@@ -350,6 +350,7 @@
 #include "Gnuplot.h"
 #include "SolutionHistory.h"
 #include "DebugOutput.h"
+#include "PicardConsoleOutput.h"
 
 namespace Moose {
 
@@ -638,6 +639,7 @@ registerObjects(Factory & factory)
   registerOutput(Gnuplot);
   registerOutput(SolutionHistory);
   registerOutput(DebugOutput);
+  registerNamedOutput(PicardConsoleOutput, "PicardConsole");
 
   registered = true;
 }

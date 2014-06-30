@@ -93,4 +93,8 @@
     linear_residuals = true
     perf_log = true
   [../]
+  [./picard]
+    type = PicardConsole
+    nonlinear_residual_dt_divisor = 10
+  [../]
 []
