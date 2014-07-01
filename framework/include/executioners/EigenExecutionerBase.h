@@ -118,6 +118,11 @@ public:
    */
   virtual void nonlinearSolve(Real rel_tol, Real abs_tol, Real pfactor, Real & k);
 
+
+  std::vector<Real> _keff_history;
+  std::vector<Real> _diff_history;
+
+
 protected:
 
   /**

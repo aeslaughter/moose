@@ -228,8 +228,11 @@ EigenExecutionerBase::inversePowerIteration(unsigned int min_iter,
   // some iteration variables
   Real k_old = 0.0;
 
-  std::vector<Real> keff_history;
-  std::vector<Real> diff_history;
+  _keff_history.clear();
+  _diff_history.clear();
+
+//  std::vector<Real> keff_history;
+//  std::vector<Real> diff_history;
 
   unsigned int iter = 0;
 
@@ -275,8 +278,9 @@ EigenExecutionerBase::inversePowerIteration(unsigned int min_iter,
     if (echo && (!output_convergence))
     {
       // output on screen the convergence history only when we want to and MOOSE output system is not used
-      keff_history.push_back(k);
-      if (_solution_diff) diff_history.push_back(*_solution_diff);
+      _keff_history.push_back(k);
+      if (_solution_diff)
+        _diff_history.push_back(*_solution_diff);
 
       std::ios_base::fmtflags flg = Moose::out.flags();
       std::streamsize pcs = Moose::out.precision();
@@ -287,15 +291,15 @@ EigenExecutionerBase::inversePowerIteration(unsigned int min_iter,
         Moose::out << " | iteration      | eigenvalue          | solution_difference |\n";
         Moose::out << " +================+=====================+=====================+\n";
         unsigned int j = 0;
-        if (keff_history.size()>10)
+        if (_keff_history.size()>10)
         {
           Moose::out << " :                :                     :                     :\n";
-          j = keff_history.size()-10;
+          j = _keff_history.size()-10;
         }
-        for (; j<keff_history.size(); j++)
+        for (; j<_keff_history.size(); j++)
           Moose::out << " | " << std::setw(14) << j
-                     << " | " << std::setw(19) << std::scientific << std::setprecision(8) << keff_history[j]
-                     << " | " << std::setw(19) << std::scientific << std::setprecision(8) << diff_history[j]
+                     << " | " << std::setw(19) << std::scientific << std::setprecision(8) << _keff_history[j]
+                     << " | " << std::setw(19) << std::scientific << std::setprecision(8) << _diff_history[j]
                      << " |\n";
         Moose::out << " +================+=====================+=====================+\n" << std::flush;
         Moose::out << std::endl;
@@ -307,14 +311,14 @@ EigenExecutionerBase::inversePowerIteration(unsigned int min_iter,
         Moose::out << " | iteration      | eigenvalue          |\n";
         Moose::out << " +================+=====================+\n";
         unsigned int j = 0;
-        if (keff_history.size()>10)
+        if (_keff_history.size()>10)
         {
           Moose::out << " :                :                     :\n";
-          j = keff_history.size()-10;
+          j = _keff_history.size()-10;
         }
-        for (; j<keff_history.size(); j++)
+        for (; j<_keff_history.size(); j++)
           Moose::out << " | " << std::setw(14) << j
-                     << " | " << std::setw(19) << std::scientific << std::setprecision(8) << keff_history[j]
+                     << " | " << std::setw(19) << std::scientific << std::setprecision(8) << _keff_history[j]
                      << " |\n";
         Moose::out << " +================+=====================+\n" << std::flush;
         Moose::out << std::endl;
