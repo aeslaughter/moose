@@ -117,8 +117,6 @@ template<typename RangeType>
 void
 ThreadedElementLoopBase<RangeType>::operator () (const RangeType & range, bool bypass_threading)
 {
-  // std::cout << "ThreadedElementLoopBase<RangeType>::operator ()" << std::endl;
-
   ParallelUniqueId puid;
   _tid = bypass_threading ? 0 : puid.id;
 
@@ -146,8 +144,6 @@ ThreadedElementLoopBase<RangeType>::operator () (const RangeType & range, bool b
       if (boundary_ids.size() > 0)
         for (std::vector<BoundaryID>::iterator it = boundary_ids.begin(); it != boundary_ids.end(); ++it)
           onBoundary(elem, side, *it);
-
-//      std::cout << "  " << elem->id() << " " << side << " " <<  elem->neighbor(side) << std::endl;
 
       if (elem->neighbor(side) != NULL)
         onInternalSide(elem, side);

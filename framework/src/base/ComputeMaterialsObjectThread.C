@@ -94,7 +94,7 @@ ComputeMaterialsObjectThread::onElement(const Elem *elem)
 void
 ComputeMaterialsObjectThread::onBoundary(const Elem *elem, unsigned int side, BoundaryID bnd_id)
 {
-  //if (_fe_problem.needMaterialOnSide(bnd_id, _tid))
+  if (_fe_problem.needMaterialOnSide(bnd_id, _tid))
   {
     _fe_problem.setCurrentBoundaryID(bnd_id);
     _assembly[_tid]->reinit(elem, side);
@@ -117,14 +117,7 @@ ComputeMaterialsObjectThread::onBoundary(const Elem *elem, unsigned int side, Bo
 void
 ComputeMaterialsObjectThread::onInternalSide(const Elem *elem, unsigned int side)
 {
-  std::cout << "ComputeMaterialsObjectThread::onInternalSide" << std::endl;
-
   _fe_problem.getIndicatorWarehouse(_tid).updateActiveIndicators(_subdomain);
-
-  std::cout << "_need_internal_side_material = " << _need_internal_side_material << std::endl;
-  std::cout << "_indicators[tid].active().size() = " << _fe_problem.getIndicatorWarehouse(_tid).active().size() << std::endl;
-  std::cout << "_indicators[tid].all().size() = " << _fe_problem.getIndicatorWarehouse(_tid).all().size() << std::endl;
-
 
   if (_need_internal_side_material)
   {

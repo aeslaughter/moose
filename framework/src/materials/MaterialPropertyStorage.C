@@ -111,8 +111,6 @@ MaterialPropertyStorage::releaseProperties()
 void
 MaterialPropertyStorage::prolongStatefulProps(const std::vector<std::vector<QpMap> > & refinement_map, QBase & qrule, QBase & qrule_face, MaterialPropertyStorage & parent_material_props, MaterialData & child_material_data, const Elem & elem, const int input_parent_side, const int input_child, const int input_child_side)
 {
-  // std::cout << "MaterialPropertyStorage::prolongStatefulProps " << elem.id() << " " << input_parent_side << " " << input_child << " " << input_child_side <<  std::endl;
-
 
   mooseAssert(input_child != -1 || input_parent_side == input_child_side, "Invalid inputs!");
 
@@ -161,10 +159,6 @@ MaterialPropertyStorage::prolongStatefulProps(const std::vector<std::vector<QpMa
     // init properties (allocate memory. etc)
     for (unsigned int i=0; i < _stateful_prop_id_to_prop_id.size(); ++i)
     {
-      //std::cout << "i = " << i << std::endl;
-      //std::cout << "child_elem.id = " << child_elem->id() << std::endl;
-      //std::cout << "props = " << props()[child_elem][child_side][i] << std::endl;
-
       // duplicate the stateful property in property storage (all three states - we will reuse the allocated memory there)
       // also allocating the right amount of memory, so we do not have to resize, etc.
       if (props()[child_elem][child_side][i] == NULL) props()[child_elem][child_side][i] = child_material_data.props()[ _stateful_prop_id_to_prop_id[i] ]->init(n_qpoints);
@@ -185,8 +179,6 @@ MaterialPropertyStorage::prolongStatefulProps(const std::vector<std::vector<QpMa
         if (hasOlderProperties())
           propsOlder()[child_elem][child_side][i]->qpCopy(qp, parent_material_props.propsOlder()[&elem][parent_side][i], child_map[qp]._to);
       }
-      //   std::cout << "props = " << props()[child_elem][child_side][i]->size() << std::endl;
-
     }
   }
 }
@@ -214,9 +206,6 @@ MaterialPropertyStorage::restrictStatefulProps(const std::vector<std::pair<unsig
   }
 
   material_data.size(n_qpoints);
-
-  // First, make sure that storage has been set aside for this element.
-  //initStatefulProps(material_data, mats, n_qpoints, elem, side);
 
   if (props()[&elem][side].size() == 0) props()[&elem][side].resize(_stateful_prop_id_to_prop_id.size());
   if (propsOld()[&elem][side].size() == 0) propsOld()[&elem][side].resize(_stateful_prop_id_to_prop_id.size());
