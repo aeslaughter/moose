@@ -70,7 +70,7 @@ ComputeMaterialsObjectThread::~ComputeMaterialsObjectThread()
 void
 ComputeMaterialsObjectThread::subdomainChanged()
 {
-  // _fe_problem.getIndicatorWarehouse(_tid).updateActiveIndicators(_subdomain);
+//  _fe_problem.getIndicatorWarehouse(_tid).updateActiveIndicators(_subdomain);
   _need_internal_side_material = _fe_problem.needMaterialOnSide(_subdomain, _tid);
   _fe_problem.subdomainSetup(_subdomain, _tid);
 }
@@ -126,7 +126,7 @@ ComputeMaterialsObjectThread::onInternalSide(const Elem *elem, unsigned int side
   std::cout << "_indicators[tid].all().size() = " << _fe_problem.getIndicatorWarehouse(_tid).all().size() << std::endl;
 
 
-  //if (_need_internal_side_material)
+  if (_need_internal_side_material)
   {
     _assembly[_tid]->reinit(elem, side);
     unsigned int face_n_points = _assembly[_tid]->qRuleFace()->n_points();
