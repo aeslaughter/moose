@@ -40,5 +40,8 @@ void
 Receiver::initialSetup()
 {
   if (isParamValid("default"))
+  {
     _fe_problem.getPostprocessorValue(_pp_name) = getParam<Real>("default");
+    _fe_problem.getPostprocessorValueOld(_pp_name) = getParam<Real>("default");
+  }
 }
