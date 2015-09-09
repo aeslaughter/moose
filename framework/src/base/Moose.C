@@ -416,6 +416,7 @@
 // Controls
 #include "RealFunctionControl.h"
 #include "TimePeriod.h"
+#include "RealPythonControl.h"
 
 // Partitioner
 #include "LibmeshPartitioner.h"
@@ -770,6 +771,7 @@ registerObjects(Factory & factory)
   // Controls
   registerControl(RealFunctionControl);
   registerControl(TimePeriod);
+  registerControl(RealPythonControl);
 
   // Partitioner
   registerPartitioner(LibmeshPartitioner);

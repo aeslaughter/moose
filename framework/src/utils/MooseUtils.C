@@ -121,6 +121,8 @@ checkFileWriteable(const std::string & filename, bool throw_on_unwritable)
   return true;
 }
 
+
+
 void
 parallelBarrierNotify(const Parallel::Communicator & comm)
 {
@@ -161,12 +163,22 @@ hasExtension(const std::string & filename, std::string ext, bool strip_exodus_ex
     re.FullMatch(filename, &file_ext);
   }
 
-  // Perform the comparision
+  // Perform the comparison
   if (file_ext == ext)
     return true;
   else
     return false;
 }
+
+std::string
+getCurrentWorkingDir()
+{
+  char * cwd;
+  cwd = (char*) malloc( FILENAME_MAX * sizeof(char) );
+  getcwd(cwd,FILENAME_MAX);
+  return std::string(cwd);
+}
+
 
 std::pair<std::string, std::string>
 splitFileName(std::string full_file)
@@ -179,7 +191,7 @@ splitFileName(std::string full_file)
   std::string path;
   std::string file;
 
-  // Locate the / sepearting the file from path
+  // Locate the / separating the file from path
   std::size_t found = full_file.find_last_of("/");
 
   // If no / is found used "." for the path, otherwise seperate the two
