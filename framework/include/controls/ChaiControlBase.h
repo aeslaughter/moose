@@ -20,26 +20,18 @@
 // MOOSE includes
 #include "Control.h"
 
+#include <chaiscript/chaiscript.hpp>
+#include <chaiscript/chaiscript_stdlib.hpp>
+
 // Forward declarations
-template<typename T = Real>
 class ChaiControlBase;
 
 template<>
-InputParameters validParams<ChaiControlBase<> >();
+InputParameters validParams<ChaiControlBase>();
 
 /**
- * A base class for controlling MOOSE via python functions
  *
- * By default a function with the name 'function' that resides
- * in a module with the name 'control.py' located in the working directory
- * is called.
- *
- * This class has two methods that must be defined in the child class:
- * buildPythonArguments and getPythonResult.
- *
- * @see RealChaiControl
  */
-template<typename T>
 class ChaiControlBase : public Control
 {
 public:
@@ -50,10 +42,6 @@ public:
    */
   ChaiControlBase(const InputParameters & parameters);
 
-  /**
-   * Class destructor
-   */
-  virtual ~ChaiControlBase();
   /**
    * Evaluate the function and set the parameter value
    */
@@ -74,30 +62,10 @@ protected:
   const PostprocessorValue & _monitor;
 
   /// A reference to the parameter to control
-  T & _parameter;
+  Real & _parameter;
 
 
 };
-
-template<typename T>
-ChaiControlBase<T>::ChaiControlBase(const InputParameters & parameters) :
-    Control(parameters),
-    _monitor(getPostprocessorValue("monitor")),
-    _parameter(getControllableParam<Real>("parameter"))
-{
-}
-
-template<typename T>
-ChaiControlBase<T>::~ChaiControlBase()
-{
-}
-
-template<typename T>
-void
-ChaiControlBase<T>::execute()
-{
-
-}
 
 #endif // CHAICONTROLBASE_H
 #endif // LIBMESH_HAVE_CXX11

@@ -19,13 +19,17 @@
 template<>
 InputParameters validParams<ChaiControlBase>()
 {
-  InputParameters params = validParams<Control<> >();
+  InputParameters params = validParams<Control>();
   return params;
 }
+
 
 ChaiControlBase::ChaiControlBase(const InputParameters & parameters) :
     Control(parameters)
 {
+
+  chaiscript::ChaiScript chai(chaiscript::Std_Lib::library());
+
 }
 
 void

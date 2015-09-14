@@ -727,6 +727,9 @@ registerObjects(Factory & factory)
 
   // Controls
   registerControl(RealFunctionControl);
+#ifdef LIBMESH_HAVE_CXX11
+  registerControl(ChaiControlBase);
+#endif // LIBMESH_HAVE_CXX11
 
   registered = true;
 }
