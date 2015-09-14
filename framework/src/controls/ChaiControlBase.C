@@ -41,13 +41,12 @@ ChaiControlBase::execute()
   chaiscript::ChaiScript chai(chaiscript::Std_Lib::library());
 
 
-  /*
+
   try {
     chai.eval("2.3 + \"String\"");
   } catch (const chaiscript::exception::eval_error &e) {
     std::cout << "Error\n" << e.pretty_print() << '\n';
   }
-  */
 
   //chaiscript::ChaiScript chai;
 
@@ -62,8 +61,25 @@ ChaiControlBase::execute()
 
   chai.add(chaiscript::var(pp), "pp");
 
-//  chai.eval("print(pp)");
-  chai.eval_file("control.chai");
+  chai.eval("print(p);");
+
+
+            try {
+              chai.eval_file("control.chai", chaiscript::exception_specification<int, double, float, const std::string &, const std::exception &>());
+}
+catch (const double e) {
+}
+catch (int) {
+}
+catch (float) {
+}
+catch (const std::string &) {
+}
+catch (const std::exception &e) {
+  std::cout << "ERROR-----------------" << std::endl;
+
+// This is the one what will be called in the specific throw() above
+}
 
 
   //chai.add(chaiscript::fun(&ChaiControlBase::test), "value");
