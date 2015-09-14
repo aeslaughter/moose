@@ -12,7 +12,6 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifdef LIBMESH_HAVE_CXX11
 
 #ifndef CHAICONTROLBASE_H
 #define CHAICONTROLBASE_H
@@ -20,6 +19,10 @@
 // MOOSE includes
 #include "Control.h"
 
+// ChaiScript requires Cxx11
+#ifdef LIBMESH_HAVE_CXX11
+
+// ChaiScript includes
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
 
@@ -59,13 +62,13 @@ public:
 protected:
 
   /// The postprocessor to pass to Python function as a monitor
-  const PostprocessorValue & _monitor;
+  //const PostprocessorValue & _monitor;
 
   /// A reference to the parameter to control
-  Real & _parameter;
+//  Real & _parameter;
 
 
 };
 
-#endif // CHAICONTROLBASE_H
 #endif // LIBMESH_HAVE_CXX11
+#endif // CHAICONTROLBASE_H

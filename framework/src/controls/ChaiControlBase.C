@@ -12,9 +12,12 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
+// MOOSE includes
+#include "ChaiControlBase.h"
+
+// ChaiScript requires Cxx11
 #ifdef LIBMESH_HAVE_CXX11
 
-#include "ChaiControlBase.h"
 
 template<>
 InputParameters validParams<ChaiControlBase>()
@@ -34,7 +37,12 @@ ChaiControlBase::ChaiControlBase(const InputParameters & parameters) :
 
 void
 ChaiControlBase::execute()
-{}
+{
 
+
+
+  std::cout << "test" << std::endl;
+
+}
 
 #endif // LIBMESH_HAVE_CXX11
