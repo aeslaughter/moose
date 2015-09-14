@@ -62,8 +62,8 @@ ChaiControlBase::execute()
 
   chai.add(chaiscript::var(pp), "pp");
 
-  chai.eval("print(pp)");
-
+//  chai.eval("print(pp)");
+  chai.eval_file("control.chai");
 
 
   //chai.add(chaiscript::fun(&ChaiControlBase::test), "value");
