@@ -59,6 +59,9 @@ public:
   virtual void threadJoin(const UserObject & /*uo*/){}
   ///@}
 
+  void test();
+  double value;
+
 protected:
 
   /// The postprocessor to pass to Python function as a monitor
