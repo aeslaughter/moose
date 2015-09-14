@@ -1,4 +1,4 @@
-This directory is for 3rd party codes that are redistributed with MOOSE.  
+This directory is for 3rd party codes that are redistributed with MOOSE.
 
 mtwist-1.1/
   /***************************************************************************\
@@ -38,4 +38,12 @@ dtk_moab/
   |*-------------------------------------------------------------------------*|
   |* Copyright (c) 2012, Stuart R. Slattery                                  *|
   |* License: bsd style http://www.linfo.org/bsdlicense.html                 *|
+  /***************************************************************************\
+
+ChaiScript/
+  /***************************************************************************\
+  |* ChaiScript: an easy to use embedded scripting language for C++.         *|
+  |*-------------------------------------------------------------------------*|
+  |* Copyright (c) 2015, Jason Tuner                                         *|
+  |* License: https://github.com/ChaiScript/ChaiScript/blob/develop/LICENSE  *|
   /***************************************************************************\

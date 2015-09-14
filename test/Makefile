@@ -15,6 +15,8 @@ FRAMEWORK_DIR      ?= $(MOOSE_DIR)/framework
 include $(FRAMEWORK_DIR)/build.mk
 include $(FRAMEWORK_DIR)/moose.mk
 
+ADDITIONAL_CPPFLAGS += "-I/Users/slauae/projects/moose/framework/contrib/ChaiScript/include -ldl"
+
 # dep apps
 APPLICATION_DIR    := $(MOOSE_DIR)/test
 APPLICATION_NAME   := moose_test
