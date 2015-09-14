@@ -12,32 +12,25 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-// MOOSE includes
-#include "RealFunctionControl.h"
-#include "Function.h"
+#ifdef LIBMESH_HAVE_CXX11
+
+#include "ChaiControlBase.h"
 
 template<>
-InputParameters validParams<RealFunctionControl>()
+InputParameters validParams<ChaiControlBase>()
 {
-  InputParameters params = validParams<Control>();
-
-  params.addRequiredParam<FunctionName>("function", "The function to use for controlling the specified parameter.");
-  params.addRequiredParam<std::string>("parameter", "The input parameter(s) to control. Specify a single parameter name and all parameters in all objects matching the name will be updated");
-
+  InputParameters params = validParams<Control<> >();
   return params;
 }
 
-RealFunctionControl::RealFunctionControl(const InputParameters & parameters) :
-    Control(parameters),
-    _function(getFunction("function")),
-    _parameters(getControllableParamVector<Real>("parameter"))
+ChaiControlBase::ChaiControlBase(const InputParameters & parameters) :
+    Control(parameters)
 {
 }
 
 void
-RealFunctionControl::execute()
-{
-  Real value = _function.value(_t, Point());
-  for (std::vector<Real *>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)
-    (*(*it)) = value;
-}
+ChaiControlBase::execute()
+{}
+
+
+#endif // LIBMESH_HAVE_CXX11

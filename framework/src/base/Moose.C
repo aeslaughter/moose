@@ -396,6 +396,9 @@
 
 // Controls
 #include "RealFunctionControl.h"
+#ifdef LIBMESH_HAVE_CXX11
+#include "ChaiControlBase.h"
+#endif // LIBMESH_HAVE_CXX11
 
 namespace Moose {
 
