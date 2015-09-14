@@ -59,8 +59,6 @@ public:
   virtual void threadJoin(const UserObject & /*uo*/){}
   ///@}
 
-  void test();
-  double value;
 
 protected:
 

@@ -28,8 +28,7 @@ InputParameters validParams<ChaiControlBase>()
 
 
 ChaiControlBase::ChaiControlBase(const InputParameters & parameters) :
-    Control(parameters),
-    value(12345)
+    Control(parameters)
 {
 
 
@@ -40,11 +39,15 @@ ChaiControlBase::execute()
 {
   chaiscript::ChaiScript chai(chaiscript::Std_Lib::library());
 
+  chai.eval("print(\"hello\");");
 
 
-  try {
+  try
+  {
     chai.eval("2.3 + \"String\"");
-  } catch (const chaiscript::exception::eval_error &e) {
+  }
+  catch (const chaiscript::exception::eval_error &e)
+  {
     std::cout << "Error\n" << e.pretty_print() << '\n';
   }
 
@@ -53,7 +56,7 @@ ChaiControlBase::execute()
 
   //int result = chai.eval<int>("1 + 3");
   //std::cout << "result = " << result << std::endl;
-
+/*
 
   const PostprocessorValue & pp = getPostprocessorValueByName("coef");
   std::cout << "pp = " << pp << std::endl;
@@ -63,27 +66,7 @@ ChaiControlBase::execute()
 
   chai.eval("print(p);");
 
-
-            try {
-              chai.eval_file("control.chai", chaiscript::exception_specification<int, double, float, const std::string &, const std::exception &>());
-}
-catch (const double e) {
-}
-catch (int) {
-}
-catch (float) {
-}
-catch (const std::string &) {
-}
-catch (const std::exception &e) {
-  std::cout << "ERROR-----------------" << std::endl;
-
-// This is the one what will be called in the specific throw() above
-}
-
-
-  //chai.add(chaiscript::fun(&ChaiControlBase::test), "value");
-
+*/
 
 
 
@@ -151,12 +134,5 @@ catch (const std::exception &e) {
 //  f(); // call the ChaiScript function dump_system, from C++
 
 }
-
-void
-ChaiControlBase::test()
-{
-  std::cout << "test()" << std::endl;
-}
-
 
 #endif // LIBMESH_HAVE_CXX11
