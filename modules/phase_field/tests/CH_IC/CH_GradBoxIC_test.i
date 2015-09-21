@@ -21,17 +21,21 @@
   [./c]
     order = THIRD
     family = HERMITE
-    [./InitialCondition]
-      type = GradientBoxIC
-      x1 = 15.0
-      x2 = 35.0
-      y1 = 0.0
-      y2 = 25.0
-      grad_direction = 0
-      grad_sign = 1.0
-      mn_value = -1.0
-      mx_value = 1.0
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = GradientBoxIC
+    x1 = 15.0
+    x2 = 35.0
+    y1 = 0.0
+    y2 = 25.0
+    grad_direction = 0
+    grad_sign = 1.0
+    mn_value = -1.0
+    mx_value = 1.0
+    variable = c
   [../]
 []
 

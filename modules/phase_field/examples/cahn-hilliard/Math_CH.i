@@ -12,11 +12,15 @@
   [./c]
     order = THIRD
     family = HERMITE
-    [./InitialCondition]
-      max = .1
-      type = RandomIC
-      min = -.1
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    max = .1
+    type = RandomIC
+    min = -.1
+    variable = c
   [../]
 []
 

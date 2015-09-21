@@ -27,22 +27,10 @@
 
 [AuxVariables]
   [./eta1]
-    [./InitialCondition]
-      type = FunctionIC
-      function = 'x/2'
-    [../]
   [../]
   [./eta2]
-    [./InitialCondition]
-      type = FunctionIC
-      function = 'y/2'
-    [../]
   [../]
   [./eta3]
-    [./InitialCondition]
-      type = FunctionIC
-      function = '(2^0.5-(y-1)^2=(y-1)^2)/2'
-    [../]
   [../]
   [./e11_aux]
     order = CONSTANT
@@ -57,6 +45,24 @@
     index_i = 0
     index_j = 0
     variable = e11_aux
+  [../]
+[]
+
+[ICs]
+  [./eta2_ic]
+    type = FunctionIC
+    function = 'y/2'
+    variable = eta2
+  [../]
+  [./eta1_ic]
+    type = FunctionIC
+    function = 'x/2'
+    variable = eta1
+  [../]
+  [./eta3_ic]
+    type = FunctionIC
+    function = '(2^0.5-(y-1)^2=(y-1)^2)/2'
+    variable = eta3
   [../]
 []
 

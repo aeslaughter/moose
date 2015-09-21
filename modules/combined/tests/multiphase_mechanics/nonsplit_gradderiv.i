@@ -14,16 +14,8 @@
 
 [AuxVariables]
   [./disp_x]
-    [./InitialCondition]
-      type = FunctionIC
-      function = '0.1*sin(2*x/10*3.14159265359)'
-    [../]
   [../]
   [./disp_y]
-    [./InitialCondition]
-      type = FunctionIC
-      function = '0.1*sin(1*y/10*3.14159265359)'
-    [../]
   [../]
 []
 
@@ -41,6 +33,19 @@
   [./gyx]
   [../]
   [./gyy]
+  [../]
+[]
+
+[ICs]
+  [./disp_x_ic]
+    type = FunctionIC
+    function = '0.1*sin(2*x/10*3.14159265359)'
+    variable = disp_x
+  [../]
+  [./disp_y_ic]
+    type = FunctionIC
+    function = '0.1*sin(1*y/10*3.14159265359)'
+    variable = disp_y
   [../]
 []
 

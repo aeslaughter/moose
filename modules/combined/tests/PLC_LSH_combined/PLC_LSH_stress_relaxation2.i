@@ -34,12 +34,6 @@
   [./disp_y]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = ConstantIC
-      boundary = 5
-      value = 0.01
-      variable = disp_y
-    [../]
   [../]
 
   [./disp_z]
@@ -81,6 +75,15 @@
     disp_x = disp_x
     disp_y = disp_y
     disp_z = disp_z
+  [../]
+[]
+
+[ICs]
+  [./disp_y_ic]
+    type = ConstantIC
+    boundary = 5
+    value = 0.01
+    variable = disp_y
   [../]
 []
 

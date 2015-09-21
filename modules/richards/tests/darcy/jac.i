@@ -1,7 +1,6 @@
 # Test to show that DarcyFlux produces the correct jacobian
 
 [GlobalParams]
-  variable = pressure
   fluid_weight = '0 0 -1.5'
   fluid_viscosity = 1
 []
@@ -16,12 +15,16 @@
 
 [Variables]
   [./pressure]
-    [./InitialCondition]
-      type = RandomIC
-      block = 0
-      min = 0
-      max = 1
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./pressure_ic]
+    type = RandomIC
+    block = 0
+    min = 0
+    max = 1
+    variable = pressure
   [../]
 []
 

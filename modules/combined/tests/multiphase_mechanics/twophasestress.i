@@ -27,10 +27,6 @@
 
 [AuxVariables]
   [./eta]
-    [./InitialCondition]
-      type = FunctionIC
-      function = 'x/2'
-    [../]
   [../]
   [./e11_aux]
     order = CONSTANT
@@ -45,6 +41,14 @@
     index_i = 0
     index_j = 0
     variable = e11_aux
+  [../]
+[]
+
+[ICs]
+  [./eta_ic]
+    type = FunctionIC
+    function = 'x/2'
+    variable = eta
   [../]
 []
 

@@ -11,11 +11,6 @@
 
 [Variables]
   [./n]
-    [./InitialCondition]
-      type = RandomIC
-      min = 0.0
-      max = 0.1
-    [../]
   [../]
   [./u]
     scaling = 1e2
@@ -41,6 +36,15 @@
   [./edrff2]
     order = CONSTANT
     family = MONOMIAL
+  [../]
+[]
+
+[ICs]
+  [./n_ic]
+    type = RandomIC
+    min = 0.0
+    max = 0.1
+    variable = n
   [../]
 []
 

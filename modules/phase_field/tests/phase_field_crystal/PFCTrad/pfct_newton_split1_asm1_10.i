@@ -9,17 +9,21 @@
 
 [Variables]
   [./n]
-    [./InitialCondition]
-      type = RandomIC
-      min = -1
-      max = 4
-    [../]
   [../]
   [./u]
     scaling = 1e2
   [../]
   [./v]
     scaling = 1e1
+  [../]
+[]
+
+[ICs]
+  [./n_ic]
+    type = RandomIC
+    min = -1
+    max = 4
+    variable = n
   [../]
 []
 
@@ -127,5 +131,4 @@
   file_base = pfct_newton_split1_asm1_10_out
   exodus = true
 []
-
 

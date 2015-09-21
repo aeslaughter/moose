@@ -15,15 +15,6 @@
   [./c]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 25.0
-      y1 = 25.0
-      radius = 6.0
-      invalue = 0.9
-      outvalue = 0.1
-      int_width = 3.0
-    [../]
   [../]
   [./w]
     order = FIRST
@@ -32,15 +23,29 @@
   [./eta]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 30.0
-      y1 = 25.0
-      radius = 4.0
-      invalue = 0.9
-      outvalue = 0.1
-      int_width = 2.0
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./eta_ic]
+    type = SmoothCircleIC
+    x1 = 30.0
+    y1 = 25.0
+    radius = 4.0
+    invalue = 0.9
+    outvalue = 0.1
+    int_width = 2.0
+    variable = eta
+  [../]
+  [./c_ic]
+    type = SmoothCircleIC
+    x1 = 25.0
+    y1 = 25.0
+    radius = 6.0
+    invalue = 0.9
+    outvalue = 0.1
+    int_width = 3.0
+    variable = c
   [../]
 []
 

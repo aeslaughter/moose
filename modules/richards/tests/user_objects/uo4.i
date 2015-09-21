@@ -364,18 +364,23 @@
   [./pwater]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = initial_pwater
-    [../]
   [../]
   [./pgas]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = initial_pgas
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./pwater_ic]
+    type = FunctionIC
+    function = initial_pwater
+    variable = pwater
+  [../]
+  [./pgas_ic]
+    type = FunctionIC
+    function = initial_pgas
+    variable = pgas
   [../]
 []
 

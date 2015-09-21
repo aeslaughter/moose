@@ -23,15 +23,19 @@
   [./eta]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 25.0
-      y1 = 25.0
-      radius = 6.0
-      invalue = 0.9
-      outvalue = 0.1
-      int_width = 3.0
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./eta_ic]
+    type = SmoothCircleIC
+    x1 = 25.0
+    y1 = 25.0
+    radius = 6.0
+    invalue = 0.9
+    outvalue = 0.1
+    int_width = 3.0
+    variable = eta
   [../]
 []
 

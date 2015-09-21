@@ -70,45 +70,52 @@
     # The concentration will quickly change to adapt to the preset order
     # parameters eta1, eta2, and eta3
     #
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 0.0
-      y1 = 0.0
-      radius = 5.0
-      invalue = 1.0
-      outvalue = 0.01
-      int_width = 10.0
-    [../]
   [../]
 
   [./eta1]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      #
-      # Note: this initial conditions sets up a _sharp_ interface. Ideally
-      # we should start with a smooth interface with a width consistent
-      # with the kappa parameter supplied for the given interface.
-      #
-      function = 'r:=sqrt(x^2+y^2);if(r<=4,1,0)'
-    [../]
   [../]
   [./eta2]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = 'r:=sqrt(x^2+y^2);if(r>4&r<=7,1,0)'
-    [../]
   [../]
   [./eta3]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = 'r:=sqrt(x^2+y^2);if(r>7,1,0)'
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./eta2_ic]
+    type = FunctionIC
+    function = 'r:=sqrt(x^2+y^2);if(r>4&r<=7,1,0)'
+    variable = eta2
+  [../]
+  [./eta1_ic]
+    type = FunctionIC
+    #
+    # Note: this initial conditions sets up a _sharp_ interface. Ideally
+    # we should start with a smooth interface with a width consistent
+    # with the kappa parameter supplied for the given interface.
+    #
+    function = 'r:=sqrt(x^2+y^2);if(r<=4,1,0)'
+    variable = eta1
+  [../]
+  [./eta3_ic]
+    type = FunctionIC
+    function = 'r:=sqrt(x^2+y^2);if(r>7,1,0)'
+    variable = eta3
+  [../]
+  [./c_ic]
+    type = SmoothCircleIC
+    x1 = 0.0
+    y1 = 0.0
+    radius = 5.0
+    invalue = 1.0
+    outvalue = 0.01
+    int_width = 10.0
+    variable = c
   [../]
 []
 

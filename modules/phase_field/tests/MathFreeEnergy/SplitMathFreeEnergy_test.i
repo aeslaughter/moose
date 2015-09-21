@@ -12,13 +12,6 @@
 
 [Variables]
   [./c]
-    [./InitialCondition]
-      type = CrossIC
-      x1 = 0.0
-      x2 = 30.0
-      y1 = 0.0
-      y2 = 30.0
-    [../]
   [../]
   [./w]
   [../]
@@ -37,6 +30,17 @@ active = 'SMP'
   [./SMP]
    type = SMP
    coupled_groups = 'c,w'
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = CrossIC
+    x1 = 0.0
+    x2 = 30.0
+    y1 = 0.0
+    y2 = 30.0
+    variable = c
   [../]
 []
 

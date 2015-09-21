@@ -16,16 +16,19 @@
   [./c]
     order = THIRD
     family = HERMITE
-    [./InitialCondition]
-      type = BoundingBoxIC
-      x1 = 15.0
-      x2 = 35.0
-      y1 = 0.0
-      y2 = 25.0
-      inside = 1.0
-      outside = -0.8
-      variable = c
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = BoundingBoxIC
+    x1 = 15.0
+    x2 = 35.0
+    y1 = 0.0
+    y2 = 25.0
+    inside = 1.0
+    outside = -0.8
+    variable = c
   [../]
 []
 

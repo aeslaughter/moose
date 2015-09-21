@@ -17,42 +17,14 @@
   [./gr0]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SpecifiedSmoothCircleIC
-      x_positions = '250.0  750.0'
-      y_positions = '300.0  300.0'
-      z_positions = '  0.0    0.0'
-      radii       = '200.0  200.0'
-      invalue = 0.0
-      outvalue = 1.0
-      int_width = 50.0
-    [../]
   [../]
   [./gr1]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 250.0
-      y1 = 300.0
-      radius = 200.0
-      invalue = 1.0
-      outvalue = 0.0
-      int_width = 50.0
-    [../]
   [../]
   [./gr2]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 750.0
-      y1 = 300.0
-      radius = 200.0
-      invalue = 1.0
-      outvalue = 0.0
-      int_width = 50.0
-    [../]
   [../]
 []
 
@@ -68,6 +40,40 @@
   [./var_indices]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
+
+[ICs]
+  [./gr2_ic]
+    type = SmoothCircleIC
+    x1 = 750.0
+    y1 = 300.0
+    radius = 200.0
+    invalue = 1.0
+    outvalue = 0.0
+    int_width = 50.0
+    variable = gr2
+  [../]
+  [./gr1_ic]
+    type = SmoothCircleIC
+    x1 = 250.0
+    y1 = 300.0
+    radius = 200.0
+    invalue = 1.0
+    outvalue = 0.0
+    int_width = 50.0
+    variable = gr1
+  [../]
+  [./gr0_ic]
+    type = SpecifiedSmoothCircleIC
+    x_positions = '250.0  750.0'
+    y_positions = '300.0  300.0'
+    z_positions = '  0.0    0.0'
+    radii       = '200.0  200.0'
+    invalue = 0.0
+    outvalue = 1.0
+    int_width = 50.0
+    variable = gr0
   [../]
 []
 

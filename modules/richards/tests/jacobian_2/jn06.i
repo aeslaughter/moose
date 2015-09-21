@@ -80,25 +80,30 @@
   [./pwater]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = RandomIC
-      block = 0
-      min = -1
-      max = 0
-    [../]
   [../]
   [./pgas]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = RandomIC
-      block = 0
-      min = 0
-      max = 1
-    [../]
   [../]
 []
 
+
+[ICs]
+  [./pwater_ic]
+    type = RandomIC
+    block = 0
+    min = -1
+    max = 0
+    variable = pwater
+  [../]
+  [./pgas_ic]
+    type = RandomIC
+    block = 0
+    min = 0
+    max = 1
+    variable = pgas
+  [../]
+[]
 
 [Kernels]
   active = 'richardsfwater richardstwater richardsfgas richardstgas'

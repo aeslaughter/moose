@@ -15,15 +15,6 @@
   [./eta1]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = -3.5
-      y1 =  0.0
-      radius = 4.0
-      invalue = 0.9
-      outvalue = 0.1
-      int_width = 2.0
-    [../]
   [../]
 []
 
@@ -31,35 +22,50 @@
   [./eta2]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 =  3.5
-      y1 =  0.0
-      radius = 4.0
-      invalue = 0.9
-      outvalue = 0.1
-      int_width = 2.0
-    [../]
   [../]
   [./eta3]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SpecifiedSmoothCircleIC
-      x_positions = '-4.0 4.0'
-      y_positions = ' 0.0 0.0'
-      z_positions = ' 0.0 0.0'
-      radii = '4.0 4.0'
-      invalue = 0.1
-      outvalue = 0.9
-      int_width = 2.0
-    [../]
   [../]
 
   [./lambda]
     order = FIRST
     family = LAGRANGE
     initial_condition = 1.0
+  [../]
+[]
+
+[ICs]
+  [./eta2_ic]
+    type = SmoothCircleIC
+    x1 =  3.5
+    y1 =  0.0
+    radius = 4.0
+    invalue = 0.9
+    outvalue = 0.1
+    int_width = 2.0
+    variable = eta2
+  [../]
+  [./eta1_ic]
+    type = SmoothCircleIC
+    x1 = -3.5
+    y1 =  0.0
+    radius = 4.0
+    invalue = 0.9
+    outvalue = 0.1
+    int_width = 2.0
+    variable = eta1
+  [../]
+  [./eta3_ic]
+    type = SpecifiedSmoothCircleIC
+    x_positions = '-4.0 4.0'
+    y_positions = ' 0.0 0.0'
+    z_positions = ' 0.0 0.0'
+    radii = '4.0 4.0'
+    invalue = 0.1
+    outvalue = 0.9
+    int_width = 2.0
+    variable = eta3
   [../]
 []
 

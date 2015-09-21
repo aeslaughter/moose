@@ -15,23 +15,26 @@
   [./c]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SpecifiedSmoothCircleIC
-      invalue = 1.0
-      outvalue = 0.1
-      int_width = 6.0
-      x_positions = '20.0 30.0 '
-      z_positions = '0.0 0.0 '
-      y_positions = '0.0 25.0 '
-      radii = '14.0 14.0'
-      3D_spheres = false
-      variable = c
-      block = 0
-    [../]
   [../]
   [./w]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = SpecifiedSmoothCircleIC
+    invalue = 1.0
+    outvalue = 0.1
+    int_width = 6.0
+    x_positions = '20.0 30.0 '
+    z_positions = '0.0 0.0 '
+    y_positions = '0.0 25.0 '
+    radii = '14.0 14.0'
+    3D_spheres = false
+    variable = c
+    block = 0
   [../]
 []
 

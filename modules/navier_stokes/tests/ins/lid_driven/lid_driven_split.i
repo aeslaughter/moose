@@ -39,59 +39,47 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # y-velocity
   [./v]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # x-acceleration
   [./a1]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # y-acceleration
   [./a2]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # Pressure
   [./p]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0
-    [../]
   [../]
 []
 
 
+
+[ICs]
+  [./a1_ic]
+    type = ConstantIC
+    value = 0.0
+    variable = a1
+  [../]
+  [./p_ic]
+    type = ConstantIC
+    value = 0
+    variable = p
+  [../]
+[]
 
 [Kernels]
   # split-momentum, x

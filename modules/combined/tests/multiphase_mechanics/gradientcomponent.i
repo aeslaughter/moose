@@ -13,15 +13,19 @@
   [./v]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 0.5
-      y1 = 0.5
-      radius = 0.2
-      invalue = 1
-      outvalue = 0
-      int_width = 0.2
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./v_ic]
+    type = SmoothCircleIC
+    x1 = 0.5
+    y1 = 0.5
+    radius = 0.2
+    invalue = 1
+    outvalue = 0
+    int_width = 0.2
+    variable = v
   [../]
 []
 

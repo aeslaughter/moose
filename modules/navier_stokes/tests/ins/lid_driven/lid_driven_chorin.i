@@ -39,59 +39,47 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # y-velocity
   [./v]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # x-star velocity
   [./u_star]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # y-star velocity
   [./v_star]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # Pressure
   [./p]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0
-    [../]
   [../]
 []
 
 
+
+[ICs]
+  [./p_ic]
+    type = ConstantIC
+    value = 0
+    variable = p
+  [../]
+  [./v_ic]
+    type = ConstantIC
+    value = 0.0
+    variable = v
+  [../]
+[]
 
 [Kernels]
   [./x_chorin_predictor]

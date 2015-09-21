@@ -62,15 +62,19 @@
   [./pressure]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = RandomIC
-      block = 0
-      min = -1
-      max = 0
-    [../]
   [../]
 []
 
+
+[ICs]
+  [./pressure_ic]
+    type = RandomIC
+    block = 0
+    min = -1
+    max = 0
+    variable = pressure
+  [../]
+[]
 
 [Kernels]
   active = 'richardsf richardst'

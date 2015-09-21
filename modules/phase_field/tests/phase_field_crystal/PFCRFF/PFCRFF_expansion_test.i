@@ -16,12 +16,16 @@
   [./PFCRFFVariables]
   [../]
   [./n]
-    [./InitialCondition]
-      type = RandomIC
-      max = 1.00187734619
-      min = -1.00187734619
-      seed = 12345
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./n_ic]
+    type = RandomIC
+    max = 1.00187734619
+    min = -1.00187734619
+    seed = 12345
+    variable = n
   [../]
 []
 
@@ -89,4 +93,3 @@
 [Outputs]
   exodus = true
 []
-

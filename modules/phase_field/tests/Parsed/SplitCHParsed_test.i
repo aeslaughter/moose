@@ -24,19 +24,23 @@
   [./c]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 125.0
-      y1 = 125.0
-      radius = 60.0
-      invalue = 1.0
-      outvalue = 0.1
-      int_width = 30.0
-    [../]
   [../]
   [./w]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = SmoothCircleIC
+    x1 = 125.0
+    y1 = 125.0
+    radius = 60.0
+    invalue = 1.0
+    outvalue = 0.1
+    int_width = 30.0
+    variable = c
   [../]
 []
 

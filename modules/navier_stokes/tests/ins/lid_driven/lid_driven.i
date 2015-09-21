@@ -39,48 +39,46 @@
   [./u]
     order = SECOND
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
   # y-velocity
   [./v]
     order = SECOND
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.0
-    [../]
   [../]
 
  # Temperature
  [./T]
    order = SECOND
    family = LAGRANGE
-
-   [./InitialCondition]
-     type = ConstantIC
-     value = 1.0
-   [../]
  [../]
 
   # Pressure
   [./p]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0 # This number is arbitrary for NS...
-    [../]
   [../]
 []
 
 
+
+[ICs]
+  [./p_ic]
+    type = ConstantIC
+    value = 0 # This number is arbitrary for NS...
+    variable = p
+  [../]
+  [./u_ic]
+    type = ConstantIC
+    value = 0.0
+    variable = u
+  [../]
+  [./T_ic]
+    type = ConstantIC
+    value = 1.0
+    variable = T
+  [../]
+[]
 
 [Kernels]
   # mass

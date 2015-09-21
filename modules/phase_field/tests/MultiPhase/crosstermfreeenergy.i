@@ -43,41 +43,47 @@
   [./eta1]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 0.0
-      y1 = 5.0
-      radius = 5.0
-      invalue = 1.0
-      outvalue = 0.0
-      int_width = 10.0
-    [../]
   [../]
   [./eta2]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = -4.0
-      y1 = -2.0
-      radius = 5.0
-      invalue = 1.0
-      outvalue = 0.0
-      int_width = 10.0
-    [../]
   [../]
   [./eta3]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = SmoothCircleIC
-      x1 = 4.0
-      y1 = -2.0
-      radius = 5.0
-      invalue = 1.0
-      outvalue = 0.0
-      int_width = 10.0
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./eta2_ic]
+    type = SmoothCircleIC
+    x1 = -4.0
+    y1 = -2.0
+    radius = 5.0
+    invalue = 1.0
+    outvalue = 0.0
+    int_width = 10.0
+    variable = eta2
+  [../]
+  [./eta1_ic]
+    type = SmoothCircleIC
+    x1 = 0.0
+    y1 = 5.0
+    radius = 5.0
+    invalue = 1.0
+    outvalue = 0.0
+    int_width = 10.0
+    variable = eta1
+  [../]
+  [./eta3_ic]
+    type = SmoothCircleIC
+    x1 = 4.0
+    y1 = -2.0
+    radius = 5.0
+    invalue = 1.0
+    outvalue = 0.0
+    int_width = 10.0
+    variable = eta3
   [../]
 []
 

@@ -56,10 +56,6 @@
   [./pressure]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = initial_pressure
-    [../]
   [../]
 []
 
@@ -135,6 +131,14 @@
     variable = pressure
     use_mobility = false
     use_relperm = false
+  [../]
+[]
+
+[ICs]
+  [./pressure_ic]
+    type = FunctionIC
+    function = initial_pressure
+    variable = pressure
   [../]
 []
 

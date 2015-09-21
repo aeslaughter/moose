@@ -88,20 +88,10 @@
   [./pwater]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      block = 0
-      function = init_p
-    [../]
   [../]
   [./pgas]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      block = 0
-      function = init_p
-    [../]
   [../]
 []
 
@@ -109,6 +99,21 @@
   [./init_p]
     type = ParsedFunction
     value = x+0.6*y+0.3*z
+  [../]
+[]
+
+[ICs]
+  [./pwater_ic]
+    type = FunctionIC
+    block = 0
+    function = init_p
+    variable = pwater
+  [../]
+  [./pgas_ic]
+    type = FunctionIC
+    block = 0
+    function = init_p
+    variable = pgas
   [../]
 []
 

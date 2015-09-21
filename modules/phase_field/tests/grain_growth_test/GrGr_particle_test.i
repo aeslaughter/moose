@@ -40,16 +40,19 @@
     family = LAGRANGE
   [../]
   [./c]
-    [./InitialCondition]
-      int_width = 60
-      x1 = 167
-      y1 = 500
-      radius = 50
-      outvalue = 0
-      variable = c
-      invalue = 1
-      type = SmoothCircleIC
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    int_width = 60
+    x1 = 167
+    y1 = 500
+    radius = 50
+    outvalue = 0
+    variable = c
+    invalue = 1
+    type = SmoothCircleIC
   [../]
 []
 

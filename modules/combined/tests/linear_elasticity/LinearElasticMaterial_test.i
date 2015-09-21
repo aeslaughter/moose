@@ -23,9 +23,6 @@
   [./diffused]
     order = FIRST
     family = LAGRANGE
-     [./InitialCondition]
-      type = RandomIC
-     [../]
   [../]
 
   [./disp_x]
@@ -69,6 +66,13 @@
   [./s33_aux]
     order = CONSTANT
     family = MONOMIAL
+  [../]
+[]
+
+[ICs]
+  [./diffused_ic]
+    type = RandomIC
+    variable = diffused
   [../]
 []
 

@@ -22,15 +22,19 @@
   [./c]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = RandomIC
-      min = 0.2
-      max = 0.21
-    [../]
   [../]
   [./w]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = RandomIC
+    min = 0.2
+    max = 0.21
+    variable = c
   [../]
 []
 

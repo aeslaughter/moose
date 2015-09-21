@@ -74,12 +74,6 @@
   [./c]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = RandomIC
-      min = 0
-      max = 0.8
-      seed = 1235
-    [../]
   [../]
 
   # Order parameter for the Matrix
@@ -115,6 +109,16 @@
     order = FIRST
     family = LAGRANGE
     initial_condition = 1.0
+  [../]
+[]
+
+[ICs]
+  [./c_ic]
+    type = RandomIC
+    min = 0
+    max = 0.8
+    seed = 1235
+    variable = c
   [../]
 []
 

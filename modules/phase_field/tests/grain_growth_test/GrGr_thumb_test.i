@@ -25,27 +25,11 @@
   [./gr0]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = ThumbIC
-      xcoord = 500.0
-      height = 600.0
-      width = 400.0
-      invalue = 0.0
-      outvalue = 1.0
-    [../]
   [../]
 
   [./gr1]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = ThumbIC
-      xcoord = 500.0
-      height = 600.0
-      width = 400.0
-      invalue = 1.0
-      outvalue = 0.0
-    [../]
   [../]
 []
 
@@ -54,6 +38,27 @@
   [./bnds]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
+
+[ICs]
+  [./gr1_ic]
+    type = ThumbIC
+    xcoord = 500.0
+    height = 600.0
+    width = 400.0
+    invalue = 1.0
+    outvalue = 0.0
+    variable = gr1
+  [../]
+  [./gr0_ic]
+    type = ThumbIC
+    xcoord = 500.0
+    height = 600.0
+    width = 400.0
+    invalue = 0.0
+    outvalue = 1.0
+    variable = gr0
   [../]
 []
 
