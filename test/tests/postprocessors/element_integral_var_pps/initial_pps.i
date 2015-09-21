@@ -16,19 +16,13 @@
   [./u]
     order = SECOND
     family = LAGRANGE
-    [./InitialCondition]
-      type = ConstantIC
-      value = 2.8
-    [../]
+    initial_condition = 2.8
   [../]
 
   [./v]
     order = SECOND
     family = LAGRANGE
-    [./InitialCondition]
-      type = ConstantIC
-      value = 5.4
-    [../]
+    initial_condition = 5.4
   [../]
 []
 

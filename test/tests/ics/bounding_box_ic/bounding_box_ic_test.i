@@ -9,16 +9,6 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = BoundingBoxIC
-      x1 = 0.1
-      y1 = 0.1
-      x2 = 0.6
-      y2 = 0.6
-      inside = 2.3
-      outside = 4.6
-    [../]
   [../]
 []
 
@@ -28,16 +18,30 @@
   [./u_aux]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
 
-    [./InitialCondition]
-      type = BoundingBoxIC
-      x1 = 0.1
-      y1 = 0.1
-      x2 = 0.6
-      y2 = 0.6
-      inside = 1.34
-      outside = 6.67
-    [../]
+
+[ICs]
+  [./u_ic]
+    type = BoundingBoxIC
+    x1 = 0.1
+    y1 = 0.1
+    x2 = 0.6
+    y2 = 0.6
+    inside = 2.3
+    outside = 4.6
+    variable = u
+  [../]
+  [./u_aux_ic]
+     type = BoundingBoxIC
+     x1 = 0.1
+     y1 = 0.1
+     x2 = 0.6
+     y2 = 0.6
+     inside = 1.34
+     outside = 6.67
+    variable = u_aux
   [../]
 []
 

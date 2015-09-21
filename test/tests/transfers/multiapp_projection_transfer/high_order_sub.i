@@ -20,10 +20,14 @@
   [./test_var]
     family = monomial
     order = first
-    [./InitialCondition]
-      type = FunctionIC
-      function = test_function
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./test_var_ic]
+    type = FunctionIC
+    function = test_function
+    variable = test_var
   [../]
 []
 
@@ -63,4 +67,3 @@
   execute_on = 'timestep_end'
   exodus = true
 []
-

@@ -14,10 +14,19 @@
   [./u]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
 
-    [./InitialCondition]
-      type = RandomIC
-    [../]
+[ICs]
+  [./u_ic]
+    type = RandomIC
+    variable = u
+  [../]
+
+  [./u_aux_ic]
+    type = RandomIC
+    seed = 5
+    variable = u_aux
   [../]
 []
 
@@ -27,11 +36,6 @@
   [./u_aux]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = RandomIC
-      seed = 5
-    [../]
   [../]
 []
 

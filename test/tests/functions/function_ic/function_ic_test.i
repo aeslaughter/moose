@@ -8,11 +8,6 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = FunctionIC
-      function = initial_cond_func
-    [../]
   [../]
 []
 
@@ -22,11 +17,19 @@
   [./u_aux]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
 
-    [./InitialCondition]
-      type = FunctionIC
-      function = initial_cond_func
-    [../]
+[ICs]
+  [./u_ic]
+    type = FunctionIC
+    function = initial_cond_func
+    variable = u
+  [../]
+  [./u_aux_ic]
+    type = FunctionIC
+    function = initial_cond_func
+    variable = u_aux
   [../]
 []
 

@@ -12,15 +12,6 @@
     family =  LAGRANGE
     initial_from_file_var = 'pressure'
     initial_from_file_timestep = 51
-#     [./InitialCondition]
-#     type = BoundingBoxIC
-#     x1 = 0.0
-#     y1 = 0.0
-#     x2 = 1.0e-10
-#     y2 = 0.15
-#     inside = 60.0
-#     outside = 0.0
-#     [../]
   [../]
 
   [./tracer]
@@ -28,15 +19,6 @@
     family =  LAGRANGE
     initial_from_file_var = 'tracer'
     initial_from_file_timestep = 51
-#     [./InitialCondition]
-#     type = BoundingBoxIC
-#     x1 = 0.0
-#     y1 = 0.0
-#     x2 = 1.0e-10
-#     y2 = 0.15
-#     inside = 1.0
-#     outside = 0.0
-#     [../]
   [../]
 
   [./ca2+]
@@ -44,15 +26,6 @@
     family =  LAGRANGE
     initial_from_file_var = 'ca2+'
     initial_from_file_timestep = 51
-#     [./InitialCondition]
-#     type = BoundingBoxIC
-#     x1 = 0.0
-#     y1 = 0.0
-#     x2 = 1.0e-10
-#     y2 = 0.15
-#     inside = 1.0e-6
-#     outside = 5.0e-2
-#     [../]
   [../]
 
   [./h+]
@@ -60,7 +33,6 @@
     family =  LAGRANGE
     initial_from_file_var = 'h+'
     initial_from_file_timestep = 51
-#    initial_condition = 1.0e-7
   [../]
 
   [./hco3-]
@@ -68,16 +40,6 @@
     family =  LAGRANGE
     initial_from_file_var = 'hco3-'
     initial_from_file_timestep = 51
-#    initial_condition = 1.0e-6
-#     [./InitialCondition]
-#     type = BoundingBoxIC
-#     x1 = 0.0
-#     y1 = 0.0
-#     x2 = 1.0e-10
-#     y2 = 0.15
-#     inside = 5.0e-2
-#     outside = 1.0e-6
-#     [../]
   [../]
 
 []

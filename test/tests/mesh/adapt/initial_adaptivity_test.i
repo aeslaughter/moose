@@ -26,15 +26,19 @@
   [./u]
     order = SECOND
     family = LAGRANGE
-    [./InitialCondition]
-      type = BoundingBoxIC
-      x1 = -2
-      y1 = -2
-      x2 =  0
-      y2 =  2
-      inside = 1
-      outside = 0
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./u_ic]
+    type = BoundingBoxIC
+    x1 = -2
+    y1 = -2
+    x2 =  0
+    y2 =  2
+    inside = 1
+    outside = 0
+    variable = u
   [../]
 []
 

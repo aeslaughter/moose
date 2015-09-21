@@ -8,11 +8,7 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 6.2
-    [../]
+    initial_condition = 6.2
   [../]
 []
 
@@ -22,11 +18,7 @@
   [./u_aux]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 9.3
-    [../]
+    initial_condition = 9.3
   [../]
 []
 

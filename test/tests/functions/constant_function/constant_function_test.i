@@ -31,10 +31,14 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = icfn
-    [../]
+  [../]
+[]
+
+[ICs]
+  [./u_ic]
+    type = FunctionIC
+    function = icfn
+    variable = u
   [../]
 []
 

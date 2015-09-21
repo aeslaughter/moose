@@ -9,12 +9,15 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = ic_function
-    [../]
   [../]
+[]
 
+[ICs]
+  [./u_ic]
+    type = FunctionIC
+    function = ic_function
+    variable = u
+  [../]
 []
 
 [Functions]

@@ -9,24 +9,12 @@
   elem_type = QUAD4
 []
 
-[Functions]
-  [./initial_value]
-    type = ParsedFunction
-    value = 'x'
-  [../]
-[]
-
 [Variables]
   active = 'u'
 
   [./u]
     order = FIRST
     family = LAGRANGE
-
-#    [./InitialCondition]
-#      type = FunctionIC
- #     function = initial_value
-#    [../]
   [../]
 []
 

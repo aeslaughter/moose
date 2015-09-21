@@ -63,13 +63,9 @@ void associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 //  syntax.registerActionSyntax("AddVariableAction", "Variables/*", "add_variable");
 //  syntax.registerActionSyntax("AddVariableAction", "Variables/*", "add_ic");
 
-  syntax.registerActionSyntax("AddICAction", "Variables/*/InitialCondition");
-
   syntax.registerActionSyntax("AddAuxVariableAction", "AuxVariables/*");
 //  syntax.registerActionSyntax("AddAuxVariableAction", "AuxVariables/*", "add_aux_variable");
 //  syntax.registerActionSyntax("AddAuxVariableAction", "AuxVariables/*", "add_ic");
-
-  syntax.registerActionSyntax("AddICAction", "AuxVariables/*/InitialCondition");
 
   syntax.registerActionSyntax("EmptyAction", "BCs/Periodic", "no_action");  // placeholder
   syntax.registerActionSyntax("AddPeriodicBCAction", "BCs/Periodic/*");

@@ -9,12 +9,15 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-    [./InitialCondition]
-      type = FunctionIC
-      function = missing_function #should generate error
-    [../]
   [../]
+[]
 
+[ICs]
+  [./u_ic]
+    type = FunctionIC
+    function = ic_function
+    variable = u
+  [../]
 []
 
 [Kernels]

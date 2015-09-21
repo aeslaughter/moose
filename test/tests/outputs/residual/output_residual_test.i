@@ -8,11 +8,7 @@
   [./u]
     order = FIRST
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0
-    [../]
+    initial_condition = 0
   [../]
 
   # subdomain restricted variable

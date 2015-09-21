@@ -10,12 +10,6 @@
     order = FIRST
     family = LAGRANGE
     block = '1 center_block 3'
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 20
-      block = 'center_block 3'
-    [../]
   [../]
 []
 
@@ -32,6 +26,12 @@
     type = ConstantIC
     variable = reporter
     value = 10
+  [../]
+  [./u_ic]
+    type = ConstantIC
+    value = 20
+    block = 'center_block 3'
+    variable = u
   [../]
 []
 

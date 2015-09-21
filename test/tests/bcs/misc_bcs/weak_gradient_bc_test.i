@@ -22,11 +22,14 @@
   [./u]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
 
-    [./InitialCondition]
-      type = FunctionIC
-      function = initial_value
-    [../]
+[ICs]
+  [./u_ic]
+    type = FunctionIC
+    function = initial_value
+    variable = u
   [../]
 []
 

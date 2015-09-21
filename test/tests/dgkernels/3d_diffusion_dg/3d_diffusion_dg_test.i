@@ -19,11 +19,7 @@
   [./u]
     order = FIRST
     family = MONOMIAL
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0.5
-    [../]
+    initial_condition = 0.5
   [../]
 []
 

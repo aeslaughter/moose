@@ -20,11 +20,7 @@
   [./u]
     order = FIRST
     family = MONOMIAL
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 1
-    [../]
+    initial_condition = 1
   [../]
 []
 

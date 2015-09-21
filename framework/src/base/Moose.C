@@ -323,7 +323,6 @@
 // Actions
 #include "AddBCAction.h"
 #include "AddDiracKernelAction.h"
-#include "AddICAction.h"
 #include "AddInitialConditionAction.h"
 #include "AddKernelAction.h"
 #include "AddScalarKernelAction.h"
@@ -989,7 +988,6 @@ registerActions(Syntax & syntax, ActionFactory & action_factory)
   registerAction(CopyNodalVarsAction, "copy_nodal_aux_vars");
 
   // Initial Condition Actions
-  registerAction(AddICAction, "add_ic");
   registerAction(AddInitialConditionAction, "add_ic");
 
   registerAction(AddKernelAction, "add_kernel");

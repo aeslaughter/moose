@@ -18,11 +18,14 @@
   [./u]
     order = SECOND
     family = LAGRANGE
+  [../]
+[]
 
-    [./InitialCondition]
-      type = FunctionIC
-      function = exact_fn
-    [../]
+[ICs]
+  [./u_ic]
+    type = FunctionIC
+    function = exact_fn
+    variable = u
   [../]
 []
 

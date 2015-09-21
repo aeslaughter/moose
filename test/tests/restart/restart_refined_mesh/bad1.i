@@ -9,43 +9,16 @@
   [./pressure]
     order =  FIRST
     family =  LAGRANGE
-    [./InitialCondition]
-    type = BoundingBoxIC
-    x1 = 0.0
-    y1 = 0.0
-    x2 = 1.0e-10
-    y2 = 0.15
-    inside = 60.0
-    outside = 0.0
-    [../]
   [../]
 
   [./tracer]
     order =  FIRST
     family =  LAGRANGE
-    [./InitialCondition]
-    type = BoundingBoxIC
-    x1 = 0.0
-    y1 = 0.0
-    x2 = 1.0e-10
-    y2 = 0.15
-    inside = 1.0
-    outside = 0.0
-    [../]
   [../]
 
   [./ca2+]
     order =  FIRST
     family =  LAGRANGE
-    [./InitialCondition]
-    type = BoundingBoxIC
-    x1 = 0.0
-    y1 = 0.0
-    x2 = 1.0e-10
-    y2 = 0.15
-    inside = 1.0e-6
-    outside = 5.0e-2
-    [../]
   [../]
 
   [./h+]
@@ -57,8 +30,45 @@
   [./hco3-]
     order =  FIRST
     family =  LAGRANGE
-#    initial_condition = 1.0e-6
-    [./InitialCondition]
+  [../]
+
+[]
+
+[ICs]
+  [./pressure_ic]
+    type = BoundingBoxIC
+    x1 = 0.0
+    y1 = 0.0
+    x2 = 1.0e-10
+    y2 = 0.15
+    inside = 60.0
+    outside = 0.0
+    variable = pressure
+  [../]
+
+  [./tracer_ic]
+    type = BoundingBoxIC
+    x1 = 0.0
+    y1 = 0.0
+    x2 = 1.0e-10
+    y2 = 0.15
+    inside = 1.0
+    outside = 0.0
+    variable = tracer
+  [../]
+
+  [./ca2+_ic]
+    type = BoundingBoxIC
+    x1 = 0.0
+    y1 = 0.0
+    x2 = 1.0e-10
+    y2 = 0.15
+    inside = 1.0e-6
+    outside = 5.0e-2
+    varaible = ca2+_ic
+  [../]
+
+  [./hco3-]
     type = BoundingBoxIC
     x1 = 0.0
     y1 = 0.0
@@ -66,9 +76,8 @@
     y2 = 0.15
     inside = 5.0e-2
     outside = 1.0e-6
-    [../]
+    variable = hco3-
   [../]
-
 []
 
 [AuxVariables]

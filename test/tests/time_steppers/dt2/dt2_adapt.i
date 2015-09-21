@@ -21,10 +21,13 @@
   [./u]
     order = FIRST
     family = LAGRANGE
+  [../]
+[]
 
-    [./InitialCondition]
-      type = TEIC
-    [../]
+[ICs]
+  [./u_ic]
+    type = TEIC
+    variable = u
   [../]
 []
 

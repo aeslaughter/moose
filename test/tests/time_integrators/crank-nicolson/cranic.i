@@ -18,11 +18,7 @@
   [./u]
     order = SECOND
     family = LAGRANGE
-
-    [./InitialCondition]
-      type = ConstantIC
-      value = 0
-    [../]
+    initial_condition = 0
   [../]
 []
 
