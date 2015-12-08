@@ -55,6 +55,9 @@ protected:
   // Reference to DGKernel storage structure
   const MooseObjectStorage<DGKernel> & _dg_kernels;
 
+  // Reference to Kernel storage structure
+  const KernelStorage & _kernels;
+
   virtual void computeJacobian();
   virtual void computeFaceJacobian(BoundaryID bnd_id);
   virtual void computeInternalFaceJacobian();
