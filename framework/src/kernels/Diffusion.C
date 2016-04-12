@@ -19,6 +19,7 @@ template<>
 InputParameters validParams<Diffusion>()
 {
   InputParameters p = validParams<Kernel>();
+  p.addClassDescription("The Laplacian operator.")
   return p;
 }
 
@@ -42,4 +43,3 @@ Diffusion::computeQpJacobian()
 {
   return _grad_phi[_j][_qp] * _grad_test[_i][_qp];
 }
-
