@@ -64,6 +64,13 @@ Diffusion::computeQpJacobian()
 }
 ```
 
+## Additional information
+This will link to additional docs, for example Theory manual, general system documentation.
+
+* Kernels
+* Finite Elements
+* InputParameters
+
 
 ## Example Input Use
 This can be generated automatically by simply grabbing the first appearence of the type in a test/example/tutorial.
@@ -99,6 +106,9 @@ A complete list of all used of the class in input files, this will be automatica
 * [tests/userobjects/user_object/user_object_test.i](https://github.com/idaholab/moose/blob/devel/test/tests/userobjects/user_object/user_object_test.i)
 * ...
 
+#### Base Class(es)
+
+#### Contained Objects
 
 ## Developer Documentation
 A few helper links that will be automatically genarated.
