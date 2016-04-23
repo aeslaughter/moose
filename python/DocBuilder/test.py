@@ -42,11 +42,15 @@ class MooseObjectParameterTable(object):
 
     def __init__(self):
 
-        self._column_widths = [0]*len(self.PARAMETER_TABLE_COLUMNS)
+        self._parameters = []
+        self._column_widths = []
+        for col in self.PARAMETER_TABLE_COLUMN_NAMES:
+            self._column_widths.append(len(col))
 
 
     def addParam(self, param):
 
+        self._parameters.append(param)
         for i in range(len(self.PARAMETER_TABLE_COLUMNS)):
             self._column_widths[i] = max(self._column_widths[i], len(str(param[self.PARAMETER_TABLE_COLUMNS[i]])))
 
@@ -62,6 +66,20 @@ class MooseObjectParameterTable(object):
 
         frmt = '| ' + ' | '.join( ['{:<{}s}'] * (len(s)/2) ) + ' |'
         md += [frmt.format(*s)]
+
+        md += ['']
+        for i in range(len(self.PARAMETER_TABLE_COLUMN_NAMES)):
+            md[-1] += '| ' + '-'*self._column_widths[i] + ' '
+        md[-1] += '|'
+
+        for param in self._parameters:
+            text = []
+            for key in self.PARAMETER_TABLE_COLUMNS:
+                text.append(str(param[key]))
+            s = self._buildFormatString(text)
+            md += [frmt.format(*s)]
+
+
 
         return '\n'.join(md)
 
