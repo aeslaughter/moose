@@ -19,7 +19,7 @@ template<>
 InputParameters validParams<Diffusion>()
 {
   InputParameters p = validParams<Kernel>();
-  p.addClassDescription("The Laplacian operator.")
+  p.addClassDescription("The Laplacian operator.");
   return p;
 }
 
