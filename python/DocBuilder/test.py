@@ -1,13 +1,19 @@
 #!/usr/bin/env python
 import os
+import re
 import yaml
 import collections
+
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     print 'SLOW'
     from yaml import Loader, Dumper
 from peacock.utils.ExeLauncher import runExe
+
+MOOSE_REPOSITORY = 'github.com/idaholab/moose/blob/devel/'
+
+
 
 class YamlData(object):
     def __init__(self, raw):
@@ -91,6 +97,8 @@ class MooseObjectParameterTable(object):
         return output
 
 
+
+
 class MooseObjectInformation(object):
 
 
@@ -135,8 +143,64 @@ class MooseObjectInformation(object):
         return '\n'.join(md)
 
 
+class RegexDatabase(object):
+    def __init__(self, ext, regex, path):
+
+        self._database = dict()
+
+        for root, dirs, files in os.walk(path, topdown=False):
+            for filename in files:
+                if filename.endswith(ext):
+                    full_file = os.path.join(root, filename)
+                    fid = open(full_file, 'r')
+                    content = fid.read()
+                    fid.close()
+
+                    for match in re.finditer(regex, content):
+                        grp1 = match.group(1)
+                        if grp1 not in self._database:
+                            self._database[grp1] = []
+
+                        rel = full_file.split('/moose/')[-1]
+                        repo = MOOSE_REPOSITORY + rel
+
+                        self._database[grp1].append( (rel, repo) )
+
+
+    def __getitem__(self, key):
+        return self._database[key]
+
+    def markdown(self, key):
+        input = self[key]
+
+        md = []
+        for rel, repo in input:
+            md += ['* [{}]({})'.format(rel, repo)]
+        return '\n'.join(md)
+
+
+
+
+class InputFileDatabase(RegexDatabase):
+    def __init__(self, path):
+        RegexDatabase.__init__(self, '.i', r'type\s*=\s*(\w+)\b', path)
+
+class ChildClassDatabase(RegexDatabase):
+    def __init__(self, path):
+        RegexDatabase.__init__(self, '.h', r'public\s*(\w+)\b', path)
+
+
 if __name__ == '__main__':
 
+    db = InputFileDatabase(os.path.join(os.environ['MOOSE_DIR'], 'tutorials'))
+    tutorials = db.markdown('Diffusion')
+
+    db = ChildClassDatabase(os.path.join(os.environ['MOOSE_DIR'], 'examples'))
+    children = db.markdown('Diffusion')
+    print children
+
+
+    """
     app = os.path.join(os.environ['MOOSE_DIR'], 'test', 'moose_test-oprof')
     args = '--yaml'
     raw = runExe(app, args)
@@ -147,62 +211,4 @@ if __name__ == '__main__':
     info = MooseObjectInformation(ydata[path])
 
     print info
-
-
-
-
-    """
-    md = []
-    md += ['# ' + path.split('/')[-1] ]
-    md += ['## Class Description']
-    md += [info['description']]
-
-    columns = ['name', 'required', 'cpp_type', 'description']
-    max_widths = [0, 0, 0, 0]
-    widths = dict()
-    groups = dict()
-    for param in info['parameters']:
-        name = param['group_name']
-
-        if not name:
-            name = ''
-
-        if name not in widths:
-            widths[name] = dict(zip(columns, max_widths))
-
-
-        if name not in groups:
-            groups[name] = []
-
-        groups[name].append(param)
-
-        for col in columns:
-            widths[name][col] = max(len(str(param[col.lower()])), widths[name][col])
-
-    print widths
-    md += ['## Input Parameters'] # TODO: link to InputParameters md
-    def markdownTable(param):
-
-        md = ['']
-
-        name = param['group_name']
-        if not name:
-            md += ['### Parameters']
-        else:
-            md += ['### ' + name + ' Parameters']
-
-        md += ['', '']
-        for c in columns:
-            md[-2] += ' | ' + c
-        md[-2] += ' |'
-        md[-2] = md[-1].strip()
-        print '\n'.join(md)
-
-        #md += '| ' + param['variable'] + ' | ' + ''
-
-    for key, group in groups.iteritems():
-        for param in group:
-            markdownTable(param)
-
-    print '\n'.join(md)
     """
