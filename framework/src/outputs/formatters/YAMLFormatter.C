@@ -108,6 +108,12 @@ YAMLFormatter::printParams(const std::string &prefix, const std::string & /*full
 
     oss << "\n" << indent << "    description: |\n      " << indent
          << doc << "\n";
+
+    if (params.isParamValid("_moose_base"))
+    {
+      oss << "\n" << indent << "    moose_base: |\n      " << indent
+         << params.get<std::string>("_moose_base") << "\n";
+    }
   }
 
   return oss.str();

@@ -192,6 +192,9 @@ class ChildClassDatabase(RegexDatabase):
 
 if __name__ == '__main__':
 
+    #TODO: Add 'moose_base' to yaml
+
+
     db = InputFileDatabase(os.path.join(os.environ['MOOSE_DIR'], 'tutorials'))
     tutorials = db.markdown('Diffusion')
 
