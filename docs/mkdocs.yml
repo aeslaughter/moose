@@ -1,2 +1,5 @@
 site_name: MOOSE
 docs_dir: .
+markdown_extensions:
+    - DocBuilder.extensions.MooseMarkdown
+    - smarty
