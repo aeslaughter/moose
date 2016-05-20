@@ -1,8 +1,9 @@
+import os
 import yaml
 from yaml import CLoader as Loader, CDumper as Dumper
 
 
-class YamlData(object):
+class MooseYaml(object):
     """
     A utility to read the YAML data from MOOSE.
 
@@ -26,6 +27,25 @@ class YamlData(object):
             if result:
                 return result
 
+    def __iter__(self):
+        """
+        Make this class iterable over the complete YAML data structure.
+        """
+        pass
+
+    def dump(self):
+        for itr in self._data:
+            self._printName(itr)
+
+    @staticmethod
+    def _printName(data, level=0):
+
+        print ' '*2*level, os.path.basename(data['name'])
+
+        if data['subblocks']:
+            for child in data['subblocks']:
+                MooseYaml._printName(child, level+1)
+
     @staticmethod
     def _search(key, data):
         """
@@ -38,7 +58,7 @@ class YamlData(object):
             return None
 
         for child in data['subblocks']:
-            child_data = YamlData._search(key, child)
+            child_data = MooseYaml._search(key, child)
             if child_data:
                 return child_data
         return None

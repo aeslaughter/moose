@@ -6,62 +6,6 @@ import collections
 MOOSE_REPOSITORY = 'github.com/idaholab/moose/blob/devel/'
 
 
-class MooseObjectParameterTable(object):
-
-    PARAMETER_TABLE_COLUMNS = ['name', 'required', 'cpp_type', 'description']
-    PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Required', 'Type', 'Description']
-
-    def __init__(self):
-
-        self._parameters = []
-        self._column_widths = []
-        for col in self.PARAMETER_TABLE_COLUMN_NAMES:
-            self._column_widths.append(len(col))
-
-
-    def addParam(self, param):
-
-        self._parameters.append(param)
-        for i in range(len(self.PARAMETER_TABLE_COLUMNS)):
-            self._column_widths[i] = max(self._column_widths[i], len(str(param[self.PARAMETER_TABLE_COLUMNS[i]])))
-
-
-    def __str__(self):
-
-
-
-
-        md = []
-
-        s = self._buildFormatString(self.PARAMETER_TABLE_COLUMN_NAMES)
-
-        frmt = '| ' + ' | '.join( ['{:<{}s}'] * (len(s)/2) ) + ' |'
-        md += [frmt.format(*s)]
-
-        md += ['']
-        for i in range(len(self.PARAMETER_TABLE_COLUMN_NAMES)):
-            md[-1] += '| ' + '-'*self._column_widths[i] + ' '
-        md[-1] += '|'
-
-        for param in self._parameters:
-            text = []
-            for key in self.PARAMETER_TABLE_COLUMNS:
-                text.append(str(param[key]))
-            s = self._buildFormatString(text)
-            md += [frmt.format(*s)]
-
-
-
-        return '\n'.join(md)
-
-    def _buildFormatString(self, text):
-        output = []
-        for i in range(len(text)):
-            output.append(text[i])
-            output.append(self._column_widths[i])
-        return output
-
-
 
 
 class MooseObjectInformation(object):
