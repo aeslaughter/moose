@@ -1,13 +1,8 @@
-import markdown
-from markdown.inlinepatterns import Pattern
-from markdown.util import etree
 import os
 import re
-
 import clang.cindex
 clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
 
-MOOSE_DIR = os.getenv('MOOSE_DIR', os.path.join(os.getenv('HOME'), 'projects', 'moose'))
 
 
 class MooseClangParser(object):
@@ -47,21 +42,21 @@ class MooseClangParser(object):
         base_dir = match.group(1)
 
         # Build the list of all headers in moose/framework
-        includes = []
+        includes = ['-x', 'c++', '-std=c++11']
+        includes += ['-I' + os.path.dirname(self._header)]
+
+        """
         includes.append('-I' + base_dir)
         for root, dirs, files in os.walk(base_dir):
             for d in dirs:
                 includes.append('-I' + os.path.join(root, d))
-
+        """
         # Build clang translation unit
         index = clang.cindex.Index.create()
         if self._source:
-            print self._source
-            print self._header
             self._translation_unit = index.parse(self._source, includes)
         else:
             self._translation_unit = index.parse(self._header, includes)
-
         self._status = self.READ_SUCCESSFUL
 
     def status(self):
@@ -76,9 +71,18 @@ class MooseClangParser(object):
         cursor = kwargs.pop('cursor', self._translation_unit.cursor)
         recursive = kwargs.pop('recursive', True)
         for c in cursor.get_children():
-            print ' '*4*level, c.kind, c.spelling
+            print ' '*4*level, c.kind, c.spelling, c.extent.start.file, c.extent.start.line
             if recursive and c.get_children():
                 self.dump(level+1, cursor=c)
+
+    @staticmethod
+    def _content(cursor):
+        source_range = cursor.extent
+        fid = open(source_range.start.file.name, 'r')
+        content = fid.read()[source_range.start.offset:source_range.end.offset]
+        fid.close()
+        return content
+
 
     def _getCursor(self, kind, **kwargs):
         """
@@ -96,64 +100,46 @@ class MooseClangParser(object):
         output = []
         name = kwargs.pop('name', None)
         kind = eval('clang.cindex.CursorKind.' + kind.upper())
-        for c in self._translation_unit.cursor.get_children():
-            if c.kind == kind:# and (name == None or c.spelling == name):
-                output.append(c)
+
+        output = []
+        self._getCursorHelper(self._translation_unit.cursor, output, kind, name)
         return output
 
 
-class MooseSourcePattern(Pattern):
+    @staticmethod
+    def _getCursorHelper(cursor, output, kind, name):
 
-    CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])\)'
-
-
-    def __init__(self):
-        Pattern.__init__(self, self.CPP_RE)
-
-    def handleMatch(self, match):
-        """
-        Process the C++ file provided.
-        """
-
-        # Build the complete filename.
-        # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
-        filename = MOOSE_DIR.rstrip('/') + os.path.sep + match.group(3).lstrip('/')
-
-        # If the file does not exist return a bold block
-        if not os.path.exists(filename):
-            el = etree.Element('b')
-            el.text = 'Invalid filename: ' + filename
-            return el
-
-        parser = MooseClangParser(filename)
-        el = etree.Element('pre')
-        code = etree.SubElement(el, 'code')
-        code.set('class', 'c++')
-        code.text = parser.method(match.group(3))
-        return el
+        for c in cursor.get_children():
+            if c.kind == kind and (name == None or c.spelling == name):
+                output.append(c)
+            MooseClangParser._getCursorHelper(c, output, kind, name)
 
 
-
-class MooseMarkdown(markdown.Extension):
-
-    def extendMarkdown(self, md, md_globals):
-        md.inlinePatterns.add('moose_source', MooseSourcePattern(), '_begin')
-
-
-def makeExtension(*args, **kwargs):
-    return MooseMarkdown(*args, **kwargs)
 
 if __name__ == '__main__':
 
     src = '/Users/slauae/projects/moose/framework/src/kernels/Diffusion.C'
-
     parser = MooseClangParser(src)
 
-    parser.dump()
-#    for child in parser._translation_unit.cursor.get_children():
-#        print child
-#    c = parser._getCursor('CXX_METHOD')
-#    print c
+ #   parser.dump()
 
-    #md = markdown.Markdown(extensions=[MooseMarkdown()])
-    #md.convertFile(input='/Users/slauae/projects/moose/docs/documentation/moose_style_markdown.md')
+    #    for child in parser._translation_unit.cursor.get_children():
+#        print child
+    cursors = parser._getCursor('CXX_METHOD', name='computeQpResidual')
+    for c in cursors:
+        print c.get_definition()
+
+        """
+        #print '\n'.join(dir(c))
+        #break
+        filename = str(c.extent.start.file)
+        print filename
+
+        fid = open(filename)
+        lines = fid.readlines()
+        fid.close()
+
+        print c.extent.start.line, c.extent.end.line
+        content = lines[c.extent.start.line-1:c.extent.end.line]
+        print content
+        """

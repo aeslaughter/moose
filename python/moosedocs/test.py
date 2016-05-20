@@ -1,45 +1,10 @@
 #!/usr/bin/env python
 import os
 import re
-import yaml
 import collections
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    print 'SLOW'
-    from yaml import Loader, Dumper
-from peacock.utils.ExeLauncher import runExe
 
 MOOSE_REPOSITORY = 'github.com/idaholab/moose/blob/devel/'
 
-
-
-class YamlData(object):
-    def __init__(self, raw):
-        raw = raw.split('**START YAML DATA**\n')[1]
-        raw = raw.split('**END YAML DATA**')[0]
-        self._data = yaml.load(raw, Loader=Loader)
-
-    def __getitem__(self, key):
-        for iter in self._data:
-            result = self._search(key, iter)
-            if result:
-                return result
-
-    @staticmethod
-    def _search(key, data):
-        if data['name'].endswith(key):
-            return data
-
-        if not data['subblocks']:
-            return None
-
-        for child in data['subblocks']:
-            child_data = YamlData._search(key, child)
-            if child_data:
-                return child_data
-        return None
 
 class MooseObjectParameterTable(object):
 
