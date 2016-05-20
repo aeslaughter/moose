@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 
     # Locate an executable
-    app = os.path.join(MooseDocs.config.MOOSE_DIR, 'test', 'moose_test-opt')
+    app = os.path.join(MooseDocs.MOOSE_DIR, 'test', 'moose_test-opt')
     args = '--yaml'
     raw = runExe(app, args)
 
