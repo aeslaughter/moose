@@ -1,12 +1,12 @@
 import re
 
-class MooseObjectParameterTable(object):
+class MarkdownTable(object):
     """
     A class for creating markdown tables from parameter data parsed from MOOSE yaml data.
     """
 
-    PARAMETER_TABLE_COLUMNS = ['name', 'required', 'cpp_type', 'description']
-    PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Required', 'Type', 'Description']
+    PARAMETER_TABLE_COLUMNS = ['name', 'cpp_type', 'description']
+    PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Type', 'Description']
 
     def __init__(self):
 
@@ -55,8 +55,6 @@ class MooseObjectParameterTable(object):
             s = self._buildFormatString(text)
             md += [frmt.format(*s)]
 
-
-
         return '\n'.join(md)
 
     def _buildFormatString(self, text):
@@ -91,3 +89,27 @@ class MooseObjectParameterTable(object):
             param = '`' + param + '`'
 
         return param
+
+
+class MooseObjectParameterTable(object):
+
+    def __init__(self):
+        self._required = MarkdownTable()
+        self._optional = MarkdownTable()
+
+    def addParam(self, param):
+
+        print param['required'], type(param['required'])
+        if param['required']:
+            self._required.addParam(param)
+        else:
+            self._optional.addParam(param)
+
+    def markdown(self):
+
+
+        md = []
+        md += [self._required.markdown()]
+        md += ['']
+        md += [self._optional.markdown()]
+        return '\n'.join(md)
