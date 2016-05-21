@@ -81,9 +81,10 @@ class MooseObjectMarkdownDatabase(Database):
 
         name = os.path.basename(filename)[0:-3]
 
-        self._database[name] = filename
+        self._database[name] = '{{!{}!}}'.format(filename)
 
-
+    def markdown(self, key):
+        return self._database[key]
 
 
 class RegexDatabase(Database):
@@ -134,9 +135,11 @@ class MooseObjectInformation(object):
 
 
 
-    def __init__(self, yaml, details, **kwargs):
+    def __init__(self, yaml, databases, **kwargs):
 
         prefix = kwargs.pop('prefix', '')
+
+        self._databases = databases
 
         # Extract basic name and description from yaml data
         self._class_path = os.path.join(MooseDocs.MOOSE_DOCS_DIR, prefix) + str(yaml['name'])
@@ -145,15 +148,17 @@ class MooseObjectInformation(object):
         self._class_description = yaml['description']
 
         # Read the markdown details markdown file
-        fid = open(str(details))
-        self._class_detail = fid.read()
-        fid.close()
+        #fid = open(str(details))
+        #self._class_detail = fid.read()
+        #fid.close()
 
         self._tables = collections.OrderedDict()
         for param in yaml['parameters']:
             name = param['group_name']
-            if not name:
-                name = 'General'
+            if not name and param['required']:
+                name = 'Required'
+            elif not name and not param['required']:
+                name = 'Optional'
 
             if name not in self._tables:
                 self._tables[name] = MooseDocs.parsing.MooseObjectParameterTable()
@@ -188,15 +193,31 @@ class MooseObjectInformation(object):
         md += ['']
 
         # The details
-        #md += ['## Class Details']
-        md += [self._class_detail]
+        details = self._databases.pop('details')
+        md += [details.markdown(self._class_name)]
         md += ['']
+
+        # Re-order the table to insert 'Required' and 'Optional' first
+        tables = collections.OrderedDict()
+        keys = ['Required', 'Optional']
+        for k in keys:
+            if k in self._tables:
+                tables[k] = self._tables.pop(k)
+        for k, t in self._tables.iteritems():
+            tables[k] = t
 
         # Print the InputParameter tables
         md += ['## Input Parameters']
-        for name, table in self._tables.iteritems():
+        for name, table in tables.iteritems():
             md += ['### {} Parameters'.format(name)]
             md += [table.markdown()]
+            md += ['']
+
+        # Print the input file use
+        md += ['## Input File Usage']
+        for key, db in self._databases.iteritems():
+            md += ['### {}'.format(key)]
+            md += [db.markdown(self._class_name)]
             md += ['']
 
         return '\n'.join(md)
@@ -206,15 +227,19 @@ class MooseObjectInformation(object):
 if __name__ == '__main__':
 
     #TODO: Add 'moose_base' to yaml
+    db = dict()
 
-    md_db = MooseObjectMarkdownDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include'))
+    db['details'] = MooseObjectMarkdownDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include'))
    # print db['Diffusion']
 
-    db = InputFileDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'tutorials'))
-   # tutorials = db.markdown('Diffusion')
-    #print tutorials
+    db['Tutorials'] = InputFileDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'tutorials'))
+    db['Tests'] = InputFileDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'test', 'tests'))
 
-    db = ChildClassDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'examples'))
+    db['Examples'] = InputFileDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'examples'))
+
+
+    db['Examples'] = ChildClassDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'examples'))
+
    # children = db.markdown('Diffusion')
     #print children
 
@@ -228,5 +253,5 @@ if __name__ == '__main__':
 
 
     path = '/Kernels/Diffusion'
-    info = MooseObjectInformation(ydata[path], md_db['Diffusion'], prefix='framework')
+    info = MooseObjectInformation(ydata[path], db, prefix='framework')
     info.write()

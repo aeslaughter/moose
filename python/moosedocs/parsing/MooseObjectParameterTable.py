@@ -1,6 +1,6 @@
 import re
 
-class MarkdownTable(object):
+class MooseObjectParameterTable(object):
     """
     A class for creating markdown tables from parameter data parsed from MOOSE yaml data.
     """
@@ -90,7 +90,7 @@ class MarkdownTable(object):
 
         return param
 
-
+"""
 class MooseObjectParameterTable(object):
 
     def __init__(self):
@@ -113,3 +113,4 @@ class MooseObjectParameterTable(object):
         md += ['']
         md += [self._optional.markdown()]
         return '\n'.join(md)
+"""
