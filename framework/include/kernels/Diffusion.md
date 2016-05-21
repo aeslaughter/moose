@@ -1,4 +1,4 @@
-## Description
+## Detailed Description
 
 The steady-state diffusion equation on a domain $\Omega$ is defined as
 $-\nabla \cdot \nabla u = 0 \in \Omega.$

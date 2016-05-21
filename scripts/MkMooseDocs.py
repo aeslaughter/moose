@@ -105,8 +105,9 @@ class RegexDatabase(Database):
             rel = filename.split('/moose/')[-1]
             repo = MooseDocs.MOOSE_REPOSITORY + rel
 
-            self._database[grp1].append( (rel, repo) )
+            self._database[grp1].append( (rel, repo, filename) )
 
+    """
     def markdown(self, key):
         input = self[key]
 
@@ -114,7 +115,7 @@ class RegexDatabase(Database):
         for rel, repo in input:
             md += ['* [{}]({})'.format(rel, repo)]
         return '\n'.join(md)
-
+    """
 
 
 
@@ -122,9 +123,37 @@ class InputFileDatabase(RegexDatabase):
     def __init__(self, path):
         RegexDatabase.__init__(self, '.i', r'type\s*=\s*(\w+)\b', path)
 
+    def markdown(self, key):
+        input = self[key]
+
+        md = []
+        for rel, repo, filename in input:
+            md += ['* [{}]({})'.format(rel, repo)]
+        return '\n'.join(md)
+
+
+
 class ChildClassDatabase(RegexDatabase):
     def __init__(self, path):
         RegexDatabase.__init__(self, '.h', r'public\s*(\w+)\b', path)
+
+
+    def markdown(self, key):
+        input = self[key]
+
+        md = []
+        for h_rel, h_repo, h_full in input:
+
+            # Check for C file
+            s_rel = h_rel.replace('/include/', '/src/').replace('.h', '.C')
+            s_repo = h_repo.replace('/include/', '/src/').replace('.h', '.C')
+            s_full = h_full.replace('/include/', '/src/').replace('.h', '.C')
+
+            if os.path.exists(s_full):
+                md += ['* [{}]({}) / [{}]({})'.format(h_rel, h_repo, s_rel, s_repo)]
+            else:
+                md += ['* [{}]({})'.format(h_rel, h_repo)]
+        return '\n'.join(md)
 
 
 class MooseObjectInformation(object):
