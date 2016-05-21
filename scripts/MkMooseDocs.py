@@ -4,99 +4,9 @@ import re
 import collections
 import utils #/moose/python/utils
 import MooseDocs
-import errno
 
 #TODO: Make this a generic function in /moose/python/utils
 from peacock.utils.ExeLauncher import runExe
-
-class DatabaseItem(object):
-    def __init__(self, filename):
-        self._filename = filename
-
-    def keys(self):
-        pass
-
-    def markdown(self):
-        pass
-
-    def content(self):
-        fid = open(self._filename, 'r')
-        content = fid.read()
-        fid.close()
-        return content
-
-
-class MarkdownIncludeItem(DatabaseItem):
-
-    def keys(self):
-        yield os.path.basename(self._filename)[0:-3]
-
-    def markdown(self):
-        return '{{!{}!}}'.format(self._filename)
-
-class RegexItem(DatabaseItem):
-
-    def __init__(self, filename, regex):
-        DatabaseItem.__init__(self, filename)
-        self._regex = re.compile(regex)
-
-    def keys(self):
-
-        for match in re.finditer(self._regex, self.content()):
-            grp1 = match.group(1)
-            self._rel_path = self._filename.split('/moose/')[-1]
-            self._repo = MooseDocs.MOOSE_REPOSITORY + self._rel_path
-            yield grp1
-
-
-#            self._database[grp1].append( (rel, repo, filename) )
-
-
-class InputFileItem(RegexItem):
-    def __init__(self, filename):
-        RegexItem.__init__(self, filename, r'type\s*=\s*(\w+)\b')
-
-    def markdown(self):
-        return '* [{}]({})'.format(self._rel_path, self._repo)
-
-class ChildClassItem(RegexItem):
-    def __init__(self, filename):
-        RegexItem.__init__(self, filename, r'public\s*(\w+)\b')
-
-    def markdown(self):
-        # Check for C file
-        c_rel_path = self._rel_path.replace('/include/', '/src/').replace('.h', '.C')
-        c_repo = self._repo.replace('/include/', '/src/').replace('.h', '.C')
-        c_filename = self._filename.replace('/include/', '/src/').replace('.h', '.C')
-
-        if os.path.exists(c_filename):
-            md = '* [{}]({})\n[{}]({})'.format(self._rel_path, self._repo, c_rel_path, c_repo)
-        else:
-            md = '* [{}]({})'.format(self._rel_path, self._repo)
-
-        return md
-
-class Database(object):
-    def __init__(self, ext, path, itype):
-        self._database = dict()
-        self._itype = itype
-
-        for root, dirs, files in os.walk(path, topdown=False):
-            for filename in files:
-                if filename.endswith(ext):
-                    self.update(os.path.join(root, filename))
-
-    def update(self, filename):
-        item = self._itype(filename)
-        keys = item.keys()
-        if keys:
-            for key in keys:
-                if key not in self._database:
-                    self._database[key] = []
-                self._database[key].append(item)
-
-    def __getitem__(self, key):
-        return self._database[key]
 
 class MooseObjectInformation(object):
     """
@@ -194,28 +104,28 @@ class MooseObjectInformation(object):
 
 if __name__ == '__main__':
 
-    #TODO: Add 'moose_base' to yaml
+
+    # Build databases (avoids excessive directory walking).
+    include = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include')
+    tutorials = os.path.join(MooseDocs.MOOSE_DIR, 'tutorials')
+    examples = os.path.join(MooseDocs.MOOSE_DIR, 'examples')
+    tests = os.path.join(MooseDocs.MOOSE_DIR, 'test')
+
     inputs = collections.OrderedDict()
     children = collections.OrderedDict()
 
-    #details = MooseObjectMarkdownDatabase(os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include'))
-    # print db['Diffusion']
+    details = MooseDocs.database.Database('.md', include, MooseDocs.database.items.MarkdownIncludeItem)
 
-    details = Database('.md', os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include'), MarkdownIncludeItem)
-   # print details
+    inputs['Tutorials'] = MooseDocs.database.Database('.i', tutorials, MooseDocs.database.items.InputFileItem)
+    inputs['Examples'] = MooseDocs.database.Database('.i', examples, MooseDocs.database.items.InputFileItem)
+    inputs['Tests'] = MooseDocs.database.Database('.i', tests, MooseDocs.database.items.InputFileItem)
 
-    inputs['Tutorials'] = Database('.i', os.path.join(MooseDocs.MOOSE_DIR, 'tutorials'), InputFileItem)
-    inputs['Examples'] = Database('.i', os.path.join(MooseDocs.MOOSE_DIR, 'examples'), InputFileItem)
-    inputs['Tests'] = Database('.i', os.path.join(MooseDocs.MOOSE_DIR, 'test', 'tests'), InputFileItem)
-
-    children['Tutorials'] = Database('.h', os.path.join(MooseDocs.MOOSE_DIR, 'tutorials'), ChildClassItem)
-    children['Examples'] = Database('.h', os.path.join(MooseDocs.MOOSE_DIR, 'examples'), ChildClassItem)
-    children['Tests'] = Database('.h', os.path.join(MooseDocs.MOOSE_DIR, 'test', 'include'), ChildClassItem)
+    children['Tutorials'] = MooseDocs.database.Database('.h', tutorials, MooseDocs.database.items.ChildClassItem)
+    children['Examples'] = MooseDocs.database.Database('.h', examples, MooseDocs.database.items.ChildClassItem)
+    children['Tests'] = MooseDocs.database.Database('.h', tests, MooseDocs.database.items.ChildClassItem)
 
     # Locate the MOOSE executable
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'test'), name='moose_test')
-    #if isinstance(exe, int):
-    #    print os.strerror(exe)
 
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
@@ -226,7 +136,6 @@ if __name__ == '__main__':
     input_header = 'Input File Use'
     child_header = 'Child Objects'
 
-
     items = collections.OrderedDict()
     items[input_header] = collections.OrderedDict()
     items[child_header] = collections.OrderedDict()
@@ -235,7 +144,6 @@ if __name__ == '__main__':
         items[input_header][key] = item[name]
     for key, item in children.iteritems():
         items[child_header][key] = item[name]
-
 
     info = MooseObjectInformation(ydata[path], details[name], items, prefix='framework')
     info.write()
