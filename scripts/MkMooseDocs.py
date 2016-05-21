@@ -9,39 +9,6 @@ import errno
 #TODO: Make this a generic function in /moose/python/utils
 from peacock.utils.ExeLauncher import runExe
 
-
-def find_moose_executable(loc, **kwargs):
-    """
-
-    Args:
-        loc[str]: The directory containing the MOOSE executable.
-
-    Kwargs:
-        methods[list]: (Default: ['opt', 'oprof', 'dbg']) The list of build types to consider.
-        name[str]: (Default: opt.path.basename(loc)) The name of the executable to locate.
-    """
-
-    # Set the methods and name local varaiables
-    methods = kwargs.pop('methods', ['opt', 'oprof', 'dbg'])
-    name = kwargs.pop('name', os.path.basename(loc))
-
-    # Check that the location exists and that it is a directory
-    if not os.path.isdir(loc):
-        print 'ERROR: The supplied path must be a valid directory:', loc
-        return errno.ENOTDIR
-
-    # Search for executable with the given name
-    exe = errno.ENOENT
-    for method in methods:
-        exe = os.path.join(loc, name + '-' + method)
-        if os.path.isfile(exe):
-            break
-
-    # Returns the executable or error code
-    if not errno.ENOENT:
-        print 'ERROR: Unable to locate a valid MOOSE executable in directory'
-    return exe
-
 class DatabaseItem(object):
     def __init__(self, filename):
         self._filename = filename
@@ -130,100 +97,6 @@ class Database(object):
 
     def __getitem__(self, key):
         return self._database[key]
-
-    """
-    def markdown(self, key):
-        return []
-
-    @staticmethod
-    def content(filename):
-        fid = open(filename, 'r')
-        content = fid.read()
-        fid.close()
-        return content
-    """
-
-"""
-class MooseObjectMarkdownDatabase(Database):
-    def __init__(self, path):
-        Database.__init__(self, '.md', path)
-
-    def update(self, filename):
-
-        name = os.path.basename(filename)[0:-3]
-
-        self._database[name] = '{{!{}!}}'.format(filename)
-
-    def markdown(self, key):
-        return self._database[key]
-"""
-
-class RegexDatabase(Database):
-    def __init__(self, ext, regex, path, itype):
-        self._regex = regex
-        Database.__init__(self, ext, path, itype)
-
-    def update(self, filename):
-        content = self.content(filename)
-
-        for match in re.finditer(self._regex, content):
-            grp1 = match.group(1)
-            if grp1 not in self._database:
-                self._database[grp1] = []
-
-            rel = filename.split('/moose/')[-1]
-            repo = MooseDocs.MOOSE_REPOSITORY + rel
-
-            self._database[grp1].append( (rel, repo, filename) )
-
-    """
-    def markdown(self, key):
-        input = self[key]
-
-        md = []
-        for rel, repo in input:
-            md += ['* [{}]({})'.format(rel, repo)]
-        return '\n'.join(md)
-    """
-
-
-
-class InputFileDatabase(RegexDatabase):
-    def __init__(self, path):
-        RegexDatabase.__init__(self, '.i', r'type\s*=\s*(\w+)\b', path)
-
-    def markdown(self, key):
-        input = self[key]
-
-        md = []
-        for rel, repo, filename in input:
-            md += ['* [{}]({})'.format(rel, repo)]
-        return '\n'.join(md)
-
-
-
-class ChildClassDatabase(RegexDatabase):
-    def __init__(self, path):
-        RegexDatabase.__init__(self, '.h', r'public\s*(\w+)\b', path)
-
-
-    def markdown(self, key):
-        input = self[key]
-
-        md = []
-        for h_rel, h_repo, h_full in input:
-
-            # Check for C file
-            s_rel = h_rel.replace('/include/', '/src/').replace('.h', '.C')
-            s_repo = h_repo.replace('/include/', '/src/').replace('.h', '.C')
-            s_full = h_full.replace('/include/', '/src/').replace('.h', '.C')
-
-            if os.path.exists(s_full):
-                md += ['* [{}]({}) / [{}]({})'.format(h_rel, h_repo, s_rel, s_repo)]
-            else:
-                md += ['* [{}]({})'.format(h_rel, h_repo)]
-        return '\n'.join(md)
-
 
 class MooseObjectInformation(object):
     """
@@ -340,7 +213,7 @@ if __name__ == '__main__':
     children['Tests'] = Database('.h', os.path.join(MooseDocs.MOOSE_DIR, 'test', 'include'), ChildClassItem)
 
     # Locate the MOOSE executable
-    exe = find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'test'), name='moose_test')
+    exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'test'), name='moose_test')
     #if isinstance(exe, int):
     #    print os.strerror(exe)
 

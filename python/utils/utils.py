@@ -1,9 +1,19 @@
-import os, re
+import os
+import re
+import errno
 
-##
-# A function for coloring text
 def colorText(string, color, **kwargs):
+  """
+  A function for coloring text.
 
+  Args:
+      string[str]: The string to color.
+      color[str]: The color to use (see color_codes variable).
+
+  Kwargs:
+      html[bool]: If true html colored text is returned.
+      colored[bool]: When false the coloring is not applied.
+  """
   # Get the properties
   html = kwargs.pop('html', False)
   code = kwargs.pop('code', True)
@@ -35,8 +45,47 @@ def colorText(string, color, **kwargs):
 ##
 # A function for converting string to boolean
 def str2bool(string):
+  """
+  A function for converting string to boolean.
+
+  Args:
+      string[str]: The text to convert (e.g., 'true' or '1')
+  """
   string = string.lower()
   if string is 'true' or string is '1':
     return True
   else:
     return False
+
+
+def find_moose_executable(loc, **kwargs):
+    """
+
+    Args:
+        loc[str]: The directory containing the MOOSE executable.
+
+    Kwargs:
+        methods[list]: (Default: ['opt', 'oprof', 'dbg']) The list of build types to consider.
+        name[str]: (Default: opt.path.basename(loc)) The name of the executable to locate.
+    """
+
+    # Set the methods and name local varaiables
+    methods = kwargs.pop('methods', ['opt', 'oprof', 'dbg'])
+    name = kwargs.pop('name', os.path.basename(loc))
+
+    # Check that the location exists and that it is a directory
+    if not os.path.isdir(loc):
+        print 'ERROR: The supplied path must be a valid directory:', loc
+        return errno.ENOTDIR
+
+    # Search for executable with the given name
+    exe = errno.ENOENT
+    for method in methods:
+        exe = os.path.join(loc, name + '-' + method)
+        if os.path.isfile(exe):
+            break
+
+    # Returns the executable or error code
+    if not errno.ENOENT:
+        print 'ERROR: Unable to locate a valid MOOSE executable in directory'
+    return exe
