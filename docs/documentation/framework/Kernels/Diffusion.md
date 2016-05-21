@@ -1,6 +1,5 @@
 # Diffusion
 
-## Class Description
 The Laplacian operator.
 
 
@@ -29,7 +28,7 @@ The Laplacian operator.
 | seed               | `unsigned int`                 | The seed for the master random number generator                                                                                                                                                           |
 | use_displaced_mesh | `bool`                         | Whether or not this object should use the displaced mesh for computation. Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used. |
 
-## Input File Usage
+## Input File Use
 ### Tutorials
 * [tutorials/darcy_thermo_mech/step01_diffusion/problems/step1.i](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step01_diffusion/problems/step1.i)
 * [tutorials/darcy_thermo_mech/step01_diffusion/tests/bcs/diffusion/diffusion.i](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step01_diffusion/tests/bcs/diffusion/diffusion.i)
@@ -52,6 +51,45 @@ The Laplacian operator.
 * [tutorials/darcy_thermo_mech/step09_mechanics/tests/kernels/simple_diffusion/simple_diffusion.i](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step09_mechanics/tests/kernels/simple_diffusion/simple_diffusion.i)
 * [tutorials/darcy_thermo_mech/step10_multiapps/tests/bcs/diffusion/diffusion.i](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step10_multiapps/tests/bcs/diffusion/diffusion.i)
 * [tutorials/darcy_thermo_mech/step10_multiapps/tests/kernels/simple_diffusion/simple_diffusion.i](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step10_multiapps/tests/kernels/simple_diffusion/simple_diffusion.i)
+
+### Examples
+* [examples/ex01_inputfile/diffusion_pathological.i](https://github.com/idaholab/moose/blob/devel/examples/ex01_inputfile/diffusion_pathological.i)
+* [examples/ex01_inputfile/ex01.i](https://github.com/idaholab/moose/blob/devel/examples/ex01_inputfile/ex01.i)
+* [examples/ex02_kernel/ex02.i](https://github.com/idaholab/moose/blob/devel/examples/ex02_kernel/ex02.i)
+* [examples/ex02_kernel/ex02_oversample.i](https://github.com/idaholab/moose/blob/devel/examples/ex02_kernel/ex02_oversample.i)
+* [examples/ex03_coupling/ex03.i](https://github.com/idaholab/moose/blob/devel/examples/ex03_coupling/ex03.i)
+* [examples/ex03_coupling/ex03.i](https://github.com/idaholab/moose/blob/devel/examples/ex03_coupling/ex03.i)
+* [examples/ex04_bcs/dirichlet_bc.i](https://github.com/idaholab/moose/blob/devel/examples/ex04_bcs/dirichlet_bc.i)
+* [examples/ex04_bcs/dirichlet_bc.i](https://github.com/idaholab/moose/blob/devel/examples/ex04_bcs/dirichlet_bc.i)
+* [examples/ex04_bcs/neumann_bc.i](https://github.com/idaholab/moose/blob/devel/examples/ex04_bcs/neumann_bc.i)
+* [examples/ex04_bcs/neumann_bc.i](https://github.com/idaholab/moose/blob/devel/examples/ex04_bcs/neumann_bc.i)
+* [examples/ex04_bcs/periodic_bc.i](https://github.com/idaholab/moose/blob/devel/examples/ex04_bcs/periodic_bc.i)
+* [examples/ex04_bcs/trapezoid.i](https://github.com/idaholab/moose/blob/devel/examples/ex04_bcs/trapezoid.i)
+* [examples/ex05_amr/ex05.i](https://github.com/idaholab/moose/blob/devel/examples/ex05_amr/ex05.i)
+* [examples/ex06_transient/ex06.i](https://github.com/idaholab/moose/blob/devel/examples/ex06_transient/ex06.i)
+* [examples/ex07_ics/steady.i](https://github.com/idaholab/moose/blob/devel/examples/ex07_ics/steady.i)
+* [examples/ex07_ics/transient.i](https://github.com/idaholab/moose/blob/devel/examples/ex07_ics/transient.i)
+* [examples/ex08_materials/ex08.i](https://github.com/idaholab/moose/blob/devel/examples/ex08_materials/ex08.i)
+* [examples/ex09_stateful_materials/ex09.i](https://github.com/idaholab/moose/blob/devel/examples/ex09_stateful_materials/ex09.i)
+* [examples/ex10_aux/ex10.i](https://github.com/idaholab/moose/blob/devel/examples/ex10_aux/ex10.i)
+* [examples/ex11_prec/default.i](https://github.com/idaholab/moose/blob/devel/examples/ex11_prec/default.i)
+* [examples/ex11_prec/default.i](https://github.com/idaholab/moose/blob/devel/examples/ex11_prec/default.i)
+* [examples/ex11_prec/fdp.i](https://github.com/idaholab/moose/blob/devel/examples/ex11_prec/fdp.i)
+* [examples/ex11_prec/fdp.i](https://github.com/idaholab/moose/blob/devel/examples/ex11_prec/fdp.i)
+* [examples/ex11_prec/smp.i](https://github.com/idaholab/moose/blob/devel/examples/ex11_prec/smp.i)
+* [examples/ex11_prec/smp.i](https://github.com/idaholab/moose/blob/devel/examples/ex11_prec/smp.i)
+* [examples/ex12_pbp/ex12.i](https://github.com/idaholab/moose/blob/devel/examples/ex12_pbp/ex12.i)
+* [examples/ex12_pbp/ex12.i](https://github.com/idaholab/moose/blob/devel/examples/ex12_pbp/ex12.i)
+* [examples/ex13_functions/ex13.i](https://github.com/idaholab/moose/blob/devel/examples/ex13_functions/ex13.i)
+* [examples/ex14_pps/ex14.i](https://github.com/idaholab/moose/blob/devel/examples/ex14_pps/ex14.i)
+* [examples/ex14_pps/ex14_compare_solutions_1.i](https://github.com/idaholab/moose/blob/devel/examples/ex14_pps/ex14_compare_solutions_1.i)
+* [examples/ex14_pps/ex14_compare_solutions_2.i](https://github.com/idaholab/moose/blob/devel/examples/ex14_pps/ex14_compare_solutions_2.i)
+* [examples/ex16_timestepper/ex16.i](https://github.com/idaholab/moose/blob/devel/examples/ex16_timestepper/ex16.i)
+* [examples/ex17_dirac/ex17.i](https://github.com/idaholab/moose/blob/devel/examples/ex17_dirac/ex17.i)
+* [examples/ex18_scalar_kernel/ex18.i](https://github.com/idaholab/moose/blob/devel/examples/ex18_scalar_kernel/ex18.i)
+* [examples/ex18_scalar_kernel/ex18_parsed.i](https://github.com/idaholab/moose/blob/devel/examples/ex18_scalar_kernel/ex18_parsed.i)
+* [examples/ex19_dampers/ex19.i](https://github.com/idaholab/moose/blob/devel/examples/ex19_dampers/ex19.i)
+* [examples/ex21_debugging/ex21.i](https://github.com/idaholab/moose/blob/devel/examples/ex21_debugging/ex21.i)
 
 ### Tests
 * [test/tests/actions/aux_scalar_variable/aux_scalar_variable.i](https://github.com/idaholab/moose/blob/devel/test/tests/actions/aux_scalar_variable/aux_scalar_variable.i)
@@ -1123,10 +1161,43 @@ The Laplacian operator.
 * [test/tests/vectorpostprocessors/time_data/time_data.i](https://github.com/idaholab/moose/blob/devel/test/tests/vectorpostprocessors/time_data/time_data.i)
 * [test/tests/vectorpostprocessors/vector_of_postprocessors/vector_of_postprocessors.i](https://github.com/idaholab/moose/blob/devel/test/tests/vectorpostprocessors/vector_of_postprocessors/vector_of_postprocessors.i)
 
+
+## Child Objects
+### Tutorials
+* [tutorials/darcy_thermo_mech/step02_darcy_pressure/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step02_darcy_pressure/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step02_darcy_pressure/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step02_darcy_pressure/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step03_darcy_material/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step03_darcy_material/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step03_darcy_material/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step03_darcy_material/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step04_velocity_aux/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step04_velocity_aux/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step04_velocity_aux/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step04_velocity_aux/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step05_heat_conduction/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step05_heat_conduction/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step05_heat_conduction/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step05_heat_conduction/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step06_coupled_darcy_heat_conduction/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step06_coupled_darcy_heat_conduction/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step06_coupled_darcy_heat_conduction/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step06_coupled_darcy_heat_conduction/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step07_adaptivity/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step07_adaptivity/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step07_adaptivity/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step07_adaptivity/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step08_postprocessors/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step08_postprocessors/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step08_postprocessors/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step08_postprocessors/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step09_mechanics/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step09_mechanics/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step09_mechanics/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step09_mechanics/src/kernels/DarcyPressure.C)
+* [tutorials/darcy_thermo_mech/step10_multiapps/include/kernels/DarcyPressure.h](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step10_multiapps/include/kernels/DarcyPressure.h)
+[tutorials/darcy_thermo_mech/step10_multiapps/src/kernels/DarcyPressure.C](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step10_multiapps/src/kernels/DarcyPressure.C)
+
 ### Examples
-* [examples/ex06_transient/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex06_transient/include/kernels/ExampleDiffusion.h) / [examples/ex06_transient/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex06_transient/src/kernels/ExampleDiffusion.C)
-* [examples/ex08_materials/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex08_materials/include/kernels/ExampleDiffusion.h) / [examples/ex08_materials/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex08_materials/src/kernels/ExampleDiffusion.C)
-* [examples/ex09_stateful_materials/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex09_stateful_materials/include/kernels/ExampleDiffusion.h) / [examples/ex09_stateful_materials/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex09_stateful_materials/src/kernels/ExampleDiffusion.C)
-* [examples/ex16_timestepper/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex16_timestepper/include/kernels/ExampleDiffusion.h) / [examples/ex16_timestepper/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex16_timestepper/src/kernels/ExampleDiffusion.C)
-* [examples/ex20_user_objects/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex20_user_objects/include/kernels/ExampleDiffusion.h) / [examples/ex20_user_objects/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex20_user_objects/src/kernels/ExampleDiffusion.C)
-* [examples/ex21_debugging/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex21_debugging/include/kernels/ExampleDiffusion.h) / [examples/ex21_debugging/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex21_debugging/src/kernels/ExampleDiffusion.C)
+* [examples/ex06_transient/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex06_transient/include/kernels/ExampleDiffusion.h)
+[examples/ex06_transient/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex06_transient/src/kernels/ExampleDiffusion.C)
+* [examples/ex08_materials/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex08_materials/include/kernels/ExampleDiffusion.h)
+[examples/ex08_materials/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex08_materials/src/kernels/ExampleDiffusion.C)
+* [examples/ex09_stateful_materials/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex09_stateful_materials/include/kernels/ExampleDiffusion.h)
+[examples/ex09_stateful_materials/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex09_stateful_materials/src/kernels/ExampleDiffusion.C)
+* [examples/ex16_timestepper/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex16_timestepper/include/kernels/ExampleDiffusion.h)
+[examples/ex16_timestepper/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex16_timestepper/src/kernels/ExampleDiffusion.C)
+* [examples/ex20_user_objects/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex20_user_objects/include/kernels/ExampleDiffusion.h)
+[examples/ex20_user_objects/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex20_user_objects/src/kernels/ExampleDiffusion.C)
+* [examples/ex21_debugging/include/kernels/ExampleDiffusion.h](https://github.com/idaholab/moose/blob/devel/examples/ex21_debugging/include/kernels/ExampleDiffusion.h)
+[examples/ex21_debugging/src/kernels/ExampleDiffusion.C](https://github.com/idaholab/moose/blob/devel/examples/ex21_debugging/src/kernels/ExampleDiffusion.C)
+
+### Tests
+* [test/include/kernels/CoeffParamDiffusion.h](https://github.com/idaholab/moose/blob/devel/test/include/kernels/CoeffParamDiffusion.h)
+[test/src/kernels/CoeffParamDiffusion.C](https://github.com/idaholab/moose/blob/devel/test/src/kernels/CoeffParamDiffusion.C)
+
