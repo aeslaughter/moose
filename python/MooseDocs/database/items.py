@@ -30,6 +30,9 @@ class DatabaseItem(object):
 
 
 class MarkdownIncludeItem(DatabaseItem):
+    """
+    An item that returns a markdown include string for use with the markdown_include extension.
+    """
 
     def keys(self):
         yield os.path.basename(self._filename)[0:-3]
@@ -38,6 +41,9 @@ class MarkdownIncludeItem(DatabaseItem):
         return '{{!{}!}}'.format(self._filename)
 
 class RegexItem(DatabaseItem):
+    """
+    An item that creates keys base on regex match.
+    """
 
     def __init__(self, filename, regex):
         DatabaseItem.__init__(self, filename)
@@ -52,10 +58,10 @@ class RegexItem(DatabaseItem):
             yield grp1
 
 
-#            self._database[grp1].append( (rel, repo, filename) )
-
-
 class InputFileItem(RegexItem):
+    """
+    Returns a markdown list item for input file matching of (type = ).
+    """
     def __init__(self, filename):
         RegexItem.__init__(self, filename, r'type\s*=\s*(\w+)\b')
 
@@ -63,6 +69,9 @@ class InputFileItem(RegexItem):
         return '* [{}]({})'.format(self._rel_path, self._repo)
 
 class ChildClassItem(RegexItem):
+    """
+    Retunns a markdown list item for h file containing a base.
+    """
     def __init__(self, filename):
         RegexItem.__init__(self, filename, r'public\s*(\w+)\b')
 

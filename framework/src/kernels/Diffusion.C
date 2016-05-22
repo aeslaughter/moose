@@ -26,6 +26,8 @@ InputParameters validParams<Diffusion>()
 Diffusion::Diffusion(const InputParameters & parameters) :
     Kernel(parameters)
 {
+  parameters.print();
+
 }
 
 Diffusion::~Diffusion()
