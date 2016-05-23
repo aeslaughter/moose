@@ -108,12 +108,6 @@ YAMLFormatter::printParams(const std::string &prefix, const std::string & /*full
 
     oss << "\n" << indent << "    description: |\n      " << indent
          << doc << "\n";
-
-    if (params.isParamValid("_moose_base"))
-    {
-      oss << "\n" << indent << "    moose_base: |\n      " << indent
-         << params.get<std::string>("_moose_base") << "\n";
-    }
   }
 
   return oss.str();
@@ -129,7 +123,7 @@ YAMLFormatter::preTraverse(short depth) const
 
 
 std::string
-YAMLFormatter::printBlockOpen(const std::string &name, short depth, const std::string & doc) const
+YAMLFormatter::printBlockOpen(const std::string &name, short depth, const std::string & doc, const std::string & base) const
 {
   std::ostringstream oss;
   std::string indent(depth*2, ' ');
@@ -140,6 +134,8 @@ YAMLFormatter::printBlockOpen(const std::string &name, short depth, const std::s
   oss << indent << "- name: " << name << "\n";
   oss << indent << "  description: |\n"
       << indent << "    " << docEscaped << "\n";
+  if (!base.empty())
+    oss << indent << "  moosebase: " << base << "\n";
   oss << indent << "  parameters:\n";
 
   return oss.str();

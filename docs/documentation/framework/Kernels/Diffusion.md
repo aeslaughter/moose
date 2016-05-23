@@ -28,6 +28,9 @@ The Laplacian operator.
 | seed               | `unsigned int`                 | The seed for the master random number generator                                                                                                                                                           |
 | use_displaced_mesh | `bool`                         | Whether or not this object should use the displaced mesh for computation. Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used. |
 
+## Additional Developer Documentation
+* Moose System: Kernel
+* Class Doxygen: [Diffusion](http://mooseframework.com/docs/doxygen/moose/classDiffusion.html)
 ## Input File Use
 ### Tutorials
 * [tutorials/darcy_thermo_mech/step01_diffusion/problems/step1.i](https://github.com/idaholab/moose/blob/devel/tutorials/darcy_thermo_mech/step01_diffusion/problems/step1.i)

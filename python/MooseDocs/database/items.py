@@ -70,7 +70,7 @@ class InputFileItem(RegexItem):
 
 class ChildClassItem(RegexItem):
     """
-    Retunns a markdown list item for h file containing a base.
+    Returns a markdown list item for h file containing a base.
     """
     def __init__(self, filename):
         RegexItem.__init__(self, filename, r'public\s*(\w+)\b')

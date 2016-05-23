@@ -24,6 +24,7 @@ class MooseObjectInformation(object):
         self._class_path = os.path.join(MooseDocs.MOOSE_DOCS_DIR, prefix) + str(yaml['name'])
 
         self._class_name = yaml['name'].split('/')[-1]
+        self._class_base = yaml['moosebase']
         self._class_description = yaml['description']
         self._class_details = details
         self._items = items
@@ -88,6 +89,12 @@ class MooseObjectInformation(object):
             md += ['### {} Parameters'.format(name)]
             md += [table.markdown()]
             md += ['']
+
+        # Developer information
+        md += ['## Additional Developer Documentation']
+        md += ['* Moose System: {}'.format(self._class_base)]
+        md += ['* Class Doxygen: [{}]({})'.format(self._class_name,
+                                          os.path.join(MooseDocs.MOOSE_DOXYGEN, 'class' + self._class_name + '.html'))]
 
         # Print the item information
         for key, item in self._items.iteritems():
