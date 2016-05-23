@@ -152,5 +152,5 @@ if __name__ == '__main__':
     for key, item in children.iteritems():
         items[child_header][key] = item[name]
 
-    info = MooseObjectInformation(ydata[path], details[name], items, prefix='framework')
+    info = MooseObjectInformation(ydata[path], details[name], items, prefix='MooseSystems')
     info.write()

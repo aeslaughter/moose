@@ -1,8 +1,11 @@
 #!/usr/bin/env python
+import os, sys
+sys.path.append('/opt/moose/llvm-3.7.0/bindings/python/')
 import clang.cindex
-clang.cindex.Config.set_library_path('/opt/moose/llvm-3.7.0/lib')
 
-"""
+#clang.cindex.Config.set_library_path('/opt/moose/llvm-3.7.0/lib')
+clang.cindex.Config.set_library_path('/Library/Developer/CommandLineTools/usr/lib')
+
 import clang.cindex
 from clang.cindex import *
 
@@ -26,6 +29,7 @@ tu = idx.parse('method.C', ['-x', 'c++'])
 defns = method_definitions(tu.cursor)
 for defn in defns:
     print extract_definition(defn)
+
 """
 def getCursors(cursor, output, kind):
     for c in cursor.get_children():
@@ -48,3 +52,4 @@ if __name__ == '__main__':
         print c, c.is_definition()
         defn = c.get_definition() # Gives nothing
         print c.extent.start.file, c.extent.start.line, c.extent.end.line
+"""
