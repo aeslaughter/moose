@@ -47,15 +47,27 @@ class RegexItem(DatabaseItem):
 
     def __init__(self, filename, regex):
         DatabaseItem.__init__(self, filename)
-        self._regex = re.compile(regex)
+
+        self._regex = []
+        if not isinstance(regex, (list, tuple)):
+            regex = [regex]
+
+        for r in regex:
+            self._regex.append(re.compile(r))
+
+        self._rel_path = self._filename.split('/moose/')[-1]
+        self._repo = MooseDocs.MOOSE_REPOSITORY + self._rel_path
 
     def keys(self):
 
-        for match in re.finditer(self._regex, self.content()):
-            grp1 = match.group(1)
-            self._rel_path = self._filename.split('/moose/')[-1]
-            self._repo = MooseDocs.MOOSE_REPOSITORY + self._rel_path
-            yield grp1
+        for regex in self._regex:
+            for match in re.finditer(regex, self.content()):
+                yield self.processMatch(match)
+
+    def processMatch(self, match):
+        grp1 = match.group(1)
+        return grp1
+
 
 
 class InputFileItem(RegexItem):
@@ -87,3 +99,14 @@ class ChildClassItem(RegexItem):
             md = '* [{}]({})'.format(self._rel_path, self._repo)
 
         return md
+
+class RegisterItem(RegexItem):
+    """
+
+    """
+    def __init__(self, filename):
+        RegexItem.__init__(self, filename, [r'register(\w+?)\((\w+)\);',
+                                            'registerNamed(\w+?)\((\w+),\s*"(\w+)"\);'])
+
+    def processMatch(self, match):
+        return match.groups()

@@ -15,6 +15,36 @@ class MooseYaml(object):
         raw = raw.split('**END YAML DATA**')[0]
         self._data = yaml.load(raw, Loader=Loader)
 
+        # Create a flat list for iterating
+        self._flat = []
+        def getdata(data):
+            self._flat.append(data)
+            if data['subblocks']:
+                for child in data['subblocks']:
+                    getdata(child)
+
+        for data in self._data:
+            getdata(data)
+        self._iter = iter(self._flat)
+
+    def __iter__(self):
+        return self._iter
+
+    def next(self):
+        return next(self._iter)
+
+    def mooseBaseDict(self):
+        base = dict()
+        for d in self._flat:
+            if 'moosebase' in d:
+                m = d['moosebase']
+                if m not in base:
+                    base[m] = []
+                base[m].append(d['name'])
+
+        return base
+
+
     def __getitem__(self, key):
         """
         Operator [] access to the yaml blocks.
@@ -26,25 +56,6 @@ class MooseYaml(object):
             result = self._search(key, itr)
             if result:
                 return result
-
-    def __iter__(self):
-        """
-        Make this class iterable over the complete YAML data structure.
-        """
-        pass
-
-    def dump(self):
-        for itr in self._data:
-            self._printName(itr)
-
-    @staticmethod
-    def _printName(data, level=0):
-
-        print ' '*2*level, os.path.basename(data['name'])
-
-        if data['subblocks']:
-            for child in data['subblocks']:
-                MooseYaml._printName(child, level+1)
 
     @staticmethod
     def _search(key, data):

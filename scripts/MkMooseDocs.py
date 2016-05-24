@@ -112,11 +112,34 @@ class MooseObjectInformation(object):
 if __name__ == '__main__':
 
 
+    # Locate the MOOSE executable
+    exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'test'), name='moose_test')
+    raw = runExe(exe, '--yaml')
+    ydata = utils.MooseYaml(raw)
+
+    mb = ydata.mooseBaseDict()
+    print mb['Material']
+
+
+
+
     # Build databases (avoids excessive directory walking).
+    src = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'src')
     include = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include')
     tutorials = os.path.join(MooseDocs.MOOSE_DIR, 'tutorials')
     examples = os.path.join(MooseDocs.MOOSE_DIR, 'examples')
     tests = os.path.join(MooseDocs.MOOSE_DIR, 'test')
+
+    db = MooseDocs.database.Database('.C', src, MooseDocs.database.items.RegisterItem)
+
+  #  print db._database
+
+
+
+
+    """
+
+
 
     inputs = collections.OrderedDict()
     children = collections.OrderedDict()
@@ -131,11 +154,6 @@ if __name__ == '__main__':
     children['Examples'] = MooseDocs.database.Database('.h', examples, MooseDocs.database.items.ChildClassItem)
     children['Tests'] = MooseDocs.database.Database('.h', tests, MooseDocs.database.items.ChildClassItem)
 
-    # Locate the MOOSE executable
-    exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'test'), name='moose_test')
-
-    raw = runExe(exe, '--yaml')
-    ydata = utils.MooseYaml(raw)
 
     path = '/Kernels/Diffusion'
     name = 'Diffusion'
@@ -154,3 +172,4 @@ if __name__ == '__main__':
 
     info = MooseObjectInformation(ydata[path], details[name], items, prefix='MooseSystems')
     info.write()
+    """
