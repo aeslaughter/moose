@@ -51,7 +51,7 @@ class RegexItem(DatabaseItem):
     def __init__(self, filename, regex):
         DatabaseItem.__init__(self, filename)
 
-        self._regex = re.compile(r)
+        self._regex = re.compile(regex)
         self._rel_path = self._filename.split('/moose/')[-1]
         self._repo = MooseDocs.MOOSE_REPOSITORY + self._rel_path
 
@@ -61,7 +61,6 @@ class RegexItem(DatabaseItem):
         """
 
         for match in re.finditer(self._regex, self.content()):
-            self._match.append(match)
             yield match.group('key')
 
 

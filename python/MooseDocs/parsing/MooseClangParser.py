@@ -1,5 +1,7 @@
 import os
 import re
+
+
 import clang.cindex
 clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
 

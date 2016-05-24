@@ -215,10 +215,7 @@ if __name__ == '__main__':
 
 
 
-    obj = MooseObjectList(ydata, framework)
-
-
-    """
+ #   obj = MooseObjectList(ydata, framework)
 
 
 
@@ -253,4 +250,3 @@ if __name__ == '__main__':
 
     info = MooseObjectInformation(ydata[path], details[name], items, prefix='MooseSystems')
     info.write()
-    """
