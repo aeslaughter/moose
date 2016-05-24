@@ -1,6 +1,6 @@
 import extensions
 import database
-import parsing
+#import parsing
 
 import os
 MOOSE_REPOSITORY = 'https://github.com/idaholab/moose/blob/devel/'

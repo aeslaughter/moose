@@ -22,6 +22,9 @@ class DatabaseItem(object):
     def markdown(self):
         pass
 
+    def filename(self):
+        return self._filename
+
     def content(self):
         fid = open(self._filename, 'r')
         content = fid.read()
@@ -48,25 +51,18 @@ class RegexItem(DatabaseItem):
     def __init__(self, filename, regex):
         DatabaseItem.__init__(self, filename)
 
-        self._regex = []
-        if not isinstance(regex, (list, tuple)):
-            regex = [regex]
-
-        for r in regex:
-            self._regex.append(re.compile(r))
-
+        self._regex = re.compile(r)
         self._rel_path = self._filename.split('/moose/')[-1]
         self._repo = MooseDocs.MOOSE_REPOSITORY + self._rel_path
 
     def keys(self):
+        """
+        Return the keys for which this item will be stored in the database.
+        """
 
-        for regex in self._regex:
-            for match in re.finditer(regex, self.content()):
-                yield self.processMatch(match)
-
-    def processMatch(self, match):
-        grp1 = match.group(1)
-        return grp1
+        for match in re.finditer(self._regex, self.content()):
+            self._match.append(match)
+            yield match.group('key')
 
 
 
@@ -75,7 +71,7 @@ class InputFileItem(RegexItem):
     Returns a markdown list item for input file matching of (type = ).
     """
     def __init__(self, filename):
-        RegexItem.__init__(self, filename, r'type\s*=\s*(\w+)\b')
+        RegexItem.__init__(self, filename, r'type\s*=\s*(?P<key>\w+)\b')
 
     def markdown(self):
         return '* [{}]({})'.format(self._rel_path, self._repo)
@@ -85,7 +81,7 @@ class ChildClassItem(RegexItem):
     Returns a markdown list item for h file containing a base.
     """
     def __init__(self, filename):
-        RegexItem.__init__(self, filename, r'public\s*(\w+)\b')
+        RegexItem.__init__(self, filename, r'public\s*(?P<key>\w+)\b')
 
     def markdown(self):
         # Check for C file
@@ -99,14 +95,3 @@ class ChildClassItem(RegexItem):
             md = '* [{}]({})'.format(self._rel_path, self._repo)
 
         return md
-
-class RegisterItem(RegexItem):
-    """
-
-    """
-    def __init__(self, filename):
-        RegexItem.__init__(self, filename, [r'register(\w+?)\((\w+)\);',
-                                            'registerNamed(\w+?)\((\w+),\s*"(\w+)"\);'])
-
-    def processMatch(self, match):
-        return match.groups()

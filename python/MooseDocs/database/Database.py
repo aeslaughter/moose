@@ -43,6 +43,7 @@ class Database(object):
             for key in keys:
                 if key not in self._database:
                     self._database[key] = []
+                print key, item.src()
                 self._database[key].append(item)
 
     def __getitem__(self, key):
