@@ -1,5 +1,6 @@
 import markdown
 from markdown.inlinepatterns import Pattern
+from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
 import os
 import re
@@ -52,12 +53,44 @@ class MooseCompleteSourcePattern(Pattern):
         return el
         """
 
+class MooseSlideBlock(BlockProcessor):
+
+    def __init__(self, *args):
+        BlockProcessor.__init__(self, *args)
+        self._test = False
+
+    def test(self, parent, block):
+
+        if self._test:
+            return False
+        else:
+            self._test = True
+            return True
+
+    def run(self, parent, block):
+
+        indices = [i for i, x in enumerate(block) if x == u'!---']
+
+        for index in indices:
+            block[index] = '</section><section>'
+
+        if indices:
+            block.insert(0, '<section>')
+            block.append('</section>')
+
+        print parent
 
 class MooseMarkdown(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
-        print '\n'.join(md.inlinePatterns)
+        print '\n'.join(md.parser.blockprocessors)
+
+        md.parser.blockprocessors.add('moose_slides',
+                                      MooseSlideBlock(md.parser),
+                                      '_begin')
         md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '<image_link')
+
+
 
 
 def makeExtension(*args, **kwargs):

@@ -4,12 +4,11 @@
 some code
 ```
 
+!---
 
 ## C++ Source Code
 
 ### Including a Complete File
-
-
 
 
 ```text
@@ -20,5 +19,11 @@ some code
 # Use following to build list of examples/tutorials/tests that use the objects
   --list-constructed-objects
 
+!---
+
 # Header
 Live update
+
+x | y
+--- | ---
+1 | 2
