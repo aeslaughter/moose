@@ -1,29 +1,19 @@
-# MOOSE Style Markdown
+Slide 1
 
-```
-some code
-```
-
-!---
-
-## C++ Source Code
-
-### Including a Complete File
-
-
-```text
-![Diffusion](/framework/src/kernels/Diffusion.C)
-```
-![Diffusion](/framework/src/kernels/Diffusion.C:computeQpResidual)
-
-# Use following to build list of examples/tutorials/tests that use the objects
-  --list-constructed-objects
+* Item 1
+* Item 2
 
 !---
 
-# Header
-Live update
+Slide 2
 
-x | y
---- | ---
-1 | 2
+Was it really that easy?
+
+!---
+
+Slide 3
+
+```python
+for i in range(10):
+    print i
+```

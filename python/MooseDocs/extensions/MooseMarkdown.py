@@ -1,5 +1,6 @@
 import markdown
 from markdown.inlinepatterns import Pattern
+from markdown.preprocessors import Preprocessor
 from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
 import os
@@ -53,6 +54,22 @@ class MooseCompleteSourcePattern(Pattern):
         return el
         """
 
+class MooseSlidePreprocesor(Preprocessor):
+
+    def run(self, lines):
+        indices = [i for i, x in enumerate(lines) if x == u'!---']
+        print indices
+
+        if indices:
+            for index in indices:
+                lines[index] = '<section>\n<\section>'
+            lines.insert(0, '<section>')
+            lines.append('</section>')
+
+
+        return '\n'.join(lines).split('\n')
+
+
 class MooseSlideBlock(BlockProcessor):
 
     def __init__(self, *args):
@@ -60,17 +77,22 @@ class MooseSlideBlock(BlockProcessor):
         self._test = False
 
     def test(self, parent, block):
-
+        return False
+        """
         if self._test:
             return False
         else:
             self._test = True
             return True
-
+        """
     def run(self, parent, block):
-
+        pass
         indices = [i for i, x in enumerate(block) if x == u'!---']
 
+        etree.SubElement(parent, 'section')
+
+
+        """
         for index in indices:
             block[index] = '</section><section>'
 
@@ -79,15 +101,17 @@ class MooseSlideBlock(BlockProcessor):
             block.append('</section>')
 
         print parent
-
+        """
 class MooseMarkdown(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
-        print '\n'.join(md.parser.blockprocessors)
+        #print '\n'.join(md.parser.blockprocessors)
 
-        md.parser.blockprocessors.add('moose_slides',
-                                      MooseSlideBlock(md.parser),
-                                      '_begin')
+        md.preprocessors.add('moose_slides', MooseSlidePreprocesor(md), '_begin')
+
+        #md.parser.blockprocessors.add('moose_slides',
+        #                              MooseSlideBlock(md.parser),
+        #                              '_begin')
         md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '<image_link')
 
 
@@ -100,4 +124,4 @@ if __name__ == '__main__':
 
     md = markdown.Markdown(extensions=[MooseMarkdown()])
     md.convertFile(output='test.html',
-                   input='/Users/slauae/projects/moose/docs/documentation/moose_style_markdown.md')
+                   input='/Users/slauae/projects/moose-doc/docs/documentation/moose_style_markdown.md')
