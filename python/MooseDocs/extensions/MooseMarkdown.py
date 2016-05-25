@@ -67,6 +67,11 @@ class MooseSlidePreprocesor(Preprocessor):
             lines.append('</section>')
 
 
+            placeholder = self.markdown.htmlStash.store(code, safe=True)
+            text = '%s\n%s\n%s' % (text[:m.start()],
+                                   placeholder,
+                                   text[m.end():])
+
         return '\n'.join(lines).split('\n')
 
 
