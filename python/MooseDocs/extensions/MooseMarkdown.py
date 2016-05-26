@@ -1,49 +1,80 @@
-import MooseDocs
-
+import os
+import re
 import markdown
 from markdown.inlinepatterns import Pattern
 from markdown.preprocessors import Preprocessor
 from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
-import os
-import re
 
-class MooseCompleteSourcePattern(Pattern):
+import MooseDocs
+import utils
+
+class MooseSourcePatternBase(Pattern):
+    def __init__(self, regex):
+        Pattern.__init__(self, regex)
+        #super(Pattern, self).__init__(regex)
+
+        # The default settings
+        self._settings = {'strip_header':True,
+                          'github_link':True,
+                          'overflow-y':'visible',
+                          'max-height':'500px',
+                          'strip-extra-newlines':False}
+
+
+    #def __getitem__(self, key):
+    #    return self._settings[key]
+
+    def updateSettings(self, settings):
+        """
+        Apply the settings captured from the regular expression.
+
+        Args:
+            settings[str]: A string containing the space separate key, value pairs (key=value key2=value2).
+        """
+        for s in settings.split(' '):
+            if s:
+                k, v = s.strip().split('=')
+                if k not in self._settings:
+                    #@TODO: Log this
+                    print 'Unknown setting', k
+                    continue
+                try:
+                    self._settings[k] = eval(v)
+                except:
+                    self._settings[k] = str(v)
+
+
+    def style(self, *keys):
+        """
+        Extract the html style string from a list of settings.
+
+        Args:
+            *keys[str]: A list of keys to compose into a style string.
+        """
+        style = []
+        for k in keys:
+            style.append('{}:{}'.format(k, self._settings[k]))
+        return ';'.join(style)
+
+
+class MooseCompleteSourcePattern(MooseSourcePatternBase):
     """
-
-
-    strip_header:True
-    github_link:True
-    overflow-y:visible
-    max-height:None
+    A markdown extension for including complete source code files.
     """
 
     CPP_RE = r'!\[(.*?)\]\((.*\.[Chi])\s*(.*?)\)'
 
-
     def __init__(self):
-        Pattern.__init__(self, self.CPP_RE)
+        super(MooseCompleteSourcePattern, self).__init__(self.CPP_RE)
 
     def handleMatch(self, match):
         """
         Process the C++ file provided.
         """
 
-        # Current settings
-        settings = {'strip_header':True, 'github_link':True, 'overflow-y':'visible', 'max-height':None}
-        for s in match.group(4).split(' '):
-            if s:
-                k, v = s.strip().split(':')
-                if k not in settings:
-                    #@TODO: Log this
-                    print 'Unknown setting', k
-                    continue
-                try:
-                    settings[k] = eval(v)
-                except:
-                    settings[k] = str(v)
-
-        print settings
+        # Update the settings from regex match
+        self.updateSettings(match.group(4))
 
         # Build the complete filename.
         # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
@@ -63,18 +94,21 @@ class MooseCompleteSourcePattern(Pattern):
         fid.close()
 
         # Strip header and leading/trailing whitespace and newlines
-        if settings['strip_header']:
+        if self._settings['strip_header']:
             strt = content.find('/********')
             stop = content.rfind('*******/\n')
             content = content.replace(content[strt:stop+9], '')
         content = re.sub(r'^(\n*)', '', content)
         content = re.sub(r'(\n*)$', '', content)
 
+        if self._settings['strip-extra-newlines']:
+            content = re.sub(r'(\n{3,})', '\n\n', content)
+
         # Build outer div container
         el = etree.Element('div')
 
         # Build label
-        if settings['github_link']:
+        if self._settings['github_link']:
             label = etree.SubElement(el, 'a')
             label.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + rel_filename)
         else:
@@ -85,12 +119,9 @@ class MooseCompleteSourcePattern(Pattern):
         pre = etree.SubElement(el, 'pre')
         code = etree.SubElement(pre, 'code')
         code.set('class', 'c++')
-        #code.set('overflow-y', settings['overflow-y'])
-        #if settings['max-height']:
-        #    code.set('max-height', settings['max-height'])
+        code.set('style', self.style('overflow-y', 'max-height'))
         code.text = content
 
-        etree.dump(el)
         return el
 
 

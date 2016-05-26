@@ -41,9 +41,6 @@ def colorText(string, color, **kwargs):
 
   return string
 
-
-##
-# A function for converting string to boolean
 def str2bool(string):
   """
   A function for converting string to boolean.
