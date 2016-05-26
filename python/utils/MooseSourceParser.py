@@ -6,7 +6,6 @@ import clang.cindex
 #clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
 clang.cindex.Config.set_library_file('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib')
 
-import MooseDocs
 
 #print '\nPYTHON BINDINGS:', clang.cindex.__file__
 
@@ -87,10 +86,12 @@ class MooseSourceParser(object):
 
         return decl, defn
 
-    def dump(self, cursor=self._translation_unit.cursor, level = 0, **kwargs):
+    def dump(self, cursor=None, level = 0, **kwargs):
         """
         A tool for dumping the cursor tree.
         """
+        if cursor == None:
+            cursor = self._translation_unit.cursor,
         recursive = kwargs.pop('recursive', True)
         for c in cursor.get_children():
             print ' '*4*level, c.kind, c.spelling, c.extent.start.file, c.extent.start.line
@@ -136,7 +137,7 @@ if __name__ == '__main__':
 
     src = '/Users/slauae/projects/moose/framework/src/kernels/Diffusion.C'
 
-    parser = MooseSourceParser(os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
+    parser = MooseSourceParser('/Users/slauae/projects/moose/framework')
     parser.parse(src)
     decl, defn = parser.method('computeQpResidual')
     print decl, defn

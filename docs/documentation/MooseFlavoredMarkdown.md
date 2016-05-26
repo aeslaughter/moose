@@ -2,7 +2,7 @@
 
 ## Including MOOSE Source Files
 
-### Complete MOOSE Source Code
+### Complete Code
 You can include complete files from the repository using the `![]()` syntax similar to that used in images. For example, the following
 includes the complete code as shown.
 
@@ -16,13 +16,15 @@ in the [Settings](MooseFlavoredMarkdown.md#optional-settings) the included code.
 ![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
 
 
-### Class Method in MOOSE Source Code
+### Class Methods
+By including a method name, in C++ syntax fashion, it is possible to include specific methods from C++ class in MOOSE. For example,
+the following limits the included code to the `computeQpResidual` method.
 
+```text
+![Diffusion.C::computeQpResidual](framework/src/kernels/Diffusion.C::computeQpResidual)
+```
 
-
-
-
-
+![Diffusion.C::computeQpResidual](framework/src/kernels/Diffusion.C::computeQpResidual)
 
 
 

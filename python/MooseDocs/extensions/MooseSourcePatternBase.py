@@ -55,17 +55,25 @@ class MooseSourcePatternBase(Pattern):
             style.append('{}:{}'.format(k, self._settings[k]))
         return ';'.join(style)
 
-    def createElement(self, label, content, filename):
+    def createElement(self, label, content, filename, rel_filename):
         """
         Create the code element from the supplied source code content.
 
         Args:
             label[str]: The label supplied in the regex, [label](...)
             content[str]: The code content to insert into the markdown.
-            filename[str]: The relative filename; used for creating github link.
+            filename[str]: The complete filename (for error checking)
+            rel_filename[str]: The relative filename; used for creating github link.
 
         NOTE: The code related settings and clean up are applied in this method.
         """
+
+        # If the file does not exist return a bold block
+        if not os.path.exists(filename):
+            el = etree.Element('p')
+            el.set('style', "color:red;font-size:150%")
+            el.text = 'ERROR: Invalid filename: ' + filename
+            return el
 
         # Strip header and leading/trailing whitespace and newlines
         if self._settings['strip_header']:
@@ -84,7 +92,7 @@ class MooseSourcePatternBase(Pattern):
         # Build label
         if self._settings['github_link']:
             label = etree.SubElement(el, 'a')
-            label.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + filename)
+            label.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + rel_filename)
         else:
             label = etree.SubElement(el, 'div')
         label.text = label
