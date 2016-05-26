@@ -9,8 +9,17 @@ import os
 import re
 
 class MooseCompleteSourcePattern(Pattern):
+    """
 
-    CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])\)'
+
+    strip_header:True
+    github_link:True
+    overflow-y:visible
+    max-height:None
+    """
+
+    CPP_RE = r'!\[(.*?)\]\((.*\.[Chi])\s*(.*?)\)'
+
 
     def __init__(self):
         Pattern.__init__(self, self.CPP_RE)
@@ -20,14 +29,31 @@ class MooseCompleteSourcePattern(Pattern):
         Process the C++ file provided.
         """
 
+        # Current settings
+        settings = {'strip_header':True, 'github_link':True, 'overflow-y':'visible', 'max-height':None}
+        for s in match.group(4).split(' '):
+            if s:
+                k, v = s.strip().split(':')
+                if k not in settings:
+                    #@TODO: Log this
+                    print 'Unknown setting', k
+                    continue
+                try:
+                    settings[k] = eval(v)
+                except:
+                    settings[k] = str(v)
+
+        print settings
+
         # Build the complete filename.
         # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
-        filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + match.group(3).lstrip('/')
+        rel_filename = match.group(3).lstrip('/')
+        filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + rel_filename
 
         # If the file does not exist return a bold block
         if not os.path.exists(filename):
-            el = etree.Element('font')
-            el.set('color', 'red')
+            el = etree.Element('p')
+            el.set('style', "color:red;font-size:150%")
             el.text = 'ERROR: Invalid filename: ' + filename
             return el
 
@@ -37,19 +63,34 @@ class MooseCompleteSourcePattern(Pattern):
         fid.close()
 
         # Strip header and leading/trailing whitespace and newlines
-        strt = content.find('/********')
-        stop = content.rfind('*******/\n')
-        content = content.replace(content[strt:stop+9], '')
+        if settings['strip_header']:
+            strt = content.find('/********')
+            stop = content.rfind('*******/\n')
+            content = content.replace(content[strt:stop+9], '')
         content = re.sub(r'^(\n*)', '', content)
         content = re.sub(r'(\n*)$', '', content)
 
-        # Build the Element object
-        el = etree.Element('pre')
-        label = etree.SubElement(el, 'p')
-        label.text = match.group(1)
-        code = etree.SubElement(el, 'code')
+        # Build outer div container
+        el = etree.Element('div')
+
+        # Build label
+        if settings['github_link']:
+            label = etree.SubElement(el, 'a')
+            label.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + rel_filename)
+        else:
+            label = etree.SubElement(el, 'div')
+        label.text = match.group(2)
+
+        # Build the code
+        pre = etree.SubElement(el, 'pre')
+        code = etree.SubElement(pre, 'code')
         code.set('class', 'c++')
+        #code.set('overflow-y', settings['overflow-y'])
+        #if settings['max-height']:
+        #    code.set('max-height', settings['max-height'])
         code.text = content
+
+        etree.dump(el)
         return el
 
 
@@ -75,7 +116,7 @@ class MooseMarkdown(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
         #md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
-        md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '_begin')
+        md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '<image_link')
 
 
 def makeExtension(*args, **kwargs):
