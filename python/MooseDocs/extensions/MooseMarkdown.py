@@ -54,69 +54,31 @@ class MooseCompleteSourcePattern(Pattern):
         return el
         """
 
-class MooseSlidePreprocesor(Preprocessor):
-
-    def run(self, lines):
-        indices = [i for i, x in enumerate(lines) if x == u'!---']
-        print indices
-
-        if indices:
-            for index in indices:
-                lines[index] = '<section>\n<\section>'
-            lines.insert(0, '<section>')
-            lines.append('</section>')
-
-
-            placeholder = self.markdown.htmlStash.store(code, safe=True)
-            text = '%s\n%s\n%s' % (text[:m.start()],
-                                   placeholder,
-                                   text[m.end():])
-
-        return '\n'.join(lines).split('\n')
-
-
-class MooseSlideBlock(BlockProcessor):
-
-    def __init__(self, *args):
-        BlockProcessor.__init__(self, *args)
-        self._test = False
-
-    def test(self, parent, block):
-        return False
-        """
-        if self._test:
-            return False
-        else:
-            self._test = True
-            return True
-        """
-    def run(self, parent, block):
+class MooseSlideTreeprocessor(Preprocessor):
+    def __init(self, *args):
         pass
-        indices = [i for i, x in enumerate(block) if x == u'!---']
 
-        etree.SubElement(parent, 'section')
+    def run(self, root):
 
+        new_root = etree.Element('div')
+        section = etree.SubElement(new_root, 'section')
 
-        """
-        for index in indices:
-            block[index] = '</section><section>'
+        for child in root:
+            if child.text == u'!---':
+                section = etree.SubElement(new_root, 'section')
+            else:
+                new = etree.SubElement(section, child.tag)
+                new.append(child)
 
-        if indices:
-            block.insert(0, '<section>')
-            block.append('</section>')
+        return new_root
 
-        print parent
-        """
 class MooseMarkdown(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
         #print '\n'.join(md.parser.blockprocessors)
 
-        md.preprocessors.add('moose_slides', MooseSlidePreprocesor(md), '_begin')
 
-        #md.parser.blockprocessors.add('moose_slides',
-        #                              MooseSlideBlock(md.parser),
-        #                              '_begin')
+        md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
         md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '<image_link')
 
 
@@ -129,4 +91,4 @@ if __name__ == '__main__':
 
     md = markdown.Markdown(extensions=[MooseMarkdown()])
     md.convertFile(output='test.html',
-                   input='/Users/slauae/projects/moose-doc/docs/documentation/moose_style_markdown.md')
+                   input='/Users/slauae/projects/moose/docs/documentation/moose_style_markdown.md')
