@@ -1,3 +1,5 @@
+import MooseDocs
+
 import markdown
 from markdown.inlinepatterns import Pattern
 from markdown.preprocessors import Preprocessor
@@ -5,8 +7,6 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
 import os
 import re
-
-MOOSE_DIR = os.getenv('MOOSE_DIR', os.path.join(os.getenv('HOME'), 'projects', 'moose'))
 
 class MooseCompleteSourcePattern(Pattern):
 
@@ -20,11 +20,12 @@ class MooseCompleteSourcePattern(Pattern):
         Process the C++ file provided.
         """
 
+        print match.groups()
+
         # Build the complete filename.
         # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
-        filename = MOOSE_DIR.rstrip('/') + os.path.sep + match.group(3).lstrip('/')
+        filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + match.group(3).lstrip('/')
 
-        print match.groups()
         # If the file does not exist return a bold block
         if not os.path.exists(filename):
             el = etree.Element('b')
@@ -75,13 +76,10 @@ class MooseSlideTreeprocessor(Preprocessor):
 class MooseMarkdown(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
-        #print '\n'.join(md.parser.blockprocessors)
+        #md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
+        md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '_begin')
 
-
-        md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
-        md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '<image_link')
-
-
+        print md.inlinePatterns
 
 
 def makeExtension(*args, **kwargs):
@@ -91,4 +89,4 @@ if __name__ == '__main__':
 
     md = markdown.Markdown(extensions=[MooseMarkdown()])
     md.convertFile(output='test.html',
-                   input='/Users/slauae/projects/moose/docs/documentation/moose_style_markdown.md')
+                   input='/Users/slauae/projects/moose/docs/documentation/MooseFlavoredMarkdown.md')

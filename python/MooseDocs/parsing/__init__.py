@@ -1,2 +1,1 @@
 from MooseObjectParameterTable import MooseObjectParameterTable
-from MooseClangParser import MooseClangParser

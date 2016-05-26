@@ -1,4 +1,5 @@
 site_name: MOOSE
+site_dir: ../site
 docs_dir: .
 watch_dirs:
     - /Users/slauae/projects/moose/framework/include/kernels
@@ -6,7 +7,13 @@ extra_javascript:
     - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
     - mathjaxconfig.js
 markdown_extensions:
-   # - MooseDocs.extensions.MooseMarkdown
+    - MooseDocs.extensions.MooseMarkdown
     - markdown_include.include           # pip install markdown-include
     - mdx_math                           # pip install python-markdown-math
     - smarty
+
+pages:
+   - Home: index.md
+   - Documentation:
+       - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
+       - MooseSystems: !include MooseSystems.yml
