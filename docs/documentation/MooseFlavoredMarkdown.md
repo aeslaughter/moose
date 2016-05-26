@@ -13,7 +13,7 @@ in the [Settings](MooseFlavoredMarkdown.md#optional-settings) the included code.
 ![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
 ```
 
-![Diffusion.C](framework/src/kernels/Diffusion.C max-height=600px strip-extra-newlines=True)
+![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
 
 
 ### Class Method in MOOSE Source Code
