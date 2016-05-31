@@ -8,10 +8,8 @@ class MooseCompleteSourcePattern(MooseSourcePatternBase):
     A markdown extension for including complete source code files.
     """
 
-    CPP_RE = r'!\[(.*?)\]\((.*\.[Chi])\s*(.*?)\)'
-
-    def __init__(self):
-        super(MooseCompleteSourcePattern, self).__init__(self.CPP_RE)
+    def __init__(self, regex):
+        super(MooseCompleteSourcePattern, self).__init__(regex)
 
     def handleMatch(self, match):
         """
@@ -27,8 +25,12 @@ class MooseCompleteSourcePattern(MooseSourcePatternBase):
         filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + rel_filename
 
         # Read the file
-        fid = open(filename)
-        content = fid.read()
-        fid.close()
+        el = self.checkFilename(filename)
+        if el == None:
+            fid = open(filename)
+            content = fid.read()
+            fid.close()
+            el = self.createElement(match.group(2), content, filename, rel_filename)
 
-        return self.createElement(match.group(2), content, filename, rel_filename)
+        # Return the Element object
+        return el

@@ -42,7 +42,6 @@ class MooseSourcePatternBase(Pattern):
                 except:
                     self._settings[k] = str(v)
 
-
     def style(self, *keys):
         """
         Extract the html style string from a list of settings.
@@ -54,6 +53,39 @@ class MooseSourcePatternBase(Pattern):
         for k in keys:
             style.append('{}:{}'.format(k, self._settings[k]))
         return ';'.join(style)
+
+    def prepareContent(self, content):
+        """
+        Prepare the convent for conversion to Element object.
+
+        Args:
+            content[str]: The content to prepare (i.e., the file contents).
+        """
+
+        # Strip leading/trailing newlines
+        content = re.sub(r'^(\n*)', '', content)
+        content = re.sub(r'(\n*)$', '', content)
+
+        # Strip extra new lines (optional)
+        if self._settings['strip-extra-newlines']:
+            content = re.sub(r'(\n{3,})', '\n\n', content)
+
+        return content
+
+
+    def checkFilename(self, filename):
+        """
+        Checks that the filename exists, if it does not a error Element is return.
+
+        Args:
+            filename[str]: The filename to check for existence.
+        """
+
+        if not os.path.exists(filename):
+            el = etree.Element('p')
+            el.set('style', "color:red;font-size:120%")
+            el.text = 'ERROR: Invalid filename: ' + filename
+            return el
 
     def createElement(self, label, content, filename, rel_filename):
         """
@@ -68,23 +100,8 @@ class MooseSourcePatternBase(Pattern):
         NOTE: The code related settings and clean up are applied in this method.
         """
 
-        # If the file does not exist return a bold block
-        if not os.path.exists(filename):
-            el = etree.Element('p')
-            el.set('style', "color:red;font-size:150%")
-            el.text = 'ERROR: Invalid filename: ' + filename
-            return el
-
-        # Strip header and leading/trailing whitespace and newlines
-        if self._settings['strip_header']:
-            strt = content.find('/********')
-            stop = content.rfind('*******/\n')
-            content = content.replace(content[strt:stop+9], '')
-        content = re.sub(r'^(\n*)', '', content)
-        content = re.sub(r'(\n*)$', '', content)
-
-        if self._settings['strip-extra-newlines']:
-            content = re.sub(r'(\n{3,})', '\n\n', content)
+        # Strip extra new lines
+        content = self.prepareContent(content)
 
         # Build outer div container
         el = etree.Element('div')

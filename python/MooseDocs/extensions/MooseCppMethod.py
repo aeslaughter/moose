@@ -4,7 +4,7 @@ import MooseDocs
 from MooseSourcePatternBase import MooseSourcePatternBase
 import utils
 
-class MooseMethodSourcePattern(MooseSourcePatternBase):
+class MooseCppMethod(MooseSourcePatternBase):
     """
     A markdown extension for including complete source code files.
     """
@@ -12,7 +12,7 @@ class MooseMethodSourcePattern(MooseSourcePatternBase):
     CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])::(\w+)\s*(.*?)\)'
 
     def __init__(self, parser):
-        super(MooseMethodSourcePattern, self).__init__(self.CPP_RE)
+        super(MooseCppMethod, self).__init__(self.CPP_RE)
         self._parser = parser
 
     def handleMatch(self, match):
@@ -32,7 +32,11 @@ class MooseMethodSourcePattern(MooseSourcePatternBase):
         print utils.colorText('Parsing method "{}" from {}'.format(match.group(4), filename), 'YELLOW')
 
         # Read the file and create element
-        self._parser.parse(filename)
-        decl, defn = self._parser.method(match.group(4))
+        el = self.checkFilename(filename)
+        if el == None:
+            self._parser.parse(filename)
+            decl, defn = self._parser.method(match.group(4))
+            el = self.createElement(match.group(2), defn, filename, rel_filename)
 
-        return self.createElement(match.group(2), defn, filename, rel_filename)
+        # Return the Element object
+        return el

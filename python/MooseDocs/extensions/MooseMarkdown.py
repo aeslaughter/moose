@@ -1,8 +1,8 @@
 import os
 import markdown
 
-from MooseMethodSourcePattern import MooseMethodSourcePattern
-from MooseCompleteSourcePattern import MooseCompleteSourcePattern
+from MooseCppMethod import MooseCppMethod
+from MooseCppFile import MooseCppFile
 from MooseSlideTreeprocessor import MooseSlideTreeprocessor
 
 import MooseDocs
@@ -26,8 +26,8 @@ class MooseMarkdown(markdown.Extension):
         #parser = utils.MooseSourceParser(path)
 
         #md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
-        md.inlinePatterns.add('moose_method_source', MooseMethodSourcePattern(self._parser), '<image_link')
-        md.inlinePatterns.add('moose_complete_source', MooseCompleteSourcePattern(), '<image_link')
+        md.inlinePatterns.add('moose_cpp_method', MooseCppMethod(self._parser), '<image_link')
+        md.inlinePatterns.add('moose_cpp_file', MooseCppFile(), '<image_link')
 
 
 def makeExtension(*args, **kwargs):
@@ -41,6 +41,6 @@ def makeExtension(*args, **kwargs):
 
 if __name__ == '__main__':
 
-    md = markdown.Markdown(extensions=[MooseMarkdown()])
+    md = markdown.Markdown(extensions=[makeExtension()])
     md.convertFile(output='test.html',
                    input='/Users/slauae/projects/moose-doc/docs/documentation/MooseFlavoredMarkdown.md')
