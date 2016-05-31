@@ -36,6 +36,9 @@ class GPNode:
   # @return The node object if any part of a node key is in the supplied name
   def getNode(self, name):
     node = None
+
+
+    print name, self.children
     if name in self.children:
       node = self.children[name]
 

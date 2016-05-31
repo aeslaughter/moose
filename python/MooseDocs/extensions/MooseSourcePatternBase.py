@@ -123,7 +123,6 @@ class MooseSourcePatternBase(Pattern):
         code = etree.SubElement(pre, 'code')
         if self._language:
             code.set('class', 'hljs ' + self._language)
-        print self.style('overflow-y', 'max-height')
         code.set('style', self.style('overflow-y', 'max-height'))
         code.text = content
 

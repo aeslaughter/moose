@@ -36,6 +36,11 @@ the following limits the included code to the `computeQpResidual` method.
 
 ![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i strip-extra-newlines=True max-height=300px)
 
+### Input File Block
+
+![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i::Kernels)
+
+
 
 
 ### Optional Settings
