@@ -36,6 +36,8 @@ class MooseInputBlock(MooseCompleteSourcePattern):
                 content = 'ERROR: Failed to find {} in {}.'.format(match.group(2), rel_filename)
             else:
                 content = node.createString()
-            el = self.createElement(match.group(2), content, filename, rel_filename)
+
+            label = '{} [{}]'.format(match.group(2), match.group(4))
+            el = self.createElement(label, content, filename, rel_filename)
 
         return el

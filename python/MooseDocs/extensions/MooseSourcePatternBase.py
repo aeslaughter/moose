@@ -23,6 +23,7 @@ class MooseSourcePatternBase(Pattern):
         # The default settings
         self._settings = {'strip_header':True,
                           'github_link':True,
+                          'label':True,
                           'overflow-y':'scroll',
                           'max-height':'500px',
                           'strip-extra-newlines':False}
@@ -112,11 +113,13 @@ class MooseSourcePatternBase(Pattern):
 
         # Build label
         if self._settings['github_link']:
-            label = etree.SubElement(el, 'a')
-            label.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + rel_filename)
+            title = etree.SubElement(el, 'a')
+            title.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + rel_filename)
         else:
-            label = etree.SubElement(el, 'div')
-        label.text = label
+            title = etree.SubElement(el, 'div')
+
+        if self._settings['label']:
+            title.text = label
 
         # Build the code
         pre = etree.SubElement(el, 'pre')
