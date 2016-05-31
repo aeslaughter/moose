@@ -1,6 +1,7 @@
 import os
 import markdown
 
+from MooseInputFile import MooseInputFile
 from MooseCppMethod import MooseCppMethod
 from MooseCppFile import MooseCppFile
 from MooseSlideTreeprocessor import MooseSlideTreeprocessor
@@ -26,6 +27,7 @@ class MooseMarkdown(markdown.Extension):
         #parser = utils.MooseSourceParser(path)
 
         #md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
+        md.inlinePatterns.add('moose_input_file', MooseInputFile(), '<image_link')
         md.inlinePatterns.add('moose_cpp_method', MooseCppMethod(self._parser), '<image_link')
         md.inlinePatterns.add('moose_cpp_file', MooseCppFile(), '<image_link')
 

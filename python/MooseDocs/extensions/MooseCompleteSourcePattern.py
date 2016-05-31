@@ -8,8 +8,8 @@ class MooseCompleteSourcePattern(MooseSourcePatternBase):
     A markdown extension for including complete source code files.
     """
 
-    def __init__(self, regex):
-        super(MooseCompleteSourcePattern, self).__init__(regex)
+    def __init__(self, regex, language=None):
+        super(MooseCompleteSourcePattern, self).__init__(regex, language)
 
     def handleMatch(self, match):
         """

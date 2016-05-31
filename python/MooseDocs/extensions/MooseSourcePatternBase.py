@@ -10,16 +10,20 @@ class MooseSourcePatternBase(Pattern):
 
     Args:
         regex: The string containing the regular expression to match.
+        language[str]: The code language (e.g., 'python' or 'c++')
     """
 
-    def __init__(self, regex):
+    def __init__(self, regex, language=None):
         Pattern.__init__(self, regex)
         #super(Pattern, self).__init__(regex) # This fails
+
+        # Set the language
+        self._language = language
 
         # The default settings
         self._settings = {'strip_header':True,
                           'github_link':True,
-                          'overflow-y':'visible',
+                          'overflow-y':'scroll',
                           'max-height':'500px',
                           'strip-extra-newlines':False}
 
@@ -117,7 +121,9 @@ class MooseSourcePatternBase(Pattern):
         # Build the code
         pre = etree.SubElement(el, 'pre')
         code = etree.SubElement(pre, 'code')
-        code.set('class', 'c++')
+        if self._language:
+            code.set('class', 'hljs ' + self._language)
+        print self.style('overflow-y', 'max-height')
         code.set('style', self.style('overflow-y', 'max-height'))
         code.text = content
 

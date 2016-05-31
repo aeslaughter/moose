@@ -1,5 +1,6 @@
 # Moose Flavored Markdown
 
+
 ## Including MOOSE Source Files
 
 ### Complete Code
@@ -26,15 +27,24 @@ the following limits the included code to the `computeQpResidual` method.
 
 ![Diffusion.C::computeQpResidual](framework/src/kernels/Diffusion.C::computeQpResidual)
 
+### Complete Input File
+
+
+```text
+![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i strip-extra-newlines=True max-height=300px)
+```
+
+![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i strip-extra-newlines=True max-height=300px)
+
 
 
 ### Optional Settings
 The following options may be passed to control the how the output is formatted.
 
-Option | Default | Description
------- | ------- | -----------
-strip_header | True | Toggles the removal of the MOOSE copyright header.
-github_link  | True | Include a link to the source code on GitHub.
-overflow-y | Scroll | The action to take when the text overflow the html container (see [overflow-y](http://www.w3schools.com/cssref/css3_pr_overflow-y.asp)).
-max-hieght | 500px | The maximum height of the code window (see [max-height](http://www.w3schools.com/cssref/pr_dim_max-height.asp)).
-strip-extra-newlines | False | Remove exessive newlines from the included code.
+Option               | Default | Description
+-------------------- | ------- | -----------
+strip_header         | True    | Toggles the removal of the MOOSE copyright header.
+github_link          | True    | Include a link to the source code on GitHub.
+overflow-y           | Scroll  | The action to take when the text overflow the html container (see [overflow-y](http://www.w3schools.com/cssref/css3_pr_overflow-y.asp)).
+max-hieght           | 500px   | The maximum height of the code window (see [max-height](http://www.w3schools.com/cssref/pr_dim_max-height.asp)).
+strip-extra-newlines | False   | Remove exessive newlines from the included code.

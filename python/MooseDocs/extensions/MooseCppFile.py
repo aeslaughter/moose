@@ -16,7 +16,7 @@ class MooseCppFile(MooseCompleteSourcePattern):
     CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])\s*(.*?)\)'
 
     def __init__(self):
-        super(MooseCompleteSourcePattern, self).__init__(self.CPP_RE)
+        super(MooseCompleteSourcePattern, self).__init__(self.CPP_RE, 'cpp')
 
     def prepareContent(self, content):
         """

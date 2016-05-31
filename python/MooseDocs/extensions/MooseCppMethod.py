@@ -12,7 +12,7 @@ class MooseCppMethod(MooseSourcePatternBase):
     CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])::(\w+)\s*(.*?)\)'
 
     def __init__(self, parser):
-        super(MooseCppMethod, self).__init__(self.CPP_RE)
+        super(MooseCppMethod, self).__init__(self.CPP_RE, 'cpp')
         self._parser = parser
 
     def handleMatch(self, match):
