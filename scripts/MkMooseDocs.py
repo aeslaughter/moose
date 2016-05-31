@@ -155,7 +155,7 @@ class MooseObjectList(object):
             getdata(itr)
 
 
-        self._syntax = dict()
+        self._syntax = set()
         self._register = dict()
         self._filenames = dict()
 
@@ -183,8 +183,8 @@ class MooseObjectList(object):
                         for match in re.finditer(r'class\s*(?P<class>\w+)', content):
                             self._filenames[match.group('class')] = fullfile
 
-                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>\w+)\"\);', content):
-                        self._syntax[match.group('syntax')] = match.group('action')
+                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
+                        self._syntax.add(match.group('syntax'))
 
 
 
@@ -203,7 +203,7 @@ if __name__ == '__main__':
 
     objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
 
-    print objects._syntax
+    print '\n'.join(objects._syntax)
     #print objects._register
     #print objects._filenames
 
