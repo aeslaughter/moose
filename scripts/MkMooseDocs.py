@@ -6,8 +6,23 @@ import utils #/moose/python/utils
 import MooseDocs
 
 #TODO: Make this a generic function in /moose/python/utils
-from peacock.utils.ExeLauncher import runExe
+#from peacock.utils.ExeLauncher import runExe
+import subprocess
 
+
+def runExe(app_path, args):
+
+    popen_args = [str(app_path)]
+    if isinstance(args, str):
+        popen_args.append(args)
+    else:
+        popen_args.extend(args)
+
+
+    proc = subprocess.Popen(popen_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    data = proc.communicate()
+    stdout_data = data[0].decode("utf-8")
+    return stdout_data
 
 
 class MooseObjectInformation(object):
@@ -111,7 +126,10 @@ class MooseObjectInformation(object):
 
 
 
+class MooseSystemInformation(object):
 
+    def __init__(self):
+        pass
 
 
 
@@ -137,6 +155,7 @@ class MooseObjectList(object):
             getdata(itr)
 
 
+        self._syntax = dict()
         self._register = dict()
         self._filenames = dict()
 
@@ -153,9 +172,9 @@ class MooseObjectList(object):
                     content = fid.read()
                     fid.close()
 
-                    #for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
-                    #    key = match.group('key')
-                    #    self._register[key] = key
+                    for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
+                        key = match.group('key')
+                        self._register[key] = key
 
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
                         self._register[match.group('class')] = match.group('key')
@@ -164,8 +183,9 @@ class MooseObjectList(object):
                         for match in re.finditer(r'class\s*(?P<class>\w+)', content):
                             self._filenames[match.group('class')] = fullfile
 
+                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>\w+)\"\);', content):
+                        self._syntax[match.group('syntax')] = match.group('action')
 
-        print self._filenames['MooseParsedFunction']
 
 
 
@@ -177,6 +197,15 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
+
+    #print ydata
+
+
+    objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
+
+    print objects._syntax
+    #print objects._register
+    #print objects._filenames
 
 
     """
@@ -218,7 +247,7 @@ if __name__ == '__main__':
  #   obj = MooseObjectList(ydata, framework)
 
 
-
+    """
     inputs = collections.OrderedDict()
     children = collections.OrderedDict()
 
@@ -250,3 +279,4 @@ if __name__ == '__main__':
 
     info = MooseObjectInformation(ydata[path], details[name], items, prefix='MooseSystems')
     info.write()
+    """

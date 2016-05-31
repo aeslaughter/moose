@@ -19,6 +19,16 @@ class MooseYaml(object):
         return self._data
 
 
+
+    def __str__(self):
+
+        output = []
+        for itr in self._data:
+            output += self._print(itr)
+
+        return '\n'.join(output)
+
+
     def __getitem__(self, key):
         """
         Operator [] access to the yaml blocks.
@@ -47,3 +57,15 @@ class MooseYaml(object):
             if child_data:
                 return child_data
         return None
+
+    @staticmethod
+    def _print(data, level=0):
+
+        output = []
+        output.append(' '*2*level + data['name'])
+
+        if data['subblocks']:
+            for child in data['subblocks']:
+                output += MooseYaml._print(child, level+1)
+
+        return output
