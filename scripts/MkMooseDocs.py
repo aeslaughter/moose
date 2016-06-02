@@ -35,6 +35,12 @@ class MooseSystemInformation(object):
 
         self._system_node = self._yaml[system]
 
+        print self._system_node
+
+        if self._system_node['subblocks']:
+            for child in self._system_node['subblocks']:
+                print child['name']
+
 
 
     def write(self):
@@ -56,13 +62,17 @@ class MooseSystemInformation(object):
 
         md = []
 
-        table = MooseDocs.parsing.MooseObjectParameterTable()
+        table = MooseDocs.MooseObjectParameterTable()
 
-        for param in self._system_node['parameters']:
-            table.addParam(param)
+        if self._system_node['parameters']:
+            for param in self._system_node['parameters']:
+                table.addParam(param)
 
-        md += ['## Input Parameters']
-        md += [table.markdown()]
+            md += ['## Input Parameters']
+            md += [table.markdown()]
+
+
+
 
         return '\n'.join(md)
 
@@ -140,7 +150,7 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
-    system = MooseSystemInformation(ydata, 'Outputs')
+    system = MooseSystemInformation(ydata, 'Dampers')
     system.write()
 
 
