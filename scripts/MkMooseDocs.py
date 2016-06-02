@@ -37,9 +37,6 @@ class MooseSystemInformation(object):
 
         print self._system_node
 
-        if self._system_node['subblocks']:
-            for child in self._system_node['subblocks']:
-                print child['name']
 
 
 
@@ -73,6 +70,13 @@ class MooseSystemInformation(object):
 
 
 
+        if self._system_node['subblocks']:
+            table = MooseDocs.MarkdownTable('Name', 'Description')
+            for child in self._system_node['subblocks']:
+                table.addRow(child['name'], child['description'])
+
+            md += ['## Available Objects']
+            md += [table.markdown()]
 
         return '\n'.join(md)
 
@@ -150,7 +154,7 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
-    system = MooseSystemInformation(ydata, 'Dampers')
+    system = MooseSystemInformation(ydata, 'Outputs')
     system.write()
 
 

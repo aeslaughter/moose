@@ -1,6 +1,8 @@
 import re
 
-class MooseObjectParameterTable(object):
+from MarkdownTable import MarkdownTable
+
+class MooseObjectParameterTable(MarkdownTable):
     """
     A class for creating markdown tables from parameter data parsed from MOOSE yaml data.
     """
@@ -9,11 +11,9 @@ class MooseObjectParameterTable(object):
     PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Type', 'Description']
 
     def __init__(self):
+        super(MooseObjectParameterTable, self).__init__(*self.PARAMETER_TABLE_COLUMN_NAMES)
 
         self._parameters = []
-        self._column_widths = []
-        for col in self.PARAMETER_TABLE_COLUMN_NAMES:
-            self._column_widths.append(len(col))
 
 
     def addParam(self, param):
@@ -25,47 +25,13 @@ class MooseObjectParameterTable(object):
         """
 
         self._parameters.append(param)
-        for i in range(len(self.PARAMETER_TABLE_COLUMNS)):
-            key = self.PARAMETER_TABLE_COLUMNS[i]
-            param[key] = self._formatParam(param[key], key)
-            self._column_widths[i] = max(self._column_widths[i], len(param[key]))
 
+        items = []
+        for key in self.PARAMETER_TABLE_COLUMNS:
+            items.append(self._formatParam(param[key], key))
 
-    def markdown(self):
-        """
-        Return the parameter table in markdown format. (public)
-        """
+        self.addRow(*items)
 
-        md = []
-
-        s = self._buildFormatString(self.PARAMETER_TABLE_COLUMN_NAMES)
-
-        frmt = '| ' + ' | '.join( ['{:<{}s}'] * (len(s)/2) ) + ' |'
-        md += [frmt.format(*s)]
-
-        md += ['']
-        for i in range(len(self.PARAMETER_TABLE_COLUMN_NAMES)):
-            md[-1] += '| ' + '-'*self._column_widths[i] + ' '
-        md[-1] += '|'
-
-        for param in self._parameters:
-            text = []
-            for key in self.PARAMETER_TABLE_COLUMNS:
-                text.append(param[key])
-            s = self._buildFormatString(text)
-            md += [frmt.format(*s)]
-
-        return '\n'.join(md)
-
-    def _buildFormatString(self, text):
-        """
-        A helper method for building format strings. (protected)
-        """
-        output = []
-        for i in range(len(text)):
-            output.append(text[i])
-            output.append(self._column_widths[i])
-        return output
 
     def _formatParam(self, param, key):
         """
@@ -89,28 +55,3 @@ class MooseObjectParameterTable(object):
             param = '`' + param + '`'
 
         return param
-
-"""
-class MooseObjectParameterTable(object):
-
-    def __init__(self):
-        self._required = MarkdownTable()
-        self._optional = MarkdownTable()
-
-    def addParam(self, param):
-
-        print param['required'], type(param['required'])
-        if param['required']:
-            self._required.addParam(param)
-        else:
-            self._optional.addParam(param)
-
-    def markdown(self):
-
-
-        md = []
-        md += [self._required.markdown()]
-        md += ['']
-        md += [self._optional.markdown()]
-        return '\n'.join(md)
-"""
