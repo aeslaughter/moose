@@ -7,8 +7,8 @@ class MooseObjectParameterTable(MarkdownTable):
     A class for creating markdown tables from parameter data parsed from MOOSE yaml data.
     """
 
-    PARAMETER_TABLE_COLUMNS = ['name', 'cpp_type', 'description']
-    PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Type', 'Description']
+    PARAMETER_TABLE_COLUMNS = ['name', 'cpp_type', 'default', 'description']
+    PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Type', 'Default', 'Description']
 
     def __init__(self):
         super(MooseObjectParameterTable, self).__init__(*self.PARAMETER_TABLE_COLUMN_NAMES)
@@ -28,14 +28,19 @@ class MooseObjectParameterTable(MarkdownTable):
 
         items = []
         for key in self.PARAMETER_TABLE_COLUMNS:
-            items.append(self._formatParam(param[key], key))
+            items.append(self._formatParam(param[key], key, param['cpp_type']))
 
         self.addRow(*items)
 
 
-    def _formatParam(self, param, key):
+    def _formatParam(self, param, key, ptype):
         """
         Convert the supplied parameter into a format suitable for output.
+
+        Args:
+            param[str]: The value of the parameter.
+            key[str]: The current key.
+            ptype[str]: The C++ type for the parameter.
         """
 
         # Make sure that supplied parameter is a string
@@ -51,7 +56,11 @@ class MooseObjectParameterTable(MarkdownTable):
             # Convert vectors
             param = re.sub(r'std::__1::vector\<(.*),\sstd::__1::allocator\<(.*)\>\s\>', r'std::vector<\1>', param)
 
-            # Return the monospaced text format
+        elif key == 'default' and ptype == 'bool':
+            param = repr(bool(param))
+
+        # Return the monospaced text format
+        if param:
             param = '`' + param + '`'
 
         return param
