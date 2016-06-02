@@ -5,6 +5,8 @@ import collections
 import utils #/moose/python/utils
 import MooseDocs
 
+import logging
+
 #TODO: Make this a generic function in /moose/python/utils
 #from peacock.utils.ExeLauncher import runExe
 import subprocess
@@ -30,14 +32,15 @@ def runExe(app_path, args):
 class MooseSystemInformation(object):
 
     def __init__(self, yaml, system):
+        self._log = logging.getLogger(self.__class__.__name__)
+        self._handler = logging.StreamHandler()
+        self._log.setLevel(logging.DEBUG)
+        self._log.addHandler(self._handler)
+
         self._yaml = yaml
 
 
         self._system_node = self._yaml[system]
-
-        print self._system_node
-
-
 
 
     def write(self):
@@ -73,7 +76,15 @@ class MooseSystemInformation(object):
         if self._system_node['subblocks']:
             table = MooseDocs.MarkdownTable('Name', 'Description')
             for child in self._system_node['subblocks']:
-                table.addRow(child['name'], child['description'])
+                name = child['name']
+                desc = child['description']
+
+
+                if not desc:
+                    self._log.error("{} object lacks a description.".format(name))
+
+
+                table.addRow(name, desc)
 
             md += ['## Available Objects']
             md += [table.markdown()]
