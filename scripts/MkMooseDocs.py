@@ -37,7 +37,7 @@ class MooseSystemInformation(object):
     def __init__(self, yaml, system):
         self._log = logging.getLogger(self.__class__.__name__)
         self._handler = logging.StreamHandler()
-        self._log.setLevel(logging.DEBUG)
+        self._log.setLevel(logging.ERROR)
         self._log.addHandler(self._handler)
 
         self._yaml = yaml
@@ -162,9 +162,12 @@ if __name__ == '__main__':
     config = yaml_load(fid.read())
     fid.close()
 
-    #print config['extra']['Source']
-    #print config['extra']['Links']
-
+    # Extract the input/source link directories to utilize and build databases
+    inputs = collections.OrderedDict()
+    source = collections.OrderedDict()
+    for key, value in config['extra']['Links'].iteritems():
+        inputs[key] = MooseDocs.database.Database('.i', value, MooseDocs.database.items.InputFileItem)
+        source[key] = MooseDocs.database.Database('.h', value, MooseDocs.database.items.ChildClassItem)
 
     # Locate and run the MOOSE executable
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
@@ -176,13 +179,6 @@ if __name__ == '__main__':
 
 
    # details = MooseDocs.database.Database('.md', include, MooseDocs.database.items.MarkdownIncludeItem)
-
-
-    inputs = collections.OrderedDict()
-    source = collections.OrderedDict()
-    for key, value in config['extra']['Links'].iteritems():
-        inputs[key] = MooseDocs.database.Database('.i', value, MooseDocs.database.items.InputFileItem)
-        source[key] = MooseDocs.database.Database('.h', value, MooseDocs.database.items.ChildClassItem)
 
     path = '/Kernels/Diffusion'
 

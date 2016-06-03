@@ -1,7 +1,10 @@
 import os
 import collections
+import logging
+
 import MooseDocs
 from MooseObjectParameterTable import MooseObjectParameterTable
+
 
 class MooseObjectInformation(object):
     """
@@ -16,6 +19,15 @@ class MooseObjectInformation(object):
 
 
     def __init__(self, yaml, details, **kwargs):
+
+
+        self._log = logging.getLogger(self.__class__.__name__)
+        self._handler = logging.StreamHandler()
+        self._log.setLevel(logging.INFO)
+        self._log.addHandler(self._handler)
+
+        self._log.info('Initializing Documentation: {}'.format(yaml['name']))
+
 
         self._inputs = kwargs.pop('inputs', None)
         self._source = kwargs.pop('source', None)
@@ -52,8 +64,6 @@ class MooseObjectInformation(object):
         if not os.path.isdir(dir_name):
             os.makedirs(dir_name)
 
-        print dir_name
-
         fid = open(os.path.join(dir_name, self._class_name + '.md'), 'w')
         fid.write(self.markdown())
         fid.close()
@@ -72,7 +82,13 @@ class MooseObjectInformation(object):
         md += ['']
 
         # The details
-        md += ['{{!{}!}}'.format(self._class_details)]
+        if os.path.exists(self._class_details):
+            md += ['{{!{}!}}'.format(self._class_details)]
+        else:
+            md += ['<p style="color:red;font-size:120%">']
+            md += ['ERROR: Failed to located class detailed description:<br>{}'.format(self._class_details)]
+            md += ['</p>']
+            self._log.error('Failed to load: {}'.format(self._class_details))
         md += ['']
 
         # Print the InputParameter tables
