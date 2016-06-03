@@ -15,20 +15,22 @@ class MooseObjectInformation(object):
 
 
 
-    def __init__(self, yaml, details, items, **kwargs):
+    def __init__(self, yaml, details, **kwargs):
 
-        prefix = kwargs.pop('prefix', '')
+        self._inputs = kwargs.pop('inputs', None)
+        self._source = kwargs.pop('source', None)
 
-        # Extract basic name and description from yaml data
-        #self._class_path = os.path.join(MooseDocs.MOOSE_DOCS_DIR, prefix) + str(yaml['name'])
 
         self._class_name = yaml['name'].split('/')[-1]
         self._class_base = yaml['moosebase']
         self._class_description = yaml['description']
         self._class_details = details
-        self._items = items
 
+        # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
         self._tables = collections.OrderedDict()
+        self._tables['Required'] = MooseObjectParameterTable()
+        self._tables['Optional'] = MooseObjectParameterTable()
+
         for param in yaml['parameters']:
             name = param['group_name']
             if not name and param['required']:
@@ -66,7 +68,6 @@ class MooseObjectInformation(object):
         md += ['']
 
         # The class description
-        #md += ['## Class Description']
         md += [self._class_description]
         md += ['']
 
@@ -74,18 +75,11 @@ class MooseObjectInformation(object):
         md += ['{{!{}!}}'.format(self._class_details)]
         md += ['']
 
-        # Re-order the table to insert 'Required' and 'Optional' first
-        tables = collections.OrderedDict()
-        keys = ['Required', 'Optional']
-        for k in keys:
-            if k in self._tables:
-                tables[k] = self._tables.pop(k)
-        for k, t in self._tables.iteritems():
-            tables[k] = t
-
         # Print the InputParameter tables
         md += ['## Input Parameters']
-        for name, table in tables.iteritems():
+        for name, table in self._tables.iteritems():
+            if table.size() == 0:
+                continue
             md += ['### {} Parameters'.format(name)]
             md += [table.markdown()]
             md += ['']
@@ -98,12 +92,31 @@ class MooseObjectInformation(object):
         md += ['']
 
         # Print the item information
-        for key, item in self._items.iteritems():
-            md += ['## {}'.format(key)]
-            for k, i in item.iteritems():
-                md += ['### {}'.format(k)]
-                for j in i:
-                    md += [j.markdown()]
-                md += ['']
-            md += ['']
+        md += self._linkMarkdown('Input Files', self._inputs)
+        md += self._linkMarkdown('Child Objects', self._source)
+
         return '\n'.join(md)
+
+    def _linkMarkdown(self, title, items):
+        """
+        Helper method for dumping link lists. (static, protected)
+
+        Args:
+            title[str]: The title of the list.
+            items[list]: The list of of DatabaseItem objects.
+        """
+
+        md = []
+        if items != None:
+            md += ['## {}'.format(title)]
+            for k, db in items.iteritems():
+                if self._class_name in db:
+                    md += ['### {}'.format(k)]
+                    md += ['<div style="max-height:350px;overflow-y:Scroll">\n']
+                    for j in db[self._class_name]:
+                        md += [j.markdown()]
+                    md += ['\n</div>']
+                    md += ['']
+            md += ['']
+
+        return md

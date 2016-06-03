@@ -61,3 +61,15 @@ class Database(object):
             [list]: A list of DatabaseItem objects.
         """
         return self._database[key]
+
+    def __contains__(self, key):
+        """
+        'in' operator to test the key is in the database.
+
+        Args:
+            key[str]: The key to which database items are desired.
+
+        Return:
+            [bool]: True when the key is in the database.
+        """
+        return key in self._database

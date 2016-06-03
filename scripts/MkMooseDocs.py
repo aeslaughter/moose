@@ -162,8 +162,8 @@ if __name__ == '__main__':
     config = yaml_load(fid.read())
     fid.close()
 
-    print config['extra']['Source']
-    print config['extra']['Links']
+    #print config['extra']['Source']
+    #print config['extra']['Links']
 
 
     # Locate and run the MOOSE executable
@@ -179,41 +179,13 @@ if __name__ == '__main__':
 
 
     inputs = collections.OrderedDict()
-    children = collections.OrderedDict()
+    source = collections.OrderedDict()
     for key, value in config['extra']['Links'].iteritems():
         inputs[key] = MooseDocs.database.Database('.i', value, MooseDocs.database.items.InputFileItem)
-        children[key] = MooseDocs.database.Database('.h', value, MooseDocs.database.items.ChildClassItem)
-
-    """
-
-    inputs['Tutorials'] = MooseDocs.database.Database('.i', tutorials, MooseDocs.database.items.InputFileItem)
-    inputs['Examples'] = MooseDocs.database.Database('.i', examples, MooseDocs.database.items.InputFileItem)
-    inputs['Tests'] = MooseDocs.database.Database('.i', tests, MooseDocs.database.items.InputFileItem)
-
-    children['Tutorials'] = MooseDocs.database.Database('.h', tutorials, MooseDocs.database.items.ChildClassItem)
-    children['Examples'] = MooseDocs.database.Database('.h', examples, MooseDocs.database.items.ChildClassItem)
-    children['Tests'] = MooseDocs.database.Database('.h', tests, MooseDocs.database.items.ChildClassItem)
-    """
+        source[key] = MooseDocs.database.Database('.h', value, MooseDocs.database.items.ChildClassItem)
 
     path = '/Kernels/Diffusion'
-    name = 'Diffusion'
-
-    input_header = 'Input File Use'
-    child_header = 'Child Objects'
-
-    items = collections.OrderedDict()
-    items[input_header] = collections.OrderedDict()
-    items[child_header] = collections.OrderedDict()
-
-    """
-    for key, item in inputs.iteritems():
-        if name in item:
-            items[input_header][key] = item[name]
-    for key, item in children.iteritems():
-        if name in item:
-            items[child_header][key] = item[name]
-    """
 
     details = '/Users/slauae/projects/moose-doc/framework/include/kernels/Diffusion.md'
-    info = MooseDocs.MooseObjectInformation(ydata[path], details, items)
+    info = MooseDocs.MooseObjectInformation(ydata[path], details, inputs=inputs, source=source)
     info.write()

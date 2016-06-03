@@ -15,6 +15,12 @@ class MarkdownTable(object):
         for col in self._column_headers:
             self._column_widths.append(len(col))
 
+    def size(self):
+        """
+        Return the number of rows.
+        """
+        return len(self._rows)
+
 
     def addRow(self, *args):
         """
