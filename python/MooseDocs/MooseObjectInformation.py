@@ -1,3 +1,7 @@
+import os
+import collections
+import MooseDocs
+from MooseObjectParameterTable import MooseObjectParameterTable
 
 class MooseObjectInformation(object):
     """
@@ -33,7 +37,7 @@ class MooseObjectInformation(object):
                 name = 'Optional'
 
             if name not in self._tables:
-                self._tables[name] = MooseDocs.parsing.MooseObjectParameterTable()
+                self._tables[name] = MooseObjectParameterTable()
 
             self._tables[name].addParam(param)
 
@@ -42,12 +46,13 @@ class MooseObjectInformation(object):
 
     def write(self):
 
+        dir_name = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'gen')
+        if not os.path.isdir(dir_name):
+            os.makedirs(dir_name)
 
-        #dir_name = os.path.dirname(self._class_path)
-        #if not os.path.isdir(dir_name):
-        #    os.makedirs(dir_name)
+        print dir_name
 
-        fid = open(self._class_name + '.md', 'w')
+        fid = open(os.path.join(dir_name, self._class_name + '.md'), 'w')
         fid.write(self.markdown())
         fid.close()
 
@@ -66,7 +71,7 @@ class MooseObjectInformation(object):
         md += ['']
 
         # The details
-        md += [self._class_details]
+        md += ['{{!{}!}}'.format(self._class_details)]
         md += ['']
 
         # Re-order the table to insert 'Required' and 'Optional' first
@@ -90,6 +95,7 @@ class MooseObjectInformation(object):
         md += ['* Moose System: {}'.format(self._class_base)]
         md += ['* Class Doxygen: [{}]({})'.format(self._class_name,
                                           os.path.join(MooseDocs.MOOSE_DOXYGEN, 'class' + self._class_name + '.html'))]
+        md += ['']
 
         # Print the item information
         for key, item in self._items.iteritems():

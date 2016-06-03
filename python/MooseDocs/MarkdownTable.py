@@ -33,7 +33,6 @@ class MarkdownTable(object):
 
         self._rows.append(args)
 
-
     def markdown(self):
         """
         Return the parameter table in markdown format. (public)

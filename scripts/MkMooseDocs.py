@@ -157,6 +157,7 @@ class MooseApplicationDocGenerator(object):
 if __name__ == '__main__':
 
     # Parse the configuration file for the desired paths
+    os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
     fid = open(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'mkdocs.yml'), 'r')
     config = yaml_load(fid.read())
     fid.close()
@@ -168,7 +169,6 @@ if __name__ == '__main__':
     # Locate and run the MOOSE executable
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
     raw = runExe(exe, '--yaml')
-    print raw
     ydata = utils.MooseYaml(raw)
 
     #generator = MooseApplicationDocGenerator(ydata, (framework, ['Framework']), (phase_field, ['Modules', 'Phase Field']))

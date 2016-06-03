@@ -10,7 +10,7 @@ class MooseObjectParameterTable(MarkdownTable):
     PARAMETER_TABLE_COLUMNS = ['name', 'cpp_type', 'default', 'description']
     PARAMETER_TABLE_COLUMN_NAMES = ['Name', 'Type', 'Default', 'Description']
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(MooseObjectParameterTable, self).__init__(*self.PARAMETER_TABLE_COLUMN_NAMES)
 
         self._parameters = []
@@ -55,12 +55,10 @@ class MooseObjectParameterTable(MarkdownTable):
 
             # Convert vectors
             param = re.sub(r'std::__1::vector\<(.*),\sstd::__1::allocator\<(.*)\>\s\>', r'std::vector<\1>', param)
-
-        elif key == 'default' and ptype == 'bool':
-            param = repr(bool(param))
-
-        # Return the monospaced text format
-        if param:
             param = '`' + param + '`'
+
+        elif key == 'default':
+            if ptype == 'bool':
+                param = repr(bool(param))
 
         return param
