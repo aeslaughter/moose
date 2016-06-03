@@ -5,6 +5,7 @@ import collections
 import utils #/moose/python/utils
 import MooseDocs
 
+import yaml
 import logging
 
 #TODO: Make this a generic function in /moose/python/utils
@@ -165,15 +166,71 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
+    """
     system = MooseSystemInformation(ydata, 'Outputs')
     system.write()
-
-
     """
+
+
+    # Loop over the syntax in the framework.
+    #    (1) Generate the Systems yaml file.
+    #    (2) Generate the System overview markdown files.
+    #    (3) Generate the MooseObject markdown files.
+
+    yml = dict()#[]#collections.defaultdict()
     objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
-    for s in objects.syntax():
-        print s
-    """
+    for syntax in objects.syntax():
+
+        s = syntax.split('/')
+
+
+        system = s[0]
+
+
+        for i in range(len(s)):
+
+            txt = '{}- {}:'.format(' '*4*i, s[i])
+            yml.append(txt)
+
+            """
+            key = '/'.join(s[:i+1])
+            print key
+
+            node = ydata[key]
+            if key.endswith('*') and node['subblocks']:
+                children = [child['name'] for child in node['subblocks']]
+                tree[s[0]].append( (i, children) )
+            """
+
+
+    #print tree
+
+        #regex = r'(\w+)'
+        #match = re.findall(r'(\w+)', s)
+        #n = len(match)
+
+        #if n == 1:
+        #yml.append('- {}:'.format(match[0]))
+
+
+
+        #for i in range(len(match)):
+        #    key = '- {}'.format(match[i])
+        #    yml[key] = ''
+
+
+    with open('result.yml', 'w') as fid:
+        fid.write('\n'.join(yml))
+#        yaml.dump(yml, fid, default_flow_style=False)
+        #print s, match
+
+        #name = s.replace('*', '').strip('/').split('/')
+        #print name
+
+
+       # print ydata[s]['name'], ydata[s]['subblocks'] == None
+
+
 
 
 
