@@ -177,7 +177,19 @@ if __name__ == '__main__':
     #    (2) Generate the System overview markdown files.
     #    (3) Generate the MooseObject markdown files.
 
-    yml = dict()#[]#collections.defaultdict()
+    yml = collections.defaultdict(dict)
+
+    def attach(branch, trunk):
+
+        a,b = branch.split('/', 1)
+        trunk[a] = ''
+        if b:
+            attach(b, trunk[a])
+
+
+
+
+
 
     # USE TUPLES AS KEYS
     #yml[('Adaptivity', 'Markers', '*')] = 'Overview.md'
@@ -188,29 +200,7 @@ if __name__ == '__main__':
     objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
     for syntax in objects.syntax():
 
-        s = syntax.split('/')
-
-
-        system = s[0]
-
-
-        for i in range(len(s)):
-
-            txt = '{}- {}:'.format(' '*4*i, s[i])
-            yml.append(txt)
-
-            """
-            key = '/'.join(s[:i+1])
-            print key
-
-            node = ydata[key]
-            if key.endswith('*') and node['subblocks']:
-                children = [child['name'] for child in node['subblocks']]
-                tree[s[0]].append( (i, children) )
-            """
-
-
-    #print tree
+        attach(syntax, yml)
 
         #regex = r'(\w+)'
         #match = re.findall(r'(\w+)', s)
@@ -224,10 +214,10 @@ if __name__ == '__main__':
         #for i in range(len(match)):
         #    key = '- {}'.format(match[i])
         #    yml[key] = ''
+    print yml
 
-
-    with open('result.yml', 'w') as fid:
-        fid.write('\n'.join(yml))
+    #with open('result.yml', 'w') as fid:
+    #    fid.write('\n'.join(yml))
 #        yaml.dump(yml, fid, default_flow_style=False)
         #print s, match
 
