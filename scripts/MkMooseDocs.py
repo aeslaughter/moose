@@ -3,14 +3,15 @@ import os
 import re
 import collections
 import utils #/moose/python/utils
-import MooseDocs
-
 import yaml
 import logging
 
 #TODO: Make this a generic function in /moose/python/utils
 #from peacock.utils.ExeLauncher import runExe
 import subprocess
+
+import MooseDocs
+from MooseApplicationSyntax import MooseApplicationSyntax
 
 
 def runExe(app_path, args):
@@ -95,70 +96,25 @@ class MooseSystemInformation(object):
 
 
 
-class MooseObjectList(object):
-    def __init__(self, yaml, path):
-        self._yaml = yaml
-        self._path = path
-
-        self._moosebase = dict()
-        def getdata(data):
-
-            if 'moosebase' in data:
-                m = data['moosebase']
-                if m not in self._moosebase:
-                    self._moosebase[m] = []
-                self._moosebase[m].append(data['name'])
-
-            if data['subblocks']:
-                for child in data['subblocks']:
-                    getdata(child)
-
-        for itr in self._yaml.get():
-            getdata(itr)
-
-
-        self._syntax = set()
-        self._register = dict()
-        self._filenames = dict()
-
-
-        # Walk the directory, looking for files with the supplied extension.
-        for root, dirs, files in os.walk(path, topdown=False):
-            for filename in files:
-
-
-                if filename.endswith('.C') or filename.endswith('.h'):
-                    fullfile = os.path.join(root, filename)
-
-                    fid = open(fullfile, 'r')
-                    content = fid.read()
-                    fid.close()
-
-                    for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
-                        key = match.group('key')
-                        self._register[key] = key
-
-                    for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
-                        self._register[match.group('class')] = match.group('key')
-
-                    if filename.endswith('.h'):
-                        for match in re.finditer(r'class\s*(?P<class>\w+)', content):
-                            self._filenames[match.group('class')] = fullfile
-
-                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
-                        self._syntax.add(match.group('syntax'))
-
-
-    def syntax(self):
-        """
-        Return the syntax defined in the supplied applications.
-        """
-        return self._syntax
 
 
 
 
 if __name__ == '__main__':
+
+
+    # Build databases (avoids excessive directory walking).
+    framework = os.path.join(MooseDocs.MOOSE_DIR, 'framework')
+    phase_field = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field')
+
+
+    src = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'src')
+    include = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include')
+    tutorials = os.path.join(MooseDocs.MOOSE_DIR, 'tutorials')
+    examples = os.path.join(MooseDocs.MOOSE_DIR, 'examples')
+    tests = os.path.join(MooseDocs.MOOSE_DIR, 'test')
+
+
 
 
     # Locate the MOOSE executable
@@ -202,9 +158,9 @@ if __name__ == '__main__':
 
 
 
-    objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
+    app_syntax = MooseSourceDirectory(ydata, framework, phase_field)
 
-    for syntax in objects.syntax():
+    for syntax in app_syntax.syntax():
         key = syntax.split('/')[0]
         if key not in yml:
             yml[key] = dict()
@@ -249,15 +205,6 @@ if __name__ == '__main__':
 
 
 
-    """
-    # Build databases (avoids excessive directory walking).
-    framework = os.path.join(MooseDocs.MOOSE_DIR, 'framework')
-    src = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'src')
-    include = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include')
-    tutorials = os.path.join(MooseDocs.MOOSE_DIR, 'tutorials')
-    examples = os.path.join(MooseDocs.MOOSE_DIR, 'examples')
-    tests = os.path.join(MooseDocs.MOOSE_DIR, 'test')
-    """
 
     #db = MooseDocs.database.Database('.C', src, MooseDocs.database.items.RegisterItem)
     #print db['ParsedFunction'][0].src()
