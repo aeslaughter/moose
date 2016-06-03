@@ -177,30 +177,39 @@ if __name__ == '__main__':
     #    (2) Generate the System overview markdown files.
     #    (3) Generate the MooseObject markdown files.
 
-    yml = collections.defaultdict(dict)
+    FILE_MARKER = 'key'
 
-    def attach(branch, trunk):
+    yml = dict()
 
-        a,b = branch.split('/', 1)
-        trunk[a] = ''
-        if b:
-            attach(b, trunk[a])
+    def attach(branch, key, trunk):
+        """
+        Insert a branch of directories on its trunk.
+        """
+
+        parts = branch.split('/', 1)
+        key = parts[0]
+
+        if key not in trunk:
+            trunk[key] = dict()
+            trunk[key]['key'] = '{}/{}'.format(trunk['key'], key)
+
+        if len(parts) == 2:
+            node, others = parts
+            attach(others, key, trunk[key])
 
 
 
 
 
-
-    # USE TUPLES AS KEYS
-    #yml[('Adaptivity', 'Markers', '*')] = 'Overview.md'
-    #yml[('Adaptivity', 'Markers', 'BoxMarker')] = 'BoxMarker.md'
-    #
-    # Make a database of markdown files, so they can just go anywhere?
 
     objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
-    for syntax in objects.syntax():
 
-        attach(syntax, yml)
+    for syntax in objects.syntax():
+        key = syntax.split('/')[0]
+        if key not in yml:
+            yml[key] = dict()
+            yml[key]['key'] = '/{}'.format(key)
+        attach(syntax, key, yml)
 
         #regex = r'(\w+)'
         #match = re.findall(r'(\w+)', s)
@@ -214,7 +223,9 @@ if __name__ == '__main__':
         #for i in range(len(match)):
         #    key = '- {}'.format(match[i])
         #    yml[key] = ''
-    print yml
+
+    print yml['Kernels']
+    print yml['Adaptivity']
 
     #with open('result.yml', 'w') as fid:
     #    fid.write('\n'.join(yml))
@@ -238,7 +249,7 @@ if __name__ == '__main__':
 
 
 
-
+    """
     # Build databases (avoids excessive directory walking).
     framework = os.path.join(MooseDocs.MOOSE_DIR, 'framework')
     src = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'src')
@@ -246,6 +257,7 @@ if __name__ == '__main__':
     tutorials = os.path.join(MooseDocs.MOOSE_DIR, 'tutorials')
     examples = os.path.join(MooseDocs.MOOSE_DIR, 'examples')
     tests = os.path.join(MooseDocs.MOOSE_DIR, 'test')
+    """
 
     #db = MooseDocs.database.Database('.C', src, MooseDocs.database.items.RegisterItem)
     #print db['ParsedFunction'][0].src()
