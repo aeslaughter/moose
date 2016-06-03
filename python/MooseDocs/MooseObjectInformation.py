@@ -1,6 +1,10 @@
 
 class MooseObjectInformation(object):
     """
+    Object for generating documentation for a MooseObject.
+
+    Args:
+        yaml: The YAML node for this object.
 
 
     """
@@ -12,7 +16,7 @@ class MooseObjectInformation(object):
         prefix = kwargs.pop('prefix', '')
 
         # Extract basic name and description from yaml data
-        self._class_path = os.path.join(MooseDocs.MOOSE_DOCS_DIR, prefix) + str(yaml['name'])
+        #self._class_path = os.path.join(MooseDocs.MOOSE_DOCS_DIR, prefix) + str(yaml['name'])
 
         self._class_name = yaml['name'].split('/')[-1]
         self._class_base = yaml['moosebase']
@@ -38,11 +42,12 @@ class MooseObjectInformation(object):
 
     def write(self):
 
-        dir_name = os.path.dirname(self._class_path)
-        if not os.path.isdir(dir_name):
-            os.makedirs(dir_name)
 
-        fid = open(self._class_path + '.md', 'w')
+        #dir_name = os.path.dirname(self._class_path)
+        #if not os.path.isdir(dir_name):
+        #    os.makedirs(dir_name)
+
+        fid = open(self._class_name + '.md', 'w')
         fid.write(self.markdown())
         fid.close()
 
@@ -61,9 +66,8 @@ class MooseObjectInformation(object):
         md += ['']
 
         # The details
-        for detail in self._class_details:
-            md += [detail.markdown()]
-            md += ['']
+        md += [self._class_details]
+        md += ['']
 
         # Re-order the table to insert 'Required' and 'Optional' first
         tables = collections.OrderedDict()

@@ -11,7 +11,7 @@ class MooseYaml(object):
         raw[str]: The raw yaml output from MOOSE.
     """
     def __init__(self, raw):
-        raw = raw.split('**START YAML DATA**\n')[1]
+        raw = raw.split('**START YAML DATA**\n')[-1]
         raw = raw.split('**END YAML DATA**')[0]
         self._data = yaml.load(raw, Loader=Loader)
 

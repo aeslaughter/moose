@@ -11,20 +11,25 @@ class Database(object):
 
     Args:
        ext[str]: The file extension to consider (e.g., '.i').
-       path[str]: The file path to walk.
+       path[str | list]: The file path(s) to walk.
        itype[type DatabaseItem]: The type of item to create.
     """
-    def __init__(self, ext, path, itype):
+    def __init__(self, ext, paths, itype):
+
+        # Handle paths
+        if isinstance(paths, str):
+            paths = [paths]
 
         # Initialize member variables
         self._database = dict()
         self._itype = itype
 
         # Walk the directory, looking for files with the supplied extension.
-        for root, dirs, files in os.walk(path, topdown=False):
-            for filename in files:
-                if filename.endswith(ext):
-                    self.update(os.path.join(root, filename))
+        for path in paths:
+            for root, dirs, files in os.walk(path, topdown=False):
+                for filename in files:
+                    if filename.endswith(ext):
+                        self.update(os.path.join(root, filename))
 
     def update(self, filename):
         """

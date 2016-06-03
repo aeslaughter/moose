@@ -3,6 +3,7 @@ import database
 
 from MarkdownTable import MarkdownTable
 from MooseObjectParameterTable import MooseObjectParameterTable
+from MooseObjectInformation import MooseObjectInformation
 from MooseApplicationSyntax import MooseApplicationSyntax
 
 import os

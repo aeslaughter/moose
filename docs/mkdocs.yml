@@ -15,4 +15,20 @@ pages:
    - Home: index.md
    - Documentation:
        - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
-       - MooseSystems: !include MooseSystems.yml
+
+extra:
+    Source:
+        Framework:
+            - /Users/slauae/projects/moose-doc/framework
+        Modules:
+            Phase Field:
+                - /Users/slauae/projects/moose-doc/modules/phase_field
+    Links:
+        Tests:
+            - /Users/slauae/projects/moose-doc/test/tests
+            - /Users/slauae/projects/moose-doc/modules/phase_field/tests
+        Examples:
+            - /Users/slauae/projects/moose-doc/examples
+            - /Users/slauae/projects/moose-doc/modules/phase_field/examples
+        Tutorials:
+            - /Users/slauae/projects/moose-doc/tutorials

@@ -39,6 +39,11 @@ class MooseApplicationSyntax(object):
         # Create the syntax tree local the supplied directories
         self._buildLocalSyntaxTree()
 
+    def syntax(self):
+        """
+        Return the application sytnax map.
+        """
+        return self._syntax
 
     def _getdata(self, data):
         """
