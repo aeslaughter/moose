@@ -178,6 +178,13 @@ if __name__ == '__main__':
     #    (3) Generate the MooseObject markdown files.
 
     yml = dict()#[]#collections.defaultdict()
+
+    # USE TUPLES AS KEYS
+    #yml[('Adaptivity', 'Markers', '*')] = 'Overview.md'
+    #yml[('Adaptivity', 'Markers', 'BoxMarker')] = 'BoxMarker.md'
+    #
+    # Make a database of markdown files, so they can just go anywhere?
+
     objects = MooseObjectList(ydata, os.path.join(MooseDocs.MOOSE_DIR, 'framework'))
     for syntax in objects.syntax():
 
