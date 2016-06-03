@@ -133,6 +133,8 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
+    #print ydata['/Kernels/*']
+
     """
     system = MooseSystemInformation(ydata, 'Outputs')
     system.write()
@@ -148,35 +150,38 @@ if __name__ == '__main__':
 
     app_syntax = MooseDocs.MooseApplicationSyntax(ydata, framework, phase_field)
 
+    print app_syntax._objects
+
 
     output = []
 
 
     def dump(node, key, level=0):
 
+        ynode = ydata[node['key']]#['subblocks']
+
+
         if key == '*':
             md = node['key'].split('/')[-2]
             y = '{}- {}: {}.md'.format(' '*4*level, 'Overview', md)
 
-            subblocks = ydata[node['key']]
-            for k,b = ydata[node['key']]:
-                print k,b['name']
-
-
-
         else:
             y = '{}- {}:'.format(' '*4*level, key)
+
         output.append(y)
-
-
-
 
 
         for k, v in node.iteritems():
             if k != 'key':
                 dump(v, k, level+1)
 
-
+        if ynode != None:
+            if ynode['subblocks'] != None:
+                for child in ynode['subblocks']:
+                    name = child['name'].split('/')[-1]
+                    if name in app_syntax._objects:
+                        y = '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
+                        output.append(y)
 
     for key, value in app_syntax._syntax.iteritems():
         dump(value, key)

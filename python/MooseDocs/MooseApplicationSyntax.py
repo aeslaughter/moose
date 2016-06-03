@@ -1,5 +1,6 @@
 import os
 import re
+import collections
 
 class MooseApplicationSyntax(object):
     """
@@ -21,11 +22,11 @@ class MooseApplicationSyntax(object):
 
         # The databases containing the system/object/markdown/source information for this directory
         self._moosebase = dict()
-        self._actions = set()
+        self._actions = list()
         self._objects = dict()
         self._filenames = dict()
         self._markdown = dict()
-        self._syntax = dict()
+        self._syntax = collections.OrderedDict()
 
         # Update the 'moosebase' database
         for itr in yaml_data.get():
@@ -96,7 +97,7 @@ class MooseApplicationSyntax(object):
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
-                        self._actions.add(match.group('syntax'))
+                        self._actions.append(match.group('syntax'))
 
             yml = dict()
 
@@ -113,7 +114,7 @@ class MooseApplicationSyntax(object):
             key = parts[0]
 
             if key not in trunk:
-                trunk[key] = dict()
+                trunk[key] = collections.OrderedDict()
                 trunk[key]['key'] = '{}/{}'.format(trunk['key'], key)
 
             if len(parts) == 2:
@@ -123,6 +124,6 @@ class MooseApplicationSyntax(object):
         for syntax in self._actions:
             key = syntax.split('/')[0]
             if key not in self._syntax:
-                self._syntax[key] = dict()
+                self._syntax[key] = collections.OrderedDict()
                 self._syntax[key]['key'] = '/{}'.format(key)
             attach(syntax, key, self._syntax)
