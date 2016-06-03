@@ -161,15 +161,12 @@ if __name__ == '__main__':
         ynode = ydata[node['key']]#['subblocks']
 
 
-        if key == '*':
-            md = node['key'].split('/')[-2]
-            y = '{}- {}: {}.md'.format(' '*4*level, 'Overview', md)
+        if len(node.keys()) > 1:
+            output.append('{}- {}:'.format(' '*4*level, key))
+            output.append('{}- {}: {}.md'.format(' '*4*(level+1), 'Overview', key))
 
-        else:
-            y = '{}- {}:'.format(' '*4*level, key)
-
-        output.append(y)
-
+        elif key != '*':
+            output.append('{0}- {1}: {1}.md'.format(' '*4*level, key))
 
         for k, v in node.iteritems():
             if k != 'key':
