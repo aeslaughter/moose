@@ -3,6 +3,7 @@ import database
 
 from MarkdownTable import MarkdownTable
 from MooseObjectParameterTable import MooseObjectParameterTable
+from MooseApplicationSyntax import MooseApplicationSyntax
 
 import os
 MOOSE_REPOSITORY = 'https://github.com/idaholab/moose/blob/devel/'

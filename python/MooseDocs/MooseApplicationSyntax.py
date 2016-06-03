@@ -3,8 +3,7 @@ import re
 
 class MooseApplicationSyntax(object):
     """
-    An object for handling the registered object and action syntax for a specific directory.
-
+    An object for handling the registered object and action syntax for a specific set of directories.
 
     A compiled MOOSE application contains all included libraries (i.e., framework, modules, and other applications), thus
     when an application is executed with --yaml in includes the complete syntax.
@@ -18,32 +17,26 @@ class MooseApplicationSyntax(object):
         args: Valid source directory(ies) to extract syntax from.
     """
 
-    def __init__(self, yaml, *args):
-
-        # The supplied variables
-        self._yaml = yaml
-        self._path = path
+    def __init__(self, yaml_data, *args):
 
         # The databases containing the system/object/markdown/source information for this directory
         self._moosebase = dict()
-        self._syntax = set()
-        self._register = dict()
+        self._actions = set()
+        self._objects = dict()
         self._filenames = dict()
         self._markdown = dict()
+        self._syntax = dict()
 
         # Update the 'moosebase' database
-        for itr in self._yaml.get():
-            _getdata(itr)
+        for itr in yaml_data.get():
+            self._getdata(itr)
 
         # Update the syntax maps
         for path in args:
             self._updateSyntax(path)
 
-    def syntax(self):
-        """
-        Return the syntax defined in the supplied applications.
-        """
-        return self._syntax
+        # Create the syntax tree local the supplied directories
+        self._buildLocalSyntaxTree()
 
 
     def _getdata(self, data):
@@ -61,7 +54,7 @@ class MooseApplicationSyntax(object):
 
         if data['subblocks']:
             for child in data['subblocks']:
-                getdata(child)
+                self._getdata(child)
 
     def _updateSyntax(self, path):
         """
@@ -95,12 +88,41 @@ class MooseApplicationSyntax(object):
                     # Map of registered objects
                     for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
                         key = match.group('key')
-                        self._register[key] = key
+                        self._objects[key] = key
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
-                        self._register[match.group('class')] = match.group('key')
+                        self._objects[match.group('class')] = match.group('key')
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
-                        self._syntax.add(match.group('syntax'))
+                        self._actions.add(match.group('syntax'))
+
+            yml = dict()
+
+    def _buildLocalSyntaxTree(self):
+        """
+        A helper for creating the syntax tree for the supplied source directories for this application.
+        """
+
+        def attach(branch, key, trunk):
+            """
+            Insert a branch of directories on its trunk.
+            """
+            parts = branch.split('/', 1)
+            key = parts[0]
+
+            if key not in trunk:
+                trunk[key] = dict()
+                trunk[key]['key'] = '{}/{}'.format(trunk['key'], key)
+
+            if len(parts) == 2:
+                node, others = parts
+                attach(others, key, trunk[key])
+
+        for syntax in self._actions:
+            key = syntax.split('/')[0]
+            if key not in self._syntax:
+                self._syntax[key] = dict()
+                self._syntax[key]['key'] = '/{}'.format(key)
+            attach(syntax, key, self._syntax)

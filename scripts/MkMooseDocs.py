@@ -11,7 +11,6 @@ import logging
 import subprocess
 
 import MooseDocs
-from MooseApplicationSyntax import MooseApplicationSyntax
 
 
 def runExe(app_path, args):
@@ -93,6 +92,18 @@ class MooseSystemInformation(object):
 
         return '\n'.join(md)
 
+"""
+class MooseApplicationDocGenerator(object):
+    def __init__(self, yaml_data, syntax):
+
+
+        self.buildSystemYaml(syntax)
+
+
+    def buildSystemYaml(self, syntax):
+"""
+
+
 
 
 
@@ -133,85 +144,49 @@ if __name__ == '__main__':
     #    (2) Generate the System overview markdown files.
     #    (3) Generate the MooseObject markdown files.
 
-    FILE_MARKER = 'key'
 
-    yml = dict()
 
-    def attach(branch, key, trunk):
-        """
-        Insert a branch of directories on its trunk.
-        """
+    app_syntax = MooseDocs.MooseApplicationSyntax(ydata, framework, phase_field)
 
-        parts = branch.split('/', 1)
-        key = parts[0]
 
-        if key not in trunk:
-            trunk[key] = dict()
-            trunk[key]['key'] = '{}/{}'.format(trunk['key'], key)
+    output = []
 
-        if len(parts) == 2:
-            node, others = parts
-            attach(others, key, trunk[key])
+
+    def dump(node, key, level=0):
+
+        if key == '*':
+            md = node['key'].split('/')[-2]
+            y = '{}- {}: {}.md'.format(' '*4*level, 'Overview', md)
+
+            subblocks = ydata[node['key']]
+            for k,b = ydata[node['key']]:
+                print k,b['name']
 
 
 
-
-
-
-    app_syntax = MooseSourceDirectory(ydata, framework, phase_field)
-
-    for syntax in app_syntax.syntax():
-        key = syntax.split('/')[0]
-        if key not in yml:
-            yml[key] = dict()
-            yml[key]['key'] = '/{}'.format(key)
-        attach(syntax, key, yml)
-
-        #regex = r'(\w+)'
-        #match = re.findall(r'(\w+)', s)
-        #n = len(match)
-
-        #if n == 1:
-        #yml.append('- {}:'.format(match[0]))
-
-
-
-        #for i in range(len(match)):
-        #    key = '- {}'.format(match[i])
-        #    yml[key] = ''
-
-    print yml['Kernels']
-    print yml['Adaptivity']
-
-    #with open('result.yml', 'w') as fid:
-    #    fid.write('\n'.join(yml))
-#        yaml.dump(yml, fid, default_flow_style=False)
-        #print s, match
-
-        #name = s.replace('*', '').strip('/').split('/')
-        #print name
-
-
-       # print ydata[s]['name'], ydata[s]['subblocks'] == None
+        else:
+            y = '{}- {}:'.format(' '*4*level, key)
+        output.append(y)
 
 
 
 
 
+        for k, v in node.iteritems():
+            if k != 'key':
+                dump(v, k, level+1)
+
+
+
+    for key, value in app_syntax._syntax.iteritems():
+        dump(value, key)
+
+
+    print '\n'.join(output)
 
 
 
 
-
-
-
-
-    #db = MooseDocs.database.Database('.C', src, MooseDocs.database.items.RegisterItem)
-    #print db['ParsedFunction'][0].src()
-
-
-
- #   obj = MooseObjectList(ydata, framework)
 
 
     """
