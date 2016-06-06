@@ -4,6 +4,7 @@ import database
 from MarkdownTable import MarkdownTable
 from MooseObjectParameterTable import MooseObjectParameterTable
 from MooseObjectInformation import MooseObjectInformation
+from MooseSystemInformation import MooseSystemInformation
 from MooseApplicationSyntax import MooseApplicationSyntax
 
 import os

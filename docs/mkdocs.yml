@@ -1,11 +1,9 @@
 site_name: MOOSE
 
-site_dir: ../site
-
-docs_dir: .
+docs_dir: markdown
 
 watch_dirs:
-    - /Users/slauae/projects/moose-doc/framework/include/kernels
+    - /Users/slauae/projects/moose-doc/framework/include
 
 extra_javascript:
     - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
@@ -20,15 +18,21 @@ pages:
    - Home: index.md
    - Documentation:
        - Moose Flavored Markdown: markdown/MooseFlavoredMarkdown.md
-       - Systems: !include gen/Systems.yml
+       - Framework: !include framework.yml # Generated (see 'extra' section)
+       - Modules:
+           - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
 
 extra:
-    Source:
+    Generate:
         Framework:
-            - /Users/slauae/projects/moose-doc/framework
-        Modules:
-            Phase Field:
-                - /Users/slauae/projects/moose-doc/modules/phase_field
+            yaml: framework.yml
+            source:
+                - /Users/slauae/projects/moose-doc/framework
+        #Phase Field:
+        #    yaml: phase_field.yml
+        #    source:
+        #        - /Users/slauae/projects/moose-doc/modules/phase_field
+
     Links:
         Tests:
             - /Users/slauae/projects/moose-doc/test/tests

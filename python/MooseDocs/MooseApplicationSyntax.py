@@ -1,6 +1,8 @@
 import os
 import re
 import collections
+import logging
+import MooseDocs
 
 class MooseApplicationSyntax(object):
     """
@@ -19,6 +21,12 @@ class MooseApplicationSyntax(object):
     """
 
     def __init__(self, yaml_data, *args):
+
+        self._log = logging.getLogger(self.__class__.__name__)
+        self._handler = logging.StreamHandler()
+        self._log.setLevel(logging.ERROR)
+        self._log.addHandler(self._handler)
+
 
         # The databases containing the system/object/markdown/source information for this directory
         self._moosebase = dict()
@@ -41,9 +49,41 @@ class MooseApplicationSyntax(object):
 
     def syntax(self):
         """
-        Return the application sytnax map.
+        Return the application syntax map.
         """
         return self._syntax
+
+    def systems(self):
+        """
+        Return a set of MOOSE systems for defined in the supplied directories.
+        """
+
+        output = set()
+        for action in self._actions:
+            output.add(action.replace('/*', '').split('/')[-1])
+            ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
+        return output
+
+
+    def hasSyntax(self, key):
+        """
+        Return True if the supplied key is registered syntax of the supplied directories.
+
+        Args:
+            key[str]: The name of the system to check.
+        """
+
+        return (key in self._actions) or (key + '/*' in self._actions)
+
+
+    def getMarkdown(self, name):
+
+        if name in self._markdown:
+            return self._markdown[name]
+
+        self._log.error('Failed to locate the system documentation for {}'.format(name))
+        return None
+        #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
 
     def _getdata(self, data):
         """

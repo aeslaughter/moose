@@ -31,127 +31,74 @@ def runExe(app_path, args):
 
 
 
+class MooseApplicationDocGenerator(object):
+    def __init__(self, yaml_data, filename, source):
 
-class MooseSystemInformation(object):
-
-    def __init__(self, yaml, system):
-        self._log = logging.getLogger(self.__class__.__name__)
-        self._handler = logging.StreamHandler()
-        self._log.setLevel(logging.ERROR)
-        self._log.addHandler(self._handler)
-
-        self._yaml = yaml
+        # Read the supplied files
+        self._yaml_data = yaml_data
+        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *source)
 
 
-        self._system_node = self._yaml[system]
+        #self._objects = []
+        self._systems = []
+        for system in self._syntax.systems():
+            self._systems.append(MooseDocs.MooseSystemInformation(yaml_data[system], self._syntax.getMarkdown(system)))
+
+
+        self.buildYaml(filename)
+
+
 
 
     def write(self):
 
+        for system in self._systems:
+            system.write()
+
+
+
+    def buildYaml(self, filename):
         """
-        dir_name = os.path.dirname(self._class_path)
-        if not os.path.isdir(dir_name):
-            os.makedirs(dir_name)
+        Generates the System.yml file.
         """
 
-
-        fid = open('test.md', 'w')
-        fid.write(self.markdown())
-        fid.close()
-
-
-
-    def markdown(self):
-
-        md = []
-
-        table = MooseDocs.MooseObjectParameterTable()
-
-        if self._system_node['parameters']:
-            for param in self._system_node['parameters']:
-                table.addParam(param)
-
-            md += ['## Input Parameters']
-            md += [table.markdown()]
-
-
-
-        if self._system_node['subblocks']:
-            table = MooseDocs.MarkdownTable('Name', 'Description')
-            for child in self._system_node['subblocks']:
-                name = child['name']
-                desc = child['description']
-
-
-                if not desc:
-                    self._log.error("{} object lacks a description.".format(name))
-
-
-                table.addRow(name, desc)
-
-            md += ['## Available Objects']
-            md += [table.markdown()]
-
-        return '\n'.join(md)
-
-class MooseApplicationDocGenerator(object):
-    def __init__(self, yaml_data, source):
-
-        # Read the supplied files
-        self._yaml_data = yaml_data
-        #self._objects = []
-        #self._systems = []
-
-        print source, type(source)
-
-
-        def gen(src, level=0):
+        def sub(syntax, key, node, level=0):
             """
-            Function for looping over supplied source directories.
+            Function for generating yaml entries.
             """
-            for key, value in src.iteritems():
+
+            ynode = self._yaml_data[node['key']]
+
+
+            if len(node.keys()) > 1:
                 yield '{}- {}:'.format(' '*4*level, key)
-                if isinstance(value, dict):
-                    out = gen(value, level+1)
-                    yield '\n'.join(out)
-                else:
-                    syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *value)
-                    for k, v in syntax.syntax().iteritems():
-                        out = self._sub(syntax, k, v, level+1)
-                        yield '\n'.join(out)
 
-        output = gen(source)
-        print '\n'.join(output)
+                if syntax.hasSyntax(key):
+                    yield '{}- {}: {}.md'.format(' '*4*(level+1), 'Overview', key)
+
+            elif key != '*':
+                yield '{0}- {1}: {1}.md'.format(' '*4*level, key)
 
 
+            for k, v in node.iteritems():
+                if k != 'key':
+                    sub(syntax, v, k, level+1)
+
+            if ynode != None:
+                if ynode['subblocks'] != None:
+                    for child in ynode['subblocks']:
+                        name = child['name'].split('/')[-1]
+                        if name in syntax._objects:
+                            yield '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
 
 
-    def _sub(self, syntax, key, node, level=0):
+        output = []
+        for key, value in self._syntax.syntax().iteritems():
+            output += sub(self._syntax, key, value)
 
-
-        ynode = self._yaml_data[node['key']]#['subblocks']
-
-
-        if len(node.keys()) > 1:
-            yield '{}- {}:'.format(' '*4*level, key)
-            yield '{}- {}: {}.md'.format(' '*4*(level+1), 'Overview', key)
-
-        elif key != '*':
-            yield '{0}- {1}: {1}.md'.format(' '*4*level, key)
-
-        for k, v in node.iteritems():
-            if k != 'key':
-                self._sub(syntax, v, k, level+1)
-
-        if ynode != None:
-            if ynode['subblocks'] != None:
-                for child in ynode['subblocks']:
-                    name = child['name'].split('/')[-1]
-                    if name in syntax._objects:
-                        yield '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
-
-
-
+        fid = open(filename, 'w')
+        fid.write('\n'.join(output))
+        fid.close()
 
 
 
@@ -178,13 +125,19 @@ if __name__ == '__main__':
     ydata = utils.MooseYaml(raw)
 
 
-
-
-    generator = MooseApplicationDocGenerator(ydata, config['extra']['Source'])
+    for value in config['extra']['Generate'].values():
 
 
 
-   # Details = MooseDocs.database.Database('.md', include, MooseDocs.database.items.MarkdownIncludeItem)
+        generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'])
+        generator.write()
+
+    """
+    node = ydata['/Kernels']
+    info = MooseDocs.MooseSystemInformation(node)
+    info.write()
+    """
+
     """
     path = '/Kernels/Diffusion'
     details = '/Users/slauae/projects/moose-doc/framework/include/kernels/Diffusion.md'
