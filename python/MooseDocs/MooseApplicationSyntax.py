@@ -20,13 +20,10 @@ class MooseApplicationSyntax(object):
         args: Valid source directory(ies) to extract syntax from.
     """
 
+    self.log = logging.getLogger('MkMooseDocs.MooseApplicationSyntax')
+
+
     def __init__(self, yaml_data, *args):
-
-        self._log = logging.getLogger(self.__class__.__name__)
-        self._handler = logging.StreamHandler()
-        self._log.setLevel(logging.ERROR)
-        self._log.addHandler(self._handler)
-
 
         # The databases containing the system/object/markdown/source information for this directory
         self._moosebase = dict()
@@ -81,7 +78,7 @@ class MooseApplicationSyntax(object):
         if name in self._markdown:
             return self._markdown[name]
 
-        self._log.error('Failed to locate the system documentation for {}'.format(name))
+        self.log.error('Failed to locate the system documentation for {}'.format(name))
         return None
         #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
 
