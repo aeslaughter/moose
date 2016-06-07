@@ -60,10 +60,11 @@ class MooseApplicationDocGenerator(object):
     def __init__(self, yaml_data, filename, source):
 
 
+        self._prefix = os.path.splitext(filename)[0]
 
         # Read the supplied files
         self._yaml_data = yaml_data
-        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *source)
+        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *source, logbase='MkMooseDocs.MooseApplicationSyntax')
 
 
         #self._objects = []
@@ -80,7 +81,7 @@ class MooseApplicationDocGenerator(object):
     def write(self):
 
         for system in self._systems:
-            system.write()
+            system.write(prefix=self._prefix)
 
 
 
@@ -157,7 +158,7 @@ if __name__ == '__main__':
 
     # Setup the location
     config_file = os.path.join(dirname, 'mkdocs.yml')
-    log.info('Generating documentation: {}'.format(config_file))
+    log.info('Generating Documentation: {}'.format(config_file))
 
     # Parse the configuration file for the desired paths
     os.chdir(dirname)

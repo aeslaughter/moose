@@ -12,12 +12,21 @@ class MooseSystemInformation(object):
         self._yaml = node
         self._details = details
 
-    def write(self):
+    def write(self, **kwargs):
 
         name = '{}.md'.format(self._yaml['name'].split('/')[-1])
+
+        prefix = kwargs.pop('prefix', None)
+        if prefix:
+            if not os.path.exists(prefix):
+                os.mkdir(prefix)
+            name = os.path.join(prefix, name)
+
+        name = os.path.abspath(name)
         fid = open(name, 'w')
         fid.write(self.markdown())
         fid.close()
+
 
 
 
