@@ -14,6 +14,28 @@ import subprocess
 
 import MooseDocs
 
+class MkMooseDocsFilter(logging.Formatter):
+
+    COLOR = {'DEBUG':'GREEN', 'INFO':'RESET', 'WARNING':'YELLOW', 'ERROR':'RED', 'CRITICAL':'MAGENTA'}
+
+    def format(self, record):
+        msg = logging.Formatter.format(self, record)
+
+        indent = record.name.count('.')
+
+        if record.levelname in ['WARNING', 'ERROR', 'CRITICAL']:
+            msg = '{}{}: {}'.format(' '*4*indent, record.levelname, msg)
+        else:
+            msg = '{}{}'.format(' '*4*indent, msg)
+
+
+
+        if record.levelname in self.COLOR:
+            msg = utils.colorText(msg, self.COLOR[record.levelname])
+
+
+        return msg
+
 
 def runExe(app_path, args):
 
@@ -32,7 +54,12 @@ def runExe(app_path, args):
 
 
 class MooseApplicationDocGenerator(object):
+
+    log = logging.getLogger('MkMooseDocs.MooseApplicationDocGenerator')
+
     def __init__(self, yaml_data, filename, source):
+
+
 
         # Read the supplied files
         self._yaml_data = yaml_data
@@ -67,17 +94,24 @@ class MooseApplicationDocGenerator(object):
             Function for generating yaml entries.
             """
 
+
             ynode = self._yaml_data[node['key']]
 
 
             if len(node.keys()) > 1:
-                yield '{}- {}:'.format(' '*4*level, key)
+                msg = '{}- {}:'.format(' '*4*level, key)
+                self.log.debug(msg)
+                yield msg
 
                 if syntax.hasSyntax(key):
-                    yield '{}- {}: {}.md'.format(' '*4*(level+1), 'Overview', key)
+                    msg = '{}- {}: {}.md'.format(' '*4*(level+1), 'Overview', key)
+                    self.log.debug(msg)
+                    yield msg
 
             elif key != '*':
-                yield '{0}- {1}: {1}.md'.format(' '*4*level, key)
+                msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
+                self.log.debug(msg)
+                yield msg
 
 
             for k, v in node.iteritems():
@@ -89,9 +123,11 @@ class MooseApplicationDocGenerator(object):
                     for child in ynode['subblocks']:
                         name = child['name'].split('/')[-1]
                         if name in syntax._objects:
-                            yield '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
+                            msg = '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
+                            self.log.debug(msg)
+                            yield msg
 
-
+        self.log.info('Creating YAML file: {}'.format(filename))
         output = []
         for key, value in self._syntax.syntax().iteritems():
             output += sub(self._syntax, key, value)
@@ -106,9 +142,26 @@ class MooseApplicationDocGenerator(object):
 
 if __name__ == '__main__':
 
+    # Some arguments to be passed in
+    dirname = os.path.join(MooseDocs.MOOSE_DIR, 'docs')
+
+
+    # Setup the logger object
+    log = logging.getLogger('MkMooseDocs')
+    handler = logging.StreamHandler()
+    formatter = MkMooseDocsFilter()#'%(name)s:%(levelname)s: %(message)s')
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+    log.setLevel(logging.INFO)
+    #log.setLevel(logging.DEBUG)
+
+    # Setup the location
+    config_file = os.path.join(dirname, 'mkdocs.yml')
+    log.info('Generating documentation: {}'.format(config_file))
+
     # Parse the configuration file for the desired paths
-    os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
-    fid = open(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'mkdocs.yml'), 'r')
+    os.chdir(dirname)
+    fid = open(config_file, 'r')
     config = yaml_load(fid.read())
     fid.close()
 
@@ -126,9 +179,6 @@ if __name__ == '__main__':
 
 
     for value in config['extra']['Generate'].values():
-
-
-
         generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'])
         generator.write()
 

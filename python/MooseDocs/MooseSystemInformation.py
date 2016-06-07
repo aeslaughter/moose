@@ -5,15 +5,9 @@ from MooseObjectParameterTable import MooseObjectParameterTable
 
 class MooseSystemInformation(object):
 
-    log = logging.getLogger('MooseSystemInformation')
-    handler = logging.StreamHandler()
-    #log.setLevel(logging.ERROR)
-    #log.addHandler(self._handler)
+    log = logging.getLogger('MkMooseDocs.MooseSystemInformation')
 
     def __init__(self, node, details):
-
-        if self.handler not in self.log.handlers:
-            self.log.addHandler(self.handler)
 
         self._yaml = node
         self._details = details
@@ -58,8 +52,8 @@ class MooseSystemInformation(object):
                 if name.endswith('*'):
                     continue
 
-                if not desc:
-                    self.log.error("{} object lacks a description.".format(name))
+                #if not desc:
+                #    self.log.error("{} object lacks a description.".format(name))
 
                 table.addRow(name.split('/')[-1], desc)
 
