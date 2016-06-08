@@ -62,6 +62,13 @@ class MooseApplicationSyntax(object):
             ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
         return output
 
+    def objects(self):
+
+        return self._objects
+
+    def header(self, key):
+        return self._filenames[key]
+
 
     def hasSyntax(self, key):
         """
@@ -141,8 +148,6 @@ class MooseApplicationSyntax(object):
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
                         self._actions.append(match.group('syntax'))
-
-            yml = dict()
 
     def _buildLocalSyntaxTree(self):
         """

@@ -3,10 +3,11 @@ import collections
 import logging
 
 import MooseDocs
+from MooseInformationBase import MooseInformationBase
 from MooseObjectParameterTable import MooseObjectParameterTable
 
 
-class MooseObjectInformation(object):
+class MooseObjectInformation(MooseInformationBase):
     """
     Object for generating documentation for a MooseObject.
 
@@ -16,11 +17,10 @@ class MooseObjectInformation(object):
 
     """
 
+    def __init__(self, yaml, details, header, **kwargs):
+        MooseInformationBase.__init__(self, yaml)
 
-
-    def __init__(self, yaml, details, **kwargs):
-
-
+        self._header = header
         self._log = logging.getLogger(self.__class__.__name__)
         self._handler = logging.StreamHandler()
         self._log.setLevel(logging.INFO)
@@ -102,7 +102,8 @@ class MooseObjectInformation(object):
 
         # Developer information
         md += ['## Additional Developer Documentation']
-        md += ['* Moose System: {}'.format(self._class_base)]
+        md += ['* Source: [{}]({})'.format(self._class_name, self._source)]
+        #md += ['* Moose System: {}'.format(self._class_base)]
         md += ['* Class Doxygen: [{}]({})'.format(self._class_name,
                                           os.path.join(MooseDocs.MOOSE_DOXYGEN, 'class' + self._class_name + '.html'))]
         md += ['']

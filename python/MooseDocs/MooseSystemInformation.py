@@ -1,33 +1,17 @@
 import logging
 import os
+from MooseInformationBase import MooseInformationBase
 from MarkdownTable import MarkdownTable
 from MooseObjectParameterTable import MooseObjectParameterTable
 
-class MooseSystemInformation(object):
+class MooseSystemInformation(MooseInformationBase):
 
     log = logging.getLogger('MkMooseDocs.MooseSystemInformation')
 
     def __init__(self, node, details):
+        MooseInformationBase.__init__(self, node)
 
-        self._yaml = node
         self._details = details
-
-    def write(self, **kwargs):
-
-        name = '{}.md'.format(self._yaml['name'].split('/')[-1])
-
-        prefix = kwargs.pop('prefix', None)
-        if prefix:
-            if not os.path.exists(prefix):
-                os.mkdir(prefix)
-            name = os.path.join(prefix, name)
-
-        name = os.path.abspath(name)
-        fid = open(name, 'w')
-        fid.write(self.markdown())
-        fid.close()
-
-
 
 
     def markdown(self):
