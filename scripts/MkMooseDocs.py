@@ -58,8 +58,8 @@ class MooseApplicationDocGenerator(object):
         source_dirs[list]: The source directories to inspect and build documentation.
 
     Kwargs:
-        input[MooseDocs.Database] A database linking the class name to an input file.
-        source[MooseDocs.Database] A database linking the class name to use in source.
+        input[list] A list of directories to search for input files containing the class name in an input file.
+        source[list] A database linking the class name to use in source.
     """
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationDocGenerator')
@@ -78,7 +78,7 @@ class MooseApplicationDocGenerator(object):
 
         # Read the supplied files
         self._yaml_data = yaml_data
-        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *source, logbase='MkMooseDocs.MooseApplicationSyntax')
+        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *source_dirs)
 
         self._systems = []
         for system in self._syntax.systems():
@@ -88,12 +88,9 @@ class MooseApplicationDocGenerator(object):
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
             md = self._syntax.getMarkdown(key)
-            source = self._syntax.filename(key)
+            source = self._syntax.header(key)
             self._objects.append(MooseDocs.MooseObjectInformation(yaml_data[key], md,
             inputs=inputs, source=source))
-
-
-
 
 
     def write(self):
@@ -107,8 +104,6 @@ class MooseApplicationDocGenerator(object):
 
         for obj in self._objects:
             obj.write(prefix=prefix)
-
-
 
     def buildYaml(self, filename):
         """
@@ -161,10 +156,6 @@ class MooseApplicationDocGenerator(object):
         fid = open(filename, 'w')
         fid.write('\n'.join(output))
         fid.close()
-
-
-
-
 
 if __name__ == '__main__':
 

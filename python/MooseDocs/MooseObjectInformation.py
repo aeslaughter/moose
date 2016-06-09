@@ -58,16 +58,6 @@ class MooseObjectInformation(MooseInformationBase):
     def __str__(self):
         return self.markdown()
 
-    def write(self):
-
-        dir_name = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'gen')
-        if not os.path.isdir(dir_name):
-            os.makedirs(dir_name)
-
-        fid = open(os.path.join(dir_name, self._class_name + '.md'), 'w')
-        fid.write(self.markdown())
-        fid.close()
-
     def markdown(self):
 
         # Build a list of strings to be separated by '\n'
