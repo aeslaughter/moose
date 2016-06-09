@@ -88,9 +88,10 @@ class MooseApplicationDocGenerator(object):
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
             md = self._syntax.getMarkdown(key)
-            source = self._syntax.header(key)
-            self._objects.append(MooseDocs.MooseObjectInformation(yaml_data[key], md,
-            inputs=inputs, source=source))
+            header = self._syntax.header(key)
+            node = yaml_data[key]
+            if node:
+                self._objects.append(MooseDocs.MooseObjectInformation(node, md, header, inputs=inputs, source=source))
 
 
     def write(self):
@@ -186,7 +187,6 @@ if __name__ == '__main__':
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
-
 
     for value in config['extra']['Generate'].values():
         generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['Links'])

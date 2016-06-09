@@ -45,9 +45,6 @@ class MooseSystemInformation(MooseInformationBase):
                 if name.endswith('*'):
                     continue
 
-                #if not desc:
-                #    self.log.error("{} object lacks a description.".format(name))
-
                 table.addRow(name.split('/')[-1], desc)
 
             md += ['## Available Objects']

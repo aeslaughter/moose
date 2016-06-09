@@ -16,17 +16,19 @@ class MooseObjectInformation(MooseInformationBase):
 
 
     """
+    log = logging.getLogger('MkMooseDocs.MooseObjectInformation')
 
     def __init__(self, yaml, details, header, **kwargs):
         MooseInformationBase.__init__(self, yaml)
 
-        self._header = header
-        self._log = logging.getLogger(self.__class__.__name__)
-        self._handler = logging.StreamHandler()
-        self._log.setLevel(logging.INFO)
-        self._log.addHandler(self._handler)
+        #self._header = header
+        #self._log = logging.getLogger(self.__class__.__name__)
+        #self._handler = logging.StreamHandler()
+        #self._log.setLevel(logging.INFO)
+        #self._log.addHandler(self._handler)#
 
-        self._log.info('Initializing Documentation: {}'.format(yaml['name']))
+        #self._log.info('Initializing Documentation: {}'.format(yaml['name']))
+
 
 
         self._inputs = kwargs.pop('inputs', None)
@@ -55,8 +57,6 @@ class MooseObjectInformation(MooseInformationBase):
 
             self._tables[name].addParam(param)
 
-    def __str__(self):
-        return self.markdown()
 
     def markdown(self):
 
@@ -68,17 +68,14 @@ class MooseObjectInformation(MooseInformationBase):
         md += ['']
 
         # The class description
-        md += [self._class_description]
-        md += ['']
+        if not self._class_description:
+            self.log.error("{} object lacks a description.".format(self._class_name))
+        else:
+            md += [self._class_description]
+            md += ['']
 
         # The details
-        if os.path.exists(self._class_details):
-            md += ['{{!{}!}}'.format(self._class_details)]
-        else:
-            md += ['<p style="color:red;font-size:120%">']
-            md += ['ERROR: Failed to located class detailed description:<br>{}'.format(self._class_details)]
-            md += ['</p>']
-            self._log.error('Failed to load: {}'.format(self._class_details))
+        md += ['{{!{}!}}'.format(self._class_details)]
         md += ['']
 
         # Print the InputParameter tables

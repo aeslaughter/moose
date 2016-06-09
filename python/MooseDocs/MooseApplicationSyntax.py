@@ -27,6 +27,7 @@ class MooseApplicationSyntax(object):
         self.log.info('Locating syntax for application.')
 
         # The databases containing the system/object/markdown/source information for this directory
+        self._yaml_data = yaml_data
         self._moosebase = dict()
         self._actions = list()
         self._objects = dict()
@@ -63,11 +64,10 @@ class MooseApplicationSyntax(object):
         return output
 
     def objects(self):
-
         return self._objects
 
     def header(self, key):
-        return self._filenames[key]
+        return self._filenames[self._objects[key]]
 
 
     def hasSyntax(self, key):
@@ -139,11 +139,14 @@ class MooseApplicationSyntax(object):
                     # Map of registered objects
                     for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
                         key = match.group('key')
-                        self._objects[key] = key
+                        if self._yaml_data[key]:
+                            self._objects[key] = key
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
-                        self._objects[match.group('class')] = match.group('key')
+                        key = match.group('key')
+                        if self._yaml_data[key]:
+                            self._objects[key] = match.group('class')
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):

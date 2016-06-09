@@ -1,4 +1,4 @@
-
+import os
 
 class MooseInformationBase(object):
     def __init__(self, node):
