@@ -50,38 +50,38 @@ class MooseApplicationSyntax(object):
 
 
     def syntax(self):
-        """
-        Return the application syntax map.
-        """
-        return self._syntax
-
-    def systems(self):
-        """
-        Return a set of MOOSE systems for defined in the supplied directories.
-        """
-
-        output = set()
-        for action in self._actions:
-            output.add(action.replace('/*', '').split('/')[-1])
-            ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
-        return output
-
-    def objects(self):
-        return self._objects
-
-    def header(self, key):
-        return self._filenames[self._objects[key]]
-
-
-    def hasSyntax(self, key):
-        """
-        Return True if the supplied key is registered syntax of the supplied directories.
-
-        Args:
-            key[str]: The name of the system to check.
-        """
-
-        return (key in self._actions) or (key + '/*' in self._actions)
+ #       """
+ #       Return the application syntax map.
+ #       """
+ #       return self._syntax
+ #
+ #   def systems(self):
+ #       """
+ #       Return a set of MOOSE systems for defined in the supplied directories.
+ #       """
+ #
+ #       output = set()
+ #       for action in self._actions:
+ #           output.add(action.replace('/*', '').split('/')[-1])
+ #           ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
+ #       return output
+ #
+ #   def objects(self):
+ #       return self._objects
+ #
+ #   def header(self, key):
+ #       return self._filenames[self._objects[key]]
+ #
+ #
+ #   def hasSyntax(self, key):
+ #       """
+ #       Return True if the supplied key is registered syntax of the supplied directories.
+ #
+ #       Args:
+ #           key[str]: The name of the system to check.
+ #       """
+ #
+ #       return (key in self._actions) or (key + '/*' in self._actions)
 
 
     def getMarkdown(self, name):
@@ -93,22 +93,22 @@ class MooseApplicationSyntax(object):
         return None
         #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
 
-    def _getdata(self, data):
-        """
-        A helper for populating the 'moosebase' database. (private)
-
-        Args:
-            data: The YAML node to examine.
-        """
-        if 'moosebase' in data:
-            m = data['moosebase']
-            if m not in self._moosebase:
-                self._moosebase[m] = []
-            self._moosebase[m].append(data['name'])
-
-        if data['subblocks']:
-            for child in data['subblocks']:
-                self._getdata(child)
+#    def _getdata(self, data):
+#        """
+#        A helper for populating the 'moosebase' database. (private)
+#
+#        Args:
+#            data: The YAML node to examine.
+#        """
+#        if 'moosebase' in data:
+#            m = data['moosebase']
+#            if m not in self._moosebase:
+#                self._moosebase[m] = []
+#            self._moosebase[m].append(data['name'])
+#
+#        if data['subblocks']:
+#            for child in data['subblocks']:
+#                self._getdata(child)
 
     def _updateSyntax(self, path):
         """

@@ -97,7 +97,7 @@ class MooseYaml(object):
     @staticmethod
     def _print(data, level=0, label=None):
         output = []
-        if ('labels' in data) and (label in data['labels']):
+        if (label == None) or (('labels' in data) and (label in data['labels'])):
             output.append(' '*2*level + data['name'])
 
         if data['subblocks']:
