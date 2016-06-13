@@ -75,11 +75,13 @@ class MooseApplicationDocGenerator(object):
             source[key] = MooseDocs.database.Database('.h', value, MooseDocs.database.items.ChildClassItem)
 
         self._filename = filename
+        self._prefix = os.path.splitext(self._filename)[0]
 
         # Read the supplied files
         self._yaml_data = yaml_data
-        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, *source_dirs)
+        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, self._prefix, *source_dirs)
 
+        """
         self._systems = []
         for system in self._syntax.systems():
             md = self._syntax.getMarkdown(system)
@@ -92,13 +94,13 @@ class MooseApplicationDocGenerator(object):
             node = yaml_data[key]
             if node:
                 self._objects.append(MooseDocs.MooseObjectInformation(node, md, header, inputs=inputs, source=source))
-
+        """
 
     def write(self):
 
         self.buildYaml(self._filename)
 
-        prefix = os.path.splitext(self._filename)[0]
+#        prefix = os.path.splitext(self._filename)[0]os.path.splitext(self._filename)[0]
 
         #for system in self._systems:
         #    system.write(prefix=prefix)
@@ -111,52 +113,112 @@ class MooseApplicationDocGenerator(object):
         Generates the System.yml file.
         """
 
+        def hasSubBlock(name, node):
+            if node['subblocks'] != None:
+                for sub in node['subblocks']:
+                    if name == sub['name']:# and ('labels' in sub) and (self._prefix in sub['labels']):
+                        return True
+            return False
+
+        def hasLabel(node, label):
+
+
+            if ('labels') in node and (label in node['labels']):
+                return True
+
+            if node['subblocks'] != None:
+                out = []
+                for child in node['subblocks']:
+                    out.append(hasLabel(child, label))
+                return any(out)
+
+            return False
+
+
+
+        #print self._yaml_data
+        #self._yaml_data.dump(label=self._prefix)
+
+
+        def sub(node, level = 0):
+
+
+            #if ('labels' in node) and (self._prefix in node['labels']):
+            if hasLabel(node, self._prefix):
+                name = node['name']
+                key = name.split('/')[-1]
+                star = '{}/*'.format(name)
+
+                #print key, star
+
+                if key == '*':# or key == '<type>':
+                    pass
+
+                #elif key == '<type>':
+                #    level -= 1
+
+                elif node['subblocks'] != None and hasSubBlock(star, node):
+                    msg = '{}- {}:'.format(' '*4*level, key)
+                    yield msg
+                    msg = '{}- Overview: {}.md'.format(' '*4*(level+1), key)
+                    yield msg
+
+
+                    #msg = '{}- {}:'.format(' '*4*level, key)
+                    #yield msg
+                    #self.log.debug(msg)
+                    #msg = '{}- Overview: {}.md'.format(' '*4*level, key)
+                    #yield msg
+
+
+                #elif key == '*' and node['subblocks'] == None:
+                #    msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
+                #    self.log.debug(msg)
+                #    yield msg
+
+                else:
+                    #msg = '{}- {}'.format(' '*4*level, key)
+                    msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
+
+                    yield msg
+
+
+                if node['subblocks'] != None:
+                    for child in node['subblocks']:
+                        output = sub(child, level+1)
+                        for out in output:
+                            yield out
+                        #if name in syntax._objects:
+                        #    msg = '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
+                        #    self.log.debug(msg)
+                        #    yield msg
+
+
+
+            #if node['subblocks'] != None:
+            #    for child in node['subblocks']:
+            #        output.append(sub(child))
+            #return output
+
+        """
         def sub(syntax, key, node, level=0):
-            """
-            Function for generating yaml entries.
-            """
 
             #TODO: Convert this to use pyyaml
 
             ynode = self._yaml_data[node['key']]
 
-            if len(node.keys()) > 1:
-                msg = '{}- {}:'.format(' '*4*level, key)
-                self.log.debug(msg)
-                yield msg
 
-                if syntax.hasSyntax(key):
-                    msg = '{}- {}: {}.md'.format(' '*4*(level+1), 'Overview', key)
-                    self.log.debug(msg)
-                    yield msg
-
-            elif key != '*':
-                msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
-                self.log.debug(msg)
-                yield msg
-
-
-            for k, v in node.iteritems():
-                if k != 'key':
-                    sub(syntax, v, k, level+1)
-
-            if ynode != None:
-                if ynode['subblocks'] != None:
-                    for child in ynode['subblocks']:
-                        name = child['name'].split('/')[-1]
-                        if name in syntax._objects:
-                            msg = '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
-                            self.log.debug(msg)
-                            yield msg
+        """
 
         self.log.info('Creating YAML file: {}'.format(filename))
         output = []
-        for key, value in self._syntax.syntax().iteritems():
-            output += sub(self._syntax, key, value)
+        for node in self._yaml_data.get():
+            output += sub(node)
 
         fid = open(filename, 'w')
         fid.write('\n'.join(output))
         fid.close()
+
 
 if __name__ == '__main__':
 
@@ -197,14 +259,14 @@ if __name__ == '__main__':
     #ydata.pop('/UserObjects/PointValue')
     #print ydata['/UserObjects/PointValue']
 
-    path = config['extra']['Generate']['Phase Field']['source']
-    syntax = MooseDocs.MooseApplicationSyntax(ydata, 'phase_field', *path)
+    #path = config['extra']['Generate']['Phase Field']['source']
+    #syntax = MooseDocs.MooseApplicationSyntax(ydata, 'phase_field', *path)
     #print syntax._yaml_data
 
 
-    #for value in config['extra']['Generate'].values():
-    #    generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['Links'])
-        #generator.write()
+    for value in config['extra']['Generate'].values():
+        generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['Links'])
+        generator.write()
 
     #print '\n'.join(generator._syntax._syntax)
 

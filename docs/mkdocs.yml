@@ -18,16 +18,16 @@ pages:
    - Home: index.md
    - Documentation:
        - Moose Flavored Markdown: markdown/MooseFlavoredMarkdown.md
-       - Framework: !include framework.yml # Generated (see 'extra' section)
-       - Modules:
-           - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
+      # - Framework: !include framework.yml # Generated (see 'extra' section)
+      # - Modules:
+      #     - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
 
 extra:
     Generate:
-        #Framework:
-        #    yaml: framework.yml
-        #    source:
-        #        - /Users/slauae/projects/moose-doc/framework
+        Framework:
+            yaml: framework.yml
+            source:
+                - /Users/slauae/projects/moose-doc/framework
         Phase Field:
             yaml: phase_field.yml
             source:

@@ -46,6 +46,8 @@ class MooseYaml(object):
             output += self._search(key, itr)
         return output
 
+
+
     def addLabel(self, label, keys):
 
         for key in keys:
@@ -54,6 +56,7 @@ class MooseYaml(object):
                     node['labels'] = set()
                 node['labels'].add(label)
 
+        """
         def sub(data):
             active = set()
 
@@ -71,10 +74,10 @@ class MooseYaml(object):
                 data['labels'].update(active)
 
             return active
+        """
 
-
-        for itr in self._data:
-            itr['labels'] = sub(itr)
+        #for itr in self._data:
+        #    itr['labels'] = sub(itr)
 
 
     @staticmethod
