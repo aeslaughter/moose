@@ -100,11 +100,11 @@ class MooseApplicationDocGenerator(object):
 
         prefix = os.path.splitext(self._filename)[0]
 
-        for system in self._systems:
-            system.write(prefix=prefix)
+        #for system in self._systems:
+        #    system.write(prefix=prefix)
 
-        for obj in self._objects:
-            obj.write(prefix=prefix)
+        #for obj in self._objects:
+        #  obj.write(prefix=prefix)
 
     def buildYaml(self, filename):
         """

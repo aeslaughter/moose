@@ -152,6 +152,10 @@ class MooseApplicationSyntax(object):
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
                         self._actions.append(match.group('syntax'))
 
+                        s = match.group('syntax')
+                        if self._yaml_data[s]:
+                            print s
+
     def _buildLocalSyntaxTree(self):
         """
         A helper for creating the syntax tree for the supplied source directories for this application.
