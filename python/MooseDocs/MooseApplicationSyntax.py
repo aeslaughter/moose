@@ -1,5 +1,6 @@
 import os
 import re
+import copy
 import collections
 import logging
 import MooseDocs
@@ -22,29 +23,31 @@ class MooseApplicationSyntax(object):
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationSyntax')
 
-    def __init__(self, yaml_data, *args, **kwargs):
+    def __init__(self, yaml_data, label, *args, **kwargs):
 
         self.log.info('Locating syntax for application.')
 
         # The databases containing the system/object/markdown/source information for this directory
-        self._yaml_data = yaml_data
+        self._yaml_data = copy.copy(yaml_data)
         self._moosebase = dict()
-        self._actions = list()
-        self._objects = dict()
+        #self._actions = list()
+        #self._objects = dict()
         self._filenames = dict()
         self._markdown = dict()
-        self._syntax = collections.OrderedDict()
+        self._syntax = []#collections.OrderedDict()
 
         # Update the 'moosebase' database
-        for itr in yaml_data.get():
-            self._getdata(itr)
+        #for itr in yaml_data.get():
+        #    self._getdata(itr)
 
         # Update the syntax maps
         for path in args:
             self._updateSyntax(path)
 
-        # Create the syntax tree local the supplied directories
-        self._buildLocalSyntaxTree()
+        self._yaml_data.addLabel(label, self._syntax)
+
+        self._yaml_data.dump(label=label)
+
 
     def syntax(self):
         """
@@ -139,46 +142,18 @@ class MooseApplicationSyntax(object):
                     # Map of registered objects
                     for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
                         key = match.group('key')
-                        if self._yaml_data[key]:
-                            self._objects[key] = key
+                        for node in self._yaml_data[key]:
+                            self._syntax.append(node['name'])
+
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
                         key = match.group('key')
-                        if self._yaml_data[key]:
-                            self._objects[key] = match.group('class')
+                        for node in self._yaml_data[key]:
+                            self._syntax.append(node['name'])
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
-                        self._actions.append(match.group('syntax'))
-
-                        s = match.group('syntax')
-                        if self._yaml_data[s]:
-                            print s
-
-    def _buildLocalSyntaxTree(self):
-        """
-        A helper for creating the syntax tree for the supplied source directories for this application.
-        """
-
-        def attach(branch, key, trunk):
-            """
-            Insert a branch of directories on its trunk.
-            """
-            parts = branch.split('/', 1)
-            key = parts[0]
-
-            if key not in trunk:
-                trunk[key] = collections.OrderedDict()
-                trunk[key]['key'] = '{}/{}'.format(trunk['key'], key)
-
-            if len(parts) == 2:
-                node, others = parts
-                attach(others, key, trunk[key])
-
-        for syntax in self._actions:
-            key = syntax.split('/')[0]
-            if key not in self._syntax:
-                self._syntax[key] = collections.OrderedDict()
-                self._syntax[key]['key'] = '/{}'.format(key)
-            attach(syntax, key, self._syntax)
+                        key = match.group('syntax')
+                        for node in self._yaml_data[key]:
+                            self._syntax.append(node['name'])

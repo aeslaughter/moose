@@ -188,9 +188,25 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
-    for value in config['extra']['Generate'].values():
-        generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['Links'])
-        generator.write()
+    #print ydata
+
+    #nodes = ydata['ClosePackIC']
+    #for node in nodes:
+    #    print node['name']
+
+    #ydata.pop('/UserObjects/PointValue')
+    #print ydata['/UserObjects/PointValue']
+
+    path = config['extra']['Generate']['Phase Field']['source']
+    syntax = MooseDocs.MooseApplicationSyntax(ydata, 'phase_field', *path)
+    #print syntax._yaml_data
+
+
+    #for value in config['extra']['Generate'].values():
+    #    generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['Links'])
+        #generator.write()
+
+    #print '\n'.join(generator._syntax._syntax)
 
     """
     node = ydata['/Kernels']
