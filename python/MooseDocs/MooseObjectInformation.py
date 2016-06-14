@@ -57,7 +57,7 @@ class MooseObjectInformation(MooseInformationBase):
 
     @staticmethod
     def filename(name):
-        return '{}.md'.format(name.split('/')[-1])
+        return '{}.md'.format(name.strip('/').replace('/*', '').replace('/<type>', ''))
 
     def markdown(self):
 
@@ -84,7 +84,7 @@ class MooseObjectInformation(MooseInformationBase):
             md += ['<p style="color:red;font-size:120%">']
             md += ['ERROR: Failed to located object detailed description: {}'.format(self._class_name)]
             md += ['</p>']
-            self.log.error('Failed to load system description: {}'.format(self._class_name))
+            self.log.error('Failed to load object description: {}'.format(self._class_name))
 
 
         # Print the InputParameter tables

@@ -6,6 +6,7 @@ from MooseObjectParameterTable import MooseObjectParameterTable
 from MooseObjectInformation import MooseObjectInformation
 from MooseSystemInformation import MooseSystemInformation
 from MooseApplicationSyntax import MooseApplicationSyntax
+from MooseApplicationDocGenerator import MooseApplicationDocGenerator
 
 import os
 MOOSE_REPOSITORY = 'https://github.com/idaholab/moose/blob/devel/'

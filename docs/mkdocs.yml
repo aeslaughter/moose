@@ -14,18 +14,20 @@ markdown_extensions:
     - markdown_include.include           # pip install markdown-include
     - mdx_math                           # pip install python-markdown-math
     - smarty
-pages:
-   - Home: index.md
-   - Documentation:
-       - Moose Flavored Markdown: src/MooseFlavoredMarkdown.md
-       - Framework: !include framework.yml # Generated (see 'extra' section)
-       #- Modules:
-       #    - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
+#pages:
+#   - Home: index.md
+#   - Documentation:
+#       - Moose Flavored Markdown: src/MooseFlavoredMarkdown.md
+#       - Framework: !include framework.yml # Generated (see 'extra' section)
+#       #- Modules:
+#       #    - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
 
 extra:
     hide: # complete YAML syntax to ignore (must include leading /)
       - /BCs/Periodic
       - /Bounds
+      - /AuxVariables/*/InitialCondition
+      - /Variables/*/InitialCondition
 
     generate:
         Framework:

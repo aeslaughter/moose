@@ -24,7 +24,7 @@ class MooseInformationBase(object):
 
         dirname = os.path.dirname(filename)
         if not os.path.exists(dirname):
-            os.mkdirs(dirname)
+            os.makedirs(dirname)
 
         print 'Writing:', filename
         fid = open(filename, 'w')

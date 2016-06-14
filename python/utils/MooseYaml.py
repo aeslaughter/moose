@@ -34,6 +34,14 @@ class MooseYaml(object):
         print '\n'.join(output)
 
 
+    def find(self, key):
+        for itr in self._data:
+            output = self._search(key, itr, fuzzy=False)
+            if output:
+                return output[0]
+        return None
+
+
     def __getitem__(self, key):
         """
         Operator [] access to the yaml blocks.
@@ -81,13 +89,15 @@ class MooseYaml(object):
 
 
     @staticmethod
-    def _search(key, data):
+    def _search(key, data, **kwargs):
         """
         A helper method for locating the desired yaml data.
         """
 
+        fuzzy = kwargs.pop('fuzzy', True)
+
         output = []
-        if data['name'].endswith(key):
+        if (fuzzy and data['name'].endswith(key)) or (key == data['name']):
             output.append(data)
 
         if data['subblocks']:

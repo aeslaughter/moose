@@ -37,11 +37,10 @@ class MooseApplicationSyntax(object):
         self._filenames = dict()
         self._markdown = dict()
 
-        self._syntax = []
+        self._syntax = set()
 
 
-        self._hide = kwargs.pop('hide', list())
-
+        #self._hide = kwargs.pop('hide', list())
 
         # Update the 'moosebase' database
         #for itr in yaml_data.get():
@@ -55,15 +54,13 @@ class MooseApplicationSyntax(object):
         #print '\n'.join(self._syntax)
         self._yaml_data.addLabel(label, self._syntax)
 
-
-
         for s in self._syntax:
             nodes = self._yaml_data[s]
             for node in nodes:
                 name = node['name'].split('/')[-1]
                 if name not in self._objects:
                     self._systems.add(node['name'])
-#                if name.endswith('*') or name.endswith('<type>')
+
 
 
  #   def syntax(self):
@@ -122,12 +119,6 @@ class MooseApplicationSyntax(object):
 #            for child in data['subblocks']:
 #                self._getdata(child)
 
-    def _appendSyntax(self, key):
-        key = '/' + key
-        for node in self._yaml_data[key]:
-            name = node['name']
-            if name not in self._hide:
-                self._syntax.append(name)
 
 
     def _updateSyntax(self, path):
@@ -137,6 +128,16 @@ class MooseApplicationSyntax(object):
         Args:
             path[str]: A valid source directory to inspect.
         """
+
+        def appendSyntax(key):
+            key = '/' + key
+            for node in self._yaml_data[key]:
+                self._syntax.add(node['name'])
+
+            #print name, [name.startswith(h) for h in self._hide], not any([name.startswith(h) for h in self._hide])
+            #if not any([name.startswith(h) for h in self._hide]):
+            #    self._syntax.add(name)
+
 
         # Walk the directory, looking for files with the supplied extension.
         for root, dirs, files in os.walk(path, topdown=False):
@@ -163,17 +164,17 @@ class MooseApplicationSyntax(object):
                     for match in re.finditer(r'(?<!\:)register(?!RecoverableData|edError)\w+?\((?P<key>\w+)\);', content):
                         key = match.group('key')
                         self._objects[key] = key
-                        self._appendSyntax(key)
+                        appendSyntax(key)
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
                         name = match.group('class')
                         key = match.group('key')
                         self._objects[key] = name
-                        self._appendSyntax(key)
+                        appendSyntax(key)
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):
                         key = match.group('key')
-                        self._appendSyntax(key)
+                        appendSyntax(key)
 #                        self._systems.add(key)
