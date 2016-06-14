@@ -120,16 +120,18 @@ class MooseApplicationDocGenerator(object):
                         return True
             return False
 
-        def hasLabel(node, label):
+        def hasLabel(node, **kwargs):
 
+            label = self._prefix
+            local = kwargs.pop('local', False)
 
             if ('labels') in node and (label in node['labels']):
                 return True
 
-            if node['subblocks'] != None:
+            if not local and node['subblocks'] != None:
                 out = []
                 for child in node['subblocks']:
-                    out.append(hasLabel(child, label))
+                    out.append(hasLabel(child))
                 return any(out)
 
             return False
@@ -142,44 +144,32 @@ class MooseApplicationDocGenerator(object):
 
         def sub(node, level = 0):
 
-
-            #if ('labels' in node) and (self._prefix in node['labels']):
-            if hasLabel(node, self._prefix):
+            if hasLabel(node, local=False):
                 name = node['name']
                 key = name.split('/')[-1]
-                star = '{}/*'.format(name)
+                #star = '{}/*'.format(name)
+                parent = name.rsplit('/', 1)[0]
+                overview = parent.strip('/').replace('/', '-')
 
-                #print key, star
+                if key == '<type>':
+                    level -= 1
 
-                if key == '*':# or key == '<type>':
-                    pass
+                elif key == '*':
+                    if hasLabel(node, local=True):
+                        msg = '{}- Overview: {}.md'.format(' '*4*level, overview)
+                        yield msg
 
-                #elif key == '<type>':
-                #    level -= 1
-
-                elif node['subblocks'] != None and hasSubBlock(star, node):
+                elif node['subblocks'] != None:
                     msg = '{}- {}:'.format(' '*4*level, key)
                     yield msg
-                    msg = '{}- Overview: {}.md'.format(' '*4*(level+1), key)
-                    yield msg
 
-
-                    #msg = '{}- {}:'.format(' '*4*level, key)
-                    #yield msg
-                    #self.log.debug(msg)
-                    #msg = '{}- Overview: {}.md'.format(' '*4*level, key)
-                    #yield msg
-
-
-                #elif key == '*' and node['subblocks'] == None:
-                #    msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
-                #    self.log.debug(msg)
-                #    yield msg
+                    if hasLabel(node, local=True):
+                        overview = name.strip('/').replace('/', '-')
+                        msg = '{}- Overview: {}.md'.format(' '*4*(level+1), overview)
+                        yield msg
 
                 else:
-                    #msg = '{}- {}'.format(' '*4*level, key)
                     msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
-
                     yield msg
 
 
@@ -250,7 +240,9 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
-    #print ydata
+    #nodes = ydata['/Kernels/*']
+    #for node in nodes:
+    #        print node['name'], node.keys()
 
     #nodes = ydata['ClosePackIC']
     #for node in nodes:

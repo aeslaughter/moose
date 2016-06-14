@@ -13,7 +13,6 @@ markdown_extensions:
     - markdown_include.include           # pip install markdown-include
     - mdx_math                           # pip install python-markdown-math
     - smarty
-
 pages:
    - Home: index.md
    - Documentation:
@@ -28,10 +27,10 @@ extra:
             yaml: framework.yml
             source:
                 - /Users/slauae/projects/moose-doc/framework
-        Phase Field:
-            yaml: phase_field.yml
-            source:
-                - /Users/slauae/projects/moose-doc/modules/phase_field
+        #Phase Field:
+      #      yaml: phase_field.yml
+      #      source:
+      #          - /Users/slauae/projects/moose-doc/modules/phase_field
 
     Links:
         Tests:

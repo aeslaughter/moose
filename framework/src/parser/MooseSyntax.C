@@ -72,7 +72,7 @@ void associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 
   syntax.registerActionSyntax("AddICAction", "AuxVariables/*/InitialCondition");
 
-  syntax.registerActionSyntax("EmptyAction", "BCs/Periodic", "no_action");  // placeholder
+//  syntax.registerActionSyntax("EmptyAction", "BCs/Periodic", "no_action");  // placeholder
   syntax.registerActionSyntax("AddPeriodicBCAction", "BCs/Periodic/*");
 
   syntax.registerActionSyntax("AddInitialConditionAction", "ICs/*", "add_ic");
