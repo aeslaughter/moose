@@ -36,6 +36,9 @@ class MooseApplicationSyntax(object):
         self._markdown = dict()
         self._syntax = []#collections.OrderedDict()
 
+        self._hide = kwargs.pop('hide', list())
+
+
         # Update the 'moosebase' database
         #for itr in yaml_data.get():
         #    self._getdata(itr)
@@ -110,6 +113,14 @@ class MooseApplicationSyntax(object):
 #            for child in data['subblocks']:
 #                self._getdata(child)
 
+    def _appendSyntax(self, key):
+
+        for node in self._yaml_data[key]:
+            name = node['name']
+            if name not in self._hide:
+                self._syntax.append(name)
+
+
     def _updateSyntax(self, path):
         """
         A helper for populating the syntax/filename/markdown databases. (private)
@@ -141,18 +152,12 @@ class MooseApplicationSyntax(object):
 
                     # Map of registered objects
                     for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
-                        key = match.group('key')
-                        for node in self._yaml_data[key]:
-                            self._syntax.append(node['name'])
+                        self._appendSyntax(match.group('key'))
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
-                        key = match.group('key')
-                        for node in self._yaml_data[key]:
-                            self._syntax.append(node['name'])
+                        self._appendSyntax(match.group('key'))
 
                     # Action syntax map
-                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<syntax>.*?)\"[,\);]', content):
-                        key = match.group('syntax')
-                        for node in self._yaml_data[key]:
-                            self._syntax.append(node['name'])
+                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):
+                        self._appendSyntax(match.group('key'))

@@ -70,6 +70,7 @@ class MooseApplicationDocGenerator(object):
         inputs = collections.OrderedDict()
         source = collections.OrderedDict()
         links = kwargs.pop('links', dict())
+        hide = kwargs.pop('hide', list())
         for key, value in links.iteritems():
             inputs[key] = MooseDocs.database.Database('.i', value, MooseDocs.database.items.InputFileItem)
             source[key] = MooseDocs.database.Database('.h', value, MooseDocs.database.items.ChildClassItem)
@@ -79,7 +80,7 @@ class MooseApplicationDocGenerator(object):
 
         # Read the supplied files
         self._yaml_data = yaml_data
-        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, self._prefix, *source_dirs)
+        self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, self._prefix, *source_dirs, hide=hide)
 
         """
         self._systems = []
@@ -145,21 +146,24 @@ class MooseApplicationDocGenerator(object):
         def sub(node, level = 0):
 
             if hasLabel(node, local=False):
+
                 name = node['name']
                 key = name.split('/')[-1]
                 #star = '{}/*'.format(name)
-                parent = name.rsplit('/', 1)[0]
-                overview = parent.strip('/').replace('/', '-')
+                subblocks = node['subblocks']
 
                 if key == '<type>':
                     level -= 1
 
                 elif key == '*':
                     if hasLabel(node, local=True):
+                        parent = name.rsplit('/', 1)[0]
+                        overview = parent.strip('/').replace('/', '-')
                         msg = '{}- Overview: {}.md'.format(' '*4*level, overview)
                         yield msg
 
-                elif node['subblocks'] != None:
+                elif subblocks != None:
+
                     msg = '{}- {}:'.format(' '*4*level, key)
                     yield msg
 
@@ -256,8 +260,8 @@ if __name__ == '__main__':
     #print syntax._yaml_data
 
 
-    for value in config['extra']['Generate'].values():
-        generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['Links'])
+    for value in config['extra']['generate'].values():
+        generator = MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['links'], hide=config['extra']['hide'])
         generator.write()
 
     #print '\n'.join(generator._syntax._syntax)
