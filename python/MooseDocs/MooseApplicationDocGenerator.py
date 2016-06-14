@@ -73,6 +73,8 @@ class MooseApplicationDocGenerator(object):
         Generates the System.yml file.
         """
 
+
+        """
         def hasLabel(node, **kwargs):
 
             label = self._prefix
@@ -88,74 +90,18 @@ class MooseApplicationDocGenerator(object):
                 return any(out)
 
             return False
+        """
+
+        for root, dirs, files in os.walk(self._prefix, topdown=False):
+
+            if 'Overview.md' in files:
+                files.insert(0, files.pop(files.index('Overview.md')))
+
+            for filename in files:
+                print root, filename
 
 
-        def sub(node, level = 0):
-
-            if hasLabel(node, local=False):
-
-                name = node['name']
-                key = name.split('/')[-1]
-                subblocks = node['subblocks']
-
-
-                if key == 'PolycrystalRandomIC':
-                    print 'WTF', name, node['labels']
-
-
-                if key == '*' or key == '<type>':
-                    level -= 1
-
-                if name in self._syntax.systems():
-
-
-                    if key == '*' or key == '<type>':
-                        #level -= 1
-                        parent = name.split('/')[-2]
-                        msg = '{}- {}:'.format(' '*4*level, parent)
-                        yield msg
-
-
-                        if hasLabel(node, local=True):
-                            parent = name.rsplit('/', 1)[0]
-                            #overview = parent.strip('/').replace('/*', '').replace('/', '-')
-                            msg = '{}- Overview: {}/{}'.format(' '*4*(level+1), self._prefix, MooseSystemInformation.filename(parent))
-                            yield msg
-                            #level -= 1
-
-                    else:
-
-                        msg = '{}- {}:'.format(' '*4*level, key)
-                        yield msg
-
-
-                        if hasLabel(node, local=True):
-                            msg = '{}- Overview: {}/{}'.format(' '*4*(level+1), self._prefix, MooseSystemInformation.filename(name))
-                            yield msg
-
-
-
-
-                else:
-                    if subblocks == None:#key != '<type>' and key != '*':
-                        #level -= 1
-                        #print 'OBJECT', name
-                        if hasLabel(node, local=True):
-
-                            msg = '{0}- {1}: {2}/{1}.md'.format(' '*4*level, key, self._prefix)
-                            yield msg
-
-                    #elif key == '<type>' or key == '*':
-                    #    level -= 1
-
-
-                if node['subblocks'] != None:
-                    for child in node['subblocks']:
-                        output = sub(child, level+1)
-                        for out in output:
-                            yield out
-
-
+        """
         self.log.info('Creating YAML file: {}'.format(filename))
         output = []
         for node in self._yaml_data.get():
@@ -164,3 +110,4 @@ class MooseApplicationDocGenerator(object):
         fid = open(filename, 'w')
         fid.write('\n'.join(output))
         fid.close()
+        """
