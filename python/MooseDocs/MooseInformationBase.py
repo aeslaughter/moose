@@ -23,7 +23,7 @@ class MooseInformationBase(object):
             name = os.path.join(prefix, name)
 
         name = os.path.abspath(name)
-        print 'Writting:', name
+        print 'Writing:', name
         fid = open(name, 'w')
         fid.write(self.markdown())
         fid.close()

@@ -95,12 +95,7 @@ class MooseApplicationDocGenerator(object):
             header = self._syntax.header(key)
             nodes = yaml_data[key]
 
-            if len(nodes) > 1:
-                log.warning('Multiple nodes located for key "{}".'.format(key))
             for node in nodes:
-
-                print key, value, node['name']
-
                 self._objects.append(MooseDocs.MooseObjectInformation(node, md, header, inputs=inputs, source=source))
 
     def write(self):
@@ -120,13 +115,6 @@ class MooseApplicationDocGenerator(object):
         Generates the System.yml file.
         """
 
-        def hasSubBlock(name, node):
-            if node['subblocks'] != None:
-                for sub in node['subblocks']:
-                    if name == sub['name']:# and ('labels' in sub) and (self._prefix in sub['labels']):
-                        return True
-            return False
-
         def hasLabel(node, **kwargs):
 
             label = self._prefix
@@ -142,11 +130,6 @@ class MooseApplicationDocGenerator(object):
                 return any(out)
 
             return False
-
-
-
-        #print self._yaml_data
-        #self._yaml_data.dump(label=self._prefix)
 
 
         def sub(node, level = 0):
@@ -188,27 +171,7 @@ class MooseApplicationDocGenerator(object):
                         output = sub(child, level+1)
                         for out in output:
                             yield out
-                        #if name in syntax._objects:
-                        #    msg = '{0}- {1}: {1}.md'.format(' '*4*(level+1), name)
-                        #    self.log.debug(msg)
-                        #    yield msg
 
-
-
-            #if node['subblocks'] != None:
-            #    for child in node['subblocks']:
-            #        output.append(sub(child))
-            #return output
-
-        """
-        def sub(syntax, key, node, level=0):
-
-            #TODO: Convert this to use pyyaml
-
-            ynode = self._yaml_data[node['key']]
-
-
-        """
 
         self.log.info('Creating YAML file: {}'.format(filename))
         output = []
