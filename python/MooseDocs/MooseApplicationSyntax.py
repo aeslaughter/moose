@@ -29,7 +29,7 @@ class MooseApplicationSyntax(object):
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)
-        #self._moosebase = dict()
+        self._moosebase = dict()
 
         self._systems = list()
         self._objects = dict()
@@ -44,8 +44,8 @@ class MooseApplicationSyntax(object):
 
 
         # Update the 'moosebase' database
-        #for itr in yaml_data.get():
-        #    self._getdata(itr)
+        for itr in yaml_data.get():
+            self._getdata(itr)
 
         self._yaml_data.addLabel(label, self._syntax)
 
@@ -67,16 +67,16 @@ class MooseApplicationSyntax(object):
         """
 
         output = set()
-        for action in self._actions:
-            output.add(action.replace('/*', '').split('/')[-1])
+        for system in self._systems:
+            output.add(system.replace('/*', '').split('/')[-1])
             ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
         return output
 
     def objects(self):
         return self._objects
- #
- #   def header(self, key):
- #       return self._filenames[self._objects[key]]
+
+    def header(self, key):
+        return self._filenames[self._objects[key]]
  #
  #
  #   def hasSyntax(self, key):
@@ -99,22 +99,22 @@ class MooseApplicationSyntax(object):
         return None
         #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
 
-#    def _getdata(self, data):
-#        """
-#        A helper for populating the 'moosebase' database. (private)
-#
-#        Args:
-#            data: The YAML node to examine.
-#        """
-#        if 'moosebase' in data:
-#            m = data['moosebase']
-#            if m not in self._moosebase:
-#                self._moosebase[m] = []
-#            self._moosebase[m].append(data['name'])
-#
-#        if data['subblocks']:
-#            for child in data['subblocks']:
-#                self._getdata(child)
+    def _getdata(self, data):
+        """
+        A helper for populating the 'moosebase' database. (private)
+
+        Args:
+            data: The YAML node to examine.
+        """
+        if 'moosebase' in data:
+            m = data['moosebase']
+            if m not in self._moosebase:
+                self._moosebase[m] = []
+            self._moosebase[m].append(data['name'])
+
+        if data['subblocks']:
+            for child in data['subblocks']:
+                self._getdata(child)
 
     def _appendSyntax(self, key):
 
@@ -154,17 +154,20 @@ class MooseApplicationSyntax(object):
                             self._filenames[match.group('class')] = fullfile
 
                     # Map of registered objects
-                    for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
+                    for match in re.finditer(r'(?<!\:)register(?!RecoverableData|edError)\w+?\((?P<key>\w+)\);', content):
                         key = match.group('key')
+                        self._objects[key] = key
                         self._appendSyntax(key)
-                        self._objects.append( (key, key) )
+                        if key == 'factory':
+                            print match.group(0)
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
                         name = match.group('class')
                         key = match.group('key')
-                        self._objects.append( (name, key) )
+                        self._objects[key] = name
                         self._appendSyntax(key)
+
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):

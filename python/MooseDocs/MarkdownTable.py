@@ -71,6 +71,6 @@ class MarkdownTable(object):
         """
         output = []
         for i in range(len(text)):
-            output.append(text[i])
+            output.append(text[i].strip())
             output.append(self._column_widths[i])
         return output

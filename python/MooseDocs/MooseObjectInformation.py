@@ -28,7 +28,7 @@ class MooseObjectInformation(MooseInformationBase):
         #self._log.addHandler(self._handler)#
 
         #self._log.info('Initializing Documentation: {}'.format(yaml['name']))
-
+        print yaml['name']
 
 
         self._inputs = kwargs.pop('inputs', None)
@@ -36,7 +36,7 @@ class MooseObjectInformation(MooseInformationBase):
 
 
         self._class_name = yaml['name'].split('/')[-1]
-        self._class_base = yaml['moosebase']
+        #self._class_base = yaml['moosebase']
         self._class_description = yaml['description']
         self._class_details = details
 

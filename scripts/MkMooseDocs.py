@@ -85,14 +85,22 @@ class MooseApplicationDocGenerator(object):
         self._systems = []
         for system in self._syntax.systems():
             md = self._syntax.getMarkdown(system)
-            self._systems.append(MooseDocs.MooseSystemInformation(yaml_data[system], md))
+            nodes = yaml_data[system]
+            for node in nodes:
+                self._systems.append(MooseDocs.MooseSystemInformation(node, md))
 
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
             md = self._syntax.getMarkdown(key)
             header = self._syntax.header(key)
-            node = yaml_data[key]
-            if node:
+            nodes = yaml_data[key]
+
+            if len(nodes) > 1:
+                log.warning('Multiple nodes located for key "{}".'.format(key))
+            for node in nodes:
+
+                print key, value, node['name']
+
                 self._objects.append(MooseDocs.MooseObjectInformation(node, md, header, inputs=inputs, source=source))
 
     def write(self):
