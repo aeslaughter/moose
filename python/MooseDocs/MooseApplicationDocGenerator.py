@@ -23,7 +23,7 @@ class MooseApplicationDocGenerator(object):
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationDocGenerator')
 
-    def __init__(self, yaml_data, filename, source_dirs, **kwargs):
+    def __init__(self, yaml_data, prefix, source_dirs, **kwargs):
 
         # Extract the input/source link directories to utilize and build databases
         inputs = collections.OrderedDict()
@@ -34,8 +34,7 @@ class MooseApplicationDocGenerator(object):
             inputs[key] = database.Database('.i', value, database.items.InputFileItem)
             source[key] = database.Database('.h', value, database.items.ChildClassItem)
 
-        self._filename = filename
-        self._prefix = os.path.splitext(self._filename)[0]
+        self._prefix = prefix
 
         # Read the supplied files
         self._yaml_data = yaml_data
@@ -60,15 +59,15 @@ class MooseApplicationDocGenerator(object):
 
     def write(self):
 
-        #self.writeYAML(self._filename)
+        self.writeYAML()
 
-        for system in self._systems:
-            system.write(prefix=self._prefix)
+        #for system in self._systems:
+        #    system.write(prefix=self._prefix)
 
-        for obj in self._objects:
-            obj.write(prefix=self._prefix)
+        #for obj in self._objects:
+        #    obj.write(prefix=self._prefix)
 
-    def writeYAML(self, filename):
+    def writeYAML(self):
         """
         Generates the System.yml file.
         """
@@ -92,14 +91,60 @@ class MooseApplicationDocGenerator(object):
             return False
         """
 
-        for root, dirs, files in os.walk(self._prefix, topdown=False):
+        #def insertItem(tree, cmd, item):
+        #    cmd = "tree{}'.format(("['{}']"*level).format(*relative))
+
+
+
+        rec_dd = lambda: collections.defaultdict(rec_dd)
+        tree = rec_dd()
+        for root, dirs, files in os.walk(self._prefix, topdown=True):
 
             if 'Overview.md' in files:
                 files.insert(0, files.pop(files.index('Overview.md')))
 
             for filename in files:
-                print root, filename
+                name, ext = os.path.splitext(filename)
 
+                if ext != '.md':
+                    continue
+
+                relative = root.replace(self._prefix, '').strip('/').split('/')
+                level = len(relative)
+
+                #print '{}- {}:{}'.format(' '*4*level, name, filename)
+
+                #cmd = "tree{}'{}'".format(("['{}']"*level).format(*relative), filename)
+                #insertItem(tree, relative, filename)
+
+                #cmd = "tree{}['items'].append('{}')".format(("['{}']"*level).format(*relative), filename)
+                cmd = "tree{}".format(("['{}']"*level).format(*relative))
+
+                #print cmd
+                d = eval(cmd)
+                if 'items' not in d:
+                    d['items'] = []
+
+                d['items'].append( (name, os.path.join(root, filename)))
+
+
+        def output(node, level=0):
+
+
+
+            keys = node.keys()
+            print keys
+
+            for k in keys:
+                v = node[k]
+                if k == 'items':
+                    for item in v:
+                        print '{}- {}: {}'.format(' '*4*(level), *item)
+                else:
+                    print '{}- {}:'.format(' '*4*level, k)
+                    output(v, level+1)
+
+        output(tree)
 
         """
         self.log.info('Creating YAML file: {}'.format(filename))

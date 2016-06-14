@@ -62,7 +62,7 @@ if __name__ == '__main__':
     #log.setLevel(logging.DEBUG)
 
     # Setup the location
-    config_file = os.path.join(dirname, 'mkdocs.yml')
+    config_file = os.path.join(dirname, 'config.yml')
     log.info('Generating Documentation: {}'.format(config_file))
 
     # Parse the configuration file for the desired paths
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     #print syntax._yaml_data
 
 
-    for value in config['extra']['generate'].values():
-        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value['yaml'], value['source'], links=config['extra']['links'], hide=config['extra']['hide'])
+    for value in config['generate'].values():
+        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value['prefix'], value['source'], links=config['links'], hide=config['hide'])
         generator.write()
 
     #print '\n'.join(generator._syntax._syntax)
