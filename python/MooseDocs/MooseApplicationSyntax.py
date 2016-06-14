@@ -29,12 +29,16 @@ class MooseApplicationSyntax(object):
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)
-        self._moosebase = dict()
-        #self._actions = list()
-        #self._objects = dict()
+        #self._moosebase = dict()
+
+        self._systems = list()
+        self._objects = dict()
+
         self._filenames = dict()
         self._markdown = dict()
-        self._syntax = []#collections.OrderedDict()
+
+        self._syntax = []
+
 
         self._hide = kwargs.pop('hide', list())
 
@@ -43,13 +47,12 @@ class MooseApplicationSyntax(object):
         #for itr in yaml_data.get():
         #    self._getdata(itr)
 
+        self._yaml_data.addLabel(label, self._syntax)
+
         # Update the syntax maps
         for path in args:
             self._updateSyntax(path)
 
-        self._yaml_data.addLabel(label, self._syntax)
-
-        #self._yaml_data.dump(label=label)
 
 
  #   def syntax(self):
@@ -58,19 +61,19 @@ class MooseApplicationSyntax(object):
  #       """
  #       return self._syntax
  #
- #   def systems(self):
- #       """
- #       Return a set of MOOSE systems for defined in the supplied directories.
- #       """
- #
- #       output = set()
- #       for action in self._actions:
- #           output.add(action.replace('/*', '').split('/')[-1])
- #           ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
- #       return output
- #
- #   def objects(self):
- #       return self._objects
+    def systems(self):
+        """
+        Return a set of MOOSE systems for defined in the supplied directories.
+        """
+
+        output = set()
+        for action in self._actions:
+            output.add(action.replace('/*', '').split('/')[-1])
+            ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
+        return output
+
+    def objects(self):
+        return self._objects
  #
  #   def header(self, key):
  #       return self._filenames[self._objects[key]]
@@ -152,12 +155,19 @@ class MooseApplicationSyntax(object):
 
                     # Map of registered objects
                     for match in re.finditer(r'register\w+?\((?P<key>\w+)\);', content):
-                        self._appendSyntax(match.group('key'))
+                        key = match.group('key')
+                        self._appendSyntax(key)
+                        self._objects.append( (key, key) )
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
-                        self._appendSyntax(match.group('key'))
+                        name = match.group('class')
+                        key = match.group('key')
+                        self._objects.append( (name, key) )
+                        self._appendSyntax(key)
 
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):
-                        self._appendSyntax(match.group('key'))
+                        key = match.group('key')
+                        self._systems.append(key)
+                        self._appendSyntax(key)

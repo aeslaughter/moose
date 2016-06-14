@@ -82,7 +82,6 @@ class MooseApplicationDocGenerator(object):
         self._yaml_data = yaml_data
         self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, self._prefix, *source_dirs, hide=hide)
 
-        """
         self._systems = []
         for system in self._syntax.systems():
             md = self._syntax.getMarkdown(system)
@@ -95,7 +94,6 @@ class MooseApplicationDocGenerator(object):
             node = yaml_data[key]
             if node:
                 self._objects.append(MooseDocs.MooseObjectInformation(node, md, header, inputs=inputs, source=source))
-        """
 
     def write(self):
 
@@ -103,11 +101,11 @@ class MooseApplicationDocGenerator(object):
 
 #        prefix = os.path.splitext(self._filename)[0]os.path.splitext(self._filename)[0]
 
-        #for system in self._systems:
-        #    system.write(prefix=prefix)
+        for system in self._systems:
+            system.write(prefix=self._prefix)
 
-        #for obj in self._objects:
-        #  obj.write(prefix=prefix)
+        for obj in self._objects:
+            obj.write(prefix=self._prefix)
 
     def buildYaml(self, filename):
         """
