@@ -15,7 +15,7 @@ class MooseSystemInformation(MooseInformationBase):
 
     @staticmethod
     def filename(name):
-        return '{}.md'.format(name.strip('/').replace('/*', '').replace('/', '-'))
+        return '{}.md'.format(name.strip('/').replace('/*', ''))
 
     def markdown(self):
 
