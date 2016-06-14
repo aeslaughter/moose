@@ -10,20 +10,23 @@ class MooseInformationBase(object):
     def markdown(self):
         pass
 
+    @staticmethod
+    def filename(name):
+        return None
+
     def write(self, **kwargs):
         """
 
         """
-        name = '{}.md'.format(self._yaml['name'].split('/')[-1])
+        prefix = kwargs.pop('prefix', '')
 
-        prefix = kwargs.pop('prefix', None)
-        if prefix:
-            if not os.path.exists(prefix):
-                os.mkdir(prefix)
-            name = os.path.join(prefix, name)
+        filename = os.path.abspath(os.path.join(prefix, self.filename(self._yaml['name'])))
 
-        name = os.path.abspath(name)
-        print 'Writing:', name
-        fid = open(name, 'w')
+        dirname = os.path.dirname(filename)
+        if not os.path.exists(dirname):
+            os.mkdirs(dirname)
+
+        print 'Writing:', filename
+        fid = open(filename, 'w')
         fid.write(self.markdown())
         fid.close()

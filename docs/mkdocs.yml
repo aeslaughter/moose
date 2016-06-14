@@ -1,6 +1,7 @@
 site_name: MOOSE
 
-docs_dir: markdown
+docs_dir: .
+site_dir: ../site
 
 watch_dirs:
     - /Users/slauae/projects/moose-doc/framework/include
@@ -16,10 +17,10 @@ markdown_extensions:
 pages:
    - Home: index.md
    - Documentation:
-       - Moose Flavored Markdown: markdown/MooseFlavoredMarkdown.md
-      # - Framework: !include framework.yml # Generated (see 'extra' section)
-      # - Modules:
-      #     - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
+       - Moose Flavored Markdown: src/MooseFlavoredMarkdown.md
+       - Framework: !include framework.yml # Generated (see 'extra' section)
+       #- Modules:
+       #    - Phase Field: !include phase_field.yml # Generated (see 'extra' section)
 
 extra:
     hide: # complete YAML syntax to ignore (must include leading /)
@@ -31,10 +32,10 @@ extra:
             yaml: framework.yml
             source:
                 - /Users/slauae/projects/moose-doc/framework
-        Phase Field:
-            yaml: phase_field.yml
-            source:
-                - /Users/slauae/projects/moose-doc/modules/phase_field
+       # Phase Field:
+       #     yaml: phase_field.yml
+       #     source:
+       #         - /Users/slauae/projects/moose-doc/modules/phase_field
 
     links:
         Tests:

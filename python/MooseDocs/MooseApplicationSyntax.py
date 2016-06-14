@@ -29,9 +29,9 @@ class MooseApplicationSyntax(object):
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)
-        self._moosebase = dict()
+        #self._moosebase = dict()
 
-        self._systems = list()
+        self._systems = set()
         self._objects = dict()
 
         self._filenames = dict()
@@ -44,15 +44,26 @@ class MooseApplicationSyntax(object):
 
 
         # Update the 'moosebase' database
-        for itr in yaml_data.get():
-            self._getdata(itr)
-
-        self._yaml_data.addLabel(label, self._syntax)
+        #for itr in yaml_data.get():
+        #    self._getdata(itr)
 
         # Update the syntax maps
         for path in args:
             self._updateSyntax(path)
 
+
+        #print '\n'.join(self._syntax)
+        self._yaml_data.addLabel(label, self._syntax)
+
+
+
+        for s in self._syntax:
+            nodes = self._yaml_data[s]
+            for node in nodes:
+                name = node['name'].split('/')[-1]
+                if name not in self._objects:
+                    self._systems.add(node['name'])
+#                if name.endswith('*') or name.endswith('<type>')
 
 
  #   def syntax(self):
@@ -65,12 +76,7 @@ class MooseApplicationSyntax(object):
         """
         Return a set of MOOSE systems for defined in the supplied directories.
         """
-
-        output = set()
-        for system in self._systems:
-            output.add(system.replace('/*', '').split('/')[-1])
-            ###output.add( (action, action.replace('/*', '').split('/')[-1]) )
-        return output
+        return self._systems
 
     def objects(self):
         return self._objects
@@ -99,25 +105,25 @@ class MooseApplicationSyntax(object):
         return None
         #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
 
-    def _getdata(self, data):
-        """
-        A helper for populating the 'moosebase' database. (private)
-
-        Args:
-            data: The YAML node to examine.
-        """
-        if 'moosebase' in data:
-            m = data['moosebase']
-            if m not in self._moosebase:
-                self._moosebase[m] = []
-            self._moosebase[m].append(data['name'])
-
-        if data['subblocks']:
-            for child in data['subblocks']:
-                self._getdata(child)
+#    def _getdata(self, data):
+#        """
+#        A helper for populating the 'moosebase' database. (private)
+#
+#        Args:
+#            data: The YAML node to examine.
+#        """
+#        if 'moosebase' in data:
+#            m = data['moosebase']
+#            if m not in self._moosebase:
+#                self._moosebase[m] = []
+#            self._moosebase[m].append(data['name'])
+#
+#        if data['subblocks']:
+#            for child in data['subblocks']:
+#                self._getdata(child)
 
     def _appendSyntax(self, key):
-
+        key = '/' + key
         for node in self._yaml_data[key]:
             name = node['name']
             if name not in self._hide:
@@ -158,8 +164,6 @@ class MooseApplicationSyntax(object):
                         key = match.group('key')
                         self._objects[key] = key
                         self._appendSyntax(key)
-                        if key == 'factory':
-                            print match.group(0)
 
                     # Map of named registered objects
                     for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
@@ -168,9 +172,8 @@ class MooseApplicationSyntax(object):
                         self._objects[key] = name
                         self._appendSyntax(key)
 
-
                     # Action syntax map
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):
                         key = match.group('key')
-                        self._systems.append(key)
                         self._appendSyntax(key)
+#                        self._systems.add(key)

@@ -28,8 +28,6 @@ class MooseObjectInformation(MooseInformationBase):
         #self._log.addHandler(self._handler)#
 
         #self._log.info('Initializing Documentation: {}'.format(yaml['name']))
-        print yaml['name']
-
 
         self._inputs = kwargs.pop('inputs', None)
         self._source = kwargs.pop('source', None)
@@ -57,6 +55,9 @@ class MooseObjectInformation(MooseInformationBase):
 
             self._tables[name].addParam(param)
 
+    @staticmethod
+    def filename(name):
+        return '{}.md'.format(name.split('/')[-1])
 
     def markdown(self):
 
@@ -75,8 +76,16 @@ class MooseObjectInformation(MooseInformationBase):
             md += ['']
 
         # The details
-        md += ['{{!{}!}}'.format(self._class_details)]
-        md += ['']
+        if self._class_details and os.path.exists(self._class_details):
+            md += ['{{!{}!}}'.format(self._class_details)]
+            md += ['']
+
+        else:
+            md += ['<p style="color:red;font-size:120%">']
+            md += ['ERROR: Failed to located object detailed description: {}'.format(self._class_name)]
+            md += ['</p>']
+            self.log.error('Failed to load system description: {}'.format(self._class_name))
+
 
         # Print the InputParameter tables
         md += ['## Input Parameters']
@@ -111,7 +120,7 @@ class MooseObjectInformation(MooseInformationBase):
         """
 
         md = []
-        if items != None:
+        if items != None and len(items) > 0:
             md += ['## {}'.format(title)]
             for k, db in items.iteritems():
                 if self._class_name in db:

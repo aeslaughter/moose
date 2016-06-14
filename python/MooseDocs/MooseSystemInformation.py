@@ -13,6 +13,9 @@ class MooseSystemInformation(MooseInformationBase):
 
         self._details = details
 
+    @staticmethod
+    def filename(name):
+        return '{}.md'.format(name.strip('/').replace('/*', '').replace('/', '-'))
 
     def markdown(self):
 
@@ -21,6 +24,8 @@ class MooseSystemInformation(MooseInformationBase):
         # The details
         if self._details and os.path.exists(self._details):
             md += ['{{!{}!}}'.format(self._details)]
+            md += ['']
+
         else:
             md += ['<p style="color:red;font-size:120%">']
             md += ['ERROR: Failed to located system detailed description: {}'.format(self._yaml['name'])]
@@ -34,20 +39,27 @@ class MooseSystemInformation(MooseInformationBase):
 
             md += ['## Input Parameters']
             md += [table.markdown()]
+            md += ['']
+
 
 
         if self._yaml['subblocks']:
             table = MarkdownTable('Name', 'Description')
             for child in self._yaml['subblocks']:
-                name = child['name']
-                desc = child['description']
 
+                name = child['name']
                 if name.endswith('*'):
                     continue
 
+                name = '[{0}]({0}.md)'.format(name.split('/')[-1])
+                desc = child['description']
+
+
                 table.addRow(name.split('/')[-1], desc)
 
-            md += ['## Available Objects']
-            md += [table.markdown()]
+            if table.size() > 0:
+                md += ['## Available Objects']
+                md += [table.markdown()]
+                md += ['']
 
         return '\n'.join(md)

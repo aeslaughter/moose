@@ -82,6 +82,7 @@ class MooseApplicationDocGenerator(object):
         self._yaml_data = yaml_data
         self._syntax = MooseDocs.MooseApplicationSyntax(yaml_data, self._prefix, *source_dirs, hide=hide)
 
+
         self._systems = []
         for system in self._syntax.systems():
             md = self._syntax.getMarkdown(system)
@@ -94,15 +95,12 @@ class MooseApplicationDocGenerator(object):
             md = self._syntax.getMarkdown(key)
             header = self._syntax.header(key)
             nodes = yaml_data[key]
-
             for node in nodes:
                 self._objects.append(MooseDocs.MooseObjectInformation(node, md, header, inputs=inputs, source=source))
 
     def write(self):
 
-        self.buildYaml(self._filename)
-
-#        prefix = os.path.splitext(self._filename)[0]os.path.splitext(self._filename)[0]
+        self.writeYAML(self._filename)
 
         for system in self._systems:
             system.write(prefix=self._prefix)
@@ -110,7 +108,7 @@ class MooseApplicationDocGenerator(object):
         for obj in self._objects:
             obj.write(prefix=self._prefix)
 
-    def buildYaml(self, filename):
+    def writeYAML(self, filename):
         """
         Generates the System.yml file.
         """
@@ -136,34 +134,62 @@ class MooseApplicationDocGenerator(object):
 
             if hasLabel(node, local=False):
 
+
+
+
                 name = node['name']
                 key = name.split('/')[-1]
-                #star = '{}/*'.format(name)
                 subblocks = node['subblocks']
 
-                if key == '<type>':
+
+                if key == 'PolycrystalRandomIC':
+                    print 'WTF', name, node['labels']
+
+
+                if key == '*' or key == '<type>':
                     level -= 1
 
-                elif key == '*':
-                    if hasLabel(node, local=True):
-                        parent = name.rsplit('/', 1)[0]
-                        overview = parent.strip('/').replace('/', '-')
-                        msg = '{}- Overview: {}.md'.format(' '*4*level, overview)
+                if name in self._syntax.systems():
+
+
+                    if key == '*' or key == '<type>':
+                        #level -= 1
+                        parent = name.split('/')[-2]
+                        msg = '{}- {}:'.format(' '*4*level, parent)
                         yield msg
 
-                elif subblocks != None:
 
-                    msg = '{}- {}:'.format(' '*4*level, key)
-                    yield msg
+                        if hasLabel(node, local=True):
+                            parent = name.rsplit('/', 1)[0]
+                            #overview = parent.strip('/').replace('/*', '').replace('/', '-')
+                            msg = '{}- Overview: {}/{}'.format(' '*4*(level+1), self._prefix, MooseDocs.MooseSystemInformation.filename(parent))
+                            yield msg
+                            #level -= 1
 
-                    if hasLabel(node, local=True):
-                        overview = name.strip('/').replace('/', '-')
-                        msg = '{}- Overview: {}.md'.format(' '*4*(level+1), overview)
+                    else:
+
+                        msg = '{}- {}:'.format(' '*4*level, key)
                         yield msg
+
+
+                        if hasLabel(node, local=True):
+                            msg = '{}- Overview: {}/{}'.format(' '*4*(level+1), self._prefix, MooseDocs.MooseSystemInformation.filename(name))
+                            yield msg
+
+
+
 
                 else:
-                    msg = '{0}- {1}: {1}.md'.format(' '*4*level, key)
-                    yield msg
+                    if subblocks == None:#key != '<type>' and key != '*':
+                        #level -= 1
+                        #print 'OBJECT', name
+                        if hasLabel(node, local=True):
+
+                            msg = '{0}- {1}: {2}/{1}.md'.format(' '*4*level, key, self._prefix)
+                            yield msg
+
+                    #elif key == '<type>' or key == '*':
+                    #    level -= 1
 
 
                 if node['subblocks'] != None:
@@ -213,9 +239,9 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
-    #nodes = ydata['/Kernels/*']
+    #nodes = ydata['/Kernels/Diffusion']
     #for node in nodes:
-    #        print node['name'], node.keys()
+    #    print node['name'], node['parameters']
 
     #nodes = ydata['ClosePackIC']
     #for node in nodes:
