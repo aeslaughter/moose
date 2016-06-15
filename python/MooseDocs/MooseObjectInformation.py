@@ -17,10 +17,11 @@ class MooseObjectInformation(MooseInformationBase):
 
     """
 
-    log = logging.getLogger('MooseObjectInformation')
+    log = logging.getLogger('MkMooseDocs.MooseObjectInformation')
 
     def __init__(self, yaml, details, src, **kwargs):
         MooseInformationBase.__init__(self, yaml)
+
         self.log.info('Initializing Documentation: {}'.format(yaml['name']))
 
 
