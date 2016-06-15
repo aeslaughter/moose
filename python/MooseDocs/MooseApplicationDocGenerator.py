@@ -51,11 +51,11 @@ class MooseApplicationDocGenerator(object):
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
             md = self._syntax.getMarkdown(key)
-            header = self._syntax.header(key)
+            src = self._syntax.filenames(key)
             nodes = yaml_data[key]
             for node in nodes:
                 if not any([node['name'].startswith(h) for h in hide]):
-                    self._objects.append(MooseObjectInformation(node, md, header, inputs=inputs, source=source))
+                    self._objects.append(MooseObjectInformation(node, md, src, inputs=inputs, source=source))
 
     def write(self):
 
@@ -127,7 +127,7 @@ class MooseApplicationDocGenerator(object):
                 d['items'].append( (name, os.path.join(root, filename)))
 
 
-        def form(node, level=0):
+        def dumptree(node, level=0):
 
             if 'items' in node:
                 for item in node['items']:
@@ -136,18 +136,13 @@ class MooseApplicationDocGenerator(object):
 
             for key, value in node.iteritems():
                 yield '{}- {}:'.format(' '*4*level, key)
-                form(value, level+1)
+                for f in dumptree(value, level+1):
+                    yield f
 
-        output = form(tree)
-        '\n'.join(output)
+        output = dumptree(tree)
 
-        """
-        self.log.info('Creating YAML file: {}'.format(filename))
-        output = []
-        for node in self._yaml_data.get():
-            output += sub(node)
-
-        fid = open(filename, 'w')
+        yaml_filename = os.path.join(self._prefix, 'pages.yml')
+        self.log.info('Creating YAML file: {}'.format(yaml_filename))
+        fid = open(yaml_filename, 'w')
         fid.write('\n'.join(output))
         fid.close()
-        """

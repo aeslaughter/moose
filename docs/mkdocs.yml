@@ -15,10 +15,10 @@ markdown_extensions:
     - mdx_math                           # pip install python-markdown-math
     - smarty
 
-#pages:
-#   - Home: index.md
-#   - Documentation:
-#       - Moose Flavored Markdown: src/MooseFlavoredMarkdown.md
-#       - Framework: !include framework.yml # Generated (see 'extra' section)
+pages:
+   - Home: index.md
+   - Documentation:
+       - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
+       - Framework: !include documentation/framework/pages.yml
 #       #- Modules:
 #       #    - Phase Field: !include phase_field.yml # Generated (see 'extra' section)

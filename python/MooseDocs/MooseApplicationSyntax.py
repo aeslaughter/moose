@@ -77,7 +77,7 @@ class MooseApplicationSyntax(object):
     def objects(self):
         return self._objects
 
-    def header(self, key):
+    def filenames(self, key):
         return self._filenames[self._objects[key]]
  #
  #
@@ -157,7 +157,7 @@ class MooseApplicationSyntax(object):
                     # Update class to source definition map
                     if filename.endswith('.h'):
                         for match in re.finditer(r'class\s*(?P<class>\w+)', content):
-                            self._filenames[match.group('class')] = fullfile
+                            self._filenames[match.group('class')] = [fullfile]
 
                     # Map of registered objects
                     for match in re.finditer(r'(?<!\:)register(?!RecoverableData|edError)\w+?\((?P<key>\w+)\);', content):
@@ -177,3 +177,12 @@ class MooseApplicationSyntax(object):
                         key = match.group('key')
                         appendSyntax(key)
 #                        self._systems.add(key)
+
+        for root, dirs, files in os.walk(path, topdown=False):
+            for filename in files:
+                fullfile = os.path.join(root, filename)
+
+                # Inspect source files
+                name, ext = os.path.splitext(filename)
+                if (ext == '.C') and (name in self._filenames):
+                    self._filenames[name].append(fullfile)

@@ -16,22 +16,18 @@ class MooseObjectInformation(MooseInformationBase):
 
 
     """
-    log = logging.getLogger('MkMooseDocs.MooseObjectInformation')
 
-    def __init__(self, yaml, details, header, **kwargs):
+    log = logging.getLogger('MooseObjectInformation')
+
+    def __init__(self, yaml, details, src, **kwargs):
         MooseInformationBase.__init__(self, yaml)
+        self.log.info('Initializing Documentation: {}'.format(yaml['name']))
 
-        #self._header = header
-        #self._log = logging.getLogger(self.__class__.__name__)
-        #self._handler = logging.StreamHandler()
-        #self._log.setLevel(logging.INFO)
-        #self._log.addHandler(self._handler)#
 
-        #self._log.info('Initializing Documentation: {}'.format(yaml['name']))
+        self._src = src
 
         self._inputs = kwargs.pop('inputs', None)
         self._source = kwargs.pop('source', None)
-
 
         self._class_name = yaml['name'].split('/')[-1]
         #self._class_base = yaml['moosebase']
@@ -55,6 +51,7 @@ class MooseObjectInformation(MooseInformationBase):
 
             self._tables[name].addParam(param)
 
+
     @staticmethod
     def filename(name):
         return '{}.md'.format(name.strip('/').replace('/*', '').replace('/<type>', ''))
@@ -69,23 +66,18 @@ class MooseObjectInformation(MooseInformationBase):
         md += ['']
 
         # The class description
-        if not self._class_description:
-            self.log.error("{} object lacks a description.".format(self._class_name))
-        else:
-            md += [self._class_description]
-            md += ['']
+        md += [self._class_description]
+        md += ['']
 
         # The details
-        if self._class_details and os.path.exists(self._class_details):
+        if self._class_details != None and os.path.exists(self._class_details):
             md += ['{{!{}!}}'.format(self._class_details)]
-            md += ['']
-
         else:
             md += ['<p style="color:red;font-size:120%">']
-            md += ['ERROR: Failed to located object detailed description: {}'.format(self._class_name)]
+            md += ['ERROR: Failed to located class detailed description:<br>{}'.format(self._class_details)]
             md += ['</p>']
-            self.log.error('Failed to load object description: {}'.format(self._class_name))
-
+            self.log.error('Failed to load: {}'.format(self._class_details))
+        md += ['']
 
         # Print the InputParameter tables
         md += ['## Input Parameters']
@@ -97,8 +89,15 @@ class MooseObjectInformation(MooseInformationBase):
             md += ['']
 
         # Developer information
+        #TODO: Replace code with repo links (add a repo config in config.yml)
         md += ['## Additional Developer Documentation']
-        md += ['* Source: [{}]({})'.format(self._class_name, self._source)]
+        n = len(self._src)
+        if n == 1:
+            md += ['* Source: [{}.h]({})'.format(self._class_name, *self._src)]
+        elif n == 2:
+            md += ['* Source: [{0}.h]({1}) [{0}.C]({2})'.format(self._class_name, *self._src)]
+        else:
+            self.log.error('Unexpected number of source files ({}).'.format(n))
         #md += ['* Moose System: {}'.format(self._class_base)]
         md += ['* Class Doxygen: [{}]({})'.format(self._class_name,
                                           os.path.join(MooseDocs.MOOSE_DOXYGEN, 'class' + self._class_name + '.html'))]
@@ -120,7 +119,7 @@ class MooseObjectInformation(MooseInformationBase):
         """
 
         md = []
-        if items != None and len(items) > 0:
+        if items != None:
             md += ['## {}'.format(title)]
             for k, db in items.iteritems():
                 if self._class_name in db:
