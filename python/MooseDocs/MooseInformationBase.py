@@ -20,7 +20,7 @@ class MooseInformationBase(object):
         """
         prefix = kwargs.pop('prefix', '')
 
-        
+
         filename = os.path.abspath(os.path.join(prefix, self.filename(self._yaml['name'])))
 
         dirname = os.path.dirname(filename)

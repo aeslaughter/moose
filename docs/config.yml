@@ -2,9 +2,6 @@
 
 repo: https://github.com/idaholab/moose
 
-markdown:
-    - /Users/slauae/projects/moose-doc/docs/details
-
 # Complete YAML syntax to ignore (must include leading /). All "systems" in MOOSE matching
 # these values will be completly ignored and all objects within the associated system will
 # also be ignored.
@@ -18,6 +15,7 @@ hide:
 generate:
     Framework:
         prefix: documentation/framework
+        details: /Users/slauae/projects/moose-doc/docs/details
         source:
             - /Users/slauae/projects/moose-doc/framework
        # Phase Field:

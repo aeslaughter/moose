@@ -75,27 +75,10 @@ if __name__ == '__main__':
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
-    #nodes = ydata['/Kernels/Diffusion']
-    #for node in nodes:
-    #    print node['name'], node['parameters']
-
-    #nodes = ydata['ClosePackIC']
-    #for node in nodes:
-    #    print node['name']
-
-    #ydata.pop('/UserObjects/PointValue')
-    #print ydata['/UserObjects/PointValue']
-
-    #path = config['extra']['Generate']['Phase Field']['source']
-    #syntax = MooseDocs.MooseApplicationSyntax(ydata, 'phase_field', *path)
-    #print syntax._yaml_data
-
 
     for value in config['generate'].values():
-        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value['prefix'], value['source'], links=config['links'], hide=config['hide'])
+        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value['prefix'], value['source'], links=config['links'], hide=config['hide'], details=value['details'])
         generator.write()
-
-    #print '\n'.join(generator._syntax._syntax)
 
     """
     node = ydata['/Kernels']
@@ -105,8 +88,8 @@ if __name__ == '__main__':
 
     """
     path = '/Kernels/Diffusion'
-    details = '/Users/slauae/projects/moose-doc/framework/include/kernels/Diffusion.md'
-    source = '/Users/slauae/projects/moose-doc/framework/include/kernels/Diffusion.h'
-    info = MooseDocs.MooseObjectInformation(ydata[path], details, source, inputs=inputs, source=source)
-    info.write()
+    source = ['/Users/slauae/projects/moose-doc/framework/include/kernels/Diffusion.h']
+    details = config['generate']['Framework']['details']
+    info = MooseDocs.MooseObjectInformation(ydata.find(path), details, source)
+    info.write(prefix='documentation/framework')
     """

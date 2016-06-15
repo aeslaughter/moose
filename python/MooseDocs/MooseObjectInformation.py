@@ -32,7 +32,7 @@ class MooseObjectInformation(MooseInformationBase):
         self._class_name = yaml['name'].split('/')[-1]
         #self._class_base = yaml['moosebase']
         self._class_description = yaml['description']
-        self._class_details = details
+        self._class_details = os.path.join(details, self.filename(yaml['name']))
 
         # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
         self._tables = collections.OrderedDict()
@@ -70,14 +70,10 @@ class MooseObjectInformation(MooseInformationBase):
         md += ['']
 
         # The details
-        if self._class_details != None and os.path.exists(self._class_details):
-            md += ['{{!{}!}}'.format(self._class_details)]
-        else:
-            md += ['<p style="color:red;font-size:120%">']
-            md += ['ERROR: Failed to located class detailed description:<br>{}'.format(self._class_details)]
-            md += ['</p>']
-            self.log.error('Failed to load: {}'.format(self._class_details))
+        md += ['{{!{}!}}'.format(self._class_details)]
         md += ['']
+        if not os.path.exists(self._class_details):
+            self.log.error('Details file does not exist: {}'.format(self._class_details))
 
         # Print the InputParameter tables
         md += ['## Input Parameters']

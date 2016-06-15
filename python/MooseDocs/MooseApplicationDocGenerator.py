@@ -26,10 +26,12 @@ class MooseApplicationDocGenerator(object):
     def __init__(self, yaml_data, prefix, source_dirs, **kwargs):
 
         # Extract the input/source link directories to utilize and build databases
-        inputs = collections.OrderedDict()
-        source = collections.OrderedDict()
         links = kwargs.pop('links', dict())
         hide = kwargs.pop('hide', list())
+        details = kwargs.pop('details')
+
+        inputs = collections.OrderedDict()
+        source = collections.OrderedDict()
         for key, value in links.iteritems():
             inputs[key] = database.Database('.i', value, database.items.InputFileItem)
             source[key] = database.Database('.h', value, database.items.ChildClassItem)
@@ -55,7 +57,7 @@ class MooseApplicationDocGenerator(object):
             nodes = yaml_data[key]
             for node in nodes:
                 if not any([node['name'].startswith(h) for h in hide]):
-                    self._objects.append(MooseObjectInformation(node, md, src, inputs=inputs, source=source))
+                    self._objects.append(MooseObjectInformation(node, details, src, inputs=inputs, source=source))
 
     def write(self):
 
