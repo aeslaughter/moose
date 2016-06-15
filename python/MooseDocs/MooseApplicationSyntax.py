@@ -35,7 +35,7 @@ class MooseApplicationSyntax(object):
         self._objects = dict()
 
         self._filenames = dict()
-        self._markdown = dict()
+        #self._markdown = dict()
 
         self._syntax = set()
 
@@ -92,13 +92,13 @@ class MooseApplicationSyntax(object):
  #       return (key in self._actions) or (key + '/*' in self._actions)
 
 
-    def getMarkdown(self, name):
+    #def getMarkdown(self, name):
 
-        if name in self._markdown:
-            return self._markdown[name]
+    #    if name in self._markdown:
+    #        return self._markdown[name]
 
         #self.log.error('Failed to locate the system documentation for {}'.format(name))
-        return None
+    #    return None
         #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
 
 #    def _getdata(self, data):
@@ -144,8 +144,8 @@ class MooseApplicationSyntax(object):
                 fullfile = os.path.join(root, filename)
 
                 # Store any markdown files associated (the name of the markdown matches should match the registered name).
-                if filename.endswith('.md'):
-                    self._markdown[filename[:-2]] = fullfile
+                #if filename.endswith('.md'):
+                #    self._markdown[filename[:-2]] = fullfile
 
                 # Inspect source files
                 if filename.endswith('.C') or filename.endswith('.h'):

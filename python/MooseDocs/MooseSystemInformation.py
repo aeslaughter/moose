@@ -11,7 +11,7 @@ class MooseSystemInformation(MooseInformationBase):
     def __init__(self, node, details):
         MooseInformationBase.__init__(self, node)
 
-        self._details = details
+        self._details = os.path.join(details, self.filename(node['name']))
 
     @staticmethod
     def filename(name):

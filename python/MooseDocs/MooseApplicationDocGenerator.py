@@ -45,14 +45,12 @@ class MooseApplicationDocGenerator(object):
 
         self._systems = []
         for system in self._syntax.systems():
-            md = self._syntax.getMarkdown(system)
             node = yaml_data.find(system)
             if node['name'] not in hide:
-                self._systems.append(MooseSystemInformation(node, md))
+                self._systems.append(MooseSystemInformation(node, details))
 
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
-            md = self._syntax.getMarkdown(key)
             src = self._syntax.filenames(key)
             nodes = yaml_data[key]
             for node in nodes:
