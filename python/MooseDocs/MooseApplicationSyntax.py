@@ -51,7 +51,6 @@ class MooseApplicationSyntax(object):
             self._updateSyntax(path)
 
 
-        #print '\n'.join(self._syntax)
         self._yaml_data.addLabel(label, self._syntax)
 
         for s in self._syntax:

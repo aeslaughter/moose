@@ -59,13 +59,13 @@ class MooseApplicationDocGenerator(object):
 
     def write(self):
 
+        for system in self._systems:
+            system.write(prefix=self._prefix)
+
+        for obj in self._objects:
+            obj.write(prefix=self._prefix)
+
         self.writeYAML()
-
-        #for system in self._systems:
-        #    system.write(prefix=self._prefix)
-
-        #for obj in self._objects:
-        #    obj.write(prefix=self._prefix)
 
     def writeYAML(self):
         """
@@ -120,7 +120,6 @@ class MooseApplicationDocGenerator(object):
                 #cmd = "tree{}['items'].append('{}')".format(("['{}']"*level).format(*relative), filename)
                 cmd = "tree{}".format(("['{}']"*level).format(*relative))
 
-                #print cmd
                 d = eval(cmd)
                 if 'items' not in d:
                     d['items'] = []
@@ -130,19 +129,15 @@ class MooseApplicationDocGenerator(object):
 
         def output(node, level=0):
 
+            if 'items' in node:
+                for item in node['items']:
+                    print '{}- {}: {}'.format(' '*4*(level), *item)
+                node.pop('items')
 
 
-            keys = node.keys()
-            print keys
-
-            for k in keys:
-                v = node[k]
-                if k == 'items':
-                    for item in v:
-                        print '{}- {}: {}'.format(' '*4*(level), *item)
-                else:
-                    print '{}- {}:'.format(' '*4*level, k)
-                    output(v, level+1)
+            for key, value in node.iteritems():
+                print '{}- {}:'.format(' '*4*level, key)
+                output(value, level+1)
 
         output(tree)
 

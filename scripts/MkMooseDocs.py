@@ -71,12 +71,10 @@ if __name__ == '__main__':
     config = yaml_load(fid.read())
     fid.close()
 
-
     # Locate and run the MOOSE executable
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
-
     #nodes = ydata['/Kernels/Diffusion']
     #for node in nodes:
     #    print node['name'], node['parameters']
