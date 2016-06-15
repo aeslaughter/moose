@@ -127,19 +127,19 @@ class MooseApplicationDocGenerator(object):
                 d['items'].append( (name, os.path.join(root, filename)))
 
 
-        def output(node, level=0):
+        def form(node, level=0):
 
             if 'items' in node:
                 for item in node['items']:
-                    print '{}- {}: {}'.format(' '*4*(level), *item)
+                    yield '{}- {}: {}'.format(' '*4*(level), *item)
                 node.pop('items')
 
-
             for key, value in node.iteritems():
-                print '{}- {}:'.format(' '*4*level, key)
-                output(value, level+1)
+                yield '{}- {}:'.format(' '*4*level, key)
+                form(value, level+1)
 
-        output(tree)
+        output = form(tree)
+        '\n'.join(output)
 
         """
         self.log.info('Creating YAML file: {}'.format(filename))
