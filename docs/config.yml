@@ -1,7 +1,5 @@
 # Configuration file for creating MOOSE application documentation.
 
-repo: https://github.com/idaholab/moose
-
 # Complete YAML syntax to ignore (must include leading /). All "systems" in MOOSE matching
 # these values will be completly ignored and all objects within the associated system will
 # also be ignored.
@@ -14,10 +12,10 @@ hide:
 # The system documentation to generate.
 generate:
     Framework:
-        prefix: documentation/framework
-        details: /Users/slauae/projects/moose-doc/docs/details
-        source:
-            - /Users/slauae/projects/moose-doc/framework
+        path: framework
+        details: docs/details
+        repo: https://github.com/idaholab/moose/blob/master
+        doxygen: http://mooseframework.com/docs/doxygen/moose/
        # Phase Field:
        #     yaml: phase_field.yml
        #     source:
@@ -25,10 +23,10 @@ generate:
 
 links:
     Tests:
-        - /Users/slauae/projects/moose-doc/test/tests
-        - /Users/slauae/projects/moose-doc/modules/phase_field/tests
+        - test/tests
+        - modules/phase_field/tests
     Examples:
-        - /Users/slauae/projects/moose-doc/examples
-        - /Users/slauae/projects/moose-doc/modules/phase_field/examples
+        - examples
+        - modules/phase_field/examples
     Tutorials:
-        - /Users/slauae/projects/moose-doc/tutorials
+        - tutorials

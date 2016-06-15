@@ -89,7 +89,7 @@ class ChildClassItem(RegexItem):
         c_filename = self._filename.replace('/include/', '/src/').replace('.h', '.C')
 
         if os.path.exists(c_filename):
-            md = '* [{}]({})\n[{}]({})'.format(self._rel_path, self._repo, c_rel_path, c_repo)
+            md = '* [{}]({})<br>[{}]({})'.format(self._rel_path, self._repo, c_rel_path, c_repo)
         else:
             md = '* [{}]({})'.format(self._rel_path, self._repo)
 

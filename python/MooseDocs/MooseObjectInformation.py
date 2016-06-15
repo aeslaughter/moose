@@ -19,21 +19,19 @@ class MooseObjectInformation(MooseInformationBase):
 
     log = logging.getLogger('MkMooseDocs.MooseObjectInformation')
 
-    def __init__(self, yaml, details, src, **kwargs):
-        MooseInformationBase.__init__(self, yaml)
+    def __init__(self, yaml, src, **kwargs):
+        MooseInformationBase.__init__(self, yaml, **kwargs)
 
         self.log.info('Initializing Documentation: {}'.format(yaml['name']))
 
-
         self._src = src
+
 
         self._inputs = kwargs.pop('inputs', None)
         self._source = kwargs.pop('source', None)
 
-        self._class_name = yaml['name'].split('/')[-1]
-        #self._class_base = yaml['moosebase']
-        self._class_description = yaml['description']
-        self._class_details = os.path.join(details, self.filename(yaml['name']))
+        self._name = yaml['name'].split('/')[-1]
+        self._description = yaml['description']
 
         # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
         self._tables = collections.OrderedDict()
@@ -57,24 +55,52 @@ class MooseObjectInformation(MooseInformationBase):
     def filename(name):
         return '{}.md'.format(name.strip('/').replace('/*', '').replace('/<type>', ''))
 
+    def develDocs(self):
+        """
+        Method for adding developer links (github, doxygen, etc.) to the markdown output.
+        """
+
+        # The markdown to output
+        md = []
+
+        # Add header
+        if any([self._repo, self._doxygen]):
+            md += ['## Additional Developer Documentation']
+
+        # Repository link(s)
+        if self._repo:
+            items = []
+            for fname in self._src:
+                items.append(os.path.basename(fname))
+                items.append(os.path.join(self._repo, fname))
+            md += ['* Source: ' + ('[{}]({}) '*len(self._src)).format(*items)]
+
+        # Doxygen link
+        if self._doxygen:
+            md += ['* Class Doxygen: [{0}]({1}class{0}.html)'.format(self._name, self._doxygen)]
+            md += ['']
+
+        return md
+
+
     def markdown(self):
 
         # Build a list of strings to be separated by '\n'
         md = []
 
         # The class title
-        md += ['# {}'.format(self._class_name)]
+        md += ['# {}'.format(self._name)]
         md += ['']
 
         # The class description
-        md += [self._class_description]
+        md += [self._description]
         md += ['']
 
         # The details
-        md += ['{{!{}!}}'.format(self._class_details)]
+        md += ['{{!{}!}}'.format(self._details)]
         md += ['']
-        if not os.path.exists(self._class_details):
-            self.log.error('Details file does not exist: {}'.format(self._class_details))
+        if not os.path.exists(self._details):
+            self.log.error('Details file does not exist: {}'.format(self._details))
 
         # Print the InputParameter tables
         md += ['## Input Parameters']
@@ -85,20 +111,8 @@ class MooseObjectInformation(MooseInformationBase):
             md += [table.markdown()]
             md += ['']
 
-        # Developer information
-        #TODO: Replace code with repo links (add a repo config in config.yml)
-        md += ['## Additional Developer Documentation']
-        n = len(self._src)
-        if n == 1:
-            md += ['* Source: [{}.h]({})'.format(self._class_name, *self._src)]
-        elif n == 2:
-            md += ['* Source: [{0}.h]({1}) [{0}.C]({2})'.format(self._class_name, *self._src)]
-        else:
-            self.log.error('Unexpected number of source files ({}).'.format(n))
-        #md += ['* Moose System: {}'.format(self._class_base)]
-        md += ['* Class Doxygen: [{}]({})'.format(self._class_name,
-                                          os.path.join(MooseDocs.MOOSE_DOXYGEN, 'class' + self._class_name + '.html'))]
-        md += ['']
+        # Developer links
+        md += self.develDocs()
 
         # Print the item information
         md += self._linkMarkdown('Input Files', self._inputs)
@@ -119,10 +133,10 @@ class MooseObjectInformation(MooseInformationBase):
         if items != None:
             md += ['## {}'.format(title)]
             for k, db in items.iteritems():
-                if self._class_name in db:
+                if self._name in db:
                     md += ['### {}'.format(k)]
                     md += ['<div style="max-height:350px;overflow-y:Scroll">\n']
-                    for j in db[self._class_name]:
+                    for j in db[self._name]:
                         md += [j.markdown()]
                     md += ['\n</div>']
                     md += ['']

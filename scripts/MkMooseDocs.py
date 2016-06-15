@@ -50,7 +50,7 @@ def runExe(app_path, args):
 if __name__ == '__main__':
 
     # Some arguments to be passed in
-    dirname = os.path.join(MooseDocs.MOOSE_DIR, 'docs')
+    dirname = os.path.join(MooseDocs.MOOSE_DIR)#, 'docs')
 
     # Setup the logger object
     log = logging.getLogger('MkMooseDocs')
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     #log.setLevel(logging.DEBUG)
 
     # Setup the location
-    config_file = os.path.join(dirname, 'config.yml')
+    config_file = os.path.join(dirname, 'docs', 'config.yml')
     log.info('Generating Documentation: {}'.format(config_file))
 
     # Parse the configuration file for the desired paths
@@ -77,19 +77,23 @@ if __name__ == '__main__':
     ydata = utils.MooseYaml(raw)
 
     for value in config['generate'].values():
-        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value['prefix'], value['source'], links=config['links'], hide=config['hide'], details=value['details'])
+        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value, links=config['links'], hide=config['hide'])
         generator.write()
 
     """
-    node = ydata['/Kernels']
-    info = MooseDocs.MooseSystemInformation(node)
+    c = config['generate']['Framework']
+    syntax = MooseDocs.MooseApplicationSyntax(ydata, path=c.get('path', '.'))
+    """
+
+    """
+    node = ydata.find('/Kernels')
+    info = MooseDocs.MooseSystemInformation(node, **config['generate']['Framework'])
     info.write()
     """
 
     """
     path = '/Kernels/Diffusion'
-    source = ['/Users/slauae/projects/moose-doc/framework/include/kernels/Diffusion.h']
-    details = config['generate']['Framework']['details']
-    info = MooseDocs.MooseObjectInformation(ydata.find(path), details, source)
-    info.write(prefix='documentation/framework')
+    source = ['framework/include/kernels/Diffusion.h']
+    info = MooseDocs.MooseObjectInformation(ydata.find(path), source, **config['generate']['Framework'])
+    info.write()
     """

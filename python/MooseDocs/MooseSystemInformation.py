@@ -8,10 +8,8 @@ class MooseSystemInformation(MooseInformationBase):
 
     log = logging.getLogger('MkMooseDocs.MooseSystemInformation')
 
-    def __init__(self, node, details):
-        MooseInformationBase.__init__(self, node)
-
-        self._details = os.path.join(details, self.filename(node['name']))
+    def __init__(self, node, **kwargs):
+        MooseInformationBase.__init__(self, node, **kwargs)
 
     @staticmethod
     def filename(name):
@@ -40,8 +38,6 @@ class MooseSystemInformation(MooseInformationBase):
             md += ['## Input Parameters']
             md += [table.markdown()]
             md += ['']
-
-
 
         if self._yaml['subblocks']:
             table = MarkdownTable('Name', 'Description')

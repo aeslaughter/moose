@@ -14,7 +14,11 @@ class MooseApplicationDocGenerator(object):
     Args:
         yaml_data[dict]: The complete YAML object obtained from the MOOSE application.
         filename[str]: The MkDocs yaml file to create.
-        source_dirs[list]: The source directories to inspect and build documentation.
+        config[dict]: A dictionary with configuration options.
+            repo:
+            prefix:
+            details:
+            source:
 
     Kwargs:
         input[list] A list of directories to search for input files containing the class name in an input file.
@@ -23,31 +27,31 @@ class MooseApplicationDocGenerator(object):
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationDocGenerator')
 
-    def __init__(self, yaml_data, prefix, source_dirs, **kwargs):
+    def __init__(self, yaml_data, config, **kwargs):
 
         # Extract the input/source link directories to utilize and build databases
         links = kwargs.pop('links', dict())
         hide = kwargs.pop('hide', list())
-        details = kwargs.pop('details')
 
+        # Configuration
+        self._config = config
+
+        # Create the database of input files and source code
         inputs = collections.OrderedDict()
         source = collections.OrderedDict()
         for key, value in links.iteritems():
             inputs[key] = database.Database('.i', value, database.items.InputFileItem)
             source[key] = database.Database('.h', value, database.items.ChildClassItem)
 
-        self._prefix = prefix
-
         # Read the supplied files
         self._yaml_data = yaml_data
-        self._syntax = MooseApplicationSyntax(yaml_data, self._prefix, *source_dirs)
-
+        self._syntax = MooseApplicationSyntax(yaml_data, path=self._config.get('path', '.'))
 
         self._systems = []
         for system in self._syntax.systems():
             node = yaml_data.find(system)
             if node['name'] not in hide:
-                self._systems.append(MooseSystemInformation(node, details))
+                self._systems.append(MooseSystemInformation(node, **self._config))
 
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
@@ -55,15 +59,16 @@ class MooseApplicationDocGenerator(object):
             nodes = yaml_data[key]
             for node in nodes:
                 if not any([node['name'].startswith(h) for h in hide]):
-                    self._objects.append(MooseObjectInformation(node, details, src, inputs=inputs, source=source))
+                    self._objects.append(MooseObjectInformation(node, src, inputs=inputs, source=source, **self._config))
+
 
     def write(self):
 
         for system in self._systems:
-            system.write(prefix=self._prefix)
+            system.write()
 
         for obj in self._objects:
-            obj.write(prefix=self._prefix)
+            obj.write()
 
         self.writeYAML()
 
@@ -94,11 +99,11 @@ class MooseApplicationDocGenerator(object):
         #def insertItem(tree, cmd, item):
         #    cmd = "tree{}'.format(("['{}']"*level).format(*relative))
 
-
+        prefix = self._config.get('prefix', '')
 
         rec_dd = lambda: collections.defaultdict(rec_dd)
         tree = rec_dd()
-        for root, dirs, files in os.walk(self._prefix, topdown=True):
+        for root, dirs, files in os.walk(prefix, topdown=True):
 
             if 'Overview.md' in files:
                 files.insert(0, files.pop(files.index('Overview.md')))
@@ -109,7 +114,7 @@ class MooseApplicationDocGenerator(object):
                 if ext != '.md':
                     continue
 
-                relative = root.replace(self._prefix, '').strip('/').split('/')
+                relative = root.replace(prefix, '').strip('/').split('/')
                 level = len(relative)
 
                 #print '{}- {}:{}'.format(' '*4*level, name, filename)
@@ -141,7 +146,7 @@ class MooseApplicationDocGenerator(object):
 
         output = dumptree(tree)
 
-        yaml_filename = os.path.join(self._prefix, 'pages.yml')
+        yaml_filename = os.path.join(prefix, 'pages.yml')
         self.log.info('Creating YAML file: {}'.format(yaml_filename))
         fid = open(yaml_filename, 'w')
         fid.write('\n'.join(output))

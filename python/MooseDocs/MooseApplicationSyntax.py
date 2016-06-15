@@ -18,40 +18,35 @@ class MooseApplicationSyntax(object):
 
     Args:
         yaml[MooseYaml]: The MooseYaml object obtained by running the application with --yaml option.
-        args: Valid source directory(ies) to extract syntax from.
+
+    Kwargs:
+        path[str]: Valid source directory to extract syntax.
     """
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationSyntax')
 
-    def __init__(self, yaml_data, label, *args, **kwargs):
+    def __init__(self, yaml_data, **kwargs):
+
+
 
         self.log.info('Locating syntax for application.')
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)
-        #self._moosebase = dict()
+        self._path = kwargs.pop('path', '.')
+
 
         self._systems = set()
         self._objects = dict()
-
         self._filenames = dict()
-        #self._markdown = dict()
-
         self._syntax = set()
 
 
-        #self._hide = kwargs.pop('hide', list())
-
-        # Update the 'moosebase' database
-        #for itr in yaml_data.get():
-        #    self._getdata(itr)
-
         # Update the syntax maps
-        for path in args:
-            self._updateSyntax(path)
+        self._updateSyntax(self._path)
 
 
-        self._yaml_data.addLabel(label, self._syntax)
+        self._yaml_data.addLabel(self._path, self._syntax)
 
         for s in self._syntax:
             nodes = self._yaml_data[s]
@@ -61,13 +56,6 @@ class MooseApplicationSyntax(object):
                     self._systems.add(node['name'])
 
 
-
- #   def syntax(self):
- #       """
- #       Return the application syntax map.
- #       """
- #       return self._syntax
- #
     def systems(self):
         """
         Return a set of MOOSE systems for defined in the supplied directories.
@@ -79,45 +67,6 @@ class MooseApplicationSyntax(object):
 
     def filenames(self, key):
         return self._filenames[self._objects[key]]
- #
- #
- #   def hasSyntax(self, key):
- #       """
- #       Return True if the supplied key is registered syntax of the supplied directories.
- #
- #       Args:
- #           key[str]: The name of the system to check.
- #       """
- #
- #       return (key in self._actions) or (key + '/*' in self._actions)
-
-
-    #def getMarkdown(self, name):
-
-    #    if name in self._markdown:
-    #        return self._markdown[name]
-
-        #self.log.error('Failed to locate the system documentation for {}'.format(name))
-    #    return None
-        #return os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'FileNotFound.md')
-
-#    def _getdata(self, data):
-#        """
-#        A helper for populating the 'moosebase' database. (private)
-#
-#        Args:
-#            data: The YAML node to examine.
-#        """
-#        if 'moosebase' in data:
-#            m = data['moosebase']
-#            if m not in self._moosebase:
-#                self._moosebase[m] = []
-#            self._moosebase[m].append(data['name'])
-#
-#        if data['subblocks']:
-#            for child in data['subblocks']:
-#                self._getdata(child)
-
 
 
     def _updateSyntax(self, path):
@@ -132,11 +81,6 @@ class MooseApplicationSyntax(object):
             key = '/' + key
             for node in self._yaml_data[key]:
                 self._syntax.add(node['name'])
-
-            #print name, [name.startswith(h) for h in self._hide], not any([name.startswith(h) for h in self._hide])
-            #if not any([name.startswith(h) for h in self._hide]):
-            #    self._syntax.add(name)
-
 
         # Walk the directory, looking for files with the supplied extension.
         for root, dirs, files in os.walk(path, topdown=False):
@@ -176,7 +120,6 @@ class MooseApplicationSyntax(object):
                     for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):
                         key = match.group('key')
                         appendSyntax(key)
-#                        self._systems.add(key)
 
         for root, dirs, files in os.walk(path, topdown=False):
             for filename in files:
