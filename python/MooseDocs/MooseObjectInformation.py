@@ -63,22 +63,23 @@ class MooseObjectInformation(MooseInformationBase):
         # The markdown to output
         md = []
 
-        # Add header
-        if any([self._repo, self._doxygen]):
-            md += ['## Additional Developer Documentation']
 
         # Repository link(s)
-        if self._repo:
+        if self._config['repo']:
             items = []
             for fname in self._src:
                 items.append(os.path.basename(fname))
-                items.append(os.path.join(self._repo, fname))
+                items.append(os.path.join(self._config['repo'], fname))
             md += ['* Source: ' + ('[{}]({}) '*len(self._src)).format(*items)]
 
         # Doxygen link
-        if self._doxygen:
-            md += ['* Class Doxygen: [{0}]({1}class{0}.html)'.format(self._name, self._doxygen)]
+        if self._config['doxygen']:
+            md += ['* Class Doxygen: [{0}]({1}class{0}.html)'.format(self._name, self._config['doxygen'])]
             md += ['']
+
+        if md:
+            md.insert(0, '## Additional Developer Documentation')
+
 
         return md
 

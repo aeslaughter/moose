@@ -45,7 +45,7 @@ class MooseApplicationDocGenerator(object):
 
         # Read the supplied files
         self._yaml_data = yaml_data
-        self._syntax = MooseApplicationSyntax(yaml_data, path=self._config.get('path', '.'))
+        self._syntax = MooseApplicationSyntax(yaml_data, self._config.get('source_dir'))
 
         self._systems = []
         for system in self._syntax.systems():
@@ -99,11 +99,11 @@ class MooseApplicationDocGenerator(object):
         #def insertItem(tree, cmd, item):
         #    cmd = "tree{}'.format(("['{}']"*level).format(*relative))
 
-        prefix = self._config.get('prefix', '')
+        prefix = os.path.join(self._config.get('build_dir'), self._config['source_dir'])
 
         rec_dd = lambda: collections.defaultdict(rec_dd)
         tree = rec_dd()
-        for root, dirs, files in os.walk(prefix, topdown=True):
+        for root, dirs, files in os.walk(os.path.join(self._config['docs_dir'], prefix), topdown=True):
 
             if 'Overview.md' in files:
                 files.insert(0, files.pop(files.index('Overview.md')))
@@ -114,22 +114,16 @@ class MooseApplicationDocGenerator(object):
                 if ext != '.md':
                     continue
 
-                relative = root.replace(prefix, '').strip('/').split('/')
+                relative = root.lstrip(self._config['docs_dir']).lstrip(prefix).strip('/').split('/')
                 level = len(relative)
 
-                #print '{}- {}:{}'.format(' '*4*level, name, filename)
-
-                #cmd = "tree{}'{}'".format(("['{}']"*level).format(*relative), filename)
-                #insertItem(tree, relative, filename)
-
-                #cmd = "tree{}['items'].append('{}')".format(("['{}']"*level).format(*relative), filename)
                 cmd = "tree{}".format(("['{}']"*level).format(*relative))
 
                 d = eval(cmd)
                 if 'items' not in d:
                     d['items'] = []
 
-                d['items'].append( (name, os.path.join(root, filename)))
+                d['items'].append( (name, os.path.join(root.lstrip(self._config['docs_dir']).lstrip('/'), filename)))
 
 
         def dumptree(node, level=0):
@@ -146,8 +140,9 @@ class MooseApplicationDocGenerator(object):
 
         output = dumptree(tree)
 
-        yaml_filename = os.path.join(prefix, 'pages.yml')
+        yaml_filename = os.path.abspath(os.path.join(self._config['docs_dir'], prefix, 'pages.yml'))
         self.log.info('Creating YAML file: {}'.format(yaml_filename))
         fid = open(yaml_filename, 'w')
-        fid.write('\n'.join(output))
+        s = '\n'.join(output)
+        fid.write(s)
         fid.close()

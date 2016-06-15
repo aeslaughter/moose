@@ -25,7 +25,7 @@ class MooseApplicationSyntax(object):
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationSyntax')
 
-    def __init__(self, yaml_data, **kwargs):
+    def __init__(self, yaml_data, path):
 
 
 
@@ -33,7 +33,6 @@ class MooseApplicationSyntax(object):
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)
-        self._path = kwargs.pop('path', '.')
 
 
         self._systems = set()
@@ -43,10 +42,10 @@ class MooseApplicationSyntax(object):
 
 
         # Update the syntax maps
-        self._updateSyntax(self._path)
+        self._updateSyntax(path)
 
 
-        self._yaml_data.addLabel(self._path, self._syntax)
+        self._yaml_data.addLabel(path, self._syntax)
 
         for s in self._syntax:
             nodes = self._yaml_data[s]

@@ -71,12 +71,26 @@ if __name__ == '__main__':
     config = yaml_load(fid.read())
     fid.close()
 
+
+    def setdefault(config):
+        config.setdefault(u'docs_dir', 'docs')
+        config.setdefault(u'build_dir', 'documentation')
+        config.setdefault(u'source_dir', '.')
+        config.setdefault(u'details_dir', '.')
+        config.setdefault(u'repo', None)
+        config.setdefault(u'doxygen', None)
+
+    #for k, v in config.iteritems():
+    #    config[str(k)] = config.pop(k)
+
+
     # Locate and run the MOOSE executable
     exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
     for value in config['generate'].values():
+        setdefault(value)
         generator = MooseDocs.MooseApplicationDocGenerator(ydata, value, links=config['links'], hide=config['hide'])
         generator.write()
 

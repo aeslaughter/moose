@@ -1,17 +1,15 @@
 import os
+import logging
 
 class MooseInformationBase(object):
+
+    log = logging.getLogger('MkMooseDocs.MooseInformationBase')
+
     def __init__(self, node, **kwargs):
         self._yaml = node
+        self._config = kwargs
 
-        self._root = kwargs.get('root', 'docs/documentation')
-
-        self._repo = kwargs.get('repo', None)
-        self._doxygen = kwargs.get('doxygen', None)
-        self._path = kwargs.get('path', '.')
-
-        print kwargs.get('details', '.'), self.filename(node['name'])
-        self._details = os.path.join(kwargs.get('details', '.'), self.filename(node['name']))
+        self._details = os.path.join(self._config['details_dir'], self.filename(node['name']))
 
 
     def __str__(self):
@@ -28,14 +26,28 @@ class MooseInformationBase(object):
         """
 
         """
-
-        filename = os.path.abspath(os.path.join(self._root, self._path, self.filename(self._yaml['name'])))
+        filename = os.path.abspath(os.path.join(self._config['docs_dir'], self._config['build_dir'], self._config['source_dir'], self.filename(self._yaml['name'])))
 
         dirname = os.path.dirname(filename)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        print 'Writing:', filename
+        md = self.markdown()
+
+
+        # Do not re-write file if it exists (saves mkdocs from re-loading the world)
+        #TODO: This doesn't seem to work
+        """
+        if os.path.exists(filename):
+            with open(filename, 'r') as fid:
+                content = fid.read()
+
+            if content == md:
+                return
+
+        """
+
+        self.log.info('Writing: {}'.format(filename))
         fid = open(filename, 'w')
-        fid.write(self.markdown())
+        fid.write(md)
         fid.close()
