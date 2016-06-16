@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     def setdefault(config):
         config.setdefault(u'docs_dir', 'docs')
-        config.setdefault(u'build_dir', 'documentation')
+        config.setdefault(u'build_dir', 'docs/documentation')
         config.setdefault(u'source_dir', '.')
         config.setdefault(u'details_dir', '.')
         config.setdefault(u'repo', None)

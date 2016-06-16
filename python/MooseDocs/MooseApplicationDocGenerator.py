@@ -73,8 +73,9 @@ class MooseApplicationDocGenerator(object):
         yml = self.generateYAML()
 
 
-        # Do not re-write file if it exists (saves mkdocs from re-loading the world)
-        filename = os.path.abspath(os.path.join(self._config['docs_dir'], self._config.get('build_dir'), self._config['source_dir'], 'pages.yml'))
+        filename = os.path.abspath(os.path.join(self._config.get('build_dir'), self._config['source_dir'], 'pages.yml'))
+
+
         """
 
         if os.path.exists(filename):
@@ -111,14 +112,13 @@ class MooseApplicationDocGenerator(object):
 
                 relative = root.lstrip(self._config['docs_dir']).lstrip(prefix).strip('/').split('/')
                 level = len(relative)
-
                 cmd = "tree{}".format(("['{}']"*level).format(*relative))
 
                 d = eval(cmd)
                 if 'items' not in d:
                     d['items'] = []
 
-                d['items'].append( (name, os.path.join(root.lstrip(self._config['docs_dir']).lstrip('/'), filename)))
+                d['items'].append( (name, os.path.join(os.path.relpath(root, self._config['docs_dir']), filename)))
 
 
         def dumptree(node, level=0):

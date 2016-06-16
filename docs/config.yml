@@ -14,7 +14,7 @@ generate:
     Framework:
         source_dir: framework
         #docs_dir: docs # default
-        #build_dir: documentation # default
+        #build_dir: docs/documentation # default
         details_dir: docs/details
         repo: https://github.com/idaholab/moose/blob/master
         doxygen: http://mooseframework.com/docs/doxygen/moose/
