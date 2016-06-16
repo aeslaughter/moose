@@ -52,12 +52,21 @@ class MooseApplicationSyntax(object):
                 if name not in self._objects:
                     self._systems.add(node['name'].rstrip('/*'))
 
+        for obj in self._objects:
+            nodes = self._yaml_data['/' + obj]
+            for node in nodes:
+                name = node['name'].rsplit('/', 1)[0]
+                self._systems.add(name)
+
 
     def systems(self):
         """
         Return a set of MOOSE systems for defined in the supplied directories.
         """
         return self._systems
+
+    def hasSystem(self, name):
+        return name in self._systems
 
     def objects(self):
         return self._objects

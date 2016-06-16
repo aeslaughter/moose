@@ -11,9 +11,8 @@ class MooseCppMethod(MooseSourcePatternBase):
 
     CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])::(\w+)\s*(.*?)\)'
 
-    def __init__(self, parser):
+    def __init__(self):
         super(MooseCppMethod, self).__init__(self.CPP_RE, 'cpp')
-        self._parser = parser
 
     def handleMatch(self, match):
         """
@@ -22,6 +21,12 @@ class MooseCppMethod(MooseSourcePatternBase):
 
         # Update the settings from regex match
         self.updateSettings(match.group(5))
+
+        path = os.path.join(MooseDocs.MOOSE_DIR, 'framework')
+
+        #TODO: Make this a configure option or something generic?
+        parser = utils.MooseSourceParser(path)
+
 
         # Build the complete filename.
         # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
@@ -34,7 +39,7 @@ class MooseCppMethod(MooseSourcePatternBase):
         # Read the file and create element
         el = self.checkFilename(filename)
         if el == None:
-            self._parser.parse(filename)
+            parser.parse(filename)
             decl, defn = self._parser.method(match.group(4))
             el = self.createElement(match.group(2), defn, filename, rel_filename)
 

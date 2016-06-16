@@ -9,7 +9,8 @@ class MooseInformationBase(object):
         self._yaml = node
         self._config = kwargs
 
-        self._details = os.path.join(self._config['details_dir'], self.filename(node['name']))
+        abspath = os.path.abspath(os.path.join(self._config['details_dir'], self.filename(node['name'])))
+        self._details = os.path.relpath(abspath, os.path.abspath(self._config['docs_dir']))
 
 
     def __str__(self):

@@ -63,7 +63,6 @@ class MooseApplicationDocGenerator(object):
 
     def write(self):
 
-        print self._systems
         for system in self._systems:
             system.write()
 

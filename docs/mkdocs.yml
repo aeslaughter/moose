@@ -1,16 +1,15 @@
 site_name: MOOSE
 
 docs_dir: .
-site_dir: ../site
 
-watch_dirs:
-    - /Users/slauae/projects/moose-doc/framework/include
+site_dir: ../site
 
 extra_javascript:
     - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
     - mathjaxconfig.js
 
 markdown_extensions:
+    - MooseDocs.extensions.MooseMarkdown
     - markdown_include.include           # pip install markdown-include
     - mdx_math                           # pip install python-markdown-math
     - smarty
@@ -18,5 +17,7 @@ markdown_extensions:
 pages:
    - Home: index.md
    - Documentation:
-       - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
+       #- Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
        - Framework: !include documentation/framework/pages.yml
+       - Modules:
+           - Phase Field: !include documentation/modules/phase_field/pages.yml
