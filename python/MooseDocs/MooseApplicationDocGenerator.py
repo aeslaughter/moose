@@ -99,7 +99,7 @@ class MooseApplicationDocGenerator(object):
 
         rec_dd = lambda: collections.defaultdict(rec_dd)
         tree = rec_dd()
-        for root, dirs, files in os.walk(os.path.join(self._config['docs_dir'], prefix), topdown=True):
+        for root, dirs, files in os.walk(prefix, topdown=True):
 
             if 'Overview.md' in files:
                 files.insert(0, files.pop(files.index('Overview.md')))

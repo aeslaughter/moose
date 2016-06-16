@@ -26,7 +26,7 @@ class MooseInformationBase(object):
         """
 
         """
-        filename = os.path.abspath(os.path.join(self._config['docs_dir'], self._config['build_dir'], self._config['source_dir'], self.filename(self._yaml['name'])))
+        filename = os.path.abspath(os.path.join(self._config['build_dir'], self._config['source_dir'], self.filename(self._yaml['name'])))
 
         dirname = os.path.dirname(filename)
         if not os.path.exists(dirname):

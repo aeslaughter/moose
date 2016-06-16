@@ -132,7 +132,6 @@ class MooseObjectInformation(MooseInformationBase):
 
         md = []
         if items != None:
-            md += ['## {}'.format(title)]
             for k, db in items.iteritems():
                 if self._name in db:
                     md += ['### {}'.format(k)]
@@ -141,6 +140,9 @@ class MooseObjectInformation(MooseInformationBase):
                         md += [j.markdown()]
                     md += ['\n</div>']
                     md += ['']
+
+        if md:
+            md.insert(0, '## {}'.format(title))
             md += ['']
 
         return md
