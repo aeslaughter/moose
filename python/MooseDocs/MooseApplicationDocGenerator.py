@@ -94,28 +94,6 @@ class MooseApplicationDocGenerator(object):
         Generates the System.yml file.
         """
 
-
-        """
-        def hasLabel(node, **kwargs):
-
-            label = self._prefix
-            local = kwargs.pop('local', False)
-
-            if ('labels') in node and (label in node['labels']):
-                return True
-
-            if not local and node['subblocks'] != None:
-                out = []
-                for child in node['subblocks']:
-                    out.append(hasLabel(child))
-                return any(out)
-
-            return False
-        """
-
-        #def insertItem(tree, cmd, item):
-        #    cmd = "tree{}'.format(("['{}']"*level).format(*relative))
-
         prefix = os.path.join(self._config.get('build_dir'), self._config['source_dir'])
 
         rec_dd = lambda: collections.defaultdict(rec_dd)

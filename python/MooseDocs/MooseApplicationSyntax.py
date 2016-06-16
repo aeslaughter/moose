@@ -45,16 +45,12 @@ class MooseApplicationSyntax(object):
         self._updateSyntax(path)
 
 
-        self._yaml_data.addLabel(path, self._syntax)
-
         for s in self._syntax:
             nodes = self._yaml_data[s]
             for node in nodes:
                 name = node['name'].split('/')[-1]
                 if name not in self._objects:
                     self._systems.add(node['name'].rstrip('/*'))
-
-
 
 
     def systems(self):

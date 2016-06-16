@@ -33,14 +33,12 @@ class MooseYaml(object):
             output += self._print(itr, 0, label)
         print '\n'.join(output)
 
-
     def find(self, key):
         for itr in self._data:
             output = self._search(key, itr, fuzzy=False)
             if output:
                 return output[0]
         return None
-
 
     def __getitem__(self, key):
         """
@@ -53,40 +51,6 @@ class MooseYaml(object):
         for itr in self._data:
             output += self._search(key, itr)
         return output
-
-
-
-    def addLabel(self, label, keys):
-
-        for key in keys:
-            for node in self[key]:
-                if 'labels' not in node:
-                    node['labels'] = set()
-                node['labels'].add(label)
-
-        """
-        def sub(data):
-            active = set()
-
-            if ('labels' in data) and (label in data['labels']):
-                active.add(label)
-
-            if isinstance(data, dict) and data['subblocks']:
-                child_active = set()
-                for child in data['subblocks']:
-                    child_active.update(sub(child))
-
-                active.update(child_active)
-                if 'labels' not in data:
-                    data['labels'] = set()
-                data['labels'].update(active)
-
-            return active
-        """
-
-        #for itr in self._data:
-        #    itr['labels'] = sub(itr)
-
 
     @staticmethod
     def _search(key, data, **kwargs):
