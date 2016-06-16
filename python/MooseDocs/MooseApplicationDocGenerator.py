@@ -51,7 +51,7 @@ class MooseApplicationDocGenerator(object):
         for system in self._syntax.systems():
             node = yaml_data.find(system)
             if node['name'] not in hide:
-                self._systems.append(MooseSystemInformation(node, **self._config))
+                self._systems.append(MooseSystemInformation(node, self._syntax, **self._config))
 
         self._objects = []
         for key, value in self._syntax.objects().iteritems():
@@ -61,18 +61,35 @@ class MooseApplicationDocGenerator(object):
                 if not any([node['name'].startswith(h) for h in hide]):
                     self._objects.append(MooseObjectInformation(node, src, inputs=inputs, source=source, **self._config))
 
-
     def write(self):
 
+        print self._systems
         for system in self._systems:
             system.write()
 
         for obj in self._objects:
             obj.write()
 
-        self.writeYAML()
+        yml = self.generateYAML()
 
-    def writeYAML(self):
+
+        # Do not re-write file if it exists (saves mkdocs from re-loading the world)
+        filename = os.path.abspath(os.path.join(self._config['docs_dir'], self._config.get('build_dir'), self._config['source_dir'], 'pages.yml'))
+        """
+
+        if os.path.exists(filename):
+            with open(filename, 'r') as fid:
+                content = fid.read()
+            if content == yml:
+                return
+        """
+
+        self.log.info('Creating YAML file: {}'.format(filename))
+        with open(filename, 'w') as fid:
+            fid.write(yml)
+
+
+    def generateYAML(self):
         """
         Generates the System.yml file.
         """
@@ -139,10 +156,4 @@ class MooseApplicationDocGenerator(object):
                     yield f
 
         output = dumptree(tree)
-
-        yaml_filename = os.path.abspath(os.path.join(self._config['docs_dir'], prefix, 'pages.yml'))
-        self.log.info('Creating YAML file: {}'.format(yaml_filename))
-        fid = open(yaml_filename, 'w')
-        s = '\n'.join(output)
-        fid.write(s)
-        fid.close()
+        return '\n'.join(output)

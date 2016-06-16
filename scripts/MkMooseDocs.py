@@ -101,7 +101,9 @@ if __name__ == '__main__':
 
     """
     node = ydata.find('/Kernels')
-    info = MooseDocs.MooseSystemInformation(node, **config['generate']['Framework'])
+    c = config['generate']['Framework']
+    setdefault(c)
+    info = MooseDocs.MooseSystemInformation(node, **c)
     info.write()
     """
 

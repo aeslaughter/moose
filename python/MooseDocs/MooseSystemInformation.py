@@ -8,8 +8,9 @@ class MooseSystemInformation(MooseInformationBase):
 
     log = logging.getLogger('MkMooseDocs.MooseSystemInformation')
 
-    def __init__(self, node, **kwargs):
+    def __init__(self, node, syntax, **kwargs):
         MooseInformationBase.__init__(self, node, **kwargs)
+        self._syntax = syntax
 
     @staticmethod
     def filename(name):
@@ -20,15 +21,10 @@ class MooseSystemInformation(MooseInformationBase):
         md = []
 
         # The details
-        if self._details and os.path.exists(self._details):
-            md += ['{{!{}!}}'.format(self._details)]
-            md += ['']
-
-        else:
-            md += ['<p style="color:red;font-size:120%">']
-            md += ['ERROR: Failed to located system detailed description: {}'.format(self._yaml['name'])]
-            md += ['</p>']
-            self.log.error('Failed to load system description: {}'.format(self._yaml['name']))
+        md += ['{{!{}!}}'.format(self._details)]
+        md += ['']
+        if not os.path.exists(self._details):
+            self.log.error('Details file does not exist: {}'.format(self._details))
 
         if self._yaml['parameters']:
             table = MooseObjectParameterTable()
@@ -39,19 +35,20 @@ class MooseSystemInformation(MooseInformationBase):
             md += [table.markdown()]
             md += ['']
 
+
         if self._yaml['subblocks']:
             table = MarkdownTable('Name', 'Description')
             for child in self._yaml['subblocks']:
 
                 name = child['name']
-                if name.endswith('*'):
+                if name.endswith('*') or name.endswith('<type>'):
                     continue
 
-                name = '[{0}]({0}.md)'.format(name.split('/')[-1])
-                desc = child['description']
-
-
-                table.addRow(name.split('/')[-1], desc)
+                name = name.split('/')[-1].strip()
+                if self._syntax.hasObject(name):
+                    name = '[{0}]({0}.md)'.format(name)
+                    desc = child['description'].strip()
+                    table.addRow(name, desc)
 
             if table.size() > 0:
                 md += ['## Available Objects']

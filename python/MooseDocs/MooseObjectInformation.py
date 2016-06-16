@@ -98,7 +98,7 @@ class MooseObjectInformation(MooseInformationBase):
         md += ['']
 
         # The details
-        md += ['{{!{}!}}'.format(self._details)]
+        md += ['{{!{}!}}'.format(os.path.relpath(self._details, os.path.abspath(self._config['docs_dir'])))]
         md += ['']
         if not os.path.exists(self._details):
             self.log.error('Details file does not exist: {}'.format(self._details))

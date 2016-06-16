@@ -44,7 +44,6 @@ class MooseInformationBase(object):
 
             if content == md:
                 return
-
         """
 
         self.log.info('Writing: {}'.format(filename))

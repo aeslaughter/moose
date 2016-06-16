@@ -52,7 +52,9 @@ class MooseApplicationSyntax(object):
             for node in nodes:
                 name = node['name'].split('/')[-1]
                 if name not in self._objects:
-                    self._systems.add(node['name'])
+                    self._systems.add(node['name'].rstrip('/*'))
+
+
 
 
     def systems(self):
@@ -63,6 +65,9 @@ class MooseApplicationSyntax(object):
 
     def objects(self):
         return self._objects
+
+    def hasObject(self, name):
+        return name in self._objects
 
     def filenames(self, key):
         return self._filenames[self._objects[key]]
