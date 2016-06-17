@@ -1,5 +1,7 @@
 import re
 import os
+from markdown.util import etree
+
 import MooseDocs
 from MooseSourcePatternBase import MooseSourcePatternBase
 import utils
@@ -11,8 +13,9 @@ class MooseCppMethod(MooseSourcePatternBase):
 
     CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])::(\w+)\s*(.*?)\)'
 
-    def __init__(self):
-        super(MooseCppMethod, self).__init__(self.CPP_RE, 'cpp')
+    def __init__(self, src=[os.getcwd()]):
+        super(MooseCppMethod, self).__init__(self.CPP_RE, 'cpp', src)
+
 
     def handleMatch(self, match):
         """
@@ -22,25 +25,24 @@ class MooseCppMethod(MooseSourcePatternBase):
         # Update the settings from regex match
         self.updateSettings(match.group(5))
 
-        path = os.path.join(MooseDocs.MOOSE_DIR, 'framework')
-
-        #TODO: Make this a configure option or something generic?
-        parser = utils.MooseSourceParser(path)
-
-        # Build the complete filename.
-        # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
+        # Extract relative filename
         rel_filename = match.group(3).lstrip('/')
-        filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + rel_filename
-
-        # Print progress
-        print utils.colorText('Parsing method "{}" from {}'.format(match.group(4), filename), 'YELLOW')
 
         # Read the file and create element
-        el = self.checkFilename(filename)
-        if el == None:
+        ret = self.checkFilename(rel_filename)
+        if ret == None:
+            el = self.createErrorElement(rel_filename)
+        else:
+            key, filename = ret
+            root = os.path.join(self._source[key]['root'], key)
+            repo = self._source[key].get('repo', None)
+
+            self.log.info('Parsing method "{}" from {}'.format(match.group(4), filename))
+
+            parser = utils.MooseSourceParser(root)
             parser.parse(filename)
             decl, defn = parser.method(match.group(4))
-            el = self.createElement(match.group(2), defn, filename, rel_filename)
+            el = self.createElement(match.group(2), defn, filename, rel_filename, repo)
 
         # Return the Element object
         return el

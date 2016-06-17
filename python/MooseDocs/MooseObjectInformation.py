@@ -98,10 +98,10 @@ class MooseObjectInformation(MooseInformationBase):
         md += ['']
 
         # The details
-        md += ['{{!{}!}}'.format(os.path.relpath(self._details, os.path.abspath(self._config['docs_dir'])))]
+        md += ['{{!{}!}}'.format(self._details)]
         md += ['']
-        if not os.path.exists(self._details):
-            self.log.error('Details file does not exist: {}'.format(self._details))
+        if not os.path.exists(self._details_abspath):
+            self.log.error('Details file does not exist: {}'.format(self._details_abspath))
 
         # Print the InputParameter tables
         md += ['## Input Parameters']

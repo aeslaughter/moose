@@ -9,15 +9,19 @@ extra_javascript:
     - mathjaxconfig.js
 
 markdown_extensions:
-    - MooseDocs.extensions.MooseMarkdown
     - markdown_include.include           # pip install markdown-include
     - mdx_math                           # pip install python-markdown-math
     - smarty
+    - MooseDocs.extensions.MooseMarkdown:
+        source:
+           framework:
+               root: ..
+               repo: https://github.com/idaholab/moose/blob/master
 
 pages:
    - Home: index.md
    - Documentation:
        - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
-       - Framework: !include documentation/framework/pages.yml
-       - Modules:
-           - Phase Field: !include documentation/modules/phase_field/pages.yml
+       #- Framework: !include documentation/framework/pages.yml
+       #- Modules:
+       #    - Phase Field: !include documentation/modules/phase_field/pages.yml

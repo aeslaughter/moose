@@ -14,7 +14,9 @@ includes the complete code as shown.
 ![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
 ```
 
+```
 ![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
+```
 
 ### Class Methods
 By including a method name, in C++ syntax fashion, it is possible to include specific methods from C++ class in MOOSE. For example,
@@ -25,6 +27,7 @@ the following limits the included code to the `computeQpResidual` method.
 ```
 
 ![Diffusion.C::computeQpResidual](framework/src/kernels/Diffusion.C::computeQpResidual)
+
 
 ### Complete Input File
 In similar fashion as in shown in [Complete C++ Code](MooseFlavoredMarkdown.md#complete-c++-code), input files may also be include
@@ -43,8 +46,9 @@ By including a block name the included content will be limited to the content ma
 ![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i::Kernels)
 ```
 
+```
 ![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i::Kernels github_link=True)
-
+```
 
 ### Optional Settings
 The following options may be passed to control the how the output is formatted.

@@ -1,5 +1,7 @@
 import re
 import os
+import logging
+
 from markdown.inlinepatterns import Pattern
 from markdown.util import etree
 import MooseDocs
@@ -13,12 +15,17 @@ class MooseSourcePatternBase(Pattern):
         language[str]: The code language (e.g., 'python' or 'c++')
     """
 
-    def __init__(self, regex, language=None):
+    def __init__(self, regex, language=None, src=[os.getcwd()]):
         Pattern.__init__(self, regex)
         #super(Pattern, self).__init__(regex) # This fails
 
+        self.log = logging.getLogger(self.__class__.__name__)
+
         # Set the language
         self._language = language
+
+        # The root directory
+        self._source = src
 
         # The default settings
         self._settings = {'strip_header':True,
@@ -78,7 +85,17 @@ class MooseSourcePatternBase(Pattern):
         return content
 
 
-    def checkFilename(self, filename):
+    def createErrorElement(self, rel_filename):
+        """
+        Returns a tree element containing error message.
+        """
+        el = etree.Element('p')
+        el.set('style', "color:red;font-size:120%")
+        el.text = 'ERROR: Invalid filename: ' + rel_filename
+        return el
+
+
+    def checkFilename(self, rel_filename):
         """
         Checks that the filename exists, if it does not a error Element is return.
 
@@ -86,13 +103,13 @@ class MooseSourcePatternBase(Pattern):
             filename[str]: The filename to check for existence.
         """
 
-        if not os.path.exists(filename):
-            el = etree.Element('p')
-            el.set('style', "color:red;font-size:120%")
-            el.text = 'ERROR: Invalid filename: ' + filename
-            return el
+        for key, value in self._source.iteritems():
+            filename = os.path.abspath(os.path.join(value['root'], rel_filename))
+            if os.path.exists(filename):
+                return (key, filename)
+        return None
 
-    def createElement(self, label, content, filename, rel_filename):
+    def createElement(self, label, content, filename, rel_filename, repo=None):
         """
         Create the code element from the supplied source code content.
 
@@ -112,9 +129,9 @@ class MooseSourcePatternBase(Pattern):
         el = etree.Element('div')
 
         # Build label
-        if self._settings['github_link']:
+        if self._settings['github_link'] and repo:
             title = etree.SubElement(el, 'a')
-            title.set('href', MooseDocs.MOOSE_REPOSITORY.rstrip('/') + os.path.sep + rel_filename)
+            title.set('href', os.path.join(repo, rel_filename))
         else:
             title = etree.SubElement(el, 'div')
 

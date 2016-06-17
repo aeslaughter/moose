@@ -89,10 +89,13 @@ if __name__ == '__main__':
     raw = runExe(exe, '--yaml')
     ydata = utils.MooseYaml(raw)
 
+    """
     for value in config['generate'].values():
         setdefault(value)
         generator = MooseDocs.MooseApplicationDocGenerator(ydata, value, links=config['links'], hide=config['hide'])
         generator.write()
+    """
+
 
     """
     c = config['generate']['Framework']
@@ -110,6 +113,8 @@ if __name__ == '__main__':
     """
     path = '/Kernels/Diffusion'
     source = ['framework/include/kernels/Diffusion.h']
-    info = MooseDocs.MooseObjectInformation(ydata.find(path), source, **config['generate']['Framework'])
+    c = config['generate']['Framework']
+    setdefault(c)
+    info = MooseDocs.MooseObjectInformation(ydata.find(path), source, **c)
     info.write()
     """
