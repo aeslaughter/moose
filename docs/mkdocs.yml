@@ -17,7 +17,7 @@ markdown_extensions:
 pages:
    - Home: index.md
    - Documentation:
-       #- Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
+       - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
        - Framework: !include documentation/framework/pages.yml
        - Modules:
            - Phase Field: !include documentation/modules/phase_field/pages.yml

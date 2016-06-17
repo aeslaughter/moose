@@ -27,7 +27,6 @@ class MooseCppMethod(MooseSourcePatternBase):
         #TODO: Make this a configure option or something generic?
         parser = utils.MooseSourceParser(path)
 
-
         # Build the complete filename.
         # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
         rel_filename = match.group(3).lstrip('/')
@@ -40,7 +39,7 @@ class MooseCppMethod(MooseSourcePatternBase):
         el = self.checkFilename(filename)
         if el == None:
             parser.parse(filename)
-            decl, defn = self._parser.method(match.group(4))
+            decl, defn = parser.method(match.group(4))
             el = self.createElement(match.group(2), defn, filename, rel_filename)
 
         # Return the Element object

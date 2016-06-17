@@ -12,13 +12,13 @@ hide:
 # The system documentation to generate.
 generate:
 
-    #Framework:
-    #    source_dir: framework
-    #    #docs_dir: docs # default
-    #    #build_dir: docs/documentation # default
-    #    details_dir: docs/details
-    #    repo: https://github.com/idaholab/moose/blob/master
-    #    doxygen: http://mooseframework.com/docs/doxygen/moose/
+    Framework:
+        source_dir: framework
+        #docs_dir: docs # default
+        #build_dir: docs/documentation # default
+        details_dir: docs/details
+        repo: https://github.com/idaholab/moose/blob/master
+        doxygen: http://mooseframework.com/docs/doxygen/moose/
 
     Phase Field:
           source_dir: modules/phase_field
