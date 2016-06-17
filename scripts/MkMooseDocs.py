@@ -47,55 +47,61 @@ def runExe(app_path, args):
     return stdout_data
 
 
-if __name__ == '__main__':
-
-    # Some arguments to be passed in
-    dirname = os.path.join(MooseDocs.MOOSE_DIR)#, 'docs')
-
-    # Setup the logger object
-    log = logging.getLogger('MkMooseDocs')
-    handler = logging.StreamHandler()
-    formatter = MkMooseDocsFilter()#'%(name)s:%(levelname)s: %(message)s')
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
-    log.setLevel(logging.INFO)
-    #log.setLevel(logging.DEBUG)
-
-    # Setup the location
-    config_file = os.path.join(dirname, 'docs', 'config.yml')
-    log.info('Generating Documentation: {}'.format(config_file))
-
-    # Parse the configuration file for the desired paths
-    os.chdir(dirname)
-    fid = open(config_file, 'r')
-    config = yaml_load(fid.read())
-    fid.close()
-
-
-    def setdefault(config):
-        config.setdefault(u'docs_dir', 'docs')
-        config.setdefault(u'build_dir', 'docs/documentation')
-        config.setdefault(u'source_dir', '.')
-        config.setdefault(u'details_dir', '.')
-        config.setdefault(u'repo', None)
-        config.setdefault(u'doxygen', None)
-
-    #for k, v in config.iteritems():
-    #    config[str(k)] = config.pop(k)
-
-
-    # Locate and run the MOOSE executable
-    exe = utils.find_moose_executable(os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'phase_field'), name='phase_field')
-    raw = runExe(exe, '--yaml')
-    ydata = utils.MooseYaml(raw)
-
-    """
-    for value in config['generate'].values():
-        setdefault(value)
-        generator = MooseDocs.MooseApplicationDocGenerator(ydata, value, links=config['links'], hide=config['hide'])
-        generator.write()
+class MooseDocGenerator(object):
     """
 
+
+
+    """
+
+    def __init__(self, root, config_file, exe, **kwargs):
+
+        self._root = root
+        self._config_file = config_file
+        self._exe = exe
+        self._modified = None
+        self._develop = kwargs.pop('develop', False)
+
+    def __call__(self):
+
+        modified = os.path.getmtime(self._exe)
+        if self._modified != os.path.getmtime(self._exe):
+            self._generate()
+            self._modified = modified
+
+
+    def _generate(self):
+
+        # Some arguments to be passed in
+        dirname = os.path.join(self._root)
+
+
+        # Setup the location
+        log.info('Generating Documentation: {}'.format(config_file))
+
+        # Parse the configuration file for the desired paths
+        os.chdir(dirname)
+        fid = open(config_file, 'r')
+        config = yaml_load(fid.read())['extra']
+        fid.close()
+
+
+        def setdefault(config):
+            config.setdefault(u'docs_dir', 'docs')
+            config.setdefault(u'build_dir', 'docs/documentation')
+            config.setdefault(u'source_dir', '.')
+            config.setdefault(u'details_dir', '.')
+            config.setdefault(u'repo', None)
+            config.setdefault(u'doxygen', None)
+
+        # Locate and run the MOOSE executable
+        raw = runExe(exe, '--yaml')
+        ydata = utils.MooseYaml(raw)
+
+        for value in config['generate'].values():
+            setdefault(value)
+            generator = MooseDocs.MooseApplicationDocGenerator(ydata, value, links=config['links'], hide=config['hide'])
+            generator.write()
 
     """
     c = config['generate']['Framework']
@@ -118,3 +124,22 @@ if __name__ == '__main__':
     info = MooseDocs.MooseObjectInformation(ydata.find(path), source, **c)
     info.write()
     """
+
+if __name__ == '__main__':
+
+    # Setup the logger object
+    log = logging.getLogger('MkMooseDocs')
+    handler = logging.StreamHandler()
+    formatter = MkMooseDocsFilter()#'%(name)s:%(levelname)s: %(message)s')
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+    log.setLevel(logging.INFO)
+    #log.setLevel(logging.DEBUG)
+
+
+    root = MooseDocs.MOOSE_DIR
+    config_file = os.path.join('docs', 'mkdocs.yml')
+    exe = utils.find_moose_executable(os.path.join(root, 'modules', 'phase_field'), name='phase_field')
+
+    gen = MooseDocGenerator(root, config_file, exe)
+    gen()
