@@ -14,9 +14,8 @@ includes the complete code as shown.
 ![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
 ```
 
-```
 ![Diffusion.C](framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True)
-```
+
 
 ### Class Methods
 By including a method name, in C++ syntax fashion, it is possible to include specific methods from C++ class in MOOSE. For example,
@@ -39,6 +38,7 @@ as follows.
 
 ![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i strip-extra-newlines=True max-height=300px)
 
+
 ### Input File Block
 By including a block name the included content will be limited to the content matching the supplied name. Notice that the supplied name may be approximate; however, if it is not unique only the first match will appear.
 
@@ -46,9 +46,9 @@ By including a block name the included content will be limited to the content ma
 ![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i::Kernels)
 ```
 
-```
-![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i::Kernels github_link=True)
-```
+
+![simple_diffusion.i](test/tests/kernels/simple_diffusion/simple_diffusion.i::Kernels repo_link=True)
+
 
 ### Optional Settings
 The following options may be passed to control the how the output is formatted.
@@ -56,7 +56,7 @@ The following options may be passed to control the how the output is formatted.
 Option               | Default | Description
 -------------------- | ------- | -----------
 strip_header         | True    | Toggles the removal of the MOOSE copyright header.
-github_link          | True    | Include a link to the source code on GitHub ("label" must be True).
+repo_link          | True    | Include a link to the source code on GitHub ("label" must be True).
 label                | True    | Include a label with the filename before the code content block.
 overflow-y           | Scroll  | The action to take when the text overflow the html container (see [overflow-y](http://www.w3schools.com/cssref/css3_pr_overflow-y.asp)).
 max-hieght           | 500px   | The maximum height of the code window (see [max-height](http://www.w3schools.com/cssref/pr_dim_max-height.asp)).

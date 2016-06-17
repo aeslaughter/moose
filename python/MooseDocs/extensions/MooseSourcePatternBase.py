@@ -15,7 +15,7 @@ class MooseSourcePatternBase(Pattern):
         language[str]: The code language (e.g., 'python' or 'c++')
     """
 
-    def __init__(self, regex, language=None, src=[os.getcwd()]):
+    def __init__(self, regex, src, language=None):
         Pattern.__init__(self, regex)
         #super(Pattern, self).__init__(regex) # This fails
 
@@ -29,7 +29,7 @@ class MooseSourcePatternBase(Pattern):
 
         # The default settings
         self._settings = {'strip_header':True,
-                          'github_link':True,
+                          'repo_link':True,
                           'label':True,
                           'overflow-y':'scroll',
                           'max-height':'500px',
@@ -129,7 +129,7 @@ class MooseSourcePatternBase(Pattern):
         el = etree.Element('div')
 
         # Build label
-        if self._settings['github_link'] and repo:
+        if self._settings['repo_link'] and repo:
             title = etree.SubElement(el, 'a')
             title.set('href', os.path.join(repo, rel_filename))
         else:

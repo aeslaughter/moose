@@ -13,8 +13,8 @@ class MooseCppMethod(MooseSourcePatternBase):
 
     CPP_RE = r'!\[(.*?)\]\((.*\.[Ch])::(\w+)\s*(.*?)\)'
 
-    def __init__(self, src=[os.getcwd()]):
-        super(MooseCppMethod, self).__init__(self.CPP_RE, 'cpp', src)
+    def __init__(self, src):
+        super(MooseCppMethod, self).__init__(self.CPP_RE, src, 'cpp')
 
 
     def handleMatch(self, match):
@@ -34,15 +34,19 @@ class MooseCppMethod(MooseSourcePatternBase):
             el = self.createErrorElement(rel_filename)
         else:
             key, filename = ret
-            root = os.path.join(self._source[key]['root'], key)
+            make = self._source[key].get('make', None)
             repo = self._source[key].get('repo', None)
 
-            self.log.info('Parsing method "{}" from {}'.format(match.group(4), filename))
+            if make == None:
+                self.log.error('The location of the Makefile must be supplied to parser.')
+                el = self.createErrorElement(rel_filename)
+            else:
+                self.log.info('Parsing method "{}" from {}'.format(match.group(4), filename))
 
-            parser = utils.MooseSourceParser(root)
-            parser.parse(filename)
-            decl, defn = parser.method(match.group(4))
-            el = self.createElement(match.group(2), defn, filename, rel_filename, repo)
+                parser = utils.MooseSourceParser(make)
+                parser.parse(filename)
+                decl, defn = parser.method(match.group(4))
+                el = self.createElement(match.group(2), defn, filename, rel_filename, repo)
 
         # Return the Element object
         return el

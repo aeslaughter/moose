@@ -8,8 +8,8 @@ class MooseCompleteSourcePattern(MooseSourcePatternBase):
     A markdown extension for including complete source code files.
     """
 
-    def __init__(self, regex, language=None):
-        super(MooseCompleteSourcePattern, self).__init__(regex, language)
+    def __init__(self, regex, src, language=None):
+        super(MooseCompleteSourcePattern, self).__init__(regex, src, language)
 
     def handleMatch(self, match):
         """
@@ -19,18 +19,19 @@ class MooseCompleteSourcePattern(MooseSourcePatternBase):
         # Update the settings from regex match
         self.updateSettings(match.group(4))
 
-        # Build the complete filename.
-        # NOTE: os.path.join doesn't like the unicode even if you call str() on it first.
-        rel_filename = match.group(3).lstrip('/')
-        filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + rel_filename
-
         # Read the file
-        el = self.checkFilename(filename)
-        if el == None:
+        rel_filename = match.group(3).lstrip('/')
+        ret = self.checkFilename(rel_filename)
+        if ret == None:
+            el = self.creteErrorElement(rel_filename)
+        else:
+            key, filename = ret
+            repo = self._source[key].get('repo', None)
+
             fid = open(filename)
             content = fid.read()
             fid.close()
-            el = self.createElement(match.group(2), content, filename, rel_filename)
+            el = self.createElement(match.group(2), content, filename, rel_filename, repo)
 
         # Return the Element object
         return el

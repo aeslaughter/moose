@@ -1,17 +1,17 @@
 import os
 import MooseDocs
-from MooseCompleteSourcePattern import MooseCompleteSourcePattern
+from MooseSourcePatternBase import MooseSourcePatternBase
 from FactorySystem import ParseGetPot
 
-class MooseInputBlock(MooseCompleteSourcePattern):
+class MooseInputBlock(MooseSourcePatternBase):
     """
     Markdown extension for extracting blocks from input files.
     """
 
     CPP_RE = r'!\[(.*?)\]\((.*\.[i])::(\w+)\s*(.*?)\)'
 
-    def __init__(self):
-        super(MooseInputBlock, self).__init__(self.CPP_RE, 'text')
+    def __init__(self, src):
+        super(MooseInputBlock, self).__init__(self.CPP_RE, src, 'text')
 
     def handleMatch(self, match):
         """
@@ -27,10 +27,14 @@ class MooseInputBlock(MooseCompleteSourcePattern):
         filename = MooseDocs.MOOSE_DIR.rstrip('/') + os.path.sep + rel_filename
 
         # Read the file and create element
-        el = self.checkFilename(filename)
-        if el == None:
+        ret = self.checkFilename(rel_filename)
+        if ret == None:
+            el = self.createErrorElement(rel_filename)
+        else:
+            key, filename = ret
             parser = ParseGetPot(filename)
             node = parser.root_node.getNode(match.group(4))
+            repo = self._source[key].get('repo', None)
 
             if node == None:
                 content = 'ERROR: Failed to find {} in {}.'.format(match.group(2), rel_filename)
@@ -38,6 +42,6 @@ class MooseInputBlock(MooseCompleteSourcePattern):
                 content = node.createString()
 
             label = '{} [{}]'.format(match.group(2), match.group(4))
-            el = self.createElement(label, content, filename, rel_filename)
+            el = self.createElement(label, content, filename, rel_filename, repo)
 
         return el

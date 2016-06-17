@@ -16,6 +16,7 @@ markdown_extensions:
         source:
            framework:
                root: ..
+               make: ../framework
                repo: https://github.com/idaholab/moose/blob/master
 
 pages:
