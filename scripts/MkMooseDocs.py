@@ -79,13 +79,13 @@ class MooseDocGenerator(object):
         hide = yml.get('hide', dict())
         links = yml.get('link', dict())
 
-        def init(cname):
+        def init(dirname, cname):
             with open(cname) as fid:
                 config = yaml_load(fid.read())
 
             config['build_dir'] = build_dir
-            config['source_dir'] = os.path.dirname(cname)
-            config['details_dir'] = os.path.join(config['source_dir'], config.get('details_dir', 'docs/details'))
+            config['source_dir'] = include
+            config['details_dir'] = os.path.join(include, config.get('details_dir', 'docs/details'))
 
             config.setdefault('docs_dir', docs_dir)
             config.setdefault('repo', None)
@@ -96,6 +96,13 @@ class MooseDocGenerator(object):
             config['hide'].update(hide)
             config['links'].update(links)
 
+            # Define the links path relative to working directory
+            for key, value in config['links'].iteritems():
+                out = []
+                for path in value:
+                    out.append(os.path.abspath(os.path.join(include, path)))
+                config['links'][key] = out
+
             return config
 
         #TODO: Error chech for 'extra' and 'include'
@@ -103,7 +110,7 @@ class MooseDocGenerator(object):
         configs = []
         for include in yml['extra']['include']:
             path = os.path.join(self._root, include, 'config.yml')
-            configs.append(init(path))
+            configs.append(init(include, path))
         return configs
 
 

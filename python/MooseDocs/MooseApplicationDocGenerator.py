@@ -27,23 +27,22 @@ class MooseApplicationDocGenerator(object):
 
     log = logging.getLogger('MkMooseDocs.MooseApplicationDocGenerator')
 
-    def __init__(self, yaml_data, config, **kwargs):
-
-        # Extract the input/source link directories to utilize and build databases
-        links = kwargs.pop('links', dict())
-        hide = kwargs.pop('hide', list())
+    def __init__(self, yaml_data, config):
 
         # Configuration
         self._config = config
 
+        # Extract the input/source link directories to utilize and build databases
+        links = self._config.get('links', dict())
+        hide = self._config.get('hide', list())
+
         # Create the database of input files and source code
         inputs = collections.OrderedDict()
         source = collections.OrderedDict()
-        for key, value in links.iteritems():
-            inputs[key] = database.Database('.i', value, database.items.InputFileItem)
-            source[key] = database.Database('.h', value, database.items.ChildClassItem)
+        for key, path in links.iteritems():
+            inputs[key] = database.Database('.i', path, database.items.InputFileItem)
+            source[key] = database.Database('.h', path, database.items.ChildClassItem)
 
-        # Read the supplied files
         self._yaml_data = yaml_data
         self._syntax = MooseApplicationSyntax(yaml_data, self._config.get('source_dir'))
 

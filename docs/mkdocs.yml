@@ -40,20 +40,9 @@ extra:
         - /AuxVariables/*/InitialCondition
         - /Variables/*/InitialCondition
 
-    # Auto link generation locations.
-    #links:
-    #    Tests:
-    #        - test/tests
-    #        - modules/phase_field/tests
-    #    Examples:
-    #        - examples
-    #        - modules/phase_field/examples
-    #    Tutorials:
-    #        - tutorials
-
     # Directories to include, they must contain a config.yml
     include:
       - framework
-      #- modules/phase_field
+      - modules/phase_field
 
     build_dir: docs/documentation

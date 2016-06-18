@@ -26,7 +26,6 @@ class MooseObjectInformation(MooseInformationBase):
 
         self._src = src
 
-
         self._inputs = kwargs.pop('inputs', None)
         self._source = kwargs.pop('source', None)
 
