@@ -42,6 +42,7 @@ class MooseApplicationDocGenerator(object):
         for key, path in links.iteritems():
             inputs[key] = database.Database('.i', path, database.items.InputFileItem)
             source[key] = database.Database('.h', path, database.items.ChildClassItem)
+        import sys; sys.exit()
 
         self._yaml_data = yaml_data
         self._syntax = MooseApplicationSyntax(yaml_data, self._config.get('source_dir'))
@@ -73,9 +74,7 @@ class MooseApplicationDocGenerator(object):
 
         filename = os.path.abspath(os.path.join(self._config.get('build_dir'), self._config['source_dir'], 'pages.yml'))
 
-
         """
-
         if os.path.exists(filename):
             with open(filename, 'r') as fid:
                 content = fid.read()

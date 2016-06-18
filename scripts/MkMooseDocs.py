@@ -79,6 +79,7 @@ class MooseDocGenerator(object):
         hide = yml.get('hide', dict())
         links = yml.get('link', dict())
 
+        #TODO: Move to abs paths and document what is going on.
         def init(dirname, cname):
             with open(cname) as fid:
                 config = yaml_load(fid.read())
@@ -134,27 +135,6 @@ class MooseDocGenerator(object):
             generator = MooseDocs.MooseApplicationDocGenerator(ydata, config)
             generator.write()
 
-    """
-    c = config['generate']['Framework']
-    syntax = MooseDocs.MooseApplicationSyntax(ydata, path=c.get('path', '.'))
-    """
-
-    """
-    node = ydata.find('/Kernels')
-    c = config['generate']['Framework']
-    setdefault(c)
-    info = MooseDocs.MooseSystemInformation(node, **c)
-    info.write()
-    """
-
-    """
-    path = '/Kernels/Diffusion'
-    source = ['framework/include/kernels/Diffusion.h']
-    c = config['generate']['Framework']
-    setdefault(c)
-    info = MooseDocs.MooseObjectInformation(ydata.find(path), source, **c)
-    info.write()
-    """
 
 if __name__ == '__main__':
 

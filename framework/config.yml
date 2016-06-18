@@ -1,0 +1,12 @@
+repo: https://github.com/idaholab/moose/blob/master
+doxygen: http://mooseframework.com/docs/doxygen/moose/
+details: docs/details #default
+links:
+    Tests:
+      - ../test/tests
+      - ../modules/phase_field/tests
+    Examples:
+      - ../examples
+      - ../modules/phase_field/examples
+    Tutorials:
+      - ../tutorials

@@ -35,17 +35,13 @@ class MooseInformationBase(object):
 
         md = self.markdown()
 
-
         # Do not re-write file if it exists (saves mkdocs from re-loading the world)
-        #TODO: This doesn't seem to work
-        """
         if os.path.exists(filename):
             with open(filename, 'r') as fid:
                 content = fid.read()
 
             if content == md:
                 return
-        """
 
         self.log.info('Writing: {}'.format(filename))
         fid = open(filename, 'w')
