@@ -74,8 +74,8 @@ class MooseDocGenerator(object):
         with open(self._config_file, 'r') as fid:
             yml = yaml_load(fid.read())
 
-        build_dir = yml.get('build_dir', 'docs/documentation')
-        docs_dir = yml.get('docs_dir', '.')
+        build_dir = yml.get('build_dir', os.path.join(self._root, 'docs', 'documentation'))
+        docs_dir = yml.get('docs_dir', os.path.join(self._root, 'docs'))
         hide = yml.get('hide', dict())
         links = yml.get('link', dict())
 
@@ -85,9 +85,9 @@ class MooseDocGenerator(object):
 
             config['build_dir'] = build_dir
             config['source_dir'] = os.path.dirname(cname)
+            config['details_dir'] = os.path.join(config['source_dir'], config.get('details_dir', 'docs/details'))
 
             config.setdefault('docs_dir', docs_dir)
-            config.setdefault('details_dir', 'docs/details')
             config.setdefault('repo', None)
             config.setdefault('doxygen', None)
             config.setdefault('hide', dict())
