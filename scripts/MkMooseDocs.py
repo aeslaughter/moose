@@ -69,38 +69,62 @@ class MooseDocGenerator(object):
             self._generate()
             self._modified = modified
 
+    def _configure(self):
+
+        with open(self._config_file, 'r') as fid:
+            yml = yaml_load(fid.read())
+
+        build_dir = yml.get('build_dir', 'docs/documentation')
+        docs_dir = yml.get('docs_dir', '.')
+        hide = yml.get('hide', dict())
+        links = yml.get('link', dict())
+
+        def init(cname):
+            with open(cname) as fid:
+                config = yaml_load(fid.read())
+
+            config['build_dir'] = build_dir
+            config['source_dir'] = os.path.dirname(cname)
+
+            config.setdefault('docs_dir', docs_dir)
+            config.setdefault('details_dir', 'docs/details')
+            config.setdefault('repo', None)
+            config.setdefault('doxygen', None)
+            config.setdefault('hide', dict())
+            config.setdefault('links', dict())
+
+            config['hide'].update(hide)
+            config['links'].update(links)
+
+            return config
+
+        #TODO: Error chech for 'extra' and 'include'
+
+        configs = []
+        for include in yml['extra']['include']:
+            path = os.path.join(self._root, include, 'config.yml')
+            configs.append(init(path))
+        return configs
+
 
     def _generate(self):
 
         # Some arguments to be passed in
         dirname = os.path.join(self._root)
 
-
         # Setup the location
         log.info('Generating Documentation: {}'.format(config_file))
 
         # Parse the configuration file for the desired paths
         os.chdir(dirname)
-        fid = open(config_file, 'r')
-        config = yaml_load(fid.read())['extra']
-        fid.close()
-
-
-        def setdefault(config):
-            config.setdefault(u'docs_dir', 'docs')
-            config.setdefault(u'build_dir', 'docs/documentation')
-            config.setdefault(u'source_dir', '.')
-            config.setdefault(u'details_dir', '.')
-            config.setdefault(u'repo', None)
-            config.setdefault(u'doxygen', None)
+        configs = self._configure()
 
         # Locate and run the MOOSE executable
         raw = runExe(exe, '--yaml')
         ydata = utils.MooseYaml(raw)
-
-        for value in config['generate'].values():
-            setdefault(value)
-            generator = MooseDocs.MooseApplicationDocGenerator(ydata, value, links=config['links'], hide=config['hide'])
+        import pprint
+        for config in configs:
+            generator = MooseDocs.MooseApplicationDocGenerator(ydata, config)
             generator.write()
 
     """
