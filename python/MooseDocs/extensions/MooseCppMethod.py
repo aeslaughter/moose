@@ -1,6 +1,9 @@
 import re
 import os
 from markdown.util import etree
+import logging
+log = logging.getLogger(__name__)
+
 
 import MooseDocs
 from MooseSourcePatternBase import MooseSourcePatternBase
@@ -38,10 +41,10 @@ class MooseCppMethod(MooseSourcePatternBase):
             repo = self._source[key].get('repo', None)
 
             if make == None:
-                self.log.error('The location of the Makefile must be supplied to parser.')
+                log.error('The location of the Makefile must be supplied to parser.')
                 el = self.createErrorElement(rel_filename)
             else:
-                self.log.info('Parsing method "{}" from {}'.format(match.group(4), filename))
+                log.info('Parsing method "{}" from {}'.format(match.group(4), filename))
 
                 parser = utils.MooseSourceParser(make)
                 parser.parse(filename)

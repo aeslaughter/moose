@@ -1,6 +1,7 @@
 import re
 import os
 import logging
+log = logging.getLogger(__name__)
 
 from markdown.inlinepatterns import Pattern
 from markdown.util import etree
@@ -19,7 +20,7 @@ class MooseSourcePatternBase(Pattern):
         Pattern.__init__(self, regex)
         #super(Pattern, self).__init__(regex) # This fails
 
-        self.log = logging.getLogger(self.__class__.__name__)
+        log = logging.getLogger(self.__class__.__name__)
 
         # Set the language
         self._language = language

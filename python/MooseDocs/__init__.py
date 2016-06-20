@@ -18,3 +18,6 @@ MOOSE_DOXYGEN = 'http://mooseframework.com/docs/doxygen/moose/'
 # Throw an exception if MOOSE_DIR is not found.
 if not os.path.exists(MOOSE_DIR):
     raise Exception('The MOOSE directory was not located.')
+
+import logging
+logging.getLogger(__name__).addHandler(logging.NullHandler())

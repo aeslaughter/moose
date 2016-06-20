@@ -1,6 +1,7 @@
 import os
 import collections
 import logging
+log = logging.getLogger(__name__)
 
 import MooseDocs
 from MooseInformationBase import MooseInformationBase
@@ -23,7 +24,7 @@ class MooseObjectInformation(MooseInformationBase):
     def __init__(self, yaml, src, **kwargs):
         MooseInformationBase.__init__(self, yaml, **kwargs)
 
-        self.log.info('Initializing Documentation: {}'.format(yaml['name']))
+        log.info('Initializing Documentation: {}'.format(yaml['name']))
 
         # Member variables
         self._src = src
@@ -106,7 +107,7 @@ class MooseObjectInformation(MooseInformationBase):
             md += ['{{!{}!}}'.format(self._details)]
             md += ['']
         else:
-            self.log.error('Details file does not exist: {}'.format(self._details))
+            log.error('Details file does not exist: {}'.format(self._details))
 
         # Print the InputParameter tables
         md += ['## Input Parameters']

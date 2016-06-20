@@ -4,6 +4,8 @@ from MooseInformationBase import MooseInformationBase
 from MarkdownTable import MarkdownTable
 from MooseObjectParameterTable import MooseObjectParameterTable
 
+log = logging.getLogger(__name__)
+
 class MooseSystemInformation(MooseInformationBase):
     """
     Object for generating documentation for a MOOSE system.
@@ -15,7 +17,6 @@ class MooseSystemInformation(MooseInformationBase):
 
     def __init__(self, node, syntax, **kwargs):
         MooseInformationBase.__init__(self, node, **kwargs)
-        self.log = logging.getLogger(self.__class__.__name__)
         self._syntax = syntax
 
     @staticmethod
@@ -37,7 +38,7 @@ class MooseSystemInformation(MooseInformationBase):
             md += ['{{!{}!}}'.format(self._details)]
             md += ['']
         else:
-            self.log.error('Details file does not exist: {}'.format(self._details))
+            log.error('Details file does not exist: {}'.format(self._details))
 
         # Generate table of action parameters
         if self._yaml['parameters']:

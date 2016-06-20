@@ -5,6 +5,8 @@ import collections
 import logging
 import MooseDocs
 
+log = logging.getLogger(__name__)
+
 class MooseApplicationSyntax(object):
     """
     An object for handling the registered object and action syntax for a specific set of directories.
@@ -24,8 +26,8 @@ class MooseApplicationSyntax(object):
 
     def __init__(self, yaml_data, path):
 
-        self.log = logging.getLogger(self.__class__.__name__)
-        self.log.info('Locating syntax for application.')
+
+        log.info('Locating syntax for application.')
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)

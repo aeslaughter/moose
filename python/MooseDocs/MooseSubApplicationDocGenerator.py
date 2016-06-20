@@ -1,5 +1,6 @@
 import os
 import logging
+log = logging.getLogger(__name__)
 import collections
 
 from MooseSystemInformation import MooseSystemInformation
@@ -66,7 +67,7 @@ class MooseSubApplicationDocGenerator(object):
         yml = self.generateYAML()
         folder = os.path.relpath(self._config['source'], os.getcwd())
         filename = os.path.abspath(os.path.join(self._config.get('build'), folder, 'pages.yml'))
-        self.log.info('Creating YAML file: {}'.format(filename))
+        log.info('Creating YAML file: {}'.format(filename))
         with open(filename, 'w') as fid:
             fid.write(yml)
 

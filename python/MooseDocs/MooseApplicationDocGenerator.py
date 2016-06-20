@@ -1,7 +1,8 @@
 import os
-import logging
 import utils
 from mkdocs.utils import yaml_load
+import logging
+log = logging.getLogger(__name__)
 
 from MooseSubApplicationDocGenerator import MooseSubApplicationDocGenerator
 class MooseApplicationDocGenerator(object):
@@ -20,7 +21,6 @@ class MooseApplicationDocGenerator(object):
     """
 
     def __init__(self, root, config_file, exe, **kwargs):
-        self.log = logging.getLogger(self.__class__.__name__)
         self._root = root
         self._config_file = config_file
         self._exe = exe
@@ -118,7 +118,7 @@ class MooseApplicationDocGenerator(object):
         dirname = os.path.join(self._root)
 
         # Setup the location
-        self.log.info('Generating Documentation: {}'.format(self._config_file))
+        log.info('Generating Documentation: {}'.format(self._config_file))
 
         # Parse the configuration file for the desired paths
         os.chdir(dirname)

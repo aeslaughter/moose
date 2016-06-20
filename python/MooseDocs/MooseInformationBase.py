@@ -1,5 +1,6 @@
 import os
 import logging
+log = logging.getLogger(__name__)
 
 class MooseInformationBase(object):
     """
@@ -13,7 +14,6 @@ class MooseInformationBase(object):
     """
 
     def __init__(self, node, **kwargs):
-        self.log = logging.getLogger(self.__class__.__name__)
 
         self._yaml = node
         self._config = kwargs
@@ -62,7 +62,7 @@ class MooseInformationBase(object):
                 return
 
         # Write the file
-        self.log.info('Writing: {}'.format(filename))
+        log.info('Writing: {}'.format(filename))
         fid = open(filename, 'w')
         fid.write(md)
         fid.close()
