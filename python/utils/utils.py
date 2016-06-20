@@ -86,3 +86,24 @@ def find_moose_executable(loc, **kwargs):
     if not errno.ENOENT:
         print 'ERROR: Unable to locate a valid MOOSE executable in directory'
     return exe
+
+def runExe(app_path, args):
+    """
+    A function for running an application.
+
+    Args:
+        app_path[str]: The application to execute.
+        args[list]: The arguuments to pass to the executable.
+    """
+    import subprocess
+
+    popen_args = [str(app_path)]
+    if isinstance(args, str):
+        popen_args.append(args)
+    else:
+        popen_args.extend(args)
+
+    proc = subprocess.Popen(popen_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    data = proc.communicate()
+    stdout_data = data[0].decode("utf-8")
+    return stdout_data

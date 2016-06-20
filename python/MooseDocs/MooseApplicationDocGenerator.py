@@ -1,135 +1,133 @@
 import os
 import logging
-import collections
+import utils
+from mkdocs.utils import yaml_load
 
-from MooseSystemInformation import MooseSystemInformation
-from MooseObjectInformation import MooseObjectInformation
-from MooseApplicationSyntax import MooseApplicationSyntax
-import database
-
+from MooseSubApplicationDocGenerator import MooseSubApplicationDocGenerator
 class MooseApplicationDocGenerator(object):
     """
-    Generate documentation for an application, for a given directory.
+    Reads the main configuration yml file (e.g., docs/mkdocs.yml) and generates MOOSE system and object
+    documentation.
 
     Args:
-        yaml_data[dict]: The complete YAML object obtained from the MOOSE application.
-        filename[str]: The MkDocs yaml file to create.
-        config[dict]: A dictionary with configuration options.
-            repo:
-            prefix:
-            details:
-            source:
+        root[str]: The root directory of your application.
+        config_file[str]: The main documentation configuration for your application.
+        exe[str]: The executable to utilize.
 
     Kwargs:
-        input[list] A list of directories to search for input files containing the class name in an input file.
-        source[list] A database linking the class name to use in source.
+        develop[bool]: When True the __call__ method will always generate documentation regardless of
+                       modified time of the executable.
     """
 
-    log = logging.getLogger('MkMooseDocs.MooseApplicationDocGenerator')
+    def __init__(self, root, config_file, exe, **kwargs):
+        self.log = logging.getLogger(self.__class__.__name__)
+        self._root = root
+        self._config_file = config_file
+        self._exe = exe
+        self._modified = None
+        self._develop = kwargs.pop('develop', False)
 
-    def __init__(self, yaml_data, config):
-
-        # Configuration
-        self._config = config
-
-        # Extract the input/source link directories to utilize and build databases
-        links = self._config.get('links')
-        hide = self._config.get('hide')
-
-        # Create the database of input files and source code
-        inputs = collections.OrderedDict()
-        children = collections.OrderedDict()
-        for key, path in links.iteritems():
-            inputs[key] = database.Database('.i', path, database.items.InputFileItem)
-            children[key] = database.Database('.h', path, database.items.ChildClassItem)
-
-        self._yaml_data = yaml_data
-        self._syntax = MooseApplicationSyntax(yaml_data, self._config.get('source'))
-
-        self._systems = []
-        for system in self._syntax.systems():
-            node = yaml_data.find(system)
-            if node['name'] not in hide:
-                self._systems.append(MooseSystemInformation(node, self._syntax, **self._config))
-
-        self._objects = []
-        for key, value in self._syntax.objects().iteritems():
-            src = self._syntax.filenames(key)
-            nodes = yaml_data[key]
-            for node in nodes:
-                if not any([node['name'].startswith(h) for h in hide]):
-                    self._objects.append(MooseObjectInformation(node, src, inputs=inputs, children=children, **self._config))
-
-    def write(self):
-
-        for system in self._systems:
-            system.write()
-
-        for obj in self._objects:
-            obj.write()
-
-        yml = self.generateYAML()
-
-
-        folder = os.path.relpath(self._config['source'], os.getcwd())
-        filename = os.path.abspath(os.path.join(self._config.get('build'), folder, 'pages.yml'))
-
+    def __call__(self):
         """
-        if os.path.exists(filename):
-            with open(filename, 'r') as fid:
-                content = fid.read()
-            if content == yml:
-                return
+        Operator(). Calling this function causes the documentation to generated.
+
+        NOTE: Documentation will only generated if the executable has been modified since that last time
+              the function has been called, unless the develop flag was set to True upon construction
+              of this object.
+        """
+        if self._develop:
+            self._generate()
+            self._modified = modified
+
+        else:
+            modified = os.path.getmtime(self._exe)
+            if self._modified != os.path.getmtime(self._exe):
+                self._generate()
+                self._modified = modified
+
+    def _configure(self):
+        """
+        Build the configuration options for included sub-directories.
+        """
+        # Read the general yml file (e.g. mkdocs.yml)
+        with open(self._config_file, 'r') as fid:
+            yml = yaml_load(fid.read())
+
+        # Global Config settings (and defaults)
+        global_config = yml['extra'].get('global_config', dict())
+        global_config.setdefault('build', os.path.join(self._root, 'docs', 'documentation'))
+        global_config.setdefault('details', os.path.join(self._root, 'docs', 'details'))
+        global_config.setdefault('docs', os.path.join(self._root, 'docs'))
+        global_config.setdefault('repo', None)
+        global_config.setdefault('doxygen', None)
+        global_config.setdefault('hide', list())
+        global_config.setdefault('links', dict())
+
+        def update_config(dirname, cname):
+            """
+            Helper for updating/creating local configuration dict.
+            """
+
+            # Open the local config file
+            with open(cname) as fid:
+                config = yaml_load(fid.read())
+
+            # Define abspath's for all directories supplied
+            keys = ['build', 'details', 'docs']
+            for key in keys:
+                if key in config:
+                    config[key] = os.path.abspath(os.path.join(dirname, config[key]))
+
+            # Set the default source directory and sub-folder
+            config['source'] = dirname
+            config['folder'] = os.path.relpath(config['source'], os.getcwd())
+
+            # Set the defaults
+            for key, value in global_config.iteritems():
+                config.setdefault(key, value)
+
+            # Append the hide/links data
+            config['hide'] = set(config['hide'] + global_config['hide'])
+            config['links'].update(global_config['links'])
+
+
+            # Re-define the links path relative to working directory
+            for key, value in config['links'].iteritems():
+                out = []
+                for path in value:
+                    out.append(os.path.abspath(os.path.join(dirname, path)))
+                config['links'][key] = out
+
+            return config
+
+        #TODO: Error check for 'extra' and 'include'
+
+        configs = []
+        for include in yml['extra']['include']:
+            path = os.path.join(self._root, include, 'config.yml')
+            configs.append(update_config(include, path))
+        return configs
+
+
+    def _generate(self):
+        """
+        Generate the documentation.
         """
 
-        self.log.info('Creating YAML file: {}'.format(filename))
-        with open(filename, 'w') as fid:
-            fid.write(yml)
+        # Some arguments to be passed in
+        dirname = os.path.join(self._root)
 
+        # Setup the location
+        self.log.info('Generating Documentation: {}'.format(self._config_file))
 
-    def generateYAML(self):
-        """
-        Generates the System.yml file.
-        """
+        # Parse the configuration file for the desired paths
+        os.chdir(dirname)
+        configs = self._configure()
 
-        folder = os.path.relpath(self._config['source'], os.getcwd())
-        prefix = os.path.join(self._config.get('build'), folder)
+        # Locate and run the MOOSE executable
+        raw = utils.runExe(self._exe, '--yaml')
+        ydata = utils.MooseYaml(raw)
 
-        rec_dd = lambda: collections.defaultdict(rec_dd)
-        tree = rec_dd()
-        for root, dirs, files in os.walk(prefix, topdown=True):
-
-            if 'Overview.md' in files:
-                files.insert(0, files.pop(files.index('Overview.md')))
-
-            for filename in files:
-                name, ext = os.path.splitext(filename)
-
-                if ext != '.md':
-                    continue
-
-                relative = os.path.relpath(root, prefix).split(os.path.sep)
-                level = len(relative)
-                cmd = "tree{}".format(("['{}']"*level).format(*relative))
-
-                d = eval(cmd)
-                if 'items' not in d:
-                    d['items'] = []
-
-                base = os.path.join(os.path.relpath(self._config['build'], self._config['docs']), folder, *relative)
-                d['items'].append( (name, os.path.join(base, filename) ) )
-
-        def dumptree(node, level=0):
-
-            if 'items' in node:
-                for item in node['items']:
-                    yield '{}- {}: {}'.format(' '*4*(level), *item)
-                node.pop('items')
-
-            for key, value in node.iteritems():
-                yield '{}- {}:'.format(' '*4*level, key)
-                for f in dumptree(value, level+1):
-                    yield f
-
-        output = dumptree(tree)
-        return '\n'.join(output)
+        for config in configs:
+            generator = MooseSubApplicationDocGenerator(ydata, config)
+            generator.write()
