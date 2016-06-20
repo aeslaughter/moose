@@ -71,37 +71,45 @@ class MooseDocGenerator(object):
 
     def _configure(self):
 
+        # Read the general yml file (e.g. mkdocs.yml)
         with open(self._config_file, 'r') as fid:
             yml = yaml_load(fid.read())
 
-        build_dir = yml.get('build_dir', os.path.join(self._root, 'docs', 'documentation'))
-        docs_dir = yml.get('docs_dir', os.path.join(self._root, 'docs'))
-        hide = yml.get('hide', dict())
-        links = yml.get('link', dict())
+        # Global Config settings (and defaults)
+        global_config = yml['extra'].get('global_config', dict())
+        global_config.setdefault('build', os.path.join(self._root, 'docs', 'documentation'))
+        global_config.setdefault('details', os.path.join(self._root, 'docs', 'details'))
+        global_config.setdefault('docs', os.path.join(self._root, 'docs'))
+        global_config.setdefault('repo', None)
+        global_config.setdefault('doxygen', None)
+        global_config.setdefault('hide', list())
+        global_config.setdefault('links', dict())
 
-        #TODO: Move to abs paths and document what is going on.
-        def init(dirname, cname):
+        def update_config(dirname, cname):
+            """
+            Helper for updating/creating local configuration dict.
+            """
+
+            # Open the local config file
             with open(cname) as fid:
                 config = yaml_load(fid.read())
 
-            config['build_dir'] = build_dir
-            config['source_dir'] = include
-            config['details_dir'] = os.path.join(include, config.get('details_dir', 'docs/details'))
+            # Set the default source directory
+            global_config.setdefault('source', os.path.dirname(cname))
 
-            config.setdefault('docs_dir', docs_dir)
-            config.setdefault('repo', None)
-            config.setdefault('doxygen', None)
-            config.setdefault('hide', dict())
-            config.setdefault('links', dict())
+            # Set the defaults
+            for key, value in global_config.iteritems():
+                config.setdefault(key, value)
 
-            config['hide'].update(hide)
-            config['links'].update(links)
+            # Append the hide/links data
+            config['hide'] = set(config['hide'] + global_config['hide'])
+            config['links'].update(global_config['links'])
 
-            # Define the links path relative to working directory
+            # Re-define the links path relative to working directory
             for key, value in config['links'].iteritems():
                 out = []
                 for path in value:
-                    out.append(os.path.abspath(os.path.join(include, path)))
+                    out.append(os.path.abspath(os.path.join(dirname, path)))
                 config['links'][key] = out
 
             return config
@@ -111,7 +119,7 @@ class MooseDocGenerator(object):
         configs = []
         for include in yml['extra']['include']:
             path = os.path.join(self._root, include, 'config.yml')
-            configs.append(init(include, path))
+            configs.append(update_config(include, path))
         return configs
 
 
@@ -130,7 +138,7 @@ class MooseDocGenerator(object):
         # Locate and run the MOOSE executable
         raw = runExe(exe, '--yaml')
         ydata = utils.MooseYaml(raw)
-        import pprint
+
         for config in configs:
             generator = MooseDocs.MooseApplicationDocGenerator(ydata, config)
             generator.write()
@@ -149,6 +157,7 @@ if __name__ == '__main__':
 
 
     root = MooseDocs.MOOSE_DIR
+
     config_file = os.path.join('docs', 'mkdocs.yml')
     exe = utils.find_moose_executable(os.path.join(root, 'modules', 'phase_field'), name='phase_field')
 

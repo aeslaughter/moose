@@ -9,8 +9,8 @@ class MooseInformationBase(object):
         self._yaml = node
         self._config = kwargs
 
-        self._details_abspath = os.path.abspath(os.path.join(self._config['details_dir'], self.filename(node['name'])))
-        self._details = os.path.relpath(self._details_abspath, os.path.abspath(self._config['docs_dir']))
+        self._details_abspath = os.path.abspath(os.path.join(self._config['details'], self.filename(node['name'])))
+        self._details = os.path.relpath(self._details_abspath, os.path.abspath(self._config['docs']))
 
 
     def __str__(self):
@@ -27,7 +27,7 @@ class MooseInformationBase(object):
         """
 
         """
-        filename = os.path.abspath(os.path.join(self._config['build_dir'], self._config['source_dir'], self.filename(self._yaml['name'])))
+        filename = os.path.abspath(os.path.join(self._config['build'], self._config['source'], self.filename(self._yaml['name'])))
 
         dirname = os.path.dirname(filename)
         if not os.path.exists(dirname):

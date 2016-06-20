@@ -40,10 +40,8 @@ class MooseApplicationSyntax(object):
         self._filenames = dict()
         self._syntax = set()
 
-
         # Update the syntax maps
         self._updateSyntax(path)
-
 
         for s in self._syntax:
             nodes = self._yaml_data[s]

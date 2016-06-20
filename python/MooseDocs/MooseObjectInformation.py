@@ -27,7 +27,7 @@ class MooseObjectInformation(MooseInformationBase):
         self._src = src
 
         self._inputs = kwargs.pop('inputs', None)
-        self._source = kwargs.pop('source', None)
+        self._children = kwargs.pop('children', None)
 
         self._name = yaml['name'].split('/')[-1]
         self._description = yaml['description']
@@ -116,7 +116,7 @@ class MooseObjectInformation(MooseInformationBase):
 
         # Print the item information
         md += self._linkMarkdown('Input Files', self._inputs)
-        md += self._linkMarkdown('Child Objects', self._source)
+        md += self._linkMarkdown('Child Objects', self._children)
 
         return '\n'.join(md)
 

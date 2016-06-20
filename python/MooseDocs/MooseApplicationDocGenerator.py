@@ -33,19 +33,18 @@ class MooseApplicationDocGenerator(object):
         self._config = config
 
         # Extract the input/source link directories to utilize and build databases
-        links = self._config.get('links', dict())
-        hide = self._config.get('hide', list())
+        links = self._config.get('links')
+        hide = self._config.get('hide')
 
         # Create the database of input files and source code
         inputs = collections.OrderedDict()
-        source = collections.OrderedDict()
+        children = collections.OrderedDict()
         for key, path in links.iteritems():
             inputs[key] = database.Database('.i', path, database.items.InputFileItem)
-            source[key] = database.Database('.h', path, database.items.ChildClassItem)
-        import sys; sys.exit()
+            children[key] = database.Database('.h', path, database.items.ChildClassItem)
 
         self._yaml_data = yaml_data
-        self._syntax = MooseApplicationSyntax(yaml_data, self._config.get('source_dir'))
+        self._syntax = MooseApplicationSyntax(yaml_data, self._config.get('source'))
 
         self._systems = []
         for system in self._syntax.systems():
@@ -59,7 +58,7 @@ class MooseApplicationDocGenerator(object):
             nodes = yaml_data[key]
             for node in nodes:
                 if not any([node['name'].startswith(h) for h in hide]):
-                    self._objects.append(MooseObjectInformation(node, src, inputs=inputs, source=source, **self._config))
+                    self._objects.append(MooseObjectInformation(node, src, inputs=inputs, children=children, **self._config))
 
     def write(self):
 
@@ -72,15 +71,15 @@ class MooseApplicationDocGenerator(object):
         yml = self.generateYAML()
 
 
-        filename = os.path.abspath(os.path.join(self._config.get('build_dir'), self._config['source_dir'], 'pages.yml'))
+        folder = os.path.relpath(self._config['source'], os.getcwd())
+        filename = os.path.abspath(os.path.join(self._config.get('build'), folder, 'pages.yml'))
 
-        """
+
         if os.path.exists(filename):
             with open(filename, 'r') as fid:
                 content = fid.read()
             if content == yml:
                 return
-        """
 
         self.log.info('Creating YAML file: {}'.format(filename))
         with open(filename, 'w') as fid:
@@ -92,7 +91,8 @@ class MooseApplicationDocGenerator(object):
         Generates the System.yml file.
         """
 
-        prefix = os.path.join(self._config.get('build_dir'), self._config['source_dir'])
+        folder = os.path.relpath(self._config['source'], os.getcwd())
+        prefix = os.path.join(self._config.get('build'), folder)
 
         rec_dd = lambda: collections.defaultdict(rec_dd)
         tree = rec_dd()
@@ -107,7 +107,7 @@ class MooseApplicationDocGenerator(object):
                 if ext != '.md':
                     continue
 
-                relative = root.lstrip(self._config['docs_dir']).lstrip(prefix).strip('/').split('/')
+                relative = os.path.relpath(root, prefix).split(os.path.sep)
                 level = len(relative)
                 cmd = "tree{}".format(("['{}']"*level).format(*relative))
 
@@ -115,8 +115,9 @@ class MooseApplicationDocGenerator(object):
                 if 'items' not in d:
                     d['items'] = []
 
-                d['items'].append( (name, os.path.join(os.path.relpath(root, self._config['docs_dir']), filename)))
-
+                base = os.path.join(os.path.relpath(self._config['build'], self._config['docs']), folder, *relative)
+                print 'BASE:', os.path.join(base, filename)
+                d['items'].append( (name, os.path.join(base, filename) ) )
 
         def dumptree(node, level=0):
 
