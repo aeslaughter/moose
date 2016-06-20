@@ -1,6 +1,6 @@
-name: Phase Field
 repo: https://github.com/idaholab/moose/blob/master
 doxygen: http://mooseframework.com/docs/doxygen/modules/
+details: docs/details
 links:
     Tests:
       - tests

@@ -24,8 +24,8 @@ pages:
    - Documentation:
        - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
        - Framework: !include documentation/framework/pages.yml
-       #- Modules:
-       #    - Phase Field: !include documentation/modules/phase_field/pages.yml
+       - Modules:
+           - Phase Field: !include documentation/modules/phase_field/pages.yml
 
 extra:
     # Configuration file for creating MOOSE application documentation.
@@ -53,6 +53,6 @@ extra:
     # Directories to include, they must contain a config.yml
     include:
       - framework
-      #- modules/phase_field
+      - modules/phase_field
 
     build_dir: docs/documentation

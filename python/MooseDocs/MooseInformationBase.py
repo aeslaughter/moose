@@ -8,13 +8,6 @@ class MooseInformationBase(object):
     def __init__(self, node, **kwargs):
         self._yaml = node
         self._config = kwargs
-
-        if node['name'].endswith('Diffusion'):
-            print self._config
-            print self._config['folder']
-            print self._config['details']
-            print os.path.abspath(os.path.join(self._config['build'], self._config['folder'], self.filename(self._yaml['name'])))
-
         self._details = os.path.join(self._config['details'], self.filename(node['name']))
 
     def __str__(self):
