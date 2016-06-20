@@ -1,5 +1,6 @@
 repo: https://github.com/idaholab/moose/blob/master
 doxygen: http://mooseframework.com/docs/doxygen/moose/
+details: docs/details
 links:
     Tests:
       - ../test/tests

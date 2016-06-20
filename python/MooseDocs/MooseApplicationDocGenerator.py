@@ -116,7 +116,6 @@ class MooseApplicationDocGenerator(object):
                     d['items'] = []
 
                 base = os.path.join(os.path.relpath(self._config['build'], self._config['docs']), folder, *relative)
-                print 'BASE:', os.path.join(base, filename)
                 d['items'].append( (name, os.path.join(base, filename) ) )
 
         def dumptree(node, level=0):

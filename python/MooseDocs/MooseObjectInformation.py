@@ -99,8 +99,8 @@ class MooseObjectInformation(MooseInformationBase):
         # The details
         md += ['{{!{}!}}'.format(self._details)]
         md += ['']
-        if not os.path.exists(self._details_abspath):
-            self.log.error('Details file does not exist: {}'.format(self._details_abspath))
+        if not os.path.exists(self._details):
+            self.log.error('Details file does not exist: {}'.format(self._details))
 
         # Print the InputParameter tables
         md += ['## Input Parameters']

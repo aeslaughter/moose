@@ -9,11 +9,13 @@ class MooseInformationBase(object):
         self._yaml = node
         self._config = kwargs
 
-        print self._config['details'], self.filename(node['name'])
-        import sys; sys.exit()
-        #self._details_abspath = os.path.abspath(os.path.join(self._config['details'], self.filename(node['name'])))
-        #self._details = os.path.relpath(self._details_abspath, os.path.abspath(self._config['docs']))
+        if node['name'].endswith('Diffusion'):
+            print self._config
+            print self._config['folder']
+            print self._config['details']
+            print os.path.abspath(os.path.join(self._config['build'], self._config['folder'], self.filename(self._yaml['name'])))
 
+        self._details = os.path.join(self._config['details'], self.filename(node['name']))
 
     def __str__(self):
         return self.markdown()
@@ -29,7 +31,9 @@ class MooseInformationBase(object):
         """
 
         """
-        filename = os.path.abspath(os.path.join(self._config['build'], self._config['source'], self.filename(self._yaml['name'])))
+
+        filename = os.path.abspath(os.path.join(self._config['build'], self._config['folder'], self.filename(self._yaml['name'])))
+
 
         dirname = os.path.dirname(filename)
         if not os.path.exists(dirname):
@@ -41,7 +45,6 @@ class MooseInformationBase(object):
         if os.path.exists(filename):
             with open(filename, 'r') as fid:
                 content = fid.read()
-
             if content == md:
                 return
 

@@ -94,8 +94,15 @@ class MooseDocGenerator(object):
             with open(cname) as fid:
                 config = yaml_load(fid.read())
 
-            # Set the default source directory
-            global_config.setdefault('source', os.path.dirname(cname))
+            # Define abspath's for all directories supplied
+            keys = ['build', 'details', 'docs']
+            for key in keys:
+                if key in config:
+                    config[key] = os.path.abspath(os.path.join(dirname, config[key]))
+
+            # Set the default source directory and sub-folder
+            config['source'] = dirname
+            config['folder'] = os.path.relpath(config['source'], os.getcwd())
 
             # Set the defaults
             for key, value in global_config.iteritems():
@@ -104,6 +111,7 @@ class MooseDocGenerator(object):
             # Append the hide/links data
             config['hide'] = set(config['hide'] + global_config['hide'])
             config['links'].update(global_config['links'])
+
 
             # Re-define the links path relative to working directory
             for key, value in config['links'].iteritems():

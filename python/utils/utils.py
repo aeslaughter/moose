@@ -62,12 +62,12 @@ def find_moose_executable(loc, **kwargs):
         loc[str]: The directory containing the MOOSE executable.
 
     Kwargs:
-        methods[list]: (Default: ['opt', 'oprof', 'dbg']) The list of build types to consider.
+        methods[list]: (Default: ['opt', 'oprof', 'dbg', 'devel']) The list of build types to consider.
         name[str]: (Default: opt.path.basename(loc)) The name of the executable to locate.
     """
 
     # Set the methods and name local varaiables
-    methods = kwargs.pop('methods', ['opt', 'oprof', 'dbg'])
+    methods = kwargs.pop('methods', ['opt', 'oprof', 'dbg', 'devel'])
     name = kwargs.pop('name', os.path.basename(loc))
 
     # Check that the location exists and that it is a directory
