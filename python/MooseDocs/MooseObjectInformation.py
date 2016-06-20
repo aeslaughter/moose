@@ -6,29 +6,29 @@ import MooseDocs
 from MooseInformationBase import MooseInformationBase
 from MooseObjectParameterTable import MooseObjectParameterTable
 
-
 class MooseObjectInformation(MooseInformationBase):
     """
     Object for generating documentation for a MooseObject.
 
     Args:
         yaml: The YAML node for this object.
+        src[Tuple]: The source files for this object (i.e., *.h/*.C files).
 
-
+    Kwargs:
+        inputs[MooseDocs.Database]: A database of input files using an object.
+        children[MooseDocs.Database]: A database of source files that inherit from the object.
     """
 
-    log = logging.getLogger('MkMooseDocs.MooseObjectInformation')
 
     def __init__(self, yaml, src, **kwargs):
         MooseInformationBase.__init__(self, yaml, **kwargs)
 
         self.log.info('Initializing Documentation: {}'.format(yaml['name']))
 
+        # Member variables
         self._src = src
-
         self._inputs = kwargs.pop('inputs', None)
         self._children = kwargs.pop('children', None)
-
         self._name = yaml['name'].split('/')[-1]
         self._description = yaml['description']
 
@@ -52,6 +52,9 @@ class MooseObjectInformation(MooseInformationBase):
 
     @staticmethod
     def filename(name):
+        """
+        The object markdown to create.
+        """
         return '{}.md'.format(name.strip('/').replace('/*', '').replace('/<type>', ''))
 
     def develDocs(self):
@@ -61,7 +64,6 @@ class MooseObjectInformation(MooseInformationBase):
 
         # The markdown to output
         md = []
-
 
         # Repository link(s)
         if self._config['repo']:
@@ -84,6 +86,9 @@ class MooseObjectInformation(MooseInformationBase):
 
 
     def markdown(self):
+        """
+        Generates the markdown for the MooseObject.
+        """
 
         # Build a list of strings to be separated by '\n'
         md = []
@@ -97,9 +102,10 @@ class MooseObjectInformation(MooseInformationBase):
         md += ['']
 
         # The details
-        md += ['{{!{}!}}'.format(self._details)]
-        md += ['']
-        if not os.path.exists(self._details):
+        if os.path.exists(self._details):
+            md += ['{{!{}!}}'.format(self._details)]
+            md += ['']
+        else:
             self.log.error('Details file does not exist: {}'.format(self._details))
 
         # Print the InputParameter tables

@@ -18,23 +18,17 @@ class MooseApplicationSyntax(object):
 
     Args:
         yaml[MooseYaml]: The MooseYaml object obtained by running the application with --yaml option.
-
-    Kwargs:
         path[str]: Valid source directory to extract syntax.
     """
 
-    log = logging.getLogger('MkMooseDocs.MooseApplicationSyntax')
 
     def __init__(self, yaml_data, path):
 
-
-
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.info('Locating syntax for application.')
 
         # The databases containing the system/object/markdown/source information for this directory
         self._yaml_data = yaml_data#copy.copy(yaml_data)
-
-
         self._systems = set()
         self._objects = dict()
         self._filenames = dict()
@@ -59,21 +53,33 @@ class MooseApplicationSyntax(object):
 
     def systems(self):
         """
-        Return a set of MOOSE systems for defined in the supplied directories.
+        Return a set of MOOSE systems defined in the supplied directories.
         """
         return self._systems
 
     def hasSystem(self, name):
+        """
+        Returns True when the supplied name is a system in this object.
+        """
         return name in self._systems
 
     def objects(self):
+        """
+        Returns a set of MOOSE objects defined in the supplied directories.
+        """
         return self._objects
 
     def hasObject(self, name):
+        """
+        Returns True when the supplied name is an object stored in the syntax object.
+        """
         return name in self._objects
 
-    def filenames(self, key):
-        return self._filenames[self._objects[key]]
+    def filenames(self, name):
+        """
+        Return the filename(s), *h (and *.C) for the given object name.
+        """
+        return self._filenames[self._objects[name]]
 
 
     def _updateSyntax(self, path):

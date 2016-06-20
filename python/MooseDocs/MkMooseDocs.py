@@ -1,21 +1,11 @@
 #!/usr/bin/env python
 import os
-import re
-import collections
-import utils #/moose/python/utils
-import yaml
+import utils
 import logging
-
-from mkdocs.utils import yaml_load
-
-import subprocess
-
 import MooseDocs
 from MooseApplicationDocGenerator import MooseApplicationDocGenerator
 
-
-
-class MkMooseDocsFilter(logging.Formatter):
+class MkMooseDocsFormatter(logging.Formatter):
 
     COLOR = {'DEBUG':'GREEN', 'INFO':'RESET', 'WARNING':'YELLOW', 'ERROR':'RED', 'CRITICAL':'MAGENTA'}
 
@@ -34,32 +24,21 @@ class MkMooseDocsFilter(logging.Formatter):
 
         return msg
 
-#TODO: Make this a generic function in /moose/python/utils
-#from peacock.utils.ExeLauncher import runExe
-def runExe(app_path, args):
-
-    popen_args = [str(app_path)]
-    if isinstance(args, str):
-        popen_args.append(args)
-    else:
-        popen_args.extend(args)
-
-    proc = subprocess.Popen(popen_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    data = proc.communicate()
-    stdout_data = data[0].decode("utf-8")
-    return stdout_data
 
 
 
 if __name__ == '__main__':
 
     # Setup the logger object
-    log = logging.getLogger('MkMooseDocs')
-    handler = logging.StreamHandler()
-    formatter = MkMooseDocsFilter()#'%(name)s:%(levelname)s: %(message)s')
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
-    log.setLevel(logging.INFO)
+    logging.basicConfig(level=logging.INFO)
+    #log = logging.getLogger('MooseDocs')
+
+    #formatter = MkMooseDocsFormatter()#'%(name)s:%(levelname)s: %(message)s')
+    #handler = logging.StreamHandler()
+    #handler.setFormatter(formatter)
+    #log.addHandler(handler)
+
+    #log.setLevel(logging.INFO)
     #log.setLevel(logging.DEBUG)
 
 

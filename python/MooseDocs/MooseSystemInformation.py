@@ -5,27 +5,41 @@ from MarkdownTable import MarkdownTable
 from MooseObjectParameterTable import MooseObjectParameterTable
 
 class MooseSystemInformation(MooseInformationBase):
+    """
+    Object for generating documentation for a MOOSE system.
 
-    log = logging.getLogger('MkMooseDocs.MooseSystemInformation')
+    Args:
+        node: The YAML node for this object.
+        syntax: The MooseApplicationSyntax object containing the syntax.
+    """
 
     def __init__(self, node, syntax, **kwargs):
         MooseInformationBase.__init__(self, node, **kwargs)
+        self.log = logging.getLogger(self.__class__.__name__)
         self._syntax = syntax
 
     @staticmethod
     def filename(name):
+        """
+        The filename for the system documentation.
+        """
         return '{}/Overview.md'.format(name.strip('/').replace('/*', '').replace('/<type>', ''))
 
     def markdown(self):
+        """
+        Generate the markdown for the system.
+        """
 
         md = []
 
         # The details
-        md += ['{{!{}!}}'.format(self._details)]
-        md += ['']
-        if not os.path.exists(self._details):
+        if os.path.exists(self._details):
+            md += ['{{!{}!}}'.format(self._details)]
+            md += ['']
+        else:
             self.log.error('Details file does not exist: {}'.format(self._details))
 
+        # Generate table of action parameters
         if self._yaml['parameters']:
             table = MooseObjectParameterTable()
             for param in self._yaml['parameters']:
@@ -35,7 +49,7 @@ class MooseSystemInformation(MooseInformationBase):
             md += [table.markdown()]
             md += ['']
 
-
+        # Generate table of object within the system
         if self._yaml['subblocks']:
             table = MarkdownTable('Name', 'Description')
             for child in self._yaml['subblocks']:

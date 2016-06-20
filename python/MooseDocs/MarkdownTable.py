@@ -1,3 +1,4 @@
+import logging
 class MarkdownTable(object):
     """
     A generic tool for generating Markdown tables.
@@ -7,7 +8,7 @@ class MarkdownTable(object):
     """
 
     def __init__(self, *args):
-
+        self.log = logging.getLogger(self.__class__.__name__)
         self._column_headers = args
         self._column_widths = []
         self._rows = []

@@ -12,9 +12,7 @@ class MooseObjectParameterTable(MarkdownTable):
 
     def __init__(self, **kwargs):
         super(MooseObjectParameterTable, self).__init__(*self.PARAMETER_TABLE_COLUMN_NAMES)
-
         self._parameters = []
-
 
     def addParam(self, param):
         """
@@ -31,7 +29,6 @@ class MooseObjectParameterTable(MarkdownTable):
             items.append(self._formatParam(param[key], key, param['cpp_type']))
 
         self.addRow(*items)
-
 
     def _formatParam(self, param, key, ptype):
         """
