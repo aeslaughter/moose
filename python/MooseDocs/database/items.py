@@ -6,6 +6,8 @@ import os
 import re
 import subprocess
 import MooseDocs
+import logging
+log = logging.getLogger(__name__)
 
 class DatabaseItem(object):
     """

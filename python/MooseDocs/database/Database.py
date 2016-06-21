@@ -1,4 +1,7 @@
 import os
+import logging
+log = logging.getLogger(__name__)
+
 class Database(object):
     """
     A generic storage container for building a database of items. The primary purpose

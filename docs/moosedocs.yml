@@ -2,8 +2,6 @@ site_name: MOOSE
 
 docs_dir: .
 
-site_dir: ../site
-
 extra_javascript:
     - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
     - mathjaxconfig.js
@@ -20,12 +18,14 @@ markdown_extensions:
                repo: https://github.com/idaholab/moose/blob/master
 
 pages:
-   - Home: index.md
-   - Documentation:
-       - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
-       - Framework: !include documentation/framework/pages.yml
-       - Modules:
-           - Phase Field: !include documentation/modules/phase_field/pages.yml
+    - Home: index.md
+    - Documentation:
+        - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
+        - Systems:
+            - Framework: !include documentation/framework/pages.yml
+            - Modules:
+                - Phase Field: !include documentation/modules/phase_field/pages.yml
+                - Contact: !include documentation/modules/contact/pages.yml
 
 extra:
     ###############################################################
@@ -49,6 +49,7 @@ extra:
     include:
       - ../framework
       - ../modules/phase_field
+      - ../modules/contact
 
     # Install markdown directory
     install: documentation

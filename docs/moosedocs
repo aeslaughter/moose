@@ -3,40 +3,9 @@ import os
 import utils
 import logging
 from mkdocs.commands import serve, build
+from mkdocs.config import load_config
 import MooseDocs
 import argparse
-
-
-import inspect
-
-class MkMooseDocsFormatter(logging.Formatter):
-
-    COLOR = {'DEBUG':'GREEN', 'INFO':'RESET', 'WARNING':'YELLOW', 'ERROR':'RED', 'CRITICAL':'MAGENTA'}
-
-    def format(self, record):
-        return logging.Formatter.format(self, record)
-
-        """
-        stack = inspect.stack()
-        the_class = stack[1][0].f_locals["self"].__class__
-        the_method = stack[1][0].f_code.co_name
-        print("  I was called by {}.{}()".format(str(the_class), the_method))
-
-        msg = logging.Formatter.format(self, record)
-
-        indent = record.name.count('.')
-
-        if record.levelname in ['WARNING', 'ERROR', 'CRITICAL']:
-            msg = '{}{}: {}'.format(' '*4*indent, record.levelname, msg)
-        else:
-            msg = '{}{}'.format(' '*4*indent, msg)
-
-        if record.levelname in self.COLOR:
-            msg = utils.colorText(msg, self.COLOR[record.levelname])
-
-        return msg
-        """
-
 
 
 if __name__ == '__main__':
@@ -51,28 +20,17 @@ if __name__ == '__main__':
     subparser = parser.add_subparsers(title='Commands', description="Documenation creation command to execute.", dest='command')
 
     generate_parser = subparser.add_parser('generate', help="Generate the markdown documentation from MOOSE application executable.")
+
     serve_parser = subparser.add_parser('serve', help='Sever the documentation using a local server.')
     serve_parser.add_argument('--no-livereload', action='store_true', help="Disable the live reloading of the served site.")
     serve_parser.add_argument('--strict', action='store_true', help='Enable strict mode and abort on warnings.')
 
+    build_parser = subparser.add_parser('build', help='Build the documentation for serving.')
+
     options = parser.parse_args()
 
-    # Setup the logger object
-    if options.verbose:
-        level = logging.DEBUG
-    else:
-        level = logging.INFO
-
-    logging.basicConfig(level=level)
-    #log = logging.getLogger('MooseDocs')
-    """
-    formatter = MkMooseDocsFormatter()#'%(name)s:%(levelname)s: %(message)s')
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
-    log.setLevel(logging.INFO)
-    """
-    #log.setLevel(logging.DEBUG)
+    # Initialize logging
+    MooseDocs.init_logging(options.verbose)
 
     # Configuration file
     if not os.path.exists(options.config_file):
@@ -89,4 +47,5 @@ if __name__ == '__main__':
 
     # BUILD:
     elif options.command == 'build':
-        pass
+        config = load_config(options.config_file)
+        build.build(config, clean_site_dir=True)

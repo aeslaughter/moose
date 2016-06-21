@@ -26,6 +26,7 @@ class MooseApplicationDocGenerator(object):
         self._config_file = config_file
         self._exe = None
         self._modified = None
+        self._develop = kwargs.get('develop', False)
 
     def __call__(self):
         """
