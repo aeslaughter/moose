@@ -32,9 +32,10 @@ class MooseSubApplicationDocGenerator(object):
         # Create the database of input files and source code
         inputs = collections.OrderedDict()
         children = collections.OrderedDict()
+        options = {'repo': self._config['repo']}
         for key, path in links.iteritems():
-            inputs[key] = database.Database('.i', path, database.items.InputFileItem)
-            children[key] = database.Database('.h', path, database.items.ChildClassItem)
+            inputs[key] = database.Database('.i', path, database.items.InputFileItem, **options)
+            children[key] = database.Database('.h', path, database.items.ChildClassItem, **options)
 
         # Parse the syntax for the given source directory.
         self._yaml_data = yaml_data
@@ -65,8 +66,7 @@ class MooseSubApplicationDocGenerator(object):
             obj.write()
 
         yml = self.generateYAML()
-        folder = os.path.relpath(self._config['source'], os.getcwd())
-        filename = os.path.abspath(os.path.join(self._config.get('build'), folder, 'pages.yml'))
+        filename = os.path.abspath(os.path.join(self._config.get('install'), self._config['prefix'], 'pages.yml'))
         log.info('Creating YAML file: {}'.format(filename))
         with open(filename, 'w') as fid:
             fid.write(yml)
@@ -76,8 +76,7 @@ class MooseSubApplicationDocGenerator(object):
         Generates the System.yml file.
         """
 
-        folder = os.path.relpath(self._config['source'], os.getcwd())
-        prefix = os.path.join(self._config.get('build'), folder)
+        prefix = os.path.join(self._config['install'], self._config['prefix'])
 
         rec_dd = lambda: collections.defaultdict(rec_dd)
         tree = rec_dd()
@@ -100,7 +99,7 @@ class MooseSubApplicationDocGenerator(object):
                 if 'items' not in d:
                     d['items'] = []
 
-                base = os.path.join(os.path.relpath(self._config['build'], self._config['docs']), folder, *relative)
+                base = os.path.join(os.path.relpath(prefix, os.getcwd()), *relative)
                 d['items'].append( (name, os.path.join(base, filename) ) )
 
         def dumptree(node, level=0):

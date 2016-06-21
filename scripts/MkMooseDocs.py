@@ -45,10 +45,10 @@ if __name__ == '__main__':
 
     # Command-line options
     parser = argparse.ArgumentParser(description="Tool for building and developing MOOSE and MOOSE-based application documentation.")
-    parser.add_argument('--docs_dir', '-d', type=str, default=os.getcwd(), help="The 'docs' directory where the markdown for the site resides.")
+    parser.add_argument('docs_dir', type=str, nargs='?', default=os.getcwd(), help="The 'docs' directory where the markdown for the site resides.")
     parser.add_argument('--root', '-r', type=str, default=os.path.abspath('..'), help="The root directory of the application. (Default: %(default)s)")
     parser.add_argument('--config-file', '-c', type=str, default=os.path.join('mkdocs.yml'), help="The configuration file to use for building the documentation. (Default: %(default)s)")
-    parser.add_argument('--executable', '-e', type=str, help="The MOOSE application executable to use for generating documentstion. If a directory is supplied it wil be searched for an executable, if nothing is provided the current working directory (cwd) is searched.")
+    #parser.add_argument('--executable', '-e', type=str, help="The MOOSE application executable to use for generating documentstion. If a directory is supplied it wil be searched for an executable, if nothing is provided the current working directory (cwd) is searched.")
 
     subparser = parser.add_subparsers(title='Commands', description="Documenation creation command to execute.", dest='command')
 
@@ -62,7 +62,6 @@ if __name__ == '__main__':
 
 
     options = parser.parse_args()
-    print options
 
     # Setup the logger object
     logging.basicConfig(level=logging.INFO)
@@ -80,6 +79,7 @@ if __name__ == '__main__':
     if not os.path.isdir(options.root):
         raise IOError("The supplied root directory is not valid: {}".format(options.root))
 
+    """
     # Executable
     if not options.executable:
         options.executable = utils.find_moose_executable(options.root)
@@ -91,6 +91,7 @@ if __name__ == '__main__':
 
     if not os.path.isabs(options.executable):
         options.executable = os.path.abspath(options.executable)
+    """
 
     # Configuration file
     if not os.path.isabs(options.config_file):
@@ -99,18 +100,16 @@ if __name__ == '__main__':
     if not os.path.exists(options.config_file):
         raise IOError("The supplied configuation file was not found: {}".format(options.config_file))
 
-    print options
-
     # GENERATE:
     if options.command == 'generate':
-        gen = MooseDocs.MooseApplicationDocGenerator(options.root, options.config_file, options.executable)
+        gen = MooseDocs.MooseApplicationDocGenerator(options.config_file)
         gen()
 
     # SERVE:
     elif options.command == 'serve':
 
         if not options.no_generate:
-            gen = MooseDocs.MooseApplicationDocGenerator(options.root, options.config_file, options.executable)
+            gen = MooseDocs.MooseApplicationDocGenerator(options.config_file)
             gen()
 
         serve.serve(config_file=options.config_file, strict=options.strict, livereload=(not options.no_livereload))

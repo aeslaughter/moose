@@ -4,6 +4,7 @@ see Database.py for usage.
 """
 import os
 import re
+import subprocess
 import MooseDocs
 
 class DatabaseItem(object):
@@ -13,8 +14,11 @@ class DatabaseItem(object):
     Args:
         filename[str]: The complete filename (supplied by Database object).
     """
-    def __init__(self, filename):
-        self._filename = filename
+    def __init__(self, filename, **kwargs):
+        self._filename = os.path.abspath(filename)
+        output = subprocess.check_output(['git', 'rev-parse', '--git-dir'], stderr=subprocess.STDOUT)
+        self._rel_path = os.path.relpath(filename, os.path.dirname(output))
+        self._config = kwargs
 
     def keys(self):
         pass
@@ -48,12 +52,11 @@ class RegexItem(DatabaseItem):
     An item that creates keys base on regex match.
     """
 
-    def __init__(self, filename, regex):
-        DatabaseItem.__init__(self, filename)
+    def __init__(self, filename, regex, **kwargs):
+        DatabaseItem.__init__(self, filename, **kwargs)
 
         self._regex = re.compile(regex)
-        self._rel_path = self._filename.split('/moose/')[-1]
-        self._repo = MooseDocs.MOOSE_REPOSITORY + self._rel_path
+        self._repo = os.path.join(kwargs.get('repo'), self._rel_path)
 
     def keys(self):
         """
@@ -63,14 +66,12 @@ class RegexItem(DatabaseItem):
         for match in re.finditer(self._regex, self.content()):
             yield match.group('key')
 
-
-
 class InputFileItem(RegexItem):
     """
     Returns a markdown list item for input file matching of (type = ).
     """
-    def __init__(self, filename):
-        RegexItem.__init__(self, filename, r'type\s*=\s*(?P<key>\w+)\b')
+    def __init__(self, filename, **kwargs):
+        RegexItem.__init__(self, filename, r'type\s*=\s*(?P<key>\w+)\b', **kwargs)
 
     def markdown(self):
         return '* [{}]({})'.format(self._rel_path, self._repo)
@@ -79,8 +80,8 @@ class ChildClassItem(RegexItem):
     """
     Returns a markdown list item for h file containing a base.
     """
-    def __init__(self, filename):
-        RegexItem.__init__(self, filename, r'public\s*(?P<key>\w+)\b')
+    def __init__(self, filename, **kwargs):
+        RegexItem.__init__(self, filename, r'public\s*(?P<key>\w+)\b', **kwargs)
 
     def markdown(self):
         # Check for C file

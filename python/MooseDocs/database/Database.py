@@ -13,8 +13,11 @@ class Database(object):
        ext[str]: The file extension to consider (e.g., '.i').
        path[str | list]: The file path(s) to walk.
        itype[type DatabaseItem]: The type of item to create.
+
+    Kwargs:
+       All key, value pairs are configuration options passed to the items generated.
     """
-    def __init__(self, ext, paths, itype):
+    def __init__(self, ext, paths, itype, **kwargs):
 
         # Handle paths
         if isinstance(paths, str):
@@ -23,6 +26,7 @@ class Database(object):
         # Initialize member variables
         self._database = dict()
         self._itype = itype
+        self._config = kwargs
 
         # Walk the directory, looking for files with the supplied extension.
         for path in paths:
@@ -40,7 +44,7 @@ class Database(object):
         """
 
         # Instantiate the desired DatabaseItem type and extract the keys
-        item = self._itype(filename)
+        item = self._itype(filename, **self._config)
         keys = item.keys()
 
         # If the keys exists, update the database

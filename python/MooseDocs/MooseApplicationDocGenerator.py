@@ -20,10 +20,11 @@ class MooseApplicationDocGenerator(object):
                        modified time of the executable.
     """
 
-    def __init__(self, root, config_file, exe, **kwargs):
-        self._root = root
+    def __init__(self, config_file, **kwargs):
+
+        self._root = os.path.dirname(config_file)
         self._config_file = config_file
-        self._exe = exe
+        self._exe = None
         self._modified = None
         self._develop = kwargs.pop('develop', False)
 
@@ -35,9 +36,9 @@ class MooseApplicationDocGenerator(object):
               the function has been called, unless the develop flag was set to True upon construction
               of this object.
         """
-        if self._develop:
+        if self._develop or self._exe == None:
             self._generate()
-            self._modified = modified
+            self._modified = os.path.getmtime(self._exe)
 
         else:
             modified = os.path.getmtime(self._exe)
@@ -49,21 +50,22 @@ class MooseApplicationDocGenerator(object):
         """
         Build the configuration options for included sub-directories.
         """
+
+        def make_abs(config):
+            keys = ['install', 'details', 'root']
+            for key in keys:
+                if key in config:
+                    if not os.path.isabs(config[key]):
+                        config[key] = os.path.abspath(os.path.join(self._root, config[key]))
+
         # Read the general yml file (e.g. mkdocs.yml)
         with open(self._config_file, 'r') as fid:
             yml = yaml_load(fid.read())
 
-        # Global Config settings (and defaults)
-        global_config = yml['extra'].get('global_config', dict())
-        global_config.setdefault('build', os.path.join(self._root, 'docs', 'documentation'))
-        global_config.setdefault('details', os.path.join(self._root, 'docs', 'details'))
-        global_config.setdefault('docs', os.path.join(self._root, 'docs'))
-        global_config.setdefault('repo', None)
-        global_config.setdefault('doxygen', None)
-        global_config.setdefault('hide', list())
-        global_config.setdefault('links', dict())
+        # Hide
+        hide = yml.get('hide', list())
 
-        def update_config(dirname, cname):
+        def update_config(cname):
             """
             Helper for updating/creating local configuration dict.
             """
@@ -72,40 +74,52 @@ class MooseApplicationDocGenerator(object):
             with open(cname) as fid:
                 config = yaml_load(fid.read())
 
+            # Defaults
+            config.setdefault('install', os.path.join(self._root, 'documentation'))
+            config.setdefault('details', os.path.join(self._root, 'details'))
+            config.setdefault('prefix', '')
+            config.setdefault('root', self._root)
+            config.setdefault('repo', None)
+            config.setdefault('doxygen', None)
+            config.setdefault('hide', list())
+            config.setdefault('links', dict())
+
             # Define abspath's for all directories supplied
-            keys = ['build', 'details', 'docs']
-            for key in keys:
-                if key in config:
-                    config[key] = os.path.abspath(os.path.join(dirname, config[key]))
+            make_abs(config)
 
             # Set the default source directory and sub-folder
-            config['source'] = dirname
-            config['folder'] = os.path.relpath(config['source'], os.getcwd())
+            config['source'] = os.path.dirname(cname)
 
             # Set the defaults
-            for key, value in global_config.iteritems():
+            for key, value in config.iteritems():
                 config.setdefault(key, value)
 
-            # Append the hide/links data
-            config['hide'] = set(config['hide'] + global_config['hide'])
-            config['links'].update(global_config['links'])
-
+            # Append the hide data
+            config['hide'] = set(config['hide'] + hide)
 
             # Re-define the links path relative to working directory
             for key, value in config['links'].iteritems():
                 out = []
                 for path in value:
-                    out.append(os.path.abspath(os.path.join(dirname, path)))
+                    out.append(os.path.abspath(os.path.join(config['source'], path)))
                 config['links'][key] = out
 
             return config
 
-        #TODO: Error check for 'extra' and 'include'
+        # Extract executable
+        if 'app' not in yml['extra']:
+            self._exe = utils.find_moose_executable(self._root)
+        else:
+            app = yml['extra']['app']
+            if os.path.isdir(app):
+                self._exe = utils.find_moose_executable(app)
+            else:
+                self._exe = app
 
         configs = []
         for include in yml['extra']['include']:
             path = os.path.join(self._root, include, 'config.yml')
-            configs.append(update_config(include, path))
+            configs.append(update_config(path))
         return configs
 
 
@@ -114,18 +128,13 @@ class MooseApplicationDocGenerator(object):
         Generate the documentation.
         """
 
-        # Some arguments to be passed in
-        dirname = os.path.join(self._root)
-
         # Setup the location
         log.info('Generating Documentation: {}'.format(self._config_file))
 
         # Parse the configuration file for the desired paths
-        os.chdir(dirname)
         configs = self._configure()
 
         # Locate and run the MOOSE executable
-        print 'EXE:', self._exe
         raw = utils.runExe(self._exe, '--yaml')
         ydata = utils.MooseYaml(raw)
 

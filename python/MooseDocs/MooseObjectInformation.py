@@ -1,5 +1,6 @@
 import os
 import collections
+import subprocess
 import logging
 log = logging.getLogger(__name__)
 
@@ -32,6 +33,10 @@ class MooseObjectInformation(MooseInformationBase):
         self._children = kwargs.pop('children', None)
         self._name = yaml['name'].split('/')[-1]
         self._description = yaml['description']
+
+        # Locate the root directory
+        output = subprocess.check_output(['git', 'rev-parse', '--git-dir'], stderr=subprocess.STDOUT)
+        self._root = os.path.dirname(output)
 
         # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
         self._tables = collections.OrderedDict()
@@ -71,8 +76,9 @@ class MooseObjectInformation(MooseInformationBase):
             items = []
             for fname in self._src:
                 items.append(os.path.basename(fname))
-                items.append(os.path.join(self._config['repo'], fname))
-            md += ['* Source: ' + ('[{}]({}) '*len(self._src)).format(*items)]
+                items.append(self._config['repo'])
+                items.append(os.path.relpath(fname, self._root))
+            md += ['* Source: ' + ('[{}]({}/{}) '*len(self._src)).format(*items)]
 
         # Doxygen link
         if self._config['doxygen']:

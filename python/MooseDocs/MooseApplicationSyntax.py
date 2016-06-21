@@ -102,10 +102,6 @@ class MooseApplicationSyntax(object):
             for filename in files:
                 fullfile = os.path.join(root, filename)
 
-                # Store any markdown files associated (the name of the markdown matches should match the registered name).
-                #if filename.endswith('.md'):
-                #    self._markdown[filename[:-2]] = fullfile
-
                 # Inspect source files
                 if filename.endswith('.C') or filename.endswith('.h'):
 
