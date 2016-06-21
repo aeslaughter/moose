@@ -26,7 +26,6 @@ class MooseApplicationDocGenerator(object):
         self._config_file = config_file
         self._exe = None
         self._modified = None
-        self._develop = kwargs.pop('develop', False)
 
     def __call__(self):
         """
@@ -35,6 +34,10 @@ class MooseApplicationDocGenerator(object):
         NOTE: Documentation will only generated if the executable has been modified since that last time
               the function has been called, unless the develop flag was set to True upon construction
               of this object.
+
+        TODO: Tie this into the mkdocs livereload. To do this the mkdocs watching should be paused while
+        the files are generated and then mkdocs livereload restarted. Otherwise, each file that changes
+        spawns a rebuild.
         """
         if self._develop or self._exe == None:
             self._generate()
