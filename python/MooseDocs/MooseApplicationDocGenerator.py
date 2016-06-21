@@ -125,6 +125,7 @@ class MooseApplicationDocGenerator(object):
         configs = self._configure()
 
         # Locate and run the MOOSE executable
+        print 'EXE:', self._exe
         raw = utils.runExe(self._exe, '--yaml')
         ydata = utils.MooseYaml(raw)
 

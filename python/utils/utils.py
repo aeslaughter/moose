@@ -71,6 +71,7 @@ def find_moose_executable(loc, **kwargs):
     name = kwargs.pop('name', os.path.basename(loc))
 
     # Check that the location exists and that it is a directory
+    loc = os.path.abspath(loc)
     if not os.path.isdir(loc):
         print 'ERROR: The supplied path must be a valid directory:', loc
         return errno.ENOTDIR
