@@ -49,3 +49,6 @@ extra:
     include:
       - ../framework
       - ../modules/phase_field
+
+    # Install markdown directory
+    install: documentation

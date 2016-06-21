@@ -107,9 +107,4 @@ if __name__ == '__main__':
 
     # SERVE:
     elif options.command == 'serve':
-
-        if not options.no_generate:
-            gen = MooseDocs.MooseApplicationDocGenerator(options.config_file)
-            gen()
-
         serve.serve(config_file=options.config_file, strict=options.strict, livereload=(not options.no_livereload))

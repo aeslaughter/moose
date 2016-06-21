@@ -51,19 +51,13 @@ class MooseApplicationDocGenerator(object):
         Build the configuration options for included sub-directories.
         """
 
-        def make_abs(config):
-            keys = ['install', 'details', 'root']
-            for key in keys:
-                if key in config:
-                    if not os.path.isabs(config[key]):
-                        config[key] = os.path.abspath(os.path.join(self._root, config[key]))
-
         # Read the general yml file (e.g. mkdocs.yml)
         with open(self._config_file, 'r') as fid:
             yml = yaml_load(fid.read())
 
         # Hide
         hide = yml.get('hide', list())
+        install = yml.get('install', os.path.join(os.getcwd(), 'documentation'))
 
         def update_config(cname):
             """
@@ -75,24 +69,15 @@ class MooseApplicationDocGenerator(object):
                 config = yaml_load(fid.read())
 
             # Defaults
-            config.setdefault('install', os.path.join(self._root, 'documentation'))
-            config.setdefault('details', os.path.join(self._root, 'details'))
+            # Set the default source directory and sub-folder
+            config['source'] = os.path.dirname(cname)
+            config.setdefault('install', install)
+            config['details'] = os.path.join(config['source'], config.get('details', os.path.join('docs', 'details')))
             config.setdefault('prefix', '')
-            config.setdefault('root', self._root)
             config.setdefault('repo', None)
             config.setdefault('doxygen', None)
             config.setdefault('hide', list())
             config.setdefault('links', dict())
-
-            # Define abspath's for all directories supplied
-            make_abs(config)
-
-            # Set the default source directory and sub-folder
-            config['source'] = os.path.dirname(cname)
-
-            # Set the defaults
-            for key, value in config.iteritems():
-                config.setdefault(key, value)
 
             # Append the hide data
             config['hide'] = set(config['hide'] + hide)
