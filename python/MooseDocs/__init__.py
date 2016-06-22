@@ -76,4 +76,4 @@ def init_logging(verbose=False):
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     log.addHandler(handler)
-    log.setLevel(logging.INFO)
+    log.setLevel(level)

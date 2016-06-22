@@ -28,7 +28,7 @@ pages:
         - Generating Docs:
             - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
         - Systems:
-            - Framework: !include documentation/sysems/framework/pages.yml
+            - Framework: !include documentation/systems/framework/pages.yml
             - Modules:
                 - Phase Field: !include documentation/systems/modules/phase_field/pages.yml
                 - Contact: !include documentation/systems/modules/contact/pages.yml
@@ -39,7 +39,7 @@ extra:
     ###############################################################
 
     # Executable directory or executable
-    app: ../modules/combined/modules
+    app: ../modules/combined
 
     # Complete YAML syntax to ignore (must include leading /). All "systems" in MOOSE matching
     # these values will be completly ignored and all objects within the associated system will
@@ -54,8 +54,8 @@ extra:
     # Directories to include, they must contain a config.yml
     include:
       - ../framework
-#      - ../modules/phase_field
-#      - ../modules/contact
+      - ../modules/phase_field
+      - ../modules/contact
 
     # Install markdown directory
     install: documentation

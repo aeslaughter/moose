@@ -3,6 +3,11 @@ import os
 import re
 import subprocess
 
+import clang.cindex
+if 'MOOSE_CLANG_LIB' not in os.environ:
+    raise EnvironmentError("Using the MooseSourceParser requires setting 'MOOSE_CLANG_LIB' environment variable to point to the clang library.")
+clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
+
 class MooseSourceParser(object):
     """
     An object for parsing MOOSE source code.
@@ -11,10 +16,6 @@ class MooseSourceParser(object):
         app_path[str]: The path that contains the application Makefile (needed for extracting includes).
     """
 
-    import clang.cindex
-    if 'MOOSE_CLANG_LIB' not in os.environ:
-        raise EnvironmentError("Using the MooseSourceParser requires setting 'MOOSE_CLANG_LIB' environment variable to point to the clang library.")
-    clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
 
     def __init__(self, app_path):
 
