@@ -4,7 +4,6 @@ docs_dir: .
 
 extra_javascript:
     - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
-    - mathjaxconfig.js
 
 markdown_extensions:
     - markdown_include.include           # pip install markdown-include
@@ -20,12 +19,13 @@ markdown_extensions:
 pages:
     - Home: index.md
     - Documentation:
-        - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
+        - Generating Docs:
+            - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
         - Systems:
             - Framework: !include documentation/framework/pages.yml
-            - Modules:
-                - Phase Field: !include documentation/modules/phase_field/pages.yml
-                - Contact: !include documentation/modules/contact/pages.yml
+#            - Modules:
+#                - Phase Field: !include documentation/modules/phase_field/pages.yml
+#                - Contact: !include documentation/modules/contact/pages.yml
 
 extra:
     ###############################################################
@@ -48,8 +48,8 @@ extra:
     # Directories to include, they must contain a config.yml
     include:
       - ../framework
-      - ../modules/phase_field
-      - ../modules/contact
+#      - ../modules/phase_field
+#      - ../modules/contact
 
     # Install markdown directory
     install: documentation

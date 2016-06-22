@@ -61,3 +61,5 @@ label                | True    | Include a label with the filename before the co
 overflow-y           | Scroll  | The action to take when the text overflow the html container (see [overflow-y](http://www.w3schools.com/cssref/css3_pr_overflow-y.asp)).
 max-hieght           | 500px   | The maximum height of the code window (see [max-height](http://www.w3schools.com/cssref/pr_dim_max-height.asp)).
 strip-extra-newlines | False   | Remove exessive newlines from the included code.
+
+## Slideshows
