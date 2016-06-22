@@ -1,27 +1,14 @@
 #!/usr/bin/env python
 import os
-import utils
 import logging
 import sys
-import yaml
 
-try:
-    from mkdocs.commands import serve, build
-    from mkdocs.config import load_config
-except:
-    print 'Installing mkdocs...'
-    try:
-        import subprocess
-        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python', 'mkdocs'))
-        subprocess.check_output(['python', 'setup.py', 'install'], cwd=path)
-    except:
-        print 'Failed to install mkdocs package, please contact the moose-users list for assistance.'
-    print 'Succefully install mkdocs package, please re-execute your command: {}'.format(' '.join(sys.argv))
-    sys.exit()
-
-import MooseDocs
+import utils
 import argparse
 
+# Check for the necessary packages, this does a load so they should all get loaded.
+if utils.check_configuration(['yaml', 'livereload', 'click', 'jinja2', 'markdown', 'markdown_include', 'mdx_math', 'mkdocs_bootswatch', 'mkdocs_bootstrap']):
+    sys.exit(1)
 
 if __name__ == '__main__':
 
@@ -31,6 +18,9 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', '-v', action='store_true', help="Execute with verbose (debug) output.")
 
     subparser = parser.add_subparsers(title='Commands', description="Documenation creation command to execute.", dest='command')
+
+    setup_parser = subparser.add_parser('setup', help="Install mkmoosedocs package.")
+    setup_parser.add_argument('--path', default=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python', 'mkdocs')), help="Specifiy the location of the mkdocs package.")
 
     generate_parser = subparser.add_parser('generate', help="Generate the markdown documentation from MOOSE application executable.")
 
@@ -42,12 +32,33 @@ if __name__ == '__main__':
 
     options = parser.parse_args()
 
-    # Initialize logging
-    MooseDocs.init_logging(options.verbose)
+    # Setup
+    if options.command == 'setup':
+        try:
+            import subprocess
+            subprocess.check_output(['python', 'setup.py', 'install'], cwd=options.path)
+            print 'Successfully installed mkmoosedocs package.'
+            sys.exit(0)
+        except:
+            print 'Failed to install mkdocs package, please contact the moose-users list for assistance.'
+            sys.exit(1)
+    # See if custom mkdocs (mkmoosedocs) is installed
+    try:
+        from mkdocs.commands import serve, build
+        from mkdocs.config import load_config
+
+    except ImportError, e:
+        raise ImportError("mkmoosedocs must be installed, run the following command:\n    moosedocs setup")
 
     # Configuration file
     if not os.path.exists(options.config_file):
         raise IOError("The supplied configuation file was not found: {}".format(options.config_file))
+
+    # Load the MooseDocs markdown generation package
+    import MooseDocs
+
+    # Initialize logging
+    MooseDocs.init_logging(options.verbose)
 
     # GENERATE:
     if options.command == 'generate':

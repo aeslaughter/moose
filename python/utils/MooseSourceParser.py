@@ -1,13 +1,7 @@
+import sys
 import os
 import re
 import subprocess
-
-import clang.cindex
-#clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
-clang.cindex.Config.set_library_file('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib')
-
-
-#print '\nPYTHON BINDINGS:', clang.cindex.__file__
 
 class MooseSourceParser(object):
     """
@@ -16,6 +10,11 @@ class MooseSourceParser(object):
     Args:
         app_path[str]: The path that contains the application Makefile (needed for extracting includes).
     """
+
+    import clang.cindex
+    if 'MOOSE_CLANG_LIB' not in os.environ:
+        raise EnvironmentError("Using the MooseSourceParser requires setting 'MOOSE_CLANG_LIB' environment variable to point to the clang library.")
+    clang.cindex.Config.set_library_path(os.getenv('MOOSE_CLANG_LIB'))
 
     def __init__(self, app_path):
 

@@ -70,6 +70,13 @@ def find_moose_executable(loc, **kwargs):
     methods = kwargs.pop('methods', ['opt', 'oprof', 'dbg', 'devel'])
     name = kwargs.pop('name', os.path.basename(loc))
 
+    # Handle 'combined' and 'tests'
+    if os.path.isdir(loc):
+        if name == 'combined':
+            name = 'modules'
+        elif name == 'tests':
+            name = 'moose_test'
+
     # Check that the location exists and that it is a directory
     loc = os.path.abspath(loc)
     if not os.path.isdir(loc):
@@ -108,3 +115,25 @@ def runExe(app_path, args):
     data = proc.communicate()
     stdout_data = data[0].decode("utf-8")
     return stdout_data
+
+def check_configuration(packages):
+    """
+    Check that the supplied packages exist.
+
+    Return:
+        [int]: 0 = Success; 1 = Missing package(s)
+    """
+    missing = []
+    for package in packages:
+        try:
+            __import__(package)
+        except ImportError, e:
+            missing.append(package)
+
+    if missing:
+        print "The following packages are missing but required:"
+        for m in missing:
+            print ' '*4, '-', m
+        return 1
+
+    return 0

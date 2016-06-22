@@ -1,8 +1,5 @@
 # REQUIREMENTS:
-# pip install markdown-include
-# pip install python-markdown-math
-# pip install mkdocs-bootstrap
-# pip install mkdocs-bootswatch
+# pip install markdown-include python-markdown-math mkdocs-bootstrap mkdocs-bootswatch click Jinja2 livereload
 
 site_name: MOOSE
 
@@ -31,10 +28,10 @@ pages:
         - Generating Docs:
             - Moose Flavored Markdown: documentation/MooseFlavoredMarkdown.md
         - Systems:
-            - Framework: !include documentation/framework/pages.yml
+            - Framework: !include documentation/sysems/framework/pages.yml
             - Modules:
-                - Phase Field: !include documentation/modules/phase_field/pages.yml
-                - Contact: !include documentation/modules/contact/pages.yml
+                - Phase Field: !include documentation/systems/modules/phase_field/pages.yml
+                - Contact: !include documentation/systems/modules/contact/pages.yml
 
 extra:
     ###############################################################
@@ -42,7 +39,7 @@ extra:
     ###############################################################
 
     # Executable directory or executable
-    app: ../modules/combined/modules-devel
+    app: ../modules/combined/modules
 
     # Complete YAML syntax to ignore (must include leading /). All "systems" in MOOSE matching
     # these values will be completly ignored and all objects within the associated system will
