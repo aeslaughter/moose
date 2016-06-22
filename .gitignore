@@ -162,3 +162,7 @@ out.xyz
 
 #Jit output
 .jitdir/
+
+# Documentation Generation
+docs/documentation/systems/**/*.md
+docs/documentation/systems/**/*.yml

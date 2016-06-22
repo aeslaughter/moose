@@ -2,15 +2,28 @@
 import os
 import utils
 import logging
-from mkdocs.commands import serve, build
-from mkdocs.config import load_config
+import sys
+import yaml
+
+try:
+    from mkdocs.commands import serve, build
+    from mkdocs.config import load_config
+except:
+    print 'Installing mkdocs...'
+    try:
+        import subprocess
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python', 'mkdocs'))
+        subprocess.check_output(['python', 'setup.py', 'install'], cwd=path)
+    except:
+        print 'Failed to install mkdocs package, please contact the moose-users list for assistance.'
+    print 'Succefully install mkdocs package, please re-execute your command: {}'.format(' '.join(sys.argv))
+    sys.exit()
+
 import MooseDocs
 import argparse
 
 
 if __name__ == '__main__':
-
-
 
     # Command-line options
     parser = argparse.ArgumentParser(description="Tool for building and developing MOOSE and MOOSE-based application documentation.")
