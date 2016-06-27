@@ -25,6 +25,10 @@ class MooseMarkdown(markdown.Extension):
 
         super(MooseMarkdown, self).__init__(*args, **kwargs)
 
+        path = os.path.join(self.config['root'][0], 'docs', 'documentation')
+        self._markdown_database = MooseDocs.database.Database('.md', path, MooseDocs.database.items.MarkdownIncludeItem)
+
+
     def extendMarkdown(self, md, md_globals):
 
         # Strip description from config
@@ -32,8 +36,11 @@ class MooseMarkdown(markdown.Extension):
         for key, value in self.config.iteritems():
             config[key] = value[0]
 
+        # Preprocessors
         #md.treeprocessors.add('moose_slides', MooseSlideTreeprocessor(md), '_end')
-        md.treeprocessors.add('moose_auto_link', MooseMarkdownLinkPreprocessor(config), '_begin')
+        md.preprocessors.add('moose_auto_link', MooseMarkdownLinkPreprocessor(md, self._markdown_database), '_begin')
+
+        # Inline Patterns
         md.inlinePatterns.add('moose_input_block', MooseInputBlock(config), '<image_link')
         md.inlinePatterns.add('moose_cpp_method', MooseCppMethod(config), '<image_link')
         md.inlinePatterns.add('moose_source', MooseSourceFile(config), '<image_link')
