@@ -211,6 +211,7 @@
 #include "ElementL2Difference.h"
 #include "TimeExtremeValue.h"
 #include "RelativeSolutionDifferenceNorm.h"
+#include "SolutionL2Norm.h"
 
 // vector PPS
 #include "ConstantVectorPostprocessor.h"
@@ -625,6 +626,7 @@ registerObjects(Factory & factory)
   registerPostprocessor(ElementL2Difference);
   registerPostprocessor(TimeExtremeValue);
   registerPostprocessor(RelativeSolutionDifferenceNorm);
+  registerPostprocessor(SolutionL2Norm);
 
   // vector PPS
   registerVectorPostprocessor(ConstantVectorPostprocessor);
