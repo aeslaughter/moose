@@ -35,6 +35,14 @@ CreateExecutionerAction::CreateExecutionerAction(InputParameters params) :
 void
 CreateExecutionerAction::act()
 {
+  // Deprecated support
+  if (_moose_object_pars.get<bool>("trans_ss_check"))
+  {
+    InputParameters params = _factory.getValidParams("RelativeSolutionDifferenceNorm");
+    params.set<std::vector<OutputName> >("outputs") = {"none"};
+    _problem->addPostprocessor("_moose_l2_norm", "RelativeSolutionDifferenceNorm", params);
+  }
+
   _moose_object_pars.set<FEProblem *>("_fe_problem") = _problem.get();
   MooseSharedPointer<Executioner> executioner = _factory.create<Executioner>(_type, "Executioner", _moose_object_pars);
 

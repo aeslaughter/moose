@@ -59,7 +59,8 @@ InputParameters validParams<Transient>()
   params.addParam<bool>("reset_dt", false, "Use when restarting a calculation to force a change in dt.");
   params.addParam<unsigned int>("num_steps",       std::numeric_limits<unsigned int>::max(),     "The number of timesteps in a transient run");
   params.addParam<int> ("n_startup_steps", 0,      "The number of timesteps during startup");
-  params.addParam<bool>("trans_ss_check",  false,  "Whether or not to check for steady state conditions");
+  params.addDeprecatedParam<bool>("trans_ss_check",  false,  "Whether or not to check for steady state conditions", "Specify a postprocessor to use for the stead-state check with 'trans_ss_postprocessor' parameter. Use the 'RelativeSolutionDifferenceNorm' to get the same behavior.");
+  params.addParam<PostprocessorName>("trans_ss_postprocessor", "Postprocessor to be used for steady-state checking.");
   params.addParam<Real>("ss_check_tol",    1.0e-08,"Whenever the relative residual changes by less than this the solution will be considered to be at steady state.");
   params.addParam<Real>("ss_tmin",         0.0,    "Minimum number of timesteps to take before checking for steady state conditions.");
 
@@ -111,11 +112,9 @@ Transient::Transient(const InputParameters & parameters) :
     _num_steps(getParam<unsigned int>("num_steps")),
     _n_startup_steps(getParam<int>("n_startup_steps")),
     _steps_taken(0),
-    _trans_ss_check(getParam<bool>("trans_ss_check")),
+    _ss_postprocessor(isParamValid("trans_ss_postprocessor") ? &getPostprocessorValue("trans_ss_postprocessor") : NULL),
     _ss_check_tol(getParam<Real>("ss_check_tol")),
     _ss_tmin(getParam<Real>("ss_tmin")),
-    _sln_diff_norm(declareRecoverableData<Real>("sln_diff_norm", 0.0)),
-    _old_time_solution_norm(declareRecoverableData<Real>("old_time_solution_norm", 0.0)),
     _sync_times(_app.getOutputWarehouse().getSyncTimes()),
     _abort(getParam<bool>("abort_on_solve_fail")),
     _time_interval(declareRecoverableData<bool>("time_interval", false)),
@@ -439,8 +438,7 @@ Transient::solveStep(Real input_dt)
       if (_picard_max_its <= 1)
         _time_stepper->acceptStep();
 
-      _sln_diff_norm = _problem.relativeSolutionDifferenceNorm();
-      _solution_change_norm = _sln_diff_norm / _dt;
+      _solution_change_norm = _problem.relativeSolutionDifferenceNorm() / _dt;
 
       _problem.onTimestepEnd();
       _problem.execute(EXEC_TIMESTEP_END);
@@ -633,10 +631,10 @@ Transient::keepGoing()
   // Check for stop condition based upon steady-state check flag:
   if (lastSolveConverged() &&
       !_xfem_repeat_step &&
-      _trans_ss_check == true && _time > _ss_tmin)
+      _ss_postprocessor && _time > _ss_tmin)
   {
     // Check solution difference relative norm against steady-state tolerance
-    if (_sln_diff_norm < _ss_check_tol)
+    if (*_ss_postprocessor < _ss_check_tol)
     {
       _console << "Steady-State Solution Achieved at time: " << _time << std::endl;
       // Output last solve if not output previously by forcing it
@@ -644,10 +642,8 @@ Transient::keepGoing()
     }
     else // Keep going
     {
-      // Update solution norm for next time step
-      _old_time_solution_norm = _problem.getNonlinearSystem().currentSolution()->l2_norm();
       // Print steady-state relative error norm
-      _console << "Steady-State Relative Differential Norm: " << _sln_diff_norm << std::endl;
+      _console << "Steady-State terminator value: " << *_ss_postprocessor << std::endl;
     }
   }
 

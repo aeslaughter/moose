@@ -262,11 +262,9 @@ protected:
   /**
    * Steady state detection variables:
    */
-  bool _trans_ss_check;
+  PostprocessorValue const * _ss_postprocessor;
   Real _ss_check_tol;
   Real _ss_tmin;
-  Real & _sln_diff_norm;
-  Real & _old_time_solution_norm;
 
   std::set<Real> & _sync_times;
 
