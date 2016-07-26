@@ -1,0 +1,7 @@
+[Tests]
+  [./test]
+    type = CSVDiff
+    input = solution_l2_norm.i
+    csvdiff = solution_l2_norm_out.csv
+  [../]
+[]
