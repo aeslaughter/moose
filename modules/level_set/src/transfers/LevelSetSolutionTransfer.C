@@ -66,6 +66,11 @@ LevelSetSolutionTransfer::transfer(FEProblem & to_problem, FEProblem & from_prob
   unsigned int from_sys_num = from_sys.number();
 
 
+  //@TODO: Perform integrety checks
+  // Check that meshes have same number of nodes and elements
+  // Check that variable order, family agree
+
+
   // Only works with a serialized mesh to transfer from!
   mooseAssert(from_sys.get_mesh().is_serial(), "LevelSetSolutionTransfer only works with ReplicatedMesh!");
 
@@ -87,33 +92,40 @@ LevelSetSolutionTransfer::transfer(FEProblem & to_problem, FEProblem & from_prob
 
     for (; node_it != node_end; ++node_it)
     {
+
       Node * node = *node_it;
       unsigned int node_id = node->id();
 
       if (node->n_dofs(sys_num, var_num) > 0) // If this variable has dofs at this node
-      {
-        // The zero only works for LAGRANGE!
-        dof_id_type dof = node->dof_number(sys_num, var_num, 0);
+        for (unsigned int comp = 0; comp < node->n_comp(sys_num, var_num); ++comp)
+        {
+          // The zero only works for LAGRANGE!
+          dof_id_type dof = node->dof_number(sys_num, var_num, comp);
 
-        // Swap back
-        Moose::swapLibMeshComm(swapped);
+          // Swap back
+          Moose::swapLibMeshComm(swapped);
 
-        Node * from_node = from_mesh->node_ptr(node_id);
+          Node * from_node = from_mesh->node_ptr(node_id);
 
-        // Assuming LAGRANGE!
-        dof_id_type from_dof = from_node->dof_number(from_sys_num, from_var_num, 0);
-        //Real from_value = (*serialized_solution)(from_dof);
-        Real from_value = (*from_sys.solution)(from_dof);
+          // Assuming LAGRANGE!
+          dof_id_type from_dof = from_node->dof_number(from_sys_num, from_var_num, comp);
+          Real from_value = (*from_sys.solution)(from_dof);
 
-        // Swap again
-        swapped = Moose::swapLibMeshComm(_multi_app->comm());
+          // Swap again
+          swapped = Moose::swapLibMeshComm(_multi_app->comm());
 
-        solution.set(dof, from_value);
+          solution.set(dof, from_value);
       }
     }
   }
   else // Elemental
   {
+
+
+
+
+
+
     mooseError("LevelSetSolutionTransfer can only be used on nodal variables");
   }
 

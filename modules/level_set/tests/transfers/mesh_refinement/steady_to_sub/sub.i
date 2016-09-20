@@ -10,6 +10,13 @@
   [../]
 []
 
+[AuxVariables]
+  [./marker]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+[../]
+
 [Kernels]
   [./diff]
     type = Diffusion

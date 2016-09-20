@@ -46,15 +46,7 @@
   [../]
 []
 
-[UserObjects]
-  [./mesh_refine]
-    type = LevelSetMeshRefinementTracker
-    execute_on = 'timestep_end'
-  [../]
-[]
-
 [MultiApps]
-  active = ''
   [./sub]
     type = FullSolveMultiApp
     input_files = 'sub.i'
@@ -63,11 +55,12 @@
 []
 
 [Transfers]
-  active = ''
   [./refine]
-    type = LevelSetMeshRefinementTransfer
+    type = LevelSetSolutionTransfer
     direction = to_multiapp
     multi_app = sub
+    variable = marker
+    source_variable = marker
   [../]
 []
 
