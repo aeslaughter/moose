@@ -54,7 +54,6 @@ def str2bool(string):
   else:
     return False
 
-
 def find_moose_executable(loc, **kwargs):
     """
 
@@ -137,3 +136,11 @@ def check_configuration(packages):
         return 1
 
     return 0
+
+##
+# A function for reading CSV files
+def readCSV(filename):
+  with open(filename, 'rb') as f:
+    reader = csv.reader(f, delimiter=',')
+    for row in reader:
+        print row[0]

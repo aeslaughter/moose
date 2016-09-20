@@ -68,3 +68,8 @@ class MooseMarkdownLinkPreprocessor(Preprocessor):
       log.warning(msg)
     if files:
       return files[0]
+
+  @staticmethod
+  def admonition(link):
+    log.error('A page failed to locate the auto-link: {}'.format(link))
+    return '\n\n!!! warning "Auto Link Failed!"\n    A MOOSE markdown automatic link failed: `{}`\n\n'.format(link)

@@ -1,0 +1,7 @@
+[Tests]
+  [./test]
+    type = Exodiff
+    input = bubble_ic.i
+    exodiff = bubble_ic_out.e
+  [../]
+[]

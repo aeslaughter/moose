@@ -46,7 +46,7 @@ MultiAppCopyTransfer::MultiAppCopyTransfer(const InputParameters & parameters) :
 void
 MultiAppCopyTransfer::initialSetup()
 {
-  variableIntegrityCheck(_to_var_name);
+//  variableIntegrityCheck(_to_var_name);
 }
 
 void

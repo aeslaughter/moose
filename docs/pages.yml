@@ -25,6 +25,9 @@
     - Tensor Mechanics:
         - Introduction: !include content/modules/tensor_mechanics/introduction/pages.yml
         - Systems: !include content/modules/tensor_mechanics/systems/pages.yml
+    - Level Set:
+        - Introduction: content/modules/level_set/introduction.md
+        - Systems: !include content/modules/level_set/systems/pages.yml
 - Utilites:
     - Documentation:
         - Overview: 'content/utilities/documentation/overview.md'

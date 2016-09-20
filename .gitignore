@@ -164,6 +164,9 @@ out.xyz
 .jitcache/
 .jitdir/
 
+# Do not store ipython notebook checkpoints
+*-checkpoint.ipynb*
+
 # Documentation Generation
 *.moose.md
 *.moose.yml

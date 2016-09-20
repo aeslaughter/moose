@@ -255,7 +255,7 @@ Console::initialSetup()
     _verbose = true;
 
   // Display a message to indicate the application is running (useful for MultiApps)
-  if (_problem_ptr->hasMultiApps() || _app.multiAppLevel() > 0)
+  if (_problem_ptr->hasMultiApps() || _app.useNamePrefix())
     write(std::string("\nRunning App: ") + _app.name() + "\n");
 
   // If the user adds "final" to the execute on, append this to the postprocessors, scalars, etc., but only
@@ -601,7 +601,7 @@ Console::write(std::string message, bool indent /*=true*/)
     _file_output_stream << message;
 
   // Apply MultiApp indenting
-  if (indent && _app.multiAppLevel() > 0)
+  if (indent && _app.useNamePrefix())
     MooseUtils::indentMessage(_app.name(), message);
 
   // Write message to the screen

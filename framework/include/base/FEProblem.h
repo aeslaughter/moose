@@ -30,6 +30,7 @@
 #include "ExecuteMooseObjectWarehouse.h"
 #include "AuxGroupExecuteMooseObjectWarehouse.h"
 #include "MaterialWarehouse.h"
+#include "MultiAppTransfer.h"
 
 // libMesh includes
 #include "libmesh/enum_quadrature_type.h"
@@ -682,6 +683,13 @@ public:
    * Those are executed automatically when MultiApps are executed.
    */
   void execTransfers(ExecFlagType type);
+
+  /**
+   * Execute MultiAppTransfers associate with execution flag and direction.
+   * @param type The execution flag to execute.
+   * @param direction The direction (to or from) to transfer.
+   */
+  void execMultiAppTransfers(ExecFlagType type, MultiAppTransfer::DIRECTION direction);
 
   /// Evaluates transient residual G in canonical semidiscrete form G(t,U,Udot) = F(t,U)
   void computeTransientImplicitResidual(Real time, const NumericVector<Number>& u, const NumericVector<Number>& udot, NumericVector<Number>& residual);

@@ -17,6 +17,7 @@ ifeq ($(ALL_MODULES),yes)
         WATER_STEAM_EOS           := yes
         XFEM                      := yes
         POROUS_FLOW               := yes
+        LEVEL_SET                 := yes
 endif
 
 ifeq ($(SOLID_MECHANICS),yes)
@@ -133,6 +134,12 @@ ifeq ($(POROUS_FLOW),yes)
 
   #Dependency on tensor_mechanics and fluid_properties
   DEPEND_MODULES     := tensor_mechanics fluid_properties
+  include $(FRAMEWORK_DIR)/app.mk
+endif
+
+ifeq ($(LEVEL_SET),yes)
+  APPLICATION_DIR    := $(MOOSE_DIR)/modules/level_set
+  APPLICATION_NAME   := level_set
   include $(FRAMEWORK_DIR)/app.mk
 endif
 

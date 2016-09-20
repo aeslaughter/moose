@@ -17,13 +17,13 @@
 template<>
 InputParameters validParams<GradientJumpIndicator>()
 {
-  InputParameters params = validParams<InternalSideIndicator>();
+  InputParameters params = validParams<JumpIndicator>();
   return params;
 }
 
 
 GradientJumpIndicator::GradientJumpIndicator(const InputParameters & parameters) :
-    InternalSideIndicator(parameters)
+    JumpIndicator(parameters)
 {
 }
 
@@ -35,3 +35,5 @@ GradientJumpIndicator::computeQpIntegral()
 
   return jump*jump;
 }
+
+
