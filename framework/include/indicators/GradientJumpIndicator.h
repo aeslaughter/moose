@@ -15,7 +15,7 @@
 #ifndef GRADIENTJUMPINDICATOR_H
 #define GRADIENTJUMPINDICATOR_H
 
-#include "InternalSideIndicator.h"
+#include "JumpIndicator.h"
 
 class GradientJumpIndicator;
 
@@ -23,7 +23,7 @@ template<>
 InputParameters validParams<GradientJumpIndicator>();
 
 class GradientJumpIndicator :
-  public InternalSideIndicator
+  public JumpIndicator
 {
 public:
   GradientJumpIndicator(const InputParameters & parameters);

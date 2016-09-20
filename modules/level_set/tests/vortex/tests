@@ -1,0 +1,8 @@
+[Tests]
+  [./test]
+    # Solve the vortex example from Johansson (2011), "Implementation of a standard level set method..."
+    type = CSVDiff
+    input = vortex.i
+    csvdiff = vortex_out.csv
+  [../]
+[]

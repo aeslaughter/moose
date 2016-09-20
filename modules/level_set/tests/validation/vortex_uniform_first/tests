@@ -1,0 +1,26 @@
+[Tests]
+  [./uniform_32]
+    type = 'Exodiff'
+    input = 'vortex_uniform_first_32.i'
+    exodiff = 'vortex_uniform_first_32_out.e'
+    heavy = true
+  [../]
+  [./uniform_64]
+    type = 'Exodiff'
+    input = 'vortex_uniform_first_64.i'
+    exodiff = 'vortex_uniform_first_64_out.e'
+    heavy = true
+  [../]
+  [./uniform_128]
+    type = 'Exodiff'
+    input = 'vortex_uniform_first_128.i'
+    exodiff = 'vortex_uniform_first_128_out.e'
+    heavy = true
+  [../]
+  [./uniform_256]
+    type = 'Exodiff'
+    input = 'vortex_uniform_first_256.i'
+    exodiff = 'vortex_uniform_first_256_out.e'
+    heavy = true
+  [../]
+[]

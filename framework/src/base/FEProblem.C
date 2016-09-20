@@ -4388,7 +4388,7 @@ FEProblem::checkNonlinearConvergence(std::string &msg,
   system._current_nl_its = static_cast<unsigned int>(it);
 
   msg = oss.str();
-  if (_app.multiAppLevel() > 0)
+  if (_app.useNamePrefix())
     MooseUtils::indentMessage(_app.name(), msg);
 
   return(reason);

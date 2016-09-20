@@ -147,7 +147,8 @@ OutputWarehouse::outputStep(ExecFlagType type)
     type = EXEC_FORCED;
 
   for (const auto & obj : _all_objects)
-    obj->outputStep(type);
+    if (obj->enabled())
+      obj->outputStep(type);
 
   /**
    * This is one of three locations where we explicitly flush the output buffers during a simulation:
@@ -191,7 +192,7 @@ OutputWarehouse::mooseConsole()
     {
       // this will cause messages to console before its construction immediately flushed and cleared.
       std::string message = _console_buffer.str();
-      if (_app.multiAppLevel() > 0)
+      if (_app.useNamePrefix())
         MooseUtils::indentMessage(_app.name(), message);
       Moose::out << message;
       _console_buffer.clear();

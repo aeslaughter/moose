@@ -258,6 +258,7 @@ protected:
   bool _trans_ss_check;
   Real _ss_check_tol;
   Real _ss_tmin;
+  const MooseEnum & _ss_norm;
   Real & _sln_diff_norm;
   Real & _old_time_solution_norm;
 

@@ -17,6 +17,9 @@
 - Modules:
     - Tensor Mechanics:
         - Systems: !include content/modules/tensor_mechanics/systems/pages.yml
+    - Level Set:
+        - Introduction: content/modules/level_set/introduction.md
+        - Systems: !include content/modules/level_set/systems/pages.yml
 - Utilites:
     - Documentation:
         - Setup and Configuration: 'content/utilities/documentation/setup.md'

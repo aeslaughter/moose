@@ -69,6 +69,8 @@ public:
    */
   const std::string & name() { return _name; }
 
+  void setName(const std::string & name) { _name = name; }
+
   /**
    * Get the parameters of the object
    * @return The parameters of the object
@@ -426,6 +428,12 @@ public:
   unsigned int multiAppLevel() const { return _multiapp_level; }
 
   /**
+   * Toggle the use of the name prefix.
+   */
+  void setUseNamePrefix(bool use_name_prefix) { _use_name_prefix = use_name_prefix; }
+  bool useNamePrefix() { return _use_name_prefix || _multiapp_level > 0; }
+
+  /**
    * Set the MultiApp Level
    * @param level The level to assign to this app.
    */
@@ -649,6 +657,9 @@ private:
 
   /// Level of multiapp, the master is level 0. This used by the Console to indent output
   unsigned int _multiapp_level;
+
+  /// When true the app name prefix is included in the console output, regardless of multiapp level
+  bool _use_name_prefix;
 
   /// Holds the mesh modifiers until they have completed, then this structure is cleared
   std::map<std::string, MooseSharedPointer<MeshModifier> > _mesh_modifiers;

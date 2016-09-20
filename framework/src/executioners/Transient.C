@@ -63,6 +63,9 @@ InputParameters validParams<Transient>()
   params.addParam<Real>("ss_check_tol",    1.0e-08,"Whenever the relative residual changes by less than this the solution will be considered to be at steady state.");
   params.addParam<Real>("ss_tmin",         0.0,    "Minimum number of timesteps to take before checking for steady state conditions.");
 
+  MooseEnum ss_norm("L1 L2", "L2");
+  params.addParam<MooseEnum>("ss_norm_type", ss_norm, "The type of norm to utilize for the steady state check.");
+
   params.addParam<std::vector<std::string> >("time_periods", "The names of periods");
   params.addParam<std::vector<Real> >("time_period_starts", "The start times of time periods");
   params.addParam<std::vector<Real> >("time_period_ends", "The end times of time periods");
@@ -114,6 +117,7 @@ Transient::Transient(const InputParameters & parameters) :
     _trans_ss_check(getParam<bool>("trans_ss_check")),
     _ss_check_tol(getParam<Real>("ss_check_tol")),
     _ss_tmin(getParam<Real>("ss_tmin")),
+    _ss_norm(getParam<MooseEnum>("ss_norm_type")),
     _sln_diff_norm(declareRecoverableData<Real>("sln_diff_norm", 0.0)),
     _old_time_solution_norm(declareRecoverableData<Real>("old_time_solution_norm", 0.0)),
     _sync_times(_app.getOutputWarehouse().getSyncTimes()),
@@ -642,7 +646,13 @@ Transient::keepGoing()
     else // Keep going
     {
       // Update solution norm for next time step
-      _old_time_solution_norm = _problem.getNonlinearSystem().currentSolution()->l2_norm();
+      if (_ss_norm == "L2")
+        _old_time_solution_norm = _problem.getNonlinearSystem().currentSolution()->l2_norm();
+      else if (_ss_norm == "L1")
+        _old_time_solution_norm = _problem.getNonlinearSystem().currentSolution()->l1_norm();
+      else
+        mooseError("Invalid norm type, select L1 or L2.");
+
       // Print steady-state relative error norm
       _console << "Steady-State Relative Differential Norm: " << _sln_diff_norm << std::endl;
     }
