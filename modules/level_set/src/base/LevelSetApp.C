@@ -43,7 +43,6 @@
 #include "LevelSetReinitializationMultiApp.h"
 
 // Transfers
-#include "LevelSetSolutionTransfer.h"
 #include "LevelSetMeshRefinementTransfer.h"
 
 // Controls
@@ -113,7 +112,6 @@ LevelSetApp::registerObjects(Factory & factory)
   registerMultiApp(LevelSetReinitializationMultiApp);
 
   // Transfers
-  registerTransfer(LevelSetSolutionTransfer);
   registerTransfer(LevelSetMeshRefinementTransfer);
 
   // Controls
