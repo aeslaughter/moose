@@ -2758,22 +2758,18 @@ FEProblem::getMultiApp(const std::string & multi_app_name)
   return _multi_apps.getActiveObject(multi_app_name);
 }
 
-bool
-FEProblem::execMultiApps(ExecFlagType type, bool auto_advance)
+void
+FEProblem::execMultiAppTransfers(ExecFlagType type, MultiAppTransfer::DIRECTION direction)
 {
-  // Active MultiApps
-  const std::vector<MooseSharedPointer<MultiApp> > & multi_apps = _multi_apps[type].getActiveObjects();
+  bool to_multiapp = direction == MultiAppTransfer::TO_MULTIAPP;
+  std::string string_direction = to_multiapp ? " To " : " From ";
+  const MooseObjectWarehouse<Transfer> & wh = to_multiapp ? _to_multi_app_transfers[type] : _from_multi_app_transfers[type];
 
-  // Do anything that needs to be done to Apps before transfers
-  for (const auto & multi_app : multi_apps)
-    multi_app->preTransfer(_dt, _time);
-
-  // Execute Transfers _to_ MultiApps
-  if (_to_multi_app_transfers[type].hasActiveObjects())
+  if (wh.hasActiveObjects())
   {
-    const std::vector<MooseSharedPointer<Transfer> > & transfers = _to_multi_app_transfers[type].getActiveObjects();
+    const std::vector<MooseSharedPointer<Transfer> > & transfers = wh.getActiveObjects();
 
-    _console << COLOR_CYAN << "\nStarting Transfers on " <<  Moose::stringify(type) << " To MultiApps" << COLOR_DEFAULT << std::endl;
+    _console << COLOR_CYAN << "\nStarting Transfers on " <<  Moose::stringify(type) << string_direction << "MultiApps" << COLOR_DEFAULT << std::endl;
     for (const auto & transfer : transfers)
     {
       Moose::perf_log.push(transfer->name(), "Transfers");
@@ -2786,9 +2782,23 @@ FEProblem::execMultiApps(ExecFlagType type, bool auto_advance)
 
     _console << COLOR_CYAN << "Transfers on " <<  Moose::stringify(type) << " Are Finished\n" << COLOR_DEFAULT << std::endl;
   }
-  else if (multi_apps.size())
+  else if (_multi_apps[type].getActiveObjects().size())
     _console << COLOR_CYAN << "\nNo Transfers on " <<  Moose::stringify(type) << " To MultiApps\n" << COLOR_DEFAULT << std::endl;
 
+}
+
+bool
+FEProblem::execMultiApps(ExecFlagType type, bool auto_advance)
+{
+  // Active MultiApps
+  const std::vector<MooseSharedPointer<MultiApp> > & multi_apps = _multi_apps[type].getActiveObjects();
+
+  // Do anything that needs to be done to Apps before transfers
+  for (const auto & multi_app : multi_apps)
+    multi_app->preTransfer(_dt, _time);
+
+  // Execute Transfers _to_ MultiApps
+  execMultiAppTransfers(type, MultiAppTransfer::TO_MULTIAPP);
 
   // Execute MultiApps
   if (multi_apps.size())
@@ -2812,26 +2822,7 @@ FEProblem::execMultiApps(ExecFlagType type, bool auto_advance)
   }
 
   // Execute Transfers _from_ MultiApps
-  if (_from_multi_app_transfers[type].hasActiveObjects())
-  {
-    const std::vector<MooseSharedPointer<Transfer> > & transfers = _from_multi_app_transfers[type].getActiveObjects();
-
-    _console << COLOR_CYAN << "\nStarting Transfers on " <<  Moose::stringify(type) << " From MultiApps" << COLOR_DEFAULT << std::endl;
-    for (const auto & transfer : transfers)
-    {
-      Moose::perf_log.push(transfer->name(), "Transfers");
-      transfer->execute();
-      Moose::perf_log.pop(transfer->name(), "Transfers");
-    }
-
-    _console << "Waiting For Transfers To Finish" << '\n';
-    MooseUtils::parallelBarrierNotify(_communicator);
-
-    _console << COLOR_CYAN << "Transfers " << Moose::stringify(type) << " Are Finished\n" << COLOR_DEFAULT << std::endl;
-  }
-  else if (multi_apps.size())
-    _console << COLOR_CYAN << "\nNo Transfers on " <<  Moose::stringify(type) << " From MultiApps\n" << COLOR_DEFAULT << std::endl;
-
+  execMultiAppTransfers(type, MultiAppTransfer::FROM_MULTIAPP);
 
   // If we made it here then everything passed
   return true;

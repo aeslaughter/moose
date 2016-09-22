@@ -37,6 +37,7 @@
 #include "AddLevelSetPostprocessors.h"
 
 // Problems
+#include "LevelSetProblem.h"
 #include "LevelSetReinitializationProblem.h"
 
 // MultiApps
@@ -103,6 +104,7 @@ LevelSetApp::registerObjects(Factory & factory)
   registerUserObject(LevelSetMeshRefinementTracker);
 
   // Problems
+  registerProblem(LevelSetProblem);
   registerProblem(LevelSetReinitializationProblem);
 
   // Markers

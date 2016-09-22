@@ -226,7 +226,10 @@ ExecuteMooseObjectWarehouse<T>::addObject(MooseSharedPointer<T> object, THREAD_I
   {
     const std::vector<ExecFlagType> flags = ptr->execFlags();
     for (std::vector<ExecFlagType>::const_iterator it = flags.begin(); it != flags.end(); ++it)
+    {
+      std::cout << "ADDING OBJECT: " << object->name() << "  " << *it << std::endl;
       _execute_objects[*it].addObject(object, tid);
+    }
   }
   else
     mooseError("The object being added (" << object->name() << ") must inherit from SetupInterface to be added to the ExecuteMooseObjectWarehouse container.");
