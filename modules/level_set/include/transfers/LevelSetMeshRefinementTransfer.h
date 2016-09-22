@@ -15,7 +15,7 @@
 #ifndef LEVELSETMESHREFINEMENTTRANSFER_H
 #define LEVELSETMESHREFINEMENTTRANSFER_H
 
-#include "MultiAppTransfer.h"
+#include "MultiAppCopyTransfer.h"
 
 // Forward declarations
 class LevelSetMeshRefinementTransfer;
@@ -26,16 +26,14 @@ InputParameters validParams<LevelSetMeshRefinementTransfer>();
 /**
  * Copy the value to the target domain from the nearest node in the source domain.
  */
-class LevelSetMeshRefinementTransfer : public MultiAppTransfer
+class LevelSetMeshRefinementTransfer : public MultiAppCopyTransfer
 {
 public:
   LevelSetMeshRefinementTransfer(const InputParameters & parameters);
 
+  virtual void initialSetup() override;
   virtual void execute() override;
 
-protected:
-
-  void transfer(FEProblem & to_problem, FEProblem & from_problem);
 };
 
 #endif // LEVELSETMESHREFINEMENTTRANSFER_H

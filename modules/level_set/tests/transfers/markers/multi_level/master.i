@@ -7,15 +7,21 @@
 
 [Adaptivity]
   marker = marker
-  max_h_level = 1
+  max_h_level = 2
+  cycles_per_step = 2
+  [./Indicators]
+    [./error]
+      type = GradientJumpIndicator
+      variable = u
+    [../]
+  [../]
   [./Markers]
     [./marker]
-      type = BoxMarker
-      bottom_left = '0.25 0.25 0'
-      top_right = '0.75 0.75 0'
-      outside =  DO_NOTHING
-      inside = REFINE
-    [../]
+      type = ErrorFractionMarker
+      coarsen = 0.1
+      refine = 0.8
+      indicator = error
+    [./]
   [../]
 []
 
@@ -63,6 +69,7 @@
 []
 
 [MultiApps]
+  active = ''
   [./sub]
     type = LevelSetReinitializationMultiApp
     input_files = 'sub.i'
@@ -71,13 +78,12 @@
 []
 
 [Transfers]
+  active = ''
   [./marker_to_sub]
-    type = MultiAppCopyTransfer
+    type = LevelSetMeshRefinementTransfer
     multi_app = sub
-    direction = to_multiapp
     source_variable = marker
     variable = marker
-    execute_on = CUSTOM
   [../]
 []
 

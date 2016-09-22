@@ -88,16 +88,19 @@ LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, b
   if (!_has_an_app)
     return true;
 
-  MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
+//  MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
 
   _console << "Solving Reinitialization problem." << std::endl;
+
+  /*
   Adaptivity & adapt = _level_set_problem->adaptivity();
   adapt.setMarkerVariableName("marker");
-  adapt.init(0,0);
+  adapt.init(1,0);
   adapt.setUseNewSystem();
   adapt.setMaxHLevel(1);
   _level_set_problem->adaptMesh();
-
+  adapt.setAdpaptivityOn(false);
+  */
   int rank;
   int ierr;
   ierr = MPI_Comm_rank(_orig_comm, &rank); mooseCheckMPIErr(ierr);
@@ -110,7 +113,7 @@ LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, b
     last_solve_converged = false;
 
   // Swap back
-  Moose::swapLibMeshComm(swapped);
+//  Moose::swapLibMeshComm(swapped);
 
   return true;//last_solve_converged;
 }
