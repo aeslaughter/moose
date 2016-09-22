@@ -3,6 +3,7 @@
   dim = 2
   nx = 10
   ny = 10
+  uniform_refine = 2
 []
 
 [Adaptivity]
@@ -18,7 +19,7 @@
   [./Markers]
     [./marker]
       type = ErrorFractionMarker
-      coarsen = 0.1
+      coarsen = 0.3
       refine = 0.8
       indicator = error
     [./]
@@ -62,14 +63,14 @@
 
 [Executioner]
   type = LevelSetExecutioner
-  num_steps = 2
+  dt = 0.02
+  num_steps = 10
   solve_type = 'PJFNK'
   petsc_options_iname = '-pc_type -pc_hypre_type'
   petsc_options_value = 'hypre boomeramg'
 []
 
 [MultiApps]
-  active = ''
   [./sub]
     type = LevelSetReinitializationMultiApp
     input_files = 'sub.i'
@@ -78,7 +79,6 @@
 []
 
 [Transfers]
-  active = ''
   [./marker_to_sub]
     type = LevelSetMeshRefinementTransfer
     multi_app = sub

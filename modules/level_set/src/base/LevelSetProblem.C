@@ -26,13 +26,11 @@ InputParameters validParams<LevelSetProblem>()
 LevelSetProblem::LevelSetProblem(const InputParameters & parameters) :
     FEProblem(parameters)
 {
-  _adaptivity.setRecomputeMarkersFlag(true);
 }
 
 void
-LevelSetProblem::computeMarkers()
+LevelSetProblem::meshChanged()
 {
-  std::cout << "LevelSetProblem::computeMarkers-----------------------------------------------------" << std::endl;
-  FEProblem::computeMarkers();
+  FEProblem::meshChanged();
   execMultiAppTransfers(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
 }

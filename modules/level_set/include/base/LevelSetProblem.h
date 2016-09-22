@@ -24,6 +24,6 @@ class LevelSetProblem : public FEProblem
 public:
   LevelSetProblem(const InputParameters & parameters);
 
-  virtual void computeMarkers() override;
+  virtual void meshChanged() override;
 
 };

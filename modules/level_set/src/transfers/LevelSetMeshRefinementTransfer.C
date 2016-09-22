@@ -28,7 +28,7 @@ InputParameters validParams<LevelSetMeshRefinementTransfer>()
   params.suppressParameter<MooseEnum>("direction");
 
   params.set<MultiMooseEnum>("execute_on") = "CUSTOM";
-  params.suppressParameter<MooseEnum>("execute_on");
+  params.suppressParameter<MultiMooseEnum>("execute_on");
 
   return params;
 }
@@ -71,7 +71,7 @@ LevelSetMeshRefinementTransfer::execute()
       FEProblem & to_problem = _multi_app->appProblem(i);
       Adaptivity & adapt = to_problem.adaptivity();
       adapt.setAdpaptivityOn(true);
-      to_problem.adaptMesh();
+      adapt.adaptMesh();
       adapt.setAdpaptivityOn(false);
     }
 }
