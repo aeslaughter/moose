@@ -9,7 +9,7 @@
 [Adaptivity]
   marker = marker
   max_h_level = 2
-  #cycles_per_step = 1
+  cycles_per_step = 2
   [./Indicators]
     [./error]
       type = GradientJumpIndicator
@@ -19,8 +19,8 @@
   [./Markers]
     [./marker]
       type = ErrorFractionMarker
-      coarsen = 0.3
-      refine = 0.8
+      coarsen = 0.4
+      refine = 0.5
       indicator = error
     [./]
   [../]
@@ -62,7 +62,7 @@
 []
 
 [Executioner]
-  type = LevelSetExecutioner
+  type = Transient
   dt = 0.02
   num_steps = 10
   solve_type = 'PJFNK'

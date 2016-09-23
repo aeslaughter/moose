@@ -41,19 +41,15 @@ LevelSetMeshRefinementTransfer::LevelSetMeshRefinementTransfer(const InputParame
 void
 LevelSetMeshRefinementTransfer::initialSetup()
 {
-  if (std::dynamic_pointer_cast<MooseSharedPointer<LevelSetExecutioner>>(_app.executioner()))
-    mooseError("The LevelSetMeshRefinementTransfer must be used with a LevelSetExecutioner.");
-
   FEProblem & from_problem = _multi_app->problem();
   for (unsigned int i = 0; i < _multi_app->numGlobalApps(); i++)
     if (_multi_app->hasLocalApp(i))
     {
-      std::cout << "SETUP SUPAPP adaptivity----------------------------------------------" << std::endl;
       FEProblem & to_problem = _multi_app->appProblem(i);
       MooseVariable & to_var = to_problem.getVariable(0, _to_var_name);
       Adaptivity & adapt = to_problem.adaptivity();
       adapt.setMarkerVariableName(to_var.name());
-      adapt.setCyclesPerStep(from_problem.adaptivity().getCyclesPerStep());
+      adapt.setCyclesPerStep(1);//from_problem.adaptivity().getCyclesPerStep());
       adapt.init(0, 0);
       adapt.setUseNewSystem();
       adapt.setMaxHLevel(from_problem.adaptivity().getMaxHLevel());

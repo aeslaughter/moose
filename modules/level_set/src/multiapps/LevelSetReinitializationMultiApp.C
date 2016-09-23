@@ -92,15 +92,6 @@ LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, b
 
   _console << "Solving Reinitialization problem." << std::endl;
 
-  /*
-  Adaptivity & adapt = _level_set_problem->adaptivity();
-  adapt.setMarkerVariableName("marker");
-  adapt.init(1,0);
-  adapt.setUseNewSystem();
-  adapt.setMaxHLevel(1);
-  _level_set_problem->adaptMesh();
-  adapt.setAdpaptivityOn(false);
-  */
   int rank;
   int ierr;
   ierr = MPI_Comm_rank(_orig_comm, &rank); mooseCheckMPIErr(ierr);
