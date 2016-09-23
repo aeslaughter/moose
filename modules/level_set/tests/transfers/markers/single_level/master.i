@@ -55,7 +55,7 @@
 []
 
 [Executioner]
-  type = LevelSetExecutioner
+  type = Transient
   num_steps = 2
   solve_type = 'PJFNK'
   petsc_options_iname = '-pc_type -pc_hypre_type'
@@ -66,18 +66,16 @@
   [./sub]
     type = LevelSetReinitializationMultiApp
     input_files = 'sub.i'
-    execute_on = CUSTOM
+    execute_on = TIMESTEP_BEGIN
   [../]
 []
 
 [Transfers]
   [./marker_to_sub]
-    type = MultiAppCopyTransfer
+    type = LevelSetMeshRefinementTransfer
     multi_app = sub
-    direction = to_multiapp
     source_variable = marker
     variable = marker
-    execute_on = CUSTOM
   [../]
 []
 

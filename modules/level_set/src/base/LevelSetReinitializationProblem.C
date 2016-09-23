@@ -37,8 +37,4 @@ LevelSetReinitializationProblem::resetTime()
   _time_old = 0.0;
   _t_step = 0;
   _termination_requested = false;
-  //_dt = 0;
-  //_dt_old = _dt;
-
-
 }

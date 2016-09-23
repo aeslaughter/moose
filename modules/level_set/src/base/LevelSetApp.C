@@ -36,9 +36,6 @@
 #include "AddLevelSetKernels.h"
 #include "AddLevelSetPostprocessors.h"
 
-// Executioners
-#include "LevelSetExecutioner.h"
-
 // Problems
 #include "LevelSetProblem.h"
 #include "LevelSetReinitializationProblem.h"
@@ -105,9 +102,6 @@ LevelSetApp::registerObjects(Factory & factory)
 
   // UserObjects
   registerUserObject(LevelSetMeshRefinementTracker);
-
-  // Executioner
-  registerExecutioner(LevelSetExecutioner);
 
   // Problems
   registerProblem(LevelSetProblem);

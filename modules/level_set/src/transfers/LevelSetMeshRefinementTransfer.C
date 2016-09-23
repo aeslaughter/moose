@@ -14,7 +14,6 @@
 
 // MOOSE includes
 #include "LevelSetMeshRefinementTransfer.h"
-#include "LevelSetExecutioner.h"
 #include "FEProblem.h"
 #include "MultiApp.h"
 #include "Adaptivity.h"
@@ -48,6 +47,11 @@ LevelSetMeshRefinementTransfer::initialSetup()
       FEProblem & to_problem = _multi_app->appProblem(i);
       MooseVariable & to_var = to_problem.getVariable(0, _to_var_name);
       Adaptivity & adapt = to_problem.adaptivity();
+
+      //if (adapt.isOn())
+
+
+
       adapt.setMarkerVariableName(to_var.name());
       adapt.setCyclesPerStep(1);//from_problem.adaptivity().getCyclesPerStep());
       adapt.init(0, 0);
