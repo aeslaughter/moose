@@ -48,6 +48,7 @@ LevelSetMeshRefinementTransfer::initialSetup()
   for (unsigned int i = 0; i < _multi_app->numGlobalApps(); i++)
     if (_multi_app->hasLocalApp(i))
     {
+      std::cout << "SETUP SUPAPP adaptivity----------------------------------------------" << std::endl;
       FEProblem & to_problem = _multi_app->appProblem(i);
       MooseVariable & to_var = to_problem.getVariable(0, _to_var_name);
       Adaptivity & adapt = to_problem.adaptivity();
@@ -71,7 +72,7 @@ LevelSetMeshRefinementTransfer::execute()
       FEProblem & to_problem = _multi_app->appProblem(i);
       Adaptivity & adapt = to_problem.adaptivity();
       adapt.setAdpaptivityOn(true);
-      adapt.adaptMesh();
+      to_problem.adaptMesh();
       adapt.setAdpaptivityOn(false);
     }
 }

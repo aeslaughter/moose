@@ -82,8 +82,8 @@ LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, b
   if ((_fe_problem.timeStep() % _interval) != 0)
     return true;
 
-  if (!auto_advance)
-    mooseError("LevelSetReinitializationMultiApp is not compatible with auto_advance=false");
+  //if (!auto_advance)
+  //  mooseError("LevelSetReinitializationMultiApp is not compatible with auto_advance=false");
 
   if (!_has_an_app)
     return true;

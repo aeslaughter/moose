@@ -29,8 +29,21 @@ LevelSetProblem::LevelSetProblem(const InputParameters & parameters) :
 }
 
 void
-LevelSetProblem::meshChanged()
+LevelSetProblem::computeMarkers()
 {
-  FEProblem::meshChanged();
+  std::cout << "FEProblem::computeMarkers()" << std::endl;
+  FEProblem::computeMarkers();
+//  execMultiApps(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
+  std::cout << "LevelSetProblem::execMultiAppTransfers()" << std::endl;
+//  execMultiAppTransfers(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
+}
+
+void
+LevelSetProblem::adaptMesh()
+{
+  std::cout << "FEProblem::adaptMesh()" << std::endl;
+//  execMultiApps(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
+  std::cout << "LevelSetProblem::execMultiAppTransfers()" << std::endl;
   execMultiAppTransfers(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
+  FEProblem::adaptMesh();
 }

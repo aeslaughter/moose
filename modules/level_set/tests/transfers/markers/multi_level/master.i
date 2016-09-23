@@ -9,7 +9,7 @@
 [Adaptivity]
   marker = marker
   max_h_level = 2
-  cycles_per_step = 2
+  #cycles_per_step = 1
   [./Indicators]
     [./error]
       type = GradientJumpIndicator
@@ -72,9 +72,9 @@
 
 [MultiApps]
   [./sub]
-    type = LevelSetReinitializationMultiApp
+    type = TransientMultiApp
     input_files = 'sub.i'
-    execute_on = CUSTOM
+    execute_on = TIMESTEP_END
   [../]
 []
 
@@ -88,5 +88,6 @@
 []
 
 [Outputs]
+  hide = u
   exodus = true
 []

@@ -44,10 +44,6 @@
   [../]
 []
 
-[Problem]
-  type = LevelSetReinitializationProblem
-[]
-
 [Executioner]
   type = Transient
   num_steps = 2
@@ -57,5 +53,6 @@
 []
 
 [Outputs]
+  hide = 'u'
   exodus = true
 []
