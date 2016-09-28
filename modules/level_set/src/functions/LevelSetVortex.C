@@ -21,7 +21,7 @@ InputParameters validParams<LevelSetVortex>()
 
   InputParameters params = validParams<Function>();
   params.addParam<Real>("reverse_time", 8, "Total time for vortex reverse.");
-  params.addRequiredParam<MooseEnum>("compoment", comp, "The component of velocity to return.");
+  params.addRequiredParam<MooseEnum>("component", comp, "The component of velocity to return.");
   return params;
 }
 
@@ -42,7 +42,16 @@ RealVectorValue
 LevelSetVortex::vectorValue(Real t, const Point & p)
 {
   RealVectorValue output;
-  output(0) = -2 * sin(libMesh::pi * p(0)) * sin(libMesh::pi * p(0)) * cos(libMesh::pi*p(1)) * sin(libMesh::pi*p(1)) * cos(libMesh::pi*t/_reverse_time);
-  output(1) = 2 * sin(libMesh::pi * p(1)) * sin(libMesh::pi * p(1)) * cos(libMesh::pi*p(0)) * sin(libMesh::pi*p(0)) * cos(libMesh::pi*t/_reverse_time);
+  if (t > _reverse_time)
+  {
+    output(0) = sin(libMesh::pi * p(0)) * sin(libMesh::pi * p(0)) * sin(2*libMesh::pi*p(1));
+    output(1) = -sin(libMesh::pi * p(1)) * sin(libMesh::pi * p(1)) * sin(2*libMesh::pi*p(0));
+  }
+  else
+  {
+    output(0) = -sin(libMesh::pi * p(0)) * sin(libMesh::pi * p(0)) * sin(2*libMesh::pi*p(1));
+    output(1) = sin(libMesh::pi * p(1)) * sin(libMesh::pi * p(1)) * sin(2*libMesh::pi*p(0));
+  }
+
   return output;
 }

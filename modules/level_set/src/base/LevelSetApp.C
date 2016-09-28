@@ -46,9 +46,6 @@
 // Transfers
 #include "LevelSetMeshRefinementTransfer.h"
 
-// Controls
-#include "LevelSetReinitializationControl.h"
-
 template<>
 InputParameters validParams<LevelSetApp>()
 {
@@ -115,9 +112,6 @@ LevelSetApp::registerObjects(Factory & factory)
 
   // Transfers
   registerTransfer(LevelSetMeshRefinementTransfer);
-
-  // Controls
-  registerControl(LevelSetReinitializationControl);
 }
 
 void

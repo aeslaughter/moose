@@ -46,8 +46,6 @@ protected:
 
   const VariableGradient & _grad_levelset_0;
   const PostprocessorValue & _epsilon;
-  const Real & _mu;
-
   // For speed
   RealVectorValue _f;
   Real _s;

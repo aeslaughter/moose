@@ -1,9 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 16
-  ny = 16
-  #elem_type = QUAD9
+  nx = 32
+  ny = 32
 []
 
 [Adaptivity]

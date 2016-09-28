@@ -39,7 +39,7 @@ ThresholdAuxKernel::ThresholdAuxKernel(const InputParameters & parameters) :
 Real
 ThresholdAuxKernel::computeValue()
 {
-  if (_threshold_variable[_qp] > _threshold)
+  if (_threshold_variable[_qp] >= _threshold)
     return _above_value;
   else
     return _below_value;

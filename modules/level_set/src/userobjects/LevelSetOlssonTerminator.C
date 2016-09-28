@@ -35,15 +35,14 @@ LevelSetOlssonTerminator::LevelSetOlssonTerminator(const InputParameters & param
 void
 LevelSetOlssonTerminator::execute()
 {
-  if (_fe_problem.timeStep() < _min_t_steps)
-    return;
 
   _solution_diff  = *_fe_problem.getNonlinearSystem().currentSolution();
   _solution_diff -= _fe_problem.getNonlinearSystem().solutionOld();
   Real delta = _solution_diff.l2_norm() / _dt;
   _console << "Computed convergence criteria: " << delta << std::endl;
 
-  if (delta < _tol )
+  if (_fe_problem.timeStep() < _min_t_steps)
+    return;
+  else if (delta < _tol )
     _fe_problem.terminateSolve();
-
 }

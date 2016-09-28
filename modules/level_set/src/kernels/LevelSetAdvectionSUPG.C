@@ -31,7 +31,7 @@ Real
 LevelSetAdvectionSUPG::computeQpResidual()
 {
   computeQpVelocity();
-  Real tau = _current_elem->hmax() / (2 * _velocity.size());
+  Real tau = _current_elem->hmin() / (2 * _velocity.norm());
   return tau * _velocity * _grad_test[_i][_qp] * _velocity * _grad_u[_qp];
 }
 
@@ -39,6 +39,6 @@ Real
 LevelSetAdvectionSUPG::computeQpJacobian()
 {
   computeQpVelocity();
-  Real tau = _current_elem->hmax() / (2 * _velocity.size());
+  Real tau = _current_elem->hmin() / (2 * _velocity.norm());
   return tau * _velocity * _grad_test[_i][_qp] * _velocity * _grad_phi[_j][_qp];
 }

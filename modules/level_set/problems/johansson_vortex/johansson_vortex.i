@@ -52,10 +52,10 @@
 
 [Functions]
   [./phi_initial]
-    type = ParsedFunction
-    value = 'sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0)) - r'
-    vars = 'x0 y0 r'
-    vals = '0.5 0.75 0.15'
+    type = LevelSetBubbleFunction
+    epsilon = 0.03
+    center = '0 0.5 0'
+    radius = 0.15
   [../]
   [./velocity_front_x]
     type = ParsedFunction

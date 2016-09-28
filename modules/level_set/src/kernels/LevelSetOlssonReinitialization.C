@@ -21,33 +21,33 @@ InputParameters validParams<LevelSetOlssonReinitialization>()
   InputParameters params = validParams<Diffusion>();
   params.addRequiredCoupledVar("phi_0", "The level set variable to be reinitialized as sign distance function.");
   params.addRequiredParam<PostprocessorName>("epsilon", "The epsilon coefficient to be used in the reinitialization calculation.");
-  params.addParam<Real>("mu", 1, "Reinitialization thingy...");
   return params;
 }
 
 LevelSetOlssonReinitialization::LevelSetOlssonReinitialization(const InputParameters & parameters) :
     Diffusion(parameters),
     _grad_levelset_0(coupledGradient("phi_0")),
-    _epsilon(getPostprocessorValue("epsilon")),
-    _mu(getParam<Real>("mu"))
+    _epsilon(getPostprocessorValue("epsilon"))
 {
 }
 
 Real
 LevelSetOlssonReinitialization::computeQpResidual()
 {
-  _s = _grad_levelset_0[_qp].size() + std::numeric_limits<Real>::epsilon();
+  _s = _grad_levelset_0[_qp].norm() + std::numeric_limits<Real>::epsilon();
   _n_hat = _grad_levelset_0[_qp] / _s;
   _f = _u[_qp] * ( 1 - _u[_qp]) * _n_hat;
-  return 1.0/_mu * _grad_test[_i][_qp] * (-_f + _epsilon*(_grad_u[_qp]*_n_hat)*_n_hat );
+//  Real epsilon = _current_elem->hmin();
+  return _grad_test[_i][_qp] * (-_f + _epsilon*(_grad_u[_qp]*_n_hat)*_n_hat );
 }
 
 Real
 LevelSetOlssonReinitialization::computeQpJacobian()
 {
-  _s = _grad_levelset_0[_qp].size() + std::numeric_limits<Real>::epsilon();
+  _s = _grad_levelset_0[_qp].norm() + std::numeric_limits<Real>::epsilon();
   _n_hat = _grad_levelset_0[_qp] / _s;
-  return 1.0/_mu * _grad_test[_i][_qp] * (-(1-2*_u[_qp])*_n_hat + _epsilon*(_grad_phi[_j][_qp]*_n_hat)*_n_hat );
+  //Real epsilon = _current_elem->hmin();
+  return _grad_test[_i][_qp] * _n_hat * ((2*_u[_qp]-1)*_phi[_j][_qp] + _epsilon*(_grad_phi[_j][_qp]*_n_hat));
 }
 
 Real
