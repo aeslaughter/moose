@@ -86,13 +86,15 @@ public:
   bool operator==(const MooseEnum & value) const;
   bool operator!=(const MooseEnum & value) const;
 
+  ///@{
   /**
    * Assignment operators
-   *  TODO: Perhaps we should implement an int assignment operator
-   * @param name - a string representing one of the enumeration values.
+   * @param name/i - a string or int representing one of the enumeration values.
    * @return A reference to this object for chaining
    */
   MooseEnum & operator=(const std::string &name);
+  MooseEnum & operator=(unsigned int i);
+  ///@}
 
   /**
    * IsValid

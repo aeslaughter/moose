@@ -246,6 +246,11 @@ protected:
   virtual void fillPositions();
 
   /**
+   * Called just prior to the factory creating the app.
+   */
+  virtual void createAppSetup(unsigned int i, InputParameters & app_params);
+
+  /**
    * Helper function for creating an App instance.
    *
    * @param i The local app number to create.

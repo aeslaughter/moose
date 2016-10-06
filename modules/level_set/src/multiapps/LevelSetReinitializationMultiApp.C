@@ -20,11 +20,30 @@
 // libMesh
 #include "libmesh/mesh_tools.h"
 
+void
+add_reinitialization_param(InputParameters & params)
+{
+  params.addRequiredParam<VariableName>("levelset_variable", "The name of the level set variable in the master application.");
+
+  params.addRequiredParam<Real>("epsilon", "The interface thickness used in Olsson reinitialization.");
+
+
+}
+
+
+
+
 template<>
 InputParameters validParams<LevelSetReinitializationMultiApp>()
 {
   InputParameters params = validParams<MultiApp>();
   params.addParam<unsigned int>("interval", 1, "Time step interval when to perform reinitialization.");
+
+  // TODO: this might be done in derived multiapps: LevelSetOlssonRe..MultiApp -> LevelSetOlssonRe..App
+  add_reinitialization_param(params);
+
+  params.suppressParameter<std::vector<std::string> >("input_files");
+
 
   params.suppressParameter<std::vector<Point> >("positions");
   params.suppressParameter<std::vector<FileName> >("positions_file");
@@ -45,6 +64,12 @@ LevelSetReinitializationMultiApp::LevelSetReinitializationMultiApp(const InputPa
     _level_set_problem(NULL),
     _interval(getParam<unsigned int>("interval"))
 {
+}
+
+void
+LevelSetReinitializationMultiApp::createAppSetup(unsigned int /*i*/, InputParameters & app_params)
+{
+  app_params.applyParameters(parameters());
 }
 
 void
@@ -76,7 +101,7 @@ LevelSetReinitializationMultiApp::initialSetup()
 }
 
 bool
-LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool auto_advance)
+LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool /*auto_advance*/)
 {
   // Do nothing if not on interval
   if ((_fe_problem.timeStep() % _interval) != 0)

@@ -618,8 +618,6 @@ public:
   /// The library, registration method and the handle to the method
   std::map<std::pair<std::string, std::string>, void *> _lib_handles;
 
-private:
-
   /** Method for creating the minimum required actions for an application (no input file)
    *
    * Mimics the following input file:
@@ -644,7 +642,9 @@ private:
    *   console = false
    * []
    */
-  void createMinimalApp();
+  virtual void createMinimalApp();
+
+private:
 
   /// Where the restartable data is held (indexed on tid)
   RestartableDatas _restartable_data;

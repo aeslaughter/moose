@@ -58,6 +58,14 @@ MooseEnum::MooseEnum(const MooseEnumBase & other_enum) :
 }
 
 MooseEnum &
+MooseEnum::operator=(unsigned int i)
+{
+  if (_names.size() >= i)
+    mooseError("Invalid index " << i << " supplied.");
+  return operator=(_names[i]);
+}
+
+MooseEnum &
 MooseEnum::operator=(const std::string & name)
 {
   if (name == "")

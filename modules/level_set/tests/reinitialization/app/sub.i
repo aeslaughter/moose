@@ -1,13 +1,15 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  xmin = 0
+  xmin = -1
   xmax = 1
-  ymin = 0
+  ymin = -1
   ymax = 1
-  nx = 8
-  ny = 8
-  uniform_refine = 3
+  nx = 32
+  ny = 32
+  uniform_refine = 2
+  #elem_type = QUAD9
+  #second_order = true
 []
 
 [Variables]
@@ -17,6 +19,8 @@
 
 [AuxVariables]
   [./phi_0]
+  [../]
+  [./marker]
   [../]
 []
 
@@ -30,7 +34,7 @@
     type = LevelSetOlssonReinitialization
     variable = phi
     phi_0 = phi_0
-    epsilon = 0.05
+    epsilon = 0.03
   [../]
 []
 
@@ -42,19 +46,33 @@
   [./arnold]
     type = LevelSetOlssonTerminator
     tol = 1
+    min_steps = 3
   [../]
 []
 
 [Executioner]
   type = Transient
-  solve_type = PJFNK
+  solve_type = NEWTON
   start_time = 0
   num_steps = 100
+  nl_abs_tol = 1e-14
   scheme = crank-nicolson
-  petsc_options_iname = '-pc_type -pc_sub_type -ksp_gmres_restart'
-  petsc_options_value = 'hypre    boomeramg    300'
-  dt = 0.001
+  line_search = none
+  petsc_options_iname = '-pc_type -pc_sub_type'
+  petsc_options_value = 'asm      ilu'
+  dt = 0.003#35#78125
+  #[./TimeStepper]
+  #  type = IterationAdaptiveDT
+  #  optimal_iterations = 4
+  #  growth_factor = 1.25
+  #  dt = 0.001
+  #[../]
 []
 
+#[Postprocessors]
+#  [./num_steps]
+#    type =
+
 [Outputs]
+#  exodus = true
 []

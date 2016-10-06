@@ -24,30 +24,29 @@ class Executioner;
 template<>
 InputParameters validParams<LevelSetReinitializationMultiApp>();
 
-/**
- * This type of MultiApp will completely solve itself the first time it is asked to take a step.
- *
- * Each "step" after that it will do nothing.
- */
+void add_reinitialization_param(InputParameters & params);
+
 class LevelSetReinitializationMultiApp : public MultiApp
 {
 public:
   LevelSetReinitializationMultiApp(const InputParameters & parameters);
 
 
-  virtual void initialSetup();
+  virtual void initialSetup() override;
 
   /**
    * Completely solve all of the Apps
    */
-  virtual bool solveStep(Real dt, Real target_time, bool auto_advance=true);
+  virtual bool solveStep(Real dt, Real target_time, bool auto_advance=true) override;
 
   /**
    * Actually advances time and causes output.
    */
-  virtual void advanceStep(){}
+  virtual void advanceStep() override {}
 
 protected:
+
+  void createAppSetup(unsigned int i, InputParameters & app_params) override;
 
   LevelSetReinitializationProblem * _level_set_problem;
 

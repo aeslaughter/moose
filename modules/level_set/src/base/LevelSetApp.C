@@ -46,6 +46,9 @@
 // Transfers
 #include "LevelSetMeshRefinementTransfer.h"
 
+// Apps
+#include "LevelSetReinitializationApp.h"
+
 template<>
 InputParameters validParams<LevelSetApp>()
 {
@@ -69,6 +72,7 @@ void
 LevelSetApp::registerApps()
 {
   registerApp(LevelSetApp);
+  registerApp(LevelSetReinitializationApp);
 }
 
 void
