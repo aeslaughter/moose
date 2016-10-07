@@ -152,6 +152,7 @@
 []
 
 [Transfers]
+  active = ''
 #  [./marker_to_sub]
 #    type = LevelSetMeshRefinementTransfer
 #    multi_app = reinit

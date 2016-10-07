@@ -87,8 +87,6 @@ LevelSetReinitializationMultiApp::initialSetup()
 
   if (_has_an_app)
   {
-    //MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
-
     Executioner * ex = _apps[0]->getExecutioner();
 
     if (!ex)
@@ -99,10 +97,9 @@ LevelSetReinitializationMultiApp::initialSetup()
     _executioner = ex;
 
     _level_set_problem = dynamic_cast<LevelSetReinitializationProblem *>(&appProblem(0));
+
     if (!_level_set_problem)
       mooseError("The Problem type must be LevelSetReinitializationProblem.");
-      // Swap back
-    //Moose::swapLibMeshComm(swapped);
   }
 }
 

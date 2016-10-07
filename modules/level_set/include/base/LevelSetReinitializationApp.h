@@ -14,14 +14,14 @@
 #ifndef LEVELSETREINITIALZATIONAPP_H
 #define LEVELSETREINITIALZATIONAPP_H
 
-#include "MooseApp.h"
+#include "LevelSetApp.h"
 
 class LevelSetReinitializationApp;
 
 template<>
 InputParameters validParams<LevelSetReinitializationApp>();
 
-class LevelSetReinitializationApp : public MooseApp
+class LevelSetReinitializationApp : public LevelSetApp
 {
 public:
   LevelSetReinitializationApp(const InputParameters & parameters);

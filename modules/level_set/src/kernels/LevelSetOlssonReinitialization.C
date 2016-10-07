@@ -20,7 +20,7 @@ InputParameters validParams<LevelSetOlssonReinitialization>()
 {
   InputParameters params = validParams<Diffusion>();
   params.addRequiredCoupledVar("phi_0", "The level set variable to be reinitialized as sign distance function.");
-  params.addRequiredParam<PostprocessorName>("epsilon", "The epsilon coefficient to be used in the reinitialization calculation.");
+  params.addParam<PostprocessorName>("epsilon", 0.03, "The epsilon coefficient to be used in the reinitialization calculation.");
   return params;
 }
 
