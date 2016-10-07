@@ -33,6 +33,11 @@ protected:
   virtual void createVariableActions();
   virtual void createKernelActions();
   virtual void createProblemActions();
+  virtual void createUserObjectActions();
+  virtual void createExecutionerActions();
+  virtual void createOutputActions();
+
+
 
 //  MooseSharedPointer<MooseObjectAction> createMooseObjectAction(const std::string & action_name, const std::string & object_name);
 

@@ -27,6 +27,11 @@ add_reinitialization_param(InputParameters & params)
 
   params.addRequiredParam<Real>("epsilon", "The interface thickness used in Olsson reinitialization.");
 
+  params.addRequiredParam<Real>("dtau", "The reinitialization timestep.");
+
+  params.addParam<unsigned int>("min_steps", 3, "The minimum number of reinitialization step to preform.");
+  params.addParam<unsigned int>("max_steps", 100, "The maximum numberof reinitialization steps to perform.");
+  params.addParam<Real>("tol", 1, "The reinitialization tolerance.");
 
 }
 
@@ -42,7 +47,9 @@ InputParameters validParams<LevelSetReinitializationMultiApp>()
   // TODO: this might be done in derived multiapps: LevelSetOlssonRe..MultiApp -> LevelSetOlssonRe..App
   add_reinitialization_param(params);
 
-  params.suppressParameter<std::vector<std::string> >("input_files");
+  params.set<std::vector<FileName> >("input_files") = std::vector<FileName>(1, "this_is_not_the_input_file_you_are_looking_for.i");
+
+  params.suppressParameter<std::vector<FileName> >("input_files");
 
 
   params.suppressParameter<std::vector<Point> >("positions");
@@ -70,6 +77,7 @@ void
 LevelSetReinitializationMultiApp::createAppSetup(unsigned int /*i*/, InputParameters & app_params)
 {
   app_params.applyParameters(parameters());
+  app_params.set<Real>("dtau") = getParam<Real>("dtau");
 }
 
 void
@@ -79,7 +87,7 @@ LevelSetReinitializationMultiApp::initialSetup()
 
   if (_has_an_app)
   {
-    MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
+    //MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
 
     Executioner * ex = _apps[0]->getExecutioner();
 
@@ -90,13 +98,11 @@ LevelSetReinitializationMultiApp::initialSetup()
 
     _executioner = ex;
 
-
     _level_set_problem = dynamic_cast<LevelSetReinitializationProblem *>(&appProblem(0));
     if (!_level_set_problem)
       mooseError("The Problem type must be LevelSetReinitializationProblem.");
-
       // Swap back
-    Moose::swapLibMeshComm(swapped);
+    //Moose::swapLibMeshComm(swapped);
   }
 }
 

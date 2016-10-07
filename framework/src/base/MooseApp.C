@@ -185,6 +185,12 @@ MooseApp::~MooseApp()
 void
 MooseApp::setupOptions()
 {
+
+  std::cout << "WTF" << std::endl;
+
+  parameters().print();
+
+
   // Print the header, this is as early as possible
   std::string hdr(header() + "\n");
   if (useNamePrefix())

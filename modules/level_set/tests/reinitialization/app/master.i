@@ -143,7 +143,10 @@
 [MultiApps]
   [./reinit]
     type = LevelSetReinitializationMultiApp
+    app_type = LevelSetReinitializationApp
     levelset_variable = 'phi'
+    epsilon = 0.03
+    dtau = 0.003
     execute_on = 'timestep_end'
   [../]
 []

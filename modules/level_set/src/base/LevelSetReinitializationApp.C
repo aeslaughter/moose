@@ -31,7 +31,7 @@ InputParameters validParams<LevelSetReinitializationApp>()
   params.set<bool>("minimal") = true;
 
 
-  add_reinitialization_param(params);
+  //add_reinitialization_param(params);
 
 
 
@@ -58,6 +58,9 @@ LevelSetReinitializationApp::createMinimalApp()
   createVariableActions();
   createKernelActions();
   createProblemActions();
+  createUserObjectActions();
+  createExecutionerActions();
+  createOutputActions();
 }
 
 
@@ -100,6 +103,8 @@ LevelSetReinitializationApp::createMeshActions()
 void
 LevelSetReinitializationApp::createVariableActions()
 {
+  std::cout << "LevelSetReinitializationApp::createVariableActions()" << std::endl;
+
 
   // Get the order and family from the parent variable
   MooseEnum families(AddVariableAction::getNonlinearVariableFamilies());
@@ -112,7 +117,7 @@ LevelSetReinitializationApp::createVariableActions()
     InputParameters action_params = _action_factory.getValidParams("AddVariableAction");
     action_params.set<MooseEnum>("family") = families;
     action_params.set<MooseEnum>("order") = orders;
-    MooseSharedPointer<Action> action = _action_factory.create("AddVariableAction", "Variables/phi", action_params);
+    MooseSharedPointer<Action> action = _action_factory.create("AddVariableAction", "phi", action_params);
     _action_warehouse.addActionBlock(action);
   }
 
@@ -149,6 +154,7 @@ LevelSetReinitializationApp::createKernelActions()
     InputParameters & params = action->getObjectParams();
     params.set<VariableName>("variable") = "phi";
     params.set<VariableName>("phi_0") = "phi_0";
+    params.set<Real>("epsilon") = getParam<Real>("epsilon");
   }
 }
 
@@ -160,8 +166,59 @@ LevelSetReinitializationApp::createProblemActions()
   action_params.set<std::string>("type") = "LevelSetReinitializationProblem";
 
   // Create the action
-  MooseSharedPointer<MooseObjectAction> action = MooseSharedNamespace::static_pointer_cast<MooseObjectAction>(_action_factory.create("CreateProblemAction", "Problem", action_params));
+  MooseSharedPointer<Action> action = _action_factory.create("CreateProblemAction", "Problem", action_params);
 
   // Add Action to the warehouse
   _action_warehouse.addActionBlock(action);
+}
+
+void
+LevelSetReinitializationApp::createUserObjectActions()
+{
+  InputParameters action_params = _action_factory.getValidParams("AddUserObjectAction");
+  action_params.set<std::string>("type") = "LevelSetOlssonTerminator";
+
+  MooseSharedPointer<MooseObjectAction> action = MooseSharedNamespace::static_pointer_cast<MooseObjectAction>(_action_factory.create("AddUserObjectActions", "UserObjects/terminator", action_params));
+
+  InputParameters & params = action->getObjectParams();
+  params.set<Real>("tol") = getParam<Real>("tol");
+  params.set<unsigned int>("min_steps") = getParam<unsigned int>("min_steps");
+
+  _action_warehouse.addActionBlock(action);
+
+}
+
+void
+LevelSetReinitializationApp::createExecutionerActions()
+{
+  // Build the Action parameters
+  InputParameters action_params = _action_factory.getValidParams("CreateExecutionerAction");
+  action_params.set<std::string>("type") = "Transient";
+
+  // Create the action
+  MooseSharedPointer<MooseObjectAction> action = MooseSharedNamespace::static_pointer_cast<MooseObjectAction>(_action_factory.create("CreateExecutionerAction", "Executioner", action_params));
+
+    // Set the object parameters
+  InputParameters & params = action->getObjectParams();
+  params.set<unsigned int>("num_steps") = getParam<unsigned int>("max_steps");
+  params.set<Real>("dt") = getParam<Real>("dtau");
+
+  // Add Action to the warehouse
+  _action_warehouse.addActionBlock(action);
+}
+
+void
+LevelSetReinitializationApp::createOutputActions()
+{
+  // Build the Action parameters
+  InputParameters action_params = _action_factory.getValidParams("CommonOutputAction");
+  //action_params.set<bool>("console") = false;
+
+  // Create action
+  MooseSharedPointer<Action> action = _action_factory.create("CommonOutputAction", "Outputs", action_params);
+
+  // Add Action to the warehouse
+  _action_warehouse.addActionBlock(action);
+
+
 }
