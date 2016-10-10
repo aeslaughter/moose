@@ -20,14 +20,14 @@ InputParameters validParams<LevelSetOlssonReinitialization>()
 {
   InputParameters params = validParams<Diffusion>();
   params.addRequiredCoupledVar("phi_0", "The level set variable to be reinitialized as sign distance function.");
-  params.addParam<PostprocessorName>("epsilon", 0.03, "The epsilon coefficient to be used in the reinitialization calculation.");
+  params.addRequiredParam<Real>("epsilon", "The epsilon coefficient to be used in the reinitialization calculation.");
   return params;
 }
 
 LevelSetOlssonReinitialization::LevelSetOlssonReinitialization(const InputParameters & parameters) :
     Diffusion(parameters),
     _grad_levelset_0(coupledGradient("phi_0")),
-    _epsilon(getPostprocessorValue("epsilon"))
+    _epsilon(getParam<Real>("epsilon"))
 {
 }
 

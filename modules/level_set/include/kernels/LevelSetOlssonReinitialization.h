@@ -45,7 +45,7 @@ protected:
   virtual Real computeQpOffDiagJacobian(const unsigned int jvar);
 
   const VariableGradient & _grad_levelset_0;
-  const PostprocessorValue & _epsilon;
+  const Real & _epsilon;
   // For speed
   RealVectorValue _f;
   Real _s;

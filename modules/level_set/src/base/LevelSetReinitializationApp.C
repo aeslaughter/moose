@@ -77,19 +77,27 @@ createMooseObjectAction(const std::string & action_name, const std::string & obj
 void
 LevelSetReinitializationApp::createMeshActions()
 {
+
+  InputParameters action_params = _action_factory.getValidParams("SetupMeshAction");
+
+  const Action & parent = _master_awh.getAction<SetupMeshAction>("Mesh");
+  InputParameters action_params = parent.parameters();
+
+
+
+
   {
     // Build the Action parameters
-    InputParameters action_params = _action_factory.getValidParams("SetupMeshAction");
-    action_params.set<std::string>("type") = "GeneratedMesh";
+    //action_params.set<std::string>("type") = "GeneratedMesh";
     action_params.set<std::string>("task") = "setup_mesh";
 
     // Create The Action
     MooseSharedPointer<MooseObjectAction> action = MooseSharedNamespace::static_pointer_cast<MooseObjectAction>(_action_factory.create("SetupMeshAction", "Mesh", action_params));
 
     // Set the object parameters
-    InputParameters & params = action->getObjectParams();
-    params.set<MooseEnum>("dim") = "1";
-    params.set<unsigned int>("nx") = 1;
+    //  InputParameters & params = action->getObjectParams();
+    //params.set<MooseEnum>("dim") = "1";
+    //params.set<unsigned int>("nx") = 1;
 
     // Add Action to the warehouse
     _action_warehouse.addActionBlock(action);
@@ -98,8 +106,8 @@ LevelSetReinitializationApp::createMeshActions()
   // SetupMeshAction (init_mesh)
   {
     // Action parameters
-    InputParameters action_params = _action_factory.getValidParams("SetupMeshAction");
-    action_params.set<std::string>("type") = "GeneratedMesh";
+    // InputParameters action_params = _action_factory.getValidParams("SetupMeshAction");
+    //action_params.set<std::string>("type") = "GeneratedMesh";
     action_params.set<std::string>("task") = "init_mesh";
 
     // Build the action
@@ -182,7 +190,7 @@ LevelSetReinitializationApp::createKernelActions()
     InputParameters & params = action->getObjectParams();
     params.set<NonlinearVariableName>("variable") = "phi";
     params.set<std::vector<VariableName>>("phi_0") = std::vector<VariableName>(1,"phi_0");
-    //x params.set<PostprocessorName>("epsilon") = "0.03";//getParam<Real>("epsilon");
+    params.set<Real>("epsilon") = 0.03;//getParam<Real>("epsilon");
 
     _action_warehouse.addActionBlock(action);
 
