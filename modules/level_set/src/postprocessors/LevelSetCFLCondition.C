@@ -12,10 +12,10 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#include "CFLCondition.h"
+#include "LevelSetCFLCondition.h"
 
 template<>
-InputParameters validParams<CFLCondition>()
+InputParameters validParams<LevelSetCFLCondition>()
 {
   InputParameters params = validParams<ElementPostprocessor>();
   params += validParams<LevelSetVelocityInterface<> >();
@@ -23,7 +23,7 @@ InputParameters validParams<CFLCondition>()
   return params;
 }
 
-CFLCondition::CFLCondition(const InputParameters & parameters) :
+LevelSetCFLCondition::LevelSetCFLCondition(const InputParameters & parameters) :
     LevelSetVelocityInterface<ElementPostprocessor>(parameters),
     _velocity_x(coupledValue("velocity_x")),
     _velocity_y(coupledValue("velocity_y")),
@@ -34,7 +34,7 @@ CFLCondition::CFLCondition(const InputParameters & parameters) :
 }
 
 void
-CFLCondition::execute()
+LevelSetCFLCondition::execute()
 {
   _min_width = std::min(_min_width, _current_elem->hmin());
 
@@ -46,23 +46,23 @@ CFLCondition::execute()
 }
 
 void
-CFLCondition::finalize()
+LevelSetCFLCondition::finalize()
 {
   gatherMax(_max_velocity);
   gatherMin(_min_width);
 }
 
 void
-CFLCondition::threadJoin(const UserObject & user_object)
+LevelSetCFLCondition::threadJoin(const UserObject & user_object)
 {
-  const CFLCondition & cfl = static_cast<const CFLCondition&>(user_object);
+  const LevelSetCFLCondition & cfl = static_cast<const LevelSetCFLCondition&>(user_object);
   _min_width = std::min(_min_width, cfl._min_width);
   _max_velocity = std::max(_max_velocity, cfl._max_velocity);
 }
 
 
 PostprocessorValue
-CFLCondition::getValue()
+LevelSetCFLCondition::getValue()
 {
   return _min_width / _max_velocity;
 }

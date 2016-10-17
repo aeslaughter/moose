@@ -12,42 +12,32 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-// LevelSet includes
-#include "AddLevelSetKernels.h"
-#include "LevelSetVelocityInterface.h"
-
-// MOOSE includes
-#include "FEProblem.h"
+#include "LevelSetGaussianHill.h"
 
 template<>
-InputParameters validParams<AddLevelSetKernels>()
+InputParameters validParams<LevelSetGaussianHill>()
 {
-  InputParameters params = validParams<LevelSetActionBase>();
+  InputParameters params = validParams<Function>();
+  params.addParam<Real>("sigma", 0.0625, "Standard deviation.");
+  params.addParam<std::vector<Real> >("center", std::vector<Real>({0.5, 0.5, 0.0}), "Location of the hill centroid.");
   return params;
 }
 
-AddLevelSetKernels::AddLevelSetKernels(InputParameters parameters) :
-    LevelSetActionBase(parameters)
+LevelSetGaussianHill::LevelSetGaussianHill(const InputParameters & parameters) :
+  Function(parameters),
+  _sigma(getParam<Real>("sigma")),
+  _center(getParam<std::vector<Real> >("center"))
 {
 }
 
-void
-AddLevelSetKernels::act()
+Real
+LevelSetGaussianHill::value(Real /*t*/, const Point & p)
 {
-  // TimeDerivative
-  // \frac{\partial\phi}{\partial t}
-  {
-    InputParameters params = _factory.getValidParams("TimeDerivative");
-    injectVariableParam(params);
-    _problem->addKernel("TimeDerivative", "LevelSet:TimeDerivative", params);
-  }
+  RealVectorValue x_bar;
 
-  // LevelSetAdvection
-  // \vec{v} \cdot \nabal\phi
-  {
-    InputParameters params = _factory.getValidParams("LevelSetAdvection");
-    injectVariableParam(params);
-    injectVelocityParams(params);
-    _problem->addKernel("LevelSetAdvection", "LevelSet:Advection", params);
-  }
+  for (unsigned int i = 0; i < _center.size(); ++i)
+    x_bar(i) = p(i) - _center[i];
+
+  return exp(- x_bar.size_sq() / (2*_sigma*_sigma));
+
 }

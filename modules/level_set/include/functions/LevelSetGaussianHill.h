@@ -12,52 +12,40 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef THRESHOLDAUXKERNEL_H
-#define THRESHOLDAUXKERNEL_H
+#ifndef GAUSSIANHILL_H
+#define GAUSSIANHILL_H
 
-// MOOSE includes
-#include "AuxKernel.h"
+#include "Function.h"
 
 // Forward declerations
-class ThresholdAuxKernel;
+class LevelSetGaussianHill;
 
 template<>
-InputParameters validParams<ThresholdAuxKernel>();
+InputParameters validParams<LevelSetGaussianHill>();
 
 /**
  *
  */
-class ThresholdAuxKernel : public AuxKernel
+class LevelSetGaussianHill : public Function
 {
 public:
 
   /**
    * Class constructor
    * @param name
+   * @param parameters
    */
-  ThresholdAuxKernel(const InputParameters & parameters);
-
-  /**
-   * Class destructor
-   */
-  virtual ~ThresholdAuxKernel(){};
-
-protected:
+  LevelSetGaussianHill(const InputParameters & parameters);
 
   /**
    *
    */
-  virtual Real computeValue();
+  Real value(Real t, const Point & p);
 
-private:
-
-  const VariableValue & _threshold_variable;
-  Real _threshold;
-  Real _above_value;
-  Real _below_value;
-
-//  bool(*_compare)(Real, Real);
+protected:
+  Real _sigma;
+  std::vector<Real> _center;
 
 };
 
-#endif //THRESHOLDAUXKERNEL_H
+#endif //GAUSSIANHILL_H

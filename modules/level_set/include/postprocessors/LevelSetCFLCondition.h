@@ -12,44 +12,54 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#include "LevelSetMeshRefinementTracker.h"
+#ifndef CFLCONDITION_H
+#define CFLCONDITION_H
 
-// libMesh includes
-#include "libmesh/elem.h"
+// MOOSE includes
+#include "ElementPostprocessor.h"
+#include "LevelSetVelocityInterface.h"
+
+// Forward declarations
+class LevelSetCFLCondition;
 
 template<>
-InputParameters validParams<LevelSetMeshRefinementTracker>()
+InputParameters validParams<LevelSetCFLCondition>();
+
+/**
+ *
+ */
+class LevelSetCFLCondition : public LevelSetVelocityInterface<ElementPostprocessor>
 {
-  InputParameters params = validParams<ElementUserObject>();
-  return params;
-}
+public:
 
-LevelSetMeshRefinementTracker::LevelSetMeshRefinementTracker(const InputParameters & parameters) :
-    ElementUserObject(parameters)
-{
-}
+  /**
+   * Class constructor
+   * @param name
+   * @param parameters
+   */
+  LevelSetCFLCondition(const InputParameters & parameters);
 
-void
-LevelSetMeshRefinementTracker::execute()
-{
-  std::cout << _current_elem->id() << " " << _current_elem->refinement_flag() << std::endl;
+  void initialize(){};
 
-}
+  void execute();
+  void finalize();
+  void threadJoin(const UserObject & user_object);
 
 
-void
-LevelSetMeshRefinementTracker::initialize()
-{
+  /**
+   *
+   */
+  virtual PostprocessorValue getValue();
 
-}
+private:
 
-void
-LevelSetMeshRefinementTracker::finalize()
-{
-}
+  const VariableValue & _velocity_x;
+  const VariableValue & _velocity_y;
+  const VariableValue & _velocity_z;
 
-void
-LevelSetMeshRefinementTracker::threadJoin(const UserObject & uo)
-{
 
-}
+  Real _min_width;
+  Real _max_velocity;
+};
+
+#endif //CFLCONDITION_H

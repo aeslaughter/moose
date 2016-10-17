@@ -1,9 +1,7 @@
-#include "LevelSetApp.h"
 #include "Moose.h"
+#include "LevelSetApp.h"
 #include "AppFactory.h"
 #include "MooseSyntax.h"
-
-// InitialConditions
 
 // Kernels
 #include "LevelSetAdvection.h"
@@ -11,30 +9,18 @@
 #include "LevelSetTimeDerivativeSUPG.h"
 #include "LevelSetOlssonReinitialization.h"
 
-// AuxKernels
-#include "ThresholdAuxKernel.h"
-#include "LevelSetVariableNormalAuxKernel.h"
-
 // Functions
-#include "GaussianHill.h"
+#include "LevelSetGaussianHill.h"
 #include "LevelSetBubbleFunction.h"
 #include "LevelSetVortex.h"
 
 // Postprocessors
-#include "CFLCondition.h"
-#include "InterfaceWidth.h"
+#include "LevelSetCFLCondition.h"
 #include "LevelSetVolume.h"
 #include "LevelSetOlssonTerminator.h"
 
-// UserObjects
-#include "LevelSetMeshRefinementTracker.h"
-
 // Markers
 #include "LevelSetValueMarker.h"
-
-// Actions
-#include "AddLevelSetKernels.h"
-#include "AddLevelSetPostprocessors.h"
 
 // Problems
 #include "LevelSetProblem.h"
@@ -74,31 +60,21 @@ LevelSetApp::registerApps()
 void
 LevelSetApp::registerObjects(Factory & factory)
 {
-  // InitialConditions
-
   // Kernels
   registerKernel(LevelSetAdvection);
   registerKernel(LevelSetAdvectionSUPG);
   registerKernel(LevelSetTimeDerivativeSUPG);
   registerKernel(LevelSetOlssonReinitialization);
 
-  // AuxKernels
-  registerAuxKernel(ThresholdAuxKernel);
-  registerAuxKernel(LevelSetVariableNormalAuxKernel);
-
   // Functions
-  registerFunction(GaussianHill);
+  registerFunction(LevelSetGaussianHill);
   registerFunction(LevelSetBubbleFunction);
   registerFunction(LevelSetVortex);
 
   // Postprocessors
-  registerPostprocessor(CFLCondition);
-  registerPostprocessor(InterfaceWidth);
+  registerPostprocessor(LevelSetCFLCondition);
   registerPostprocessor(LevelSetVolume);
   registerPostprocessor(LevelSetOlssonTerminator);
-
-  // UserObjects
-  registerUserObject(LevelSetMeshRefinementTracker);
 
   // Problems
   registerProblem(LevelSetProblem);
@@ -115,17 +91,6 @@ LevelSetApp::registerObjects(Factory & factory)
 }
 
 void
-LevelSetApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
+LevelSetApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
 {
-  // level set kernel creation
-  registerTask("add_level_set_kernels", false);
-  registerAction(AddLevelSetKernels, "add_level_set_kernels");
-  syntax.registerActionSyntax("AddLevelSetKernels", "Modules/LevelSet", "add_level_set_kernels");
-  syntax.addDependency("add_level_set_kernels", "add_kernel");
-
-  // level set kernel creation
-  registerTask("add_level_set_postprocessors", false);
-  registerAction(AddLevelSetPostprocessors, "add_level_set_postprocessors");
-  syntax.registerActionSyntax("AddLevelSetPostprocessors", "Modules/LevelSet", "add_level_set_postprocessors");
-  syntax.addDependency("add_level_set_postprocessors", "add_postprocessor");
 }

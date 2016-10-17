@@ -36,7 +36,7 @@ Marker::MarkerValue
 LevelSetValueMarker::computeQpMarker()
 {
   // Compute the levelset variable normal direction
-  _n_hat = _grad_levelset_var[_qp] / _grad_levelset_var[_qp].size();
+  _n_hat = _grad_levelset_var[_qp] / (_grad_levelset_var[_qp].norm() + std::numeric_limits<Real>::epsilon());
 
   // Dot the normal with the velocity
   computeQpVelocity();
@@ -56,6 +56,6 @@ LevelSetValueMarker::computeQpMarker()
   else if (_v_dot_n < 0 && _inside)
     _lower_bound *= _bound_scale;
 
-  // Compte the marker using the base class
+  // Compute the marker using the base class
   return ValueRangeMarker::computeQpMarker();
 }
