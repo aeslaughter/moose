@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+    {% for name, link in breadcrumbs.iteritems() %}
+      <li><a href="{{link}}">{{name}}</a></li>
+    {% endfor %}
+    </ul>
+    {{content}}
+  </body>
+</html>
