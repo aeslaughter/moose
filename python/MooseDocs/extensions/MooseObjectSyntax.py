@@ -109,8 +109,6 @@ class MooseObjectSyntax(MooseSyntaxBase):
 
     # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
     tables = collections.OrderedDict()
-    tables['Required'] = MooseDocs.MooseObjectParameterTable()
-    tables['Optional'] = MooseDocs.MooseObjectParameterTable()
 
     # Loop through the parameters in yaml object
     for param in node['parameters'] or []:
