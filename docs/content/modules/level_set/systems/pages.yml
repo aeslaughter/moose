@@ -1,0 +1,7 @@
+- Adaptivity: !include content/modules/level_set/systems/Adaptivity/pages.yml
+- Functions: !include content/modules/level_set/systems/Functions/pages.yml
+- Kernels: !include content/modules/level_set/systems/Kernels/pages.yml
+- MultiApps: !include content/modules/level_set/systems/MultiApps/pages.yml
+- Postprocessors: !include content/modules/level_set/systems/Postprocessors/pages.yml
+- Transfers: !include content/modules/level_set/systems/Transfers/pages.yml
+- UserObjects: !include content/modules/level_set/systems/UserObjects/pages.yml

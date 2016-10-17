@@ -20,6 +20,7 @@ InputParameters
 validParams<LevelSetOlssonBubbleFunction>()
 {
   InputParameters params = validParams<Function>();
+  params.addClassDescription("Implementation of 'bubble' ranging from 0 to 1.");
   params.addParam<RealVectorValue>("center", RealVectorValue(0.5, 0.5, 0), "The center of the bubble.");
   params.addParam<Real>("radius", 0.15, "The radius of the bubble.");
   params.addParam<Real>("epsilon", 0.01, "The interface thickness.");
