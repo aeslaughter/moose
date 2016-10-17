@@ -30,7 +30,7 @@ markdown_extensions:
     - MooseDocs.extensions.MooseMarkdown:
           package: True
           make: ../modules
-          executable: ../modules/combined/modules-opt
+          executable: ../modules/level_set/level_set-develcd
           repo: https://github.com/idaholab/moose/blob/master
           hide:
               - /Bounds # this should not be removed, this is deprecated syntax that we do not want to document
@@ -84,6 +84,7 @@ markdown_extensions:
                   - ../modules/heat_conduction/include
                   - ../modules/tensor_mechanics/include
           locations:
+<<<<<<< 842167d39bac8ec98c87e634879f88fbe990a07d
               framework:
                   doxygen: http://mooseframework.com/docs/doxygen/moose/
                   paths:
@@ -96,12 +97,21 @@ markdown_extensions:
                       - ../modules/phase_field/src
                       - ../modules/phase_field/include
                   install: content/modules/phase_field/systems
+=======
+#              framework:
+#                  doxygen: http://mooseframework.com/docs/doxygen/moose/
+#                  paths:
+#                      - ../framework/src
+#                      - ../framework/include
+#                  install: content/framework/systems
+>>>>>>> REMOVE THIS
               level_set:
                   doxygen: http://mooseframework.com/docs/doxygen/moose/
                   paths:
                       - ../modules/level_set/src
                       - ../modules/level_set/include
                   install: content/modules/level_set/systems
+<<<<<<< 842167d39bac8ec98c87e634879f88fbe990a07d
               tensor_mechanics:
                   doxygen: http://mooseframework.org/docs/doxygen/modules/
                   paths:
@@ -116,3 +126,17 @@ markdown_extensions:
                       - ../modules/heat_conduction/src
                       - ../modules/heat_conduction/include
                   install: content/modules/heat_conduction/systems
+=======
+#              tensor_mechanics:
+#                  doxygen: http://mooseframework.org/docs/doxygen/modules/
+#                  paths:
+#                      - ../modules/tensor_mechanics/src
+#                      - ../modules/tensor_mechanics/include
+#                  install: content/modules/tensor_mechanics/systems
+#              heat_conduction:
+#                  doxygen: http://mooseframework.org/docs/doxygen/modules/
+#                  paths:
+#                      - ../modules/heat_conduction/src
+#                      - ../modules/heat_conduction/include
+#                  install: content/modules/heat_conduction/systems
+>>>>>>> REMOVE THIS
