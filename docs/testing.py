@@ -25,7 +25,6 @@ class MoosePage(object):
 
         output = collections.OrderedDict()
         for i, crumb in enumerate(self._breadcrumbs):
-
             local = os.path.join(os.path.join(*self._breadcrumbs[0:i+1]), 'index.html')
             local = local.lower().replace(' ', '_')
             output[crumb] = os.path.join(self._root, local)
