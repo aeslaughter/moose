@@ -96,6 +96,12 @@ markdown_extensions:
                       - ../modules/phase_field/src
                       - ../modules/phase_field/include
                   install: content/modules/phase_field/systems
+              level_set:
+                  doxygen: http://mooseframework.com/docs/doxygen/moose/
+                  paths:
+                      - ../modules/level_set/src
+                      - ../modules/level_set/include
+                  install: content/modules/level_set/systems
               tensor_mechanics:
                   doxygen: http://mooseframework.org/docs/doxygen/modules/
                   paths:

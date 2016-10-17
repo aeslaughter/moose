@@ -11,7 +11,7 @@
 
 // Functions
 #include "LevelSetGaussianHill.h"
-#include "LevelSetBubbleFunction.h"
+#include "LevelSetOlssonBubbleFunction.h"
 #include "LevelSetVortex.h"
 
 // Postprocessors
@@ -68,7 +68,7 @@ LevelSetApp::registerObjects(Factory & factory)
 
   // Functions
   registerFunction(LevelSetGaussianHill);
-  registerFunction(LevelSetBubbleFunction);
+  registerFunction(LevelSetOlssonBubbleFunction);
   registerFunction(LevelSetVortex);
 
   // Postprocessors

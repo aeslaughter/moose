@@ -471,7 +471,6 @@ Transient::solveStep(Real input_dt)
 void
 Transient::endStep(Real input_time)
 {
-  std::cout << "Transient::endStep()" << std::endl;
   if (input_time == -1.0)
     _time = _time_old + _dt;
   else

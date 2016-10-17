@@ -13,11 +13,11 @@
 /****************************************************************/
 
 // MOOSE includes
-#include "LevelSetBubbleFunction.h"
+#include "LevelSetOlssonBubbleFunction.h"
 
 template<>
 InputParameters
-validParams<LevelSetBubbleFunction>()
+validParams<LevelSetOlssonBubbleFunction>()
 {
   InputParameters params = validParams<Function>();
   params.addParam<RealVectorValue>("center", RealVectorValue(0.5, 0.5, 0), "The center of the bubble.");
@@ -26,7 +26,7 @@ validParams<LevelSetBubbleFunction>()
   return params;
 }
 
-LevelSetBubbleFunction::LevelSetBubbleFunction(const InputParameters & parameters):
+LevelSetOlssonBubbleFunction::LevelSetOlssonBubbleFunction(const InputParameters & parameters):
     Function(parameters),
     _center(getParam<RealVectorValue>("center")),
     _radius(getParam<Real>("radius")),
@@ -35,14 +35,14 @@ LevelSetBubbleFunction::LevelSetBubbleFunction(const InputParameters & parameter
 }
 
 Real
-LevelSetBubbleFunction::value(Real /*t*/, const Point & p)
+LevelSetOlssonBubbleFunction::value(Real /*t*/, const Point & p)
 {
   Real x = ((p - _center).size() - _radius) / _epsilon;
   return 1.0 / (1 + exp(x));
 }
 
 RealGradient
-LevelSetBubbleFunction::gradient(Real /*t*/, const Point & p)
+LevelSetOlssonBubbleFunction::gradient(Real /*t*/, const Point & p)
 {
   Real norm = (p - _center).size();
   Real g = (norm - _radius) / _epsilon;

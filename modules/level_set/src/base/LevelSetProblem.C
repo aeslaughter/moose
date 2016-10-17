@@ -28,18 +28,6 @@ LevelSetProblem::LevelSetProblem(const InputParameters & parameters) :
 {
 }
 
-/*
-void
-LevelSetProblem::computeMarkers()
-{
-  std::cout << "FEProblem::computeMarkers()" << std::endl;
-  FEProblem::computeMarkers();
-//  execMultiApps(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
-  std::cout << "LevelSetProblem::execMultiAppTransfers()" << std::endl;
-//  execMultiAppTransfers(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
-}
-*/
-
 void
 LevelSetProblem::adaptMesh()
 {
@@ -53,7 +41,6 @@ LevelSetProblem::adaptMesh()
 
     execMultiAppTransfers(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
 
-
     _console << "Adaptivity step " << i+1 << " of " << cycles_per_step << '\n';
     // Markers were already computed once by Executioner
     if (_adaptivity.getRecomputeMarkersFlag() && i > 0)
@@ -65,7 +52,7 @@ LevelSetProblem::adaptMesh()
     }
     else
     {
-      _console << "Mesh unchanged, skipping remaing steps..." << std::endl;
+      _console << "Mesh unchanged, skipping remaining steps..." << std::endl;
       return;
     }
 
@@ -73,18 +60,3 @@ LevelSetProblem::adaptMesh()
     _console << std::flush;
   }
 }
-
-
-
-
-
-/*
-
-
-  std::cout << "FEProblem::adaptMesh()" << std::endl;
-//  execMultiApps(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
-  std::cout << "LevelSetProblem::execMultiAppTransfers()" << std::endl;
-  execMultiAppTransfers(EXEC_CUSTOM, MultiAppTransfer::TO_MULTIAPP);
-  FEProblem::adaptMesh();
-}
-*/
