@@ -17,7 +17,7 @@
 
 #include "Function.h"
 
-// Forward declerations
+// Forward declarations
 class LevelSetGaussianHill;
 
 template<>
@@ -45,6 +45,9 @@ public:
 protected:
   Real _sigma;
   std::vector<Real> _center;
+
+  RealVectorValue _x_bar;
+
 
 };
 

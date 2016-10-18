@@ -17,7 +17,7 @@ H_{sm}(\Phi) = \begin{cases}
 \end{equation}
 $$
 
-!image media/level_set_olsson_bubble.png float=right width=35% padding-left=10px caption=Example of "Olsson" bubble function.
+!image media/level_set_olsson_bubble.png float=right width=45% padding-left=10px caption=Example of "Olsson" bubble function.
 
 Typically, the interface of the level set function is defined by the 0.5 contour and the interface or boundary layer is defined between 0 and 1.
 

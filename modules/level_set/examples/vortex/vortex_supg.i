@@ -5,20 +5,20 @@
   ymax = 1
   nx = 16
   ny = 16
-  uniform_refine = 3
+  uniform_refine = 4
   elem_type = QUAD9
 []
 
 [Adaptivity]
   marker = marker
-  max_h_level = 3
+  max_h_level = 4
   [./Markers]
     [./marker]
       type = ValueRangeMarker
       variable = phi
       lower_bound = 0.47
       upper_bound = 0.53
-      buffer_size = 0.12
+      buffer_size = 0.24
       third_state = DO_NOTHING
     [../]
   [../]
@@ -59,12 +59,7 @@
 
 [Functions]
   [./phi_exact]
-    #type = ParsedFunction
-    #value = 'sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0)) - r'
-    #vars = 'x0 y0 r'
-    #vals = '0.5 0.75 0.15'
-
-    type = LevelSetBubbleFunction
+    type = LevelSetOlssonBubbleFunction
     epsilon = 0.03
     center = '0.5 0.75 0'
     radius = 0.15
@@ -72,12 +67,12 @@
   [./vel_x]
     type = LevelSetVortex
     component = x
-    reverse_time = 4
+    reverse_time = 2
   [../]
   [./vel_y]
     type = LevelSetVortex
     component = y
-    reverse_time = 4
+    reverse_time = 2
   [../]
 []
 
@@ -90,6 +85,7 @@
 []
 
 [Kernels]
+ # active = 'time advection'
   [./time]
     type = TimeDerivative
     variable = phi
@@ -119,7 +115,7 @@
     execute_on = 'initial timestep_end'
   [../]
   [./cfl]
-    type = CFLCondition
+    type = LevelSetCFLCondition
     velocity_x = vel_x
     velocity_y = vel_y
     execute_on = 'initial timestep_end'
@@ -130,7 +126,7 @@
   type = Transient
   solve_type = PJFNK
   start_time = 0
-  end_time = 4
+  end_time = 2
   scheme = crank-nicolson
   petsc_options_iname = '-pc_type -pc_sub_type'
   petsc_options_value = 'asm      ilu'
@@ -147,5 +143,6 @@
   [./out]
     type = Exodus
     interval = 5
+    execute_on = 'initial timestep_end final'
   [../]
 []

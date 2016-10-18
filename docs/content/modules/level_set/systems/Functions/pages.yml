@@ -1,4 +1,3 @@
 - Overview: content/modules/level_set/systems/Functions/Overview.md
-- LevelSetGaussianHill: content/modules/level_set/systems/Functions/LevelSetGaussianHill.md
 - LevelSetOlssonBubbleFunction: content/modules/level_set/systems/Functions/LevelSetOlssonBubbleFunction.md
-- LevelSetVortex: content/modules/level_set/systems/Functions/LevelSetVortex.md
+- LevelSetOlssonVortex: content/modules/level_set/systems/Functions/LevelSetOlssonVortex.md

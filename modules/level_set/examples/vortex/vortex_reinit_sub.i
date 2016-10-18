@@ -6,20 +6,20 @@
   nx = 32
   ny = 32
   uniform_refine = 2
-#  elem_type = QUAD9
+  elem_type = TRI6
+  second_order = true
+
 []
 
 [Variables]
   [./phi]
     family = LAGRANGE
-#    order = SECOND
   [../]
 []
 
 [AuxVariables]
   [./phi_0]
     family = LAGRANGE
-#    order = SECOND
   [../]
   [./marker]
     family = MONOMIAL
@@ -37,7 +37,7 @@
     type = LevelSetOlssonReinitialization
     variable = phi
     phi_0 = phi_0
-    epsilon = 0.03#0.01184
+    epsilon = 0.03
   [../]
 []
 
@@ -48,28 +48,23 @@
 [UserObjects]
   [./arnold]
     type = LevelSetOlssonTerminator
-    tol = 1
-    min_steps = 3
+    tol = 0.5
+    min_steps = 5
   [../]
 []
 
 [Executioner]
   type = Transient
-  solve_type = NEWTON
+  solve_type = PJFNK
   start_time = 0
   num_steps = 100
-  nl_abs_tol = 1e-14
+  nl_rel_tol = 1e-8
+ # nl_abs_tol = 1e-12
   scheme = crank-nicolson
   line_search = none
   petsc_options_iname = '-pc_type -pc_sub_type'
-  petsc_options_value = 'asm      ilu'
-  dt = 0.0007#3
-  #[./TimeStepper]
-  #  type = IterationAdaptiveDT
-  #  optimal_iterations = 4
-  #  growth_factor = 1.25
-  #  dt = 0.001
-  #[../]
+  petsc_options_value = 'hypre     boomeramg'
+  dt = 0.01
 []
 
 [Outputs]

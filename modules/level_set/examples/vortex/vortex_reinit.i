@@ -3,10 +3,11 @@
   dim = 2
   xmax = 1
   ymax = 1
-  nx = 16
-  ny = 16
-  uniform_refine = 3
-#  elem_type = QUAD9
+  nx = 32
+  ny = 32
+  uniform_refine = 2
+  elem_type = TRI6
+  second_order = true
 []
 
 #[Adaptivity]
@@ -16,10 +17,10 @@
 #    [./marker]
 #      type = ValueRangeMarker
 #      variable = phi
-#      lower_bound = 0.47
-#      upper_bound = 0.53
-#      buffer_size = 0.12
-#      third_state = DO_NOTHING
+#      lower_bound = 0.3
+#      upper_bound = 0.7
+#      buffer_size = 0.2
+#      third_state = DONT_MARK
 #    [../]
 #  [../]
 #[]
@@ -27,11 +28,9 @@
 [AuxVariables]
   [./vel_x]
     family = LAGRANGE
-#    order = SECOND
   [../]
   [./vel_y]
     family = LAGRANGE
-#    order = SECOND
   [../]
 []
 
@@ -53,26 +52,25 @@
 [Variables]
   [./phi]
     family = LAGRANGE
-    #order = SECOND
   [../]
 []
 
 [Functions]
   [./phi_exact]
-    type = LevelSetBubbleFunction
-    epsilon = 0.03#0.01184
+    type = LevelSetOlssonBubbleFunction
+    epsilon = 0.03
     center = '0.5 0.75 0'
     radius = 0.15
   [../]
   [./vel_x]
-    type = LevelSetVortex
+    type = LevelSetOlssonVortex
     component = x
-    reverse_time = 4
+    reverse_time = 1
   [../]
   [./vel_y]
-    type = LevelSetVortex
+    type = LevelSetOlssonVortex
     component = y
-    reverse_time = 4
+    reverse_time = 1
   [../]
 []
 
@@ -85,12 +83,25 @@
 []
 
 [Kernels]
+  active = 'time advection'
   [./time]
     type = TimeDerivative
     variable = phi
   [../]
   [./advection]
     type = LevelSetAdvection
+    velocity_x = vel_x
+    velocity_y = vel_y
+    variable = phi
+  [../]
+  [./time_supg]
+    type = LevelSetTimeDerivativeSUPG
+    variable = phi
+    velocity_x = vel_x
+    velocity_y = vel_y
+  [../]
+  [./supg]
+    type = LevelSetAdvectionSUPG
     velocity_x = vel_x
     velocity_y = vel_y
     variable = phi
@@ -106,7 +117,7 @@
     execute_on = 'initial timestep_end'
   [../]
   [./cfl]
-    type = CFLCondition
+    type = LevelSetCFLCondition
     velocity_x = vel_x
     velocity_y = vel_y
     execute_on = 'initial timestep_end'
@@ -120,9 +131,8 @@
 [Executioner]
   type = Transient
   solve_type = PJFNK
-  #num_steps = 1
   start_time = 0
-  end_time = 4
+  end_time = 1
   scheme = crank-nicolson
   petsc_options_iname = '-pc_type -pc_sub_type'
   petsc_options_value = 'asm      ilu'
@@ -142,12 +152,12 @@
 []
 
 [Transfers]
-  #[./marker_to_sub]
-  #  type = LevelSetMeshRefinementTransfer
-  #  multi_app = reinit
-  #  source_variable = marker
-  #  variable = marker
-  #[../]
+  [./marker_to_sub]
+    type = LevelSetMeshRefinementTransfer
+    multi_app = reinit
+    source_variable = marker
+    variable = marker
+  [../]
 
   [./to_sub]
     type = MultiAppCopyTransfer
@@ -180,8 +190,9 @@
 [Outputs]
   csv = true
   [./out]
+    file_base = output/vortex_reinit_out
     type = Exodus
-    interval = 1
-  #  execute_on = 'INITIAL TIMESTEP_BEGIN TIMESTEP_END'
+    interval = 5
+    execute_on = 'initial timestep_end final'
   [../]
 []
