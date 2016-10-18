@@ -12,26 +12,26 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef LEVELSETOLSSONBUBBLEFUNCTION_H
-#define LEVELSETOLSSONBUBBLEFUNCTION_H
+#ifndef LEVELSETOLSSONBUBBLE_H
+#define LEVELSETOLSSONBUBBLE_H
 
 // MOOSE includes
 #include "Function.h"
 
-class LevelSetOlssonBubbleFunction;
+class LevelSetOlssonBubble;
 
 template<>
-InputParameters validParams<LevelSetOlssonBubbleFunction>();
+InputParameters validParams<LevelSetOlssonBubble>();
 
 /**
  * Implements the "bubble" function from Olsson and Kreiss (2005) that
  * creates function that varies from 0 to 1.
  */
-class LevelSetOlssonBubbleFunction : public Function
+class LevelSetOlssonBubble : public Function
 {
 public:
 
-  LevelSetOlssonBubbleFunction(const InputParameters & parameters);
+  LevelSetOlssonBubble(const InputParameters & parameters);
 
   virtual Real value(Real /*t*/, const Point & p) override;
 
@@ -49,4 +49,4 @@ protected:
   const Real & _epsilon;
 };
 
-#endif // LEVELSETOLSSONBUBBLEFUNCTION_H
+#endif // LEVELSETOLSSONBUBBLE_H

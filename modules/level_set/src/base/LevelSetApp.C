@@ -10,7 +10,7 @@
 #include "LevelSetOlssonReinitialization.h"
 
 // Functions
-#include "LevelSetOlssonBubbleFunction.h"
+#include "LevelSetOlssonBubble.h"
 #include "LevelSetOlssonVortex.h"
 
 // Postprocessors
@@ -66,7 +66,7 @@ LevelSetApp::registerObjects(Factory & factory)
   registerKernel(LevelSetOlssonReinitialization);
 
   // Functions
-  registerFunction(LevelSetOlssonBubbleFunction);
+  registerFunction(LevelSetOlssonBubble);
   registerFunction(LevelSetOlssonVortex);
 
   // Postprocessors
