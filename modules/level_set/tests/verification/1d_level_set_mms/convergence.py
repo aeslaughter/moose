@@ -1,39 +1,42 @@
 #!/usr/bin/env python
 import sys, os
 import glob
-import numpy
+import numpy as np
 import math
 import pandas
 import matplotlib.pyplot as plt
 
-df = pandas.DataFrame(pandas.read_csv('levelset_mms_out.csv', index_col='time'))
-print df
+fontsize = 16
 
-ax = df.plot(y='point')
-plt.show()
-
-
-
-"""
-# Load tools from moose/python
-sys.path.append(os.path.join('..', '..', '..', '..', 'python'))
-from utils import CSVIO, ConvergencePlot
 
 # The csv files to read
-filenames = glob.glob('levelset_mms*.csv')
-n = len(filenames)
+filenames = glob.glob('level_set_mms*.csv')
 
 # Extract the data
-error = numpy.zeros(n)
-sqrt_dofs = numpy.zeros(n)
-for i in xrange(n):
-    csv = CSVIO(filenames[i])
-    error[i] = csv.getColumn('error')[-1]
-    sqrt_dofs[i] = math.sqrt(csv.getColumn('dofs')[-1])
+n = len(filenames)
+error = np.zeros(n)
+length = np.zeros(n)
+for i, filename in enumerate(filenames):
+    csv = pandas.read_csv(filename)
+    error[i] = csv['error'].iloc[-1]
+    length[i] = csv['h'].iloc[-1]
 
+# Create figure and axes
+fig = plt.figure(facecolor='w')
+ax = plt.subplot(111, xscale='log', yscale='log')
 
-# Plot the data
-graph = ConvergencePlot(sqrt_dofs, error, xlabel = 'sqrt(dofs)', ylabel='L2_Error')
-graph.fit()
-graph.save('convergence.pdf')
-"""
+ax.grid(True, which='major')
+ax.grid(True, which='minor')
+
+h = ax.plot(error, length, '-bo', markersize=5)
+
+ax.set_xlabel('Element Length', fontsize=fontsize)
+ax.set_ylabel('L2 Error', fontsize=fontsize)
+for tick in ax.xaxis.get_major_ticks() + ax.yaxis.get_major_ticks():
+    tick.label.set_fontsize(fontsize)
+coefficients = np.polyfit(np.log10(length), np.log10(error), 1)
+
+x = min(h[0].get_xdata())
+y = max(h[0].get_ydata())
+ax.text(x, y, 'slope = {}'.format(coefficients[0]), fontsize=15)
+plt.show()
