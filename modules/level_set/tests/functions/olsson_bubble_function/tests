@@ -1,7 +1,0 @@
-[Tests]
-  [./test]
-    type = Exodiff
-    input = olsson_bubble_function.i
-    exodiff = olsson_bubble_function_out.e
-  [../]
-[]

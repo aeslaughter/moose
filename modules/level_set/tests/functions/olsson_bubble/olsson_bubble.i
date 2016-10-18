@@ -37,7 +37,7 @@
 
 [Functions]
   [./bubble_func]
-    type = LevelSetOlssonBubbleFunction
+    type = LevelSetOlssonBubble
     center = '0.25 0.25 0'
     radius = 0.15
   [../]
