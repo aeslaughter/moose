@@ -33,6 +33,12 @@ public:
   TestGetActionsAction(const InputParameters & params);
 
   virtual void act() override;
+
+protected:
+
+  /// Controls what function is tested
+  const MooseEnum & _test_function;
+
 };
 
 #endif // TESTGETACTIONSACTION_H

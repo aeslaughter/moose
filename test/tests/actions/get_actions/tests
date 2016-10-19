@@ -1,0 +1,22 @@
+[Tests]
+  [./get_actions]
+    type = CSVDiff
+    input = test_get_actions.i
+    csvdiff = test_get_actions.csv
+  [../]
+
+  [./get_actions_on_other_processor]
+    type = CSVDiff
+    input = test_get_actions.i
+    csvdiff = test_get_actions.csv
+    cli_args = "TestGetActions/pid=3"
+    min_parallel = 4
+    prereq = get_action
+  [../]
+
+  [./get_action]
+    type = RunApp
+    input = test_get_actions.i
+    cli_args = "TestGetActions/test_function=getActions"
+  [../]
+[]

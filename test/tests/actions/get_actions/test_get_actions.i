@@ -1,11 +1,12 @@
 [Mesh]
-  file = square.e
+  file = ../meta_action/square.e
   uniform_refine = 4
 []
 
 [TestGetActions]
   csv_file = test_get_actions.csv
   pid = 0
+  test_function = 'getActions'
 []
 
 [Variables]

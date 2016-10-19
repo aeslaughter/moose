@@ -1,0 +1,5 @@
+name,name_id,type
+mat1,0,GenericConstantMaterial
+mat2,1,CoupledMaterial
+mat3,2,MTMaterial
+mat4,3,RandomMaterial

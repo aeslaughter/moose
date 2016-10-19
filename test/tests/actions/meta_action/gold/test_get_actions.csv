@@ -1,5 +1,0 @@
-name,name_id,type,type_id
-mat1,0,GenericConstantMaterial,1
-mat2,1,CoupledMaterial,2
-mat3,2,MTMaterial,4
-mat4,3,RandomMaterial,3
