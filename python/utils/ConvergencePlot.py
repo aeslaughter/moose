@@ -1,75 +1,73 @@
-import matplotlib.pyplot, numpy
-from pylab import *
-from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
+import numpy as np
 
-##
-# A tool for making convergence plots.
-# @param x The x data of the graph (e.g., dofs)
-# @param y The y data of the graph (e.g., L2_error)
-#
-# Key, value Options:
-#   xlabel = <str> The label for the x-axis
-#   ylabel = <str> The label for the y-axis
-#
 class ConvergencePlot(object):
-  def __init__(self, x, y, **kwargs):
+  """
+  A tool for making convergence plots.
 
-    x_label = kwargs.pop('xlabel', 'x')
-    y_label = kwargs.pop('ylabel', 'y')
+  Args:
+    x[np.array]: The x data of the graph (e.g., dofs)
+    y[np.array]: The y data of the graph (e.g., L2_error)
 
-    self._x = numpy.array(x)
-    self._y = numpy.array(y)
+  Key, value Options:
+    xlabel[str]: The label for the x-axis
+    ylabel[str]: The label for the y-axis
+  """
+  def __init__(self, x, y, xlabel='x', ylabel='y', fontsize=16, fit=True):
 
-    figure(figsize=(10,6))
-    plot(self._x, self._y, 'ob', markersize=12)
+    self._x = np.array(x)
+    self._y = np.array(y)
 
-    self._gcf = gcf()
-    self._gca = gca()
+    self._figure = plt.figure(figsize=(10,6), facecolor='w')
+    self._line = plt.plot(self._x, self._y, '-ob', markersize=8)[0]
+    self._axes = plt.gca()
 
-    gca().set_yscale('log')
-    gca().set_xscale('log')
+    self._axes.set_yscale('log')
+    self._axes.set_xscale('log')
 
     # Add axis labels
-    xlabel(x_label,{'fontsize':20})
-    ylabel(y_label,{'fontsize':20})
+    plt.xlabel(xlabel, fontsize=fontsize)
+    plt.ylabel(ylabel, fontsize=fontsize)
 
     # Adjust tick mark fonts
-    for xtick in  gca().xaxis.get_major_ticks():
-      xtick.label.set_fontsize(18)
-
-    for ytick in gca().yaxis.get_major_ticks():
-      ytick.label.set_fontsize(18)
+    for tick in self._axes.xaxis.get_major_ticks() + self._axes.yaxis.get_major_ticks():
+      tick.label.set_fontsize(18)
 
     # Apply grid marks
-    grid(True)
-    grid(True, which='minor', color='b')
+    plt.grid(True)
+    plt.grid(True, which='minor', color='b')
 
+    if fit:
+      self.fit()
 
-  ##
-  # Display and output the slope fit.
-  #
-  # key, value Options:
-  #    order = <int> The order of the fit for plotting idea line (default = 2).
   def fit(self, **kwargs):
+    """
+    Apply the fit and report the slope.
+
+    Key, value Options:
+      x[float]: The x-position in data coordinates.
+      y[float]: The y-poisition in data coordinates.
+    """
 
     # Perform fit
-    coefficients = numpy.polyfit(log10(self._x), log10(self._y), 1)
-    print coefficients
+    coefficients = np.polyfit(np.log10(self._x), np.log10(self._y), 1)
 
-    #polynomial = numpy.poly1d(coefficients)
-    #order = kwargs.pop('order', 2)
+    # Display slope
+    x = kwargs.get('x', min(self._x))
+    y = kwargs.get('y', max(self._y))
+    self._axes.text(x, y, 'slope = {}'.format(coefficients[0]), fontsize=15)
 
-    #y_ideal = pow(10,coefficients[1])*numpy.power(self._x, sign(coefficients[0])*order)
-
-    #plot(self._x, y_ideal, '-k', lw=1)
-
-    #text(self._x[0], self._y[-1],'slope: ' + str(coefficients[0]))1
-
-
-  ##
-  # Save the plot to the provide filename.
   def save(self, filename):
-    savefig(filename)
+    """
+    Save figure to a file.
 
-  def show():
-    show()
+    Args:
+      filename[str]: The destination file.
+    """
+    plt.savefig(filename)
+
+  def show(self):
+    """
+    Display the plot.
+    """
+    plt.show()
