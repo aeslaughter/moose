@@ -16,11 +16,11 @@
     {# Creates breadcrumbs with links #}
     <ul class="moose-breadcrumbs">
     {% for name, link in breadcrumbs %}
-    {% if link != None %}
-    <li><a href="{{link}}">{{name}}</a></li>
-    {% else %}
-    {{name}}
-    {% endif %}
+      {% if link != None %}
+        <li><a href="{{link}}">{{name}}</a></li>
+      {% else %}
+        {{name}}
+      {% endif %}
     {% endfor %}
     </ul>
     {{content}}
