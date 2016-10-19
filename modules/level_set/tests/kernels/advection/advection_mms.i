@@ -3,7 +3,7 @@
   dim = 1
   xmin = 0
   xmax = 12
-  nx = 24
+  nx = 48
 []
 
 [Adaptivity]
@@ -32,7 +32,6 @@
     type = FunctionAux
     variable = v_x
     function = 'cos(pi*x)'
-    execute_on = initial
   [../]
 []
 
@@ -85,19 +84,9 @@
   [../]
 []
 
-[VectorPostprocessors]
-  [./phi_sample]
-    type = LineValueSampler
-    num_points = 5000
-    start_point = '0 0 0'
-    end_point = '12 0 0'
-    sort_by = 'x'
-    variable = phi
-  [../]
-[]
-
 [Executioner]
   type = Steady
+  nl_rel_tol = 1e-10
   petsc_options_iname = '-pc_type -pc_sub_type'
   petsc_options_value = 'asm      ilu'
 []

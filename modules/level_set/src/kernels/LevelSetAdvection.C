@@ -19,6 +19,7 @@ template<>
 InputParameters validParams<LevelSetAdvection>()
 {
   InputParameters params = validParams<Kernel>();
+  params.addClassDescription("Implements the level set advection equation: $\\vec{v}\\cdot\\nabla u = 0$, where the weak form is $(\\Psi_i, \\vec{v}\\cdot\\nabla u) = 0$.");
   params += validParams<LevelSetVelocityInterface<> >();
   return params;
 }
@@ -40,19 +41,4 @@ LevelSetAdvection::computeQpJacobian()
 {
   computeQpVelocity();
   return _test[_i][_qp] * (_velocity * _grad_phi[_j][_qp]);
-}
-
-Real
-LevelSetAdvection::computeQpOffDiagJacobian(const unsigned int jvar)
-{
-  /*
-  if (jvar == _x_vel_var)
-    return _test[_i][_qp] * _grad_u[_qp](0);
-  else if (jvar == _y_vel_var)
-    return _test[_i][_qp] * _grad_u[_qp](1);
-  else if (jvar == _z_vel_var)
-    return _test[_i][_qp] * _grad_u[_qp](2);
-  else
-  */
-    return 0.0;
 }

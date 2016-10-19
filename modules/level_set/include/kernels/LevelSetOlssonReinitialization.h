@@ -16,7 +16,7 @@
 #define LEVELSETOLSSONREINITIALIZATION_H
 
 // MOOSE includes
-#include "Diffusion.h"
+#include "Kernel.h"
 #include "Function.h"
 
 // Forward declarations
@@ -26,33 +26,33 @@ template<>
 InputParameters validParams<LevelSetOlssonReinitialization>();
 
 /**
+ * Implements the re-initialization equation proposed by Olsson et. al. (2007).
  */
 class LevelSetOlssonReinitialization :
-  public Diffusion
+  public Kernel
 {
 public:
 
-  /**
-   */
   LevelSetOlssonReinitialization(const InputParameters & parameters);
 
 protected:
 
-  /**
-   */
-  virtual Real computeQpResidual();
-  virtual Real computeQpJacobian();
-  virtual Real computeQpOffDiagJacobian(const unsigned int jvar);
+  virtual Real computeQpResidual() override;
 
+  virtual Real computeQpJacobian() override;
+
+  /// Gradient of the level set variable at time, \tau = 0.
   const VariableGradient & _grad_levelset_0;
+
+  /// Interface thickness
   const PostprocessorValue & _epsilon;
-  // For speed
+
+  ///@{
+  /// Helper members to avoid initializing variables in computeQpResidual/Jacobian
   RealVectorValue _f;
   Real _s;
   RealVectorValue _n_hat;
-
-
-
+  ///@}
 };
 
 #endif // LEVELSETOLSSONREINITIALIZATION_H

@@ -38,28 +38,13 @@ class LevelSetAdvection :
 {
 public:
 
-  /**
-   * Class constructor
-   * @param name The Kernel name
-   * @param parameters The InputParameters associated with this object
-   */
   LevelSetAdvection(const InputParameters & parameters);
 
 protected:
 
-  ///@{
-  /**
-   * Kernel functions for computing the residual and jacobian for the
-   * levelset advection term.
-   */
-  virtual Real computeQpResidual();
-  virtual Real computeQpJacobian();
-  virtual Real computeQpOffDiagJacobian(const unsigned int jvar);
-  ///@}
+  virtual Real computeQpResidual() override;
 
-private:
-
-
+  virtual Real computeQpJacobian() override;
 };
 
 #endif //LEVELSETADVECTION_H
