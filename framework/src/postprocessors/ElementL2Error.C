@@ -39,6 +39,7 @@ Real
 ElementL2Error::computeQpIntegral()
 {
   Real diff = _u[_qp]-_func.value(_t, _q_point[_qp]);
+
+  std::cout << _u[_qp] << " - " << _func.value(_t, _q_point[_qp]) << " = " << diff << std::endl;
   return diff*diff;
 }
-
