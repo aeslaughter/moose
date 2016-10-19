@@ -5,4 +5,19 @@
     exodiff = 'out.e'
     group = 'requirements'
   [../]
+
+  [./test_get_action]
+    type = 'CSVDiff'
+    input = 'test_get_actions.i'
+    csvdiff = 'test_get_actions.csv'
+  [../]
+
+  [./test_get_action_on_other_processor]
+    type = 'CSVDiff'
+    input = 'test_get_actions.i'
+    csvdiff = 'test_get_actions.csv'
+    cli_args = 'TestGetActions/pid=3'
+    min_parallel = 4
+    prereq = test_get_action
+  [../]
 []
