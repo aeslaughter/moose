@@ -1,7 +1,11 @@
 import os
+import sys
 import collections
 import markdown
 import markdown_include
+import bs4
+from markdown.util import etree
+
 import jinja2
 
 import MooseDocs
@@ -19,64 +23,111 @@ class MoosePage(object):
         self._breadcrumbs = breadcrumbs
         self._filename = filename
         self._root = root
+        self._html = None
 
+        local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
+        self._url = os.path.join(self._root, local, 'index.html')
 
     def breadcrumbs(self):
+        """
 
-        output = collections.OrderedDict()
+        """
+        return []
+
+        #TODO: This doesn't work b/c the html has not been created. This needs to be handled
+        # in another way, perhaps by inspecting the tree
+        """
+        output = []
         for i, crumb in enumerate(self._breadcrumbs):
-            local = os.path.join(os.path.join(*self._breadcrumbs[0:i+1]), 'index.html')
-            local = local.lower().replace(' ', '_')
-            output[crumb] = os.path.join(self._root, local)
-        return output
+            local = os.path.join(*self._breadcrumbs[0:i+1]).lower().replace(' ', '_')
+            #local = os.path.join(self._root, local)
+            index = os.path.join(local, 'index.html')
+            overview = os.path.join(local, 'overview', 'index.html')
 
-    def destination(self):
-        local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
-        return os.path.join(self._root, local)
+            if os.path.exists(index):
+                output.append((crumb, index))
+            elif os.path.exists(overview):
+                output.append((crumb, overview))
+            else:
+                output.append((crumb, None))
+
+        return output
+        """
+
+   # def __eq__(self, other):
+   #     return self._breadcrumbs == other._breadcrumbs and self._filename == other._filename
+
+
+   # def navigation(self, pages):
+   #     return ''
+
+    def url(self):
+        return self._url
+
+    def dirname(self):
+        return os.path.dirname(self._url)
 
     def html(self):
+        return self._html
+
+    def parse(self):
         moose = MooseDocs.extensions.MooseMarkdown()
         parser = markdown.Markdown(extensions=[moose, 'markdown_include.include', 'admonition', 'mdx_math', 'toc', 'extra'])
 
         with open(self._filename, 'r') as fid:
             md = fid.read()
 
-        return parser.convert(md)
+        self._html = parser.convert(md)
 
 
 
+#class NavItem(object):
+#    def __init__(self):
+#        self.children = collections.OrderedDict()
 
-prefix = ['']*600
-def flat(node, parent=None, level=0, root=''):
+def make_dict(node, sitemap=collections.OrderedDict(), crumbs=['']*100, root='', level=0):
     for n in node:
         for k, v in n.iteritems():
-            prefix[level] = k
+            crumbs[level] = k
+            if k not in sitemap:
+                sitemap[k] = collections.OrderedDict()
             if isinstance(v, list):
-                for f in flat(v, parent=n, level=level+1, root=root):
-                    yield f
+                make_dict(v, sitemap=sitemap[k], crumbs=crumbs, root=root, level=level+1)
             else:
-                yield MoosePage(v, breadcrumbs=prefix[0:level] + [k], root=root)
+                page = MoosePage(v, breadcrumbs=crumbs[0:level+1], root=root)
+                sitemap[k] = page
 
 
+def flat(node):
+    for k, v in node.iteritems():
+        if isinstance(v, collections.OrderedDict):
+            for page in flat(v):
+                yield page
+        else:
+            yield  v
+
+sitemap = collections.OrderedDict()
 root = os.path.join(os.getenv('HOME'), 'projects', 'moose-doc', 'site')
-all_pages = flat(pages, root=root)
+make_dict(pages, sitemap=sitemap, root=root)
 
+all_pages = flat(sitemap23)
 
 for page in all_pages:
+
+    page.parse()
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
     template = env.get_template('testing.html')
 
 
-#    for name, link in page.breadcrumbs().iteritems():
-#        print name, link
+    complete = template.render(content=page.html(), breadcrumbs=page.breadcrumbs(),
+                               sitemap=sitemap, url=page.url())
 
-    complete = template.render(content=page.html(), breadcrumbs=page.breadcrumbs())
-
-    destination = page.destination()
+    destination = page.dirname()
     if not os.path.exists(destination):
         os.makedirs(destination)
 
     index = os.path.join(destination, 'index.html')
     with open(index, 'w') as fid:
-        fid.write(complete.encode('utf-8'))
+        soup = bs4.BeautifulSoup(complete, 'html.parser')
+        fid.write(soup.prettify().encode('utf-8'))

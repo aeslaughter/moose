@@ -1,9 +1,26 @@
 <!DOCTYPE html>
 <html>
   <body>
+    <div>
+      <ul class="mtree">
+      {% for key, value in sitemap.iteritems() recursive %}
+      <li><a href="#">{{key|e}}</a>
+        {% if value is iterable  %}
+          <ul>{{loop(value.iteritems())}}</ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+      </ul>
+    </div>
+
+    {# Creates breadcrumbs with links #}
     <ul class="moose-breadcrumbs">
-    {% for name, link in breadcrumbs.iteritems() %}
-      <li><a href="{{link}}">{{name}}</a></li>
+    {% for name, link in breadcrumbs %}
+    {% if link != None %}
+    <li><a href="{{link}}">{{name}}</a></li>
+    {% else %}
+    {{name}}
+    {% endif %}
     {% endfor %}
     </ul>
     {{content}}
