@@ -14,17 +14,9 @@
 
 [AuxVariables]
   [./v_x]
+    initial_condition = 1
   [../]
 [../]
-
-[AuxKernels]
-  [./velocity_x_aux]
-    type = FunctionAux
-    variable = v_x
-    function = 1
-    execute_on = 'initial timestep_begin'
-  [../]
-[]
 
 [ICs]
   [./phi_ic]
@@ -83,7 +75,6 @@
   [../]
 []
 
-
 [Executioner]
   type = Transient
   start_time = 1
@@ -99,6 +90,5 @@
 [Outputs]
   interval = 10
   execute_on = 'timestep_end'
-  #exodus = true
   csv = true
 []

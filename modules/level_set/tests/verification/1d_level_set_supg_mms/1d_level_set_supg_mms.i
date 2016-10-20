@@ -13,16 +13,15 @@
 
 [AuxVariables]
   [./v_x]
-    initial_condition = 2
+    initial_condition = 1
   [../]
 []
 
-[BCs]
-  [./left]
-    type = FunctionDirichletBC
-    boundary = 'left'
+[ICs]
+  [./phi_ic]
     function = phi_exact
     variable = phi
+    type = FunctionIC
   [../]
 []
 
@@ -84,17 +83,10 @@
     type = AverageElementSize
     variable = phi
   [../]
-[]
-
-[VectorPostprocessors]
-  active = ''
-  [./results]
-    type = LineValueSampler
+  [./point]
+    type = PointValue
+    point = '0.1 0 0'
     variable = phi
-    start_point = '0 0 0'
-    end_point = '12 0 0'
-    num_points = 500
-    sort_by = x
   [../]
 []
 
@@ -103,13 +95,15 @@
   start_time = 1
   dt = 0.01
   end_time = 1.25
-  nl_rel_tol = 1e-10
-  solve_type = NEWTON
-  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'lu       superlu_dist'
+  solve_type = PJFNK
+  petsc_options_iname = '-pc_type -pc_sub_type'
+  petsc_options_value = 'asm      ilu'
+  scheme = bdf2
+  nl_rel_tol = 1e-12
 []
 
 [Outputs]
-  execute_on = 'TIMESTEP_END'
+  interval = 10
+  execute_on = 'timestep_end'
   csv = true
 []

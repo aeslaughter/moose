@@ -6,7 +6,7 @@ import numpy as np
 from utils.ConvergencePlot import ConvergencePlot
 
 # The csv files to read
-filenames = glob.glob('level_set_supg_transient*.csv')
+filenames = glob.glob('1d_level_set_supg_mms*.csv')
 
 # Extract the data
 n = len(filenames)
