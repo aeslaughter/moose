@@ -12,33 +12,34 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef LEVELSETADVECTIONSUPG_H
-#define LEVELSETADVECTIONSUPG_H
-
-// MOOSE includes
-#include "Kernel.h"
-#include "LevelSetVelocityInterface.h"
-
-// Forward declarations
-class LevelSetAdvectionSUPG;
+#include "LevelSetForcingFunctionSUPG.h"
 
 template<>
-InputParameters validParams<LevelSetAdvectionSUPG>();
-
-/**
- * SUPG stablization for the advection portion of the level set equation.
- */
-class LevelSetAdvectionSUPG : public LevelSetVelocityInterface<Kernel>
+InputParameters validParams<LevelSetForcingFunctionSUPG>()
 {
-public:
+  InputParameters params = validParams<UserForcingFunction>();
+  params.addClassDescription("The SUPG stablization term for a forcing function.");
+  params += validParams<LevelSetVelocityInterface<> >();
+  return params;
+}
 
-  LevelSetAdvectionSUPG(const InputParameters & parameters);
+LevelSetForcingFunctionSUPG::LevelSetForcingFunctionSUPG(const InputParameters & parameters) :
+    LevelSetVelocityInterface<UserForcingFunction>(parameters)
+{
+}
 
+Real
+LevelSetForcingFunctionSUPG::computeQpResidual()
+{
+  computeQpVelocity();
+  Real tau = _current_elem->hmin() / (2 * _velocity.norm());
+  return -tau * _velocity * _grad_test[_i][_qp] * f();
+}
 
-protected:
-  Real computeQpResidual() override;
-
-  Real computeQpJacobian() override;
-};
-
-#endif //LEVELSETADVECTIONSUPG_H
+Real
+LevelSetForcingFunctionSUPG::computeQpJacobian()
+{
+  computeQpVelocity();
+  Real tau = _current_elem->hmin() / (2 * _velocity.norm());
+  return -tau * _velocity * _grad_test[_i][_qp] * f();
+}

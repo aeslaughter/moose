@@ -7,6 +7,7 @@
 #include "LevelSetAdvection.h"
 #include "LevelSetAdvectionSUPG.h"
 #include "LevelSetTimeDerivativeSUPG.h"
+#include "LevelSetForcingFunctionSUPG.h"
 #include "LevelSetOlssonReinitialization.h"
 
 // Functions
@@ -63,6 +64,7 @@ LevelSetApp::registerObjects(Factory & factory)
   registerKernel(LevelSetAdvection);
   registerKernel(LevelSetAdvectionSUPG);
   registerKernel(LevelSetTimeDerivativeSUPG);
+  registerKernel(LevelSetForcingFunctionSUPG);
   registerKernel(LevelSetOlssonReinitialization);
 
   // Functions

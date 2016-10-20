@@ -2,19 +2,8 @@
   type = GeneratedMesh
   dim = 1
   xmin = 0
-  xmax = 12
-  nx = 48
-[]
-
-[Adaptivity]
-  steps = 5
-  marker = marker
-  [./Markers]
-    [./marker]
-      type = UniformMarker
-      mark = REFINE
-    [../]
-  [../]
+  xmax = 32
+  nx = 64
 []
 
 [Variables]
@@ -40,19 +29,28 @@
 [Functions]
   [./phi_exact]
     type = ParsedFunction
-    value = 'a*sin(pi*x/b)*cos(pi*x)'
+    value = 'a*exp(1/(10*t))*sin(2*pi*x/b) + 1'
     vars = 'a b'
-    vals = '2 12'
+    vals = '1 8'
   [../]
   [./phi_mms]
     type = ParsedFunction
-    value = '-2*pi*a*sin(pi*x)*sin(pi*x/b) + 2*pi*a*cos(pi*x)*cos(pi*x/b)/b'
+    value = '-a*exp(1/(10*t))*sin(2*pi*x/b)/(10*t^2) + 2*pi*a*exp(1/(10*t))*cos(2*pi*x/b)/b'
     vars = 'a b'
-    vals = '2 12'
+    vals = '1 8'
   [../]
 []
 
 [Kernels]
+  [./time]
+    type = TimeDerivative
+    variable = phi
+  [../]
+  [./time_supg]
+    type = LevelSetTimeDerivativeSUPG
+    variable = phi
+    velocity_x = v_x
+  [../]
   [./phi_advection]
     type = LevelSetAdvection
     variable = phi
@@ -60,6 +58,17 @@
   [../]
   [./phi_forcing]
     type = UserForcingFunction
+    variable = phi
+    function = phi_mms
+  [../]
+  [./phi_advection_supg]
+    type = LevelSetAdvectionSUPG
+    variable = phi
+    velocity_x = v_x
+  [../]
+  [./phi_forcing_supg]
+    type = LevelSetForcingFunctionSUPG
+    velocity_x = v_x
     variable = phi
     function = phi_mms
   [../]
@@ -90,12 +99,12 @@
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
+  start_time = 1
+  dt = 0.01
+  end_time = 1.25
   nl_rel_tol = 1e-10
   solve_type = NEWTON
-  # A steady-state pure advection problem is numerically challenging,
-  # it has a zero diagonal in the Jabocian matrix. The following solver
-  # settings seem to reliably solve this problem.
   petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
   petsc_options_value = 'lu       superlu_dist'
 []

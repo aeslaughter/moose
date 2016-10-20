@@ -12,28 +12,27 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef LEVELSETADVECTIONSUPG_H
-#define LEVELSETADVECTIONSUPG_H
+#ifndef LEVELSETFORCINGFUNCTIONSUPG_H
+#define LEVELSETFORCINGFUNCTIONSUPG_H
 
 // MOOSE includes
-#include "Kernel.h"
+#include "UserForcingFunction.h"
 #include "LevelSetVelocityInterface.h"
 
 // Forward declarations
-class LevelSetAdvectionSUPG;
+class LevelSetForcingFunctionSUPG;
 
 template<>
-InputParameters validParams<LevelSetAdvectionSUPG>();
+InputParameters validParams<LevelSetForcingFunctionSUPG>();
 
 /**
- * SUPG stablization for the advection portion of the level set equation.
+ * SUPG stablization term for a forcing function.
  */
-class LevelSetAdvectionSUPG : public LevelSetVelocityInterface<Kernel>
+class LevelSetForcingFunctionSUPG : public LevelSetVelocityInterface<UserForcingFunction>
 {
 public:
 
-  LevelSetAdvectionSUPG(const InputParameters & parameters);
-
+  LevelSetForcingFunctionSUPG(const InputParameters & parameters);
 
 protected:
   Real computeQpResidual() override;
@@ -41,4 +40,4 @@ protected:
   Real computeQpJacobian() override;
 };
 
-#endif //LEVELSETADVECTIONSUPG_H
+#endif // LEVELSETFORCINGFUNCTIONSUPG_H
