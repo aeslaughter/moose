@@ -51,6 +51,7 @@
   solve_type = PJFNK
   start_time = 0
   num_steps = 100
+  nl_rel_tol = 1e-10
   scheme = crank-nicolson
   petsc_options_iname = '-pc_type -pc_sub_type -ksp_gmres_restart'
   petsc_options_value = 'hypre    boomeramg    300'

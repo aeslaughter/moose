@@ -7,7 +7,7 @@
   ymax = 1
   nx = 8
   ny = 8
-  uniform_refine = 3
+  uniform_refine = 3 #1/64
 []
 
 [AuxVariables]
@@ -26,7 +26,7 @@
 
 [Functions]
   [./phi_exact]
-    type = LevelSetBubbleFunction
+    type = LevelSetOlssonBubble
     epsilon = 0.05
     center = '0.5 0.5 0'
     radius = 0.15
@@ -62,18 +62,10 @@
     velocity_y = vel_y
     variable = phi
   [../]
-
-
-  [./olsson]
-    type = LevelSetOlssonReinitialization
-    variable = phi
-    epsilon = 0.05
-    phi_0 = phi
-    mu = 1
-  [../]
 []
 
 [Postprocessors]
+
   [./area]
     type = LevelSetVolume
     threshold = 0.5
@@ -81,38 +73,73 @@
     location = outside
     execute_on = 'initial timestep_end'
   [../]
+
   [./cfl]
-    type = CFLCondition
+    type = LevelSetCFLCondition
     velocity_x = vel_x
     velocity_y = vel_y
     execute_on = 'initial' #timestep_end'
   [../]
+
 []
 
 [Executioner]
   type = Transient
-  l_max_its = 40
-  nl_max_its = 10
   solve_type = PJFNK
+  num_steps = 2
   start_time = 0
-  end_time = 4
+  nl_rel_tol = 1e-10
   scheme = crank-nicolson
-  petsc_options_iname = '-pc_type -pc_sub_type -ksp_gmres_restart'
-  petsc_options_value = 'hypre    boomeramg    100'
-
+  petsc_options_iname = '-pc_type -pc_sub_type'
+  petsc_options_value = 'hypre    boomeramg'
 
   [./TimeStepper]
-    type = IterationAdaptiveDT
-    dt = 0.001
-    optimal_iterations = 5
-    iteration_window = 1
-  #  type = PostprocessorDT
-  #  postprocessor = cfl
-  #  scale = 0.1
+    type = PostprocessorDT
+    postprocessor = cfl
+    scale = 0.8
+  [../]
+
+[]
+
+[MultiApps]
+  [./reinit]
+    type = LevelSetReinitializationMultiApp
+    input_files = 'reinit.i'
+    execute_on = 'timestep_end'
+  [../]
+[]
+
+[Transfers]
+  [./to_sub]
+    type = MultiAppCopyTransfer
+    variable = phi
+    source_variable = phi
+    direction = to_multiapp
+    multi_app = reinit
+    execute_on = 'timestep_end'
+  [../]
+
+  [./to_sub_init]
+    type = MultiAppCopyTransfer
+    variable = phi_0
+    source_variable = phi
+    direction = to_multiapp
+    multi_app = reinit
+    execute_on = 'timestep_end'
+  [../]
+
+  [./from_sub]
+    type = MultiAppCopyTransfer
+    variable = phi
+    source_variable = phi
+    direction = from_multiapp
+    multi_app = reinit
+    execute_on = timestep_end
   [../]
 []
 
 [Outputs]
-  csv = true
+  intervel = 4
   exodus = true
+  csv = true
 []

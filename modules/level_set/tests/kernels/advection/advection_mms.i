@@ -24,21 +24,14 @@
 
 [AuxVariables]
   [./v_x]
-  [../]
-[]
-
-[AuxKernels]
-  [./velocity_x_aux]
-    type = FunctionAux
-    variable = v_x
-    function = 'cos(pi*x)'
+    initial_condition = 2
   [../]
 []
 
 [BCs]
-  [./all]
+  [./left]
     type = FunctionDirichletBC
-    boundary = 'right'
+    boundary = 'left'
     function = phi_exact
     variable = phi
   [../]
@@ -53,7 +46,7 @@
   [../]
   [./phi_mms]
     type = ParsedFunction
-    value = '(-pi*a*sin(pi*x)*sin(pi*x/b) + pi*a*cos(pi*x)*cos(pi*x/b)/b)*cos(pi*x)'
+    value = '-2*pi*a*sin(pi*x)*sin(pi*x/b) + 2*pi*a*cos(pi*x)*cos(pi*x/b)/b'
     vars = 'a b'
     vals = '2 12'
   [../]
@@ -84,11 +77,27 @@
   [../]
 []
 
+[VectorPostprocessors]
+  active = ''
+  [./results]
+    type = LineValueSampler
+    variable = phi
+    start_point = '0 0 0'
+    end_point = '12 0 0'
+    num_points = 500
+    sort_by = x
+  [../]
+[]
+
 [Executioner]
   type = Steady
   nl_rel_tol = 1e-10
-  petsc_options_iname = '-pc_type -pc_sub_type'
-  petsc_options_value = 'asm      ilu'
+  solve_type = NEWTON
+  # A steady-state pure advection problem is numerically challenging,
+  # it have a zero-diagonal in the Jabocian matrix. The following solver
+  # settings seem to reliably solve this problem.
+  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  petsc_options_value = 'lu       superlu_dist'
 []
 
 [Outputs]
