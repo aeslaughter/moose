@@ -3,6 +3,7 @@
   dim = 2
   nx = 8
   ny = 8
+  uniform_refine = 2
 []
 
 [Variables]
@@ -107,7 +108,7 @@
   start_time = 0
   nl_abs_tol = 1e-13
   scheme = implicit-euler
-  dt = 0.0125
+  dt = 0.05
   petsc_options_iname = '-pc_type -pc_sub_type -ksp_gmres_restart'
   petsc_options_value = 'hypre    boomeramg    300'
 []

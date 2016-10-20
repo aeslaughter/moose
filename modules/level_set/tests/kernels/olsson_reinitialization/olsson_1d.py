@@ -4,7 +4,6 @@ import pandas
 import glob
 
 tdata = pandas.read_csv('output/olsson_1d_out_line_time.csv')
-
 ax = plt.subplot(111)
 
 
