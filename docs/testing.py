@@ -25,8 +25,11 @@ class MoosePage(object):
         self._root = root
         self._html = None
 
+
         local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
-        self._url = os.path.join(self._root, local, 'index.html')
+        self._url = os.path.join(local, 'index.html')
+
+        self._full = os.path.join(self._root, self._url)
 
     def breadcrumbs(self):
         """
@@ -65,7 +68,7 @@ class MoosePage(object):
         return self._url
 
     def dirname(self):
-        return os.path.dirname(self._url)
+        return os.path.dirname(self._full)
 
     def html(self):
         return self._html
@@ -106,22 +109,28 @@ def flat(node):
         else:
             yield  v
 
+def debug(text):
+    print text
+    return ''
+
+
 sitemap = collections.OrderedDict()
 root = os.path.join(os.getenv('HOME'), 'projects', 'moose-doc', 'site')
 make_dict(pages, sitemap=sitemap, root=root)
 
-all_pages = flat(sitemap23)
+all_pages = flat(sitemap)
 
 for page in all_pages:
 
     page.parse()
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+    env.filters['debug']=debug
     template = env.get_template('testing.html')
 
 
     complete = template.render(content=page.html(), breadcrumbs=page.breadcrumbs(),
-                               sitemap=sitemap, url=page.url())
+                               sitemap=sitemap, url=page.url(), current=page.url())
 
     destination = page.dirname()
     if not os.path.exists(destination):
@@ -129,5 +138,6 @@ for page in all_pages:
 
     index = os.path.join(destination, 'index.html')
     with open(index, 'w') as fid:
+        print index
         soup = bs4.BeautifulSoup(complete, 'html.parser')
         fid.write(soup.prettify().encode('utf-8'))
