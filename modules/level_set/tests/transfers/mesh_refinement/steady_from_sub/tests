@@ -1,7 +1,0 @@
-[Tests]
-  [./test]
-    type = Exodiff
-    input = master.i
-    exodiff = 'master_out.e master_out.e-s002 master_out_sub0.e'
-  [../]
-[]

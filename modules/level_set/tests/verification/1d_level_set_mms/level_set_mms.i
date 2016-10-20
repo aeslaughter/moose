@@ -3,7 +3,7 @@
   dim = 1
   xmin = 0
   xmax = 32
-  nx = 128
+  nx = 64
   uniform_refine = 0
 []
 
@@ -87,16 +87,13 @@
 [Executioner]
   type = Transient
   start_time = 1
-  dt = 0.002
-  end_time = 1.5
-  l_max_its = 200
-  nl_max_its = 100
+  dt = 0.01
+  end_time = 1.25
   solve_type = PJFNK
-  petsc_options_iname = -ksp_gmres_restart
-  petsc_options_value = 500
+  petsc_options_iname = '-pc_type -pc_sub_type'
+  petsc_options_value = 'asm      ilu'
   scheme = bdf2
   nl_rel_tol = 1e-12
-  line_search = none
 []
 
 [Outputs]

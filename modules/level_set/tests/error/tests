@@ -1,8 +1,0 @@
-[Tests]
-  [./volume_pp]
-    # Test that the volume/area postprocessor erros if the name and locations are differing in length
-    type = RunException
-    input = volume_pp.i
-    expect_err = "If a postprocessor name for the 'volume/area' is suppled then the following parameters must be all the same length"
-  [../]
-[]    

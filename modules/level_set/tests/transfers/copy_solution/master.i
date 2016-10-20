@@ -37,9 +37,9 @@
 
 [Transfers]
   [./to_sub]
-    type = LevelSetSolutionTransfer
-    from_variable = u
-    to_variable = u
+    type = MultiAppCopyTransfer
+    variable = u
+    source_variable = u
     direction = to_multiapp
     multi_app = sub
     execute_on = timestep_end
