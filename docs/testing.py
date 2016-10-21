@@ -13,8 +13,7 @@ import MooseDocs
 
 
 #pages = MooseDocs.yaml_load('pages.yml')
-pages = [MooseDocs.yaml_load('pages.yml')[4]]
-
+pages = MooseDocs.yaml_load('pages.yml')
 
 
 class MoosePage(object):
@@ -80,7 +79,7 @@ class MoosePage(object):
         with open(self._filename, 'r') as fid:
             md = fid.read()
 
-        self._html = parser.convert(md)
+        self._html = parser.convert(md.decode('utf-8'))
 
 
 
@@ -100,7 +99,6 @@ def make_dict(node, sitemap=collections.OrderedDict(), crumbs=['']*100, root='',
                 page = MoosePage(v, breadcrumbs=crumbs[0:level+1], root=root)
                 sitemap[k] = page
 
-
 def flat(node):
     for k, v in node.iteritems():
         if isinstance(v, collections.OrderedDict):
@@ -112,6 +110,9 @@ def flat(node):
 def debug(text):
     print text
     return ''
+
+#import json
+#print json.dumps(pages, sort_keys=True, indent=4, separators=(',', ': '))
 
 
 sitemap = collections.OrderedDict()
