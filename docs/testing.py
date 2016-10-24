@@ -14,22 +14,50 @@ import MooseDocs
 
 root = os.path.join(os.getenv('HOME'), 'projects', 'moose-doc', 'site')
 
+config_file = 'moosedocs.yml'
+config = MooseDocs.yaml_load(config_file)
+md_config = config['markdown_extensions'][-1]['MooseDocs.extensions.MooseMarkdown']
 
-#pages = MooseDocs.yaml_load('pages.yml')
+moose = MooseDocs.extensions.MooseMarkdown(**md_config)
+parser = markdown.Markdown(extensions=[moose, 'markdown_include.include', 'admonition', 'mdx_math', 'toc', 'extra'])
+
+pages = MooseDocs.yaml_load('pages.yml')
 
 
 class MoosePage(object):
 
-    def __init__(self, filename, root=''):#, breadcrumbs=[], root=''):
-        #self._breadcrumbs = breadcrumbs
+    def __init__(self, filename, markdown=None, root='', breadcrumbs=[]):
+
+        self._markdown = markdown
+        self._breadcrumbs = breadcrumbs
         self._filename = filename
         self._root = root
         self._html = None
 
 
-        #local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
-        #self._url = os.path.join(local, 'index.html')
-        #self._full = os.path.join(self._root, self._url)
+        local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
+        self._url = os.path.join(local, 'index.html')
+        self._full = os.path.join(self._root, self._url)
+
+    def initialize(self, breadcrumbs=[]):
+        pass
+
+    def isActive(self, tree):
+
+        def helper(tree):
+            for key, value in tree.iteritems():
+                if isinstance(value, collections.OrderedDict):
+                    for h in helper(value):
+                        yield h
+
+                else:
+                    yield self == value
+
+        if any(helper(tree)):
+            return " active"
+        else:
+            return ''
+
 
     def breadcrumbs(self):
         """
@@ -57,12 +85,8 @@ class MoosePage(object):
         return output
         """
 
-   # def __eq__(self, other):
-   #     return self._breadcrumbs == other._breadcrumbs and self._filename == other._filename
-
-
-   # def navigation(self, pages):
-   #     return ''
+    def __eq__(self, other):
+      return self._breadcrumbs == other._breadcrumbs and self._filename == other._filename
 
     def url(self):
         return self._url
@@ -74,38 +98,12 @@ class MoosePage(object):
         return self._html
 
     def parse(self):
-        moose = MooseDocs.extensions.MooseMarkdown()
-        parser = markdown.Markdown(extensions=[moose, 'markdown_include.include', 'admonition', 'mdx_math', 'toc', 'extra'])
 
         with open(self._filename, 'r') as fid:
             md = fid.read()
 
         self._html = parser.convert(md.decode('utf-8'))
 
-
-
-import yaml
-class PageLoader(yaml.Loader):
-#    def construct_sequence(self, node):
-#        return super(PageLoader, self).construct_sequence(node)
-#    def construct_mapping(self, node):
-#        return super(PageLoader, self).construct_mapping(node)
-    def construct_scalar(self, node):
-
-
-        return super(PageLoader, self).construct_scalar(node)
-
-with open('pages.yml', 'r') as fid:
-    pages = yaml.load(fid.read(), PageLoader)
-
-
-sys.exit()
-
-
-
-#class NavItem(object):
-#    def __init__(self):
-#        self.children = collections.OrderedDict()
 
 def make_dict(node, sitemap=collections.OrderedDict(), crumbs=['']*100, root='', level=0):
     for n in node:
@@ -116,7 +114,7 @@ def make_dict(node, sitemap=collections.OrderedDict(), crumbs=['']*100, root='',
             if isinstance(v, list):
                 make_dict(v, sitemap=sitemap[k], crumbs=crumbs, root=root, level=level+1)
             else:
-                page = MoosePage(v, breadcrumbs=crumbs[0:level+1], root=root)
+                page = MoosePage(v, breadcrumbs=crumbs[0:level+1], root=root, markdown=parser)
                 sitemap[k] = page
 
 def flat(node):
@@ -127,12 +125,12 @@ def flat(node):
         else:
             yield  v
 
-def debug(text):
-    print text
-    return ''
 
-#import json
-#print json.dumps(pages, sort_keys=True, indent=4, separators=(',', ': '))
+
+
+
+
+
 
 
 sitemap = collections.OrderedDict()
@@ -145,12 +143,12 @@ for page in all_pages:
     page.parse()
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
-    env.filters['debug']=debug
-    template = env.get_template('testing.html')
+    env.filters['isActive']=page.isActive
+    template = env.get_template('materialize.html')
 
 
     complete = template.render(content=page.html(), breadcrumbs=page.breadcrumbs(),
-                               sitemap=sitemap, url=page.url(), current=page.url())
+                               sitemap=sitemap, url=page.url(), current=page)
 
     destination = page.dirname()
     if not os.path.exists(destination):
