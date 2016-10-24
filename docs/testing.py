@@ -55,17 +55,13 @@ class MoosePage(NavigationNode):
         self._markdown = markdown
 
 
-
         self._parser = parser
         self._root = root
 
-        self._breadcrumbs = []
-        self._url = None
-        self._full = None
         self._html = None
 
 
-        # All parents exist
+        # Populate the list of parent nodes (i.e., "breadcrumbs")
         self._breadcrumbs = []
         def helper(node):
             if node.parent:
@@ -102,22 +98,18 @@ class MoosePage(NavigationNode):
         else:
             return ''
 
+    def contents(self, level='h2'):
+
+        soup = bs4.BeautifulSoup(self._html, 'html.parser')
+        for tag in soup.find_all(level):
+            yield (tag.contents[0], tag.attrs['id'])
+
+
     def breadcrumbs(self):
         """
 
         """
         return self._breadcrumbs
-
-        """
-        crumbs = []
-        for node in self._breadcrumbs:
-            if isinstance(node, MoosePage):
-                link = os.path.join('/', node.url())
-            else:
-                link = '#'
-            crumbs.append( (node.name, link) )
-        return crumbs
-        """
 
     def url(self, rel=None):
         if rel:
