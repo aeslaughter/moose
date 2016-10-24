@@ -1,6 +1,7 @@
 import os
 import sys
 import collections
+import shutil
 import markdown
 import markdown_include
 import bs4
@@ -24,72 +25,105 @@ parser = markdown.Markdown(extensions=[moose, 'markdown_include.include', 'admon
 pages = MooseDocs.yaml_load('pages.yml')
 
 
-class MoosePage(object):
+class NavigationNode(object):
+    def __init__(self, name='', parent=None):
+        self.name = name
+        self.parent = parent
+        self.children = []
 
-    def __init__(self, filename, markdown=None, root='', breadcrumbs=[]):
+    def __eq__(self, other):
+      return self.name == other.name and self.parent == other.parent and self.children == other.children
+
+    def __str__(self):
+        return self._string()
+
+    def url(self, **kwargs):
+        return None
+
+    def _string(self, level=0):
+        output = "{}{}\n".format(' '*2*level, self.name)
+        for child in self.children:
+            output += child._string(level=level+1)
+        return output
+
+
+class MoosePage(NavigationNode):
+
+    def __init__(self, markdown=markdown, parser=None, root='', **kwargs):
+        super(MoosePage, self).__init__(**kwargs)
 
         self._markdown = markdown
-        self._breadcrumbs = breadcrumbs
-        self._filename = filename
+
+
+
+        self._parser = parser
         self._root = root
+
+        self._breadcrumbs = []
+        self._url = None
+        self._full = None
         self._html = None
 
 
-        local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
-        self._url = os.path.join(local, 'index.html')
+        # All parents exist
+        self._breadcrumbs = []
+        def helper(node):
+            if node.parent:
+                self._breadcrumbs.insert(0, node)
+                helper(node.parent)
+
+        helper(self)
+
+        local = [node.name for node in self._breadcrumbs] + ['index.html']
+        self._url = os.path.join(*local).lower().replace(' ', '_')
+
         self._full = os.path.join(self._root, self._url)
 
-    def initialize(self, breadcrumbs=[]):
-        pass
+
+
+
+        #local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
+        #self._url = os.path.join(local, 'index.html')
+
+    def _string(self, level):
+        return "{}{}: {} {}\n".format(' '*2*level, self.name, self.markdown, list(self._breadcrumbs))
 
     def isActive(self, tree):
 
         def helper(tree):
-            for key, value in tree.iteritems():
-                if isinstance(value, collections.OrderedDict):
-                    for h in helper(value):
-                        yield h
-
+            for child in tree.children:
+                for h in helper(child):
+                    yield h
                 else:
-                    yield self == value
+                    yield self == child
 
         if any(helper(tree)):
-            return " active"
+            return "active"
         else:
             return ''
-
 
     def breadcrumbs(self):
         """
 
         """
-        return []
+        return self._breadcrumbs
 
-        #TODO: This doesn't work b/c the html has not been created. This needs to be handled
-        # in another way, perhaps by inspecting the tree
         """
-        output = []
-        for i, crumb in enumerate(self._breadcrumbs):
-            local = os.path.join(*self._breadcrumbs[0:i+1]).lower().replace(' ', '_')
-            #local = os.path.join(self._root, local)
-            index = os.path.join(local, 'index.html')
-            overview = os.path.join(local, 'overview', 'index.html')
-
-            if os.path.exists(index):
-                output.append((crumb, index))
-            elif os.path.exists(overview):
-                output.append((crumb, overview))
+        crumbs = []
+        for node in self._breadcrumbs:
+            if isinstance(node, MoosePage):
+                link = os.path.join('/', node.url())
             else:
-                output.append((crumb, None))
-
-        return output
+                link = '#'
+            crumbs.append( (node.name, link) )
+        return crumbs
         """
 
-    def __eq__(self, other):
-      return self._breadcrumbs == other._breadcrumbs and self._filename == other._filename
-
-    def url(self):
-        return self._url
+    def url(self, rel=None):
+        if rel:
+            return os.path.relpath(rel.url(), self._url)
+        else:
+            return self._url
 
     def dirname(self):
         return os.path.dirname(self._full)
@@ -99,44 +133,36 @@ class MoosePage(object):
 
     def parse(self):
 
-        with open(self._filename, 'r') as fid:
-            md = fid.read()
 
+
+        with open(self._markdown, 'r') as fid:
+            md = fid.read()
         self._html = parser.convert(md.decode('utf-8'))
 
 
-def make_dict(node, sitemap=collections.OrderedDict(), crumbs=['']*100, root='', level=0):
-    for n in node:
-        for k, v in n.iteritems():
-            crumbs[level] = k
-            if k not in sitemap:
-                sitemap[k] = collections.OrderedDict()
+def make_tree(pages, node, root=''):
+    for p in pages:
+        for k, v in p.iteritems():
             if isinstance(v, list):
-                make_dict(v, sitemap=sitemap[k], crumbs=crumbs, root=root, level=level+1)
+                child = NavigationNode(name=k, parent=node)
+                node.children.append(child)
+                make_tree(v, child, root=root)
             else:
-                page = MoosePage(v, breadcrumbs=crumbs[0:level+1], root=root, markdown=parser)
-                sitemap[k] = page
+                page = MoosePage(markdown=v, name=k, root=root, parser=parser, parent=node)
+                node.children.append(page)
 
 def flat(node):
-    for k, v in node.iteritems():
-        if isinstance(v, collections.OrderedDict):
-            for page in flat(v):
-                yield page
-        else:
-            yield  v
+    for child in node.children:
+        if isinstance(child, MoosePage):
+            yield child
+        for c in flat(child):
+            yield c
 
 
+tree = NavigationNode(name='root')
+make_tree(pages, tree, root=root)
 
-
-
-
-
-
-
-sitemap = collections.OrderedDict()
-make_dict(pages, sitemap=sitemap, root=root)
-
-all_pages = flat(sitemap)
+all_pages = flat(tree)
 
 for page in all_pages:
 
@@ -147,8 +173,7 @@ for page in all_pages:
     template = env.get_template('materialize.html')
 
 
-    complete = template.render(content=page.html(), breadcrumbs=page.breadcrumbs(),
-                               sitemap=sitemap, url=page.url(), current=page)
+    complete = template.render(current=page, tree=tree)
 
     destination = page.dirname()
     if not os.path.exists(destination):
@@ -159,3 +184,6 @@ for page in all_pages:
         print index
         soup = bs4.BeautifulSoup(complete, 'html.parser')
         fid.write(soup.prettify().encode('utf-8'))
+
+    # Copy CSS/js/media
+    shutil.copy('css/moose.css', '../site/css')
