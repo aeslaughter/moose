@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+      <!--Import Google Icon Font-->
+      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"  media="screen,projection"/>
+
+      <!--Load the MOOSE style sheet-->
+      <link type="text/css" rel="stylesheet" href="/css/moose.css"/>
+
+  </head>
+  <body>
+    <header>
+      <nav class="top-nav">
+        <div class="container">
+          <div class="nav-wrapper">
+            <a class="page-title">{{current.name}}</a>
+          </div>
+        </div>
+      </nav>
+      <div class="container"><a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i class="material-icons">menu</i></a></div>
+
+      <ul id="slide-out" class="side-nav fixed">
+        <li class="logo">
+          <a href="https://www.mooseframework.org">MOOSE Framework</a>
+        </li>
+        <li>
+          <ul class="collapsible" data-collapsible="accoridon">
+            {% for child in tree.children recursive %}
+            <li>
+              {% if child.children %}
+                <a class="collapsible-header {{child|isActive}}" href="#">{{child.name|e}}</a>
+                <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
+              {% else %}
+                {% if current == child %}
+                  <a class="collapsible-header active" href="/{{child.url()}}">{{child.name|e}}</a>
+                {% else %}
+                  <a class="collapsible-header" href="/{{child.url()}}">{{child.name|e}}</a>
+                {% endif %}
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+    </header>
+
+
+
+    <main>
+      <div class="container">
+        <div class="row">
+
+          <div class="col s12 m9 l10">
+
+            {# Creates breadcrumbs with links #}
+            <nav>
+              <div class="nav-wrapper">
+                <div class="col s12 m9 l10">
+                  {% for node in current.breadcrumbs() %}
+                    {% if node.url() %}
+                      <a href="{{node.url(rel=current)}}" class="breadcrumb">{{node.name}}</a>
+                    {% else %}
+                      <span class="breadcrumb">{{node.name}}</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </nav>
+            {{current.html()}}
+          </div>
+
+          <!-- Table of Contents -->
+          <div class="col hid-on-small-only m3 l2">
+            <div class="section table-of-contents">
+              <ul>
+                {% for text, id in current.contents() %}
+                  <li><a href="#{{id}}">{{text}}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      $(".button-collapse").sideNav();
+    </script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <script type="test/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+
+  </body>
+</html>

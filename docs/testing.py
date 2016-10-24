@@ -38,6 +38,7 @@ class NavigationNode(object):
         return self._string()
 
     def url(self, **kwargs):
+
         return None
 
     def _string(self, level=0):
@@ -154,9 +155,12 @@ def flat(node):
 tree = NavigationNode(name='root')
 make_tree(pages, tree, root=root)
 
-all_pages = flat(tree)
+all_pages = list(flat(tree))
 
-for page in all_pages:
+
+def create(i):
+
+    page = all_pages[i]
 
     page.parse()
 
@@ -177,5 +181,11 @@ for page in all_pages:
         soup = bs4.BeautifulSoup(complete, 'html.parser')
         fid.write(soup.prettify().encode('utf-8'))
 
-    # Copy CSS/js/media
-    shutil.copy('css/moose.css', '../site/css')
+
+import multiprocessing
+idx = range(len(all_pages))
+p = multiprocessing.Pool(multiprocessing.cpu_count())
+p.map(create, idx)
+
+# Copy CSS/js/media
+shutil.copy('css/moose.css', '../site/css')
