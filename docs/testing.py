@@ -183,9 +183,9 @@ def create(i):
 
 
 import multiprocessing
-idx = range(len(all_pages))
+idx =
 p = multiprocessing.Pool(multiprocessing.cpu_count())
-p.map(create, idx)
+p.map(create, range(len(all_pages)))
 
 # Copy CSS/js/media
 shutil.copy('css/moose.css', '../site/css')

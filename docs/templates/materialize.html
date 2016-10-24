@@ -30,18 +30,18 @@
         <li>
           <ul class="collapsible" data-collapsible="accoridon">
             {% for child in tree.children recursive %}
-            <li>
-              {% if child.children %}
-                <a class="collapsible-header {{child|isActive}}" href="#">{{child.name|e}}</a>
-                <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
-              {% else %}
-                {% if current == child %}
-                  <a class="collapsible-header active" href="/{{child.url()}}">{{child.name|e}}</a>
+              <li>
+                {% if child.children %}
+                  <a class="collapsible-header {{child|isActive}}" href="#">{{child.name|e}}</a>
+                  <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
                 {% else %}
-                  <a class="collapsible-header" href="/{{child.url()}}">{{child.name|e}}</a>
+                  {% if current == child %}
+                    <a class="collapsible-header active" href="/{{child.url()}}">{{child.name|e}}</a>
+                  {% else %}
+                    <a class="collapsible-header" href="/{{child.url()}}">{{child.name|e}}</a>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-            </li>
+              </li>
             {% endfor %}
           </ul>
         </li>
@@ -72,8 +72,6 @@
             </nav>
             {{current.html()}}
           </div>
-
-          <!-- Table of Contents -->
           <div class="col hid-on-small-only m3 l2">
             <div class="section table-of-contents">
               <ul>
@@ -89,11 +87,14 @@
 
     <script>
       $(".button-collapse").sideNav();
+      $(document).ready(function(){
+        $('.scrollspy').scrollSpy();
+      });
     </script>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
-    <script type="test/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
 
   </body>
 </html>
