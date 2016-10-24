@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" /-->
+    <!--link rel="stylesheet" href="/ui.easytree.css"-->
+
+      <!--Import Google Icon Font-->
+      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"  media="screen,projection"/>
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   </head>
   <body>
-    <div id="jstree">
-      <ul>
+    <div>
+      <ul id="slide-out" class="side-nav fixed">
       {% for key, value in sitemap.iteritems() recursive %}
         {% if value is iterable %}
           <li><a href="#">{{key|e}}</a>
@@ -35,25 +44,16 @@
     </ul>
     {{content}}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
-  <script>
-  $(function () {
-    // 6 create an instance when the DOM is ready
-    $("#jstree").jstree({
-  "core" : {
-    "multiple" : false,
-    "animation" : 0
-  }
-});
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script-->
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script-->
+    <!--script src="/jquery.easytree.min.js"></script-->
+<!--script>
+    $('#easytree').easytree();
+    </script-->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
-  $('#jstree').bind("select_node.jstree", function (e, data) {
-  var href = data.node.a_attr.href
-  document.location.href = href;
-  }) ;
-  });
-  </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+  <script>  $(".button-collapse").sideNav(); </script>
   </body>
 </html>
 

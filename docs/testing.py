@@ -12,23 +12,24 @@ import MooseDocs
 
 
 
+root = os.path.join(os.getenv('HOME'), 'projects', 'moose-doc', 'site')
+
+
 #pages = MooseDocs.yaml_load('pages.yml')
-pages = MooseDocs.yaml_load('pages.yml')
 
 
 class MoosePage(object):
 
-    def __init__(self, filename, breadcrumbs=[], root=''):
-        self._breadcrumbs = breadcrumbs
+    def __init__(self, filename, root=''):#, breadcrumbs=[], root=''):
+        #self._breadcrumbs = breadcrumbs
         self._filename = filename
         self._root = root
         self._html = None
 
 
-        local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
-        self._url = os.path.join(local, 'index.html')
-
-        self._full = os.path.join(self._root, self._url)
+        #local = os.path.join(*self._breadcrumbs).lower().replace(' ', '_')
+        #self._url = os.path.join(local, 'index.html')
+        #self._full = os.path.join(self._root, self._url)
 
     def breadcrumbs(self):
         """
@@ -83,6 +84,25 @@ class MoosePage(object):
 
 
 
+import yaml
+class PageLoader(yaml.Loader):
+#    def construct_sequence(self, node):
+#        return super(PageLoader, self).construct_sequence(node)
+#    def construct_mapping(self, node):
+#        return super(PageLoader, self).construct_mapping(node)
+    def construct_scalar(self, node):
+
+
+        return super(PageLoader, self).construct_scalar(node)
+
+with open('pages.yml', 'r') as fid:
+    pages = yaml.load(fid.read(), PageLoader)
+
+
+sys.exit()
+
+
+
 #class NavItem(object):
 #    def __init__(self):
 #        self.children = collections.OrderedDict()
@@ -116,7 +136,6 @@ def debug(text):
 
 
 sitemap = collections.OrderedDict()
-root = os.path.join(os.getenv('HOME'), 'projects', 'moose-doc', 'site')
 make_dict(pages, sitemap=sitemap, root=root)
 
 all_pages = flat(sitemap)
