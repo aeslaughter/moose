@@ -70,7 +70,7 @@ def copy_files(source, destination, extensions=[]):
 
 def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pages.yml', page_keys=[], clean_site_dir=False, **kwargs):
   """
-  Build the documentation using mkdocs build command.
+  Build the documentation.
 
   Args:
     config_file[str]: (Default: 'mkdocs.yml') The configure file to pass to mkdocs.

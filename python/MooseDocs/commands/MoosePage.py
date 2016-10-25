@@ -13,7 +13,7 @@ class MoosePage(NavigationNode):
     root[str]: The root directory.
   """
 
-  def __init__(self, markdown=markdown, parser=None, **kwargs):
+  def __init__(self, markdown=None, parser=None, **kwargs):
     super(MoosePage, self).__init__(**kwargs)
 
     # Store the supplied arguments
