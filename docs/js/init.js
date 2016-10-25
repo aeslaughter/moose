@@ -7,12 +7,23 @@ MathJax.Hub.Config({
 });
 
 // Materialize side navigation
-$(".button-collapse").sideNav();
+(function($){
+  $(function(){
+    $('.button-collapse').sideNav();
+
+      // Show sideNav
+      $('.button-collapse').sideNav('show');
+      // Hide sideNav
+      $('.button-collapse').sideNav('hide');
+
+  }); // end of document ready
+})(jQuery); // end of jQuery name space
 
 // Materialize scrolling table-of-contents
-$(document).ready(function(){
-    $('.scrollspy').scrollSpy();
-});
+//$(document).ready(function(){
+//    $('.scrollspy').scrollSpy();
+//});
 
 
 //$("h1","h2").addClass("section scollSpy");
+vb

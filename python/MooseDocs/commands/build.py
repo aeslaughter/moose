@@ -20,13 +20,13 @@ def build_options(parser, subparser):
   return build_parser
 
 
-def make_tree(pages, node):
+def make_tree(pages, node, parser):
   for p in pages:
     for k, v in p.iteritems():
       if isinstance(v, list):
         child = NavigationNode(name=k, parent=node)
         node.children.append(child)
-        make_tree(v, child)
+        make_tree(v, child, parser)
       else:
         page = MoosePage(name=k, parent=node, markdown=v, parser=parser)
         node.children.append(page)
@@ -58,13 +58,13 @@ def copy_files(source, destination, extensions=[]):
       dst = os.path.join(destination, filename)
 
       # Update the file, if it is out-of-date
-      if (not os.path.exists(dst)) or (os.path.getmtime(src) > os.path.getmtime(dst)):
-        dst_dir = os.path.dirname(dst)
-        if not os.path.exists(dst_dir):
-          log.debug('Creating {} directory.'.format(destination))
-          os.makedirs(dst_dir)
-        log.debug('Copying file {} --> {}'.format(src, dst))
-        shutil.copy(src, dst)
+      dst_dir = os.path.dirname(dst)
+      if not os.path.exists(dst_dir):
+        log.debug('Creating {} directory.'.format(destination))
+        os.makedirs(dst_dir)
+
+      log.debug('Copying file {} --> {}'.format(src, dst))
+      shutil.copy(src, dst)
 
 
 
@@ -83,6 +83,10 @@ def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pa
   copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'js'), os.path.join(config['site_dir'], 'js'), extensions=['.js'])
   copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'css'), os.path.join(config['site_dir'], 'css'), extensions=['.css'])
 
+  copy_files(os.path.join(os.getcwd(), 'js'), os.path.join(config['site_dir'], 'js'), extensions=['.js'])
+  copy_files(os.path.join(os.getcwd(), 'css'), os.path.join(config['site_dir'], 'css'), extensions=['.css'])
+
+
 
   # TODO: Update this to use list provide in configuration
   md_config = config['markdown_extensions'][-1]['MooseDocs.extensions.MooseMarkdown']
@@ -94,7 +98,7 @@ def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pa
 
   # Create the
   tree = NavigationNode(name='root')
-  make_tree(pages, tree)
+  make_tree(pages, tree, parser)
 
   all_pages = list(flat(tree))
 
@@ -111,25 +115,28 @@ def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pa
     template = env.get_template(config['template'])
 
 
-    complete = template.render(current=page, tree=tree, javascript=config['extra_javascript'], stylesheets=config['extra_css'])
+    complete = template.render(current=page, tree=tree, javascript=config['extra_javascript'], stylesheets=config['extra_css'], repo=config['repo_url'])
 
-    destination = config['site_dir']
-    if not os.path.exists(destination):
-      os.makedirs(destination)
+    destination = os.path.join(config['site_dir'], page.url())
+    if not os.path.exists(os.path.dirname(destination)):
+      os.makedirs(os.path.dirname(destination))
 
-    index = os.path.join(destination, 'index.html')
-    with open(index, 'w') as fid:
-      log.info('Creating {}'.format(index))
+    with open(destination, 'w') as fid:
+      log.info('Creating {}'.format(destination))
       soup = bs4.BeautifulSoup(complete, 'html.parser')
       fid.write(soup.prettify().encode('utf-8'))
 
-
+  """
   import multiprocessing
+  idx  = range(len(all_pages))
   p = multiprocessing.Pool(multiprocessing.cpu_count())
-  p.map(create, range(len(all_pages)))
+  p.map(create, idx)
+  """
+  for i in range(len(all_pages)):
+    create(i)
 
 
-  copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'media'), os.path.join(config['site_dir'], 'media'), extensions=['.png', '.svg'])
+  copy_files(os.path.join(os.getcwd(), 'media'), os.path.join(config['site_dir'], 'media'), extensions=['.png', '.svg'])
 
 
   return config

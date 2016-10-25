@@ -94,4 +94,4 @@ class MoosePage(NavigationNode):
     """
     with open(self._markdown, 'r') as fid:
       md = fid.read()
-    self._html = parser.convert(md.decode('utf-8'))
+    self._html = self._parser.convert(md.decode('utf-8'))

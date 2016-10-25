@@ -1,65 +1,11 @@
-/* Collapse Nav-bar correctly */
-@media(min-width: 768px) {
-    .bs-sidebar.affix {
-	top: 110px;
+header, main, footer {
+    padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+        padding-left: 0;
     }
-    div.col-md-3 {
-	margin-top: 60px;
-    }
-}
-@media(min-width:992px) {
-    .bs-sidebar.affix {
-	top: 140px;
-}
-    div.col-md-9 {
-	margin-top: 50px;
-    }
-}
-@media(min-width:1200px) {
-    .bs-sidebar.affix {
-	top: 90px;
-}
-    div.col-md-9 {
-	margin-top: 5px;
-    }
-}
-/* End Collapse Nav-bar correctly */
-
-/* Get rid of the Previous and Next buttons */
-ul.nav.navbar-right > li:nth-of-type(2), ul.nav.navbar-right > li:nth-of-type(3){
-    display: none;
-}
-/* Get rid of the Previous and Next buttons */
-
-p {
-    text-align: justify;
-}
-a {
-    color: #0333a5;
-    text-decoration: none;
-}
-
-a:hover, a:focus {
-    color: #0333a5;
-    text-decoration: underline;
-}
-
-/* NavBar hover color modification (bluish to more closely match our </a> links color) */
-.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus , .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
-    color: #b7c0ff;
-}
-
-pre {
-    overflow: auto;
-}
-
-hr {
-    border-bottom-style: groove;
-    border-bottom-width: 2px;
-}
-/* NavBar submenu font color */
-.dropdown-menu>li>a {
-    color: #383d3e;
 }
 
 /* Slideshows with white backgrounds and captions, need a black drop text shadow */
@@ -141,9 +87,8 @@ hr {
     color: #000;
     border: 0px solid transparent;
 }
-/*
-Slide style
-*/
+
+/* Slide style */
 .reveal h1 {
     font-size: 2em;
 }
@@ -155,6 +100,7 @@ Slide style
 .reveal .slides > section {
   text-align: left;
 }
+
 /* MOOSE Build status CSS */
 .boxed_job_status_Passed {
     vertical-align: middle;
