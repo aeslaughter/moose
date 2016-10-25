@@ -38,6 +38,11 @@ class NavigationNode(object):
         return self._string()
 
     def url(self, **kwargs):
+        for child in self.children:
+            if child.name == 'Overview':
+                return child.url()
+
+
 
         return None
 
@@ -46,6 +51,7 @@ class NavigationNode(object):
         for child in self.children:
             output += child._string(level=level+1)
         return output
+
 
 
 class MoosePage(NavigationNode):
@@ -183,7 +189,6 @@ def create(i):
 
 
 import multiprocessing
-idx =
 p = multiprocessing.Pool(multiprocessing.cpu_count())
 p.map(create, range(len(all_pages)))
 

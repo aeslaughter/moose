@@ -4,12 +4,12 @@
 
       <!--Import Google Icon Font-->
       <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-      <!--Import materialize.css-->
-      <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"  media="screen,projection"/>
-
-      <!--Load the MOOSE style sheet-->
-      <link type="text/css" rel="stylesheet" href="/css/moose.css"/>
+      {% for css in stylesheets %}
+        <link type="text/css" rel="stylesheet" href="{{css}}"/>
+      {% endfor %}
 
   </head>
   <body>
@@ -48,8 +48,6 @@
       </ul>
     </header>
 
-
-
     <main>
       <div class="container">
         <div class="row">
@@ -85,16 +83,12 @@
       </div>
     </main>
 
-    <script>
-      $(".button-collapse").sideNav();
-      $(document).ready(function(){
-        $('.scrollspy').scrollSpy();
-      });
-    </script>
-
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    {% for js in javascript %}
+      <script type="text/javascript" src="{{js}}"></script>
+    {% endfor %}
 
   </body>
 </html>
