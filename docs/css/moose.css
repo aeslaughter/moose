@@ -1,5 +1,31 @@
 /* Materialize */
 
+.breadcrumb-nav{
+    margin-top: 24px;
+    padding-left: 12px;
+    background-color: transparent;
+}
+
+.breadcrumb{
+    color:#757575;
+    font-family: "Roboto", sans-serif;
+    font-weight:300;
+}
+
+.breadcrumb:before{
+    color:#757575;
+}
+
+.breadcrumb:last-child{
+    color:#757575;
+    font-family: "Roboto", sans-serif;
+    font-weight:500;
+}
+
+.table-of-contents a.active{
+    border-left: 2px solid #26a69a;
+}
+
 .page-title{
     font-size:x-large;
 }
@@ -9,9 +35,10 @@
 }
 
 .github-mark{
+    height: 24px;
     vertical-align: middle;
     padding-bottom: 4px;
-    padding-left: 2px;
+    padding-right: 4px;
 }
 
 header, main, footer {
@@ -50,7 +77,8 @@ p {
 }
 
 .button-collapse {
-  color: #26a69a;
+    color: #26a69a;
+    padding-right: 8px;
 }
 
 .parallax-container {
