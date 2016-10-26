@@ -22,10 +22,21 @@
 
       <ul id="nav-mobile" class="side-nav fixed">
         <li><a href="#">LOGO HERE</a></li>
-        <li><a href="#">Link 1</a></li>
-        <li><a href="#">Link 2</a></li>
-        <li><a href="#">Link 3</a></li>
-
+        <li>
+          <ul class="collapsible" data-collapsible="accoridon">
+            <li><a class="collapsible-header" href="#">Link 1</a></li>
+            <li>
+              <a class="collapsible-header active" href="#">Link 2</a>
+              <div class="collapsible-body active">
+                <ul class="collapsible">
+                  <li><a class="collapsible-header">Sub-item 1</a></li>
+                  <li><a class="collapsible-header active">Sub-item 2</a></li>
+                  <li><a class="collapsible-header">Sub-item 3</a></li>
+                </ul>
+            </li>
+            <li><a class="collapsible-header" href="#">Link 3</a></li>
+          </ul>
+        </li>
       </ul>
       <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>

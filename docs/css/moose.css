@@ -1,5 +1,19 @@
 /* Materialize */
 
+.side-nav .collapsible-header {
+    margin: 0;
+    color:#757575;
+    font-family: "Roboto", sans-serif;
+    font-weight:300;
+}
+
+.side-nav .collapsible-body li.active, .side-nav.fixed .collapsible-body li.active {
+    background-color: #26a69a;
+    color:#fff;
+    font-family: "Roboto", sans-serif;
+    font-weight:500;
+}
+
 .breadcrumb-nav{
     margin-top: 24px;
     padding-left: 12px;
