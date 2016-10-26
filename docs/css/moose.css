@@ -1,18 +1,4 @@
 /* Materialize */
-.side-nav .collapsible-header {
-    margin: 0;
-    color:#757575;
-    font-family: "Roboto", sans-serif;
-    font-weight:300;
-}
-
-.side-nav .collapsible-body li.active a, .side-nav.fixed .collapsible-body li.active a {
-    background-color: #26a69a;
-    color:#fff;
-    font-family: "Roboto", sans-serif;
-    font-weight:500;
-}
-
 .breadcrumb-nav{
     margin-top: 24px;
     padding-left: 12px;
@@ -65,7 +51,7 @@ header, main, footer {
 }
 
 
-// Class for when element is above threshold
+/* Class for when element is above threshold */
 .pin-top {
     position: relative;
 }
@@ -131,10 +117,12 @@ footer.page-footer {
   margin: 0;
 }
 
+
 /* Slideshows with white backgrounds and captions, need a black drop text shadow */
 .carousel-caption {
     text-shadow: 1px 1px 9px rgba(0, 0, 0, 1);
 }
+
 
 /* Admonition */
 .admonition-title {
@@ -212,6 +200,7 @@ footer.page-footer {
     border: 0px solid transparent;
 }
 
+
 /* Slide style */
 .reveal h1 {
     font-size: 2em;
@@ -224,6 +213,7 @@ footer.page-footer {
 .reveal .slides > section {
   text-align: left;
 }
+
 
 /* MOOSE Build status CSS */
 .boxed_job_status_Passed {

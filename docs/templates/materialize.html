@@ -27,13 +27,18 @@
       <ul id="nav-mobile" class="side-nav fixed">
         <li><a href="{{site_url}}">{{logo}}</a></li>
         <li>
-
           <ul class="collapsible" data-collapsible="accoridon">
             {% for child in tree.children recursive %}
               <li>
-                <a class="collapsible-header {{child|isActive}}" href="#">{{child.name|e}}</a>
                 {% if child.children %}
+                  <a class="collapsible-header">{{child.name|e}}</a>
                   <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
+                {% else %}
+                  {% if current == child %}
+                    <a class="collapsible-header active" href="/{{child.url()}}">{{child.name|e}}</a>
+                  {% else %}
+                    <a class="collapsible-header" href="/{{child.url()}}">{{child.name|e}}</a>
+                  {% endif %}
                 {% endif %}
               </li>
             {% endfor %}

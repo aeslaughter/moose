@@ -2,7 +2,6 @@ site_dir: ../site
 
 pages: pages.yml
 
-
 template: materialize.html
 
 template_arguments:
