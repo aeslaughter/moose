@@ -1,3 +1,5 @@
+/* Materialize */
+
 header, main, footer {
     padding-left: 300px;
 }
@@ -8,11 +10,63 @@ header, main, footer {
     }
 }
 
+
+nav ul a,
+nav .brand-logo {
+  color: #444;
+}
+
+p {
+  line-height: 2rem;
+}
+
+.button-collapse {
+  color: #26a69a;
+}
+
+.parallax-container {
+  min-height: 380px;
+  line-height: 0;
+  height: auto;
+  color: rgba(255,255,255,.9);
+}
+  .parallax-container .section {
+    width: 100%;
+  }
+
+@media only screen and (max-width : 992px) {
+  .parallax-container .section {
+    position: absolute;
+    top: 40%;
+  }
+  #index-banner .section {
+    top: 10%;
+  }
+}
+
+@media only screen and (max-width : 600px) {
+  #index-banner .section {
+    top: 0;
+  }
+}
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+  font-size: inherit;
+}
+
+footer.page-footer {
+  margin: 0;
+}
+
 /* Slideshows with white backgrounds and captions, need a black drop text shadow */
 .carousel-caption {
     text-shadow: 1px 1px 9px rgba(0, 0, 0, 1);
 }
 
+/* Admonition */
 .admonition-title {
     font-weight: bold;
     display: block;
@@ -150,4 +204,3 @@ header, main, footer {
     box-shadow: 2px 2px 3px #888888;
     display: inline-block;
 }
-/* MOOSE Build status CSS */
