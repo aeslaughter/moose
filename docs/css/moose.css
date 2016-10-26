@@ -15,6 +15,21 @@ header, main, footer {
 }
 
 
+// Class for when element is above threshold
+.pin-top {
+    position: relative;
+}
+
+// Class for when element is below threshold
+.pin-bottom {
+    position: relative;
+}
+
+// Class for when element is pinned
+.pinned {
+    position: fixed !important;
+}
+
 nav ul a,
 nav .brand-logo {
   color: #444;
