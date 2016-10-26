@@ -4,6 +4,16 @@
     font-size:x-large;
 }
 
+.github-mark-label{
+    color:white;
+}
+
+.github-mark{
+    vertical-align: middle;
+    padding-bottom: 4px;
+    padding-left: 2px;
+}
+
 header, main, footer {
     padding-left: 300px;
 }
