@@ -1,17 +1,22 @@
 site_dir: ../site
 
-repo_url: https://github.com/idaholab/moose/
+pages: pages.yml
+
 
 template: materialize.html
 
-pages: pages.yml
-
-extra_css:
-    - css/moose.css
-
-extra_javascript:
-    - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
-    - js/init.js
+template_arguments:
+    title: MOOSE
+    repo_url: https://github.com/idaholab/moose/
+    site_url: https:://www.mooseframework.org
+    include_css:
+        - css/materialize.css
+        - css/moose.css
+    include_javascript:
+        - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+        - https://code.jquery.com/jquery-2.1.1.min.js
+        - js/materialize.js
+        - js/init.js
 
 markdown_extensions:
     - toc

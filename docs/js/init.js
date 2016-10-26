@@ -3,6 +3,7 @@
 
     $('.button-collapse').sideNav();
     $('.parallax').parallax();
+    $('h2').addClass("section scrollspy");
     $('.toc-wrapper').pushpin({
         top: 64
     });

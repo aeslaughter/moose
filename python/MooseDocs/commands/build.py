@@ -67,6 +67,10 @@ def copy_files(source, destination, extensions=[]):
       shutil.copy(src, dst)
 
 
+def relpath(input):
+  return os.path.relpath(*input)
+
+
 
 def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pages.yml', page_keys=[], clean_site_dir=False, **kwargs):
   """
@@ -82,6 +86,7 @@ def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pa
 
   copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'js'), os.path.join(config['site_dir'], 'js'), extensions=['.js'])
   copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'css'), os.path.join(config['site_dir'], 'css'), extensions=['.css'])
+#  copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'fonts'), os.path.join(config['site_dir'], 'fonts'), extensions=['.css'])
 
   copy_files(os.path.join(os.getcwd(), 'js'), os.path.join(config['site_dir'], 'js'), extensions=['.js'])
   copy_files(os.path.join(os.getcwd(), 'css'), os.path.join(config['site_dir'], 'css'), extensions=['.css'])
@@ -102,8 +107,6 @@ def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pa
 
   all_pages = list(flat(tree))
 
-
-
   def create(i):
 
     page = all_pages[i]
@@ -111,11 +114,11 @@ def build(config_file='moosedocs.yml', **kwargs):#, live_server=False, pages='pa
     page.parse()
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
-    env.filters['isActive']=page.isActive
+    env.filters['isActive'] = page.isActive
+    env.filters['relpath'] = relpath
     template = env.get_template(config['template'])
 
-
-    complete = template.render(current=page, tree=tree, javascript=config['extra_javascript'], stylesheets=config['extra_css'], repo=config['repo_url'])
+    complete = template.render(current=page, tree=tree, **config['template_arguments'])
 
     destination = os.path.join(config['site_dir'], page.url())
     if not os.path.exists(os.path.dirname(destination)):

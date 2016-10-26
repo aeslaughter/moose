@@ -58,6 +58,15 @@ class MoosePage(NavigationNode):
     else:
       return ''
 
+  def edit(self, repo_url):
+    """
+    Return the GitHub address for editing the markdown file.
+
+    Args:
+      repo_url[str]: Web address to use as the base for creating the edit link
+    """
+    return os.path.join(repo_url, 'edit', 'devel', self._markdown)
+
   def contents(self, level='h2'):
     """
     Return the table of contents.

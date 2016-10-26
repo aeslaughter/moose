@@ -1,67 +1,58 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
 
-      <!--Import Google Icon Font-->
-      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Website title -->
+  <title>{{title}}</title>
 
-      {% for css in stylesheets %}
-        <link type="text/css" rel="stylesheet" href="{{css}}"/>
-      {% endfor %}
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  </head>
-  <body>
+  {% for css in include_css %}
+    <link type="text/css" rel="stylesheet" href="{{(css, current.url())|relpath}}"/>
+  {% endfor %}
 
+</head>
+<body>
+  <header>
+  <nav class="teal" role="navigation">
+    <div class="nav-wrapper container">
+      <a href="#" class="page-title">{{current.name|e}}</a>
+      <ul class="right hide-on-med-and-down">
+        <li><a class="github-mark-label" href="{{repo_url}}"><img class="github-mark" src="/media/github-mark-light.png">GitHub</a></li>
+      </ul>
 
-      <ul id="slide-out" class="side-nav fixed">
-        <li class="logo">
-          <a href="https://www.mooseframework.org">MOOSE Framework</a>
-        </li>
+      <ul id="nav-mobile" class="side-nav fixed">
+        <li><a href="{{site_url}}">{{logo}}</a></li>
         <li>
+
           <ul class="collapsible" data-collapsible="accoridon">
             {% for child in tree.children recursive %}
               <li>
+                <a class="collapsible-header {{child|isActive}}" href="#">{{child.name|e}}</a>
                 {% if child.children %}
-                  <a class="collapsible-header {{child|isActive}}" href="#">{{child.name|e}}</a>
                   <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
-                {% else %}
-                  {% if current == child %}
-                    <a class="collapsible-header active" href="/{{child.url()}}">{{child.name|e}}</a>
-                  {% else %}
-                    <a class="collapsible-header" href="/{{child.url()}}">{{child.name|e}}</a>
-                  {% endif %}
                 {% endif %}
               </li>
             {% endfor %}
           </ul>
+
         </li>
       </ul>
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
+  </header>
 
-
-
-
-    <header>
-      <nav class="top-nav">
-        <div class="container">
-          <div class="nav-wrapper">
-            <a class="page-title">{{current.name}}</a>
-          </div>
-        </div>
-      </nav>
-      <div class="container"><a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i class="material-icons">menu</i></a></div>
-
-    </header>
-
-    <main>
-      <div class="container">
-        <div class="row">
-
-          <div class="col s12 m9 l10">
+  <main>
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m8 l9">
 
             {# Creates breadcrumbs with links #}
-            <nav>
+            <nav class="breadcrumb-nav">
               <div class="nav-wrapper">
                 <div class="col s12 m9 l10">
                   {% for node in current.breadcrumbs() %}
@@ -74,27 +65,38 @@
                 </div>
               </div>
             </nav>
+
             {{current.html()}}
-          </div>
-          <div class="col hid-on-small-only m3 l2">
+        </div>
+
+
+        <div class="col hid-on-small-only m3 l2">
+          <div class="toc-wrapper pin-top">
             <div class="section table-of-contents">
               <ul>
                 {% for text, id in current.contents() %}
-                  <li><a href="#{{id}}">{{text}}</a></li>
+                <li><a href="#{{id}}">{{text}}</a></li>
                 {% endfor %}
               </ul>
             </div>
+          <a href="{{current.edit(repo_url)}}"class="waves-effect waves-light btn">Edit on GitHub</a>
           </div>
         </div>
       </div>
-    </main>
+    </div>
+  </main>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+  <footer class="page-footer teal">
+    <div class="container white-text">
+      Site Generated with <a href="https://www.mooseframework.org">MOOSE</a>
+    </div>
+  </footer>
 
-    {% for js in javascript %}
-      <script type="text/javascript" src="{{js}}"></script>
-    {% endfor %}
+
+  <!--  Scripts-->
+  {% for js in include_javascript %}
+    <script type="text/javascript" src="{{(js, current.url())|relpath}}"></script>
+  {% endfor %}
 
   </body>
 </html>

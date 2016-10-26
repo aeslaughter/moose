@@ -6,7 +6,7 @@
     font-weight:300;
 }
 
-.side-nav .collapsible-body li.active, .side-nav.fixed .collapsible-body li.active {
+.side-nav .collapsible-body li.active a, .side-nav.fixed .collapsible-body li.active a {
     background-color: #26a69a;
     color:#fff;
     font-family: "Roboto", sans-serif;
