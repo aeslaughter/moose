@@ -51,8 +51,7 @@
   <main>
     <div class="container">
       <div class="row">
-        <div class="col s12 m8 l9">
-
+        <div class="col s12 m12 l12">
           {% if current.breadcrumbs() %}
             <nav class="breadcrumb-nav">
               <div class="nav-wrapper">
@@ -68,11 +67,15 @@
               </div>
             </nav>
           {% endif %}
+        </div>
+      </div>
 
+      <div class="row">
+        <div class="col s12 m8 l9">
           {{current.html()}}
         </div>
 
-        <div class="col hid-on-small-only m3 l2">
+        <div class="col hid-on-small-only m4 l3">
           <div class="toc-wrapper pin-top">
             <div class="section table-of-contents">
               <ul>

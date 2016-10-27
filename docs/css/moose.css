@@ -1,4 +1,9 @@
 /* Materialize */
+
+.container{
+    width:90%;
+}
+
 .side-nav .collapsible li.active a.active, .side-nav.fixed .collapsible li.active a.active {
     background-color: #26a69a;
     color:#fff;
@@ -73,16 +78,19 @@ header, main, footer {
 
 /* Class for when element is above threshold */
 .pin-top {
+    width:220px;
     position: relative;
 }
 
 // Class for when element is below threshold
 .pin-bottom {
+    width:220px;
     position: relative;
 }
 
 // Class for when element is pinned
 .pinned {
+    width:220px;
     position: fixed !important;
 }
 

@@ -2,10 +2,10 @@
   $(function(){
 
     $('.button-collapse').sideNav();
-    $('.parallax').parallax();
+   // $('.parallax').parallax();
     $('h2').addClass("section scrollspy");
     $('.toc-wrapper').pushpin({
-        top: 64
+        top: 152
     });
     $('.scrollspy').scrollSpy();
 

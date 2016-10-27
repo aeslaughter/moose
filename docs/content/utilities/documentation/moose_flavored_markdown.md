@@ -115,8 +115,9 @@ the following limits the included code to the `computeQpResidual` method.
 ```markdown
 !clang framework/src/kernels/Diffusion.C method=computeQpResidual
 ```
-
+<!--
 !clang framework/src/kernels/Diffusion.C method=computeQpResidual
+-->
 
 !!! warning "Warning"
     This method uses the clang parser directly, which can be slow. Thus, in general source code should be
