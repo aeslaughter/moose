@@ -6,10 +6,13 @@ class NavigationNode(object):
     name[str]: The name of the node.
     parent[NavigationNode]: The parent node in tree.
   """
-  def __init__(self, name='', parent=None):
+  def __init__(self, name='', parent=None, site_dir='', **kwargs):
+
     self.name = name
     self.parent = parent
     self.children = []
+    self.site_dir = site_dir
+    self.config = kwargs
 
   def __eq__(self, other):
     """
@@ -22,6 +25,18 @@ class NavigationNode(object):
     Allows 'print' to dump the complete tree structure.
     """
     return self._string()
+
+  def root(self):
+
+    def helper(node):
+      if node.parent:
+        return helper(node.parent)
+      else:
+        return node
+    return helper(self)
+
+  def build(self, **kwargs):
+      pass
 
   def url(self, **kwargs):
     """

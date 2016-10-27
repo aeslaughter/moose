@@ -51,9 +51,6 @@ def serve(config_file='moosedocs.yml'):
   if not os.path.exists(tempdir):
     os.makedirs(tempdir)
 
-  def builder(**kwargs):
-    pass
-
   # Perform the initial build
   log.info("Building documentation...")
   config = build.build(config_file=config_file)#, site_dir=tempdir)

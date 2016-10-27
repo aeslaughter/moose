@@ -1,12 +1,13 @@
 import os
 import sys
+import copy
 import multiprocessing
 import itertools
 import markdown
 import markdown_include
 import bs4
 import shutil
-import jinja2
+#import jinja2
 import logging
 log = logging.getLogger(__name__)
 
@@ -23,18 +24,18 @@ def build_options(parser, subparser):
   return build_parser
 
 
-def make_tree(pages, node, parser):
+def make_tree(pages, node, parser, site_dir, config):
   """
   Create the tree structure of NavigationNode/MoosePage objects
   """
   for p in pages:
     for k, v in p.iteritems():
       if isinstance(v, list):
-        child = NavigationNode(name=k, parent=node)
+        child = NavigationNode(name=k, parent=node, site_dir=site_dir, **config)
         node.children.append(child)
-        make_tree(v, child, parser)
+        make_tree(v, child, parser, site_dir, config)
       else:
-        page = MoosePage(name=k, parent=node, markdown=v, parser=parser)
+        page = MoosePage(name=k, parent=node, filename=v, parser=parser, site_dir=site_dir, **config)
         node.children.append(page)
 
 
@@ -52,102 +53,100 @@ def flat(node):
       yield c
 
 
-def copy_files(**config):
+def copy_files(source, destination, extensions=[]):
   """
-  Copies the js, css, and media files to the site directory.
+  A helper function for copying files
   """
 
-  def helper(source, destination, extensions=[]):
+  for root, dirs, files in os.walk(source):
+    for filename in files:
+
+      # Only examine files with the supplied extensions
+      _, ext = os.path.splitext(filename)
+      if ext not in extensions:
+        continue
+
+      # Define the complete source and destination filenames
+      src = os.path.join(root, filename)
+      dst = os.path.join(destination, filename)
+
+      # Update the file, if it is out-of-date
+      dst_dir = os.path.dirname(dst)
+      if not os.path.exists(dst_dir):
+        log.debug('Creating {} directory.'.format(destination))
+        os.makedirs(dst_dir)
+
+      log.debug('Copying file {} --> {}'.format(src, dst))
+      shutil.copy(src, dst)
+
+
+
+
+
+class Builder(object):
+
+  def __init__(self, sitemap, parser, site_dir, **config):
+
+    self._sitemap = sitemap
+    self._parser = parser
+    self._site_dir = site_dir
+
+    self._root = NavigationNode(name='root')
+    make_tree(self._sitemap, self._root, self._parser, self._site_dir, config)
+
+    self._pages = dict()
+    for page in flat(self._root):
+      self._pages[page.name] = page
+
+
+  def add(self, filename, name='', **config):
+
+    page = MoosePage(name=name, filename=filename, parser=self._parser, site_dir=self._site_dir, **config)
+    self._pages[page.name] = page
+
+  def build(self, name=None, **kwargs):
     """
-    A helper function for copying files
+    Build all the pages in parallel.
     """
 
-    for root, dirs, files in os.walk(source):
-      for filename in files:
+    if name:
+      if name in self._pages:
+        self._pages[name].build()
+      else:
+        log.error("Unknown markdown page: {}".format(name))
 
-        # Only examine files with the supplied extensions
-        _, ext = os.path.splitext(filename)
-        if ext not in extensions:
-          continue
+    else:
+      jobs = []
+      for page in self._pages.itervalues():
+        p = multiprocessing.Process(target=page.build)
+        p.start()
+        jobs.append(p)
 
-        # Define the complete source and destination filenames
-        src = os.path.join(root, filename)
-        dst = os.path.join(destination, filename)
+      for job in jobs:
+        job.join()
 
-        # Update the file, if it is out-of-date
-        dst_dir = os.path.dirname(dst)
-        if not os.path.exists(dst_dir):
-          log.debug('Creating {} directory.'.format(destination))
-          os.makedirs(dst_dir)
-
-        log.debug('Copying file {} --> {}'.format(src, dst))
-        shutil.copy(src, dst)
+    self._copy_files()
 
 
-  site_dir = config['site_dir']
-  helper(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'js'),
-         os.path.join(site_dir, 'js'), extensions=['.js'])
-  helper(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'css'),
-         os.path.join(site_dir, 'css'), extensions=['.css'])
+  def _copy_files(self):
+
+    copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'js'),
+               os.path.join(self._site_dir, 'js'), extensions=['.js'])
+
+    copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'css'),
+               os.path.join(self._site_dir, 'css'), extensions=['.css'])
 #  copy_files(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'fonts'), os.path.join(config['site_dir'], 'fonts'), extensions=['.css'])
 
-  helper(os.path.join(os.getcwd(), 'js'),
-         os.path.join(site_dir, 'js'), extensions=['.js'])
-  helper(os.path.join(os.getcwd(), 'css'),
-         os.path.join(site_dir, 'css'), extensions=['.css'])
+    copy_files(os.path.join(os.getcwd(), 'js'),
+               os.path.join(self._site_dir, 'js'), extensions=['.js'])
 
-  helper(os.path.join(os.getcwd(), 'media'),
-         os.path.join(site_dir, 'media'), extensions=['.png', '.svg'])
+    copy_files(os.path.join(os.getcwd(), 'css'),
+         os.path.join(self._site_dir, 'css'), extensions=['.css'])
 
-def relpath(input):
-  """
-  A utility function for Jinja2 template.
-
-  Args:
-    input[tuple]: The os.path.relpath arguments.
-  """
-  if input[0].startswith('http'):
-    return input[0]
-  return os.path.relpath(*input)
+    copy_files(os.path.join(os.getcwd(), 'media'),
+           os.path.join(self._site_dir, 'media'), extensions=['.png', '.svg'])
 
 
-def build_page(page, tree, config, **kwargs):
-  """
-  Build the html for the supplied page.
-  """
-
-  page.parse()
-
-  env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
-  env.filters['relpath'] = relpath
-  template = env.get_template(config['template'])
-
-  targs = config['template_arguments']
-  targs.update(kwargs)
-  complete = template.render(current=page, tree=tree, **targs)
-
-  destination = os.path.join(config['site_dir'], page.url())
-  if not os.path.exists(os.path.dirname(destination)):
-    os.makedirs(os.path.dirname(destination))
-
-  with open(destination, 'w') as fid:
-    log.info('Creating {}'.format(destination))
-    soup = bs4.BeautifulSoup(complete, 'html.parser')
-    fid.write(soup.prettify().encode('utf-8'))
-
-
-def build_pages(tree, **config):
-  """
-  Build all the pages in parallel.
-  """
-  jobs = []
-  for page in flat(tree):
-    p = multiprocessing.Process(target=build_page, args=(page, tree, config))
-    p.start()
-    jobs.append(p)
-
-    for job in jobs:
-      job.join()
 
 
 def build(config_file='moosedocs.yml', **kwargs):
@@ -166,17 +165,8 @@ def build(config_file='moosedocs.yml', **kwargs):
   moose = MooseDocs.extensions.MooseMarkdown(**md_config)
   parser = markdown.Markdown(extensions=[moose, 'markdown_include.include', 'admonition', 'mdx_math', 'toc', 'extra'])
 
-
-  # Build the tree structure from the pages
-  tree = NavigationNode(name='root')
-  make_tree(sitemap, tree, parser)
-
-  # Crete the html
-  home = MoosePage(markdown='index.md', parser=parser)
-  build_page(home, tree, config, home=True)
-  build_pages(tree, **config)
-
-  # Copy supporting files
-  copy_files(**config)
+  builder = Builder(sitemap, parser, config.pop('site_dir'), **config)
+  builder.add('index.md', **config)
+  builder.build()
 
   return config
