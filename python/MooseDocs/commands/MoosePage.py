@@ -67,7 +67,10 @@ class MoosePage(NavigationNode):
     # Parse the HTML
     with open(self.filename, 'r') as fid:
       content = fid.read().decode('utf-8')
-    self._html = self._parser.convert(content)
+    if self.filename.endswith('.md'):
+        self._html = self._parser.convert(content)
+    else:
+        self._html = content
 
     # Create the template object
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))

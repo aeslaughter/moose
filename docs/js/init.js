@@ -2,11 +2,12 @@
   $(function(){
 
     $('.button-collapse').sideNav();
-   // $('.parallax').parallax();
+    $('.parallax').parallax();
     $('h2').addClass("section scrollspy");
     $('.toc-wrapper').pushpin({
         top: 152
     });
+    $('.modal-trigger').leanModal();
     $('.scrollspy').scrollSpy();
 
   }); // end of document ready

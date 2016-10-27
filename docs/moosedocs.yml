@@ -19,7 +19,7 @@ template_arguments:
 
 extra_pages:
     - home:
-        filename: index.md
+        filename: index.html
         template: materialize-home.html
 
 markdown_extensions:
