@@ -29,16 +29,13 @@
         <li>
           <ul class="collapsible" data-collapsible="accoridon">
             {% for child in tree.children recursive %}
-              <li>
+              {% set active = child.active(current) %}
+              <li class="{{active}}">
                 {% if child.children %}
-                  <a class="collapsible-header">{{child.name|e}}</a>
+                  <a class="collapsible-header {{active}}">{{child.name|e}}</a>
                   <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
                 {% else %}
-                  {% if current == child %}
-                    <a class="collapsible-header active" href="/{{child.url()}}">{{child.name|e}}</a>
-                  {% else %}
-                    <a class="collapsible-header" href="/{{child.url()}}">{{child.name|e}}</a>
-                  {% endif %}
+                  <a class="collapsible-header {{active}}" href="/{{child.url()}}">{{child.name|e}}</a>
                 {% endif %}
               </li>
             {% endfor %}
@@ -56,13 +53,13 @@
       <div class="row">
         <div class="col s12 m8 l9">
 
-            {# Creates breadcrumbs with links #}
+          {% if current.breadcrumbs() %}
             <nav class="breadcrumb-nav">
               <div class="nav-wrapper">
                 <div class="col s12 m9 l10">
                   {% for node in current.breadcrumbs() %}
                     {% if node.url() %}
-                      <a href="{{node.url(rel=current)}}" class="breadcrumb">{{node.name}}</a>
+                      <a href="/{{node.url()}}" class="breadcrumb">{{node.name}}</a>
                     {% else %}
                       <span class="breadcrumb">{{node.name}}</span>
                     {% endif %}
@@ -70,10 +67,10 @@
                 </div>
               </div>
             </nav>
+          {% endif %}
 
-            {{current.html()}}
+          {{current.html()}}
         </div>
-
 
         <div class="col hid-on-small-only m3 l2">
           <div class="toc-wrapper pin-top">
@@ -84,7 +81,7 @@
                 {% endfor %}
               </ul>
             </div>
-          <a href="{{current.edit(repo_url)}}"class="waves-effect waves-light btn">Edit on GitHub</a>
+            <a href="{{current.edit(repo_url)}}"class="waves-effect waves-light btn">Edit on GitHub</a>
           </div>
         </div>
       </div>
@@ -96,7 +93,6 @@
       Site Generated with <a href="https://www.mooseframework.org">MOOSE</a>
     </div>
   </footer>
-
 
   <!--  Scripts-->
   {% for js in include_javascript %}

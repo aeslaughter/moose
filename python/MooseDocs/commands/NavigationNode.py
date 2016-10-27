@@ -32,6 +32,20 @@ class NavigationNode(object):
         return child.url()
     return None
 
+  def active(self, page):
+    """
+    Tests if the supplied node is contained in the current tree.
+    """
+
+    def helper(tree):
+      for child in tree.children:
+        for h in helper(child):
+          yield h
+        else:
+          yield page == child
+
+    return 'active' if (page == self or any(helper(self))) else ''
+
   def _string(self, level=0):
     """
     Helper function for dumping the tree.

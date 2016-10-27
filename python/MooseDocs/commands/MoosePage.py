@@ -41,22 +41,6 @@ class MoosePage(NavigationNode):
     """
     return "{}{}: {}\n".format(' '*2*level, self.name, self._markdown)
 
-  def isActive(self, tree):
-    """
-    Tests if the supplied tree contains this page.
-    """
-
-    def helper(tree):
-      for child in tree.children:
-        for h in helper(child):
-          yield h
-        else:
-          yield self == child
-
-    if any(helper(tree)):
-      return "active"
-    else:
-      return ''
 
   def edit(self, repo_url):
     """

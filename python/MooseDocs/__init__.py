@@ -188,18 +188,8 @@ def command_line_options():
   latex_parser = commands.latex_options(parser, subparser)
   presentation_parser = commands.presentation_options(parser, subparser)
 
-  # Both build and serve need config file
-  for p in [serve_parser, build_parser]:
-    p.add_argument('--theme', help="Build documentation using specified theme. The available themes are: cosmo, cyborg, readthedocs, yeti, journal, bootstrap, readable, united, simplex, flatly, spacelab, amelia, cerulean, slate, mkdocs")
-    p.add_argument('--pages', default='pages.yml', help="YAML file containing the pages that are supplied to the mkdocs 'pages' configuration item. It also supports passing the name of a single markdown file, in this case only this file will be served with the 'Home' page.")
-    p.add_argument('--page-keys', default=[], nargs='+', help='A list of top-level keys from the "pages" file to include. This is a tool to help speed up the serving for development of documentation.')
-
   # Parse the arguments
   options = parser.parse_args()
-
-  # Set livereload default
-  if options.command == 'serve' and not options.livereload:
-    options.livereload = 'dirtyreload'
 
   return options
 
