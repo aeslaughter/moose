@@ -1,4 +1,24 @@
 /* Materialize */
+.side-nav .collapsible-body li.active a.active, .side-nav.fixed .collapsible-body li.active a.active {
+    background-color: #26a69a;
+    color:#fff;
+    font-family: "Roboto", sans-serif;
+    font-weight:500;
+}
+
+.side-nav .collapsible-body li, .side-nav.fixed .collapsible-body li{
+    color:#757575;
+    font-family: "Roboto", sans-serif;
+    font-weight:300;
+}
+
+.side-nav .collapsible-body li.active a, .side-nav.fixed .collapsible-body li.active a
+{
+    color:#757575;
+    font-family: "Roboto", sans-serif;
+    font-weight:300;
+}
+
 .breadcrumb-nav{
     margin-top: 24px;
     padding-left: 12px;
