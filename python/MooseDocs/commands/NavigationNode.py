@@ -6,13 +6,16 @@ class NavigationNode(object):
     name[str]: The name of the node.
     parent[NavigationNode]: The parent node in tree.
   """
-  def __init__(self, name='', parent=None, site_dir='', **kwargs):
+  def __init__(self, name='', parent=None, site_dir='', template=None, **kwargs):
 
     self.name = name
     self.parent = parent
     self.children = []
     self.site_dir = site_dir
-    self.config = kwargs
+
+    self._config = kwargs
+    self._template = template
+
 
   def __eq__(self, other):
     """

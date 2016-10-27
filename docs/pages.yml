@@ -11,10 +11,10 @@
         - Virtual Machine: 'content/getting_started/virtual_machine.md'
         - Manual Installation: 'content/getting_started/manual_installation.md'
     - Create an Application: 'content/application_development/create_an_app.md'
-#- Framework:
-#    - Systems: !include content/framework/systems/pages.yml
-#    - Interfaces:
-#       - DerivativeMaterialInterface: 'content/framework/interfaces/DerivativeMaterialInterface.md'
+# Framework:
+#   - Systems: !include content/framework/systems/pages.yml
+#   - Interfaces:
+#      - DerivativeMaterialInterface: 'content/framework/interfaces/DerivativeMaterialInterface.md'
 #- Modules:
 #    - Heat Conduction:
 #        - Systems: !include content/modules/heat_conduction/systems/pages.yml

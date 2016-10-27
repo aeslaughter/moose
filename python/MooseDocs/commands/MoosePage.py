@@ -25,7 +25,7 @@ class MoosePage(NavigationNode):
   Navigation item for markdown page.
 
   Args:
-    filename[str]: The complete markdown filename to be converted.
+    filename[str]: The complete markdown/html filename to be converted.
     parser[markdown.Markdown(): Python Markdown object instance.
     root[str]: The root directory.
   """
@@ -34,7 +34,7 @@ class MoosePage(NavigationNode):
     super(MoosePage, self).__init__(**kwargs)
 
     # Store the supplied arguments
-    self._filename = filename
+    self.filename = filename
     self._parser = parser
 
     # Storage for the the html that will be generated
@@ -56,28 +56,27 @@ class MoosePage(NavigationNode):
     """
     Overrides default to include the markdown file name in the tree dump.
     """
-    return "{}{}: {}\n".format(' '*2*level, self.name, self._filename)
+    return "{}{}: {}\n".format(' '*2*level, self.name, self.filename)
 
   def build(self, **kwargs):
 
     # Create a local configuration
-    config = copy.copy(self.config)
+    config = copy.copy(self._config)
     config.update(kwargs)
 
     # Parse the HTML
-    with open(self._filename, 'r') as fid:
-      md = fid.read()
-    self._html = self._parser.convert(md.decode('utf-8'))
+    with open(self.filename, 'r') as fid:
+      content = fid.read().decode('utf-8')
+    self._html = self._parser.convert(content)
 
     # Create the template object
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
     env.filters['relpath'] = relpath
-    template = env.get_template(config['template'])
+    template = env.get_template(self._template)
 
     # Render the html via template
-    targs = config['template_arguments']
-    targs.update(kwargs)
-    complete = template.render(current=self, tree=self.root(), **targs)
+    config.update(kwargs)
+    complete = template.render(current=self, tree=self.root(), **config)
 
     # Make sure the destination directory exists
     destination = os.path.join(self.site_dir, self.url())
@@ -86,7 +85,7 @@ class MoosePage(NavigationNode):
 
     # Write the file
     with open(destination, 'w') as fid:
-      log.info('Creating {}'.format(destination))
+      log.info('Creating {}: {}'.format(destination, self._template))
       soup = bs4.BeautifulSoup(complete, 'html.parser')
       fid.write(soup.prettify().encode('utf-8'))
 
@@ -97,7 +96,7 @@ class MoosePage(NavigationNode):
     Args:
       repo_url[str]: Web address to use as the base for creating the edit link
     """
-    return os.path.join(repo_url, 'edit', 'devel', self._filename)
+    return os.path.join(repo_url, 'edit', 'devel', self.filename)
 
   def contents(self, level='h2'):
     """
@@ -106,7 +105,6 @@ class MoosePage(NavigationNode):
     soup = bs4.BeautifulSoup(self._html, 'html.parser')
     for tag in soup.find_all(level):
       yield (tag.contents[0], tag.attrs['id'])
-
 
   def breadcrumbs(self):
     """

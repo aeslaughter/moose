@@ -9,32 +9,18 @@ import MooseDocs
 import build
 log = logging.getLogger(__name__)
 
-
-"""
-def _livereload(host, port, config, builder, site_dir):
-
-    server = livereload.Server()
-
-    # Watch the documentation files, the config file and the theme files.
-    server.watch(config['docs_dir'], builder)
-    server.watch(config['config_file_path'], builder)
-
-    for d in config['theme_dir']:
-        server.watch(d, builder)
-
-    server.serve(root=site_dir, host=host, port=int(port), restart_delay=0)
-"""
-
-
 def serve_options(parser, subparser):
   """
   Command-line options for serve command.
   """
 
   serve_parser = subparser.add_parser('serve', help='Generate and Sever the documentation using a local server.')
+  serve_parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
+  serve_parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
+
   return serve_parser
 
-def serve(config_file='moosedocs.yml'):
+def serve(config_file='moosedocs.yml', host='127.0.0.1', port='8000'):
   """
   Create live server
   """
@@ -53,9 +39,27 @@ def serve(config_file='moosedocs.yml'):
 
   # Perform the initial build
   log.info("Building documentation...")
-  config = build.build(config_file=config_file)#, site_dir=tempdir)
 
+  # Wrapper for building complete website
+  def build_complete():
+    return build.build(config_file=config_file, site_dir=tempdir)
+  config, parser, builder = build_complete()
 
+  # Start the live server
   server = livereload.Server()
-  server.watch('content', builder)
-  server.serve(root=tempdir, host='127.0.0.1', port='8000', restart_delay=0)
+
+  # Watch markdown files
+  for page in builder:
+    server.watch(page.filename, page.build)
+
+  # Watch support directories
+  server.watch(os.path.join(os.getcwd(), 'media'), builder.copyFiles)
+  server.watch(os.path.join(os.getcwd(), 'css'), builder.copyFiles)
+  server.watch(os.path.join(os.getcwd(), 'js'), builder.copyFiles)
+  server.watch(os.path.join(os.getcwd(), 'fonts'), builder.copyFiles)
+
+  # Watch the pages file
+  server.watch(config['pages'], build_complete)
+
+  # Start the server
+  server.serve(root=config['site_dir'], host=host, port=port, restart_delay=0)

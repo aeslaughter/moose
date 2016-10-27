@@ -51,8 +51,8 @@
   <main>
     <div class="container">
       <div class="row">
-        <div class="col s12 m12 l12">
-          {% if current.breadcrumbs() %}
+        {% if current.breadcrumbs() %}
+          <div class="col s12 m12 l12">
             <nav class="breadcrumb-nav">
               <div class="nav-wrapper">
                 <div class="col s12 m9 l10">
@@ -66,8 +66,8 @@
                 </div>
               </div>
             </nav>
-          {% endif %}
-        </div>
+          </div>
+        {% endif %}
       </div>
 
       <div class="row">
@@ -80,7 +80,7 @@
             <div class="section table-of-contents">
               <ul>
                 {% for text, id in current.contents() %}
-                <li><a href="#{{id}}">{{text}}</a></li>
+                  <li><a href="#{{id}}">{{text}}</a></li>
                 {% endfor %}
               </ul>
             </div>
