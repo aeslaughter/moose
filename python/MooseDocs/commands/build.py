@@ -58,15 +58,15 @@ def get_markdown_extensions(config):
   Extract the markdown extensions and associated configurations from the yaml configuration.
   """
   extensions = []
-  extension_configs = []
+  extension_configs = dict()
   for extension in config['markdown_extensions']:
     if isinstance(extension, dict):
       for k, v in extension.iteritems(): # there should only be one entry, but just in case
         extensions.append(k)
-        extension_configs.append(v)
+        extension_configs[k] = v
     else:
       extensions.append(extension)
-      extension_configs.append(dict())
+      #extension_configs.append(dict())
 
   return extensions, extension_configs
 

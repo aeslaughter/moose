@@ -1,12 +1,44 @@
 /* Materialize */
 
+h1{
+    font-size:250%;
+    font-weight:300;
+}
+
+h2{
+    font-size:220%;
+    font-weight:300;
+}
+
+h3{
+    font-size:150%;
+    font-weight:300;
+}
+
+h4{
+    font-size:120%;
+    font-weight:300;
+}
+
+.table-of-contents a.active {
+    border-left: 2px solid #005897;
+}
+
+nav,
+.btn,
+.btn-large,
+footer.page-footer,
+.side-nav .collapsible li.active a.active,
+.side-nav.fixed .collapsible li.active a.active {
+    background-color:#005897;
+}
+
 .container{
     width:90%;
 }
 
 .side-nav .collapsible li.active a.active,
 .side-nav.fixed .collapsible li.active a.active {
-    background-color: #26a69a;
     color:#fff;
     font-family: "Roboto", sans-serif;
     font-weight:500;
@@ -46,10 +78,6 @@
     color:#757575;
     font-family: "Roboto", sans-serif;
     font-weight:500;
-}
-
-.table-of-contents a.active{
-    border-left: 2px solid #26a69a;
 }
 
 .page-title{
@@ -156,6 +184,7 @@ footer.page-footer {
 
 /* Admonition */
 .admonition-title {
+    margin-top:0px;
     font-weight: bold;
     display: block;
     padding: 6px 12px;

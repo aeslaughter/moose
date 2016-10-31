@@ -1,3 +1,5 @@
+# MOOSE Flavored Markdown
+
 Documentation generated using MOOSE is generated using the [python-markdown](http://pythonhosted.org/Markdown/) package,
 which includes the ability to use extensions from others as well as define custom extensions. This page outlines the
 extensions included as well as the custom syntax defined exclusively for documenting MOOSE source code.

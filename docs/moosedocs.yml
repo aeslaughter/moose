@@ -16,7 +16,7 @@ template_arguments:
         - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
         - https://code.jquery.com/jquery-2.1.1.min.js
         - js/materialize.js
-        - js/prism.css
+        - js/prism.js
         - js/init.js
 
 extra_pages:
