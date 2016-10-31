@@ -19,30 +19,19 @@
   <header>
   <nav class="light-blue darken-4" role="navigation">
     <div class="nav-wrapper container">
+
       <a href="#" class="page-title">{{current.name|e}}</a>
+
       <ul class="right hide-on-med-and-down">
-        <li><a class="github-mark-label" href="{{repo_url}}"><img class="github-mark" src="/media/github-mark-light.png">GitHub</a></li>
-      </ul>
-
-      <ul id="nav-mobile" class="side-nav fixed">
-        <li><a href="{{site_url}}">{{logo}}</a></li>
         <li>
-          <ul class="collapsible" data-collapsible="accoridon">
-            {% for child in tree.children recursive %}
-              {% set active = child.active(current) %}
-              <li class="{{active}}">
-                {% if child.children %}
-                  <a class="collapsible-header {{active}}">{{child.name|e}}</a>
-                  <div class="collapsible-body"><ul class="collapsible" data-collapsible="accoridon">{{loop(child.children)}}</ul></div>
-                {% else %}
-                  <a class="collapsible-header {{active}}" href="/{{child.url()}}">{{child.name|e}}</a>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-
+          <a class="github-mark-label" href="{{repo_url}}">
+            <img class="github-mark" src="/media/github-mark-light.png">GitHub
+          </a>
         </li>
       </ul>
+
+      {% include 'sidebar.html' %}
+
       <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>
   </nav>
@@ -50,44 +39,28 @@
 
   <main>
     <div class="container">
+
+      <!-- Breadcrumbs spanning entire page -->
       <div class="row">
-        {% if current.breadcrumbs() %}
-          <div class="col s12 m12 l12">
-            <nav class="breadcrumb-nav">
-              <div class="nav-wrapper">
-                <div class="col s12 m9 l10">
-                  {% for node in current.breadcrumbs() %}
-                    {% if node.url() %}
-                      <a href="/{{node.url()}}" class="breadcrumb">{{node.name}}</a>
-                    {% else %}
-                      <span class="breadcrumb">{{node.name}}</span>
-                    {% endif %}
-                  {% endfor %}
-                </div>
-              </div>
-            </nav>
-          </div>
-        {% endif %}
+        <div class="col s12 m12 l12">
+          {% include 'breadcrumbs.html' %}
+        </div>
       </div>
 
+      <!-- Row containing the markdown content and the table-of-contents on the right -->
       <div class="row">
+
+        <!-- Markdown -->
         <div class="col s12 m8 l9">
           {{current.html()}}
         </div>
 
+        <!-- TOC -->
         <div class="col hid-on-small-only m4 l3">
-          <div class="toc-wrapper pin-top">
-            <div class="section table-of-contents">
-              <ul>
-                {% for text, id in current.contents() %}
-                  <li><a href="#{{id}}">{{text}}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
-            <a href="{{current.edit(repo_url)}}"class="waves-effect waves-light btn">Edit on GitHub</a>
-          </div>
+          {% include 'table_of_contents.html' %}
         </div>
       </div>
+
     </div>
   </main>
 
@@ -95,15 +68,13 @@
     <div class="container white-text">
       <div class="row">
         <div class="col s12">
-          <h4 class="light text-white">
-            Site Generated with <a href="https://www.mooseframework.org">MOOSE</a>
-          </h4>
+          {% include 'footer.html' %}
         </div>
       </div>
     </div>
   </footer>
 
-  <!--  Scripts-->
+  <!-- Include the "extra" Javascript items -->
   {% for js in include_javascript %}
     <script type="text/javascript" src="{{(js, current.url())|relpath}}"></script>
   {% endfor %}

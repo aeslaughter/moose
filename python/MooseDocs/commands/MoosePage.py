@@ -28,16 +28,20 @@ class MoosePage(NavigationNode):
     filename[str]: The complete markdown/html filename to be converted.
     parser[markdown.Markdown(): Python Markdown object instance.
     root[str]: The root directory.
+
+
+  NOTE: This class can also handle pure html pages as well, the markdown
+        conversion step is simply skipped if the file ends with .html.
   """
 
   def __init__(self, filename=None, parser=None, **kwargs):
     super(MoosePage, self).__init__(**kwargs)
 
-    # Store the supplied arguments
+    # Public members
     self.filename = filename
-    self._parser = parser
 
-    # Storage for the the html that will be generated
+    # Storage for the Markdown parser and the html to be generated
+    self._parser = parser
     self._html = None
 
     # Populate the list of parent nodes (i.e., "breadcrumbs")
@@ -59,6 +63,9 @@ class MoosePage(NavigationNode):
     return "{}{}: {}\n".format(' '*2*level, self.name, self.filename)
 
   def build(self, **kwargs):
+    """
+    Converts the markdown to html.
+    """
 
     # Create a local configuration
     config = copy.copy(self._config)
@@ -92,6 +99,7 @@ class MoosePage(NavigationNode):
       soup = bs4.BeautifulSoup(complete, 'html.parser')
       fid.write(soup.prettify().encode('utf-8'))
 
+
   def edit(self, repo_url):
     """
     Return the GitHub address for editing the markdown file.
@@ -101,6 +109,7 @@ class MoosePage(NavigationNode):
     """
     return os.path.join(repo_url, 'edit', 'devel', self.filename)
 
+
   def contents(self, level='h2'):
     """
     Return the table of contents.
@@ -109,11 +118,13 @@ class MoosePage(NavigationNode):
     for tag in soup.find_all(level):
       yield (tag.contents[0], tag.attrs['id'])
 
+
   def breadcrumbs(self):
     """
     Return the parent nodes (i.e., "breadcrumbs")
     """
     return self._breadcrumbs
+
 
   def url(self, rel=None):
     """
@@ -123,6 +134,7 @@ class MoosePage(NavigationNode):
       return os.path.relpath(rel.url(), self._url)
     else:
       return self._url
+
 
   def html(self):
     """

@@ -8,6 +8,7 @@ class NavigationNode(object):
   """
   def __init__(self, name='', parent=None, site_dir='', template=None, **kwargs):
 
+    # Public member variables, these are accessed by the Jinja2 template.
     self.name = name
     self.parent = parent
     self.children = []
@@ -29,7 +30,11 @@ class NavigationNode(object):
     """
     return self._string()
 
+
   def root(self):
+    """
+    Returns the "root" node of this node.
+    """
 
     def helper(node):
       if node.parent:
@@ -38,8 +43,16 @@ class NavigationNode(object):
         return node
     return helper(self)
 
+
   def build(self, **kwargs):
-      pass
+    """
+    Method for constructing state (e.g., converting markdown).
+
+    NOTE: This is called in parallel so accessing parent/child data
+          should be avoided.
+    """
+    pass
+
 
   def url(self, **kwargs):
     """
@@ -49,6 +62,7 @@ class NavigationNode(object):
       if child.name == 'Overview':
         return child.url()
     return None
+
 
   def active(self, page):
     """
@@ -63,6 +77,7 @@ class NavigationNode(object):
           yield page == child
 
     return 'active' if (page == self or any(helper(self))) else ''
+
 
   def _string(self, level=0):
     """
