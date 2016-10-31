@@ -1,0 +1,26 @@
+<!--
+Page header including the "sidebar" navigation.
+-->
+
+<nav class="light-blue darken-4" role="navigation">
+  <div class="nav-wrapper container">
+
+    <a href="#" class="page-title">{{current.name|e}}</a>
+
+    {% if fixed %}
+      <ul class="right hide-on-med-and-down">
+    {% else %}
+    <ul class="right">
+    {% endif %}
+      <li>
+        <a class="github-mark-label" href="{{repo_url}}">
+          <img class="github-mark" src="/media/github-mark-light.png">GitHub
+        </a>
+      </li>
+    </ul>
+
+    {% include 'sidebar.html' %}
+
+    <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+  </div>
+</nav>
