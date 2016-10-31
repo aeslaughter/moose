@@ -6,6 +6,7 @@ template: materialize.html
 
 template_arguments:
     title: MOOSE
+    logo: /media/moose_logo_small.png
     repo_url: https:://github.com/idaholab/moose/
     site_url: /index.html #https:://www.mooseframework.org
     include_css:

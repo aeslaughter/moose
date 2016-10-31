@@ -15,7 +15,7 @@ from MooseInputBlock import MooseInputBlock
 from MooseCppMethod import MooseCppMethod
 from MoosePackageParser import MoosePackageParser
 from MooseMarkdownLinkPreprocessor import MooseMarkdownLinkPreprocessor
-from MooseCarousel import MooseCarousel
+from MooseSlider import MooseSlider
 from MooseDiagram import MooseDiagram
 from MooseCSS import MooseCSS
 from MooseSlidePreprocessor import MooseSlidePreprocessor
@@ -121,7 +121,7 @@ class MooseMarkdown(markdown.Extension):
     diagrams = MooseDiagram(md.parser, root=config['root'], docs_dir=config['docs_dir'], graphviz=config['graphviz'], ext=config['dot_ext'])
     md.parser.blockprocessors.add('diagrams', diagrams, '_begin')
 
-    carousel = MooseCarousel(md.parser, root=config['root'], docs_dir=config['docs_dir'])
+    carousel = MooseSlider(md.parser, root=config['root'], docs_dir=config['docs_dir'])
     md.parser.blockprocessors.add('slideshow', carousel, '_begin')
 
     css = MooseCSS(md.parser, root=config['root'], docs_dir=config['docs_dir'])

@@ -9,7 +9,7 @@
     });
     $('.modal-trigger').leanModal();
     $('.scrollspy').scrollSpy();
-
+    $('.slider').slider();
   }); // end of document ready
 })(jQuery); // end of jQuery name space
 
