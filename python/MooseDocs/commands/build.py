@@ -53,6 +53,24 @@ def flat(node):
       yield c
 
 
+def get_markdown_extensions(config):
+  """
+  Extract the markdown extensions and associated configurations from the yaml configuration.
+  """
+  extensions = []
+  extension_configs = []
+  for extension in config['markdown_extensions']:
+    if isinstance(extension, dict):
+      for k, v in extension.iteritems(): # there should only be one entry, but just in case
+        extensions.append(k)
+        extension_configs.append(v)
+    else:
+      extensions.append(extension)
+      extension_configs.append(dict())
+
+  return extensions, extension_configs
+
+
 class Builder(object):
   """
   Object for building
@@ -143,14 +161,16 @@ def build(config_file='moosedocs.yml', **kwargs):
   The main build command.
   """
 
+  # Load the YAML configuration file
   config = MooseDocs.yaml_load(config_file)
   config.update(kwargs)
+
+  # Load the site map
   sitemap = MooseDocs.load_pages(config['pages'])
 
-  # TODO: Update this to use list provide in configuration
-  md_config = config['markdown_extensions'][-1]['MooseDocs.extensions.MooseMarkdown']
-  moose = MooseDocs.extensions.MooseMarkdown(**md_config)
-  parser = markdown.Markdown(extensions=[moose, 'markdown_include.include', 'admonition', 'mdx_math', 'toc', 'extra'])
+  # Create the markdown parser
+  extensions, extension_configs = get_markdown_extensions(config)
+  parser = markdown.Markdown(extensions=extensions, extension_configs=extension_configs)
 
   # Create object for storing pages to be generated
   builder = Builder(sitemap, parser, config['site_dir'], config['template'], **config['template_arguments'])

@@ -11,10 +11,12 @@ template_arguments:
     include_css:
         - css/materialize.css
         - css/moose.css
+        - css/prism.css
     include_javascript:
         - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
         - https://code.jquery.com/jquery-2.1.1.min.js
         - js/materialize.js
+        - js/prism.css
         - js/init.js
 
 extra_pages:
@@ -26,6 +28,7 @@ markdown_extensions:
     - toc
     - smarty
     - admonition
+    - extra
     - markdown_include.include           # pip install markdown-include
     - mdx_math                           # pip install python-markdown-math
     - MooseDocs.extensions.MooseMarkdown:
