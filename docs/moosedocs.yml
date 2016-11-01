@@ -86,49 +86,24 @@ markdown_extensions:
                   - ../modules/tensor_mechanics/include
                   - ../modules/level_set/include
           locations:
-<<<<<<< 842167d39bac8ec98c87e634879f88fbe990a07d
-              framework:
-                  doxygen: http://mooseframework.com/docs/doxygen/moose/
-                  paths:
-                      - ../framework/src
-                      - ../framework/include
-                  install: content/framework/systems
-              phase_field:
-                  doxygen: http://mooseframework.org/docs/doxygen/modules/
-                  paths:
-                      - ../modules/phase_field/src
-                      - ../modules/phase_field/include
-                  install: content/modules/phase_field/systems
-=======
 #              framework:
 #                  doxygen: http://mooseframework.com/docs/doxygen/moose/
 #                  paths:
 #                      - ../framework/src
 #                      - ../framework/include
 #                  install: content/framework/systems
->>>>>>> REMOVE THIS
+#              phase_field:
+#                  doxygen: http://mooseframework.org/docs/doxygen/modules/
+#                  paths:
+#                      - ../modules/phase_field/src
+#                      - ../modules/phase_field/include
+#                  install: content/modules/phase_field/systems
               level_set:
                   doxygen: http://mooseframework.com/docs/doxygen/moose/
                   paths:
                       - ../modules/level_set/src
                       - ../modules/level_set/include
                   install: content/modules/level_set/systems
-<<<<<<< 842167d39bac8ec98c87e634879f88fbe990a07d
-              tensor_mechanics:
-                  doxygen: http://mooseframework.org/docs/doxygen/modules/
-                  paths:
-                      - ../modules/tensor_mechanics/src
-                      - ../modules/tensor_mechanics/include
-                  install: content/modules/tensor_mechanics/systems
-              heat_conduction:
-                  hide:
-                      - /ThermalContact
-                  doxygen: http://mooseframework.org/docs/doxygen/modules/
-                  paths:
-                      - ../modules/heat_conduction/src
-                      - ../modules/heat_conduction/include
-                  install: content/modules/heat_conduction/systems
-=======
 #              tensor_mechanics:
 #                  doxygen: http://mooseframework.org/docs/doxygen/modules/
 #                  paths:
@@ -136,9 +111,10 @@ markdown_extensions:
 #                      - ../modules/tensor_mechanics/include
 #                  install: content/modules/tensor_mechanics/systems
 #              heat_conduction:
+#                  hide:
+#                      - /ThermalContact
 #                  doxygen: http://mooseframework.org/docs/doxygen/modules/
 #                  paths:
 #                      - ../modules/heat_conduction/src
 #                      - ../modules/heat_conduction/include
 #                  install: content/modules/heat_conduction/systems
->>>>>>> REMOVE THIS
