@@ -6,13 +6,14 @@ import traceback
 from pybtex.plugin import find_plugin
 from pybtex.database import BibliographyData, parse_file
 
+from MooseCommonExtension import MooseCommonExtension
 from markdown.preprocessors import Preprocessor
 from markdown.util import etree
 
 import logging
 log = logging.getLogger(__name__)
 
-class MooseBibtex(Preprocessor):
+class MooseBibtex(MooseCommonExtension, Preprocessor):
   """
   Creates per-page bibliographies using latex syntax.
   """
@@ -21,12 +22,12 @@ class MooseBibtex(Preprocessor):
   RE_STYLE = r'(?<!`)\\bibliographystyle\{(.*?)\}'
   RE_CITE = r'(?<!`)\\(?P<cmd>cite|citet|citep)\{(?P<key>.*?)\}'
 
-  def __init__(self, root=None, **kwargs):
-    Preprocessor.__init__(self, **kwargs)
+  def __init__(self, markdown_instance=None, **kwargs):
+    MooseCommonExtension.__init__(self, **kwargs),
+    Preprocessor.__init__(self, markdown_instance)
 
     self._citations = []
     self._bibtex = BibliographyData()
-    self._root = root
 
   def run(self, lines):
     """
@@ -43,11 +44,12 @@ class MooseBibtex(Preprocessor):
       bib_string = match.group(0)
       for bfile in match.group(1).split(','):
         try:
-          bibfiles.append(os.path.join(self._root, bfile))
+          bibfiles.append(os.path.join(self._docs_dir, bfile))
+          print self._root, self._docs_dir, bfile, bib_string
           data = parse_file(bibfiles[-1])
         except Exception as e:
           log.error('Failed to parse bibtex file: {}'.format(bfile))
-          traceback.prent_exc(e)
+          traceback.print_exc(e)
           return lines
         self._bibtex.add_entries(data.entries.iteritems())
     else:

@@ -54,8 +54,6 @@ LevelSetReinitializationMultiApp::initialSetup()
 
   if (_has_an_app)
   {
-    MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
-
     Executioner * ex = _apps[0]->getExecutioner();
 
     if (!ex)
@@ -65,30 +63,21 @@ LevelSetReinitializationMultiApp::initialSetup()
 
     _executioner = ex;
 
-
     _level_set_problem = dynamic_cast<LevelSetReinitializationProblem *>(&appProblem(0));
     if (!_level_set_problem)
       mooseError("The Problem type must be LevelSetReinitializationProblem.");
-
-      // Swap back
-    Moose::swapLibMeshComm(swapped);
   }
 }
 
 bool
-LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool auto_advance)
+LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool /*auto_advance*/)
 {
   // Do nothing if not on interval
   if ((_fe_problem.timeStep() % _interval) != 0)
     return true;
 
-  //if (!auto_advance)
-  //  mooseError("LevelSetReinitializationMultiApp is not compatible with auto_advance=false");
-
   if (!_has_an_app)
     return true;
-
-//  MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
 
   _console << "Solving Reinitialization problem." << std::endl;
 
@@ -102,9 +91,6 @@ LevelSetReinitializationMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, b
   _executioner->execute();
   if (!_executioner->lastSolveConverged())
     last_solve_converged = false;
-
-  // Swap back
-//  Moose::swapLibMeshComm(swapped);
 
   return true;//last_solve_converged;
 }

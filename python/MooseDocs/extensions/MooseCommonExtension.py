@@ -22,6 +22,7 @@ class MooseCommonExtension(object):
 
     # The default settings should be stored here
     self._settings = dict()
+    self._settings['id'] = None
 
     # Any CSS you wish not to be set should be stored here
     # { element.tag : [attribute,] }

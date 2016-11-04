@@ -30,4 +30,4 @@ cosine multiplier so that the reversal is smooth.
 
 ## References
 \bibliographystyle{unsrt}
-\bibliography{docs/bib/level_set.bib}
+\bibliography{bib/level_set.bib}

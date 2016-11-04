@@ -7,25 +7,8 @@
   ymax = 1
   nx = 32
   ny = 32
-  #elem_type = QUAD9
-  #second_order = true
   uniform_refine = 2
 []
-
-#[Adaptivity]
-#  marker = marker
-#  max_h_level = 2
-#  [./Markers]
-#    [./marker]
-#      type = ValueRangeMarker
-#      variable = phi
-#      lower_bound = 0.47
-#      upper_bound = 0.53
-#      buffer_size = 0.12
-#      third_state = DO_NOTHING
-#    [../]
-#  [../]
-#[]
 
 [AuxVariables]
   [./vel_x]
@@ -65,7 +48,7 @@
 
 [Functions]
   [./phi_exact]
-    type = LevelSetBubbleFunction
+    type = LevelSetOlssonBubble
     epsilon = 0.03
     center = '0 0.5 0'
     radius = 0.15
@@ -92,21 +75,6 @@
     velocity_y = vel_y
     variable = phi
   [../]
-
-#  [./advection_supg]
-#    type = LevelSetAdvectionSUPG
-#    velocity_x = vel_x
-#    velocity_y = vel_y
-#    variable = phi
-#  [../]
-#
-#  [./time_supg]
-#    type = LevelSetTimeDerivativeSUPG
-#    velocity_x = vel_x
-#    velocity_y = vel_y
-#    variable = phi
-#  [../]
-
 []
 
 [Postprocessors]
@@ -118,7 +86,7 @@
     execute_on = 'initial timestep_end'
   [../]
   [./cfl]
-    type = CFLCondition
+    type = LevelSetCFLCondition
     velocity_x = vel_x
     velocity_y = vel_y
     execute_on = 'initial timestep_end'
@@ -149,13 +117,6 @@
 []
 
 [Transfers]
-#  [./marker_to_sub]
-#    type = LevelSetMeshRefinementTransfer
-#    multi_app = reinit
-#    source_variable = marker
-#    variable = marker
-#  [../]
-
   [./to_sub]
     type = MultiAppCopyTransfer
     source_variable = phi
@@ -189,6 +150,6 @@
   csv = true
   [./out]
     type = Exodus
-    interval = 5
+#    interval = 5
   [../]
 []

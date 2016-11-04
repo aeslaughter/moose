@@ -107,7 +107,7 @@ class MooseMarkdown(markdown.Extension):
         cache['pages'].append(match.group(1).strip())
 
     # Preprocessors
-    bibtex = MooseBibtex(markdown_instance=md, root=config['root'])
+    bibtex = MooseBibtex(markdown_instance=md, root=config['root'], docs_dir=config['docs_dir'])
     md.preprocessors.add('moose_bibtex', bibtex , '_end')
 
     links = MooseMarkdownLinkPreprocessor(markdown_instance=md, pages=cache['pages'])

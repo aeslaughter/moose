@@ -37,19 +37,9 @@
   [../]
 []
 
-[BCs]
-  active = ''
-  [./all]
-    type = DirichletBC
-    variable = phi
-    boundary = 'top bottom left right'
-    value = 0
-  [../]
-[]
-
 [Functions]
   [./phi_exact]
-    type = LevelSetBubbleFunction
+    type = LevelSetOlssonBubble
     epsilon = 0.03
     center = '0 0.5 0'
     radius = 0.15
@@ -87,7 +77,7 @@
     execute_on = 'initial timestep_end'
   [../]
   [./cfl]
-    type = CFLCondition
+    type = LevelSetCFLCondition
     velocity_x = vel_x
     velocity_y = vel_y
     execute_on = 'initial' #timestep_end'

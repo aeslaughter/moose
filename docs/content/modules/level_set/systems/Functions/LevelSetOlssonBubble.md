@@ -1,7 +1,7 @@
 # LevelSetOlssonBubbleFunction
-!devel /Functions/LevelSetOlssonBubbleFunction float=right width=auto margin=20px padding=20px background-color=#F8F8F8
+!devel /Functions/LevelSetOlssonBubble float=right width=auto margin=20px padding=20px background-color=#F8F8F8
 
-!description /Functions/LevelSetOlssonBubbleFunction
+!description /Functions/LevelSetOlssonBubble
 
 \citet{olsson2005conservative} define a level set function ($\Phi$) that differs from the traditional signed distance function.
 They define a level set function ranging from 0 to 1 with a defined thickness ($\epsilon$), which
@@ -24,14 +24,14 @@ Typically, the interface of the level set function is defined by the 0.5 contour
 For example, the following code creates a "bubble" in the
 lower left corner in a domain ranging from 0 to 1 in the x- and y-direction, as shown in the figure.
 
-!input modules/level_set/tests/functions/olsson_bubble_function/olsson_bubble_function.i block=Functions
+!input modules/level_set/tests/functions/olsson_bubble/olsson_bubble.i block=Functions
 
-!parameters /Functions/LevelSetOlssonBubbleFunction
+!parameters /Functions/LevelSetOlssonBubble
 
-!inputfiles /Functions/LevelSetOlssonBubbleFunction
+!inputfiles /Functions/LevelSetOlssonBubble
 
-!childobjects /Functions/LevelSetOlssonBubbleFunction
+!childobjects /Functions/LevelSetOlssonBubble
 
 ## References
 \bibliographystyle{unsrt}
-\bibliography{docs/bib/level_set.bib}
+\bibliography{bib/level_set.bib}
