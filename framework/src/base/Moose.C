@@ -237,6 +237,7 @@
 #include "LineFunctionSampler.h"
 #include "VolumeHistogram.h"
 #include "SphericalAverage.h"
+#include "VectorReceiver.h"
 
 // user objects
 #include "LayeredIntegral.h"
@@ -350,6 +351,7 @@
 #include "MultiAppPostprocessorTransfer.h"
 #include "MultiAppProjectionTransfer.h"
 #include "MultiAppPostprocessorToAuxScalarTransfer.h"
+#include "MultiAppVectorPostprocessorTransfer.h"
 
 // Actions
 #include "AddBCAction.h"
@@ -445,6 +447,9 @@
 #include "ConstantRate.h"
 #include "TimeDerivativeNodalKernel.h"
 #include "UserForcingFunctionNodalKernel.h"
+
+// Samplers
+#include "NormalDistribution.h"
 
 namespace Moose {
 
@@ -664,6 +669,7 @@ registerObjects(Factory & factory)
   registerVectorPostprocessor(LineFunctionSampler);
   registerVectorPostprocessor(VolumeHistogram);
   registerVectorPostprocessor(SphericalAverage);
+  registerVectorPostprocessor(VectorReceiver);
 
   // user objects
   registerUserObject(LayeredIntegral);
@@ -779,6 +785,7 @@ registerObjects(Factory & factory)
   registerTransfer(MultiAppPostprocessorTransfer);
   registerTransfer(MultiAppProjectionTransfer);
   registerTransfer(MultiAppPostprocessorToAuxScalarTransfer);
+  registerTransfer(MultiAppVectorPostprocessorTransfer);
 
   // Outputs
 #ifdef LIBMESH_HAVE_EXODUS_API
@@ -821,6 +828,9 @@ registerObjects(Factory & factory)
   registerNodalKernel(TimeDerivativeNodalKernel);
   registerNodalKernel(ConstantRate);
   registerNodalKernel(UserForcingFunctionNodalKernel);
+
+  // Samplers
+  registerObject(NormalDistribution);
 
   registered = true;
 }
