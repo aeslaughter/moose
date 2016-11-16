@@ -9,3 +9,8 @@
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css"/>
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css"/>
 <link type="text/css" rel="stylesheet" href="{{current.relpath('css/moose.css')}}"/>
+
+{% if sidenav == "mlpushmenu" %}
+  <link type="text/css" rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link type="text/css" rel="stylesheet" href={{current.relpath('css/mlpushmenu.css')}}>
+{% endif %}

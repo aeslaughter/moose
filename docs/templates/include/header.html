@@ -14,8 +14,11 @@ Page header including the "sidebar" navigation.
       </li>
     </ul>
 
-    {% include 'sidebar.html' %}
-
+    {% if sidenav == "mlpushmenu" %}
+      {% include 'include/mlpushmenu-sidebar.html' %}
+    {% else %}
+      {% include 'include/sidebar.html' %}
+    {% endif %}
 
     {% if fixed|default(true) %}
       <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>

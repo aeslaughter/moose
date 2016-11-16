@@ -1,7 +1,8 @@
-template: materialize.html
+template: website.html
 
 template_arguments:
     title: MOOSE
+    sidenav: mlpushmenu
     logo: media/moose_logo_small.png
     repo_url: https://github.com/idaholab/moose/
     site_url: /index.html
@@ -9,7 +10,7 @@ template_arguments:
 extra_pages:
     - MOOSE:
         filename: index.html
-        template: materialize-home.html
+        template: website-home.html
 
 markdown_extensions:
     - toc

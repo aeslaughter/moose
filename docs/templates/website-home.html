@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  {% include 'head.html' %}
+  {% include 'include/head.html' %}
   <style>
     header, main, footer {
     padding-left:0px;
@@ -13,7 +13,7 @@
 
 <body>
   <header>
-    {% include 'header.html' %}
+    {% include 'include/header.html' %}
   </header>
 
   <main>
@@ -28,13 +28,13 @@
     <div class="container white-text">
       <div class="row">
         <div class="col s12">
-          {% include 'footer.html' %}
+          {% include 'include/footer.html' %}
         </div>
       </div>
     </div>
   </footer>
 
-  {% include 'scripts.html' %}
+  {% include 'include/scripts.html' %}
 
   </body>
 </html>
