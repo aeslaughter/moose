@@ -15,6 +15,7 @@ from MooseInputBlock import MooseInputBlock
 from MooseCppMethod import MooseCppMethod
 from MoosePackageParser import MoosePackageParser
 from MooseSlider import MooseSlider
+from MooseCollection import MooseCollection
 from MooseDiagram import MooseDiagram
 from MooseCSS import MooseCSS
 from MooseSlidePreprocessor import MooseSlidePreprocessor
@@ -104,6 +105,7 @@ class MooseMarkdown(markdown.Extension):
     md.parser.blockprocessors.add('diagrams', MooseDiagram(md.parser, **config), '_begin')
     md.parser.blockprocessors.add('slideshow', MooseSlider(md.parser, **config), '_begin')
     md.parser.blockprocessors.add('css', MooseCSS(md.parser, **config), '_begin')
+    md.parser.blockprocessors.add('collection', MooseCollection(md.parser, **config), '_begin')
 
     # Inline Patterns
     object_markdown = MooseObjectSyntax(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax, database=database, **config)

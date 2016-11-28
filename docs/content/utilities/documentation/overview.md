@@ -12,12 +12,14 @@ To ameliorate this problem a single source documentation system was developed ba
 * Lists of cross-referencing links to examples and source code that use or inherit from your objects may be created.
 * Tools for placing source code without copying code allow documentation to change with the code, without modification.
 
-The single source markdown files may be converted into various media forms include web-sites (like this one), slide shows, and pdfs (via latex). Most importantly, custom markdown syntax is easily created so it is possible to develop syntax to meet the needs of any project.
+The single source markdown files may be converted into various media forms include web-sites (like this one), presentations, and pdfs (via latex). Most importantly, custom markdown syntax is easily created so it is possible to develop syntax to meet the needs of any project.
 
 The following links provide additional details on the MOOSE documentation system:
 
-* [Setup and Configuration](documentation/setup.md)
-* [Creating a Web-Site](documentation/website.md)
-* [Building a Presentation](documentation/presentation.md)
-* [Generating a PDF](documentation/pdf.md)
-* [Moose Style Markdown](documentation/moose_flavored_markdown.md)
+*- [Setup and Configuration](documentation/setup.md)
+*- [Creating a Web-Site](documentation/website.md)
+*- [Building a Presentation](documentation/presentation.md)
+*- [Generating a PDF](documentation/pdf.md)
+*- [Moose Style Markdown](documentation/moose_flavored_markdown.md)
+
+foo
