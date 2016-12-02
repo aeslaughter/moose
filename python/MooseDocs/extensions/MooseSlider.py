@@ -1,13 +1,15 @@
 import glob
 import re
 import os
-import string
 from markdown.util import etree
 from markdown.blockprocessors import BlockProcessor
-import inspect
 import collections
+import logging
+log = logging.getLogger(__name__)
+
 import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
+
 
 class MooseSlider(BlockProcessor, MooseCommonExtension):
   """
@@ -102,7 +104,6 @@ class MooseSlider(BlockProcessor, MooseCommonExtension):
     ul.set('class', 'slides')
 
     for item in self.parseFilenames(block[match.end()+1:]):
-      print item
       li = etree.SubElement(ul, 'li')
       img = etree.SubElement(li, 'img')
       img.set('src', item.filename)
