@@ -95,7 +95,7 @@ class Authors(object):
         for line in output:
             match = self.AUTHOR_RE.search(line)
             if match:
-                author = match.group(1)
+                author = match.group(1).strip()
                 local = match.group(2).strip()
             else:
                 continue
