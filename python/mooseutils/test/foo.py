@@ -3,7 +3,7 @@ import os
 def func():
     """
     This is a block comment,
-    that has multiple lines.
+    ALL: 17; CODE:7; COMMENT:6; BLANK:3
     """
 
     x = 0

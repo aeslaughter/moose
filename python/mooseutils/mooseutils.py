@@ -1,5 +1,6 @@
 import os
 import re
+import math
 import errno
 
 def colorText(string, color, **kwargs):
@@ -137,3 +138,13 @@ def check_configuration(packages):
         return 1
 
     return 0
+
+def make_chunks(l, n):
+    """
+    Separate single list into multiple lists for multiprocessing.
+
+    Create n (cores) lists from list l.
+    """
+    n = int(math.ceil(len(l)/float(n)))
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
