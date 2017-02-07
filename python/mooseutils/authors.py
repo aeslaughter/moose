@@ -11,9 +11,6 @@ import argparse
 
 Language = collections.namedtuple('Language', 'extension name comment block_comment_open block_comment_close')
 
-languages = dict()
-languages['.py'] = Language(extension='.py', name='Python', comment=['#'],
-                            block_comment_open=["'''", '"""'], block_comment_close=["'''", '"""'])
 
 
 
@@ -27,21 +24,25 @@ def write_table(counts):
     hline = '-' * (50 + 18*n) + '\n'
 
     output = ''
-    authors = sorted(counts[Authors.GROUPS[0]].keys())
 
+    authors = []
     total = 0
-    for group in counts.itervalues():
-        for cnt in group.itervalues():
+    for k, v in counts.iteritems():
+        authors.append((k, v['all']))
+        for cnt in v.itervalues():
             total += cnt
+
+    authors = sorted(authors, key=lambda x: x[1])
+
 
     output += hline
     output += h1.format('', *[x.upper() for x in Authors.GROUPS])
     output += h_fmt.format('Author', *['Count', '%']*n)
     output += hline
-    for author in authors:
+    for author, _ in reversed(authors):
         out = [author]
-        for group in Authors.GROUPS:
-            cnt = counts[group][author]
+        for group in Authors.GROUPS:#counts[author].itervalues():
+            cnt = counts[author][group]
             out += [cnt, cnt/total]
         output += d_fmt.format(*out)
     return output
@@ -51,18 +52,20 @@ def write_table(counts):
 
 class Authors(object):
 
-    AUTHOR_RE = re.compile('\(([\w\s\.]+)\s[0-9]{4}-')
+    AUTHOR_RE = re.compile('\(([\w\s\.]+)\s[0-9]{4}-.*?\)\s+(.*?)$')
 
-    GROUPS = ['total', 'code', 'comments', 'blank']
+    GROUPS = ['all', 'code', 'comments', 'blank']
+
+    LANGUAGES = dict()
+    LANGUAGES['.py'] = Language(extension='.py', name='Python', comment=['#'],
+                                block_comment_open=["'''", '"""'], block_comment_close=["'''", '"""'])
 
 
     def __init__(self, filename):
         self.__filename = filename
 
         _, ext = os.path.splitext(self.__filename)
-#        if ext not in languages:
-#            raise NotImplementedError("")
-        self.__language = languages[ext]
+        self.__language = self.LANGUAGES[ext]
 
         self.__counts = collections.defaultdict(lambda: collections.defaultdict(int))
 
@@ -78,7 +81,7 @@ class Authors(object):
     def increment(self, group, author):
         if group not in self.GROUPS:
             raise KeyError('Invalid group name: {}'.format(group))
-        self.__counts[group][author] += 1
+        self.__counts[author][group] += 1
 
     def execute(self):
 
@@ -90,18 +93,16 @@ class Authors(object):
         in_block_comment = False
 
         for line in output:
-            local = line.strip()
             match = self.AUTHOR_RE.search(line)
             if match:
                 author = match.group(1)
+                local = match.group(2).strip()
             else:
                 continue
 
             if (not in_block_comment) and any([local.startswith(x) for x in self.__language.block_comment_open]):
                 in_block_comment = True
-            self.increment('total', author)
-
-            print local
+            self.increment('all', author)
 
             if local == '':
                 self.increment('blank', author)
@@ -112,15 +113,6 @@ class Authors(object):
 
             if (in_block_comment) and any([local.startswith(x) for x in self.__language.block_comment_close]):
                 in_block_comment = False
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -139,7 +131,9 @@ if __name__ == '__main__':
             dirs[:] = [d for d in dirs if d not in args.exclude]
             for filename in filenames:
                 full_file = os.path.abspath(os.path.join(root, filename))
-                objects.append(Authors(full_file))
+                _, ext = os.path.splitext(filename)
+                if ext in Authors.LANGUAGES:
+                    objects.append(Authors(full_file))
 
 
     for obj in objects:
