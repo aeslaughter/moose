@@ -21,6 +21,8 @@
 #include "BlockRestrictable.h"
 #include "MooseVariable.h"
 #include "TransientInterface.h"
+#include "MooseVariableDependencyInterface.h"
+#include "MaterialPropertyInterface.h"
 
 /**
  * A base storage container for MooseObjects.
@@ -442,7 +444,6 @@ MooseObjectWarehouseBase<T>::updateActive(THREAD_ID tid /*= 0*/)
     for (it = _all_boundary_objects[tid].begin(); it != _all_boundary_objects[tid].end(); ++it)
       updateActiveHelper(_active_boundary_objects[tid][it->first], it->second);
   }
-
 }
 
 
@@ -530,12 +531,23 @@ MooseObjectWarehouseBase<T>::updateBoundaryVariableDependency(BoundaryID id, std
 template<typename T>
 void
 MooseObjectWarehouseBase<T>::updateVariableDependencyHelper(std::set<MooseVariable *> & needed_moose_vars,
-                                                                    const std::vector<MooseSharedPointer<T> > & objects)
+                                                            const std::vector<MooseSharedPointer<T> > & objects)
 {
-  for (typename std::vector<MooseSharedPointer<T> >::const_iterator it = objects.begin(); it != objects.end(); ++it)
+  for (const MooseSharedPointer<T> & ptr : objects)
   {
-    const std::set<MooseVariable *> & mv_deps = (*it)->getMooseVariableDependencies();
-    needed_moose_vars.insert(mv_deps.begin(), mv_deps.end());
+    MooseSharedPointer<MooseVariableDependencyInterface> interface = MooseSharedNamespace::dynamic_pointer_cast<MooseVariableDependencyInterface>(ptr);
+    if (interface)
+    {
+      const std::set<MooseVariable *> & mv_deps = interface->getMooseVariableDependencies();
+      needed_moose_vars.insert(mv_deps.begin(), mv_deps.end());
+    }
+
+    std::shared_ptr<MaterialPropertyInterface> material_interface = std::dynamic_pointer_cast<MaterialPropertyInterface>(ptr);
+    if (material_interface)
+    {
+      const std::set<MooseVariable *> & mv_deps = material_interface->getMaterialMooseVariableDependencies();
+      needed_moose_vars.insert(mv_deps.begin(), mv_deps.end());
+    }
   }
 }
 
@@ -562,7 +574,7 @@ MooseObjectWarehouseBase<T>::sortHelper(std::vector<MooseSharedPointer<T> > & ob
     return;
 
   // Make sure the object is sortable
-  mooseAssert(MooseSharedNamespace::dynamic_pointer_cast<DependencyResolverInterface>(objects[0]), "Objects must inhert from DependencyResolverInterface to be sorted.");
+  mooseAssert(MooseSharedNamespace::dynamic_pointer_cast<DependencyResolverInterface>(objects[0]), "Objects must inherit from DependencyResolverInterface to be sorted.");
 
   try
   {
