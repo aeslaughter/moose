@@ -19,19 +19,31 @@ languages['.py'] = Language(extension='.py', name='Python', comment=['#'],
 
 def write_table(counts):
 
+    n = len(Authors.GROUPS)
+    h_fmt = '{:50}' + '{:>10}{:>8}' * n + '\n'
+    d_fmt = '{:50}' + '{:10}{:8.1%}' * n + '\n'
+
+    h1 = '{:50}' + '{:>18}' * n + '\n'
+    hline = '-' * (50 + 18*n) + '\n'
 
     output = ''
-    for group in Authors.GROUPS:
+    authors = sorted(counts[Authors.GROUPS[0]].keys())
 
-        total = sum([c for c in counts[group].itervalues()])
-        if total:
-            output += group.upper() + ':\n'
-            output += '-'*72 + '\n'
-            output += '{:4}{:50}{:>10}{:>8}\n'.format('', 'Author', 'Count', '%')
-            output += '-'*72 + '\n'
-            for author, cnt in counts[group].iteritems():
-                output +=  '{:4}{:50}{:10}{:8.1%}\n'.format('', author, cnt, cnt/total)
+    total = 0
+    for group in counts.itervalues():
+        for cnt in group.itervalues():
+            total += cnt
 
+    output += hline
+    output += h1.format('', *[x.upper() for x in Authors.GROUPS])
+    output += h_fmt.format('Author', *['Count', '%']*n)
+    output += hline
+    for author in authors:
+        out = [author]
+        for group in Authors.GROUPS:
+            cnt = counts[group][author]
+            out += [cnt, cnt/total]
+        output += d_fmt.format(*out)
     return output
 
 
@@ -59,6 +71,9 @@ class Authors(object):
 
     def counts(self):
         return self.__counts
+
+    def language(self):
+        return self.__language.name
 
     def increment(self, group, author):
         if group not in self.GROUPS:
@@ -128,12 +143,15 @@ if __name__ == '__main__':
     for obj in objects:
         obj.execute()
 
-    counts = collections.defaultdict(lambda: collections.defaultdict(int))
+    counts = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(int)))
     for obj in objects:
         #print obj.filename()
         for name, value in obj.counts().iteritems():
             for author, count in value.iteritems():
                 #print ' '*4, name, author, count
-                counts[name][author] += count
+                counts[obj.language()][name][author] += count
 
-    print write_table(counts)
+    for key, value in counts.iteritems():
+        print key
+        #print key.name:
+        print write_table(value)
