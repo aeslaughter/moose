@@ -9,7 +9,7 @@ import collections
 import argparse
 
 
-Language = collections.namedtuple('Language', 'extension name comment block_comment_open block_comment_close')
+Language = collections.namedtuple('Language', 'extensions comment block_comment_open block_comment_close')
 
 
 
@@ -25,12 +25,14 @@ def write_table(counts):
 
     output = ''
 
+    totals = collections.defaultdict(int)
     authors = []
     total = 0
     for k, v in counts.iteritems():
         authors.append((k, v['all']))
-        for cnt in v.itervalues():
+        for group, cnt in v.iteritems():
             total += cnt
+            totals[group] += cnt
 
     authors = sorted(authors, key=lambda x: x[1])
 
@@ -41,10 +43,13 @@ def write_table(counts):
     output += hline
     for author, _ in reversed(authors):
         out = [author]
-        for group in Authors.GROUPS:#counts[author].itervalues():
+        for group in Authors.GROUPS:
             cnt = counts[author][group]
             out += [cnt, cnt/total]
         output += d_fmt.format(*out)
+
+    output += hline
+    output += h1.format('', *[totals[g] for g in Authors.GROUPS])
     return output
 
 
@@ -57,15 +62,16 @@ class Authors(object):
     GROUPS = ['all', 'code', 'comments', 'blank']
 
     LANGUAGES = dict()
-    LANGUAGES['.py'] = Language(extension='.py', name='Python', comment=['#'],
-                                block_comment_open=["'''", '"""'], block_comment_close=["'''", '"""'])
+    LANGUAGES['Python'] = Language(extensions=['.py'], comment=['#'],
+                                   block_comment_open=["'''", '"""'], block_comment_close=["'''", '"""'])
+    LANGUAGES['C++'] = Language(extensions=['.C', '.h'], comment=['//'],
+                                block_comment_open=['/*'],
+                                block_comment_close=['*/'])
 
-
-    def __init__(self, filename):
+    def __init__(self, lang, filename):
+        self.__name = lang
         self.__filename = filename
-
-        _, ext = os.path.splitext(self.__filename)
-        self.__language = self.LANGUAGES[ext]
+        self.__language = self.LANGUAGES[lang]
 
         self.__counts = collections.defaultdict(lambda: collections.defaultdict(int))
 
@@ -76,7 +82,7 @@ class Authors(object):
         return self.__counts
 
     def language(self):
-        return self.__language.name
+        return self.__name
 
     def increment(self, group, author):
         if group not in self.GROUPS:
@@ -127,13 +133,15 @@ if __name__ == '__main__':
 
     objects = []
     for location in args.locations:
-        for root, dirs, filenames in os.walk(location):
-            dirs[:] = [d for d in dirs if d not in args.exclude]
-            for filename in filenames:
-                full_file = os.path.abspath(os.path.join(root, filename))
-                _, ext = os.path.splitext(filename)
-                if ext in Authors.LANGUAGES:
-                    objects.append(Authors(full_file))
+        for root, _, _ in os.walk(location):
+            if root not in args.exclude:
+                filenames = subprocess.check_output(['git', 'ls-files', root]).split('\n')
+                for filename in filenames:
+                    full_file = os.path.abspath(filename)
+                    _, ext = os.path.splitext(filename)
+                    for key, lang in Authors.LANGUAGES.iteritems():
+                        if ext in lang.extensions:
+                            objects.append(Authors(key, full_file))
 
 
     for obj in objects:
@@ -141,13 +149,11 @@ if __name__ == '__main__':
 
     counts = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(int)))
     for obj in objects:
-        #print obj.filename()
         for name, value in obj.counts().iteritems():
             for author, count in value.iteritems():
-                #print ' '*4, name, author, count
                 counts[obj.language()][name][author] += count
 
     for key, value in counts.iteritems():
         print key
-        #print key.name:
         print write_table(value)
+        print '\n\n'
