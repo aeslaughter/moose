@@ -101,6 +101,8 @@ class Authors(object):
                 in_block_comment = True
             self.increment('total', author)
 
+            print local
+
             if local == '':
                 self.increment('blank', author)
             elif in_block_comment or any([local.startswith(x) for x in self.__language.comment]):
