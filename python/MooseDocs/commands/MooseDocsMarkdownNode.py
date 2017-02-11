@@ -12,7 +12,7 @@ class MooseDocsMarkdownNode(MooseDocsNode):
     """
     Node for converting
     """
-    def __init__(self, md_file=None, syntax=None, parser=None, navigation=None, template=None, template_args=dict(), **kwargs):
+    def __init__(self, md_file=None, parser=None, navigation=None, template=None, template_args=dict(), **kwargs):
         super(MooseDocsMarkdownNode, self).__init__(**kwargs)
 
         if (not md_file) or (not os.path.exists(md_file)):
