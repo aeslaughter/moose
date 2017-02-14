@@ -32,7 +32,6 @@
 #include "AuxGroupExecuteMooseObjectWarehouse.h"
 #include "MaterialWarehouse.h"
 #include "NonlinearSystem.h"
-#include "MultiAppTransfer.h"
 
 // libMesh includes
 #include "libmesh/enum_quadrature_type.h"
