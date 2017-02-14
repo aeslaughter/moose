@@ -52,7 +52,7 @@ MultiAppVariableValueSampleTransfer::execute()
 
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       FEProblemBase & from_problem = _multi_app->problemBase();
       MooseVariable & from_var = from_problem.getVariable(0, _from_var_name);
@@ -129,7 +129,7 @@ MultiAppVariableValueSampleTransfer::execute()
 
       break;
     }
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       mooseError2("Doesn't make sense to transfer a sampled variable's value from a MultiApp!!");
       break;

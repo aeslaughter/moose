@@ -46,7 +46,7 @@ MultiAppVariableValueSamplePostprocessorTransfer::execute()
 
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       FEProblemBase & from_problem = _multi_app->problemBase();
       MooseVariable & from_var = from_problem.getVariable(0, _from_var_name);
@@ -87,7 +87,7 @@ MultiAppVariableValueSamplePostprocessorTransfer::execute()
 
       break;
     }
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       mooseError2("Can't transfer a variable value from a MultiApp to a Postprocessor in the Master.");
       break;

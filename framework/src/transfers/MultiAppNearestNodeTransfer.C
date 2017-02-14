@@ -62,7 +62,7 @@ MultiAppNearestNodeTransfer::MultiAppNearestNodeTransfer(const InputParameters &
 void
 MultiAppNearestNodeTransfer::initialSetup()
 {
-  if (_direction == TO_MULTIAPP)
+  if (_direction == Moose::TO_MULTIAPP)
     variableIntegrityCheck(_to_var_name);
   else
     variableIntegrityCheck(_from_var_name);
@@ -356,10 +356,10 @@ MultiAppNearestNodeTransfer::execute()
     NumericVector<Real> * solution = nullptr;
     switch (_direction)
     {
-      case TO_MULTIAPP:
+      case Moose::TO_MULTIAPP:
         solution = & getTransferVector(i_to, _to_var_name);
         break;
-      case FROM_MULTIAPP:
+      case Moose::FROM_MULTIAPP:
         solution = to_sys->solution.get();
         break;
     }

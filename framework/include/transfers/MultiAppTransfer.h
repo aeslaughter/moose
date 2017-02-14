@@ -44,12 +44,6 @@ class MultiAppTransfer : public Transfer
 public:
   MultiAppTransfer(const InputParameters & parameters);
 
-  enum DIRECTION
-  {
-    TO_MULTIAPP,
-    FROM_MULTIAPP
-  };
-
   /// Used to construct InputParameters
   static MooseEnum directions() { return MooseEnum("to_multiapp from_multiapp"); }
 

@@ -51,7 +51,7 @@ MultiAppMeshFunctionTransfer::MultiAppMeshFunctionTransfer(const InputParameters
 void
 MultiAppMeshFunctionTransfer::initialSetup()
 {
-  if (_direction == TO_MULTIAPP)
+  if (_direction == Moose::TO_MULTIAPP)
     variableIntegrityCheck(_to_var_name);
   else
     variableIntegrityCheck(_from_var_name);
@@ -247,7 +247,7 @@ MultiAppMeshFunctionTransfer::execute()
         if (local_bboxes[i_from].contains_point(pt))
         {
           outgoing_evals[i_pt] = (* local_meshfuns[i_from])(pt - _from_positions[i_from]);
-          if (_direction == FROM_MULTIAPP)
+          if (_direction == Moose::FROM_MULTIAPP)
             outgoing_ids[i_pt] = _local2global_map[i_from];
         }
       }
@@ -256,13 +256,13 @@ MultiAppMeshFunctionTransfer::execute()
     if (i_proc == processor_id())
     {
       incoming_evals[i_proc] = outgoing_evals;
-      if (_direction == FROM_MULTIAPP)
+      if (_direction == Moose::FROM_MULTIAPP)
         incoming_app_ids[i_proc] = outgoing_ids;
     }
     else
     {
       _communicator.send(i_proc, outgoing_evals, send_evals[i_proc]);
-      if (_direction == FROM_MULTIAPP)
+      if (_direction == Moose::FROM_MULTIAPP)
         _communicator.send(i_proc, outgoing_ids, send_ids[i_proc]);
     }
   }
@@ -280,7 +280,7 @@ MultiAppMeshFunctionTransfer::execute()
       continue;
 
     _communicator.receive(i_proc, incoming_evals[i_proc]);
-    if (_direction == FROM_MULTIAPP)
+    if (_direction == Moose::FROM_MULTIAPP)
       _communicator.receive(i_proc, incoming_app_ids[i_proc]);
   }
 
@@ -294,10 +294,10 @@ MultiAppMeshFunctionTransfer::execute()
     NumericVector<Real> * solution = nullptr;
     switch (_direction)
     {
-      case TO_MULTIAPP:
+      case Moose::TO_MULTIAPP:
         solution = & getTransferVector(i_to, _to_var_name);
         break;
-      case FROM_MULTIAPP:
+      case Moose::FROM_MULTIAPP:
         solution = to_sys->solution.get();
         break;
     }
@@ -332,7 +332,7 @@ MultiAppMeshFunctionTransfer::execute()
 
           // Ignore this proc if it's app has a higher rank than the
           // previously found lowest app rank.
-          if (_direction == FROM_MULTIAPP)
+          if (_direction == Moose::FROM_MULTIAPP)
           {
             if (incoming_app_ids[i_proc][i_pt] >= lowest_app_rank)
               continue;
@@ -379,7 +379,7 @@ MultiAppMeshFunctionTransfer::execute()
 
           // Ignore this proc if it's app has a higher rank than the
           // previously found lowest app rank.
-          if (_direction == FROM_MULTIAPP)
+          if (_direction == Moose::FROM_MULTIAPP)
           {
             if (incoming_app_ids[i_proc][i_pt] >= lowest_app_rank)
               continue;
@@ -411,7 +411,7 @@ MultiAppMeshFunctionTransfer::execute()
       continue;
     send_points[i_proc].wait();
     send_evals[i_proc].wait();
-    if (_direction == FROM_MULTIAPP)
+    if (_direction == Moose::FROM_MULTIAPP)
       send_ids[i_proc].wait();
   }
 

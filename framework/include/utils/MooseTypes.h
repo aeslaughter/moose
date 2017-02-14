@@ -308,6 +308,15 @@ enum LineSearchType
 #endif
 };
 
+/**
+ * Transfer direction for MultiApp objects.
+ */
+enum MultiAppTransferDirection
+{
+  TO_MULTIAPP,
+  FROM_MULTIAPP
+};
+
 }
 
 /**

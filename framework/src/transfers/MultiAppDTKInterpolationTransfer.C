@@ -49,7 +49,7 @@ MultiAppDTKInterpolationTransfer::execute()
   {
     switch (_direction)
     {
-      case TO_MULTIAPP:
+      case Moose::TO_MULTIAPP:
       {
         System * from_sys = find_sys(_multi_app->problemBase().es(), _from_var_name);
         System * to_sys = NULL;
@@ -64,7 +64,7 @@ MultiAppDTKInterpolationTransfer::execute()
         break;
       }
 
-      case FROM_MULTIAPP:
+      case Moose::FROM_MULTIAPP:
       {
         System * from_sys = NULL;
         System * to_sys = find_sys(_multi_app->problemBase().es(), _to_var_name);

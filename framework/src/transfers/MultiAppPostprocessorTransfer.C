@@ -40,7 +40,7 @@ MultiAppPostprocessorTransfer::MultiAppPostprocessorTransfer(const InputParamete
     _to_pp_name(getParam<PostprocessorName>("to_postprocessor")),
     _reduction_type(getParam<MooseEnum>("reduction_type"))
 {
-  if (_direction == FROM_MULTIAPP)
+  if (_direction == Moose::FROM_MULTIAPP)
     if (!_reduction_type.isValid())
       mooseError2("In MultiAppPostprocessorTransfer, must specify 'reduction_type' if direction = from_multiapp");
 }
@@ -52,7 +52,7 @@ MultiAppPostprocessorTransfer::execute()
 
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       FEProblemBase & from_problem = _multi_app->problemBase();
 
@@ -63,7 +63,7 @@ MultiAppPostprocessorTransfer::execute()
           _multi_app->appProblemBase(i).getPostprocessorValue(_to_pp_name) = pp_value;
       break;
     }
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       FEProblemBase & to_problem = _multi_app->problemBase();
 

@@ -108,7 +108,7 @@ MultiAppCopyTransfer::execute()
 {
   _console << "Beginning MultiAppCopyTransfer " << name() << std::endl;
 
-  if (_direction == TO_MULTIAPP)
+  if (_direction == Moose::TO_MULTIAPP)
   {
     FEProblemBase & from_problem = _multi_app->problemBase();
     for (unsigned int i = 0; i < _multi_app->numGlobalApps(); i++)
@@ -116,7 +116,7 @@ MultiAppCopyTransfer::execute()
         transfer(_multi_app->appProblemBase(i), from_problem);
   }
 
-  else if (_direction == FROM_MULTIAPP)
+  else if (_direction == Moose::FROM_MULTIAPP)
   {
     FEProblemBase & to_problem = _multi_app->problemBase();
     for (unsigned int i = 0; i < _multi_app->numGlobalApps(); i++)

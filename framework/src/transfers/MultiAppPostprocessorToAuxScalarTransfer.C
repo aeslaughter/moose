@@ -49,7 +49,7 @@ MultiAppPostprocessorToAuxScalarTransfer::execute()
   switch (_direction)
   {
     // MasterApp -> SubApp
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       // Extract the postprocessor that is being transferd
       FEProblemBase & from_problem = _multi_app->problemBase();
@@ -75,7 +75,7 @@ MultiAppPostprocessorToAuxScalarTransfer::execute()
     }
 
     // SubApp -> MasterApp
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       // The number of sub applications
       unsigned int num_apps = _multi_app->numGlobalApps();

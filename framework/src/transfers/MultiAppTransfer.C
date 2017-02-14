@@ -106,7 +106,7 @@ MultiAppTransfer::getAppInfo()
   // Build the vectors for to problems, from problems, and subapps positions.
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
       _from_problems.push_back(&_multi_app->problemBase());
       _from_positions.push_back(Point(0., 0., 0.));
       for (unsigned int i_app = 0; i_app < _multi_app->numGlobalApps(); i_app++)
@@ -118,7 +118,7 @@ MultiAppTransfer::getAppInfo()
       }
       break;
 
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
       _to_problems.push_back(&_multi_app->problemBase());
       _to_positions.push_back(Point(0., 0., 0.));
       for (unsigned int i_app = 0; i_app < _multi_app->numGlobalApps(); i_app++)
@@ -187,10 +187,10 @@ MultiAppTransfer::getFromsPerProc()
   std::vector<unsigned int> froms_per_proc;
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
       froms_per_proc.resize(n_processors(), 1);
       break;
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
       froms_per_proc.resize(n_processors());
       _communicator.allgather(_multi_app->numLocalApps(), froms_per_proc);
       break;
@@ -202,7 +202,7 @@ MultiAppTransfer::getFromsPerProc()
 NumericVector<Real> &
 MultiAppTransfer::getTransferVector(unsigned int i_local, std::string var_name)
 {
-  mooseAssert(_direction == TO_MULTIAPP, "getTransferVector only works for transfers to multiapps");
+  mooseAssert(_direction == Moose::TO_MULTIAPP, "getTransferVector only works for transfers to multiapps");
 
   return _multi_app->appTransferVector(_local2global_map[i_local], var_name);
 }

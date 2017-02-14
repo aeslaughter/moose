@@ -669,7 +669,7 @@ public:
    * @param type The execution flag to execute.
    * @param direction The direction (to or from) to transfer.
    */
-  void execMultiAppTransfers(ExecFlagType type, MultiAppTransfer::DIRECTION direction);
+  void execMultiAppTransfers(ExecFlagType type, Moose::MultiAppTransferDirection direction);
 
   /**
    * Execute the MultiApps associated with the ExecFlagType

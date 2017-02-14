@@ -64,7 +64,7 @@ MultiAppInterpolationTransfer::MultiAppInterpolationTransfer(const InputParamete
 void
 MultiAppInterpolationTransfer::initialSetup()
 {
-  if (_direction == TO_MULTIAPP)
+  if (_direction == Moose::TO_MULTIAPP)
     variableIntegrityCheck(_to_var_name);
   else
     variableIntegrityCheck(_from_var_name);
@@ -77,7 +77,7 @@ MultiAppInterpolationTransfer::execute()
 
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       FEProblemBase & from_problem = _multi_app->problemBase();
       MooseVariable & from_var = from_problem.getVariable(0, _from_var_name);
@@ -256,7 +256,7 @@ MultiAppInterpolationTransfer::execute()
 
       break;
     }
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       FEProblemBase & to_problem = _multi_app->problemBase();
       MooseVariable & to_var = to_problem.getVariable(0, _to_var_name);

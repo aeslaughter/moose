@@ -52,7 +52,7 @@ MultiAppUserObjectTransfer::MultiAppUserObjectTransfer(const InputParameters & p
 void
 MultiAppUserObjectTransfer::initialSetup()
 {
-  if (_direction == TO_MULTIAPP)
+  if (_direction == Moose::TO_MULTIAPP)
     variableIntegrityCheck(_to_var_name);
 }
 
@@ -63,7 +63,7 @@ MultiAppUserObjectTransfer::execute()
 
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       for (unsigned int i=0; i<_multi_app->numGlobalApps(); i++)
       {
@@ -153,7 +153,7 @@ MultiAppUserObjectTransfer::execute()
 
       break;
     }
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       FEProblemBase & to_problem = _multi_app->problemBase();
       MooseVariable & to_var = to_problem.getVariable(0, _to_var_name);

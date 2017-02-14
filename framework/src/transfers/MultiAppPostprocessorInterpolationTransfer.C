@@ -60,12 +60,12 @@ MultiAppPostprocessorInterpolationTransfer::execute()
 
   switch (_direction)
   {
-    case TO_MULTIAPP:
+    case Moose::TO_MULTIAPP:
     {
       mooseError2("Can't interpolate to a MultiApp!!");
       break;
     }
-    case FROM_MULTIAPP:
+    case Moose::FROM_MULTIAPP:
     {
       InverseDistanceInterpolation<LIBMESH_DIM> * idi;
 
