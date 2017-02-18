@@ -6,6 +6,10 @@
 #include "FluidPropertiesApp.h"
 #include "ChemicalReactionsApp.h"
 
+// Actions
+#include "PorousFlowUnsaturated.h"
+#include "PorousFlowUnsaturatedHM.h"
+
 // UserObjects
 #include "PorousFlowDictator.h"
 #include "PorousFlowSumQuantity.h"
@@ -225,6 +229,28 @@ PorousFlowApp::registerObjects(Factory & factory)
 // External entry point for dynamic syntax association
 extern "C" void PorousFlowApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory) { PorousFlowApp::associateSyntax(syntax, action_factory); }
 void
-PorousFlowApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
+PorousFlowApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 {
+  syntax.registerActionSyntax("PorousFlowUnsaturated", "PorousFlowUnsaturated", "add_user_object");
+  syntax.registerActionSyntax("PorousFlowUnsaturated", "PorousFlowUnsaturated", "add_kernel");
+  syntax.registerActionSyntax("PorousFlowUnsaturated", "PorousFlowUnsaturated", "add_material");
+  syntax.registerActionSyntax("PorousFlowUnsaturated", "PorousFlowUnsaturated", "add_aux_variable");
+  syntax.registerActionSyntax("PorousFlowUnsaturated", "PorousFlowUnsaturated", "add_aux_kernel");
+  registerAction(PorousFlowUnsaturated, "add_user_object");
+  registerAction(PorousFlowUnsaturated, "add_kernel");
+  registerAction(PorousFlowUnsaturated, "add_material");
+  registerAction(PorousFlowUnsaturated, "add_aux_variable");
+  registerAction(PorousFlowUnsaturated, "add_aux_kernel");
+
+  syntax.registerActionSyntax("PorousFlowUnsaturatedHM", "PorousFlowUnsaturatedHM", "add_user_object");
+  syntax.registerActionSyntax("PorousFlowUnsaturatedHM", "PorousFlowUnsaturatedHM", "add_kernel");
+  syntax.registerActionSyntax("PorousFlowUnsaturatedHM", "PorousFlowUnsaturatedHM", "add_material");
+  syntax.registerActionSyntax("PorousFlowUnsaturatedHM", "PorousFlowUnsaturatedHM", "add_aux_variable");
+  syntax.registerActionSyntax("PorousFlowUnsaturatedHM", "PorousFlowUnsaturatedHM", "add_aux_kernel");
+
+  registerAction(PorousFlowUnsaturatedHM, "add_user_object");
+  registerAction(PorousFlowUnsaturatedHM, "add_kernel");
+  registerAction(PorousFlowUnsaturatedHM, "add_material");
+  registerAction(PorousFlowUnsaturatedHM, "add_aux_variable");
+  registerAction(PorousFlowUnsaturatedHM, "add_aux_kernel");
 }
