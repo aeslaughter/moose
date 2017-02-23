@@ -561,3 +561,12 @@ footer.page-footer {
 .reveal ul{
   list-style-type:disc;
 }
+
+.reveal .moose-list{
+  column-count: 2;
+  column-gap: 2em;
+}
+
+.reveal .moose-list li{
+  break-inside: avoid-column;
+}
