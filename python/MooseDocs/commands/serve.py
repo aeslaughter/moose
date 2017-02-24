@@ -24,7 +24,7 @@ def serve(config_file=None, host=None, port=None, num_threads=None, template=Non
     """
 
     # Location of serve site
-    tempdir = os.path.abspath(os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site'))
+    tempdir = os.path.abspath(os.path.join(MooseDocs.TEMP_DIR, 'site'))
 
     # Clean the "temp" directory (if desired)
     if os.path.exists(tempdir):

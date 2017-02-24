@@ -26,7 +26,9 @@ MOOSE_DIR = os.getenv('MOOSE_DIR', os.path.join(os.getcwd(), '..', 'moose'))
 if not os.path.exists(MOOSE_DIR):
     MOOSE_DIR = os.path.join(os.getenv('HOME'), 'projects', 'moose')
 
-ROOT_DIR = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], stderr=subprocess.STDOUT).strip('\n')
+ROOT_DIR = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=os.path.dirname(__file__), stderr=subprocess.STDOUT).strip('\n')
+
+TEMP_DIR = os.path.abspath(os.path.join(os.getenv('HOME'), '.local', 'share', 'moose'))
 
 class MooseDocsFormatter(logging.Formatter):
     """
@@ -279,7 +281,7 @@ def moosedocs():
 
     # Pull LFS image files
     try:
-        subprocess.check_output(['git', 'lfs', 'pull'])
+        subprocess.check_output(['git', 'lfs', 'pull'], cwd=ROOT_DIR)
     except subprocess.CalledProcessError:
         print "ERROR: Unable to run 'git lfs', it is likely not installed but required for the MOOSE documentation system."
         sys.exit(1)

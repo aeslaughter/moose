@@ -4,6 +4,7 @@ import collections
 import logging
 log = logging.getLogger(__name__)
 import MooseDocs
+import cPickle as pickle
 
 class MooseInfoBase(object):
     """

@@ -1,6 +1,7 @@
 import os
 import markdown
 import collections
+import cPickle as pickle
 import logging
 log = logging.getLogger(__name__)
 
@@ -60,8 +61,15 @@ class MooseMarkdown(markdown.Extension):
         Execute the supplied MOOSE application and return the YAML.
         """
 
+        cache = os.path.join(MooseDocs.TEMP_DIR, 'moosedocs.yaml')
         exe = self.getConfig('executable')
-        if not (exe or os.path.exists(exe)):
+
+        if os.path.exists(cache) and (os.path.getmtime(cache) >= os.path.getmtime(cache)):
+            with open(cache, 'r') as fid:
+                log.debug('Reading MooseYaml Pickle: ' + cache)
+                return mooseutils.MooseYaml(pickle.load(fid))
+
+        elif not (exe or os.path.exists(exe)):
             log.critical('The executable does not exist: {}'.format(exe))
             raise Exception('Critical Error')
 
@@ -69,6 +77,9 @@ class MooseMarkdown(markdown.Extension):
             log.debug("Executing {} to extract syntax.".format(exe))
             try:
                 raw = mooseutils.runExe(exe, '--yaml')
+                with open(cache, 'w') as fid:
+                    log.debug('Writing MooseYaml Pickle: ' + cache)
+                    pickle.dump(raw, fid)
                 return mooseutils.MooseYaml(raw)
             except:
                 log.critical('Failed to read YAML file, MOOSE and modules are likely not compiled correctly.')

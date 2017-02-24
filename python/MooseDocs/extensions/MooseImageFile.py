@@ -38,14 +38,18 @@ class MooseImageFile(MooseCommonExtension, Pattern):
           settings[dict]: The settings extracted via getSettings() method.
         """
         # Read the file and create element
-        filename = MooseDocs.abspath(rel_filename)
-        if not os.path.exists(filename):
+        filename = None
+        repo = MooseDocs.abspath(rel_filename)
+        local = os.path.abspath(os.path.join(os.getcwd(), rel_filename))
+        if os.path.exists(repo):
+            filename = repo
+        elif os.path.exists(local):
+            filename = local
+        else:
             return self.createErrorElement('File not found: {}'.format(rel_filename))
 
         # Create the figure element
-        el = self.applyElementSettings(etree.Element('div'), settings)
-
-        card = etree.SubElement(el, 'div')
+        card = self.applyElementSettings(etree.Element('div'), settings)
         card.set('class', 'card')
 
         img_card = etree.SubElement(card, 'div')
@@ -54,6 +58,7 @@ class MooseImageFile(MooseCommonExtension, Pattern):
         img = etree.SubElement(img_card, 'img')
         img.set('src', os.path.relpath(filename, os.getcwd()))
         img.set('class', 'materialboxed')
+        img.set('style', 'margin-left:auto;margin-right:auto;margin-top:auto;margin-bottom:auto')
 
         # Add caption
         if settings['caption']:
@@ -63,7 +68,7 @@ class MooseImageFile(MooseCommonExtension, Pattern):
             p.set('align', "justify")
             p.text = settings['caption']
 
-        return el
+        return card
 
     def handleMatch(self, match):
         """

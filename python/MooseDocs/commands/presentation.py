@@ -1,5 +1,6 @@
 import os
 import shutil
+import livereload
 import jinja2
 import markdown
 import MooseDocs
@@ -11,9 +12,11 @@ def presentation_options(parser):
     """
     Command line options for the presentation generator.
     """
-    reveal_default = os.path.join(os.getenv('HOME'), 'projects', 'reveal.js')
-
     parser.add_argument('md_file', type=str, help="The markdown file to convert to slides.")
+    parser.add_argument('--serve', action='store_true', help="Serve the presentation with live reloading.")
+    parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
+    parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
+    parser.add_argument('--config-file', type=str, default=os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'moosedocs.yml'), help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
     parser.add_argument('--output', '-o', default=None, type=str, help="The default html file to create, defaults to input filename with html extension.")
     parser.add_argument('--template', type=str, default='presentation.html', help="The template html file to utilize (default: %(default)s).")
     parser.add_argument('--title', type=str, default="MOOSE Presentation", help="The title of the document.")
@@ -57,7 +60,7 @@ class PresentationBuilder(MooseDocsMarkdownNodeBase):
             shutil.copyfile(img['src'], dest)
         return soup
 
-def presentation(config_file='moosedocs.yml', md_file=None, output=None, template=None, **template_args):
+def presentation(config_file=None, md_file=None, output=None, template=None, serve=None, port=None, host=None, **template_args):
     """
     MOOSE markdown presentation blaster.
     """
@@ -74,3 +77,8 @@ def presentation(config_file='moosedocs.yml', md_file=None, output=None, templat
     site_dir, _ = os.path.splitext(md_file)
     root = PresentationBuilder(name='', md_file=md_file, parser=parser, template=template, template_args=template_args, site_dir=site_dir)
     root.build()
+
+    if serve:
+        server = livereload.Server()
+        server.watch(md_file, root.build)
+        server.serve(root=site_dir, host=host, port=port, restart_delay=0)
