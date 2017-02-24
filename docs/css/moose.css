@@ -562,11 +562,7 @@ footer.page-footer {
   list-style-type:disc;
 }
 
-.reveal .moose-list{
-  column-count: 2;
-  column-gap: 2em;
-}
-
-.reveal .moose-list li{
-  break-inside: avoid-column;
+.reveal section img{
+  border: none;
+  box-shadow: none;
 }

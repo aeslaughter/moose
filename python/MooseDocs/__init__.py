@@ -212,7 +212,6 @@ def read_markdown(md_file):
             break
     return '\n'.join(lines[count:]), output
 
-
 def purge(extensions):
     """
     Removes generated files from repository.

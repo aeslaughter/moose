@@ -1,8 +1,11 @@
 import os
+import shutil
 import jinja2
 import markdown
 import MooseDocs
 from MooseDocsMarkdownNodeBase import MooseDocsMarkdownNodeBase
+import logging
+log = logging.getLogger(__name__)
 
 def presentation_options(parser):
     """
@@ -19,6 +22,9 @@ def presentation_options(parser):
     return presentation
 
 class PresentationBuilder(MooseDocsMarkdownNodeBase):
+    """
+    Utilize the base website node object to build presentations.
+    """
 
     def environment(self):
         """
@@ -36,6 +42,20 @@ class PresentationBuilder(MooseDocsMarkdownNodeBase):
         with open(filename, 'r') as fid:
             return fid.read().strip('\n')
             return ''
+
+    def finalize(self, soup):
+        """
+        Adds a copy of image files to the destination directory.
+        """
+        soup = super(PresentationBuilder, self).finalize(soup)
+        for img in soup('img'):
+            dest = os.path.join(self.path(), img['src'])
+            dirname = os.path.dirname(dest)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+            log.debug('Copying images: {} to {}'.format(img['src'], dest))
+            shutil.copyfile(img['src'], dest)
+        return soup
 
 def presentation(config_file='moosedocs.yml', md_file=None, output=None, template=None, **template_args):
     """

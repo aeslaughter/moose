@@ -53,7 +53,6 @@ class MooseDocsMarkdownNodeBase(MooseDocsNode):
         log.debug('Parsing markdown: {}'.format(self._md_file))
         content, meta = MooseDocs.read_markdown(self._md_file)
         self._html = self._parser.convert(content)
-        print self._html
 
         template_args = copy.copy(self._template_args)
         template_args.update(meta)
@@ -92,7 +91,6 @@ class MooseDocsMarkdownNodeBase(MooseDocsNode):
         # Fix media links
         for img in soup('img'):
             img['src'] = self.relpath(img['src'])
-
 
         # Fix <pre><code class="python"> to be <pre class="language-python"><code> and add a copy button.
         count = 0

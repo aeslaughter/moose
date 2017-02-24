@@ -1,5 +1,6 @@
 # MOOSE Team
 
+!css width=49% float=left
 * Derek Gaston
     * [derek.gaston@inl.gov](mailto:derek.gaston@inl.gov)
     * [@friedmud](https://twitter.com/friedmud)
@@ -12,6 +13,8 @@
 * John Peterson
     * [jw.peterson@inl.gov](mailto:jw.peterson@inl.gov)
     * [@peterson512](https://twitter.com/peterson512)
+
+!css width=49% float=right
 * Jason Miller
     * [jason.miller@inl.gov](mailto:jason.miller@inl.gov)
     * [@mjmiller96](https://twitter.com/mjmiller96)
@@ -37,6 +40,9 @@
 
 # MOOSE: Multiphysics Object Oriented Simulation Environment
 
+!image docs/media/bison_pellet_stack.png float=right width=19%
+
+!css class="moose-two-column" float=left width=80%
 * A framework for solving computational engineering problems in a well-planned, managed, and coordinated way
 * **Designed to significantly reduce the expense and time required to develop new applications**
     * *Maximize Science/$*
@@ -44,11 +50,11 @@
     * *Efficient on both a few and many processors*
     * *Provides an object-oriented, pluggable system for defining all aspects of a simulation tool.*
 
-!image docs/media/bison_pellet_stack.png
-
 --
 
 !image docs/media/moose_full_core.png
+
+--
 
 # Capabilities
 
@@ -77,12 +83,13 @@
 * Uses well-established libraries
 * Implements robust and state-of-the-art solution methods
 
-!image docs/media/moose_arch.png
+!image docs/media/moose_arch.png width=80%
 
 --
 
 # Rapid Development
 
+!css font-size=large
 | **Application** | **Physics** | **Results** | **Lines** |
 | :- | :- | :-: | :-: |
 | BISON | Thermo-mechanics, Chemical, diffusion, coupled mesoscale | 4 mo. | 3,000 |

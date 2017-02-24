@@ -20,6 +20,7 @@ from MoosePackageParser import MoosePackageParser
 from MooseSlider import MooseSlider
 from MooseDiagram import MooseDiagram
 from MooseCSS import MooseCSS
+from MooseCSSPreprocessor import MooseCSSPreprocessor
 from MooseBuildStatus import MooseBuildStatus
 from MooseBibtex import MooseBibtex
 from MooseActionList import MooseActionList
@@ -107,6 +108,7 @@ class MooseMarkdown(markdown.Extension):
 
         # Preprocessors
         md.preprocessors.add('moose_bibtex', MooseBibtex(markdown_instance=md, **config), '_end')
+        md.preprocessors.add('moose_css_list', MooseCSSPreprocessor(markdown_instance=md, **config), '_end')
 
         # Block processors
         md.parser.blockprocessors.add('diagrams', MooseDiagram(md.parser, **config), '_begin')
