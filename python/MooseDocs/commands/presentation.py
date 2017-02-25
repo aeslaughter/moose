@@ -52,13 +52,16 @@ class PresentationBuilder(MooseDocsMarkdownNodeBase):
         """
         soup = super(PresentationBuilder, self).finalize(soup)
         for img in soup('img'):
-            dest = os.path.join(self.path(), img['src'])
+            name = os.path.basename(img['src'])
+            dest = os.path.join(self.path(), name)
             dirname = os.path.dirname(dest)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
             log.debug('Copying images: {} to {}'.format(img['src'], dest))
             shutil.copyfile(img['src'], dest)
+            img['src'] = name
         return soup
+
 
 def presentation(config_file=None, md_file=None, output=None, template=None, serve=None, port=None, host=None, **template_args):
     """

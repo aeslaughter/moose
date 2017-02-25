@@ -27,6 +27,7 @@ class MooseImageFile(MooseCommonExtension, Pattern):
         MooseCommonExtension.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
         self._settings['caption'] = None
+        self._settings['center'] = False
 
     def createImageElement(self, rel_filename, settings):
         """
@@ -51,6 +52,10 @@ class MooseImageFile(MooseCommonExtension, Pattern):
         # Create the figure element
         card = self.applyElementSettings(etree.Element('div'), settings)
         card.set('class', 'card')
+
+        if settings['center']:
+            style = card.get('style', '')
+            card.set('style', 'margin-left:auto;margin-right:auto;' + style)
 
         img_card = etree.SubElement(card, 'div')
         img_card.set('class', 'card-image')
