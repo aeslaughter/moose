@@ -28,7 +28,7 @@ from MooseActionList import MooseActionList
 import MooseDocs
 import mooseutils
 
-class MooseMarkdown(markdown.Extension):
+class MooseMarkdownExtension(markdown.Extension):
     """
     Extensions that comprise the MOOSE flavored markdown.
     """
@@ -51,7 +51,7 @@ class MooseMarkdown(markdown.Extension):
         self.config['macro_files']  = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
 
         # Construct the extension object
-        super(MooseMarkdown, self).__init__(**kwargs)
+        super(MooseMarkdownExtension, self).__init__(**kwargs)
 
         # Create the absolute path to the executable
         self.setConfig('executable', MooseDocs.abspath(self.getConfig('executable')))
@@ -154,4 +154,4 @@ class MooseMarkdown(markdown.Extension):
             md.inlinePatterns.add('moose_package_parser', MoosePackageParser(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs):
-    return MooseMarkdown(*args, **kwargs)
+    return MooseMarkdownExtension(*args, **kwargs)

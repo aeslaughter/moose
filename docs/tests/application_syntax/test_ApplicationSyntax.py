@@ -12,7 +12,7 @@ class TestMooseApplicationSyntax(unittest.TestCase):
 
         # Read the moosedocs.yml configuration
         config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'moosedocs.yml'))
-        options = config['markdown_extensions'][6]['MooseDocs.extensions.MooseMarkdown']
+        options = config['markdown_extensions'][6]['MooseDocs.extensions.MooseMarkdownExtension']
 
         # Extract the MOOSE YAML data
         exe = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'combined', 'combined-opt')

@@ -135,7 +135,7 @@ def build_site(config_file=None, site_dir=None, num_threads=None, template=None)
 
     # Create the markdown parser
     extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
-    parser = markdown.Markdown(extensions=extensions, extension_configs=extension_configs)
+    parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
 
     # Create object for storing pages to be generated
     builder = Builder(parser, site_dir, config['template'], config['template_arguments'], config['navigation'])

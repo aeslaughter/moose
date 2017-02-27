@@ -50,9 +50,7 @@ class MooseDocsMarkdownNodeBase(MooseDocsNode):
         """
 
         # Read the markdown and parse the HTML
-        log.debug('Parsing markdown: {}'.format(self._md_file))
-        content, meta = MooseDocs.read_markdown(self._md_file)
-        self._html = self._parser.convert(content)
+        self._html, meta = self._parser.convert(self)
 
         template_args = copy.copy(self._template_args)
         template_args.update(meta)

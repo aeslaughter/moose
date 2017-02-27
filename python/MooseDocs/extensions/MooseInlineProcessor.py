@@ -6,7 +6,7 @@ from MooseCommonExtension import MooseCommonExtension
 
 class MooseInlineProcessor(InlineProcessor, MooseCommonExtension):
     """
-    Replacement for the standard InlineProcessor that includes special features for MooseMarkdown.
+    Replacement for the standard InlineProcessor that includes special features for MooseMarkdownExtension.
         1. Calls an initialize() method on all inline patterns before processing the tree
     """
     def __init__(self, markdown_instance=None, **kargs):

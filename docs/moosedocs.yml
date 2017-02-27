@@ -4,15 +4,7 @@ template_arguments:
     repo_url: https://github.com/idaholab/moose/
 
 markdown_extensions:
-    - toc
-    - smarty
-    - admonition
-    - extra
-    - markdown_include.include:
-          base_path: ..
-    - mdx_math:
-        enable_dollar_delimiter: True
-    - MooseDocs.extensions.MooseMarkdown:
+    - MooseDocs.extensions.MooseMarkdownExtension:
           package: True
           executable: modules/combined/combined-opt
           repo: https://github.com/idaholab/moose/blob/master

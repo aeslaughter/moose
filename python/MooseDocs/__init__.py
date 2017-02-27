@@ -9,6 +9,8 @@ import extensions
 import commands
 import mooseutils
 
+from MooseMarkdown import MooseMarkdown
+
 # Check for the necessary packages, this does a load so they should all get loaded.
 if mooseutils.check_configuration(['yaml', 'jinja2', 'markdown', 'markdown_include', 'mdx_math', 'bs4']):
     sys.exit(1)
@@ -173,46 +175,11 @@ def get_markdown_extensions(config):
 
 def get_moose_markdown_extension(parser):
     """
-    Return the MooseMarkdown instance from the Markdown parser, if it exists.
+    Return the MooseMarkdownExtension instance from the Markdown parser, if it exists.
     """
     for ext in parser.registeredExtensions:
-        if isinstance(ext, extensions.MooseMarkdown):
+        if isinstance(ext, extensions.MooseMarkdownExtension):
             return ext
-
-
-def read_markdown(md_file):
-    """
-    Reads and removes meta data (key, value pairs) from the top of a markdown file.
-
-    Inputs:
-      md_file[str]: The *.md file or text to convert.
-    """
-
-    # Read file, if provided
-    if os.path.isfile(md_file):
-        with open(md_file, 'r') as fid:
-            content = fid.read().decode('utf-8')
-    else:
-        content = md_file
-
-    # Extract meta data
-    output = dict()
-    count = 0
-    lines = content.splitlines()
-    for line in lines:
-        if line == '':
-            break
-        match = re.search(r'^(?P<key>[A-Za-z0-9_-]+)\s*:\s*(?P<value>.*)', line)
-        if match:
-            try:
-                value = eval(match.group('value'))
-            except:
-                value = match.group('value')
-            output[match.group('key')] = value
-            count += 1
-        else:
-            break
-    return '\n'.join(lines[count:]), output
 
 def purge(extensions):
     """
