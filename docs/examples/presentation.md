@@ -8,6 +8,11 @@ A tool to build a [reveal.js](http://lab.hakim.se/reveal-js/#/) slideshows using
 The presentation tool includes complete support for all special MOOSE markdown syntax.
 
 --
+## Contents
+
+!sectiontoc
+
+--
 ## Alerts (Admonition)
 
 !!! note

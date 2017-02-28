@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from MooseSlidePreprocessor import MooseSlidePreprocessor
+from MooseSlideContents import MooseSlideContents
 
 class MooseMarkdownPresentationExtension(markdown.Extension):
     def __init__(self, *args, **kwargs):
@@ -16,6 +17,9 @@ class MooseMarkdownPresentationExtension(markdown.Extension):
         """
         md.registerExtension(self)
         md.preprocessors.add('moose_slides', MooseSlidePreprocessor(markdown_instance=md), '_end')
+
+        md.postprocessors.add('moose_slide_contents', MooseSlideContents(markdown_instance=md), '_end')
+
 
 def makeExtension(*args, **kwargs):
     return MooseMarkdownPresentationExtension(*args, **kwargs)

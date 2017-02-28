@@ -75,7 +75,7 @@ def presentation(config_file=None, md_file=None, output=None, template=None, ser
     # Create the markdown parser, being sure to enable
     extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
     extensions.append('MooseDocs.extensions.MooseMarkdownPresentationExtension')
-    parser = markdown.Markdown(extensions=extensions, extension_configs=extension_configs)
+    parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
 
     site_dir, _ = os.path.splitext(md_file)
     root = PresentationBuilder(name='', md_file=md_file, parser=parser, template=template, template_args=template_args, site_dir=site_dir)
