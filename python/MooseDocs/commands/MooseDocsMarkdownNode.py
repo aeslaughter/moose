@@ -57,20 +57,6 @@ class MooseDocsMarkdownNode(MooseDocsMarkdownNodeBase):
                 url = self.relpath(found[0].url())
                 #log.debug('Converting link: {} --> {}'.format(href, url))
                 link['href'] = url
-
-        # Add materialize sections for table-of-contents
-        div = soup.find('div', id='moose-markdown-content')
-        if div:
-            current = div
-            for tag in div.contents:
-                if isinstance(tag, bs4.element.Tag):
-                    if tag.name == 'h2':
-                        current = soup.new_tag('div', id=tag.get('id', '#'))
-                        current.attrs['class'] = "section scrollspy"
-
-                    if current != tag.parent:
-                        tag.wrap(current)
-
         return soup
 
     def code(self, repo_url):

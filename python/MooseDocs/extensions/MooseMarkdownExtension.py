@@ -26,6 +26,7 @@ from MooseBuildStatus import MooseBuildStatus
 from MooseBibtex import MooseBibtex
 from MooseActionList import MooseActionList
 from MooseCopyCodeButton import MooseCopyCodeButton
+from MooseContentScroll import MooseContentScroll
 import MooseDocs
 import mooseutils
 
@@ -156,6 +157,7 @@ class MooseMarkdownExtension(markdown.Extension):
 
         # Postprocessing
         md.treeprocessors.add('moose_code_button', MooseCopyCodeButton(markdown_instance=md, **config), '_end')
+        md.treeprocessors.add('moose_content_scroll', MooseContentScroll(markdown_instance=md, **config), '_end')
 
 
 def makeExtension(*args, **kwargs):
