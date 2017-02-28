@@ -7,8 +7,7 @@ log = logging.getLogger(__name__)
 
 class MooseMarkdown(markdown.Markdown):
     """
-
-
+    Custom Markdown parser for handling MOOSE flavored markdown.
     """
 
     def __init__(self, extensions=[], extension_configs=dict(), **kwargs):
@@ -28,9 +27,9 @@ class MooseMarkdown(markdown.Markdown):
 
         self.current = None
 
-
     def convert(self, node):
         """
+        Convert the markdown for the supplied node and return html and meta data.
 
         Args:
             content[str]: A markdown file or markdown content.

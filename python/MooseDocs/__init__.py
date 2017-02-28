@@ -222,14 +222,14 @@ def command_line_options(*args):
     build_parser = subparser.add_parser('build', help='Build the documentation for serving on another system.')
     commands.build_options(build_parser)
 
-    serve_parser = subparser.add_parser('serve', help='Serve the documentation using a local server.')
-    commands.serve_options(serve_parser)
-
     latex_parser = subparser.add_parser('latex', help='Generate a .tex or .pdf document from a markdown file.')
     commands.latex_options(latex_parser)
 
     presentation_parser = subparser.add_parser('presentation', help="Convert a markdown file to an html presentation.")
     commands.presentation_options(presentation_parser)
+
+    subparser.add_parser('generate', help='Deprecated: use "check --generate"')
+    subparser.add_parser('serve', help='Deprecated: use "build --serve"')
 
     return parser.parse_args(*args)
 
@@ -260,9 +260,11 @@ def moosedocs():
     elif cmd == 'check':
         retcode = commands.check(**options)
     elif cmd == 'generate':
-        retcode = commands.generate(**options)
+        retcode = None
+        log.error('Deprecated command, please used "check --generate" instead.')
     elif cmd == 'serve':
-        retcode = commands.serve(**options)
+        retcode = None
+        log.error('Deprecated command, please used "build --serve" instead.')
     elif cmd == 'build':
         retcode = commands.build(**options)
     elif cmd == 'latex':

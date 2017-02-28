@@ -9,8 +9,8 @@ html, body {
   height: 100%;
 }
 
-ul:not(.browser-default) li{
-  list-style-type: disc;
+.nav ul:not(.browser-default) li{
+  list-style-type: none;
 }
 
 .page-wrap {
@@ -558,8 +558,8 @@ footer.page-footer {
   line-height: normal;
 }
 
-.reveal ul{
-  list-style-type:disc;
+.reveal ul:not(.browser-default) li{
+  list-style-type: disc;
 }
 
 .reveal section img{

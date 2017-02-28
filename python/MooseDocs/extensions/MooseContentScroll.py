@@ -1,7 +1,6 @@
 from markdown.treeprocessors import Treeprocessor
 from markdown.util import etree
 
-
 class MooseContentScroll(Treeprocessor):
     """
     Adds a 'div' tag around h2 levels with class of 'section scrollspy' to allow scrollable contents

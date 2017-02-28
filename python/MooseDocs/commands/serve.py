@@ -14,9 +14,9 @@ def serve_options(parser):
     """
     Command-line options for serve command.
     """
-    build.build_options(parser, site_dir=False)
-    parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
-    parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
+    build.build_options(parser)
+    #parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
+    #parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
 
 def serve(config_file=None, host=None, port=None, num_threads=None, template=None):
     """

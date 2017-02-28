@@ -2,6 +2,8 @@ import os
 import math
 import multiprocessing
 import markdown
+import shutil
+import livereload
 from distutils.dir_util import copy_tree
 import logging
 log = logging.getLogger(__name__)
@@ -11,15 +13,19 @@ from MooseDocsNode import MooseDocsNode
 from MooseDocsMarkdownNode import MooseDocsMarkdownNode
 
 
-def build_options(parser, site_dir=True):
+def build_options(parser):
     """
     Command-line options for build command.
     """
     parser.add_argument('--config-file', type=str, default='moosedocs.yml', help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
     parser.add_argument('--num-threads', '-j', type=int, default=multiprocessing.cpu_count(), help="Specify the number of threads to build pages with.")
     parser.add_argument('--template', type=str, default='website.html', help="The template html file to utilize (Default: %(default)s).")
-    if site_dir:
-        parser.add_argument('--site-dir', type=str, default=os.path.join(MooseDocs.ROOT_DIR, 'site'), help="The location to build the website content (Default: %(default)s).")
+
+    parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
+    parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
+    parser.add_argument('--site-dir', type=str, default=os.path.join(MooseDocs.ROOT_DIR, 'site'), help="The location to build the website content (Default: %(default)s).")
+    parser.add_argument('--serve', action='store_true', help="Serve the presentation with live reloading, the 'site_dir' is ignored for this case.")
+
 
 def make_tree(directory, node, **kwargs):
     """
@@ -125,10 +131,24 @@ class Builder(object):
             helper(os.path.join(from_dir, 'css'), os.path.join(self._site_dir, 'css'))
             helper(os.path.join(from_dir, 'media'), os.path.join(self._site_dir, 'media'))
 
-def build_site(config_file=None, site_dir=None, num_threads=None, template=None):
+def build(config_file=None, site_dir=None, num_threads=None, template=None,
+               clean=False, serve=False, host=None, port=None):
     """
     The main build command.
     """
+
+    if serve:
+        clean = True
+        site_dir = os.path.abspath(os.path.join(MooseDocs.TEMP_DIR, 'site'))
+
+    # Clean/create site directory
+    if clean and os.path.exists(site_dir):
+        log.info('Cleaning build directory: {}'.format(site_dir))
+        shutil.rmtree(site_dir)
+
+    # Create the "temp" directory
+    if not os.path.exists(site_dir):
+        os.makedirs(site_dir)
 
     # Load the YAML configuration file
     config = MooseDocs.load_config(config_file, template=template)
@@ -138,14 +158,34 @@ def build_site(config_file=None, site_dir=None, num_threads=None, template=None)
     parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
 
     # Create object for storing pages to be generated
-    builder = Builder(parser, site_dir, config['template'], config['template_arguments'], config['navigation'])
+    def build_complete():
+        builder = Builder(parser, site_dir, config['template'], config['template_arguments'], config['navigation'])
+        builder.build(num_threads=num_threads)
+        return builder
+    builder = build_complete()
 
-    # Create the html
-    builder.build(num_threads=num_threads)
-    return config, parser, builder
+    # Serve
+    if serve:
+        # Create the live server
+        server = livereload.Server()
 
-def build(*args, **kwargs):
-    """
-    The main build command.
-    """
-    build_site(*args, **kwargs)
+        # Watch markdown files
+        for page in builder:
+            server.watch(page.source(), page.build)
+
+        # Watch support directories
+        server.watch(os.path.join(os.getcwd(), 'media'), builder.copyFiles)
+        server.watch(os.path.join(os.getcwd(), 'css'), builder.copyFiles)
+        server.watch(os.path.join(os.getcwd(), 'js'), builder.copyFiles)
+        server.watch(os.path.join(os.getcwd(), 'fonts'), builder.copyFiles)
+
+        # Watch the files and directories that require complete rebuild
+        moose_extension = MooseDocs.get_moose_markdown_extension(parser)
+        if moose_extension:
+            server.watch(os.path.join(os.getcwd(), moose_extension.getConfig('executable')), build_complete)
+        server.watch(config_file, build_complete)
+        server.watch(config['navigation'], builder.build)
+        server.watch('templates', builder.build)
+
+        # Start the server
+        server.serve(root=site_dir, host=host, port=port, restart_delay=0)
