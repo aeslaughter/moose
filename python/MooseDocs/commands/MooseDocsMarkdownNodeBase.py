@@ -90,28 +90,6 @@ class MooseDocsMarkdownNodeBase(MooseDocsNode):
         for img in soup('img'):
             img['src'] = self.relpath(img['src'])
 
-        # Fix <pre><code class="python"> to be <pre class="language-python"><code> and add a copy button.
-        count = 0
-        for pre in soup('pre'):
-            code = pre.find('code')
-            if code and code.has_attr('class'):
-                pre['class'] = 'language-{}'.format(code['class'][0])
-
-                if not code.has_attr('id'):
-                    code['id'] = 'moose-code-block-{}'.format(str(count))
-                    count += 1
-
-                id = '#{}'.format(code['id'])
-                btn = soup.new_tag('button')
-                btn['class'] = "moose-copy-button btn"
-                btn['data-clipboard-target'] = id
-                btn.string = 'copy'
-
-                if "moose-code-div" in pre.parent['class']:
-                    pre.parent.insert(0, btn)
-                else:
-                    pre.insert(0, btn)
-
         return soup
 
     def content(self):

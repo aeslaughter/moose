@@ -25,6 +25,7 @@ from MooseCSSPreprocessor import MooseCSSPreprocessor
 from MooseBuildStatus import MooseBuildStatus
 from MooseBibtex import MooseBibtex
 from MooseActionList import MooseActionList
+from MooseCopyCodeButton import MooseCopyCodeButton
 import MooseDocs
 import mooseutils
 
@@ -152,6 +153,10 @@ class MooseMarkdownExtension(markdown.Extension):
         md.inlinePatterns.add('moose_build_status', MooseBuildStatus(markdown_instance=md, **config), '_begin')
         if config['package']:
             md.inlinePatterns.add('moose_package_parser', MoosePackageParser(markdown_instance=md, **config), '_end')
+
+        # Postprocessing
+        md.treeprocessors.add('moose_code_button', MooseCopyCodeButton(markdown_instance=md, **config), '_end')
+
 
 def makeExtension(*args, **kwargs):
     return MooseMarkdownExtension(*args, **kwargs)
