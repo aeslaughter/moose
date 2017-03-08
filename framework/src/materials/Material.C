@@ -63,6 +63,7 @@ Material::Material(const InputParameters & parameters) :
     MooseVariableDependencyInterface(),
     ScalarCoupleable(this),
     FunctionInterface(this),
+    DistributionInterface(this),
     UserObjectInterface(this),
     TransientInterface(this),
     MaterialPropertyInterface(this, blockIDs(), boundaryIDs()),

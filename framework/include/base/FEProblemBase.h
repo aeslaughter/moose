@@ -71,6 +71,7 @@ class ElementUserObject;
 class InternalSideUserObject;
 class GeneralUserObject;
 class Function;
+class Distribution;
 class KernelBase;
 class IntegratedBC;
 
@@ -459,6 +460,10 @@ public:
   virtual void addFunction(std::string type, const std::string & name, InputParameters parameters);
   virtual bool hasFunction(const std::string & name, THREAD_ID tid = 0);
   virtual Function & getFunction(const std::string & name, THREAD_ID tid = 0);
+
+  // Distribution /////
+  virtual void addDistribution(std::string type, const std::string & name, InputParameters parameters);
+  virtual Distribution & getDistribution(const std::string & name, THREAD_ID tid = 0);
 
   // NL /////
   NonlinearSystemBase & getNonlinearSystemBase() { return *_nl; }
@@ -1118,6 +1123,9 @@ protected:
 
   /// functions
   MooseObjectWarehouse<Function> _functions;
+
+  /// distributions
+  MooseObjectWarehouse<Distribution> _distributions;
 
   /// nonlocal kernels
   MooseObjectWarehouse<KernelBase> _nonlocal_kernels;

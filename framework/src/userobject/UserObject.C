@@ -42,6 +42,7 @@ UserObject::UserObject(const InputParameters & parameters) :
     MooseObject(parameters),
     SetupInterface(this),
     FunctionInterface(this),
+    DistributionInterface(this),
     Restartable(parameters, "UserObjects"),
     MeshChangedInterface(parameters),
     ScalarCoupleable(this),
