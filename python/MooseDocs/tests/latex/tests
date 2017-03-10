@@ -1,0 +1,10 @@
+[Tests]
+  [./generation]
+    type = PythonUnitTest
+    input = test_generation.py
+  [../]
+  [./elements]
+    type = PythonUnitTest
+    input = test_elements.py
+  [../]
+[]

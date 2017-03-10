@@ -1,0 +1,6 @@
+[Tests]
+  [./syntax]
+    type = PythonUnitTest
+    input = test_ApplicationSyntax.py
+  [../]
+[]

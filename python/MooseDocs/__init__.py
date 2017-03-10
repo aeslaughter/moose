@@ -250,8 +250,6 @@ def command_line_options(*args):
     subparser = parser.add_subparsers(title='Commands', description="Documentation creation command to execute.", dest='command')
 
     # Add the sub-commands
-    test_parser = subparser.add_parser('test', help='Performs unit testing of MooseDocs module.')
-    commands.test_options(test_parser)
 
     check_parser = subparser.add_parser('check', help="Check that the documentation exists and is complete for your application and optionally generating missing markdown files.")
     commands.check_options(check_parser)
@@ -265,6 +263,7 @@ def command_line_options(*args):
     presentation_parser = subparser.add_parser('presentation', help="Convert a markdown file to an html presentation.")
     commands.presentation_options(presentation_parser)
 
+    subparser.add_parser('test', help='Deprecated: use "~/projects/moose/python/run_tests -j8 --re=MooseDocs"')
     subparser.add_parser('generate', help='Deprecated: use "check --generate"')
     subparser.add_parser('serve', help='Deprecated: use "build --serve"')
 
@@ -293,7 +292,8 @@ def moosedocs():
     # Execute command
     cmd = options.pop('command')
     if cmd == 'test':
-        retcode = commands.test(**options)
+        retcode = None
+        log.error('Deprecated command, please used "~/projects/moose/python/run_tests -j8 --re=MooseDocs" instead.')
     elif cmd == 'check':
         retcode = commands.check(**options)
     elif cmd == 'generate':

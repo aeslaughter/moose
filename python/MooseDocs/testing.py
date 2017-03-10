@@ -34,7 +34,6 @@ class MarkdownTestCase(unittest.TestCase):
         cls._path = os.path.abspath(os.path.dirname(inspect.getfile(cls)))
 
         # Create the markdown object
-        cwd = os.getcwd()
         os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
 
         config = MooseDocs.load_config('moosedocs.yml')
@@ -42,7 +41,7 @@ class MarkdownTestCase(unittest.TestCase):
         extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
         cls.updateExtensionConfigs(extension_configs)
         cls.parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
-        os.chdir(cwd)
+        os.chdir(cls.working_dir)
 
     @classmethod
     def updateExtensionConfigs(cls, extension_configs):
@@ -74,7 +73,7 @@ class MarkdownTestCase(unittest.TestCase):
         """
         Read gold file in current directory.
         """
-        gold_name = os.path.join(os.path.dirname(name), 'gold', os.path.basename(name))
+        gold_name = os.path.join(self.working_dir, 'gold', os.path.basename(name))
         self.assertTrue(os.path.exists(gold_name), "Failed to locate gold file: {}".format(gold_name))
         with open(gold_name) as fid:
             gold = fid.read().encode('utf-8').splitlines()

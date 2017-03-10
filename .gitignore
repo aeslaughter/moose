@@ -174,7 +174,7 @@ out.xyz
 # Do not store ipython notebook checkpoints
 *-checkpoint.ipynb*
 
-# Documentation Generation
+# MooseDocs
 site
 *.moose.md
 *.moose.yml
@@ -184,7 +184,7 @@ docs/.moosedocs
 !docs/templates/**/*.html
 !docs/media/**/*.png
 !docs/media/**/*.gif
-!docs/tests/**/gold/*.html
+!python/MooseDocs/tests/**/gold/*.html
 
 # Chigger
 !python/chigger/tests/**/gold/*.png
