@@ -2,16 +2,20 @@
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram
 - MooseDocs.extensions.devel
-
-- MooseDocs.extensions.MooseMarkdownExtension:
-    template: 'website.html'
+- MooseDocs.extensions.include:
+    repo: https://github.com/idaholab/moose/blob/master
+    make_dir: modules/combined
+- MooseDocs.extensions.template:
+    template: website.html
     template_args:
         title: 'MOOSE'
-        logo: ../media/moose_logo_small.png
+        logo: docs/media/moose_logo_small.png
         repo_url: https://github.com/idaholab/moose/
+        navigation: docs/navigation.yml
+- MooseDocs.extensions.MooseMarkdownExtension:
     executable: modules/combined/combined-opt
-    repo: https://github.com/idaholab/moose/blob/master
     install: docs/content/documentation/systems
+    repo: https://github.com/idaholab/moose/blob/master
     links:
         Tests:
             - test/tests

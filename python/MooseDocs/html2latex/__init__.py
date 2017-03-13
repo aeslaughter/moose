@@ -25,7 +25,8 @@ def generate_html(md_file, config_file):
     """
 
     # Load the YAML configuration file
-    config = MooseDocs.load_config(config_file, template=None)
+    config = MooseDocs.load_config(config_file)
+    config.pop('MooseDocs.extensions.template')
 
     # Create the markdown parser
     parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)

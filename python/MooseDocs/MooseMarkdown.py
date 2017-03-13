@@ -17,7 +17,7 @@ class MooseMarkdown(markdown.Markdown):
     for other pages. This should allow for cross page figure, equation, and table links to be created.
     """
 
-    def __init__(self, extensions=[], extension_configs=dict(), **kwargs):
+    def __init__(self, extensions=[], extension_configs=dict()):
 
         # The member for holding the current MooseDocsMarkdownNodeBase object
         self.current = None
@@ -31,7 +31,7 @@ class MooseMarkdown(markdown.Markdown):
                 extension_configs[config] = dict()
                 extension_configs['mdx_math'].setdefault('enable_dollar_delimiter', True)
         extension_configs['markdown_include.include'].setdefault('base_path', MooseDocs.ROOT_DIR)
-        super(MooseMarkdown, self).__init__(extensions=extensions, extension_configs=extension_configs, **kwargs)
+        super(MooseMarkdown, self).__init__(extensions=extensions, extension_configs=extension_configs)
 
     def convert(self, node):
         """

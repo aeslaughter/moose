@@ -37,6 +37,9 @@ class MarkdownTestCase(unittest.TestCase):
         os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
 
         config = MooseDocs.load_config('moosedocs.yml')
+        if not cls.TEMPLATE:
+            config.pop('MooseDocs.extensions.template', None)
+
         cls.updateExtensionConfigs(config)
         cls.parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
         os.chdir(cls.working_dir)
@@ -53,7 +56,6 @@ class MarkdownTestCase(unittest.TestCase):
                 extension_configs['MooseDocs.extensions.bibtex']['macro_files'] =\
                   ['docs/bib/macro_test_abbrev.bib']
 
-        extension_configs['MooseDocs.extensions.MooseMarkdownExtension']['template'] = cls.TEMPLATE
 
     def setUp(self):
         """

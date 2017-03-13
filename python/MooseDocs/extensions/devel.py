@@ -14,7 +14,7 @@ import MooseDocs
 
 class DevelExtension(markdown.Extension):
     """
-    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.xk
+    Extension for adding developer tools to MOOSE flavored markdown.xk
     """
 
     def __init__(self, **kwargs):
@@ -25,7 +25,7 @@ class DevelExtension(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
         """
-        Adds Bibtex support for MOOSE flavored markdown.
+        Adds developer tools to MOOSE flavored markdown.
         """
         md.registerExtension(self)
         config = self.getConfigs()

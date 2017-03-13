@@ -161,9 +161,10 @@ def load_config(config_file, **kwargs):
         else:
             out[item.keys()[0]] = item.values()[0]
 
-    key = 'MooseDocs.extensions.MooseMarkdownExtension'
-    if key in out:
-        out[key].update(kwargs)
+    for key, value in out.iteritems():
+        for k,v in kwargs.iteritems():
+            if k in value:
+                value[k] = v
     return out
 
 def get_moose_markdown_extension(parser):

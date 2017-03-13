@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 class DiagramExtension(markdown.Extension):
     """
-    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.xk
+    Extension for adding dot diagrams to MOOSE flavored markdown.xk
     """
 
     def __init__(self, **kwargs):
@@ -25,7 +25,7 @@ class DiagramExtension(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
         """
-        Adds Bibtex support for MOOSE flavored markdown.
+        Adds diagrams support for MOOSE flavored markdown.
         """
         md.registerExtension(self)
         config = self.getConfigs()
