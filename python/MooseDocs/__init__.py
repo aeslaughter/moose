@@ -4,6 +4,7 @@ import re
 import argparse
 import subprocess
 import multiprocessing
+import collections
 
 import extensions
 import commands
@@ -152,29 +153,18 @@ def load_config(config_file, **kwargs):
     """
     Read the MooseDocs configure file (e.g., moosedocs.yml)
     """
-
-    key = 'MooseDocs.extensions.MooseMarkdownExtension'
+    out = collections.OrderedDict()
     config = yaml_load(config_file)
     for item in config:
-        if key in item:
-            item[key].update(kwargs)
-    return config
-
-def get_markdown_extensions(config):
-    """
-    Extract the markdown extensions and associated configurations from the yaml configuration.
-    """
-    extensions = []
-    extension_configs = dict()
-    for ext in config:
-        if isinstance(ext, dict):
-            for k, v in ext.iteritems(): # there should only be one entry, but just in case
-                extensions.append(k)
-                extension_configs[k] = v
+        if isinstance(item, str):
+            out[item] = dict()
         else:
-            extensions.append(ext)
+            out[item.keys()[0]] = item.values()[0]
 
-    return extensions, extension_configs
+    key = 'MooseDocs.extensions.MooseMarkdownExtension'
+    if key in out:
+        out[key].update(kwargs)
+    return out
 
 def get_moose_markdown_extension(parser):
     """

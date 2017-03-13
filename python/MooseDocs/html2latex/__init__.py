@@ -28,8 +28,7 @@ def generate_html(md_file, config_file):
     config = MooseDocs.load_config(config_file, template=None)
 
     # Create the markdown parser
-    extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
-    parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
+    parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
     # Read and parse the markdown
     md, settings = MooseDocs.read_markdown(md_file)

@@ -37,10 +37,8 @@ class MarkdownTestCase(unittest.TestCase):
         os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
 
         config = MooseDocs.load_config('moosedocs.yml')
-
-        extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
-        cls.updateExtensionConfigs(extension_configs)
-        cls.parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
+        cls.updateExtensionConfigs(config)
+        cls.parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
         os.chdir(cls.working_dir)
 
     @classmethod

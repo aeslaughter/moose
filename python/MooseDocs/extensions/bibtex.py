@@ -1,9 +1,14 @@
+"""
+Bibtex extension for MooseDocs markdown.
+"""
 import shutil
 import sys
 import os
 import re
 import io
 import traceback
+import markdown
+
 from pybtex.plugin import find_plugin
 from pybtex.database import BibliographyData, parse_file
 from pybtex.database.input.bibtex import UndefinedMacro as undefined_macro_exception
@@ -16,7 +21,29 @@ from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
 
-class MooseBibtex(MooseCommonExtension, Preprocessor):
+
+class BibtexExtension(markdown.Extension):
+    """
+    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.xk
+    """
+
+    def __init__(self, **kwargs):
+
+        self.config = dict()
+        self.config['macro_files'] = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
+        super(BibtexExtension, self).__init__(**kwargs)
+
+
+    def extendMarkdown(self, md, md_globals):
+        """
+        Adds Bibtex support for MOOSE flavored markdown.
+        """
+        md.registerExtension(self)
+        config = self.getConfigs()
+        md.preprocessors.add('moose_bibtex', BibtexPreprocessor(markdown_instance=md, **config), '_end')
+
+
+class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
     """
     Creates per-page bibliographies using latex syntax.
     """
@@ -174,3 +201,6 @@ class MooseBibtex(MooseCommonExtension, Preprocessor):
         else:
             html = '<span data-moose-cite="{}">{}</span>'.format(tex, ', '.join(cite_list))
         return self.markdown.htmlStash.store(html, safe=True)
+
+def makeExtension(*args, **kwargs):
+    return BibtexExtension(*args, **kwargs)

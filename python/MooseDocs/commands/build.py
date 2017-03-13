@@ -146,8 +146,7 @@ def build(config_file=None, site_dir=None, num_threads=None,
     config = MooseDocs.load_config(config_file, **kwargs)
 
     # Create the markdown parser
-    extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
-    parser = MooseDocs.MooseMarkdown(extensions=extensions, extension_configs=extension_configs)
+    parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
     # Create object for storing pages to be generated
     def build_complete():
