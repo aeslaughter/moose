@@ -2,6 +2,7 @@
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram
 - MooseDocs.extensions.devel
+- MooseDocs.extensions.materialize
 - MooseDocs.extensions.include:
     repo: https://github.com/idaholab/moose/blob/master
     make_dir: modules/combined
