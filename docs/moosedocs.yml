@@ -1,13 +1,14 @@
 - MooseDocs.extensions.bibtex
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram
+- MooseDocs.extensions.devel
+
 - MooseDocs.extensions.MooseMarkdownExtension:
     template: 'website.html'
     template_args:
         title: 'MOOSE'
         logo: ../media/moose_logo_small.png
         repo_url: https://github.com/idaholab/moose/
-    package: True
     executable: modules/combined/combined-opt
     repo: https://github.com/idaholab/moose/blob/master
     install: docs/content/documentation/systems

@@ -47,9 +47,6 @@ class MooseMarkdownExtension(markdown.Extension):
         self.config['locations']     = [dict(), "The locations to parse for syntax."]
         self.config['repo']          = ['', "The remote repository to create hyperlinks."]
         self.config['links']         = [dict(), "The set of paths for generating input file and source code links to objects."]
-        self.config['package']       = [False, "Enable the use of the MoosePackageParser."]
-        self.config['graphviz']      = ['/opt/moose/graphviz/bin', 'The location of graphviz executable for use with diagrams.']
-        self.config['dot_ext']       = ['svg', "The graphviz/dot output file extension (default: svg)."]
         self.config['install']       = ['', "The location to install system and object documentation."]
         self.config['template']      = ['', "The jinja2 template to apply."]
         self.config['template_args'] = [dict(), "Arguments passed to to the MooseTemplate Postprocessor."]
@@ -128,7 +125,6 @@ class MooseMarkdownExtension(markdown.Extension):
         md.treeprocessors['inline'] = MooseInlineProcessor(markdown_instance=md, **config)
 
         # Block processors
-        md.parser.blockprocessors.add('diagrams', MooseDiagram(md.parser, **config), '_begin')
         md.parser.blockprocessors.add('slider', MooseSlider(md.parser, **config), '_begin')
 
         # Inline Patterns
@@ -154,9 +150,6 @@ class MooseMarkdownExtension(markdown.Extension):
         md.inlinePatterns.add('moose_figure', MooseFigure(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_figure_reference', MooseFigureReference(markdown_instance=md, **config), '>moose_figure')
         md.inlinePatterns.add('moose_equation_reference', MooseEquationReference(markdown_instance=md, **config), '<moose_figure_reference')
-        md.inlinePatterns.add('moose_build_status', MooseBuildStatus(markdown_instance=md, **config), '_begin')
-        if config['package']:
-            md.inlinePatterns.add('moose_package_parser', MoosePackageParser(markdown_instance=md, **config), '_end')
 
         # Postprocessing
         md.treeprocessors.add('moose_code_button', MooseCopyCodeButton(markdown_instance=md, **config), '_end')
