@@ -3,11 +3,30 @@ from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
 
-import MooseDocs
+import markdown
 from markdown.inlinepatterns import Pattern
+import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
 
-class MooseImageFile(MooseCommonExtension, Pattern):
+
+class MediaExtension(markdown.Extension):
+    """
+    Extension for adding media files via markdown.
+    """
+
+    def extendMarkdown(self, md, md_globals):
+        """
+        Adds Bibtex support for MOOSE flavored markdown.
+        """
+        md.registerExtension(self)
+        config = self.getConfigs()
+        md.inlinePatterns.add('moose_image', ImagePattern(markdown_instance=md, **config), '_begin')
+
+def makeExtension(*args, **kwargs):
+    return MediaExtension(*args, **kwargs)
+
+
+class ImagePattern(MooseCommonExtension, Pattern):
     """
     Markdown extension for handling images.
 
