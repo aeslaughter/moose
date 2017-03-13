@@ -320,3 +320,14 @@ class moose_diagram(elements.BlockElement):
         return '\\admonition[error-title][error]{ERROR: Un-supported Markdown!}{Dot diagram markdown syntax is not currently supported for latex/pdf output.}'
     def preamble(self):
         return admonition_preamble()
+
+class moose_video(elements.BlockElement):
+    """
+    Produce and error that videos are not supported.
+    """
+    name = 'video'
+    def convert(self, tag, content):
+        log.warning('The !video syntax is not currently supported for latex/pdf output.')
+        return '\\admonition[error-title][error]{ERROR: Un-supported Markdown!}{The !video syntax is not currently supported for latex/pdf output.}'
+    def preamble(self):
+        return admonition_preamble()

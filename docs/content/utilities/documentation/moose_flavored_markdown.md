@@ -184,6 +184,12 @@ automatically applied to the `<figure>` tag of the image. For example, the follo
 !image docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
 ```
 
+## Videos
+
+Locally stored or hosted videos can be displayed using the `!video`
+
+!video http://clips.vorwaerts-gmbh.de/VfE.webm width=100%
+
 ## Slideshows
 A sequence of images can be shown via a `slider`.
 By default the images will auto cycle between images.

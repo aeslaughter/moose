@@ -125,14 +125,9 @@ class MooseMarkdownExtension(markdown.Extension):
         system_list = MooseActionList(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_system_list', system_list, '_begin')
 
-        md.inlinePatterns.add('moose_image', MooseImageFile(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_figure', MooseFigure(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_figure_reference', MooseFigureReference(markdown_instance=md, **config), '>moose_figure')
         md.inlinePatterns.add('moose_equation_reference', MooseEquationReference(markdown_instance=md, **config), '<moose_figure_reference')
-
-        # Postprocessing
-        md.treeprocessors.add('moose_code_button', MooseCopyCodeButton(markdown_instance=md, **config), '_end')
-        md.treeprocessors.add('moose_content_scroll', MooseContentScroll(markdown_instance=md, **config), '_end')
 
 
 def makeExtension(*args, **kwargs):

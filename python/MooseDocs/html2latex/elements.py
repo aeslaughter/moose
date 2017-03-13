@@ -222,3 +222,8 @@ class em(InlineElement):
 class unknown(BlockElement):
     def convert(self, tag, content):
         return '\\begin{verbatim}\n%s\\end{verbatim}' % content
+
+class center(BlockElement):
+    name = 'center'
+    def convert(self, tag, content):
+        return '\\begin{center}\n%s\\end{center}' % content

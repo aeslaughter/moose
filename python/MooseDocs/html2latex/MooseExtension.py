@@ -24,6 +24,7 @@ class MooseExtension(Extension):
         translator.elements.add('moose_table', moose_table(), '<table')
         translator.elements.add('moose_img', moose_img(), '<img')
         translator.elements.add('moose_diagram', moose_diagram(), '<moose_img')
+        translator.elements.add('moose_video', moose_video(), '_begin')
 
         if not config['hrule']:
             translator.elements.add('moose_hide_hr', moose_hide_hr(), '<hr')

@@ -45,3 +45,4 @@ class BasicExtension(Extension):
         translator.elements.add('em', elements.em())
         translator.elements.add('code', elements.code())
         translator.elements.add('figcaption', elements.figcaption())
+        translator.elements.add('center', elements.center())
