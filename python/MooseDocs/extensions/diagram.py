@@ -1,14 +1,41 @@
+"""
+Markdown syntax for dot diagrams.
+"""
 import os
 import subprocess
 import re
 import uuid
+import markdown
 from markdown.blockprocessors import BlockProcessor
 from MooseCommonExtension import MooseCommonExtension
 from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
 
-class MooseDiagram(BlockProcessor, MooseCommonExtension):
+class DiagramExtension(markdown.Extension):
+    """
+    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.xk
+    """
+
+    def __init__(self, **kwargs):
+        self.config = dict()
+        self.config['graphviz'] = ['/opt/moose/graphviz/bin', 'The location of graphviz executable for use with diagrams.']
+        self.config['dot_ext'] = ['svg', "The graphviz/dot output file extension (default: svg)."]
+        super(DiagramExtension, self).__init__(**kwargs)
+
+    def extendMarkdown(self, md, md_globals):
+        """
+        Adds Bibtex support for MOOSE flavored markdown.
+        """
+        md.registerExtension(self)
+        config = self.getConfigs()
+        md.parser.blockprocessors.add('moose_diagrams', DiagramBlockProcessor(md.parser, **config), '_begin')
+
+def makeExtension(*args, **kwargs):
+    return DiagramExtension(*args, **kwargs)
+
+
+class DiagramBlockProcessor(BlockProcessor, MooseCommonExtension):
     """
     Extension to allow for dot diagrams.
     """

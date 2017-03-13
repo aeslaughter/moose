@@ -40,6 +40,8 @@ class BibtexExtension(markdown.Extension):
         config = self.getConfigs()
         md.preprocessors.add('moose_bibtex', BibtexPreprocessor(markdown_instance=md, **config), '_end')
 
+def makeExtension(*args, **kwargs):
+    return BibtexExtension(*args, **kwargs)
 
 class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
     """
@@ -199,6 +201,3 @@ class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
         else:
             html = '<span data-moose-cite="{}">{}</span>'.format(tex, ', '.join(cite_list))
         return self.markdown.htmlStash.store(html, safe=True)
-
-def makeExtension(*args, **kwargs):
-    return BibtexExtension(*args, **kwargs)
