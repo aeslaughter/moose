@@ -49,8 +49,8 @@ class MarkdownTestCase(unittest.TestCase):
         changing moosedocs.yml
         """
         if 'testBibtexMacro' in dir(cls):
-            if 'MooseDocs.extensions.MooseMarkdownExtension' in extension_configs:
-                extension_configs['MooseDocs.extensions.MooseMarkdownExtension']['macro_files'] =\
+            if 'MooseDocs.extensions.bibtex' in extension_configs:
+                extension_configs['MooseDocs.extensions.bibtex']['macro_files'] =\
                   ['docs/bib/macro_test_abbrev.bib']
 
         extension_configs['MooseDocs.extensions.MooseMarkdownExtension']['template'] = cls.TEMPLATE

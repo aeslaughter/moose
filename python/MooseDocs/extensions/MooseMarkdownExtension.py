@@ -51,7 +51,6 @@ class MooseMarkdownExtension(markdown.Extension):
         self.config['graphviz']      = ['/opt/moose/graphviz/bin', 'The location of graphviz executable for use with diagrams.']
         self.config['dot_ext']       = ['svg', "The graphviz/dot output file extension (default: svg)."]
         self.config['install']       = ['', "The location to install system and object documentation."]
-        self.config['macro_files']   = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
         self.config['template']      = ['', "The jinja2 template to apply."]
         self.config['template_args'] = [dict(), "Arguments passed to to the MooseTemplate Postprocessor."]
 
@@ -128,14 +127,9 @@ class MooseMarkdownExtension(markdown.Extension):
         # for an initialize() method to be called prior to the convert for re-setting state.
         md.treeprocessors['inline'] = MooseInlineProcessor(markdown_instance=md, **config)
 
-        # Preprocessors
-        md.preprocessors.add('moose_bibtex', MooseBibtex(markdown_instance=md, **config), '_end')
-        md.preprocessors.add('moose_css_list', MooseCSSPreprocessor(markdown_instance=md, **config), '_end')
-
         # Block processors
         md.parser.blockprocessors.add('diagrams', MooseDiagram(md.parser, **config), '_begin')
         md.parser.blockprocessors.add('slider', MooseSlider(md.parser, **config), '_begin')
-        md.parser.blockprocessors.add('css', MooseCSS(md.parser, **config), '_begin')
 
         # Inline Patterns
         params = MooseParameters(markdown_instance=md, syntax=self.syntax, **config)

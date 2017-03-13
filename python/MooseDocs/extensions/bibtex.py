@@ -28,11 +28,9 @@ class BibtexExtension(markdown.Extension):
     """
 
     def __init__(self, **kwargs):
-
         self.config = dict()
         self.config['macro_files'] = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
         super(BibtexExtension, self).__init__(**kwargs)
-
 
     def extendMarkdown(self, md, md_globals):
         """

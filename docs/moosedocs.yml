@@ -1,4 +1,5 @@
 - MooseDocs.extensions.bibtex
+- MooseDocs.extensions.css
 - MooseDocs.extensions.MooseMarkdownExtension:
     template: 'website.html'
     template_args:
