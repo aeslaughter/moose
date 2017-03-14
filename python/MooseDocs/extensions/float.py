@@ -1,11 +1,11 @@
 import re
 import markdown
-from markdown.treeprocessors import InlineProcessor
 import logging
 log = logging.getLogger(__name__)
 
 from markdown.preprocessors import Preprocessor
 from markdown.inlinepatterns import Pattern
+from markdown.extensions.tables import TableProcessor
 from markdown.util import etree
 
 import mooseutils
@@ -33,8 +33,18 @@ class FloatExtension(markdown.Extension):
         fig_ref = FloatReferencePattern(markdown_instance=md, count=fig_count, **config)
         md.inlinePatterns.add('moose_figure_reference', fig_ref, '>moose_figure')
 
-        #unknown = UnknownReferencePattern(markdown_instance=md, **config)
-        #md.inlinePatterns.add('moose_unknown_reference', unknown, '_end')
+        # Tables
+        tbl_count = FloatCountPreprocessor(markdown_instance=md, pattern=MooseTableProcessor.RE, **config)
+        md.preprocessors.add('moose_table_count', tbl_count, '_begin')
+
+        tbl = MooseTableProcessor(markdown_instance=md, count=tbl_count, **config)
+        md.parser.blockprocessors.add('moose_table', tbl, '_begin')
+
+        tbl_ref = FloatReferencePattern(markdown_instance=md, count=tbl_count, **config)
+        md.inlinePatterns.add('moose_table_reference', tbl_ref, '>moose_figure')
+
+        unknown = UnknownReferencePattern(markdown_instance=md, **config)
+        md.inlinePatterns.add('moose_unknown_reference', unknown, '_end')
 
 def makeExtension(*args, **kwargs):
     return FloatExtension(*args, **kwargs)
@@ -57,7 +67,7 @@ class FloatCountPreprocessor(Preprocessor, MooseCommonExtension):
         self._floats = dict()
         index = 0
         for match in re.finditer(self._re, '\n'.join(lines), flags=re.MULTILINE):
-            match_id = re.search(r'id\s*=\s*([A-Za-z0-9_\-:]+)', match.group(2))
+            match_id = re.search(r'id\s*=\s*([A-Za-z0-9_\-:]+)', match.group('settings'))
             if match_id:
                 index += 1
                 self._floats[match_id.group(1)] = index
@@ -71,7 +81,7 @@ class FigurePattern(ImagePattern):
     """
     Defines syntax for adding images as numbered figures with labels that can be referenced.
     """
-    RE = r'^!figure\s+(.*?)(?:$|\s+)(.*)'
+    RE = r'^!figure\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
     def __init__(self, markdown_instance=None, count=None, **kwargs):
         super(FigurePattern, self).__init__(markdown_instance, **kwargs)
@@ -110,12 +120,80 @@ class FigurePattern(ImagePattern):
         el = self.createImageElement(rel_filename, settings)
         return el
 
+class MooseTableProcessor(MooseCommonExtension, TableProcessor):
+    """
+    A special version of the built-in markdown tables that applies a caption and additional css.
+    """
+
+    RE = r'^!table\s*(?P<settings>.*?)$'
+
+    def __init__(self, markdown_instance=None, count=None, **kwargs):
+        MooseCommonExtension.__init__(self, **kwargs)
+        TableProcessor.__init__(self, markdown_instance.parser)
+
+        if not isinstance(count, FloatCountPreprocessor):
+            raise mooseutils.MooseException("The supplied preprocessor must be a FloatCountPreprocessor, but {} provided.".format(type(count)))
+        self._count = count
+
+        self._settings['caption'] = None
+        self._settings['prefix'] = 'Table'
+
+    def test(self, parent, block):
+        """
+        Test that the block has !table syntax, if it does remove the top line and run the base class
+        test method to prepare for creating the actual table.
+        """
+        match = re.search(self.RE, block, flags=re.MULTILINE)
+        if match:
+            block = '\n'.join(block.split('\n')[1:])
+            return TableProcessor.test(self, parent, block)
+        return False
+
+    def run(self, parent, blocks):
+        """
+        Create a table with caption.
+        """
+
+        # Strip the !table line and settings
+        lines = blocks[0].split('\n')
+        blocks[0] = '\n'.join(lines[1:])
+        match = re.search(self.RE, lines[0], flags=re.MULTILINE)
+        settings = self.getSettings(match.group(1))
+
+        # Create the containing <div> tag.
+        div = self.applyElementSettings(etree.SubElement(parent, 'div'), settings)
+        div.set('class', 'moose-table')
+
+        # Extract known table floats so the table number can be added to the caption
+        floats = self._count.getFloats()
+
+        # Error if the 'label' setting is not provided
+        if not settings['id']:
+            return self.createErrorElement("The 'id' setting must be supplied for the table command.")
+
+        # Update the caption to include the numbered prefix
+        num = floats[settings['id']]
+        if settings['caption']:
+            caption = '{} {}: {}'.format(settings['prefix'], num, settings['caption'])
+        else:
+            caption = '{} {}'.format(settings['prefix'], num)
+
+        # Create the caption tag
+        caption_el = etree.SubElement(div, 'div')
+        p = etree.SubElement(caption_el, 'p')
+        p.set('class', 'moose-table-caption')
+        p.set('align', "justify")
+        p.text = caption
+
+        # Create the table
+        TableProcessor.run(self, div, blocks)
 
 class FloatReferencePattern(MooseCommonExtension, Pattern):
     """
     Defines syntax for referencing figures.
     """
     RE = r'(?<![`])\\ref{(.*?)}'
+    CLASS = 'moose-figure-caption'
 
     def __init__(self, markdown_instance=None, count=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
@@ -134,17 +212,22 @@ class FloatReferencePattern(MooseCommonExtension, Pattern):
         float_id = match.group(2)
         if float_id in floats:
             el = etree.Element('a')
-            el.set('class', 'moose-figure-reference')
+            el.set('class', 'moose-float-reference')
             el.set('href', '#' + match.group(2))
             el.text = str(floats[match.group(2)])
             return el
 
 class UnknownReferencePattern(Pattern):
+    """
+    Creates a span tag for unknown \ref commands.
+    """
+    RE = r'(?<![`])(\\ref{.*?})'
+
     def __init__(self, *args, **kwargs):
-        Pattern.__init__(self, FloatReferencePattern.RE, *args, **kwargs)
+        Pattern.__init__(self, self.RE, *args, **kwargs)
 
     def handleMatch(self, match):
         el = etree.Element('span')
-        el.text = match.group(1)
-        el.set('color', 'rgb(255,1,1)')
+        el.text = match.group(2)
+        el.set('class', 'moose-unknown-reference')
         return el

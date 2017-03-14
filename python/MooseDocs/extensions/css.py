@@ -93,8 +93,6 @@ class CSSPreprocessor(Preprocessor, MooseCommonExtension):
         Args:
           lines[list]: List of markdown lines to preprocess.
         """
-
-        # Break the lines at '---' items
         content = '\n'.join(lines)
         content = re.sub(r'^(!css\s*(.*?)\n)(.*?)^$', self._injectListCSS, content, flags=re.MULTILINE|re.DOTALL)
         return content.split('\n')

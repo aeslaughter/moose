@@ -82,6 +82,7 @@ class ImagePattern(MediaPatternBase):
     Find !image /path/to/file attribute=setting
     """
     RE = r'^!image\s+(.*?)(?:$|\s+)(.*)'
+    CLASS = 'moose-image-caption'
 
     def __init__(self, markdown_instance, **kwargs):
         super(ImagePattern, self).__init__(self.RE, markdown_instance, **kwargs)
@@ -116,7 +117,7 @@ class ImagePattern(MediaPatternBase):
         if settings['caption']:
             caption = etree.SubElement(card, 'div')
             p = etree.SubElement(caption, 'p')
-            p.set('class', 'moose-caption')
+            p.set('class', self.CLASS)
             p.set('align', "justify")
             p.text = settings['caption']
 

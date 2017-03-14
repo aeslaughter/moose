@@ -250,7 +250,14 @@ Secondly, the "id" setting must be supplied. This defines the name to which the 
 Figures can be referenced with latex style reference commands. For example, using `\ref{fig:memory_logger}` results in a
 reference to Figure \ref{fig:memory_logger}. If an invalid "id" is supplied the reference will displayed in red: \ref{fig:invalid_id}.
 
----
+## Tables
+
+!table id=table:testing caption=This is an example table with a caption.
+| 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|----|
+| 2 | 4 | 6 | 8 | 10 |
+
+Similar to figures, tables can be referenced: Table \ref{table:testing}.
 
 ## Flow Charts
 The ability to include diagrams using [GraphViz](http://www.graphviz.org/) using the [dot]() language is provided.

@@ -86,7 +86,9 @@ ul {
   opacity:1;
 }
 
-moose-caption {
+moose-figure-caption,
+moose-table-caption,
+moose-image-caption {
     padding: 5px;
     margin: 0px;
 }
@@ -107,7 +109,8 @@ moose-caption {
     text-transform: none;
 }
 
-a.moose-bad-link{
+a.moose-bad-link,
+span.moose-unknown-reference{
     color:red;
 }
 
