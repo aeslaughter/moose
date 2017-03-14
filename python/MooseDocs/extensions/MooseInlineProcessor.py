@@ -1,7 +1,6 @@
 import logging
 log = logging.getLogger(__name__)
 from markdown.treeprocessors import InlineProcessor
-from MooseImageFile import MooseImageFile
 from MooseCommonExtension import MooseCommonExtension
 
 class MooseInlineProcessor(InlineProcessor, MooseCommonExtension):

@@ -9,15 +9,10 @@ from MooseObjectSyntax import MooseObjectSyntax
 from MooseParameters import MooseParameters
 from MooseDescription import MooseDescription
 from MooseActionSyntax import MooseActionSyntax
-from MooseImageFile import MooseImageFile
-from MooseFigure import MooseFigure
-from MooseFigureReference import MooseFigureReference
 from MooseEquationReference import MooseEquationReference
 from MooseInlineProcessor import MooseInlineProcessor
 from MooseSlider import MooseSlider
 from MooseActionList import MooseActionList
-from MooseCopyCodeButton import MooseCopyCodeButton
-from MooseContentScroll import MooseContentScroll
 import MooseDocs
 import mooseutils
 
@@ -125,8 +120,6 @@ class MooseMarkdownExtension(markdown.Extension):
         system_list = MooseActionList(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_system_list', system_list, '_begin')
 
-        md.inlinePatterns.add('moose_figure', MooseFigure(markdown_instance=md, **config), '_begin')
-        md.inlinePatterns.add('moose_figure_reference', MooseFigureReference(markdown_instance=md, **config), '>moose_figure')
         md.inlinePatterns.add('moose_equation_reference', MooseEquationReference(markdown_instance=md, **config), '<moose_figure_reference')
 
 
