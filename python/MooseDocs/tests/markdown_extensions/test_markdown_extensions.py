@@ -4,7 +4,7 @@ from MooseDocs.testing import MarkdownTestCase
 
 class TestMarkdownExtensions(MarkdownTestCase):
     """
-    Tests that the 'moosedocs.yml' configuration file sets up the markdown conversion, including
+    Tests that the configuration file sets up the markdown conversion, including
     that the basic (i.e., non-MOOSE) extensions are working.
     """
 

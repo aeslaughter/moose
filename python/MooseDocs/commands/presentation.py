@@ -15,7 +15,7 @@ def presentation_options(parser):
     parser.add_argument('--serve', action='store_true', help="Serve the presentation with live reloading.")
     parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
     parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
-    parser.add_argument('--config-file', type=str, default=os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'moosedocs.yml'), help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
+    parser.add_argument('--config-file', type=str, default=os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'presentation.yml'), help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
     parser.add_argument('--output', '-o', default=None, type=str, help="The default html file to create, defaults to input filename with html extension.")
     parser.add_argument('--template', type=str, default='presentation.html', help="The template html file to utilize (default: %(default)s).")
     parser.add_argument('--title', type=str, default="MOOSE Presentation", help="The title of the document.")
@@ -49,10 +49,6 @@ def presentation(config_file=None, md_file=None, output=None, serve=None, port=N
 
     # Load the YAML configuration file
     config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
-
-    # Create the markdown parser, being sure to enable
-    config['MooseDocs.extensions.presentation'] = dict()
-
     parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
     site_dir, _ = os.path.splitext(md_file)

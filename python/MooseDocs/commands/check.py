@@ -9,7 +9,7 @@ def check_options(parser):
     """
     Command-line options for check command.
     """
-    parser.add_argument('--config-file', type=str, default='moosedocs.yml', help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
+    parser.add_argument('--config-file', type=str, default='website.yml', help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
     parser.add_argument('--locations', nargs='+', help="List of locations to consider, names should match the keys listed in the configuration file.")
     parser.add_argument('--generate', action='store_true', help="When checking the application for complete documentation generate any missing markdown documentation files.")
 

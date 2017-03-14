@@ -10,8 +10,6 @@ import logging
 log = logging.getLogger(__name__)
 
 import MooseDocs
-from MooseSlidePreprocessor import MooseSlidePreprocessor
-from MooseSlideContents import MooseSlideContents
 
 class PresentationExtension(markdown.Extension):
     def __init__(self, *args, **kwargs):

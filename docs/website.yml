@@ -1,0 +1,19 @@
+- MooseDocs.extensions.bibtex
+- MooseDocs.extensions.css
+- MooseDocs.extensions.diagram
+- MooseDocs.extensions.devel
+- MooseDocs.extensions.materialize
+- MooseDocs.extensions.media
+- MooseDocs.extensions.float
+- MooseDocs.extensions.equation
+- MooseDocs.extensions.include:
+    repo: https://github.com/idaholab/moose/blob/master
+    make_dir: modules/combined
+- MooseDocs.extensions.template:
+    template: website.html
+    template_args:
+        title: 'MOOSE'
+        logo: docs/media/moose_logo_small.png
+        repo_url: https://github.com/idaholab/moose/
+        navigation: docs/navigation.yml
+- MooseDocs.extensions.app_syntax: !include docs/app_syntax.yml

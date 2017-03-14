@@ -17,7 +17,7 @@ def build_options(parser):
     """
     Command-line options for build command.
     """
-    parser.add_argument('--config-file', type=str, default='moosedocs.yml', help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
+    parser.add_argument('--config-file', type=str, default='website.yml', help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
     parser.add_argument('--num-threads', '-j', type=int, default=multiprocessing.cpu_count(), help="Specify the number of threads to build pages with.")
     parser.add_argument('--template', type=str, default='website.html', help="The template html file to utilize (Default: %(default)s).")
 
@@ -171,7 +171,7 @@ def build(config_file=None, site_dir=None, num_threads=None,
         server.watch(os.path.join(os.getcwd(), 'fonts'), builder.copyFiles)
 
         # Watch the files and directories that require complete rebuild
-        moose_extension = MooseDocs.get_moose_markdown_extension(parser)
+        moose_extension = MooseDocs.get_app_syntax_extension(parser)
         if moose_extension:
             server.watch(os.path.join(os.getcwd(), moose_extension.getConfig('executable')), build_complete)
         server.watch(config_file, build_complete)

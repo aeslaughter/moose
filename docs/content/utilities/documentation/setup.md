@@ -74,10 +74,10 @@ cp ~/projects/moose/docs/moosedocs.py ~/projects/your_application_name/doc
 Second, you need to create a configuration file. Again, it is best to start by copying the file in MOOSE:
 
 ```bash
-cp ~/projects/moose/docs/moosedocs.yml ~/projects/your_application_name/doc
+cp ~/projects/moose/docs/website.yml ~/projects/your_application_name/doc
 ```
 
-The "moosedocs.yml" file that was copied will likely need to be modified for your application. This configuration file as
+The "website.yml" file that was copied will likely need to be modified for your application. This configuration file as
 well as all other paths within the documentation are always provided
 
 The following configuration options are available.
@@ -93,7 +93,7 @@ The following configuration options are available.
 The MOOSE documentation system uses the [python markdown](http://pythonhosted.org/Markdown/) package from which a custom set of markdown
 was created, the available options for this package are listed in the table below as well as the configuration for MOOSE documentation.
 
-!text docs/moosedocs.yml max-height=400px overflow-y=scroll
+!text docs/website.yml max-height=400px overflow-y=scroll
 
 | Option       | Default | Description |
 | ------------ | ------- | ----------- |

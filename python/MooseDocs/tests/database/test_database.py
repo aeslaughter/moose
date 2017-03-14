@@ -8,7 +8,7 @@ class TestMooseLinkDatabase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
-        config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'moosedocs.yml'))
+        config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'website.yml'))
         options = config['MooseDocs.extensions.app_syntax']
         cls.database = MooseDocs.MooseLinkDatabase(**options)
 

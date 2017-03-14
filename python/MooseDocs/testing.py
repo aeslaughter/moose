@@ -27,7 +27,7 @@ class MarkdownTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """
-        Create the markdown parser using the 'moosedocs.yml' configuration file.
+        Create the markdown parser using the configuration file.
         """
 
         # Define the local directory
@@ -36,7 +36,7 @@ class MarkdownTestCase(unittest.TestCase):
         # Create the markdown object
         os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
 
-        config = MooseDocs.load_config('moosedocs.yml')
+        config = MooseDocs.load_config('website.yml')
         if not cls.TEMPLATE:
             config.pop('MooseDocs.extensions.template', None)
 
@@ -49,7 +49,7 @@ class MarkdownTestCase(unittest.TestCase):
         """
         Method to change the arguments that come from the configuration file for
         specific tests.  This way one can test optional arguments without permanently
-        changing moosedocs.yml
+        changing the configuration file.
         """
         if 'testBibtexMacro' in dir(cls):
             if 'MooseDocs.extensions.bibtex' in extension_configs:

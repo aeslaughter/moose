@@ -151,7 +151,7 @@ def yaml_load(filename, loader=Loader):
 
 def load_config(config_file, **kwargs):
     """
-    Read the MooseDocs configure file (e.g., moosedocs.yml)
+    Read the MooseDocs configure file (e.g., website.yml)
     """
     out = collections.OrderedDict()
     config = yaml_load(config_file)
@@ -167,12 +167,12 @@ def load_config(config_file, **kwargs):
                 value[k] = v
     return out
 
-def get_moose_markdown_extension(parser):
+def get_app_syntax_extension(parser):
     """
     Return the MooseMarkdownExtension instance from the Markdown parser, if it exists.
     """
     for ext in parser.registeredExtensions:
-        if isinstance(ext, extensions.MooseMarkdownExtension):
+        if isinstance(ext, extensions.app_syntax.AppSyntaxExtension):
             return ext
 
 def read_markdown(md_file):

@@ -10,8 +10,8 @@ class TestMooseApplicationSyntax(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
-        # Read the moosedocs.yml configuration
-        config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'moosedocs.yml'))
+        # Read the configuration
+        config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'website.yml'))
         options = config['MooseDocs.extensions.app_syntax']
 
         # Extract the MOOSE YAML data

@@ -103,7 +103,7 @@ class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
                 except Exception as e:
                     if isinstance(e,undefined_macro_exception):
                         log.error('Undefined macro in bibtex file: {}, '\
-                          'specify macro_files arguments in configuration file (e.g. moosedocs.yml)'\
+                          'specify macro_files arguments in configuration file (e.g. website.yml)'\
                           .format(bfile.strip()))
                     else:
                         log.error('Failed to parse bibtex file: {}'.format(bfile.strip()))

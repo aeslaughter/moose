@@ -13,7 +13,7 @@ from MooseActionList import MooseActionList
 import MooseDocs
 import mooseutils
 
-class AppSyntaxExension(markdown.Extension):
+class AppSyntaxExtension(markdown.Extension):
     """
     Extensions that comprise the MOOSE flavored markdown.
     """
@@ -32,7 +32,7 @@ class AppSyntaxExension(markdown.Extension):
         self.config['install']       = ['', "The location to install system and object documentation."]
 
         # Construct the extension object
-        super(AppSyntaxExension, self).__init__(**kwargs)
+        super(AppSyntaxExtension, self).__init__(**kwargs)
 
         # Create the absolute path to the executable
         self.setConfig('executable', MooseDocs.abspath(self.getConfig('executable')))
@@ -113,4 +113,4 @@ class AppSyntaxExension(markdown.Extension):
 
 
 def makeExtension(*args, **kwargs):
-    return AppSyntaxExension(*args, **kwargs)
+    return AppSyntaxExtension(*args, **kwargs)
