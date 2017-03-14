@@ -10,7 +10,6 @@ from MooseParameters import MooseParameters
 from MooseDescription import MooseDescription
 from MooseActionSyntax import MooseActionSyntax
 from MooseActionList import MooseActionList
-from MooseEquationReference import MooseEquationReference
 import MooseDocs
 import mooseutils
 
@@ -95,8 +94,6 @@ class MooseMarkdownExtension(markdown.Extension):
             options.setdefault('install', config['install'])
             self.syntax[key] = MooseDocs.MooseApplicationSyntax(exe_yaml, **options)
 
-        # Block processors
-
         # Inline Patterns
         params = MooseParameters(markdown_instance=md, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_parameters', params, '_begin')
@@ -113,7 +110,6 @@ class MooseMarkdownExtension(markdown.Extension):
         system_list = MooseActionList(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_system_list', system_list, '_begin')
 
-        md.inlinePatterns.add('moose_equation_reference', MooseEquationReference(markdown_instance=md, **config), '<moose_figure_reference')
 
 
 def makeExtension(*args, **kwargs):

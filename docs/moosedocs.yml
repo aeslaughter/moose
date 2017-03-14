@@ -5,6 +5,7 @@
 - MooseDocs.extensions.materialize
 - MooseDocs.extensions.media
 - MooseDocs.extensions.float
+- MooseDocs.extensions.equation
 - MooseDocs.extensions.include:
     repo: https://github.com/idaholab/moose/blob/master
     make_dir: modules/combined

@@ -3,11 +3,30 @@ from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
 
-import MooseDocs
+import markdown
 from markdown.inlinepatterns import Pattern
+
+import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
 
-class MooseEquationReference(MooseCommonExtension, Pattern):
+
+class EquationExtension(markdown.Extension):
+    """
+    Adds extension for MathJax equation reference support.
+    """
+    def extendMarkdown(self, md, md_globals):
+        """
+        Adds \eqref support for MOOSE flavored markdown.
+        """
+        md.registerExtension(self)
+        config = self.getConfigs()
+        md.inlinePatterns.add('moose_equation_reference', EquationPattern(markdown_instance=md, **config), '_begin')
+
+def makeExtension(*args, **kwargs):
+    return EquationExtension(*args, **kwargs)
+
+
+class EquationPattern(MooseCommonExtension, Pattern):
     """
     Defines syntax for referencing MathJax equations with \label defined.
 
