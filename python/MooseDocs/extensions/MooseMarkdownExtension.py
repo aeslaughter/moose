@@ -9,10 +9,8 @@ from MooseObjectSyntax import MooseObjectSyntax
 from MooseParameters import MooseParameters
 from MooseDescription import MooseDescription
 from MooseActionSyntax import MooseActionSyntax
-from MooseEquationReference import MooseEquationReference
-from MooseInlineProcessor import MooseInlineProcessor
-from MooseSlider import MooseSlider
 from MooseActionList import MooseActionList
+from MooseEquationReference import MooseEquationReference
 import MooseDocs
 import mooseutils
 
@@ -97,12 +95,7 @@ class MooseMarkdownExtension(markdown.Extension):
             options.setdefault('install', config['install'])
             self.syntax[key] = MooseDocs.MooseApplicationSyntax(exe_yaml, **options)
 
-        # Replace the InlineTreeprocessor with the MooseInlineProcessor, this allows
-        # for an initialize() method to be called prior to the convert for re-setting state.
-        md.treeprocessors['inline'] = MooseInlineProcessor(markdown_instance=md, **config)
-
         # Block processors
-        md.parser.blockprocessors.add('slider', MooseSlider(md.parser, **config), '_begin')
 
         # Inline Patterns
         params = MooseParameters(markdown_instance=md, syntax=self.syntax, **config)
