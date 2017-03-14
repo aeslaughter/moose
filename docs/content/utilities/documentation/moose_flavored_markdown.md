@@ -186,7 +186,7 @@ automatically applied to the `<figure>` tag of the image. For example, the follo
 
 ## Videos
 
-Locally stored or hosted videos can be displayed using the `!video`
+Locally stored or hosted videos can be displayed using the `!video` syntax.
 
 !video http://clips.vorwaerts-gmbh.de/VfE.webm width=100%
 
@@ -239,16 +239,16 @@ the `!figure` markdown syntax. This syntax operates nearly identically to the `!
 
 !figure docs/media/memory_logger-plot_multi.png width=250px caption=The numbered prefix is automatically applied to the caption. id=fig:memory_logger
 
-First, the caption will automatically be prefixed with the figure number (e.g., Figure \ref{fig:dark_mode}). The
+First, the caption will automatically be prefixed with the figure number (e.g., Figure \ref{fig:memory_logger}). The
 numbering begins at one and is reset on each page. The prefix "Figure" can be modified by setting
-the "prefix" option.
+the "prefix" option as in Figure \ref{fig:dark_mode}.
 
 !figure docs/media/memory_logger-darkmode.png width=250px id=fig:dark_mode prefix=Fig. caption=The "prefix" setting changes the text that proceeds the number.
 
 Secondly, the "id" setting must be supplied. This defines the name to which the figure should be referred in the text.
 
 Figures can be referenced with latex style reference commands. For example, using `\ref{fig:memory_logger}` results in a
-reference to Figure \ref{fig:memory_logger}. If an invalid "id" is supplied the reference will display question marks: \ref{fig:invalid_id}.
+reference to Figure \ref{fig:memory_logger}. If an invalid "id" is supplied the reference will displayed in red: \ref{fig:invalid_id}.
 
 ---
 
