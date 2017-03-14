@@ -1,4 +1,5 @@
 import bs4
+import mooseutils
 
 class Element(object):
     """
@@ -11,7 +12,7 @@ class Element(object):
         pass
 
     def test(self, tag):
-        if tag.name == self.name and all([a in tag.attrs for a in self.attrs]):
+        if isinstance(tag, bs4.element.Tag) and tag.name == self.name and all([a in tag.attrs for a in self.attrs]):
             return True
         return False
 
@@ -22,208 +23,229 @@ class Element(object):
         """
         return u''.join([unicode(c) for c in tag.children])
 
-    def convert(self, tag, content):
-        return None
+    def convert(self, tag):
+        tag.insert_before(bs4.element.NavigableString(self.before(tag)))
+        tag.insert_after(bs4.element.NavigableString(self.after(tag)))
+        tag.unwrap()
 
-    def prefix(self, tag, level=0):
-        pass
+    def before(self, tag):
+        return str()
 
-    def preamble(self):
-        return []
+    def after(self, tag):
+        return str()
 
 class BlockElement(Element):
-    """
-    BlockElements begin with a new line.
-    """
-    def prefix(self, tag):
-        return '\n'
+    command = None
+    def __init__(self, *args, **kwargs):
+        super(BlockElement, self).__init__(*args, **kwargs)
+        if self.command is None:
+            raise mooseutils.MooseException('The "command" class member must be set.')
+        self.begin = '\\begin{%s}\n' % self.command
+        self.end = '\n\\end{%s}' % self.command
+    def before(self, tag):
+        return self.begin
+    def after(self, tag):
+        return self.end
 
 class InlineElement(Element):
     """
     InlineElements are 'inline', says Cpt. Obvious.
     """
-    def prefix(self, tag, level=0):
-        return ''
+    command = None
+    def __init__(self, *args, **kwargs):
+        super(InlineElement, self).__init__(*args, **kwargs)
+        if self.command is None:
+            raise mooseutils.MooseException('The "command" class member must be set.')
 
-class h1(BlockElement):
+    def before(self, tag):
+        return '\\%s{' % self.command
+
+    def after(self, tag):
+        return '}'
+
+class InlineHeading(InlineElement):
+    def __init__(self, command=None):
+        if command is None:
+            raise mooseutils.MooseException("The 'command' argument must be supplied.")
+        self.command = command
+
+    def after(self, tag):
+        if 'id' in tag.attrs:
+            return '\\label{%s}}' % tag['id']
+        else:
+            return '}'
+
+class html(Element):
+    name = 'html'
+
+class body(Element):
+    name = 'body'
+
+class head(Element):
+    name = 'head'
+
+class h1(InlineHeading):
     name = 'h1'
-    attrs = ['id']
-    def __init__(self, command='section'):
-        self.command = command
-    def convert(self, tag, content):
-        return '\\%s{%s\\label{sec:%s}}' % (self.command, content, tag["id"])
 
-class h2(BlockElement):
+class h2(InlineHeading):
     name = 'h2'
-    attrs = ['id']
-    def __init__(self, command='subsection'):
-        self.command = command
-    def convert(self, tag, content):
-        return '\\%s{%s\\label{sec:%s}}' % (self.command, content, tag["id"])
 
-class h3(BlockElement):
+class h3(InlineHeading):
     name = 'h3'
-    attrs = ['id']
-    def __init__(self, command='subsubsection'):
-        self.command = command
-    def convert(self, tag, content):
-        return '\\%s{%s\\label{sec:%s}}' % (self.command, content, tag["id"])
 
-class h4(BlockElement):
+class h4(InlineHeading):
     name = 'h4'
-    attrs = ['id']
-    def __init__(self, command='textbf'):
-        self.command = command
-    def convert(self, tag, content):
-        return '\\%s{%s\\label{sec:%s}}' % (self.command, content, tag["id"])
 
-class h5(BlockElement):
+class h5(InlineHeading):
     name = 'h5'
-    attrs = ['id']
-    def __init__(self, command='underline'):
-        self.command = command
-    def convert(self, tag, content):
-        return '\\%s{%s\\label{sec:%s}}' % (self.command, content, tag["id"])
 
-class h6(BlockElement):
-    name = 'h5'
-    attrs = ['id']
-    def __init__(self, command='emph'):
-        self.command = command
-    def convert(self, tag, content):
-        return '\\%s{%s\\label{sec:%s}}' % (self.command, content, tag["id"])
+class h6(InlineHeading):
+    name = 'h6'
 
-class div(BlockElement):
+class div(Element):
     name = 'div'
-    def convert(self, tag, content):
-        return content
-
-class pre(BlockElement):
-    name = 'pre'
-    def convert(self, tag, content):
-        return '\\begin{verbatim}\n%s\\end{verbatim}' % content
 
 class pre_code(BlockElement):
     name = 'pre'
+    command = 'verbatim'
     def test(self, tag):
-        return super(pre_code, self).test(tag) and (tag.contents[0].name == 'code')
-    def convert(self, tag, content):
-        return '\\begin{verbatim}\n%s\\end{verbatim}' % self.content(tag.contents[0])
+        return super(pre_code, self).test(tag) and (tag.code)
+    def convert(self, tag):
+        tag.code.unwrap()
+        super(pre_code, self).convert(tag)
+
+class pre(BlockElement):
+    name = 'pre'
+    command = 'verbatim'
 
 class table(BlockElement):
     name = 'table'
-    def convert(self, tag, content):
-        tr = tag.find_all('tr')
-        return '\\begin{tabular}{%s}%s\\end{tabular}' % ('l'*len(tr), content)
+    command ='tabular'
+    def before(self, tag):
+        tr = tag.tbody.find_all('tr')
+        return '\\begin{tabular}{%s}\n' % ('l'*len(tr))
 
-class thead(InlineElement):
-    name = 'thead'
-    def convert(self, tag, content):
-        return '\\hline%s' % content
-
-class tbody(InlineElement):
+class tbody(Element):
     name = 'tbody'
-    def convert(self, tag, content):
-        return '\\hline%s\\hline' % content
 
-class tr(InlineElement):
+class thead(Element):
+    name = 'thead'
+    def before(self, tag):
+        return '\\hline\n'
+    def after(self, tag):
+        return '\\hline'
+
+class tfoot(thead):
+    name = 'tfoot'
+
+class tr(Element):
     name = 'tr'
-    def convert(self, tag, content):
-        items = [Element.content(c) for c in tag.find_all('td')]
-        items += [Element.content(c) for c in tag.find_all('th')]
-        return ' & '.join(items) + '\\\\'
+    def after(self, tag):
+        print tag
+        return '\n'
+
+class th(Element):
+    name = 'th'
+    def after(self, tag):
+        if tag.find_next_sibling(self.name):
+            return ' & '
+        return ' \\\\'
+
+class td(th):
+    name = 'td'
 
 class ol(BlockElement):
     name = 'ol'
-    def convert(self, tag, content):
-        return '\\begin{enumerate}%s\\end{enumerate}' % content
+    command = 'enumerate'
 
 class ul(BlockElement):
     name = 'ul'
-    def convert(self, tag, content):
-        return '\\begin{itemize}%s\\end{itemize}' % content
+    command = 'itemize'
 
-class inline_equation(BlockElement):
+class li(Element):
+    name = 'li'
+    def before(self, tag):
+        return '\\item '
+    def after(self, tag):
+        if tag.find_next_sibling('li'):
+            return '\n'
+        return ''
+
+class inline_equation(Element):
     name = 'script'
     attrs = ['type']
 
     def test(self, tag):
-        tf = super(inline_equation, self).test(tag)
-        return tf and (tag['type'] == u'math/tex')
-    def convert(self, tag, content):
-        return '$%s$' % content
+        return super(inline_equation, self).test(tag) and (tag['type'] == u'math/tex')
+    def before(self, tag):
+        return '$'
+    def after(self, tag):
+        return '$'
 
 class equation(BlockElement):
     name = 'script'
     attrs = ['type']
+    command = 'equation'
 
     def test(self, tag):
         tf = super(equation, self).test(tag)
         return tf and (tag['type'] == u'math/tex; mode=display')
+    def before(self, tag):
+        content = self.content(tag)
+        if self.begin in content:
+            return ''
+        else:
+            return super(equation, self).before(tag)
 
-    def convert(self, tag, content):
-        return content
-
-class hr(BlockElement):
+class hr(Element):
     name = 'hr'
-    def convert(self, tag, content):
-        return '\\hrule'
-
-class figure(BlockElement):
-    name = 'figure'
-    def convert(self, tag, content):
-        return "\\begin{figure}%s\\end{figure}" % content
+    def before(self, tag):
+        return '\\hrule\n'
 
 class figcaption(InlineElement):
     name = 'figcaption'
-    def convert(self, tag, content):
-        return "\\caption{%s}" % content
+    command = 'caption'
 
-class img(BlockElement):
+class img(InlineElement):
     name = 'img'
-    def convert(self, tag, content):
-        return '\\includegraphics{%s}' % tag.attrs['src']
-    def preamble(self):
-        return ['\\usepackage{graphicx}']
+    attrs = ['src']
+    command = 'includegraphics'
+    def after(self, tag):
+        return tag['src'] + '}\n'
 
-class a(InlineElement):
+class figure(BlockElement):
+    name = 'figure'
+    command = 'figure'
+
+class a(Element):
     name = 'a'
     attrs = ['href']
-    def convert(self, tag, content):
-        return '\\href{%s}{%s}' % (tag['href'], content)
-    def preamble(self):
-        return ['\\usepackage{hyperref}']
+    def before(self, tag):
+        return '\\href{%s}{' % tag['href']
+    def after(self, tag):
+        return '}'
 
-class span(InlineElement):
+class span(Element):
     name = 'span'
-    def convert(self, tag, content):
-        return content
 
-class p(InlineElement):
+class p(Element):
     name = 'p'
-    def convert(self, tag, content):
-        return '\\par\n%s' % content
-
-class li(InlineElement):
-    name = 'li'
-    def convert(self, tag, content):
-        return '\\item %s' % content
+    def before(self, tag):
+        return '\\par\n'
+    def after(self, tag):
+        return '\n'
 
 class code(InlineElement):
     name = 'code'
-    def convert(self, tag, content):
-        return '\\texttt{%s}' % content
+    command = 'texttt'
 
 class em(InlineElement):
     name = 'em'
-    def convert(self, tag, content):
-        return '\\emph{%s}' % content
+    command = 'emph'
 
 class unknown(BlockElement):
-    def convert(self, tag, content):
-        return '\\begin{verbatim}\n%s\\end{verbatim}' % content
+    command = 'verbatim'
 
 class center(BlockElement):
     name = 'center'
-    def convert(self, tag, content):
-        return '\\begin{center}\n%s\\end{center}' % content
+    command = 'center'

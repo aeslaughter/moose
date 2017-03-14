@@ -22,6 +22,7 @@ class MarkdownTestCase(unittest.TestCase):
     parser = None
     working_dir = os.getcwd()
     TEMPLATE = False
+    CONFIG = 'website.yml'
 
 
     @classmethod
@@ -36,7 +37,7 @@ class MarkdownTestCase(unittest.TestCase):
         # Create the markdown object
         os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
 
-        config = MooseDocs.load_config('website.yml')
+        config = MooseDocs.load_config(cls.CONFIG)
         if not cls.TEMPLATE:
             config.pop('MooseDocs.extensions.template', None)
 
@@ -137,24 +138,13 @@ class MarkdownTestCase(unittest.TestCase):
         # Compare against gold
         self.assertTextFile(name)
 
-class TestLatexBase(unittest.TestCase):
+class TestLatexBase(MarkdownTestCase):
     """
     Test that basic html to latex conversion working.
     """
     working_dir = os.getcwd()
-    defaults = vars(MooseDocs.command_line_options(['latex', 'fake.md']))
-
-    def setUp(self):
-        """
-        Runs prior to each test.
-        """
-        os.chdir(os.path.join(MooseDocs.ROOT_DIR, 'docs'))
-
-    def tearDown(self):
-        """
-        Runs after each test.
-        """
-        os.chdir(self.working_dir)
+    CONFIG = 'latex.yml'
+    TEMPLATE = False
 
     def assertLaTeX(self, md, gold, preamble='', **kwargs):
         """
@@ -166,12 +156,6 @@ class TestLatexBase(unittest.TestCase):
             md[str]: The markdown to convert.
             gold[str]: The expected latex.
         """
-        kwargs.update(self.defaults)
-        config_file = os.path.join(MooseDocs.ROOT_DIR, 'docs', kwargs['config_file'])
-        html, settings = MooseDocs.html2latex.generate_html(md, config_file)
-        for key, value in kwargs.iteritems():
-            if not value and key in settings:
-                kwargs[key] = settings[key]
-        tex, h2l = MooseDocs.html2latex.generate_latex(html, **kwargs)
+        tex = self.parser.convert(md)
+        print tex
         self.assertEqual(tex, gold)
-        self.assertEqual(h2l.preamble(), preamble)

@@ -18,6 +18,7 @@ class TemplateExtension(markdown.Extension):
         self.config = dict()
         self.config['template'] = ['', "The jinja2 template to apply."]
         self.config['template_args'] = [dict(), "Arguments passed to to the MooseTemplate Postprocessor."]
+        self.config['environment_args'] = [dict(), "Arguments passed to the jinja2.Environment."]
         super(TemplateExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
@@ -39,21 +40,26 @@ class TemplatePostprocessor(Postprocessor):
         super(TemplatePostprocessor, self).__init__(markdown_instance)
         self._template = config.pop('template')
         self._template_args = config.pop('template_args', dict())
+        self._environment_args = config.pop('environment_args', dict())
 
     def globals(self, env):
         """
         Defines global template functions.
         """
-        env.globals['insert_file'] = self._insertFile
+        env.globals['insert_files'] = self._insertFiles
 
     def run(self, text):
         """
         Apply the converted text to an jinja2 template and return the result.
         """
+        # Update the meta data to proper python types
+        meta = dict()
+        for key, value in self.markdown.Meta.iteritems():
+            meta[key] = eval(''.join(value))
 
         # Define template arguments
         template_args = copy.copy(self._template_args)
-        template_args.update(self.markdown.Meta)
+        template_args.update(meta)
         template_args['content'] = text
         template_args['tableofcontents'] = self._tableofcontents(text)
         if 'navigation' in template_args:
@@ -61,7 +67,7 @@ class TemplatePostprocessor(Postprocessor):
 
         # Execute template and return result
         paths = [os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'templates'), os.path.join(os.getcwd(), 'templates')]
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(paths))
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(paths), **self._environment_args)
         self.globals(env)
         template = env.get_template(self._template)
         complete = template.render(current=self.markdown.current, **template_args)
@@ -74,12 +80,16 @@ class TemplatePostprocessor(Postprocessor):
         return soup.prettify()
 
     @staticmethod
-    def _insertFile(filename):
+    def _insertFiles(filenames):
         """
         Helper function for jinja2 to read css file and return as string.
         """
-        with open(filename, 'r') as fid:
-            return fid.read().strip('\n')
+        if isinstance(filenames, str):
+            filenames = [filenames]
+
+        for filename in filenames:
+            with open(MooseDocs.abspath(filename), 'r') as fid:
+                return fid.read().strip('\n')
 
     @staticmethod
     def _imageLinks(node, soup):

@@ -1,5 +1,6 @@
 import re
 import bs4
+import copy
 import logging
 log = logging.getLogger(__name__)
 from Extension import Extension
@@ -17,8 +18,6 @@ class Translator(object):
 
         #: BlockElement objects
         self.elements = ElementStorage(etype=elements.Element)
-
-        self.used = set()
 
         #: Unknown tag conversion
         self.unknown = unknown
@@ -44,53 +43,46 @@ class Translator(object):
         """
 
         # The html parser attempts to match < > even when they are inside code blocks
-        def subAngleBrackets(match):
-            return '<code{}>{}</code>'.format(match.group(1), match.group(2).replace('<', '##LESSTHAN##').replace('>', '##GREATERTHAN##').replace('&lt;','##LESSTHAN##').replace('&gt;','##GREATERTHAN##'))
-        html = re.sub(r'<code(.*?)>(.*?)</code>', subAngleBrackets, html,
-        flags=re.MULTILINE|re.DOTALL)
+        #def subAngleBrackets(match):
+        #    return 'u<code{}>{}</code>'.format(match.group(1), match.group(2).replace('<', #'##LESSTHAN##').replace('>', #'##GREATERTHAN##').replace('&lt;','##LESSTHAN##').replace('&gt;','##GREATERTHAN##'))
+        #html = re.sub(r'<code(.*?)>(.*?)</code>', subAngleBrackets, html,
+        #flags=re.MULTILINE|re.DOTALL)
 
         # Replace html's unicode quotation marks with those used by latex
-        def subQuoteMarks(match):
-            return '<p>{}</p>'.format(match.group(1).replace('&ldquo;','``').replace('&rdquo;','\'\'').replace('&lsquo;','`').replace('&rsquo;','\''))
-        html = re.sub(r'<p>(.*?)</p>', subQuoteMarks, html, flags=re.MULTILINE|re.DOTALL)
+        #def subQuoteMarks(match):
+        #    return u'<p>{}</p>'.format(match.group(1).replace('&ldquo;','``').replace('&rdquo;','\'\'').replace('&lsquo;','`').replace('&rsquo;','\''))
+        #tml = re.sub(r'<p>(.*?)</p>', subQuoteMarks, html, flags=re.MULTILINE|re.DOTALL)
 
-        def html2latex(input):
-            n_tags = 0
-            soup = bs4.BeautifulSoup(input, "html.parser")
-            output = []
-            for child in soup.children:
-                if isinstance(child, bs4.element.Tag):
-                    n_tags += 1
-                    result = self._convertTag(child)
-                    if result:
-                        output += result
-                    else:
-                        output += unicode(child)
-                else:
-                    output += unicode(child)
+        def html2latex(soup):
+            keep_going = False
+            for elem in self.elements:
+                for tag in soup.find_all(elem.name):
+                    if elem.test(tag):
+                        elem.convert(tag)
+                        keep_going = True
+                        #break
+            return keep_going
 
-            tex = ''.join(output)
-            return (tex, n_tags)
 
-        tex = html
-        old_n_tags = 0
-        while (True):
-            tex, n_tags = html2latex(tex)
-            if n_tags == old_n_tags:
-                break
-            old_n_tags = n_tags
+        soup = bs4.BeautifulSoup(html, "lxml")
 
-        output = []
-        soup = bs4.BeautifulSoup(tex, "html.parser")
-        for child in soup.children:
+        just_go = True
+        while (just_go):
+            just_go = html2latex(soup)
+
+        for child in soup.descendants:
             if isinstance(child, bs4.element.Tag):
                 log.error('Failed to convert tag {}: {}'.format(child.name, str(child)))
-                output += self.unknown.convert(child, self.unknown.content(child))
-            else:
-                output += unicode(child)
-        tex = ''.join(output)
+                self.unknown.convert(child)
 
-        return tex.replace('##LESSTHAN##', '<').replace('##GREATERTHAN##', '>')
+        output = ''.join([unicode(child) for child in soup.descendants])
+
+        pairs = [('&ldquo;', '``'), ('&rdquo;', '\'\''), ('&lsquo;', '`'), ('&rsquo;', '\'')]
+        for find, rep in pairs:
+            output = output.replace(find, rep)
+
+        return output
+        #return tex.replace('##LESSTHAN##', '<').replace('##GREATERTHAN##', '>')
 
     def _convertTag(self, tag):
         """
@@ -99,14 +91,13 @@ class Translator(object):
         Args:
           tag[bs4.element.Tag]: The tag element to convert.
         """
-
-        for obj in self.elements:
-            if obj.test(tag):
-                self.used.add(obj)
-                #@todo check return type of convert(), expects a string
-                return obj.prefix(tag) + obj.convert(tag, obj.content(tag))
-
-        return ''
+        if isinstance(tag, bs4.element.Tag):
+            for obj in self.elements:
+                out = obj(tag)
+                if out:
+                    self.used.add(obj)
+                    return out
+        return None
 
     def preamble(self):
         """

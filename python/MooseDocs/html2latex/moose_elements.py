@@ -116,12 +116,12 @@ class admonition_div(elements.BlockElement):
         return admonition_preamble()
 
 
-class moose_hide_hr(elements.hr):
-    """
-    Hides horizontal hr tags in latex.
-    """
-    def convert(self, tag, content):
-        return ''
+#class moose_hide_hr(elements.hr):
+#    """
+#    Hides horizontal hr tags in latex.
+#    """
+#    def convert(self, tag, content):
+#        return ''
 
 
 class moose_inline_code(elements.InlineElement):
@@ -144,15 +144,15 @@ class moose_pre(elements.pre):
         return ['\\usepackage{listings}'] + listings_settings()
 
 
-class moose_pre_code(elements.pre_code):
-    """
-    Handles the code environments that have the filename as a heading.
-    """
-    def convert(self, tag, content):
-        lang = get_language(tag.contents[0])
-        return '\\begin{lstlisting}[language=%s]\n%s\\end{lstlisting}' % (lang, self.content(tag.contents[0]))
-    def preamble(self):
-        return ['\\usepackage{listings}'] + listings_settings()
+#class moose_pre_code(elements.pre_code):
+#    """
+#    Handles the code environments that have the filename as a heading.
+#    """
+#    def convert(self, tag, content):
+#        lang = get_language(tag.contents[0])
+#        return '\\begin{lstlisting}[language=%s]\n%s\\end{lstlisting}' % (lang, #self.content(tag.contents[0]))
+#    def preamble(self):
+#        return ['\\usepackage{listings}'] + listings_settings()
 
 
 class moose_code_div(elements.BlockElement):
@@ -231,47 +231,47 @@ class moose_markdown_links(elements.a):
         return ['\\usepackage{hyperref}']
 
 
-class moose_img(elements.img):
-    """
-    Handles images with MOOSE markdown by doing some extra work to make sure path is correct.
-    """
+#class moose_img(elements.img):
+#    """
+#    Handles images with MOOSE markdown by doing some extra work to make sure path is correct.
+#    """
+#
+#    def convert(self, tag, content):
+#
+#        path = tag.attrs['src']
+#        if not os.path.exists(path):
+#            lpath = path.strip('/')
+#            if os.path.exists(lpath):
+#                path = lpath
+#
+#        if not os.path.exists(path):
+#            log.error('Image file does not exist: {}'.format(path))
+#
+#        path = os.path.abspath(path)
+#        width = tag.attrs.get('width', '\linewidth')
+#        return "\\begin{center}\n\\includegraphics[width=%s]{%s}\n\\end{center}" % (width, path)
+#
+#    def preamble(self):
+#        return ['\\usepackage{graphicx}']
 
-    def convert(self, tag, content):
+#class moose_bib(elements.ol):
+#    """
+#    Convert html bibliography (from MooseBibtex) to the correct latex entry.
+#    """
+#    attrs = ['data-moose-bibfiles']
+#    def convert(self, tag, content):
+#        bibfiles = eval(tag.attrs['data-moose-bibfiles'])
+#        return '\\bibliographystyle{unsrtnat}\n\\bibliography{%s}' % ','.join(bibfiles)
+#    def preamble(self):
+#        return ['\\usepackage{natbib}']
 
-        path = tag.attrs['src']
-        if not os.path.exists(path):
-            lpath = path.strip('/')
-            if os.path.exists(lpath):
-                path = lpath
-
-        if not os.path.exists(path):
-            log.error('Image file does not exist: {}'.format(path))
-
-        path = os.path.abspath(path)
-        width = tag.attrs.get('width', '\linewidth')
-        return "\\begin{center}\n\\includegraphics[width=%s]{%s}\n\\end{center}" % (width, path)
-
-    def preamble(self):
-        return ['\\usepackage{graphicx}']
-
-class moose_bib(elements.ol):
-    """
-    Convert html bibliography (from MooseBibtex) to the correct latex entry.
-    """
-    attrs = ['data-moose-bibfiles']
-    def convert(self, tag, content):
-        bibfiles = eval(tag.attrs['data-moose-bibfiles'])
-        return '\\bibliographystyle{unsrtnat}\n\\bibliography{%s}' % ','.join(bibfiles)
-    def preamble(self):
-        return ['\\usepackage{natbib}']
-
-class moose_bib_span(elements.span):
-    """
-    Convert the cite command from MooseBibtex to the proper latex cite command.
-    """
-    attrs = ['data-moose-cite']
-    def convert(self, tag, content):
-        return tag.attrs['data-moose-cite']
+#class moose_bib_span(elements.span):
+#    """
+#    Convert the cite command from MooseBibtex to the proper latex cite command.
+#    """
+#    attrs = ['data-moose-cite']
+#    def convert(self, tag, content):
+#        return tag.attrs['data-moose-cite']
 
 class moose_slider(elements.BlockElement):
     """
