@@ -51,7 +51,7 @@ def presentation(config_file=None, md_file=None, output=None, serve=None, port=N
     config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
 
     # Create the markdown parser, being sure to enable
-    config['MooseDocs.extensions.MooseMarkdownPresentationExtension'] = dict()
+    config['MooseDocs.extensions.presentation'] = dict()
 
     parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
