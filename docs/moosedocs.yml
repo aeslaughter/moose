@@ -16,7 +16,7 @@
         logo: docs/media/moose_logo_small.png
         repo_url: https://github.com/idaholab/moose/
         navigation: docs/navigation.yml
-- MooseDocs.extensions.MooseMarkdownExtension:
+- MooseDocs.extensions.app_syntax:
     executable: modules/combined/combined-opt
     install: docs/content/documentation/systems
     repo: https://github.com/idaholab/moose/blob/master

@@ -20,7 +20,7 @@ def check(config_file=None, locations=None, generate=None):
     # Read the configuration
     config = MooseDocs.load_config(config_file)
     _, ext_config = MooseDocs.get_markdown_extensions(config)
-    ext_config = ext_config['MooseDocs.extensions.MooseMarkdownExtension']
+    ext_config = ext_config['MooseDocs.extensions.app_syntax']
 
     # Run the executable
     exe = MooseDocs.abspath(ext_config['executable'])
