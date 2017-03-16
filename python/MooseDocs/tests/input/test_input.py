@@ -12,10 +12,6 @@ class TestMooseInputBlock(MarkdownTestCase):
         md = '!input test/tests/kernels/simple_diffusion/simple_diffusion.i block=Kernels'
         self.assertConvert('test_Input.html', md)
 
-    def testInputNoBlock(self):
-        md = '!input test/tests/kernels/simple_diffusion/simple_diffusion.i'
-        self.assertConvert('test_InputNoBlock.html', md)
-
     def testInputBadBlock(self):
         md = '!input test/tests/kernels/simple_diffusion/simple_diffusion.i block=BadBlock'
         self.assertConvert('test_InputBadBlock.html', md)

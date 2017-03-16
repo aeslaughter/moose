@@ -16,11 +16,15 @@ class MooseParameters(MooseSyntaxBase):
 
     RE = r'^!parameters\s+(.*?)(?:$|\s+)(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MooseSyntaxBase.defaultSettings()
+        settings['title'] = ('Input Parameters', "The title to include prior to the parameter table.")
+        settings['title_level'] = (2, "The HTML heading level to apply to the title")
+        return settings
+
     def __init__(self, **kwargs):
         super(MooseParameters, self).__init__(self.RE, **kwargs)
-        self._settings['display'] = "collapsible"
-        self._settings['title'] = 'Input Parameters'
-        self._settings['title_level'] = 2
 
     def handleMatch(self, match):
         """
@@ -38,8 +42,8 @@ class MooseParameters(MooseSyntaxBase):
 
         # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
         tables = collections.OrderedDict()
-        tables['Required'] = MooseObjectParameterTable(display_type = settings['display'])
-        tables['Optional'] = MooseObjectParameterTable(display_type = settings['display'])
+        tables['Required'] = MooseObjectParameterTable()
+        tables['Optional'] = MooseObjectParameterTable()
 
         # Loop through the parameters in yaml object
         for param in info.parameters or []:
@@ -50,7 +54,7 @@ class MooseParameters(MooseSyntaxBase):
                 name = 'Optional'
 
             if name not in tables:
-                tables[name] = MooseObjectParameterTable(display_type = settings['display'])
+                tables[name] = MooseObjectParameterTable()
             tables[name].addParam(param)
 
         # Produces a debug message if parameters are empty, but generally we just want to include the

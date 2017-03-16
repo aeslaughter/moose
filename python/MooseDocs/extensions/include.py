@@ -24,7 +24,7 @@ except:
 
 class IncludeExtension(markdown.Extension):
     """
-    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.xk
+    Extension for adding including code and other text files.s
     """
     def __init__(self, **kwargs):
         self.config = dict()
@@ -54,6 +54,19 @@ class TextPatternBase(MooseCommonExtension, Pattern):
       regex: The string containing the regular expression to match.
       language[str]: The code language (e.g., 'python' or 'c++')
     """
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['strip_header'] = (True, "When True the MOOSE header is removed for display.")
+        settings['repo_link'] = (True, "Toggles the including of a link to the complete file in the repository.")
+        settings['label'] = (True, "Toggles the inclusion of the label above the included text.")
+        settings['language'] = ('text', "The language to utilize for providing syntax highlighting.")
+        settings['strip-extra-newlines'] = (True, "Removes extraneous new lines from the text.")
+        settings['prefix'] = ('', "Text to include prior to the included text.")
+        settings['suffix'] = ('', "Text to include after to the included text.")
+        settings['indent'] = (0, "The level of indenting to apply to the included text.")
+        settings['strip-leading-whitespace'] = (False, "When True leading white-space is removed from the included text.")
+        return settings
 
     def __init__(self, pattern, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
@@ -61,17 +74,6 @@ class TextPatternBase(MooseCommonExtension, Pattern):
 
         # The root/repo settings
         self._repo = kwargs.pop('repo')
-
-        # The default settings
-        self._settings['strip_header'] = True
-        self._settings['repo_link'] = True
-        self._settings['label'] = True
-        self._settings['language'] = 'text'
-        self._settings['strip-extra-newlines'] = False
-        self._settings['prefix'] = ''
-        self._settings['suffix'] = ''
-        self._settings['indent'] = 0
-        self._settings['strip-leading-whitespace'] = False
 
     def prepareContent(self, content, settings):
         """
@@ -163,14 +165,17 @@ class TextPattern(TextPatternBase):
     """
     RE = r'^!text\s+(.*?)(?:$|\s+)(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = TextPatternBase.defaultSettings()
+        settings['line'] = (None, "A portion of text that unique identifies a single line to include.")
+        settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
+        settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
+        settings['include_end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
+        return settings
+
     def __init__(self, **kwargs):
         super(TextPattern, self).__init__(self.RE, **kwargs)
-
-        # Add to the default settings
-        self._settings['line'] =  None
-        self._settings['start'] =  None
-        self._settings['end'] =  None
-        self._settings['include_end'] = False
 
     def handleMatch(self, match):
         """
@@ -262,17 +267,22 @@ class InputPattern(TextPatternBase):
 
     CPP_RE = r'^!input\s+(.*?)(?:$|\s+)(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = TextPatternBase.defaultSettings()
+        settings['block'] = (None, "The input file syntax block to include.")
+        return settings
+
     def __init__(self, **kwargs):
         TextPatternBase.__init__(self, self.CPP_RE, language='text', **kwargs)
-        self._settings['block'] = None
 
     def handleMatch(self, match):
         """
         Process the input file supplied.
         """
-
-        # Update the settings from regex match
         settings = self.getSettings(match.group(3))
+        if 'block' not in settings:
+            return TextPatternBase.handleMatch(self, match)
 
         # Build the complete filename.
         rel_filename = match.group(2)
@@ -280,22 +290,17 @@ class InputPattern(TextPatternBase):
 
         # Read the file and create element
         if not os.path.exists(filename):
-            el = self.createErrorElement("The input file was not located: {}".format(rel_filename))
-        elif settings['block'] is None:
-            el = self.createErrorElement("Use of !input syntax while not providing a block=some_block. If you wish to include the entire file, use !text instead")
-        else:
-            parser = ParseGetPot(filename)
-            node = parser.root_node.getNode(settings['block'])
+            return self.createErrorElement("The input file was not located: {}".format(rel_filename))
 
-            if node == None:
-                el = self.createErrorElement('Failed to find {} in {}.'.format(settings['block'], rel_filename))
-            else:
-                content = node.createString()
-                label = match.group(2) if match.group(2) else rel_filename
-                el = self.createElement(label, content, filename, rel_filename, settings)
+        parser = ParseGetPot(filename)
+        node = parser.root_node.getNode(settings['block'])
 
-        return el
+        if node == None:
+            return self.createErrorElement('Failed to find {} in {}.'.format(settings['block'], rel_filename))
 
+        content = node.createString()
+        label = match.group(2) if match.group(2) else rel_filename
+        return self.createElement(label, content, filename, rel_filename, settings)
 
 class ClangPattern(TextPatternBase):
     """
@@ -309,9 +314,14 @@ class ClangPattern(TextPatternBase):
     # REGEX for finding: !clang /path/to/file.C|h method=some_method
     CPP_RE = r'^!clang\s+(.*?)(?:$|\s+)(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = TextPatternBase.defaultSettings()
+        settings['method'] = (None, "The C++ method to return using the clang parser.")
+        return settings
+
     def __init__(self, **kwargs):
         super(ClangPattern, self).__init__(self.CPP_RE, language='cpp', **kwargs)
-        self._settings['method'] = None
 
         # The make command to execute
         self._make_dir = MooseDocs.abspath(kwargs.pop('make_dir'))

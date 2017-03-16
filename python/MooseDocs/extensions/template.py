@@ -87,9 +87,11 @@ class TemplatePostprocessor(Postprocessor):
         if isinstance(filenames, str):
             filenames = [filenames]
 
+        out = []
         for filename in filenames:
             with open(MooseDocs.abspath(filename), 'r') as fid:
-                return fid.read().strip('\n')
+                out += [fid.read().strip('\n')]
+        return '\n'.join(out)
 
     @staticmethod
     def _imageLinks(node, soup):

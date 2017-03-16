@@ -18,10 +18,15 @@ class MooseActionSyntax(MooseSyntaxBase):
 
     RE = r'^!(subobjects|subsystems)\s+(.*?)(?:$|\s+)(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MooseSyntaxBase.defaultSettings()
+        settings['title'] = ('default', "The title display prior to tables ('default' provides a tile with the action name)")
+        settings['title_level'] = (2, "The HTML heading level to apply to the title.")
+        return settings
+
     def __init__(self, yaml=None, syntax=None, **kwargs):
         MooseSyntaxBase.__init__(self, self.RE, yaml=yaml, syntax=syntax, **kwargs)
-        self._settings['title'] = 'default'
-        self._settings['title_level'] = 2
 
     def handleMatch(self, match):
         """

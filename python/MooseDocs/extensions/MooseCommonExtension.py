@@ -8,10 +8,19 @@ class MooseCommonExtension(object):
     """
     Class containing commonly used routines.
     """
+    @staticmethod
+    def defaultSettings():
+        settings = dict()
+        settings['id'] = (None, "The HTML element 'id' for the outer tag.")
+        settings['style'] = ('', "The 'style' to be applied to the outer HTML tag.")
+        return settings
+
     def __init__(self, **kwargs):
 
-        # The default settings should be stored here
-        self._settings = {'id': None, 'class': None, 'style': ''}
+        # Store the default settings
+        self.__settings = dict()
+        for key, value in self.defaultSettings().iteritems():
+            self.__settings[key] = value[0]
 
     def getSettings(self, settings_line):
         """
@@ -31,7 +40,7 @@ class MooseCommonExtension(object):
         SETTINGS_RE = re.compile("([^\s=]+)=(.*?)(?=(?:\s[^\s=]+=|$))")
         matches = SETTINGS_RE.findall(settings_line.strip())
 
-        options = copy.copy(self._settings)
+        options = copy.copy(self.__settings)
         if len(matches) == 0:
             return options
         for entry in matches:

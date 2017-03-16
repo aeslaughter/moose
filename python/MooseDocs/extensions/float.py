@@ -83,6 +83,13 @@ class FigurePattern(ImagePattern):
     """
     RE = r'^!figure\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = ImagePattern.defaultSettings()
+        settings['prefix'] = ('Figure', "The prefix to place before the figure number.")
+        settings['caption'] = (None, "The caption text to place after the float prefix and number.")
+        return settings
+
     def __init__(self, markdown_instance=None, count=None, **kwargs):
         super(FigurePattern, self).__init__(markdown_instance, **kwargs)
 
@@ -90,8 +97,6 @@ class FigurePattern(ImagePattern):
             raise mooseutils.MooseException("The supplied preprocessor must be a FloatCountPreprocessor, but {} provided.".format(type(count)))
 
         self._count = count
-        self._settings['prefix'] = 'Figure'
-        self._settings['id'] = None
 
     def handleMatch(self, match):
         """
@@ -127,6 +132,13 @@ class MooseTableProcessor(MooseCommonExtension, TableProcessor):
 
     RE = r'^!table\s*(?P<settings>.*?)$'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['prefix'] = ('Table', "The prefix to place before the table number.")
+        settings['caption'] = (None, "The caption text to place after the float prefix and number.")
+        return settings
+
     def __init__(self, markdown_instance=None, count=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
         TableProcessor.__init__(self, markdown_instance.parser)
@@ -134,9 +146,6 @@ class MooseTableProcessor(MooseCommonExtension, TableProcessor):
         if not isinstance(count, FloatCountPreprocessor):
             raise mooseutils.MooseException("The supplied preprocessor must be a FloatCountPreprocessor, but {} provided.".format(type(count)))
         self._count = count
-
-        self._settings['caption'] = None
-        self._settings['prefix'] = 'Table'
 
     def test(self, parent, block):
         """

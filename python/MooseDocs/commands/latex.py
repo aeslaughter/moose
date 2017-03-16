@@ -43,6 +43,7 @@ class LatexBuilder(MooseDocsMarkdownNodeBase):
         Adds PDF creation to write command.
         """
         super(LatexBuilder, self).write(*args, **kwargs)
+
         if self._output.endswith('.pdf'):
             self.generatePDF(self._tex_output)
 
@@ -52,28 +53,36 @@ class LatexBuilder(MooseDocsMarkdownNodeBase):
         """
         return self._tex_output
 
+    def path(self, parent=None):
+        """
+
+        """
+        return os.path.dirname(self._tex_output)
+
     @staticmethod
-    def generatePDF(tex_file):#, output):
+    def generatePDF(tex_file):
         """
         Create the PDF file using pdflatex and bibtex.
         """
 
         # Working directory
         cwd = os.path.abspath(os.path.dirname(tex_file))
-
         # Call pdflatex
         local_file = os.path.basename(tex_file)
+
+        print 'CWD:', cwd
+        print 'local_file:', local_file
+
         subprocess.call(["pdflatex", local_file], cwd=cwd)
         subprocess.call(["bibtex", os.path.splitext(local_file)[0]], cwd=cwd)
         subprocess.call(["pdflatex", local_file], cwd=cwd)
         subprocess.call(["pdflatex", local_file], cwd=cwd)
 
         # Clean-up
-        for ext in ['.out', '.tex', '.aux', '.log', '.spl', '.bbl', '.toc', '.lof', '.lot', '.blg']:
+        for ext in ['.out', '.aux', '.log', '.spl', '.bbl', '.toc', '.lof', '.lot', '.blg']:
             tmp = tex_file.replace('.tex', ext)
             if os.path.exists(tmp):
                 os.remove(tmp)
-
 
 def latex(config_file=None, output=None, md_file=None, **kwargs):
     """

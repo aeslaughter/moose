@@ -1,12 +1,11 @@
 @+ set documentclass = documentclass|default('report') +@
+@+ set preamble = preamble|default([]) +@
 @+ set margin = margin|default('1in') +@
 @+ set paper = paper|default('letterpaper') +@
 @+ set linkcolor = linkcolor|default('blue') +@
 @+ set citecolor = citecolor|default(linkcolor) +@
 @+ set filecolor = filecolor|default(linkcolor) +@
 @+ set urlcolor = urlcolor|default(linkcolor) +@
-
-
 
 \documentclass[++fontsize++]{++documentclass++}
 \renewcommand{\familydefault}{\sfdefault}
@@ -16,7 +15,6 @@
 \usepackage{hyperref}
 \hypersetup{colorlinks=true, linkcolor=++linkcolor++, citecolor=++citecolor++, filecolor=++filecolor++, urlcolor=++urlcolor++}
 
-++ insert_files(preamble) ++
 
 \begin{document}
 @+ if title +@

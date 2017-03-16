@@ -46,6 +46,11 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
 
     All image filenames should be supplied as relative to the docs directory, i.e., media/my_image.png
     """
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['center'] = (False, "When True the contents are centered.")
+        return settings
 
     def __init__(self, pattern, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
@@ -91,12 +96,14 @@ class ImagePattern(MediaPatternBase):
     RE = r'^!image\s+(.*?)(?:$|\s+)(.*)'
     CLASS = 'moose-image-caption'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MediaPatternBase.defaultSettings()
+        settings['caption'] = (None, "The text for the image caption.")
+        return settings
+
     def __init__(self, markdown_instance, **kwargs):
         super(ImagePattern, self).__init__(self.RE, markdown_instance, **kwargs)
-        self._settings['caption'] = None
-        self._settings['center'] = False
-        for pos in ['left', 'right', 'top', 'bottom']:
-            self._settings['margin-{}'.format(pos)] = 'auto'
 
     def createMediaElement(self, filename, settings):
         """
@@ -118,7 +125,6 @@ class ImagePattern(MediaPatternBase):
         img = etree.SubElement(img_card, 'img')
         img.set('src', os.path.relpath(filename, os.getcwd()))
         img.set('class', 'materialboxed')
-        #img.set('style', 'margin-left:auto;margin-right:auto;margin-top:auto;margin-bottom:auto')
 
         # Add caption
         if settings['caption']:
@@ -137,14 +143,18 @@ class VideoPattern(MediaPatternBase):
     """
     RE = r'^!video\s+(.*?)(?:$|\s+)(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MediaPatternBase.defaultSettings()
+        settings['controls'] = (True, "Display the video player controls.")
+        settings['loop'] = (False, "Automatically loop the video.")
+        settings['autoplay'] = (False, "Automatically start playing the video.")
+        settings['width'] = ('auto', "The width of the video player.")
+        settings['height'] = ('auto', "The height of the video player.")
+        return settings
+
     def __init__(self, markdown_instance=None, **kwargs):
         super(VideoPattern, self).__init__(self.RE, markdown_instance, **kwargs)
-        self._settings['controls'] = True
-        self._settings['loop'] = False
-        self._settings['autoplay'] = False
-        self._settings['width'] = 'auto'
-        self._settings['height'] = 'auto'
-        self._settings['center'] = True
 
     def createMediaElement(self, filename, settings):
         """

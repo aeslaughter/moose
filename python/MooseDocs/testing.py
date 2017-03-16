@@ -52,11 +52,7 @@ class MarkdownTestCase(unittest.TestCase):
         specific tests.  This way one can test optional arguments without permanently
         changing the configuration file.
         """
-        if 'testBibtexMacro' in dir(cls):
-            if 'MooseDocs.extensions.bibtex' in extension_configs:
-                extension_configs['MooseDocs.extensions.bibtex']['macro_files'] =\
-                  ['docs/bib/macro_test_abbrev.bib']
-
+        pass
 
     def setUp(self):
         """

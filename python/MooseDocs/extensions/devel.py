@@ -31,6 +31,8 @@ class DevelExtension(markdown.Extension):
         config = self.getConfigs()
         md.inlinePatterns.add('moose_build_status', BuildStatusPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_package_parser', PackagePattern(markdown_instance=md, **config), '_end')
+        md.inlinePatterns.add('moose_extension_config', ExtensionConfigPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose_extension_component_settings', ExtensionSettingsPattern(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
     return DevelExtension(*args, **kwargs)
@@ -56,13 +58,9 @@ class BuildStatusPattern(MooseCommonExtension, Pattern):
         """
         process settings associated with !buildstatus markdown
         """
-        reverse_margin = { 'left' : 'right',
-                           'right' : 'left',
-                           'None' : 'none'}
-
         url = match.group(2)
 
-        # A tuple separating specific MOOSE documentation features (self._settings) from HTML styles
+        # A tuple separating specific MOOSE documentation features from HTML styles
         settings = self.getSettings(match.group(3))
 
         # Create parent div, and set any allowed CSS
@@ -92,16 +90,19 @@ class PackagePattern(MooseCommonExtension, Pattern):
 
     RE = r'!MOOSEPACKAGE\s*(.*?)!'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['arch'] = (None, "The architecture to return (e.g., osx10.12)")
+        settings['return'] = (None, "The information to return ('link' or 'name')")
+        return settings
+
     def __init__(self, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
         # Load the yaml data containing package information
         self.package = MooseDocs.yaml_load(kwargs.pop('package_file'))
-
-        # The default settings
-        self._settings['arch'] = None
-        self._settings['return'] =  None
 
     def handleMatch(self, match):
         """
@@ -123,3 +124,98 @@ class PackagePattern(MooseCommonExtension, Pattern):
                     el = etree.Element('p')
                     el.text = self.package[settings['arch']]['name']
         return el
+
+
+class ExtensionConfigPattern(MooseCommonExtension, Pattern):
+    """
+    Extension for display MarkdownExtension config options in a table.
+    """
+    RE = r'^!extension\s+(.*?)\s*(?:$|\s+)(.*)'
+
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['title'] = ('Extension Configuration Options', "The title to place above the generated table (title=None removes the heading)")
+        return settings
+
+    def __init__(self, markdown_instance=None, **kwargs):
+        MooseCommonExtension.__init__(self, **kwargs)
+        Pattern.__init__(self, self.RE, markdown_instance)
+
+    def handleMatch(self, match):
+        """
+        Creates table of extension configuration options.
+        """
+        extensions = [obj.__class__.__name__ for obj in self.markdown.registeredExtensions]
+        name = str(match.group(2))
+        settings = self.getSettings(match.group(3))
+
+        if name not in extensions:
+            return self.createErrorElement('Unknown extension name: {}'.format(name))
+
+        ext = self.markdown.registeredExtensions[extensions.index(name)]
+        table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
+        for key, value in ext.config.iteritems():
+            table.addRow(key, repr(value[0]), value[1])
+
+        div = self.applyElementSettings(etree.Element('div'), settings)
+        if settings['title']:
+            h = etree.SubElement(div, 'h2')
+            h.text = settings['title']
+
+        div.append(table.html())
+        return div
+
+class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
+    """
+    Provides a table for the MooseCommonExtension settings.
+    """
+    RE = r'^!extension-settings\s+(.*?)\s*(?:$|\s+)(.*)'
+
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['title'] = ('Extension Command Settings', "The title to place above the generated table (title=None removes the heading)")
+        return settings
+
+    def __init__(self, markdown_instance=None, **kwargs):
+        MooseCommonExtension.__init__(self, **kwargs)
+        Pattern.__init__(self, self.RE, markdown_instance)
+
+    def handleMatch(self, match):
+        """
+        Creates table of MooseCommonExtension settings.
+        """
+        name = str(match.group(2))
+        settings = self.getSettings(match.group(3))
+
+        obj = self.find(name)
+        if obj is None:
+            return self.createErrorElement('Unknown extension module: {}'.format(name))
+        elif not isinstance(obj, MooseCommonExtension):
+            return self.createErrorElement('The extension module must be a "{}" object, but a "{}" was found.'.format(MooseCommonExtension.__name__, type(obj).__name__))
+
+        table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
+        for key, value in obj.defaultSettings().iteritems():
+            table.addRow(key, repr(value[0]), value[1])
+
+        div = self.applyElementSettings(etree.Element('div'), settings)
+        if settings['title']:
+            h = etree.SubElement(div, 'h2')
+            h.text = settings['title']
+
+        div.append(table.html())
+        return div
+
+    def find(self, name):
+        """
+        Locate the extension component with the markdown object.
+        """
+        containers = [self.markdown.preprocessors,
+                      self.markdown.inlinePatterns,
+                      self.markdown.treeprocessors,
+                      self.markdown.postprocessors]
+        for container in containers:
+            if name in container:
+                return container[name]
+        return None

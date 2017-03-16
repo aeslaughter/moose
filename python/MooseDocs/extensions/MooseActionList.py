@@ -16,10 +16,15 @@ class MooseActionList(MooseSyntaxBase):
 
     RE = r'^!systems\s*(.*)'
 
+    @staticmethod
+    def defaultSettings():
+        settings = MooseSyntaxBase.defaultSettings()
+        settings['groups'] = (None, "The configured 'groups' to include.")
+        settings['show_hidden'] = (False, "Show hidden syntax.")
+        return settings
+
     def __init__(self, yaml=None, syntax=None, **kwargs):
         MooseSyntaxBase.__init__(self, self.RE, syntax=syntax, **kwargs)
-        self._settings['groups'] = None
-        self._settings['show_hidden'] = False
         self._yaml = yaml
 
     def handleMatch(self, match):

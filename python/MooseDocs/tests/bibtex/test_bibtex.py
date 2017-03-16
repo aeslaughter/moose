@@ -18,6 +18,16 @@ class TestBibtexExtension(MarkdownTestCase):
         html[0] = html[0].replace('<<CWD>>', os.path.abspath(os.path.join(MooseDocs.MOOSE_DIR, 'docs')))
         return html
 
+    @classmethod
+    def updateExtensionConfigs(cls, extension_configs):
+        """
+        Method to change the arguments that come from the configuration file for
+        specific tests.  This way one can test optional arguments without permanently
+        changing the configuration file.
+        """
+        extension_configs['MooseDocs.extensions.bibtex']['macro_files'] =\
+            ['docs/bib/macro_test_abbrev.bib']
+
     def testCite(self):
         md = r'\cite{testkey}\n\bibliography{docs/bib/moose.bib}'
         self.assertConvert('test_cite.html', md)
