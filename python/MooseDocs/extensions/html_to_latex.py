@@ -41,6 +41,6 @@ class LatexPostprocessor(Postprocessor):
     def run(self, text):
 
         # Build latex
-        h2l = Translator(extensions=[BasicExtension(**self._config)])#, MooseExtension(**self._config)])
+        h2l = Translator(extensions=[BasicExtension(**self._config), MooseExtension(**self._config)])
         tex = h2l.convert(text)
         return tex

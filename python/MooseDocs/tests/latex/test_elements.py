@@ -1,42 +1,34 @@
 #!/usr/bin/env python
-import unittest
-from MooseDocs.html2latex import Translator, BasicExtension
+from pylatexenc.latexencode import utf82latex
 from MooseDocs import testing
+from MooseDocs.html2latex import BasicExtension, Translator
 
-class TestLatexElements(unittest.TestCase):
+import unittest
+class TestLatexElements(testing.TestLatexBase):
     """
     Test that basic html to latex conversion working.
     """
-    @classmethod
-    def setUpClass(cls):
-        config = dict()
-        cls._translator = Translator(extensions=[BasicExtension(**config)])
 
-    def assertLaTeX(self, html, gold):
-        """
-        Assert markdown to latex conversion.
-        """
-        tex = self._translator.convert(html)
-        print ('\n{:>15}: {}'*3).format('HTML', repr(html), 'TEX', repr(tex), 'TEX (GOLD)', repr(gold))
-        self.assertEqual(tex, gold, testing.text_diff(tex.splitlines(), gold.splitlines()))
+    # Only test the basic extension
+    EXTENSIONS = [BasicExtension]
 
     def test_a(self):
         html = u'<a href="foo">bar</a>'
-        self.assertLaTeX(html, u'\href{foo}{bar}')
+        self.assertLaTeX(html, '\href{foo}{bar}')
 
     def test_li(self):
-        html = u'<li>content</li>'
-        gold = u'\\item content'
+        html = u'<li>cont_ent</li>'
+        gold = '\\item cont\_ent'
         self.assertLaTeX(html, gold)
 
     def test_ul(self):
-        html = u'<ul><li>one</li><li>two</li></ul>'
-        gold = u'\\begin{itemize}\n\\item one\n\\item two\n\\end{itemize}'
+        html = u'<ul><li>one</li><li>two%</li></ul>'
+        gold = '\\begin{itemize}\n\\item one\n\\item two\%\n\\end{itemize}'
         self.assertLaTeX(html, gold)
 
     def test_ol(self):
         html = u'<ol><li>one</li><li>two</li></ol>'
-        gold = u'\\begin{enumerate}\n\\item one\n\\item two\n\\end{enumerate}'
+        gold = '\\begin{enumerate}\n\\item one\n\\item two\n\\end{enumerate}'
         self.assertLaTeX(html, gold)
 
     def test_headings(self):
@@ -53,118 +45,147 @@ class TestLatexElements(unittest.TestCase):
 
     def test_div(self):
         html = u'<div>This is some content with <a href="foo">link</a> in the middle.</div>'
-        gold = u'This is some content with \href{foo}{link} in the middle.'
+        gold = 'This is some content with \href{foo}{link} in the middle.'
         self.assertLaTeX(html, gold)
 
     def test_pre(self):
         html = u'<pre>double x = 2;\nx += 2;</pre>'
-        gold = u'\\begin{verbatim}\ndouble x = 2;\nx += 2;\n\\end{verbatim}'
+        gold = '\\begin{verbatim}\ndouble x = 2;\nx += 2;\n\\end{verbatim}'
         self.assertLaTeX(html, gold)
 
     def test_code(self):
         html = u'<code>double x = 2;</code>'
-        gold = u'\\texttt{double x = 2;}'
+        gold = '\\texttt{double x = 2;}'
+        self.assertLaTeX(html, gold)
+
+        html = u'<code>$</code>'
+        gold = '\\texttt{\$}'
+        self.assertLaTeX(html, gold)
+
+    def test_p(self):
+        html = u'<p>This is a paragraph.</p>'
+        gold = '\n\\par\nThis is a paragraph.'
+        self.assertLaTeX(html, gold)
+
+        html = u'<p>This is a paragraph.</p><p>And this is another.</p>'
+        gold = '\n\\par\nThis is a paragraph.\n\\par\nAnd this is another.'
+        self.assertLaTeX(html, gold)
+
+    def test_nested_inline_code(self):
+        html = u'<p>Inline math <code>$</code> works.</p>'
+        gold = '\n\\par\nInline math \\texttt{\\$} works.'
         self.assertLaTeX(html, gold)
 
     def test_pre_code(self):
         html = u'<pre><code>double x = 2;\nx += 2;</code></pre>'
-        gold = u'\\begin{verbatim}\ndouble x = 2;\nx += 2;\n\\end{verbatim}'
+        gold = '\\begin{verbatim}\ndouble x = 2;\nx += 2;\n\\end{verbatim}'
         self.assertLaTeX(html, gold)
 
     def test_hr(self):
         html = u'<hr>'
-        gold = u'\\hrule\n'
-        self.assertLaTeX(html, gold)
-
-    def test_p(self):
-        html = u'<p>This is a paragraph.</p><p>And this is another.</p>'
-        gold = u'\\par\nThis is a paragraph.\n\\par\nAnd this is another.\n'
+        gold = '\n\\hrule\n'
         self.assertLaTeX(html, gold)
 
     def test_span(self):
         html = u'<span>Some text</span>'
-        gold = u'Some text'
+        gold = 'Some text'
         self.assertLaTeX(html, gold)
 
     def test_em(self):
         html = u'<em>slanty</em>'
-        gold = u'\\emph{slanty}'
+        gold = '\\emph{slanty}'
         self.assertLaTeX(html, gold)
 
     def test_inline_equation(self):
         html = u'<script type="math/tex">x+y</script>'
-        gold = u'$x+y$'
+        gold = '$x+y$'
         self.assertLaTeX(html, gold)
 
     def test_block_equation(self):
         html = u'<script type="math/tex; mode=display">x+y</script>'
-        gold = u'\\begin{equation}\nx+y\n\\end{equation}'
+        gold = '\\begin{equation}\nx+y\n\\end{equation}'
         self.assertLaTeX(html, gold)
 
     def test_th_td(self):
         html = u'<th>1</th><th>2</th><th>3</th>'
-        gold = u'1 & 2 & 3 \\\\'
+        gold = '1 & 2 & 3 \\\\'
         self.assertLaTeX(html, gold)
         self.assertLaTeX(html.replace('th', 'td'), gold)
 
     def test_tr(self):
         html = u'<tr><th>1</th><th>2</th><th>3</th></tr><tr><th>2</th><th>4</th><th>6</th></tr>'
-        gold = u'1 & 2 & 3 \\\\\n2 & 4 & 6 \\\\\n'
+        gold = '1 & 2 & 3 \\\\\n2 & 4 & 6 \\\\\n'
         self.assertLaTeX(html, gold)
 
     def test_thead_tfoot(self):
         html = u'<thead><tr><th>1</th><th>2</th><th>3</th></tr></thead>'
-        gold = u'\\hline\n1 & 2 & 3 \\\\\n\\hline'
+        gold = '\\hline\n1 & 2 & 3 \\\\\n\\hline'
         self.assertLaTeX(html, gold)
         self.assertLaTeX(html.replace('thead', 'tfoot'), gold)
 
     def test_tbody(self):
         html = u'<tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>4</td><td>6</td></tr></tbody>'
-        gold = u'1 & 2 & 3 \\\\\n2 & 4 & 6 \\\\\n'
+        gold = '1 & 2 & 3 \\\\\n2 & 4 & 6 \\\\\n'
         self.assertLaTeX(html, gold)
 
     def test_thead_tbody_tfoot_table(self):
         html = u'<thead><tr><th>h1</th><th>h2</th><th>h3</th></tr></thead>'
         html += u'<tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>4</td><td>6</td></tr></tbody>'
         html += u'<tfoot><tr><td>f1</td><td>f2</td><td>f3</td></tr></tfoot>'
-        gold = u'\\hline\nh1 & h2 & h3 \\\\\n\\hline'
-        gold += u'1 & 2 & 3 \\\\\n2 & 4 & 6 \\\\\n'
-        gold += u'\\hline\nf1 & f2 & f3 \\\\\n\\hline'
+        gold = '\\hline\nh1 & h2 & h3 \\\\\n\\hline'
+        gold += '1 & 2 & 3 \\\\\n2 & 4 & 6 \\\\\n'
+        gold += '\\hline\nf1 & f2 & f3 \\\\\n\\hline'
         self.assertLaTeX(html, gold)
 
         html = '<table>' + html + '</table>'
-        gold = '\\begin{tabular}{ll}\n' + gold + '\n\\end{tabular}'
+        gold = '\\begin{tabular}{lll}\n' + gold + '\n\\end{tabular}'
         self.assertLaTeX(html, gold)
 
     def test_figure(self):
+        html = u'<figure id="foo">content</figure>'
+        gold = '\\begin{figure}\n\\label{foo}\ncontent\n\\end{figure}'
+        self.assertLaTeX(html, gold)
+
         html = u'<figure>content</figure>'
-        gold = u'\\begin{figure}\ncontent\n\\end{figure}'
+        gold = '\\begin{figure*}\ncontent\n\\end{figure*}'
         self.assertLaTeX(html, gold)
 
     def test_figcaption(self):
         html = u'<figcaption>a caption</figcaption>'
-        gold = u'\\caption{a caption}'
+        gold = '\\caption{a caption}'
         self.assertLaTeX(html, gold)
 
     def test_img(self):
         html = u'<img src="file.png">'
-        gold = u'\\includegraphics{file.png}\n'
+        gold = '\\includegraphics{file.png}\n'
         self.assertLaTeX(html, gold)
 
     def test_figure_figcaption_img(self):
         html = u'<figure><img src="file.png"><figcaption>a caption</figcaption></figure>'
-        gold = u'\\begin{figure}\n\\includegraphics{file.png}\n\\caption{a caption}\n\\end{figure}'
+        gold = '\\begin{figure*}\n\\includegraphics{file.png}\n\\caption{a caption}\n\\end{figure*}'
         self.assertLaTeX(html, gold)
 
     def test_center(self):
         html = u'<center>this</center>'
-        gold = u'\\begin{center}\nthis\n\\end{center}'
+        gold = '\\begin{center}\nthis\n\\end{center}'
         self.assertLaTeX(html, gold)
+
+    def test_escape(self):
+        for key, value in Translator.ESCAPE_MAP.iteritems():
+            html = u'<p>{}</p>'.format(key)
+            gold = "\n\par\n{}".format(value)
+            self.assertLaTeX(html, gold)
 
     def test_unknown(self):
         html = u'<unknown>something</unknown>'
-        gold = u'\\begin{verbatim}\nsomething\n\\end{verbatim}'
+        gold = '\\begin{verbatim}\n<unknown>something</unknown>\n\\end{verbatim}'
         self.assertLaTeX(html, gold)
 
+    def test_latex_data(self):
+        html = u'<div data-latex-content="foo"><p>Some text that will get removed.</p></div>'
+        self.assertLaTeX(html, 'foo')
+
+
 if __name__ == '__main__':
+    import unittest
     unittest.main(verbosity=2)

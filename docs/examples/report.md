@@ -4,4 +4,4 @@ institution: 'Idaho National Laboratory'
 tableofcontents: 'True'
 headings: ['chapter', 'section', 'subsection', 'subsubsection', 'textbf', 'emph']
 
-{!docs/content/utilities/documentation/index.md!}
+{!docs/content/utilities/documentation/moose_flavored_markdown.md!}

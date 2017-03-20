@@ -21,7 +21,7 @@ class TestDevelExtension(MarkdownTestCase):
 
     def testBuildStatus(self):
         md = '!buildstatus https://moosebuild.org/mooseframework/ float=right padding-left=10px'
-        self.assertConvert('test_BuildStatus.html', md)s
+        self.assertConvert('test_BuildStatus.html', md)
 
     def testPackage(self):
         md = '!MOOSEPACKAGE arch=centos7 return=link!'

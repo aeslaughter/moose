@@ -3,7 +3,9 @@ import inspect
 import unittest
 import difflib
 import markdown
+import bs4
 import MooseDocs
+from MooseDocs.html2latex import Translator, BasicExtension, MooseExtension
 
 def text_diff(text, gold):
     """
@@ -138,20 +140,31 @@ class TestLatexBase(MarkdownTestCase):
     """
     Test that basic html to latex conversion working.
     """
-    working_dir = os.getcwd()
-    CONFIG = 'latex.yml'
-    TEMPLATE = False
+    EXTENSIONS = [BasicExtension, MooseExtension]
+    CONFIG = dict()
 
-    def assertLaTeX(self, md, gold, preamble='', **kwargs):
+    @classmethod
+    def setUpClass(cls):
+        cls._translator = Translator(extensions=[ext(**cls.CONFIG) for ext in cls.EXTENSIONS])
+
+    def convert(self, html):
         """
-        Assert that the supplied markdown can be converted to latex.
-
-        This mimics latex.py without creating files.
-
-        Inputs:
-            md[str]: The markdown to convert.
-            gold[str]: The expected latex.
+        Convert the html to latex.
         """
-        tex = self.parser.convert(md)
-        print tex
-        self.assertEqual(tex, gold)
+        return self._translator.convert(html)
+
+    def assertLaTeX(self, html, gold):
+        """
+        Assert markdown to latex conversion.
+        """
+        tex = self.convert(html)
+        print ('\n{:>15}: {}'*3).format('HTML', repr(html), 'TEX', repr(tex), 'TEX (GOLD)', repr(gold))
+        self.assertEqual(tex, gold, text_diff(tex.splitlines(), gold.splitlines()))
+
+    def soup(self, html_file):
+        """
+        Assert markdown to latex conversion from an html file.
+        """
+        with open(html_file, 'r') as fid:
+            html = fid.read()
+        return bs4.BeautifulSoup(html, 'lxml')

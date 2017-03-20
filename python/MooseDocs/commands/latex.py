@@ -70,9 +70,6 @@ class LatexBuilder(MooseDocsMarkdownNodeBase):
         # Call pdflatex
         local_file = os.path.basename(tex_file)
 
-        print 'CWD:', cwd
-        print 'local_file:', local_file
-
         subprocess.call(["pdflatex", local_file], cwd=cwd)
         subprocess.call(["bibtex", os.path.splitext(local_file)[0]], cwd=cwd)
         subprocess.call(["pdflatex", local_file], cwd=cwd)
