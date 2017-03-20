@@ -1,3 +1,5 @@
+- MooseDocs.extensions.global:
+    globals: !include docs/globals.yml
 - MooseDocs.extensions.bibtex
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram

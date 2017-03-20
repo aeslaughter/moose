@@ -37,7 +37,7 @@ also be written to Exodus/XDA/XDR files. An illustration for mesh in exodus file
 
 ## Replicated and Distributed Mesh
 
-The core of the mesh capabilities are derived from [libMesh](http://libmesh.github.io), which has two underlying
+The core of the mesh capabilities are derived from [libMesh], which has two underlying
 parallel mesh formats: "replicated" and "distributed".
 
 The replicated mesh format is the default format for MOOSE and is the most appropriate format to utilize for nearly

@@ -86,10 +86,11 @@ ul {
   opacity:1;
 }
 
-moose-figure-caption,
-moose-table-caption,
-moose-image-caption {
-    padding: 5px;
+.moose-figure-caption,
+.moose-table-caption,
+.moose-image-caption {
+    padding-left: 5px;
+    padding-right: 5px;
     margin: 0px;
 }
 
@@ -107,12 +108,14 @@ moose-image-caption {
 
 .moose-code-links {
     text-transform: none;
+    text-overflow: ellipsis;
 }
 
 a.moose-bad-link,
 span.moose-unknown-reference{
     color:red;
 }
+
 
 li{
     padding-left:15px;
