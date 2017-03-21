@@ -15,12 +15,13 @@
 import os
 import collections
 import bisect
-
+import copy
 import vtk
 
 import mooseutils
 from .. import utils
 from .. import base
+
 
 class ExodusReader(base.ChiggerObject):
     """
@@ -61,12 +62,24 @@ class ExodusReader(base.ChiggerObject):
     GLOBAL = vtk.vtkExodusIIReader.GLOBAL
     VARIABLE_TYPES = [NODAL, ELEMENTAL, GLOBAL]
 
+
     # Information data structures
     BlockInformation = collections.namedtuple('BlockInformation', ['name', 'object_type',
                                                                    'object_index',
                                                                    'multiblock_index'])
-    VariableInformation = collections.namedtuple('VariableInformation', ['name', 'object_type',
-                                                                         'num_components'])
+
+    class VariableInformation(collections.namedtuple('VariableInformation', ['name', 'object_type',
+                                                                             'num_components'])):
+        """
+        namedtuple for storing variable information.
+        """
+        __slots__ = ()
+        def __str__(self):
+            out = self.name
+            out += '\n{:>16}: {}'.format('VTK type', self.object_type)
+            out += '\n{:>16}: {}'.format('components', self.num_components)
+            return out
+
     FileInformation = collections.namedtuple('FileInformation', ['filename', 'times', 'modified'])
     TimeData = collections.namedtuple('TimeData', ['timestep', 'time', 'filename', 'index'])
 
@@ -444,3 +457,16 @@ class ExodusReader(base.ChiggerObject):
 
         self.__variableinfo = collections.OrderedDict(sorted(unsorted.items(),
                                                              key=lambda x: x[0].lower()))
+
+
+    def __str__(self):
+        """
+        Overload the str function so that information is printed when print is called on the object.
+        """
+        self.update()
+        #self.checkUpdateState()
+        out = []
+        out += ['Variables:']
+        for key, varinfo in self.getVariableInformation().iteritems():
+            out += [str(varinfo)]
+        return '\n'.join(out)

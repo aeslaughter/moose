@@ -69,7 +69,7 @@ class ExodusSourceLineSampler(geometric.LineSource):
             dist = np.linalg.norm(np.array(p1) - np.array(p0))
             self._distance = list(np.linspace(0, dist, num=n))
 
-        self._probe.PassCellArraysOn()
+        #self._probe.PassCellArraysOn()
         self._probe.SetInputConnection(self.getVTKSource().GetOutputPort())
         f = self._exodus_source.getFilters()[-1].getVTKFilter().GetOutputPort()
         self._probe.SetSourceConnection(f)
