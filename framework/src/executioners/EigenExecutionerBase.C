@@ -100,6 +100,7 @@ EigenExecutionerBase::init()
   _problem.initialSetup();
   _eigen_sys.initSystemSolutionOld(MooseEigenSystem::EIGEN, 0.0);
 
+  /*
   // check when the postprocessors are evaluated
   ExecFlagType bx_execflag =
       _problem.getUserObject<UserObject>(getParam<PostprocessorName>("bx_norm")).execBitFlags();
@@ -113,9 +114,10 @@ EigenExecutionerBase::init()
             .execBitFlags();
   else
     _norm_execflag = bx_execflag;
+  */
 
   // check if _source_integral has been evaluated during initialSetup()
-  if ((bx_execflag & EXEC_INITIAL) == EXEC_NONE)
+  //if ((bx_execflag & EXEC_INITIAL) == EXEC_NONE)
     _problem.execute(EXEC_LINEAR);
 
   if (_source_integral == 0.0)
@@ -195,9 +197,9 @@ EigenExecutionerBase::inversePowerIteration(unsigned int min_iter,
   if (xdiff != "")
   {
     solution_diff = &getPostprocessorValueByName(xdiff);
-    ExecFlagType xdiff_execflag = _problem.getUserObject<UserObject>(xdiff).execBitFlags();
-    if ((xdiff_execflag & EXEC_LINEAR) == EXEC_NONE)
-      mooseError("Postprocessor " + xdiff + " requires execute_on = 'linear'");
+  //  ExecFlagType xdiff_execflag = _problem.getUserObject<UserObject>(xdiff).execBitFlags();
+  //  if ((xdiff_execflag & EXEC_LINEAR) == EXEC_NONE)
+  //    mooseError("Postprocessor " + xdiff + " requires execute_on = 'linear'");
   }
 
   // not perform any iteration when max_iter==0
@@ -392,6 +394,7 @@ EigenExecutionerBase::postExecute()
     _problem.time() = t;
   }
 
+  /*
   Real s = 1.0;
   if (_norm_execflag & EXEC_CUSTOM)
   {
@@ -400,9 +403,9 @@ EigenExecutionerBase::postExecute()
   }
   else
   {
-    s = normalizeSolution(_norm_execflag & (EXEC_TIMESTEP_END | EXEC_LINEAR));
-    if (!MooseUtils::absoluteFuzzyEqual(s, 1.0))
-      _console << " Solution is rescaled with factor " << s << " for normalization!" << std::endl;
+    //s = normalizeSolution(_norm_execflag & (EXEC_TIMESTEP_END | EXEC_LINEAR));
+    //if (!MooseUtils::absoluteFuzzyEqual(s, 1.0))
+    //  _console << " Solution is rescaled with factor " << s << " for normalization!" << std::endl;
   }
 
   if ((!getParam<bool>("output_before_normalization")) || !MooseUtils::absoluteFuzzyEqual(s, 1.0))
@@ -413,6 +416,8 @@ EigenExecutionerBase::postExecute()
     _problem.outputStep(EXEC_TIMESTEP_END);
     _problem.time() = t;
   }
+  */
+
 }
 
 Real

@@ -30,5 +30,5 @@ CheckCurrentExecAux::CheckCurrentExecAux(const InputParameters & parameters)
 Real
 CheckCurrentExecAux::computeValue()
 {
-  return _problem.getCurrentExecuteOnFlag();
+  return 0;//_problem.getCurrentExecuteOnFlag();
 }

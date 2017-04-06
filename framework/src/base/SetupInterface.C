@@ -96,6 +96,7 @@ SetupInterface::execFlags() const
   return _exec_flags;
 }
 
+/*
 ExecFlagType
 SetupInterface::execBitFlags() const
 {
@@ -105,11 +106,12 @@ SetupInterface::execBitFlags() const
 
   return static_cast<ExecFlagType>(exec_bit_field);
 }
+*/
 
 MultiMooseEnum
 SetupInterface::getExecuteOptions()
 {
   return MultiMooseEnum("none=0x00 initial=0x01 linear=0x02 nonlinear=0x04 timestep_end=0x08 "
-                        "timestep_begin=0x10 custom=0x100",
+                        "timestep_begin=0x10 final=0x20 custom=0x100",
                         "linear");
 }

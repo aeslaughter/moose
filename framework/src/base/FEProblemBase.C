@@ -2709,32 +2709,28 @@ FEProblemBase::computeUserObjects(const ExecFlagType & type, const Moose::AuxGro
   Moose::perf_log.push(compute_uo_tag, "Execution");
 
   // Perform Residual/Jacobian setups
-  switch (type)
+  if (type == EXEC_LINEAR)
   {
-    case EXEC_LINEAR:
-      for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
-      {
-        elemental.residualSetup(tid);
-        side.residualSetup(tid);
-        internal_side.residualSetup(tid);
-        nodal.residualSetup(tid);
-      }
-      general.residualSetup();
-      break;
+    for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
+    {
+      elemental.residualSetup(tid);
+      side.residualSetup(tid);
+      internal_side.residualSetup(tid);
+      nodal.residualSetup(tid);
+    }
+    general.residualSetup();
+  }
 
-    case EXEC_NONLINEAR:
-      for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
-      {
-        elemental.jacobianSetup(tid);
-        side.jacobianSetup(tid);
-        internal_side.jacobianSetup(tid);
-        nodal.jacobianSetup(tid);
-      }
-      general.jacobianSetup();
-      break;
-
-    default:
-      break;
+  else if (type == EXEC_NONLINEAR)
+  {
+    for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
+    {
+      elemental.jacobianSetup(tid);
+      side.jacobianSetup(tid);
+      internal_side.jacobianSetup(tid);
+      nodal.jacobianSetup(tid);
+    }
+    general.jacobianSetup();
   }
 
   // Initialize Elemental/Side/InternalSideUserObjects

@@ -82,12 +82,28 @@ typedef unsigned int THREAD_ID;
 typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange;
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
+typedef std::string ExecFlagType;
+
+
+const ExecFlagType EXEC_NONE("none");
+const ExecFlagType EXEC_INITIAL("initial");
+const ExecFlagType EXEC_LINEAR("linear");
+const ExecFlagType EXEC_NONLINEAR("nonlinear");
+const ExecFlagType EXEC_TIMESTEP_END("timestep_end");
+const ExecFlagType EXEC_TIMESTEP_BEGIN("timestep_begin");
+const ExecFlagType EXEC_FINAL("final");
+const ExecFlagType EXEC_FORCED("forced");
+const ExecFlagType EXEC_FAILED("failed");
+const ExecFlagType EXEC_CUSTOM("custom");
+const ExecFlagType EXEC_SUBDOMAIN("subdomain");
+
 /// Execution flags - when is the object executed/evaluated
 // Note: If this enum is changed, make sure to modify:
-//   (1) the local function populateExecTypes in Moose.C.
+//   (1) the local function populateExecTypes in MooseTypes.C.
 //   (2) the function in Conversion.C: initExecStoreType()
 //   (3) the method SetupInterface::getExecuteOptions
-//   (4) the function Output::getExecuteOptions
+//   (4) the function Output::getExecuteOptionss
+/*
 enum ExecFlagType
 {
   EXEC_NONE = 0x00, // 0
@@ -101,7 +117,7 @@ enum ExecFlagType
   EXEC_TIMESTEP_END = 0x08, // 8
   /// Object is evaluated at the beginning of every time step
   EXEC_TIMESTEP_BEGIN = 0x10, // 16
-  /// Object is evaluated at the end of the simulations (output only)
+  /// Object is evaluated at the end of the simulations
   EXEC_FINAL = 0x20, // 32
   /// Forces execution to occur (output only)
   EXEC_FORCED = 0x40, // 64
@@ -112,6 +128,7 @@ enum ExecFlagType
   /// Objects is evaluated on subdomain
   EXEC_SUBDOMAIN = 0x200 // 512
 };
+*/
 
 namespace Moose
 {

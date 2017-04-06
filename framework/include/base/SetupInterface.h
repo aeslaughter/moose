@@ -15,7 +15,6 @@
 #ifndef SETUPINTERFACE_H
 #define SETUPINTERFACE_H
 
-#include "ExecStore.h"
 #include "MooseEnum.h"
 #include "InputParameters.h"
 
@@ -65,7 +64,7 @@ public:
   /**
    * Build and return the execution flags as a bitfield
    */
-  ExecFlagType execBitFlags() const;
+  //ExecFlagType execBitFlags() const;
 
   /**
    * Returns the available options for the 'execute_on' input parameters

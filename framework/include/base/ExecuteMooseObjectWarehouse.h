@@ -183,26 +183,16 @@ void
 ExecuteMooseObjectWarehouse<T>::setup(ExecFlagType exec_flag, THREAD_ID tid /* = 0*/) const
 {
   checkThreadID(tid);
-  switch (exec_flag)
-  {
-    case EXEC_INITIAL:
-      initialSetup(tid);
-      break;
-    case EXEC_TIMESTEP_BEGIN:
+  if (exec_flag == EXEC_INITIAL)
+    initialSetup(tid);
+  else if (exec_flag == EXEC_TIMESTEP_BEGIN)
       timestepSetup(tid);
-      break;
-    case EXEC_SUBDOMAIN:
+  else if (exec_flag == EXEC_SUBDOMAIN)
       subdomainSetup(tid);
-      break;
-    case EXEC_NONLINEAR:
+  else if (exec_flag == EXEC_NONLINEAR)
       jacobianSetup(tid);
-      break;
-    case EXEC_LINEAR:
+  else if (exec_flag == EXEC_LINEAR)
       residualSetup(tid);
-      break;
-    default:
-      break;
-  }
 }
 
 template <typename T>
