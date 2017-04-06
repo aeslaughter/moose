@@ -278,4 +278,30 @@ MooseEnumTest::testErrors()
     CPPUNIT_ASSERT(msg.find("You cannot place whitespace around the '=' character") !=
                    std::string::npos);
   }
+
+  // Same name
+  try
+  {
+    MultiMooseEnum error_check("one two one");
+    CPPUNIT_ASSERT(false); // Unreachable
+  }
+  catch (const std::exception & e)
+  {
+    std::string msg(e.what());
+    CPPUNIT_ASSERT(msg.find("The name ONE already exists in the enumeration.") !=
+                   std::string::npos);
+  }
+
+  // Same id
+  try
+  {
+    MultiMooseEnum error_check("one=0 two three=0");
+    CPPUNIT_ASSERT(false); // Unreachable
+  }
+  catch (const std::exception & e)
+  {
+    std::string msg(e.what());
+    CPPUNIT_ASSERT(msg.find("The id 0 already exists in the enumeration.") !=
+                   std::string::npos);
+  }
 }

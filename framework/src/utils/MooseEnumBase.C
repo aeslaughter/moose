@@ -108,8 +108,15 @@ MooseEnumBase::fillNames(std::string names, std::string option_delim)
     std::string upper(name_value[0]);
     std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
 
+    // check ids and names
+    if (_ids.find(value) != _ids.end())
+      mooseError("The id ", value, " already exists in the enumeration.");
+    if (_name_to_id.find(upper) != _name_to_id.end())
+      mooseError("The name ", upper, " already exists in the enumeration.");
+
     // populate internal datastructures
     _names[i] = upper;
+    _ids.insert(value);
     _name_to_id[upper] = value++;
   }
 }

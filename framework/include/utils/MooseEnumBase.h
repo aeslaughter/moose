@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 /**
  * The base class for both the MooseEnum and MultiMooseEnum classes.
@@ -31,8 +32,7 @@ public:
    * separate string to set a default for this instance.
    * @param names - a list of names for this enumeration
    * @param allow_out_of_range - determines whether this enumeration will accept values outside of
-   * it's range of
-   *                       defined values.
+   *                             it's range of defined values.
    */
   MooseEnumBase(std::string names, bool allow_out_of_range = false);
 
@@ -102,6 +102,9 @@ protected:
 
   /// The map of deprecated names and optional replacements
   std::map<std::string, std::string> _deprecated_names;
+
+  /// A set of ids utilized to check that it is not set the same for multiple keys
+  std::set<int> _ids;
 
   /**
    * The index of values assigned that are NOT values in this enum.  If this index is 0 (false) then
