@@ -12,32 +12,39 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef MOOSEENUMTEST_H
-#define MOOSEENUMTEST_H
+// MOOSE includes
+#include "ExecuteEnum.h"
+#include "MooseUtils.h"
 
-// CPPUnit includes
-#include "GuardedHelperMacros.h"
-
-#include <string>
-
-class MooseEnumTest : public CppUnit::TestFixture
+ExecuteEnum::ExecuteEnum(std::string names, std::string default_names)
+  : MultiMooseEnum(names, default_names)
 {
-  CPPUNIT_TEST_SUITE(MooseEnumTest);
+}
 
-  CPPUNIT_TEST(multiTestOne);
-  CPPUNIT_TEST(withNamesFromTest);
-  CPPUNIT_TEST(testDeprecate);
-  CPPUNIT_TEST(testErrors);
-  CPPUNIT_TEST(testExecuteEnum);
+void
+ExecuteEnum::extend(const std::string & name)
+{
+  addEnumerationName(name);
+}
 
-  CPPUNIT_TEST_SUITE_END();
 
-public:
-  void multiTestOne();
-  void withNamesFromTest();
-  void testDeprecate();
-  void testErrors();
-  void testExecuteEnum();
-};
+ExecuteEnum &
+ExecuteEnum::operator=(const std::string & names)
+{
+  MultiMooseEnum::operator=(names);
+  return *this;
+}
 
-#endif // MOOSEENUMTEST_H
+ExecuteEnum &
+ExecuteEnum::operator=(const std::vector<std::string> & names)
+{
+  MultiMooseEnum::operator=(names);
+  return *this;
+}
+
+ExecuteEnum &
+ExecuteEnum::operator=(const std::set<std::string> & names)
+{
+  MultiMooseEnum::operator=(names);
+  return *this;
+}

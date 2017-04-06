@@ -15,6 +15,7 @@
 #include "MooseEnumTest.h"
 #include "MooseEnum.h"
 #include "MultiMooseEnum.h"
+#include "ExecuteEnum.h"
 
 #include <algorithm> // std::set_symmetric_difference
 
@@ -304,4 +305,23 @@ MooseEnumTest::testErrors()
     CPPUNIT_ASSERT(msg.find("The id 0 already exists in the enumeration.") !=
                    std::string::npos);
   }
+}
+
+void
+MooseEnumTest::testExecuteEnum()
+{
+  ExecuteEnum exec_enum("one two", "one");
+  exec_enum.extend("three=42");
+  CPPUNIT_ASSERT(exec_enum.getRawNames() == "one two three");
+
+  std::vector<std::string> opts = {"ONE", "TWO", "THREE"};
+  CPPUNIT_ASSERT(exec_enum.getNames() == opts);
+
+  CPPUNIT_ASSERT(exec_enum.contains("one"));
+  exec_enum = "three";
+  CPPUNIT_ASSERT(exec_enum.contains("three"));
+  CPPUNIT_ASSERT(exec_enum.contains(42));
+  CPPUNIT_ASSERT(exec_enum.size() == 1);
+  CPPUNIT_ASSERT(exec_enum[0] == "three");
+  CPPUNIT_ASSERT(exec_enum.get(0) == 42);
 }

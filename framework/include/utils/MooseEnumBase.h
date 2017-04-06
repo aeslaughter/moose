@@ -82,6 +82,14 @@ protected:
    */
   void fillNames(std::string names, std::string option_delim = " ");
 
+  /**
+   * Adds a possible enumeration value to the enum.
+   *
+   * This is protected because it is not generally allowed; however, in the case of "execute_on"
+   * settings this is allowed. Thus, the ExecuteEnum object adds a method that calls this method.
+   */
+  void addEnumerationName(const std::string & raw_name);
+
   // The method that must be implemented to check derived class values against the _deprecated_names
   // list
   virtual void checkDeprecated() const = 0;
@@ -103,14 +111,14 @@ protected:
   /// The map of deprecated names and optional replacements
   std::map<std::string, std::string> _deprecated_names;
 
-  /// A set of ids utilized to check that it is not set the same for multiple keys
-  std::set<int> _ids;
-
   /**
    * The index of values assigned that are NOT values in this enum.  If this index is 0 (false) then
    * out of range values are not allowed.
    */
   int _out_of_range_index;
+
+  /// A set of ids utilized to check that it is not set the same for multiple keys
+  std::set<int> _ids;
 
   /// Constants
   const static int INVALID_ID;
