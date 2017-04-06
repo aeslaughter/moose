@@ -72,10 +72,7 @@ void
 MooseEnumBase::fillNames(std::string names, std::string option_delim)
 {
   std::vector<std::string> elements;
-  // split on spaces
   MooseUtils::tokenize(names, elements, 1, option_delim);
-
-  _names.clear();
   for (const std::string & raw_name : elements)
     addEnumerationName(raw_name);
 }

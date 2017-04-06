@@ -20,6 +20,7 @@
 #include "MooseTypes.h"
 #include "MooseEnum.h"
 #include "MultiMooseEnum.h"
+#include "ExecuteEnum.h"
 #include "MooseUtils.h"
 
 // libMesh includes
@@ -1178,6 +1179,12 @@ void InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
                                                        const std::string & doc_string);
 
 template <>
+void InputParameters::addRequiredParam<ExecuteEnum>(const std::string & name,
+                                                    const ExecuteEnum & moose_enum,
+                                                    const std::string & doc_string);
+
+
+template <>
 void InputParameters::addRequiredParam<std::vector<MooseEnum>>(
     const std::string & name,
     const std::vector<MooseEnum> & moose_enums,
@@ -1190,6 +1197,11 @@ void InputParameters::addParam<MooseEnum>(const std::string & /*name*/,
 template <>
 void InputParameters::addParam<MultiMooseEnum>(const std::string & /*name*/,
                                                const std::string & /*doc_string*/);
+
+template <>
+void InputParameters::addParam<ExecuteEnum>(const std::string & /*name*/,
+                                            const std::string & /*doc_string*/);
+
 
 template <>
 void InputParameters::addParam<std::vector<MooseEnum>>(const std::string & /*name*/,
@@ -1277,6 +1289,16 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
 {
   return pars.get<MultiMooseEnum>(name);
 }
+
+template <>
+inline const ExecuteEnum &
+InputParameters::getParamHelper<ExecuteEnum>(const std::string & name,
+                                             const InputParameters & pars,
+                                            const ExecuteEnum *)
+{
+  return pars.get<ExecuteEnum>(name);
+}
+
 
 InputParameters emptyInputParameters();
 

@@ -34,6 +34,7 @@ validParams<Output>()
 {
   // Get the parameters from the parent object
   InputParameters params = validParams<MooseObject>();
+  params += validParams<SetupInterface>();
 
   // Displaced Mesh options
   params.addParam<bool>(
@@ -51,18 +52,10 @@ validParams<Output>()
       "time_tolerance", 1e-14, "Time tolerance utilized checking start and end times");
 
   // Add the 'execute_on' input parameter for users to set
-  params.addParam<MultiMooseEnum>("execute_on",
-                                  Output::getExecuteOptions("initial timestep_end"),
-                                  "Set to "
-                                  "(none|initial|linear|nonlinear|timestep_end|timestep_begin|"
-                                  "final|failed|custom) to execute only at that moment");
-
-  // Add ability to append to the 'execute_on' list
-  params.addParam<MultiMooseEnum>("additional_execute_on",
-                                  Output::getExecuteOptions(),
-                                  "This list of output flags is added to the existing flags "
-                                  "(initial|linear|nonlinear|timestep_end|timestep_begin|final|"
-                                  "failed|custom) to execute only at that moment");
+  ExecuteEnum & exec_enum = params.get<ExecuteEnum>("execute_on");
+  exec_enum.extend("final failed");
+  exec_enum = "initial timestep_end";
+  params.setDocString("execute_on", Moose::getExecuteOptionsDocString(exe_enum));
 
   // 'Timing' group
   params.addParamNamesToGroup("time_tolerance interval sync_times sync_only start_time end_time ",

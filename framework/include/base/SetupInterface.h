@@ -57,24 +57,16 @@ public:
   virtual void subdomainSetup();
 
   /**
-   * Get the execution flag for the object
+   * Returns a list of the current execution flag(s).
    */
-  virtual const std::vector<ExecFlagType> & execFlags() const;
-
-  /**
-   * Build and return the execution flags as a bitfield
-   */
-  //ExecFlagType execBitFlags() const;
-
-  /**
-   * Returns the available options for the 'execute_on' input parameters
-   * @return A MooseEnum with the available 'execute_on' options, the default is 'residual'
-   */
-  static MultiMooseEnum getExecuteOptions();
+  const std::set<ExecFlagType> & execFlags() const;
 
 protected:
   /// execution flag (when is the object executed/evaluated)
-  std::vector<ExecFlagType> _exec_flags;
+  const ExecuteEnum & _exec_enum;
+
+  /// Execution flags for this object.
+  const std::set<ExecFlagType> _exec_flags;
 
   /// Reference to FEProblemBase
   const ExecFlagType & _current_execute_flag;

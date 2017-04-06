@@ -799,6 +799,17 @@ InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
 
 template <>
 void
+InputParameters::addRequiredParam<ExecuteEnum>(const std::string & name,
+                                               const ExecuteEnum & moose_enum,
+                                               const std::string & doc_string)
+{
+  InputParameters::set<ExecuteEnum>(name) = moose_enum;
+  _required_params.insert(name);
+  _doc_string[name] = doc_string;
+}
+
+template <>
+void
 InputParameters::addRequiredParam<std::vector<MooseEnum>>(
     const std::string & name,
     const std::vector<MooseEnum> & moose_enums,
@@ -825,6 +836,15 @@ InputParameters::addParam<MultiMooseEnum>(const std::string & /*name*/,
                                           const std::string & /*doc_string*/)
 {
   mooseError("You must supply a MultiMooseEnum object when using addParam, even if the parameter "
+             "is not required!");
+}
+
+template <>
+void
+InputParameters::addParam<ExecuteEnum>(const std::string & /*name*/,
+                                      const std::string & /*doc_string*/)
+{
+  mooseError("You must supply a ExecuteEnum object when using addParam, even if the parameter "
              "is not required!");
 }
 

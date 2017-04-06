@@ -324,4 +324,9 @@ MooseEnumTest::testExecuteEnum()
   CPPUNIT_ASSERT(exec_enum.size() == 1);
   CPPUNIT_ASSERT(exec_enum[0] == "three");
   CPPUNIT_ASSERT(exec_enum.get(0) == 42);
+
+  std::vector<std::string> vec = {"one", "two"};
+  ExecuteEnum exec_enum(vec, "one");
+  exec_enum.extend("three=42");
+  CPPUNIT_ASSERT(exec_enum.getRawNames() == "one two three");
 }

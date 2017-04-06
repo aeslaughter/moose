@@ -12,32 +12,28 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-// STL includes
-#include <vector>
-
 // MOOSE includes
 #include "MooseTypes.h"
+#include "ExecuteEnum.h"
 
 namespace Moose
 {
 
-
-// Currently there are 7 exec types (See MooseTypes.h)
-const std::vector<ExecFlagType>
-populateExecTypes()
+ExecuteEnum getExecuteOptions(const std::string & default_names)
 {
-  std::vector<ExecFlagType> exec_types(8);
-  exec_types[0] = EXEC_INITIAL;
-  exec_types[1] = EXEC_TIMESTEP_BEGIN;
-  exec_types[2] = EXEC_NONLINEAR;
-  exec_types[3] = EXEC_LINEAR;
-  exec_types[4] = EXEC_TIMESTEP_END;
-  exec_types[5] = EXEC_FINAL;
-  exec_types[6] = EXEC_CUSTOM;
-  exec_types[7] = EXEC_SUBDOMAIN;
-  return exec_types;
+  std::vector<std::string> vec = {EXEC_INITIAL, EXEC_TIMESTEP_BEGIN, EXEC_NONLINEAR, EXEC_LINEAR,
+                                  EXEC_TIMESTEP_END, EXEC_CUSTOM, EXEC_SUBDOMAIN};
+  return ExecuteEnum(vec, default_names);
 }
 
-const std::vector<ExecFlagType> exec_types = populateExecTypes();
+std::string getExecuteOptionsDocString(const ExecuteEnum & exec_enum)
+{
+  std::string doc("List the flag(s) when the object should executed (");
+  for (const auto & name : exec_enum.getNames())
+    doc += name + ' V ';
+  std::earse(doc.end()-3, doc.end());
+  doc + ').';
+  return doc;
+}
 
-} // namespace Moose
+}
