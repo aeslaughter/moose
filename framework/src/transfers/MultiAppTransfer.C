@@ -20,6 +20,7 @@
 #include "DisplacedProblem.h"
 #include "MultiApp.h"
 #include "MooseMesh.h"
+#include "ExecuteEnum.h"
 
 // libMesh includes
 #include "libmesh/parallel_algebra.h"
@@ -38,10 +39,10 @@ validParams<MultiAppTransfer>()
 
   // MultiAppTransfers by default will execute with their associated MultiApp. These flags will be
   // added by FEProblemBase when the transfer is added.
-  MultiMooseEnum multi_transfer_execute_on(params.get<MultiMooseEnum>("execute_on").getRawNames() +
-                                               " same_as_multiapp",
-                                           "same_as_multiapp");
-  params.set<MultiMooseEnum>("execute_on") = multi_transfer_execute_on;
+  ExecuteEnum & exec_enum = params.set<ExecuteEnum>("execute_on");
+  exec_enum.extend("same_as_multiapp");
+  exec_enum = "same_as_multiapp";
+  params.setDocString("execute_on", exec_enum.getDocString());
 
   params.addParam<bool>(
       "check_multiapp_execute_on",
@@ -62,7 +63,7 @@ const InputParameters &
 removeSpecialOption(const InputParameters & parameters)
 {
   InputParameters * params = const_cast<InputParameters *>(&parameters);
-  params->set<MultiMooseEnum>("execute_on").erase("SAME_AS_MULTIAPP");
+  params->set<ExecuteEnum>("execute_on").erase("SAME_AS_MULTIAPP");
   return *params;
 }
 

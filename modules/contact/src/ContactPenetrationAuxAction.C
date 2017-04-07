@@ -10,6 +10,7 @@
 #include "FEProblem.h"
 #include "Parser.h"
 #include "MooseApp.h"
+#include "ExecuteEnum.h"
 
 static unsigned int counter = 0;
 
@@ -48,7 +49,7 @@ ContactPenetrationAuxAction::act()
 
     MultiMooseEnum execute_options = SetupInterface::getExecuteOptions();
     execute_options = "initial linear";
-    params.set<MultiMooseEnum>("execute_on") = execute_options;
+    params.set<ExecuteEnum>("execute_on") = execute_options;
 
     // Extract global params
     if (isParamValid("parser_syntax"))

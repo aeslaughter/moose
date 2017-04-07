@@ -10,6 +10,7 @@
 #include "FEProblem.h"
 #include "Conversion.h"
 #include "AddVariableAction.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -57,7 +58,7 @@ ThermalContactAuxBCsAction::act()
 
   MultiMooseEnum execute_options = SetupInterface::getExecuteOptions();
   execute_options = "initial linear";
-  params.set<MultiMooseEnum>("execute_on") = execute_options;
+  params.set<ExecuteEnum>("execute_on") = execute_options;
 
   params.set<std::vector<BoundaryName>>("boundary") = {getParam<BoundaryName>("slave")};
   params.set<BoundaryName>("paired_boundary") = getParam<BoundaryName>("master");
@@ -77,7 +78,7 @@ ThermalContactAuxBCsAction::act()
   std::string penetration_var_name = quadrature ? "qpoint_penetration" : "penetration";
   params.set<AuxVariableName>("variable") = penetration_var_name;
 
-  params.set<MultiMooseEnum>("execute_on") = execute_options;
+  params.set<ExecuteEnum>("execute_on") = execute_options;
 
   params.set<std::vector<BoundaryName>>("boundary") = {getParam<BoundaryName>("slave")};
   params.set<BoundaryName>("paired_boundary") = getParam<BoundaryName>("master");

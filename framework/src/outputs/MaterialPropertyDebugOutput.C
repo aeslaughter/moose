@@ -18,6 +18,7 @@
 #include "MooseApp.h"
 #include "Material.h"
 #include "ConsoleUtils.h"
+#include "ExecuteEnum.h"
 
 // libMesh includes
 #include "libmesh/transient_system.h"
@@ -29,7 +30,7 @@ validParams<MaterialPropertyDebugOutput>()
   InputParameters params = validParams<BasicOutput<Output>>();
 
   // This object only outputs data once, in the constructor, so disable fine control
-  params.suppressParameter<MultiMooseEnum>("execute_on");
+  params.suppressParameter<ExecuteEnum>("execute_on");
 
   return params;
 }

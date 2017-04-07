@@ -18,6 +18,7 @@
 #include "MooseObjectParameterName.h"
 #include "InputParameterWarehouse.h"
 #include "ConsoleUtils.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -25,7 +26,7 @@ validParams<ControlOutput>()
 {
   // Get the base class parameters
   InputParameters params = validParams<BasicOutput<Output>>();
-  params.set<MultiMooseEnum>("execute_on") = "initial timestep_begin";
+  params.set<ExecuteEnum>("execute_on") = "initial timestep_begin";
   params.addParam<bool>(
       "clear_after_output", true, "Clear the active control display after each output.");
   params.addParam<bool>("show_active_objects", true, "List active MooseObjects.");

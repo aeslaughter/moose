@@ -20,6 +20,7 @@
 #include "MooseMesh.h"
 #include "NonlinearSystem.h"
 #include "SlepcSupport.h"
+#include "ExecuteEnum.h"
 
 // C++ includes
 #include <vector>
@@ -196,6 +197,6 @@ Executioner::addAttributeReporter(const std::string & name,
   InputParameters params = _app.getFactory().getValidParams("ExecutionerAttributeReporter");
   params.set<Real *>("value") = &attribute;
   if (!execute_on.empty())
-    params.set<MultiMooseEnum>("execute_on") = execute_on;
+    params.set<ExecuteEnum>("execute_on") = execute_on;
   problem->addPostprocessor("ExecutionerAttributeReporter", name, params);
 }

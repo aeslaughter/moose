@@ -18,6 +18,7 @@
 #include "MooseApp.h"
 #include "AddOutputAction.h"
 #include "Material.h"
+#include "ExecuteEnum.h"
 
 // Declare the output helper specializations
 template <>
@@ -218,7 +219,7 @@ MaterialOutputAction::createAction(const std::string & type,
   InputParameters & object_params = action->getObjectParams();
   object_params.set<MaterialPropertyName>("property") = property_name;
   object_params.set<AuxVariableName>("variable") = variable_name;
-  object_params.set<MultiMooseEnum>("execute_on") = "timestep_end";
+  object_params.set<ExecuteEnum>("execute_on") = "timestep_end";
 
   if (material->boundaryRestricted())
     object_params.set<std::vector<BoundaryName>>("boundary") = material->boundaryNames();

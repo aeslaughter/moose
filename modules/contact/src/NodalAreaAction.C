@@ -11,6 +11,7 @@
 #include "Parser.h"
 #include "MooseApp.h"
 #include "Conversion.h"
+#include "ExecuteEnum.h"
 
 static unsigned int counter = 0;
 
@@ -37,7 +38,7 @@ NodalAreaAction::act()
   _moose_object_pars.set<std::vector<VariableName>>("variable") = {"nodal_area_" + _name};
 
   mooseAssert(_problem, "Problem pointer is NULL");
-  _moose_object_pars.set<MultiMooseEnum>("execute_on") = "initial timestep_begin";
+  _moose_object_pars.set<ExecuteEnum>("execute_on") = "initial timestep_begin";
   _moose_object_pars.set<bool>("use_displaced_mesh") = true;
 
   _problem->addUserObject(

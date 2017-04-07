@@ -8,6 +8,7 @@
 
 #include "NodalArea.h"
 #include "PenetrationLocator.h"
+#include "ExecuteEnum.h"
 
 #include "libmesh/string_to_enum.h"
 
@@ -18,7 +19,7 @@ validParams<ContactPressureAux>()
   InputParameters params = validParams<AuxKernel>();
   params.addRequiredCoupledVar("nodal_area", "The nodal area");
   params.addRequiredParam<BoundaryName>("paired_boundary", "The boundary to be penetrated");
-  params.set<MultiMooseEnum>("execute_on") = "nonlinear";
+  params.set<ExecuteEnum>("execute_on") = "nonlinear";
   return params;
 }
 

@@ -27,7 +27,7 @@ CavityPressurePPAction::act()
   std::string uo_name = _name + "UserObject";
 
   InputParameters params = _factory.getValidParams("CavityPressurePostprocessor");
-  params.set<MultiMooseEnum>("execute_on") = "initial linear";
+  params.set<ExecuteEnum>("execute_on") = "initial linear";
   params.set<UserObjectName>("cavity_pressure_uo") = uo_name;
   params.set<std::string>("quantity") = "cavity_pressure";
 

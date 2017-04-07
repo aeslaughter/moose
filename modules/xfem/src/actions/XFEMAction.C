@@ -231,12 +231,12 @@ XFEMAction::act()
   else if (_current_task == "add_aux_kernel" && _xfem_cut_plane)
   {
     InputParameters params = _factory.getValidParams("XFEMVolFracAux");
-    params.set<MultiMooseEnum>("execute_on") = "timestep_begin";
+    params.set<ExecuteEnum>("execute_on") = "timestep_begin";
     params.set<AuxVariableName>("variable") = "xfem_volfrac";
     _problem->addAuxKernel("XFEMVolFracAux", "xfem_volfrac", params);
 
     params = _factory.getValidParams("XFEMCutPlaneAux");
-    params.set<MultiMooseEnum>("execute_on") = "timestep_end";
+    params.set<ExecuteEnum>("execute_on") = "timestep_end";
 
     // first cut plane
     params.set<unsigned int>("plane_id") = 0;

@@ -14,6 +14,7 @@
 
 #include "MaterialCopyUserObject.h"
 #include "MooseMesh.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -26,9 +27,7 @@ validParams<MaterialCopyUserObject>()
   params.addRequiredParam<unsigned int>("copy_to_element",
                                         "The id of the element to which data is copied");
 
-  MultiMooseEnum execute_options(SetupInterface::getExecuteOptions());
-  execute_options = "timestep_end";
-  params.set<MultiMooseEnum>("execute_on") = execute_options;
+  params.set<ExecuteEnum>("execute_on") = "timestep_end";
 
   return params;
 }

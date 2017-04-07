@@ -67,7 +67,7 @@ ContactPressureAuxAction::act()
 
     MultiMooseEnum execute_options(SetupInterface::getExecuteOptions());
     execute_options = "nonlinear timestep_end timestep_begin";
-    params.set<MultiMooseEnum>("execute_on") = execute_options;
+    params.set<ExecuteEnum>("execute_on") = execute_options;
     _problem->addAuxKernel("ContactPressureAux", name.str(), params);
   }
 }

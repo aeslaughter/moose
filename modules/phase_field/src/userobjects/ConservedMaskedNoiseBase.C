@@ -18,7 +18,7 @@ validParams<ConservedMaskedNoiseBase>()
 
   MultiMooseEnum setup_options(SetupInterface::getExecuteOptions());
   setup_options = "timestep_begin";
-  params.set<MultiMooseEnum>("execute_on") = setup_options;
+  params.set<ExecuteEnum>("execute_on") = setup_options;
   params.addParam<MaterialPropertyName>("mask",
                                         "Material property to multiply the random numbers with");
   return params;

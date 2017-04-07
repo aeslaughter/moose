@@ -13,6 +13,7 @@
 /****************************************************************/
 
 #include "DiscreteElementUserObject.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -21,8 +22,8 @@ validParams<DiscreteElementUserObject>()
   InputParameters params = validParams<ElementUserObject>();
 
   // UOs of this type should not be executed by MOOSE, but only called directly by the user
-  params.set<MultiMooseEnum>("execute_on") = "custom";
-  params.suppressParameter<MultiMooseEnum>("execute_on");
+  params.set<ExecuteEnum>("execute_on") = "none";
+  params.suppressParameter<ExecuteEnum>("execute_on");
 
   return params;
 }

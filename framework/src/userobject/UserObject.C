@@ -15,6 +15,7 @@
 #include "UserObject.h"
 #include "SubProblem.h"
 #include "Assembly.h"
+#include "ExecuteEnum.h"
 
 // libMesh includes
 #include "libmesh/sparse_matrix.h"
@@ -27,7 +28,7 @@ validParams<UserObject>()
 
   // Add the SetupInterface parameter, 'execute_on', and set it to a default of 'timestep_end'
   params += validParams<SetupInterface>();
-  params.set<MultiMooseEnum>("execute_on") = "timestep_end";
+  params.set<ExecuteEnum>("execute_on") = "timestep_end";
 
   params.addParam<bool>("use_displaced_mesh",
                         false,

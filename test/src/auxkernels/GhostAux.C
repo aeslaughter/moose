@@ -14,6 +14,7 @@
 
 #include "GhostAux.h"
 #include "GhostUserObject.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -23,9 +24,7 @@ validParams<GhostAux>()
   params.addParam<UserObjectName>("ghost_user_object",
                                   "The GhostUserObject where this Aux pulls values from");
 
-  MultiMooseEnum setup_options(SetupInterface::getExecuteOptions());
-  setup_options = "timestep_begin";
-  params.set<MultiMooseEnum>("execute_on") = setup_options;
+  params.set<ExecuteEnum>("execute_on") = "timestep_begin";;
   params.addClassDescription("Aux Kernel to display ghosted elements from a single processor or "
                              "the union on all processors");
   return params;

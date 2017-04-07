@@ -18,6 +18,7 @@
 #include "ActionWarehouse.h"
 #include "Factory.h"
 #include "NonlinearSystemBase.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -67,7 +68,7 @@ SetupResidualDebugAction::act()
     InputParameters params = _factory.getValidParams("DebugResidualAux");
     params.set<AuxVariableName>("variable") = aux_var_name;
     params.set<NonlinearVariableName>("debug_variable") = var.name();
-    params.set<MultiMooseEnum>("execute_on") = "linear timestep_end";
+    params.set<ExecuteEnum>("execute_on") = "linear timestep_end";
     _problem->addAuxKernel("DebugResidualAux", kern_name, params);
   }
 }

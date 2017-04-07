@@ -21,6 +21,7 @@
 #include "Action.h"
 #include "MooseMesh.h"
 #include "NonlinearSystemBase.h"
+#include "ExecuteEnum.h"
 
 // libMesh includes
 #include "libmesh/transient_system.h"
@@ -37,7 +38,7 @@ validParams<TopResidualDebugOutput>()
       "num_residuals", 0, "The number of top residuals to print out (0 = no output)");
 
   // By default operate on both nonlinear and linear residuals
-  params.set<MultiMooseEnum>("execute_on") = "linear nonlinear timestep_end";
+  params.set<ExecuteEnum>("execute_on") = "linear nonlinear timestep_end";
   return params;
 }
 

@@ -48,7 +48,7 @@ validParams<GrainTrackerInterface>()
 
   MultiMooseEnum execute_options(SetupInterface::getExecuteOptions());
   execute_options = "initial timestep_end";
-  params.set<MultiMooseEnum>("execute_on") = execute_options;
+  params.set<ExecuteEnum>("execute_on") = execute_options;
 
   return params;
 }

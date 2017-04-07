@@ -8,6 +8,7 @@
 #include "NodalArea.h"
 
 #include "SystemBase.h"
+#include "ExecuteEnum.h"
 
 // libmesh includes
 #include "libmesh/numeric_vector.h"
@@ -19,7 +20,7 @@ validParams<NodalArea>()
 {
   InputParameters params = validParams<SideIntegralVariableUserObject>();
 
-  params.set<MultiMooseEnum>("execute_on") = "linear";
+  params.set<ExecuteEnum>("execute_on") = "linear";
   return params;
 }
 

@@ -21,6 +21,7 @@
 #include "Conversion.h"
 #include "MooseMesh.h"
 #include "NonlinearSystem.h"
+#include "ExecuteEnum.h"
 
 // libMesh includes
 #include "libmesh/fe.h"
@@ -41,7 +42,7 @@ validParams<DOFMapOutput>()
   params.addParam<std::string>("system_name", "nl0", "System to output");
 
   // By default this only executes on the initial timestep
-  params.set<MultiMooseEnum>("execute_on") = "initial";
+  params.set<ExecuteEnum>("execute_on") = "initial";
 
   return params;
 }

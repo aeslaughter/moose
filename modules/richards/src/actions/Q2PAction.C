@@ -260,7 +260,7 @@ Q2PAction::act()
 
     InputParameters params = _factory.getValidParams("TimestepSize");
 
-    params.set<MultiMooseEnum>("execute_on") = "timestep_begin";
+    params.set<ExecuteEnum>("execute_on") = "timestep_begin";
     params.set<std::vector<OutputName>>("outputs") = {"none"};
     _problem->addPostprocessor("TimestepSize", "Q2P_dt", params);
 

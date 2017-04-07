@@ -14,6 +14,7 @@
 
 // MOOSE includes
 #include "Control.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -25,7 +26,10 @@ validParams<Control>()
   params += validParams<FunctionInterface>();
   params.registerBase("Control");
 
-  params.set<MultiMooseEnum>("execute_on") = Control::getExecuteOptions();
+  ExecuteEnum & exec_enum = params.set<ExecuteEnum>("execute_on");
+  exec_enum.extend("subdomain");
+  exec_enum = "initial timestep_end";
+  params.setDocString("execute_on", exec_enum.getDocString());
 
   return params;
 }
@@ -41,12 +45,4 @@ Control::Control(const InputParameters & parameters)
     _fe_problem(*parameters.get<FEProblemBase *>("_fe_problem_base")),
     _input_parameter_warehouse(_app.getInputParameterWarehouse())
 {
-}
-
-MultiMooseEnum
-Control::getExecuteOptions()
-{
-  return MultiMooseEnum("none=0x00 initial=0x01 linear=0x02 nonlinear=0x04 timestep_end=0x08 "
-                        "timestep_begin=0x10 custom=0x100 subdomain=0x200",
-                        "initial timestep_end");
 }

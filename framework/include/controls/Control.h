@@ -65,11 +65,6 @@ public:
    */
   virtual void execute() = 0;
 
-  /**
-   * Return the valid "execute_on" options for Control objects
-   */
-  static MultiMooseEnum getExecuteOptions();
-
 protected:
   /// Reference to the FEProblemBase for this object
   FEProblemBase & _fe_problem;

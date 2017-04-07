@@ -20,6 +20,7 @@
 #include "MooseVariable.h"
 #include "MooseEnum.h"
 #include "InputParameters.h"
+#include "ExecuteEnum.h"
 
 // libMesh
 #include "libmesh/system.h"
@@ -40,7 +41,7 @@ validParams<Transfer>()
                         "the undisplaced mesh will still be used.");
   // Add the SetupInterface parameter, 'execute_on', and set it to a default of 'timestep_begin'
   params += validParams<SetupInterface>();
-  params.set<MultiMooseEnum>("execute_on") = "timestep_begin";
+  params.set<ExecuteEnum>("execute_on") = "timestep_begin";
 
   params.registerBase("Transfer");
 

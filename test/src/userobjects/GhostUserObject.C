@@ -14,6 +14,7 @@
 
 #include "GhostUserObject.h"
 #include "MooseMesh.h"
+#include "ExecuteEnum.h"
 
 // invalid_processor_id
 #include "libmesh/dof_object.h"
@@ -28,9 +29,7 @@ validParams<GhostUserObject>()
       DofObject::invalid_processor_id,
       "The rank for which the ghosted elements are recorded (Default: ALL)");
 
-  MultiMooseEnum setup_options(SetupInterface::getExecuteOptions());
-  setup_options = "timestep_begin";
-  params.set<MultiMooseEnum>("execute_on") = setup_options;
+  params.set<ExecuteEnum>("execute_on") = "timestep_begin";;
   params.addClassDescription("User object to calculate ghosted elements on a single processor or "
                              "the union across all processors.");
   return params;

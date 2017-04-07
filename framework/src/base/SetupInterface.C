@@ -25,7 +25,7 @@ validParams<SetupInterface>()
   InputParameters params = emptyInputParameters();
 
   // Get an MooseEnum of the available 'execute_on' options
-  ExecuteEnum execute_options("intial timestep_begin nonlinear linear timestep_end custom subdomain", "linear");
+  ExecuteEnum execute_options("none initial timestep_begin nonlinear linear timestep_end custom", "linear");
 
   // Add the 'execute_on' input parameter for users to set
   params.addParam<ExecuteEnum>("execute_on", execute_options, execute_options.getDocString());

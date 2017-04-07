@@ -24,7 +24,7 @@ validParams<DiscreteNucleationInserter>()
   params.addParam<Point>("test", "Insert a fixed nucleus at a point in the simulation cell");
   MultiMooseEnum setup_options(SetupInterface::getExecuteOptions());
   setup_options = "timestep_end";
-  params.set<MultiMooseEnum>("execute_on") = setup_options;
+  params.set<ExecuteEnum>("execute_on") = setup_options;
   return params;
 }
 

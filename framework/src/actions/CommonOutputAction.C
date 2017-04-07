@@ -20,6 +20,7 @@
 #include "ActionFactory.h"
 #include "Output.h"
 #include "OutputWarehouse.h"
+#include "ExecuteEnum.h"
 
 // Extrnal includes
 #include "tinydir.h"
@@ -99,9 +100,10 @@ validParams<CommonOutputAction>()
       "(may include Variables, ScalarVariables, and Postprocessor names).");
 
   // Add the 'execute_on' input parameter
-  params.addParam<MultiMooseEnum>(
-      "execute_on",
-      Output::getExecuteOptions("initial timestep_end"),
+  ExecuteEnum exec_enum("none=0x00 initial=0x01 linear=0x02 nonlinear=0x04 timestep_end=0x08 "
+                        "timestep_begin=0x10 final=0x20 failed=0x80", "initial timestep_end");
+  params.addParam<ExecuteEnum>("execute_on",
+    exec_enum,
       "Set to (initial|linear|nonlinear|timestep_end|timestep_begin|final|failed|custom) to "
       "execute only at that moment (default: 'initial timestep_end')");
 
