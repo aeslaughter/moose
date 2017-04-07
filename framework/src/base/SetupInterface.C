@@ -12,9 +12,11 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
+// MOOSE includes
 #include "SetupInterface.h"
 #include "Conversion.h"
 #include "FEProblem.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -23,13 +25,10 @@ validParams<SetupInterface>()
   InputParameters params = emptyInputParameters();
 
   // Get an MooseEnum of the available 'execute_on' options
-  MultiMooseEnum execute_options(SetupInterface::getExecuteOptions());
+  ExecuteEnum execute_options("intial timestep_begin nonlinear linear timestep_end custom subdomain", "linear");
 
   // Add the 'execute_on' input parameter for users to set
-  params.addParam<MultiMooseEnum>("execute_on",
-                                  execute_options,
-                                  "Set to (nonlinear|linear|timestep_end|timestep_begin|custom) "
-                                  "to execute only at that moment");
+  params.addParam<ExecuteEnum>("execute_on", execute_options, execute_options.getDocString());
 
   // The Output system uses different options for the 'execute_on' than other systems, therefore the
   // check of the options
@@ -40,7 +39,8 @@ validParams<SetupInterface>()
 }
 
 SetupInterface::SetupInterface(const MooseObject * moose_object)
-  : _current_execute_flag(
+  : _execute_enum(moose_object->parameters().get<ExecuteEnum>("execute_on")),
+    _current_execute_flag(
         (moose_object->parameters().getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
             ->getCurrentExecuteOnFlag())
 {
@@ -55,8 +55,8 @@ SetupInterface::SetupInterface(const MooseObject * moose_object)
    */
   if (params.have_parameter<bool>("check_execute_on") && params.get<bool>("check_execute_on"))
   {
-    MultiMooseEnum flags = params.get<MultiMooseEnum>("execute_on");
-    _exec_flags = Moose::vectorStringsToEnum<ExecFlagType>(flags);
+    const MultiMooseEnum & flags = params.get<ExecuteEnum>("execute_on");
+    _exec_flags = flags.getNames();
   }
 
   else
@@ -93,24 +93,28 @@ SetupInterface::subdomainSetup()
 const std::vector<ExecFlagType> &
 SetupInterface::execFlags() const
 {
+  // mooseDeprecated(...)
+
   return _exec_flags;
 }
 
-/*
+
 ExecFlagType
 SetupInterface::execBitFlags() const
 {
-  unsigned int exec_bit_field = EXEC_NONE;
-  for (unsigned int i = 0; i < _exec_flags.size(); ++i)
-    exec_bit_field |= _exec_flags[i];
+// mooseDeprecated(...)
 
-  return static_cast<ExecFlagType>(exec_bit_field);
+  //unsigned int exec_bit_field = EXEC_NONE;
+  //for (unsigned int i = 0; i < _exec_flags.size(); ++i)
+  //  exec_bit_field |= _exec_flags[i];
+
+  return EXEC_LINEAR;//static_cast<ExecFlagType>(exec_bit_field);
 }
-*/
 
 MultiMooseEnum
 SetupInterface::getExecuteOptions()
 {
+  // mooseDeprecated(...)
   return MultiMooseEnum("none=0x00 initial=0x01 linear=0x02 nonlinear=0x04 timestep_end=0x08 "
                         "timestep_begin=0x10 final=0x20 custom=0x100",
                         "linear");

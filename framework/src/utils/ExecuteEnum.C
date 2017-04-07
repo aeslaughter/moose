@@ -14,7 +14,6 @@
 
 // MOOSE includes
 #include "ExecuteEnum.h"
-#include "MooseUtils.h"
 
 ExecuteEnum::ExecuteEnum(std::string names, std::string default_names)
   : MultiMooseEnum(names, default_names)
@@ -24,7 +23,7 @@ ExecuteEnum::ExecuteEnum(std::string names, std::string default_names)
 void
 ExecuteEnum::extend(const std::string & name)
 {
-  addEnumerationName(name);
+  fillNames(name);
 }
 
 
@@ -47,4 +46,15 @@ ExecuteEnum::operator=(const std::set<std::string> & names)
 {
   MultiMooseEnum::operator=(names);
   return *this;
+}
+
+std::string
+ExecuteEnum::getDocString()
+{
+  std::string doc("The list of flag(s) indicating when this object should executed (\"");
+  for (const auto & name : _names)
+    doc += name + "\" V \"";
+  doc.erase(doc.end()-5, doc.end());
+  doc += "\").";
+  return doc;
 }

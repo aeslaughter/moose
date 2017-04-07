@@ -49,6 +49,11 @@ public:
   ExecuteEnum & operator=(const std::set<std::string> & names);
   ///@}
 
+  /**
+   * Return a documentation string with the enumeration values listed.
+   */
+  std::string getDocString();
+
 };
 
 #endif

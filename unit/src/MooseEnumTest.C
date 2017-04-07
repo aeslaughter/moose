@@ -324,4 +324,6 @@ MooseEnumTest::testExecuteEnum()
   CPPUNIT_ASSERT(exec_enum.size() == 1);
   CPPUNIT_ASSERT(exec_enum[0] == "three");
   CPPUNIT_ASSERT(exec_enum.get(0) == 42);
+  CPPUNIT_ASSERT(exec_enum.getDocString() == "The list of flag(s) indicating when this object " \
+                                             "should executed (\"ONE\" V \"TWO\" V \"THREE\").");
 }
