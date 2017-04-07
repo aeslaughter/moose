@@ -98,6 +98,11 @@ public:
 
 protected:
   // Map of execute objects to storage containers for MooseObjects
+  // This mutable to allow the const version of operator[] to create and return an empty
+  // warehouse on-demand, this was done to allow for arbitrary execute on flags without the need
+  // to check prior to retrieving a warehouse. Doing the check is possible but would require adding
+  // an additional has method at each place it is accessed, which is inconsistent with the current
+  // usage and would add a lot of lines of code.
   mutable std::map<ExecFlagType, MooseObjectWarehouse<T>> _execute_objects;
 
   /// A helper method for extracting objects from the various storage containers
