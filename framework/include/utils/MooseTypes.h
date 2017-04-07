@@ -85,17 +85,17 @@ typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElem
 typedef std::string ExecFlagType;
 
 
-const ExecFlagType EXEC_NONE("none");
-const ExecFlagType EXEC_INITIAL("initial");
-const ExecFlagType EXEC_LINEAR("linear");
-const ExecFlagType EXEC_NONLINEAR("nonlinear");
-const ExecFlagType EXEC_TIMESTEP_END("timestep_end");
-const ExecFlagType EXEC_TIMESTEP_BEGIN("timestep_begin");
-const ExecFlagType EXEC_FINAL("final");
-const ExecFlagType EXEC_FORCED("forced");
-const ExecFlagType EXEC_FAILED("failed");
-const ExecFlagType EXEC_CUSTOM("custom");
-const ExecFlagType EXEC_SUBDOMAIN("subdomain");
+const ExecFlagType EXEC_NONE("NONE");
+const ExecFlagType EXEC_INITIAL("INITIAL");
+const ExecFlagType EXEC_LINEAR("LINEAR");
+const ExecFlagType EXEC_NONLINEAR("NONLINEAR");
+const ExecFlagType EXEC_TIMESTEP_END("TIMESTEP_END");
+const ExecFlagType EXEC_TIMESTEP_BEGIN("TIMESTEP_BEGIN");
+const ExecFlagType EXEC_FINAL("FINAL");
+const ExecFlagType EXEC_FORCED("FORCED");
+const ExecFlagType EXEC_FAILED("FAILED");
+const ExecFlagType EXEC_CUSTOM("CUSTOM");
+const ExecFlagType EXEC_SUBDOMAIN("SUBDOMAIN");
 
 /// Execution flags - when is the object executed/evaluated
 // Note: If this enum is changed, make sure to modify:

@@ -199,6 +199,7 @@ template <typename T>
 void
 ExecuteMooseObjectWarehouse<T>::addObject(std::shared_ptr<T> object, THREAD_ID tid /*=0*/)
 {
+
   // Update list of all objects
   MooseObjectWarehouse<T>::addObject(object, tid);
 

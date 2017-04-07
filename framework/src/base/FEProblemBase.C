@@ -2691,6 +2691,9 @@ FEProblemBase::computeAuxiliaryKernels(const ExecFlagType & type)
 void
 FEProblemBase::computeUserObjects(const ExecFlagType & type, const Moose::AuxGroup & group)
 {
+
+
+
   // Get convenience reference to active warehouse
   const MooseObjectWarehouse<ElementUserObject> & elemental = _elemental_user_objects[group][type];
   const MooseObjectWarehouse<SideUserObject> & side = _side_user_objects[group][type];
@@ -2698,6 +2701,8 @@ FEProblemBase::computeUserObjects(const ExecFlagType & type, const Moose::AuxGro
       _internal_side_user_objects[group][type];
   const MooseObjectWarehouse<NodalUserObject> & nodal = _nodal_user_objects[group][type];
   const MooseObjectWarehouse<GeneralUserObject> & general = _general_user_objects[group][type];
+
+
 
   if (!elemental.hasActiveObjects() && !side.hasActiveObjects() &&
       !internal_side.hasActiveObjects() && !nodal.hasActiveObjects() && !general.hasActiveObjects())
@@ -2762,9 +2767,6 @@ FEProblemBase::computeUserObjects(const ExecFlagType & type, const Moose::AuxGro
 
   // Finalize, threadJoin, and update PP values of Nodal
   finalizeUserObjects<NodalUserObject>(nodal);
-
-  mooseError("No");
-  std::cout << "GENERAL:" << general.getActiveObjects().size() << std::endl;
 
   // Execute GeneralUserObjects
   if (general.hasActiveObjects())
