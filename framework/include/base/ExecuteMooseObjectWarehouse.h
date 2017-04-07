@@ -208,7 +208,10 @@ ExecuteMooseObjectWarehouse<T>::addObject(std::shared_ptr<T> object, THREAD_ID t
   {
     const std::vector<ExecFlagType> flags = ptr->execFlags();
     for (std::vector<ExecFlagType>::const_iterator it = flags.begin(); it != flags.end(); ++it)
+    {
+      std::cout << "ADDING OBJECT: " << object->name() << " " << *it << std::endl;
       _execute_objects[*it].addObject(object, tid);
+    }
   }
   else
     mooseError("The object being added (",

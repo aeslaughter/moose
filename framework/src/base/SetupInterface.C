@@ -39,12 +39,13 @@ validParams<SetupInterface>()
 }
 
 SetupInterface::SetupInterface(const MooseObject * moose_object)
-  : //_execute_enum(moose_object->parameters().get<ExecuteEnum>("execute_on")),
+  : _execute_enum(moose_object->parameters().isParamValid("execute_on") ?
+        moose_object->parameters().get<ExecuteEnum>("execute_on") : _empty_execute_enum),
     _current_execute_flag(
         (moose_object->parameters().getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
             ->getCurrentExecuteOnFlag())
 {
-  const InputParameters & params = moose_object->parameters();
+  //const InputParameters & params = moose_object->parameters();
 
   /**
    * While many of the MOOSE systems inherit from this interface, it doesn't make sense for them all
@@ -53,6 +54,7 @@ SetupInterface::SetupInterface(const MooseObject * moose_object)
    * valid params to their own.  In
    * those cases it won't exist so we just set it to a default and ignore it.
    */
+   /*
   if (params.have_parameter<bool>("check_execute_on") && params.get<bool>("check_execute_on"))
   {
     const MultiMooseEnum & flags = params.get<ExecuteEnum>("execute_on");
@@ -61,6 +63,14 @@ SetupInterface::SetupInterface(const MooseObject * moose_object)
 
   else
     _exec_flags.push_back(EXEC_LINEAR);
+    */
+
+  _exec_flags = std::vector<ExecFlagType>(_execute_enum.current().begin(), _execute_enum.current().end());
+
+  std::cout << "EXECUTE_ON " << moose_object->name();
+  for (auto name : _exec_flags)
+    std::cout << " " << name;
+  std::cout << std::endl;
 }
 
 SetupInterface::~SetupInterface() {}
@@ -95,7 +105,7 @@ SetupInterface::execFlags() const
 {
   // mooseDeprecated(...)
 
-  return _exec_flags;
+  return _exec_flags;//_execute_enum.current();
 }
 
 

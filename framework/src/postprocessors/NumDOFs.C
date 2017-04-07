@@ -68,3 +68,9 @@ NumDOFs::getValue()
       return 0;
   }
 }
+
+void
+NumDOFs::execute()
+{
+  std::cout << name() << " execute()" << std::endl;
+}

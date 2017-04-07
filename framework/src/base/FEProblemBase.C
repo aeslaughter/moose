@@ -2763,6 +2763,9 @@ FEProblemBase::computeUserObjects(const ExecFlagType & type, const Moose::AuxGro
   // Finalize, threadJoin, and update PP values of Nodal
   finalizeUserObjects<NodalUserObject>(nodal);
 
+  mooseError("No");
+  std::cout << "GENERAL:" << general.getActiveObjects().size() << std::endl;
+
   // Execute GeneralUserObjects
   if (general.hasActiveObjects())
   {

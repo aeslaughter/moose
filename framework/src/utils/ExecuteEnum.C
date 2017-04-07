@@ -15,6 +15,7 @@
 // MOOSE includes
 #include "ExecuteEnum.h"
 
+
 ExecuteEnum::ExecuteEnum(std::string names, std::string default_names)
   : MultiMooseEnum(names, default_names)
 {
@@ -25,7 +26,6 @@ ExecuteEnum::ExecuteEnum(const ExecuteEnum & other_enum)
 {
 }
 
-// Private constuctor for use by libmesh::Parameters
 ExecuteEnum::ExecuteEnum() {}
 
 void
@@ -65,4 +65,10 @@ ExecuteEnum::getDocString()
   doc.erase(doc.end()-5, doc.end());
   doc += "\").";
   return doc;
+}
+
+const std::set<std::string> &
+ExecuteEnum::current() const
+{
+  return _current_names;
 }
