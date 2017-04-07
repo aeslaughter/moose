@@ -57,7 +57,7 @@ public:
   virtual void subdomainSetup();
 
   /**
-   * Get the execution flag for the object
+   * Returns a list of the current execution flag(s).
    */
   virtual const std::vector<ExecFlagType> & execFlags() const;
 

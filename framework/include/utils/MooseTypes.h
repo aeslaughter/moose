@@ -138,6 +138,17 @@ const BoundaryID ANY_BOUNDARY_ID = static_cast<BoundaryID>(-1);
 const BoundaryID INVALID_BOUNDARY_ID = libMesh::BoundaryInfo::invalid_id;
 
 /**
+ * Returns the default 'execute_on' settings available
+ * @return A ExecuteEnum with the available 'execute_on' options, the default is 'linear'
+ */
+ExecuteEnum getExecuteOptions(const std::string & default_names = EXEC_LINEAR);
+
+/**
+ * Returns the doc string for the available execute_on options.
+ */
+std::string getExecuteOptionsDocString(const ExecuteEnum & exec_enum);
+
+/**
  * MaterialData types
  *
  * @see FEProblemBase, MaterialPropertyInterface

@@ -15,6 +15,7 @@
 #include "AddNodalNormalsAction.h"
 #include "FEProblem.h"
 #include "Factory.h"
+#include "ExecuteEnum.h"
 
 #include "libmesh/fe.h"
 #include "libmesh/string_to_enum.h"

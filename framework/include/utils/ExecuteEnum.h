@@ -25,6 +25,7 @@ class ExecuteEnum : public MultiMooseEnum
 {
 public:
   ExecuteEnum(std::string names, std::string default_names);
+  ExecuteEnum(std::vector<std::string> names, std::string default_names);
 
   /**
    * Adds an additional possible enumeration value.
@@ -48,6 +49,17 @@ public:
   ExecuteEnum & operator=(const std::vector<std::string> & names);
   ExecuteEnum & operator=(const std::set<std::string> & names);
   ///@}
+
+  // InputParameters and Output is allowed to create an empty enum but is responsible for
+  // filling it in after the fact
+  friend class libMesh::Parameters;
+
+private:
+
+  /**
+   * Private constructor for use by libmesh::Parameters
+   */
+  ExecuteEnum();
 
 };
 

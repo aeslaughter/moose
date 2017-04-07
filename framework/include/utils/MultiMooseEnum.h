@@ -174,6 +174,7 @@ public:
   // InputParameters and Output is allowed to create an empty enum but is responsible for
   // filling it in after the fact
   friend class libMesh::Parameters;
+  friend class ExecuteEnum;
 
   /// Operator for printing to iostreams
   friend std::ostream & operator<<(std::ostream & out, const MultiMooseEnum & obj);
