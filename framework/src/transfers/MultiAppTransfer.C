@@ -94,7 +94,7 @@ MultiAppTransfer::variableIntegrityCheck(const AuxVariableName & var_name) const
       mooseError("Cannot find variable ", var_name, " for ", name(), " Transfer");
 }
 
-const std::vector<ExecFlagType> &
+const std::set<ExecFlagType> &
 MultiAppTransfer::execFlags() const
 {
   if (Transfer::execFlags().empty())

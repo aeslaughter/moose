@@ -15,6 +15,7 @@
 #include "SetupInterface.h"
 #include "Conversion.h"
 #include "FEProblem.h"
+#include "ExecuteEnum.h"
 
 template <>
 InputParameters
@@ -23,28 +24,29 @@ validParams<SetupInterface>()
   InputParameters params = emptyInputParameters();
 
   // Get an MooseEnum of the available 'execute_on' options
-  MultiMooseEnum execute_options(SetupInterface::getExecuteOptions());
+  ExecuteEnum execute_options(Moose::getExecuteOptions(EXEC_LINEAR));
+  std::string exec_doc = Moose::getExecuteOptionsDocString(execute_options);
 
   // Add the 'execute_on' input parameter for users to set
-  params.addParam<MultiMooseEnum>("execute_on",
-                                  execute_options,
-                                  "Set to (nonlinear|linear|timestep_end|timestep_begin|custom) "
-                                  "to execute only at that moment");
+  params.addParam<ExecuteEnum>("execute_on", execute_options, exec_doc);
 
   // The Output system uses different options for the 'execute_on' than other systems, therefore the
   // check of the options
   // cannot occur based on the 'execute_on' parameter, so this flag triggers the check
-  params.addPrivateParam<bool>("check_execute_on", true);
+//  params.addPrivateParam<bool>("check_execute_on", true);
 
   return params;
 }
 
 SetupInterface::SetupInterface(const MooseObject * moose_object)
-  : _current_execute_flag(
+  : _exec_enum(moose_object->parameters().get<ExecuteEnum>("execute_on")),
+    _exec_flags(_exec_enum.begin(), _exec_enum.end()),
+    _current_execute_flag(
         (moose_object->parameters().getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
             ->getCurrentExecuteOnFlag())
 {
-  const InputParameters & params = moose_object->parameters();
+
+  //const InputParameters & params = moose_object->parameters();
 
   /**
    * While many of the MOOSE systems inherit from this interface, it doesn't make sense for them all
@@ -53,14 +55,17 @@ SetupInterface::SetupInterface(const MooseObject * moose_object)
    * valid params to their own.  In
    * those cases it won't exist so we just set it to a default and ignore it.
    */
+
+  /*
   if (params.have_parameter<bool>("check_execute_on") && params.get<bool>("check_execute_on"))
   {
-    MultiMooseEnum flags = params.get<MultiMooseEnum>("execute_on");
+    MultiMooseEnum flags = params.get<ExecuteEnum>("execute_on");
     _exec_flags = Moose::vectorStringsToEnum<ExecFlagType>(flags);
   }
 
   else
     _exec_flags.push_back(EXEC_LINEAR);
+  */
 }
 
 SetupInterface::~SetupInterface() {}

@@ -20,6 +20,7 @@
 #include "ActionFactory.h"
 #include "Output.h"
 #include "OutputWarehouse.h"
+#include "ExecuteEnum.h"
 
 // Extrnal includes
 #include "tinydir.h"
@@ -99,11 +100,9 @@ validParams<CommonOutputAction>()
       "(may include Variables, ScalarVariables, and Postprocessor names).");
 
   // Add the 'execute_on' input parameter
-  params.addParam<MultiMooseEnum>(
-      "execute_on",
-      Output::getExecuteOptions("initial timestep_end"),
-      "Set to (initial|linear|nonlinear|timestep_end|timestep_begin|final|failed|custom) to "
-      "execute only at that moment (default: 'initial timestep_end')");
+  ExecuteEnum exec_enum = Moose::getExecuteOptions("initial timestep_end");
+  std::string exec_doc = Moose::getExecuteOptionsDocString(exec_enum);
+  params.addParam<ExecuteEnum>("execute_on", exec_enum, exec_doc);
 
   // Add special Console flags
   params.addParam<bool>(
