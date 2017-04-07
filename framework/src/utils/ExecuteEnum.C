@@ -20,6 +20,14 @@ ExecuteEnum::ExecuteEnum(std::string names, std::string default_names)
 {
 }
 
+ExecuteEnum::ExecuteEnum(const ExecuteEnum & other_enum)
+  : MultiMooseEnum(other_enum)
+{
+}
+
+// Private constuctor for use by libmesh::Parameters
+ExecuteEnum::ExecuteEnum() {}
+
 void
 ExecuteEnum::extend(const std::string & name)
 {

@@ -39,7 +39,7 @@ validParams<SetupInterface>()
 }
 
 SetupInterface::SetupInterface(const MooseObject * moose_object)
-  : _execute_enum(moose_object->parameters().get<ExecuteEnum>("execute_on")),
+  : //_execute_enum(moose_object->parameters().get<ExecuteEnum>("execute_on")),
     _current_execute_flag(
         (moose_object->parameters().getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
             ->getCurrentExecuteOnFlag())

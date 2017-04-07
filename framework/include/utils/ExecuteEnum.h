@@ -25,6 +25,7 @@ class ExecuteEnum : public MultiMooseEnum
 {
 public:
   ExecuteEnum(std::string names, std::string default_names);
+  ExecuteEnum(const ExecuteEnum & other_enum);
 
   /**
    * Adds an additional possible enumeration value.
@@ -54,6 +55,15 @@ public:
    */
   std::string getDocString();
 
+  // InputParameters is allowed to create an empty enum but is must fill it in after the fact
+  friend class libMesh::Parameters;
+
+private:
+
+  /**
+   * Private constructor for use by libmesh::Parameters
+   */
+  ExecuteEnum();
 };
 
 #endif

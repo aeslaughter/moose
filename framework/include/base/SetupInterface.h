@@ -76,7 +76,7 @@ public:
 protected:
 
   /// Execute settings for this object.
-  const ExecuteEnum & _execute_enum;
+//  const ExecuteEnum & _execute_enum;
 
   /// execution flag (when is the object executed/evaluated)
   std::vector<ExecFlagType> _exec_flags;
