@@ -32,6 +32,15 @@ MultiMooseEnum::MultiMooseEnum(std::string names,
   *this = default_names;
 }
 
+MultiMooseEnum::MultiMooseEnum(std::vector<std::string> names,
+                               std::string default_names,
+                               bool allow_out_of_range)
+  : MooseEnumBase(names, allow_out_of_range)
+{
+  *this = default_names;
+}
+
+
 MultiMooseEnum::MultiMooseEnum(const MultiMooseEnum & other_enum)
   : MooseEnumBase(other_enum),
     _current_ids(other_enum._current_ids),

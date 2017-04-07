@@ -27,6 +27,8 @@
 class MooseEnumBase
 {
 public:
+
+  ///@{
   /**
    * Constructor that takes a list of enumeration values, and a
    * separate string to set a default for this instance.
@@ -35,6 +37,8 @@ public:
    *                             it's range of defined values.
    */
   MooseEnumBase(std::string names, bool allow_out_of_range = false);
+  MooseEnumBase(std::vector<std::string> names, bool allow_out_of_range = false);
+  ///@}
 
   /**
    * Copy Constructor for use when creating vectors of MooseEnumBases

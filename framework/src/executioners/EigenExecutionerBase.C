@@ -433,6 +433,7 @@ EigenExecutionerBase::normalizeSolution(bool force)
     factor = _eigenvalue;
   Real scaling = factor / _normalization;
 
+  /*
   if (!MooseUtils::absoluteFuzzyEqual(scaling, 1.0))
   {
     // FIXME: we assume linear scaling here!
@@ -447,6 +448,7 @@ EigenExecutionerBase::normalizeSolution(bool force)
       _problem.execute(Moose::exec_types[i]);
     }
   }
+  */
   return scaling;
 }
 

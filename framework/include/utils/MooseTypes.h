@@ -29,6 +29,9 @@
 #include <vector>
 #include <memory>
 
+// Forward Declarations
+class MultiMooseEnum;
+
 // DO NOT USE (Deprecated)
 #define MooseSharedPointer std::shared_ptr
 #define MooseSharedNamespace std
@@ -83,52 +86,18 @@ typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
 typedef std::string ExecFlagType;
+const ExecFlagType EXEC_NONE("NONE");
+const ExecFlagType EXEC_INITIAL("INITIAL");
+const ExecFlagType EXEC_LINEAR("LINEAR");
+const ExecFlagType EXEC_NONLINEAR("NONLINEAR");
+const ExecFlagType EXEC_TIMESTEP_END("TIMESTEP_END");
+const ExecFlagType EXEC_TIMESTEP_BEGIN("TIMESTEP_BEGIN");
+const ExecFlagType EXEC_FINAL("FINAL");
+const ExecFlagType EXEC_FORCED("FORCED");
+const ExecFlagType EXEC_FAILED("FAILED");
+const ExecFlagType EXEC_CUSTOM("CUSTOM");
+const ExecFlagType EXEC_SUBDOMAIN("SUBDOMAIN");
 
-
-const ExecFlagType EXEC_NONE("none");
-const ExecFlagType EXEC_INITIAL("initial");
-const ExecFlagType EXEC_LINEAR("linear");
-const ExecFlagType EXEC_NONLINEAR("nonlinear");
-const ExecFlagType EXEC_TIMESTEP_END("timestep_end");
-const ExecFlagType EXEC_TIMESTEP_BEGIN("timestep_begin");
-const ExecFlagType EXEC_FINAL("final");
-const ExecFlagType EXEC_FORCED("forced");
-const ExecFlagType EXEC_FAILED("failed");
-const ExecFlagType EXEC_CUSTOM("custom");
-const ExecFlagType EXEC_SUBDOMAIN("subdomain");
-
-/// Execution flags - when is the object executed/evaluated
-// Note: If this enum is changed, make sure to modify:
-//   (1) the local function populateExecTypes in MooseTypes.C.
-//   (2) the function in Conversion.C: initExecStoreType()
-//   (3) the method SetupInterface::getExecuteOptions
-//   (4) the function Output::getExecuteOptionss
-/*
-enum ExecFlagType
-{
-  EXEC_NONE = 0x00, // 0
-  /// Object is evaluated only once at the beginning of the simulation
-  EXEC_INITIAL = 0x01, // 1
-  /// Object is evaluated in every residual computation
-  EXEC_LINEAR = 0x02, // 2
-  /// Object is evaluated in every jacobian computation
-  EXEC_NONLINEAR = 0x04, // 4
-  /// Object is evaluated at the end of every time step
-  EXEC_TIMESTEP_END = 0x08, // 8
-  /// Object is evaluated at the beginning of every time step
-  EXEC_TIMESTEP_BEGIN = 0x10, // 16
-  /// Object is evaluated at the end of the simulations
-  EXEC_FINAL = 0x20, // 32
-  /// Forces execution to occur (output only)
-  EXEC_FORCED = 0x40, // 64
-  /// Forces execution on failed solve (output only)
-  EXEC_FAILED = 0x80, // 128
-  /// For use with custom executioners that want to fire objects at a specific time
-  EXEC_CUSTOM = 0x100, // 256
-  /// Objects is evaluated on subdomain
-  EXEC_SUBDOMAIN = 0x200 // 512
-};
-*/
 
 namespace Moose
 {
@@ -136,6 +105,7 @@ const SubdomainID ANY_BLOCK_ID = libMesh::Elem::invalid_subdomain_id - 1;
 const SubdomainID INVALID_BLOCK_ID = libMesh::Elem::invalid_subdomain_id;
 const BoundaryID ANY_BOUNDARY_ID = static_cast<BoundaryID>(-1);
 const BoundaryID INVALID_BOUNDARY_ID = libMesh::BoundaryInfo::invalid_id;
+
 
 /**
  * MaterialData types
@@ -159,11 +129,6 @@ enum AuxGroup
   POST_AUX = 1,
   ALL = 2
 };
-
-/**
- * A static list of all the exec types.
- */
-extern const std::vector<ExecFlagType> exec_types;
 
 /**
  * Framework-wide stuff

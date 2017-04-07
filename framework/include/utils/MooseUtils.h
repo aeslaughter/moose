@@ -32,6 +32,7 @@ namespace libMesh
 {
 class Elem;
 }
+class MultiMooseEnum;
 
 namespace MooseUtils
 {
@@ -382,6 +383,23 @@ tokenizeAndConvert(const std::string & str,
   }
   return true;
 }
+
+
+/**
+ * Return the default execute_on MultiMooseEnum.
+ * @params default_names Space separated list to set the default execute flags.
+ */
+MultiMooseEnum createExecuteOnEnum(const std::string & default_flags = EXEC_LINEAR);
+
+/**
+ * Return a documentation string with the available and default execute_on options.
+ */
+std::string getExecuteOnDocString(const MultiMooseEnum & exec_enum);
+
+
+
 }
+
+
 
 #endif // MOOSEUTILS_H

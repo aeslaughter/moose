@@ -40,6 +40,13 @@ MooseEnumBase::MooseEnumBase(std::string names, bool allow_out_of_range)
     fillNames(names);
 }
 
+MooseEnumBase::MooseEnumBase(std::vector<std::string> names, bool allow_out_of_range)
+  : _out_of_range_index(allow_out_of_range ? INVALID_ID + 1 : 0)
+{
+  for (const std::string & raw_name : names)
+    addEnumerationName(raw_name);
+}
+
 MooseEnumBase::MooseEnumBase(const MooseEnumBase & other_enum)
   : _names(other_enum._names),
     _raw_names(other_enum._raw_names),
@@ -72,10 +79,7 @@ void
 MooseEnumBase::fillNames(std::string names, std::string option_delim)
 {
   std::vector<std::string> elements;
-  // split on spaces
   MooseUtils::tokenize(names, elements, 1, option_delim);
-
-  _names.clear();
   for (const std::string & raw_name : elements)
     addEnumerationName(raw_name);
 }
@@ -109,7 +113,6 @@ MooseEnumBase::addEnumerationName(const std::string & raw_name)
   // There should be one or two items in the name_value
   if (name_value.size() < 1 || name_value.size() > 2)
     mooseError("Invalid option supplied in MooseEnumBase: ", raw_name);
-
 
   // Remove un-wanted space around string
   name_value[0] = MooseUtils::trim(name_value[0]);

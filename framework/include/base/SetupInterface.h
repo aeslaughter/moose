@@ -57,6 +57,11 @@ public:
   virtual void subdomainSetup();
 
   /**
+   * Return the execute on MultiMooseEnum for this object.
+   */
+  const MultiMooseEnum & getExecuteOnEnum() const;
+
+  /**
    * Get the execution flag for the object
    */
   virtual const std::vector<ExecFlagType> & execFlags() const;
@@ -64,7 +69,7 @@ public:
   /**
    * Build and return the execution flags as a bitfield
    */
-  //ExecFlagType execBitFlags() const;
+  ExecFlagType execBitFlags() const;
 
   /**
    * Returns the available options for the 'execute_on' input parameters
@@ -72,9 +77,19 @@ public:
    */
   static MultiMooseEnum getExecuteOptions();
 
+
+
+private:
+
+  MultiMooseEnum _empty_execute_enum;
+
 protected:
-  /// execution flag (when is the object executed/evaluated)
-  std::vector<ExecFlagType> _exec_flags;
+
+  const MultiMooseEnum & _execute_enum;
+
+
+  /// execution flag (when is the object executed/evaluated) (deprecated)
+  const std::vector<ExecFlagType> _exec_flags;
 
   /// Reference to FEProblemBase
   const ExecFlagType & _current_execute_flag;
