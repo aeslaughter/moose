@@ -28,12 +28,14 @@ ExecuteEnum getExecuteOptions(const std::string & default_names)
 
 std::string getExecuteOptionsDocString(const ExecuteEnum & exec_enum)
 {
-  std::string doc("List the flag(s) when the object should executed (");
+  std::string doc("The list of flag(s) indicating when the object should executed (");
   for (const auto & name : exec_enum.getNames())
-    doc += name + ' V ';
-  std::earse(doc.end()-3, doc.end());
-  doc + ').';
+    doc += name + " V ";
+  doc.erase(doc.end()-3, doc.end());
+  doc + ").";
   return doc;
 }
+
+const std::vector<ExecFlagType> exec_types = getExecuteOptions().getNames();
 
 }

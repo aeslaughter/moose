@@ -52,10 +52,10 @@ validParams<Output>()
       "time_tolerance", 1e-14, "Time tolerance utilized checking start and end times");
 
   // Add the 'execute_on' input parameter for users to set
-  ExecuteEnum & exec_enum = params.get<ExecuteEnum>("execute_on");
+  ExecuteEnum & exec_enum = params.set<ExecuteEnum>("execute_on");
   exec_enum.extend("final failed");
   exec_enum = "initial timestep_end";
-  params.setDocString("execute_on", Moose::getExecuteOptionsDocString(exe_enum));
+  params.setDocString("execute_on", Moose::getExecuteOptionsDocString(exec_enum));
 
   // 'Timing' group
   params.addParamNamesToGroup("time_tolerance interval sync_times sync_only start_time end_time ",

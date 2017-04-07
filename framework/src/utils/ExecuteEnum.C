@@ -22,13 +22,13 @@ ExecuteEnum::ExecuteEnum(std::string names, std::string default_names)
 }
 
 ExecuteEnum::ExecuteEnum(std::vector<std::string> names, std::string default_names)
-  : MultiMooseEnum(names, default_names)
+  : MultiMooseEnum("", default_names)
 {
   for (const std::string & raw_name : names)
     addEnumerationName(raw_name);
 }
 
-ExecuteEnum::ExecuteEnum(){}
+ExecuteEnum::ExecuteEnum() : MultiMooseEnum(){}
 
 void
 ExecuteEnum::extend(const std::string & names)

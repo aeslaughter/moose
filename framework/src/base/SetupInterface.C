@@ -24,7 +24,7 @@ validParams<SetupInterface>()
   InputParameters params = emptyInputParameters();
 
   // Get an MooseEnum of the available 'execute_on' options
-  ExecuteEnum execute_options(Moose::getExecuteOptions());
+  ExecuteEnum execute_options(Moose::getExecuteOptions(EXEC_LINEAR));
   std::string exec_doc = Moose::getExecuteOptionsDocString(execute_options);
 
   // Add the 'execute_on' input parameter for users to set
@@ -95,8 +95,19 @@ SetupInterface::subdomainSetup()
 {
 }
 
-const std::vector<ExecFlagType> &
+const std::set<ExecFlagType> &
 SetupInterface::execFlags() const
 {
   return _exec_flags;
+}
+
+MultiMooseEnum
+SetupInterface::getExecuteOptions()
+{
+  mooseDeprecated("The used of a MultiMooseEnum for the \"execute_on\" settings is deprecated.\n",
+                  "The code should be updated to utilize a ExecuteEnum and the "
+                  "Moose::getExecuteOptions() defined in MooseTypes.h/C.");
+  return MultiMooseEnum("none=0x00 initial=0x01 linear=0x02 nonlinear=0x04 timestep_end=0x08 "
+                        "timestep_begin=0x10 custom=0x100",
+                        "linear");
 }

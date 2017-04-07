@@ -61,6 +61,12 @@ public:
    */
   const std::set<ExecFlagType> & execFlags() const;
 
+  /**
+   * Returns the available options for the 'execute_on' input parameters
+   * @return A MooseEnum with the available 'execute_on' options, the default is 'residual'
+   */
+   static MultiMooseEnum getExecuteOptions();
+
 protected:
   /// execution flag (when is the object executed/evaluated)
   const ExecuteEnum & _exec_enum;
