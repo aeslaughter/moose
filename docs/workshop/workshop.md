@@ -2,4 +2,4 @@
 
 ---
 
-{!docs/workshop/overview.md!}
+!include docs/workshop/overview.md

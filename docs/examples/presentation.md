@@ -41,7 +41,7 @@ Complete source code and snippets are available.
 ## Include Markdown
 You can include other markdown files.
 
-{!docs/examples/presentation-include.md!}
+!include docs/examples/presentation-include.md
 
 ---
 

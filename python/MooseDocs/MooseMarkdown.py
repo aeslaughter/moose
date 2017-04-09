@@ -23,7 +23,7 @@ class MooseMarkdown(markdown.Markdown):
         self.current = None
 
         # Add the required packages
-        extensions += ['toc', 'smarty', 'admonition', 'extra', 'meta', 'mdx_math', 'markdown_include.include']
+        extensions += ['toc', 'smarty', 'admonition', 'extra', 'meta', 'mdx_math']
 
         # Configure packages
         for config in ['mdx_math', 'markdown_include.include']:
@@ -40,6 +40,7 @@ class MooseMarkdown(markdown.Markdown):
         Args:
             content[str]: A markdown file or markdown content.
         """
+        self.current = None
         if isinstance(node, MooseDocsMarkdownNodeBase):
             with open(node.source(), 'r') as fid:
                 md = fid.read().decode('utf-8')

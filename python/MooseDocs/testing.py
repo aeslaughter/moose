@@ -84,6 +84,14 @@ class MarkdownTestCase(unittest.TestCase):
         """
         return self.parser.convert(md)
 
+    def assertMarkdown(self, md, gold):
+        """
+        Convert the supplied markdown and compare the supplied gold.
+        """
+        html = self.parser.convert(md)
+        print ('\n{:>15}: {}'*3).format('MARKDOWN', repr(md), 'HTML', repr(html), 'HTMLs (GOLD)', repr(gold))
+        self.assertEqual(html, gold, text_diff(html.splitlines(), gold.splitlines()))
+
     def assertTextFile(self, name):
         """
         Assert method for comparing converted html (text) against the text in gold file.

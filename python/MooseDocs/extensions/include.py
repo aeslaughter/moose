@@ -1,5 +1,5 @@
 """
-Syntax for including MOOSE source and input files.
+Syntax for including MOOSE source, input, and markdown files.
 """
 import re
 import os
@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
+from markdown.preprocessors import Preprocessor
 from markdown.util import etree
 
 import MooseDocs
@@ -38,6 +39,7 @@ class IncludeExtension(markdown.Extension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
+        md.preprocessors.add('moose_markdown_include', MarkdownPreprocessor(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_input_block', InputPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_cpp_method', ClangPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_text', TextPattern(markdown_instance=md, **config), '_begin')
@@ -190,6 +192,7 @@ class TextPattern(TextPatternBase):
         filename = MooseDocs.abspath(rel_filename)
         if not os.path.exists(filename):
             return self.createErrorElement("Unable to locate file: {}".format(rel_filename))
+
         if settings['line']:
             content = self.extractLine(filename, settings["line"])
 
@@ -207,7 +210,8 @@ class TextPattern(TextPatternBase):
         el = self.createElement(match.group(2), content, filename, rel_filename, settings)
         return el
 
-    def extractLine(self, filename, desired):
+    @staticmethod
+    def extractLine(filename, desired):
         """
         Function for returning a single line.
 
@@ -227,7 +231,8 @@ class TextPattern(TextPatternBase):
 
         return content
 
-    def extractLineRange(self, filename, start, end, include_end):
+    @staticmethod
+    def extractLineRange(filename, start, end, include_end):
         """
         Function for extracting content between start/end strings.
 
@@ -366,3 +371,54 @@ class ClangPattern(TextPatternBase):
 
         # Return the Element object
         return el
+
+class MarkdownPreprocessor(MooseCommonExtension, Preprocessor):
+    """
+    An recursive include command for including a markdown file from within another. This adds the ability
+    to specify start/end string to include only portions for the markdown.
+    """
+
+    RE = r'^!include\s+(.*?)(?:$|\s+)(.*)'
+
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
+        settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
+        settings['include_end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
+        return settings
+
+    def __init__(self, *args, **kwargs):
+        super(MarkdownPreprocessor, self).__init__(*args, **kwargs)
+        self._found = False
+
+    def replace(self, match):
+        """
+        Substitution function for the re.sub function.
+        """
+        filename = MooseDocs.abspath(match.group(1))
+        settings = self.getSettings(match.group(2))
+        if not os.path.exists(filename):
+            log.error("Unknown markdown file to include: {}".format(filename))
+            return match.group(0)
+        else:
+            if settings['start'] or settings['end']:
+                content = TextPattern.extractLineRange(filename, settings['start'], settings['end'], settings['include_end'])
+            else:
+                with open(filename, 'r') as fid:
+                    content = fid.read()
+            self._found = True
+            return content
+
+    def run(self, lines):
+        """
+        Recursive markdown replacement.
+        """
+        content = '\n'.join(lines)
+        match = True
+        while(match):
+            self._found = False
+            content = re.sub(self.RE, self.replace, content, flags=re.MULTILINE)
+            if not self._found:
+                break
+        return content.splitlines()

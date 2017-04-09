@@ -1,6 +1,6 @@
 # Macintosh OS
 
-{!docs/content/getting_started/minimum_requirements.md!}
+!include docs/content/getting_started/minimum_requirements.md
 
 ---
 ## Pre-Reqs
@@ -15,6 +15,6 @@
 !!! note
     If you have any opened terminals at this point, you will need to close them, and re-open them in order to use the MOOSE environment. The following instructions will ultimately fail if you do not.
 
-{!docs/content/getting_started/installation/clone_moose.md!}
-{!docs/content/getting_started/installation/build_libmesh.md!}
-{!docs/content/getting_started/installation/conclusion.md!}
+!include docs/content/getting_started/installation/clone_moose.md
+!include docs/content/getting_started/installation/build_libmesh.md
+!include docs/content/getting_started/installation/conclusion.md
