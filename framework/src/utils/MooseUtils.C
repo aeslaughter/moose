@@ -564,10 +564,12 @@ createExecuteOnEnum(const std::string & default_flags,
                                   EXEC_TIMESTEP_END,
                                   EXEC_TIMESTEP_BEGIN,
                                   EXEC_CUSTOM};
+
   if (!add_flags.empty())
   {
     std::vector<std::string> add;
     MooseUtils::tokenize(add_flags, add, 1, " ");
+    MooseUtils::upper(add);
     flags.insert(add.begin(), add.end());
   }
 
@@ -575,6 +577,7 @@ createExecuteOnEnum(const std::string & default_flags,
   {
     std::vector<std::string> erase;
     MooseUtils::tokenize(remove_flags, erase, 1, " ");
+    MooseUtils::upper(erase);
     for (const std::string & name : erase)
     {
       std::set<std::string>::const_iterator iter = flags.find(name);
@@ -582,7 +585,7 @@ createExecuteOnEnum(const std::string & default_flags,
         flags.erase(iter);
       else
         mooseWarning("The execute on flag '", name, "' does not exist within the available "
-                                                    "enumeration values this it cannot be "
+                                                    "enumeration values thus it cannot be "
                                                     "removed.");
     }
   }
