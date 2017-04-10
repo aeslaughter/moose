@@ -328,4 +328,5 @@ MooseEnumTest::testExecuteEnum()
 
   // try catch on id
   // add/remove enumeration name and error checks for remove
+  // doc string
 }
