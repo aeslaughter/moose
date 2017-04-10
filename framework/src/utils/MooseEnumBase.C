@@ -40,13 +40,6 @@ MooseEnumBase::MooseEnumBase(std::string names, bool allow_out_of_range)
     fillNames(names);
 }
 
-MooseEnumBase::MooseEnumBase(std::set<std::string> names, bool allow_out_of_range)
-  : _out_of_range_index(allow_out_of_range ? INVALID_ID + 1 : 0)
-{
-  for (const std::string & raw_name : names)
-    addEnumerationName(raw_name);
-}
-
 MooseEnumBase::MooseEnumBase(const MooseEnumBase & other_enum)
   : _names(other_enum._names),
     _raw_names(other_enum._raw_names),
@@ -82,6 +75,21 @@ MooseEnumBase::fillNames(std::string names, std::string option_delim)
   MooseUtils::tokenize(names, elements, 1, option_delim);
   for (const std::string & raw_name : elements)
     addEnumerationName(raw_name);
+}
+
+void
+MooseEnumBase::addEnumerationNames(const std::string & names)
+{
+  fillNames(names);
+}
+
+void
+MooseEnumBase::removeEnumerationNames(const std::string & names)
+{
+  std::vector<std::string> elements;
+  MooseUtils::tokenize(names, elements, 1, " ");
+  for (const std::string & raw_name : elements)
+    removeEnumerationName(raw_name);
 }
 
 void
@@ -121,7 +129,6 @@ MooseEnumBase::addEnumerationName(const std::string & raw_name)
   if (!_raw_names.empty())
     _raw_names += " ";
   _raw_names += name_value[0];
-
 
   // See if there is a value supplied for this option
   // strtol allows for proper conversions of both int and hex strings

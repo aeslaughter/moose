@@ -28,7 +28,6 @@ class MooseEnumBase
 {
 public:
 
-  ///@{
   /**
    * Constructor that takes a list of enumeration values, and a
    * separate string to set a default for this instance.
@@ -37,8 +36,6 @@ public:
    *                             it's range of defined values.
    */
   MooseEnumBase(std::string names, bool allow_out_of_range = false);
-  MooseEnumBase(std::set<std::string> names, bool allow_out_of_range = false);
-  ///@}
 
   /**
    * Copy Constructor for use when creating vectors of MooseEnumBases
@@ -84,6 +81,19 @@ public:
   int id(std::string name) const;
 
   /**
+   * Adds possible enumeration names.
+   */
+  void addEnumerationNames(const std::string & names);
+
+  /**
+   * Removes possible enumeration names.
+   */
+  void removeEnumerationNames(const std::string & names);\
+
+protected:
+  MooseEnumBase();
+
+  /**
    * Adds a possible enumeration value to the enum.
    * @param raw_name The enumeration name, which may include an id (e.g., foo=42).
    */
@@ -94,9 +104,6 @@ public:
    * @param name The enumeration name to remove.
    */
   virtual void removeEnumerationName(std::string name);
-
-protected:
-  MooseEnumBase();
 
   /**
    * Populates the _names vector

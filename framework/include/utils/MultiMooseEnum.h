@@ -42,7 +42,7 @@ typedef std::set<std::string>::const_iterator MooseEnumIterator;
 class MultiMooseEnum : public MooseEnumBase
 {
 public:
-  ///@{
+
   /**
    * Constructor that takes a list or vector of enumeration values, and a separate string to set a
    * default for this instance
@@ -53,13 +53,8 @@ public:
    */
   MultiMooseEnum(std::string names,
                  std::string default_names = "",
-                 bool allow_out_of_range = false);
-
-
-  MultiMooseEnum(std::set<std::string> names,
-                 std::string default_names = "",
-                 bool allow_out_of_range = false);
-  ///@}
+                 bool allow_out_of_range = false,
+               bool bitwise_flags = false);
 
   /**
    * Copy Constructor
