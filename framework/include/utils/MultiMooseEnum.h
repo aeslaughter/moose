@@ -53,8 +53,7 @@ public:
    */
   MultiMooseEnum(std::string names,
                  std::string default_names = "",
-                 bool allow_out_of_range = false,
-               bool bitwise_flags = false);
+                 bool allow_out_of_range = false);
 
   /**
    * Copy Constructor

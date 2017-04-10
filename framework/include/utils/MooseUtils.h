@@ -386,7 +386,7 @@ tokenizeAndConvert(const std::string & str,
 
 
 /**
- * Return the default execute_on MultiMooseEnum.
+ * Returns the default execute_on MultiMooseEnum.
  * @params default_names Space separated list to set the default execute flags.
  * @params add_flags Enumeration values to add to the possible execute flags.
  * @params remove_flags Enumeration values to extract from the possible execute flags.
