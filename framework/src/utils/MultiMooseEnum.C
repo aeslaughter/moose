@@ -32,7 +32,7 @@ MultiMooseEnum::MultiMooseEnum(std::string names,
   *this = default_names;
 }
 
-MultiMooseEnum::MultiMooseEnum(std::vector<std::string> names,
+MultiMooseEnum::MultiMooseEnum(std::set<std::string> names,
                                std::string default_names,
                                bool allow_out_of_range)
   : MooseEnumBase(names, allow_out_of_range)

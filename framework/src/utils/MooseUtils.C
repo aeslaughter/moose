@@ -552,22 +552,52 @@ wildCardMatch(std::string name, std::string search_string)
     return false;
 }
 
-
 MultiMooseEnum
-createExecuteOnEnum(const std::string & default_flags)
+createExecuteOnEnum(const std::string & default_flags,
+                    const std::string & add_flags,
+                    const std::string & remove_flags)
 {
-  std::vector<ExecFlagType> vec = {EXEC_NONE, EXEC_INITIAL, EXEC_LINEAR, EXEC_NONLINEAR,
-                                   EXEC_TIMESTEP_END, EXEC_TIMESTEP_BEGIN, EXEC_CUSTOM};
-  return MultiMooseEnum(vec, default_flags);
+  std::set<ExecFlagType> flags = {EXEC_NONE,
+                                  EXEC_INITIAL,
+                                  EXEC_LINEAR,
+                                  EXEC_NONLINEAR,
+                                  EXEC_TIMESTEP_END,
+                                  EXEC_TIMESTEP_BEGIN,
+                                  EXEC_CUSTOM};
+
+  if (!add_flags.empty())
+  {
+    std::vector<std::string> add;
+    MooseUtils::tokenize(add_flags, add, 1, " ");
+    flags.insert(add.begin(), add.end());
+  }
+
+  if (!remove_flags.empty())
+  {
+    std::vector<std::string> erase;
+    MooseUtils::tokenize(remove_flags, erase, 1, " ");
+    for (const std::string & name : erase)
+    {
+      std::set<std::string>::const_iterator iter = flags.find(name);
+      if (iter != flags.end())
+        flags.erase(iter);
+      else
+        mooseWarning("The execute on flag '", name, "' does not exist within the available "
+                                                    "enumeration values this it cannot be "
+                                                    "removed.");
+    }
+  }
+
+  return MultiMooseEnum(flags, default_flags);
 }
 
 std::string
-getExecuteOnDocString(const MultiMooseEnum & exec_enum)
+getExecuteOnEnumDocString(const MultiMooseEnum & exec_enum)
 {
   std::string doc("The list of flag(s) indicating when this object should be executed (\"");
   for (const std::string & name : exec_enum.getNames())
     doc += name + "\" V \"";
-  doc.erase(doc.end()-5, doc.end());
+  doc.erase(doc.end() - 5, doc.end());
   doc += "\").";
   return doc;
 }

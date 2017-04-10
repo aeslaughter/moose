@@ -37,7 +37,7 @@ public:
    *                             it's range of defined values.
    */
   MooseEnumBase(std::string names, bool allow_out_of_range = false);
-  MooseEnumBase(std::vector<std::string> names, bool allow_out_of_range = false);
+  MooseEnumBase(std::set<std::string> names, bool allow_out_of_range = false);
   ///@}
 
   /**

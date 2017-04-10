@@ -40,7 +40,7 @@ MooseEnumBase::MooseEnumBase(std::string names, bool allow_out_of_range)
     fillNames(names);
 }
 
-MooseEnumBase::MooseEnumBase(std::vector<std::string> names, bool allow_out_of_range)
+MooseEnumBase::MooseEnumBase(std::set<std::string> names, bool allow_out_of_range)
   : _out_of_range_index(allow_out_of_range ? INVALID_ID + 1 : 0)
 {
   for (const std::string & raw_name : names)

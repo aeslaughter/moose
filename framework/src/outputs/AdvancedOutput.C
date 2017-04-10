@@ -538,7 +538,7 @@ AdvancedOutput<T>::initExecutionTypes(const std::string & name, MultiMooseEnum &
   // If the parameter does not exists; set it to a state where no valid entries exists so nothing
   // gets executed
   else if (!T::_pars.template have_parameter<MultiMooseEnum>(param_name))
-    input = AdvancedOutput<T>::getExecuteOptions();
+    input = MooseUtils::createExecuteOnEnum("initial timestep_end");
 }
 
 template <class T>
@@ -668,8 +668,9 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   // Nodal output
   if (types.contains("nodal"))
   {
-    params.addParam<MultiMooseEnum>(
-        "execute_nodal_on", T::getExecuteOptions(), "Control the output of nodal variables");
+    params.addParam<MultiMooseEnum>("execute_nodal_on",
+                                    MooseUtils::createExecuteOnEnum(),
+                                    "Control the output of nodal variables");
     params.addParamNamesToGroup("execute_nodal_on", "Variables");
   }
 
@@ -677,7 +678,7 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   if (types.contains("elemental"))
   {
     params.addParam<MultiMooseEnum>("execute_elemental_on",
-                                    T::getExecuteOptions(),
+                                    MooseUtils::createExecuteOnEnum(),
                                     "Control the output of elemental variables");
     params.addParamNamesToGroup("execute_elemental_on", "Variables");
 
@@ -694,8 +695,9 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   // Scalar variable output
   if (types.contains("scalar"))
   {
-    params.addParam<MultiMooseEnum>(
-        "execute_scalars_on", T::getExecuteOptions(), "Control the output of scalar variables");
+    params.addParam<MultiMooseEnum>("execute_scalars_on",
+                                    MooseUtils::createExecuteOnEnum(),
+                                    "Control the output of scalar variables");
     params.addParamNamesToGroup("execute_scalars_on", "Variables");
   }
 
@@ -718,7 +720,7 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   if (types.contains("postprocessor"))
   {
     params.addParam<MultiMooseEnum>("execute_postprocessors_on",
-                                    T::getExecuteOptions(),
+                                    MooseUtils::createExecuteOnEnum(),
                                     "Control of when postprocessors are output");
     params.addParamNamesToGroup("execute_postprocessors_on", "Variables");
   }
@@ -727,7 +729,7 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   if (types.contains("vector_postprocessor"))
   {
     params.addParam<MultiMooseEnum>("execute_vector_postprocessors_on",
-                                    T::getExecuteOptions(),
+                                    MooseUtils::createExecuteOnEnum(),
                                     "Enable/disable the output of VectorPostprocessors");
     params.addParamNamesToGroup("execute_vector_postprocessors_on", "Variables");
   }
@@ -735,8 +737,9 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   // Input file
   if (types.contains("input"))
   {
-    params.addParam<MultiMooseEnum>(
-        "execute_input_on", T::getExecuteOptions(), "Enable/disable the output of the input file");
+    params.addParam<MultiMooseEnum>("execute_input_on",
+                                    MooseUtils::createExecuteOnEnum(),
+                                    "Enable/disable the output of the input file");
     params.addParamNamesToGroup("execute_input_on", "Variables");
   }
 
@@ -744,7 +747,7 @@ AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum
   if (types.contains("system_information"))
   {
     params.addParam<MultiMooseEnum>("execute_system_information_on",
-                                    T::getExecuteOptions(),
+                                    MooseUtils::createExecuteOnEnum(),
                                     "Control when the output of the simulation information occurs");
     params.addParamNamesToGroup("execute_system_information_on", "Variables");
   }

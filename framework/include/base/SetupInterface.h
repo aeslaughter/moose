@@ -72,7 +72,7 @@ public:
   ExecFlagType execBitFlags() const;
 
   /**
-   * Returns the available options for the 'execute_on' input parameters
+   * (DEPRECATED) Returns the available options for the 'execute_on' input parameters
    * @return A MooseEnum with the available 'execute_on' options, the default is 'residual'
    */
   static MultiMooseEnum getExecuteOptions();

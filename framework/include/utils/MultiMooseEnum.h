@@ -56,7 +56,7 @@ public:
                  bool allow_out_of_range = false);
 
 
-  MultiMooseEnum(std::vector<std::string> names,
+  MultiMooseEnum(std::set<std::string> names,
                  std::string default_names = "",
                  bool allow_out_of_range = false);
   ///@}
