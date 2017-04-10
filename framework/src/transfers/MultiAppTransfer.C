@@ -81,10 +81,11 @@ MultiAppTransfer::variableIntegrityCheck(const AuxVariableName & var_name) const
 const std::vector<ExecFlagType> &
 MultiAppTransfer::execFlags() const
 {
-  if (Transfer::execFlags().empty())
-    return _multi_app->execFlags();
-  else
-    return Transfer::execFlags();
+  mooseDeprecated("MOOSE has been updated to use a MultiMooseEnum for execute flags. The current "
+                  "flags should be retrieved from the \"exeucte_on\" parameters of your object, "
+                  "or by using the \"_execute_enum\" reference to the parameter or the "
+                  "getExecuteOnEnum() method.");
+  return _exec_flags;
 }
 
 void

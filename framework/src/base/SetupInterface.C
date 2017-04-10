@@ -88,16 +88,17 @@ SetupInterface::execFlags() const
 ExecFlagType
 SetupInterface::execBitFlags() const
 {
-  mooseDeprecated("This method has been removed because MOOSE useds a MultiMooseEnum for execute "
-                  "flags. This method does nothing so will likely alter application execution.");
+  mooseDeprecated("This method has been removed because MOOSE was updated to use a MultiMooseEnum "
+                  "for execute flags. This method does nothing so will likely alter application "
+                  "execution.");
   return EXEC_NONE;
 }
 
 MultiMooseEnum
 SetupInterface::getExecuteOptions()
 {
-  mooseDeprecated("Replaced by MooseUtils::getExecuteOnEnum.");
-  return MultiMooseEnum("none=0x00 initial=0x01 linear=0x02 nonlinear=0x04 timestep_end=0x08 "
-                        "timestep_begin=0x10 final=0x20 custom=0x100",
-                        "linear");
+  mooseDeprecated("The getExecuteOptions' was replaced by MooseUtils::createExecuteOnEnum because "
+                  "MOOSE was updated to use a MultiMooseEnum for the execute flags and the "
+                  "new function provides additional arguments for modification of the enum.");
+  return MooseUtils::createExecuteOnEnum();
 }
