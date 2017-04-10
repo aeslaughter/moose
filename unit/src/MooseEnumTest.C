@@ -312,8 +312,6 @@ MooseEnumTest::testExecuteEnum()
 {
   // Create an enum with added and removed flags
   MultiMooseEnum exec_enum = MooseUtils::createExecuteOnEnum("initial", "final=42 failed", "LINEAR");
-
-  std::cout << exec_enum.getRawNames() << std::endl;
   CPPUNIT_ASSERT(exec_enum.getRawNames() == "CUSTOM INITIAL NONE NONLINEAR TIMESTEP_BEGIN TIMESTEP_END failed final");
 
   std::vector<std::string> opts = {"CUSTOM", "INITIAL", "NONE", "NONLINEAR", "TIMESTEP_BEGIN", "TIMESTEP_END", "FAILED", "FINAL"};
@@ -326,4 +324,8 @@ MooseEnumTest::testExecuteEnum()
   CPPUNIT_ASSERT(exec_enum.size() == 1);
   CPPUNIT_ASSERT(exec_enum[0] == "final");
   CPPUNIT_ASSERT(exec_enum.get(0) == 42);
+  CPPUNIT_ASSERT(exec_enum.id("final") == 42);
+
+  // try catch on id
+  // add/remove enumeration name and error checks for remove
 }

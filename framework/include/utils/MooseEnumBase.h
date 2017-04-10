@@ -81,7 +81,19 @@ public:
    * Return the id given a name.
    @return name The name of a valid enumeration.
    */
-  int id(const std::string & name) const;
+  int id(std::string name) const;
+
+  /**
+   * Adds a possible enumeration value to the enum.
+   * @param raw_name The enumeration name, which may include an id (e.g., foo=42).
+   */
+  void addEnumerationName(const std::string & raw_name);
+
+  /**
+   * Remove a possible enumeration value to the enum.
+   * @param name The enumeration name to remove.
+   */
+  virtual void removeEnumerationName(std::string name);
 
 protected:
   MooseEnumBase();
@@ -92,13 +104,6 @@ protected:
    */
   void fillNames(std::string names, std::string option_delim = " ");
 
-  /**
-   * Adds a possible enumeration value to the enum.
-   *
-   * This is protected because it is not generally allowed; however, in the case of "execute_on"
-   * settings this is allowed. Thus, the ExecuteEnum object adds a method that calls this method.
-   */
-  void addEnumerationName(const std::string & raw_name);
 
   // The method that must be implemented to check derived class values against the _deprecated_names
   // list

@@ -557,14 +557,14 @@ createExecuteOnEnum(const std::string & default_flags,
                     const std::string & add_flags,
                     const std::string & remove_flags)
 {
-  std::set<ExecFlagType> flags = {"NONE",
-                                  "INITIAL",
-                                  "LINEAR",
-                                  "NONLINEAR",
-                                  "TIMESTEP_END",
-                                  "TIMESTEP_BEGIN",
-                                  "CUSTOM",
-                                  "SUBDOMAIN"};
+  std::set<ExecFlagType> flags = {"NONE=0",
+                                  "INITIAL=0x01",
+                                  "LINEAR=0x02",
+                                  "NONLINEAR=0x04",
+                                  "TIMESTEP_END=0x08",
+                                  "TIMESTEP_BEGIN=0x10",
+                                  "CUSTOM=0x100",
+                                  "SUBDOMAIN=0x200"};
 
   if (!add_flags.empty())
   {
