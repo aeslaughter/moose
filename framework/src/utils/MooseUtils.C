@@ -557,13 +557,14 @@ createExecuteOnEnum(const std::string & default_flags,
                     const std::string & add_flags,
                     const std::string & remove_flags)
 {
-  std::set<ExecFlagType> flags = {EXEC_NONE,
-                                  EXEC_INITIAL,
-                                  EXEC_LINEAR,
-                                  EXEC_NONLINEAR,
-                                  EXEC_TIMESTEP_END,
-                                  EXEC_TIMESTEP_BEGIN,
-                                  EXEC_CUSTOM};
+  std::set<ExecFlagType> flags = {"NONE",
+                                  "INITIAL",
+                                  "LINEAR",
+                                  "NONLINEAR",
+                                  "TIMESTEP_END",
+                                  "TIMESTEP_BEGIN",
+                                  "CUSTOM",
+                                  "SUBDOMAIN"};
 
   if (!add_flags.empty())
   {
@@ -584,9 +585,11 @@ createExecuteOnEnum(const std::string & default_flags,
       if (iter != flags.end())
         flags.erase(iter);
       else
-        mooseWarning("The execute on flag '", name, "' does not exist within the available "
-                                                    "enumeration values thus it cannot be "
-                                                    "removed.");
+        mooseWarning("The execute on flag '",
+                     name,
+                     "' does not exist within the available "
+                     "enumeration values thus it cannot be "
+                     "removed.");
     }
   }
 

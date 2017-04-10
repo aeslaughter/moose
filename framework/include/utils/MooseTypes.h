@@ -85,6 +85,10 @@ typedef unsigned int THREAD_ID;
 typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange;
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
+// Previously ExecFlagType was an C++ enum. However, this did not allow for custom execute flags
+// to be defined and required a lot of conversion back and forth between the MultiMooseEnum and
+// the actual enum. The enum has now been replaced, but to allow other codes to continue to
+// operate without being modified this list of globals is defined.
 typedef std::string ExecFlagType;
 const ExecFlagType EXEC_NONE("NONE");
 const ExecFlagType EXEC_INITIAL("INITIAL");

@@ -30,5 +30,16 @@ CheckCurrentExecAux::CheckCurrentExecAux(const InputParameters & parameters)
 Real
 CheckCurrentExecAux::computeValue()
 {
-  return 0;//_problem.getCurrentExecuteOnFlag();
+  ExecFlagType flag = _problem.getCurrentExecuteOnFlag();
+  if (flag == "INITIAL")
+    return 1;
+  else if (flag == "TIMESTEP_BEGIN")
+    return 16;
+  else if (flag == "TIMESTEP_END")
+    return 8;
+  else if (flag == "NONLINEAR")
+    return 4;
+  else if (flag == "LINEAR")
+    return 2;
+  return 0.;
 }

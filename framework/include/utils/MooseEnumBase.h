@@ -77,6 +77,12 @@ public:
    */
   virtual bool isValid() const = 0;
 
+  /**
+   * Return the id given a name.
+   @return name The name of a valid enumeration.
+   */
+  int id(const std::string & name) const;
+
 protected:
   MooseEnumBase();
 

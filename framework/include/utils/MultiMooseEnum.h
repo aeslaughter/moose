@@ -85,6 +85,8 @@ public:
   bool operator!=(const MultiMooseEnum & value) const;
   ///@}
 
+
+
   ///@{
   /**
    * Contains methods for seeing if a value is in the MultiMooseEnum.

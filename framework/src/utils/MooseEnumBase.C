@@ -148,3 +148,12 @@ MooseEnumBase::addEnumerationName(const std::string & raw_name)
   _ids.insert(value);
   _name_to_id[upper] = value;
 }
+
+int
+MooseEnumBase::id(const std::string & name) const
+{
+  std::map<std::string, int>::const_iterator iter = _name_to_id.find(name);
+  if (iter == _name_to_id.end())
+    mooseError("The name ", name, " is not a possible enumeration value.");
+  return iter->second;
+}
