@@ -3203,6 +3203,14 @@ FEProblemBase::addTransfer(const std::string & transfer_name,
     parameters.set<SystemBase *>("_sys") = _aux;
   }
 
+  // Handle the "SAME_AS_MULTIAPP" execute option
+  MultiMooseEnum & exec_enum = parameters.set<MultiMooseEnum>("execute_on");
+  if (exec_enum.contains("SAME_AS_MULTIAPP"))
+  {
+    std::shared_ptr<MultiApp> multiapp = getMultiApp(parameters.get<MultiAppName>("multi_app"));
+    exec_enum = multiapp->getExecuteOnEnum().getCurrentNames();
+  }
+
   // Create the Transfer objects
   std::shared_ptr<Transfer> transfer = _factory.create<Transfer>(transfer_name, name, parameters);
 
