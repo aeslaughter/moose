@@ -564,7 +564,6 @@ createExecuteOnEnum(const std::string & default_flags,
                                   EXEC_TIMESTEP_END,
                                   EXEC_TIMESTEP_BEGIN,
                                   EXEC_CUSTOM};
-
   if (!add_flags.empty())
   {
     std::vector<std::string> add;

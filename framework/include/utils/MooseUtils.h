@@ -400,6 +400,17 @@ MultiMooseEnum createExecuteOnEnum(const std::string & default_flags = "",
  */
 std::string getExecuteOnEnumDocString(const MultiMooseEnum & exec_enum);
 
+/**
+ * Convert a container to upper case.
+ */
+template <typename T>
+void
+upper(T & container)
+{
+  for (auto & item : container)
+    std::transform(item.begin(), item.end(), item.begin(), ::toupper);
+}
+
 }
 
 #endif // MOOSEUTILS_H

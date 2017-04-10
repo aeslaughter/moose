@@ -15,7 +15,7 @@
 #include "MooseEnumTest.h"
 #include "MooseEnum.h"
 #include "MultiMooseEnum.h"
-#include "ExecuteEnum.h"
+#include "MooseUtils.h"
 
 #include <algorithm> // std::set_symmetric_difference
 
@@ -310,18 +310,20 @@ MooseEnumTest::testErrors()
 void
 MooseEnumTest::testExecuteEnum()
 {
-  ExecuteEnum exec_enum("one two", "one");
-  exec_enum.extend("three=42");
-  CPPUNIT_ASSERT(exec_enum.getRawNames() == "one two three");
+  // Create an enum with added and removed flags
+  MultiMooseEnum exec_enum = MooseUtils::createExecuteOnEnum("initial", "final=42 failed", "LINEAR");
 
-  std::vector<std::string> opts = {"ONE", "TWO", "THREE"};
+  std::cout << exec_enum.getRawNames() << std::endl;
+  CPPUNIT_ASSERT(exec_enum.getRawNames() == "CUSTOM INITIAL NONE NONLINEAR TIMESTEP_BEGIN TIMESTEP_END failed final");
+
+  std::vector<std::string> opts = {"CUSTOM", "INITIAL", "NONE", "NONLINEAR", "TIMESTEP_BEGIN", "TIMESTEP_END", "FAILED", "FINAL"};
   CPPUNIT_ASSERT(exec_enum.getNames() == opts);
 
-  CPPUNIT_ASSERT(exec_enum.contains("one"));
-  exec_enum = "three";
-  CPPUNIT_ASSERT(exec_enum.contains("three"));
+  CPPUNIT_ASSERT(exec_enum.contains("initial"));
+  exec_enum = "final";
+  CPPUNIT_ASSERT(exec_enum.contains("final"));
   CPPUNIT_ASSERT(exec_enum.contains(42));
   CPPUNIT_ASSERT(exec_enum.size() == 1);
-  CPPUNIT_ASSERT(exec_enum[0] == "three");
+  CPPUNIT_ASSERT(exec_enum[0] == "final");
   CPPUNIT_ASSERT(exec_enum.get(0) == 42);
 }

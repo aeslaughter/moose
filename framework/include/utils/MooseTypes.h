@@ -86,7 +86,7 @@ typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
 typedef std::string ExecFlagType;
-const ExecFlagType EXEC_NONE("NONE");
+const ExecFlagType EXEC_NONE("NONE");
 const ExecFlagType EXEC_INITIAL("INITIAL");
 const ExecFlagType EXEC_LINEAR("LINEAR");
 const ExecFlagType EXEC_NONLINEAR("NONLINEAR");
