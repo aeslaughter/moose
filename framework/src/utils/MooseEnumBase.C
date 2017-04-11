@@ -93,12 +93,6 @@ MooseEnumBase::removeEnumerationNames(const std::string & names)
 }
 
 void
-MooseEnumBase::removeEnumerationName(const ExecFlagType & flag)
-{
-  removeEnumerationName(name(flag));
-}
-
-void
 MooseEnumBase::checkDeprecatedBase(const std::string & name_upper) const
 {
   std::map<std::string, std::string>::const_iterator it = _deprecated_names.find(name_upper);
@@ -168,15 +162,6 @@ MooseEnumBase::addEnumerationName(const std::string & name, const int & value)
   _name_to_id[upper] = value;
   _id_to_name[value] = upper;
   _name_to_raw_name[upper] = name + " "; // add space to make the name unique for removal
-}
-
-void
-MooseEnumBase::addEnumerationName(const ExecFlagType & flag)
-{
-  const auto iter = Moose::execute_flags.find(flag);
-  if (iter == Moose::execute_flags.end())
-    mooseError("Unknown flag value of ", flag, ", the flag is likely not registered.");
-  addEnumerationName(iter->second, iter->first);
 }
 
 int

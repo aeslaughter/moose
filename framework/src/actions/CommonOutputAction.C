@@ -20,6 +20,7 @@
 #include "ActionFactory.h"
 #include "Output.h"
 #include "OutputWarehouse.h"
+#include "MooseUtils.h"
 
 // Extrnal includes
 #include "tinydir.h"
@@ -99,9 +100,8 @@ validParams<CommonOutputAction>()
       "(may include Variables, ScalarVariables, and Postprocessor names).");
 
   // Add the 'execute_on' input parameter
-  MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum("initial timestep_end"));
-  exec_enum.addEnumerationName(EXEC_FINAL);
-  exec_enum.addEnumerationName(EXEC_FAILED);
+  MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum(2, EXEC_INITIAL, EXEC_TIMESTEP_BEGIN));
+  MooseUtils::addExecuteOnFlags(exec_enum, 2, EXEC_FINAL, EXEC_FAILED);
   params.addParam<MultiMooseEnum>("execute_on",
                                   exec_enum,
                                   MooseUtils::getExecuteOnEnumDocString(exec_enum));

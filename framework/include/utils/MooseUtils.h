@@ -28,6 +28,7 @@
 #include <list>
 
 // Forward Declarations
+class InputParameters;
 namespace libMesh
 {
 class Elem;
@@ -386,9 +387,32 @@ tokenizeAndConvert(const std::string & str,
 
 /**
  * Returns the default execute_on MultiMooseEnum.
- * @params default_names Space separated list to set the default execute flags.
+ * @param default_names Space separated list to set the default execute flags.
  */
-MultiMooseEnum createExecuteOnEnum(const std::string & default_flags = "");
+MultiMooseEnum createExecuteOnEnum(int n = 0, ...);
+
+///@
+/**
+ * Add/removes the given execute flags to the InputParameters or MultiMooseEnum object.
+ * @param params/exec_enum The InputParameters of MultiMooseEnum object to modify.
+ * @param n The number of ExecFlagType flags provided.
+ * @param ... Comma separated list of ExecFlagType to append as possible values.
+ *
+ * These methods also automatically update the doc string for the "execute_on" parameter.
+ */
+void addExecuteOnFlags(InputParameters & params, int n, ...);
+void addExecuteOnFlags(MultiMooseEnum & exec_enum, int n, ...);
+void removeExecuteOnFlags(InputParameters & params, int n, ...);
+void removeExecuteOnFlags(MultiMooseEnum & exec_enum, int n, ...);
+///@}
+
+/**
+ * Adds/removes individual flag to the supplied MultiMooseEnum.
+ * @param exec_enum The MultiMooseEnum object to modify.
+ * @param flag The ExecFlagType to append as possible values.
+ */
+void addExecuteOnFlag(MultiMooseEnum & exec_enum, const ExecFlagType & flag);
+void removeExecuteOnFlag(MultiMooseEnum & exec_enum, const ExecFlagType & flag);
 
 /**
  * Return a documentation string with the available and default execute_on options.

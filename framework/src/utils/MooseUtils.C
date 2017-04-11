@@ -17,6 +17,7 @@
 #include "MooseError.h"
 #include "MaterialProperty.h"
 #include "MultiMooseEnum.h"
+#include "InputParameters.h"
 
 // libMesh includes
 #include "libmesh/elem.h"
@@ -552,31 +553,111 @@ wildCardMatch(std::string name, std::string search_string)
     return false;
 }
 
-MultiMooseEnum
-createExecuteOnEnum(const std::string & default_flags)
+MultiMooseEnum createExecuteOnEnum(int n, ...) // const std::string & default_flags)
 {
+  // Define the default execute_on flags
   MultiMooseEnum exec_enum;
-  exec_enum.addEnumerationName(EXEC_NONE);
-  exec_enum.addEnumerationName(EXEC_INITIAL);
-  exec_enum.addEnumerationName(EXEC_LINEAR);
-  exec_enum.addEnumerationName(EXEC_NONLINEAR);
-  exec_enum.addEnumerationName(EXEC_TIMESTEP_END);
-  exec_enum.addEnumerationName(EXEC_TIMESTEP_BEGIN);
-  exec_enum.addEnumerationName(EXEC_CUSTOM);
-  exec_enum.addEnumerationName(EXEC_SUBDOMAIN);
-  exec_enum = default_flags;
+  addExecuteOnFlag(exec_enum, EXEC_NONE);
+  addExecuteOnFlag(exec_enum, EXEC_INITIAL);
+  addExecuteOnFlag(exec_enum, EXEC_LINEAR);
+  addExecuteOnFlag(exec_enum, EXEC_NONLINEAR);
+  addExecuteOnFlag(exec_enum, EXEC_TIMESTEP_END);
+  addExecuteOnFlag(exec_enum, EXEC_TIMESTEP_BEGIN);
+  addExecuteOnFlag(exec_enum, EXEC_CUSTOM);
+  addExecuteOnFlag(exec_enum, EXEC_SUBDOMAIN);
+
+  // Add the default flags
+  va_list args;
+  va_start(args, n);
+  for (int i = 0; i < n; i++)
+  {
+    const ExecFlagType & flag = va_arg(args, ExecFlagType);
+    const auto iter = Moose::execute_flags.find(flag);
+    if (iter == Moose::execute_flags.end())
+      mooseError("Unknown flag value of ", flag, ", the flag is likely not registered.");
+    exec_enum.push_back(iter->second);
+  }
+  va_end(args);
+
   return exec_enum;
 }
 
 std::string
 getExecuteOnEnumDocString(const MultiMooseEnum & exec_enum)
 {
-  std::string doc("The list of flag(s) indicating when this object should be executed, the available optoins include \'");
+  std::string doc("The list of flag(s) indicating when this object should be executed, the "
+                  "available optoins include \'");
   for (const std::string & name : exec_enum.getNames())
     doc += name + "', '";
   doc.erase(doc.end() - 4, doc.end());
   doc += "').";
   return doc;
+}
+
+void
+addExecuteOnFlags(InputParameters & params, int n, ...)
+{
+  if (!params.isParamValid("execute_on"))
+    mooseError("Cannot add execute flags, the InputParameters do not have 'execute_on'.");
+  MultiMooseEnum & exec_enum = params.set<MultiMooseEnum>("execute_on");
+  va_list args;
+  va_start(args, n);
+  for (int i = 0; i < n; i++)
+    addExecuteOnFlag(exec_enum, va_arg(args, ExecFlagType));
+  va_end(args);
+  params.setDocString("execute_on", getExecuteOnEnumDocString(exec_enum));
+}
+
+void
+addExecuteOnFlags(MultiMooseEnum & exec_enum, int n, ...)
+{
+  va_list args;
+  va_start(args, n);
+  for (int i = 0; i < n; i++)
+    addExecuteOnFlag(exec_enum, va_arg(args, ExecFlagType));
+  va_end(args);
+}
+
+void
+removeExecuteOnFlags(InputParameters & params, int n, ...)
+{
+  if (!params.isParamValid("execute_on"))
+    mooseError("Cannot add execute flags, the InputParameters do not have 'execute_on'.");
+  MultiMooseEnum & exec_enum = params.set<MultiMooseEnum>("execute_on");
+  va_list args;
+  va_start(args, n);
+  for (int i = 0; i < n; i++)
+    removeExecuteOnFlag(exec_enum, va_arg(args, ExecFlagType));
+  va_end(args);
+  params.setDocString("execute_on", getExecuteOnEnumDocString(exec_enum));
+}
+
+void
+removeExecuteOnFlags(MultiMooseEnum & exec_enum, int n, ...)
+{
+  va_list args;
+  va_start(args, n);
+  for (int i = 0; i < n; i++)
+    removeExecuteOnFlag(exec_enum, va_arg(args, ExecFlagType));
+  va_end(args);
+}
+
+void
+addExecuteOnFlag(MultiMooseEnum & exec_enum, const ExecFlagType & flag)
+{
+  const auto iter = Moose::execute_flags.find(flag);
+  if (iter == Moose::execute_flags.end())
+    mooseError("Unknown flag value of ", flag, ", the flag is likely not registered.");
+  exec_enum.addEnumerationName(iter->second, iter->first);
+}
+
+void
+removeExecuteOnFlag(MultiMooseEnum & exec_enum, const ExecFlagType & flag)
+{
+  const auto iter = Moose::execute_flags.find(flag);
+  if (iter == Moose::execute_flags.end())
+    mooseError("Unknown flag value of ", flag, ", the flag is likely not registered.");
+  exec_enum.removeEnumerationName(iter->second);
 }
 
 } // MooseUtils namespace

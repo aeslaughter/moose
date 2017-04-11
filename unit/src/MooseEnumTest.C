@@ -311,7 +311,9 @@ void
 MooseEnumTest::testExecuteEnum()
 {
   // Create an enum with added and removed flags
-  MultiMooseEnum exec_enum = MooseUtils::createExecuteOnEnum("initial", "final=42 failed", "LINEAR");
+  MultiMooseEnum exec_enum = MooseUtils::createExecuteOnEnum(1, EXEC_TIMESTEP_BEGIN);
+  MooseUtils.addExecuteOnFlags(exec_enum, 2, EXEC_FINAL, EXEC_FAILED));
+  MooseUtils.removeExecuteOnFlags(exec_eum, 1, EXEC_LINEAR));
 
   // Check that added names show up
   std::cout << exec_enum.getRawNames() << std::endl;
@@ -323,11 +325,12 @@ MooseEnumTest::testExecuteEnum()
   CPPUNIT_ASSERT(exec_enum.contains("initial"));
   exec_enum = "final";
   CPPUNIT_ASSERT(exec_enum.contains("final"));
-  CPPUNIT_ASSERT(exec_enum.contains(42));
+  CPPUNIT_ASSERT(exec_enum.contains(16));
   CPPUNIT_ASSERT(exec_enum.size() == 1);
   CPPUNIT_ASSERT(exec_enum[0] == "final");
-  CPPUNIT_ASSERT(exec_enum.get(0) == 42);
-  CPPUNIT_ASSERT(exec_enum.id("final") == 42);
+  CPPUNIT_ASSERT(exec_enum.get(0) == 16);
+  CPPUNIT_ASSERT(exec_enum.id("final") == 16);
+  CPPUNIT_ASSERT(exec_enum.name(16) == "FINAL");
 
   // Error when bad name provided to id
   try

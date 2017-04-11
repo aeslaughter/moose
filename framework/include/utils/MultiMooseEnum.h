@@ -29,7 +29,7 @@ class Parameters;
 }
 namespace MooseUtils
 {
-MultiMooseEnum createExecuteOnEnum(const std::string & default_flags);
+MultiMooseEnum createExecuteOnEnum(int n, ...);
 }
 
 typedef std::set<std::string>::const_iterator MooseEnumIterator;
@@ -193,7 +193,7 @@ public:
   friend class libMesh::Parameters;
 
   // The create function can build an empty MultiMooseEnums for the execution flags.
-  friend MultiMooseEnum MooseUtils::createExecuteOnEnum(const std::string & default_flags);
+  friend MultiMooseEnum MooseUtils::createExecuteOnEnum(int n, ...);
   friend class SetupInterface;
 
   /// Operator for printing to iostreams

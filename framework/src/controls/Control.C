@@ -26,7 +26,7 @@ validParams<Control>()
   params.registerBase("Control");
 
   params.set<MultiMooseEnum>("execute_on") =
-      MooseUtils::createExecuteOnEnum("initial timestep_end");
+      MooseUtils::createExecuteOnEnum(2, EXEC_INITIAL, EXEC_TIMESTEP_END);
   return params;
 }
 
@@ -49,5 +49,5 @@ Control::getExecuteOptions()
   ::mooseDeprecated("The 'getExecuteOptions' was replaced by MooseUtils::createExecuteOnEnum "
                     "because MOOSE was updated to use a MultiMooseEnum for the execute flags and "
                     "the new function provides additional arguments for modification of the enum.");
-  return MooseUtils::createExecuteOnEnum("initial timestep_end");
+  return MooseUtils::createExecuteOnEnum(2, EXEC_INITIAL, EXEC_TIMESTEP_BEGIN);
 }

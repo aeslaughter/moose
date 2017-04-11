@@ -34,6 +34,7 @@ validParams<Output>()
 {
   // Get the parameters from the parent object
   InputParameters params = validParams<MooseObject>();
+  params += validParams<SetupInterface>();
 
   // Displaced Mesh options
   params.addParam<bool>(
@@ -51,14 +52,16 @@ validParams<Output>()
       "time_tolerance", 1e-14, "Time tolerance utilized checking start and end times");
 
   // Add the 'execute_on' input parameter for users to set
-  MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum("initial timestep_end"));
-  exec_enum.addEnumerationName(EXEC_FINAL);
-  exec_enum.addEnumerationName(EXEC_FAILED);
-  params.addParam<MultiMooseEnum>("execute_on",
-                                  exec_enum,
-                                  MooseUtils::getExecuteOnEnumDocString(exec_enum));
+  //  MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum(2, EXEC_INITIAL, EXEC_TIMESTEP_END));
+  //  MooseUtils::addExecuteOnFlags(exec_enum, 2, EXEC_FINAL, EXEC_FAILED);
+  //  params.addParam<MultiMooseEnum>("execute_on",
+  //                                  exec_enum,
+  //                                  MooseUtils::getExecuteOnEnumDocString(exec_enum));
+  params.set<MultiMooseEnum>("execute_on") = "initial timestep_end";
+  MooseUtils::addExecuteOnFlags(params, 2, EXEC_FINAL, EXEC_FAILED);
 
   // Add ability to append to the 'execute_on' list
+  MultiMooseEnum exec_enum(params.get<MultiMooseEnum>("execute_on"));
   exec_enum.clear();
   params.addParam<MultiMooseEnum>("additional_execute_on",
                                   exec_enum,
@@ -84,7 +87,9 @@ Output::getExecuteOptions(std::string default_type)
   ::mooseDeprecated("The 'getExecuteOptions' was replaced by MooseUtils::createExecuteOnEnum "
                     "because MOOSE was updated to use a MultiMooseEnum for the execute flags and "
                     "the new function provides additional arguments for modification of the enum.");
-  return MooseUtils::createExecuteOnEnum(default_type);
+  MultiMooseEnum exec_enum = MooseUtils::createExecuteOnEnum();
+  exec_enum = default_type;
+  return exec_enum;
 }
 
 Output::Output(const InputParameters & parameters)

@@ -462,17 +462,17 @@
 
 #include <unistd.h>
 
-const ExecFlagType EXEC_NONE = 0x00;
-const ExecFlagType EXEC_INITIAL = 0x01;
-const ExecFlagType EXEC_LINEAR = 0x02;
-const ExecFlagType EXEC_NONLINEAR = 0x04;
-const ExecFlagType EXEC_TIMESTEP_END = 0x8;
-const ExecFlagType EXEC_TIMESTEP_BEGIN = 0x10;
-const ExecFlagType EXEC_FINAL = 0x20;
-const ExecFlagType EXEC_FORCED = 0x40;
-const ExecFlagType EXEC_FAILED = 0x80;
-const ExecFlagType EXEC_CUSTOM = 0x100;
-const ExecFlagType EXEC_SUBDOMAIN = 0x200;
+const ExecFlagType EXEC_NONE = 0x00;           // 0
+const ExecFlagType EXEC_INITIAL = 0x01;        // 1
+const ExecFlagType EXEC_LINEAR = 0x02;         // 2
+const ExecFlagType EXEC_NONLINEAR = 0x04;      // 4
+const ExecFlagType EXEC_TIMESTEP_END = 0x08;   // 8
+const ExecFlagType EXEC_TIMESTEP_BEGIN = 0x10; // 16
+const ExecFlagType EXEC_FINAL = 0x20;          // 32
+const ExecFlagType EXEC_FORCED = 0x40;         // 64
+const ExecFlagType EXEC_FAILED = 0x80;         // 128
+const ExecFlagType EXEC_CUSTOM = 0x100;        // 256
+const ExecFlagType EXEC_SUBDOMAIN = 0x200;     // 512
 
 namespace Moose
 {
@@ -1203,17 +1203,17 @@ registerActions(Syntax & syntax, ActionFactory & action_factory)
 void
 registerExecFlags()
 {
-  registerExecFlag(EXEC_NONE, "NONE");                     // 0
-  registerExecFlag(EXEC_INITIAL, "INITIAL");               // 1
-  registerExecFlag(EXEC_LINEAR, "LINEAR");                 // 2
-  registerExecFlag(EXEC_NONLINEAR, "NONLINEAR");           // 4
-  registerExecFlag(EXEC_TIMESTEP_END, "TIMESTEP_END");     // 8
-  registerExecFlag(EXEC_TIMESTEP_BEGIN, "TIMESTEP_BEGIN"); // 16
-  registerExecFlag(EXEC_FINAL, "FINAL");                   // 32
-  registerExecFlag(EXEC_FORCED, "FORCED");                 // 64
-  registerExecFlag(EXEC_FAILED, "FAILED");                 // 128
-  registerExecFlag(EXEC_CUSTOM, "CUSTOM");                 // 256
-  registerExecFlag(EXEC_SUBDOMAIN, "SUBDOMAIN");           // 512
+  registerExecFlag(EXEC_NONE, "NONE");
+  registerExecFlag(EXEC_INITIAL, "INITIAL");
+  registerExecFlag(EXEC_LINEAR, "LINEAR");
+  registerExecFlag(EXEC_NONLINEAR, "NONLINEAR");
+  registerExecFlag(EXEC_TIMESTEP_END, "TIMESTEP_END");
+  registerExecFlag(EXEC_TIMESTEP_BEGIN, "TIMESTEP_BEGIN");
+  registerExecFlag(EXEC_FINAL, "FINAL");
+  registerExecFlag(EXEC_FORCED, "FORCED");
+  registerExecFlag(EXEC_FAILED, "FAILED");
+  registerExecFlag(EXEC_CUSTOM, "CUSTOM");
+  registerExecFlag(EXEC_SUBDOMAIN, "SUBDOMAIN");
 }
 
 void

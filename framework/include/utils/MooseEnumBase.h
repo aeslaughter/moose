@@ -22,9 +22,6 @@
 #include <set>
 #include <cstdarg>
 
-// MOOSE includes
-#include "MooseTypes.h"
-
 /**
  * The base class for both the MooseEnum and MultiMooseEnum classes.
  */
@@ -96,22 +93,24 @@ public:
    */
   const std::string & name(const int & id) const;
 
-  ///@{
   /**
    * Adds possible enumeration name(s).
+   * @param names List of raw names with or without an id.
    */
   void addEnumerationNames(const std::string & names);
-  void addEnumerationName(const std::string & name, const int & value);
-  void addEnumerationName(const ExecFlagType & flag);
-  ///@}
 
-  ///@{
   /**
-   * Removes possible enumeration name(s.
+   * Adds possible enumeration name with an id.
+   * @param name The name to add.
+   * @param value The id to associate with the given name.
+   */
+  void addEnumerationName(const std::string & name, const int & value);
+
+  /**
+   * Removes possible enumeration name.
+   * @param name The name to remove.
    */
   void removeEnumerationNames(const std::string & names);
-  void removeEnumerationName(const ExecFlagType & flag);
-  ///@}
 
 protected:
   MooseEnumBase();

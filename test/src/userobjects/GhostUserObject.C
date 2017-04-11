@@ -28,7 +28,7 @@ validParams<GhostUserObject>()
       DofObject::invalid_processor_id,
       "The rank for which the ghosted elements are recorded (Default: ALL)");
 
-  MultiMooseEnum setup_options(MooseUtils::createExecuteOnEnum("timestep_begin"));
+  MultiMooseEnum setup_options(MooseUtils::createExecuteOnEnum(1, EXEC_TIMESTEP_BEGIN));
   params.set<MultiMooseEnum>("execute_on") = setup_options;
   params.addClassDescription("User object to calculate ghosted elements on a single processor or "
                              "the union across all processors.");

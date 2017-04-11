@@ -23,7 +23,7 @@ validParams<GhostAux>()
   params.addParam<UserObjectName>("ghost_user_object",
                                   "The GhostUserObject where this Aux pulls values from");
 
-  MultiMooseEnum setup_options(MooseUtils::createExecuteOnEnum("timestep_begin"));
+  MultiMooseEnum setup_options(MooseUtils::createExecuteOnEnum(1, EXEC_TIMESTEP_BEGIN));
   params.set<MultiMooseEnum>("execute_on") = setup_options;
   params.addClassDescription("Aux Kernel to display ghosted elements from a single processor or "
                              "the union on all processors");
