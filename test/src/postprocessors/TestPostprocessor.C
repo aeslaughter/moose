@@ -23,7 +23,7 @@ validParams<TestPostprocessor>()
   params.addRequiredParam<MooseEnum>("test_type", test_type, "The type of test to perform");
   params.addParam<PostprocessorName>("report_name",
                                      "The name of the postprocessor value to report");
-  params.set<MultiMooseEnum>("execute_on").addEnumerationNames("just_go");
+  params.set<MultiMooseEnum>("execute_on").addEnumerationNames("just_go=12345");
   return params;
 }
 

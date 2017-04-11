@@ -52,7 +52,7 @@ validParams<Output>()
 
   // Add the 'execute_on' input parameter for users to set
   MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum("initial timestep_end",
-                                                           /*add=*/"FINAL FAILED"));
+                                                           /*add=*/"FINAL=0x20 FAILED=0x80"));
   params.addParam<MultiMooseEnum>("execute_on",
                                   exec_enum,
                                   MooseUtils::getExecuteOnEnumDocString(exec_enum));

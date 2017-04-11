@@ -155,7 +155,12 @@ public:
   /**
    * Get a list of the current valid enumeration.s
    */
-  const std::set<std::string> getCurrentNames() const { return _current_names; }
+  const std::set<std::string> & getCurrentNames() const { return _current_names; }
+
+  /**
+   * Get a list of the current valid enumeration.s
+   */
+  const std::vector<int> & getCurrentIDs() const { return _current_ids; }
 
   /**
    * Clear the MultiMooseEnum

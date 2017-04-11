@@ -12,23 +12,5 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#include "CheckCurrentExecAux.h"
-
-template <>
-InputParameters
-validParams<CheckCurrentExecAux>()
-{
-  InputParameters params = validParams<AuxKernel>();
-  return params;
-}
-
-CheckCurrentExecAux::CheckCurrentExecAux(const InputParameters & parameters)
-  : AuxKernel(parameters), _problem(*parameters.get<FEProblemBase *>("_fe_problem_base"))
-{
-}
-
-Real
-CheckCurrentExecAux::computeValue()
-{
-  return _problem.getCurrentExecuteOnFlag();
-}
+#include "MooseTypes.h"
+ExecFlagType EXEC_JUST_GO(12345);

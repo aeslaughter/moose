@@ -3208,7 +3208,7 @@ FEProblemBase::addTransfer(const std::string & transfer_name,
   if (exec_enum.contains("SAME_AS_MULTIAPP"))
   {
     std::shared_ptr<MultiApp> multiapp = getMultiApp(parameters.get<MultiAppName>("multi_app"));
-    exec_enum = multiapp->getExecuteOnEnum().getCurrentNames();
+    exec_enum = multiapp->getExecuteOnEnum();
   }
 
   // Create the Transfer objects

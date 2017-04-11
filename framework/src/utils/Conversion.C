@@ -323,7 +323,6 @@ template <>
 std::string
 stringify(const ExecFlagType & t)
 {
-  /*
   switch (t)
   {
     case EXEC_INITIAL:
@@ -349,8 +348,7 @@ stringify(const ExecFlagType & t)
     case EXEC_NONE:
       return "NONE";
   }
-  */
-  return t;
+  return "";
 }
 
 std::string

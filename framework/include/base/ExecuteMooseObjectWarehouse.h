@@ -204,7 +204,7 @@ ExecuteMooseObjectWarehouse<T>::addObject(std::shared_ptr<T> object, THREAD_ID t
   // Update the execute flag lists of objects
   std::shared_ptr<SetupInterface> ptr = std::dynamic_pointer_cast<SetupInterface>(object);
   if (ptr)
-    for (const ExecFlagType & exec_flag : ptr->getExecuteOnEnum().getCurrentNames())
+    for (const ExecFlagType & exec_flag : ptr->getExecuteOnEnum().getCurrentIDs())
       _execute_objects[exec_flag].addObject(object, tid);
   else
     mooseError("The object being added (",

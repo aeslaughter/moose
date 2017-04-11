@@ -89,19 +89,18 @@ typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElem
 // to be defined and required a lot of conversion back and forth between the MultiMooseEnum and
 // the actual enum. The enum has now been replaced, but to allow other codes to continue to
 // operate without being modified this list of globals is defined.
-typedef std::string ExecFlagType;
-const ExecFlagType EXEC_NONE("NONE");
-const ExecFlagType EXEC_INITIAL("INITIAL");
-const ExecFlagType EXEC_LINEAR("LINEAR");
-const ExecFlagType EXEC_NONLINEAR("NONLINEAR");
-const ExecFlagType EXEC_TIMESTEP_END("TIMESTEP_END");
-const ExecFlagType EXEC_TIMESTEP_BEGIN("TIMESTEP_BEGIN");
-const ExecFlagType EXEC_FINAL("FINAL");
-const ExecFlagType EXEC_FORCED("FORCED");
-const ExecFlagType EXEC_FAILED("FAILED");
-const ExecFlagType EXEC_CUSTOM("CUSTOM");
-const ExecFlagType EXEC_SUBDOMAIN("SUBDOMAIN");
-
+typedef int ExecFlagType;
+const ExecFlagType EXEC_NONE(0x00);           // 0
+const ExecFlagType EXEC_INITIAL(0x01);        // 1
+const ExecFlagType EXEC_LINEAR(0x02);         // 2
+const ExecFlagType EXEC_NONLINEAR(0x04);      // 4
+const ExecFlagType EXEC_TIMESTEP_END(0x08);   // 8
+const ExecFlagType EXEC_TIMESTEP_BEGIN(0x10); // 16
+const ExecFlagType EXEC_FINAL(0x20);          // 32
+const ExecFlagType EXEC_FORCED(0x40);         // 64
+const ExecFlagType EXEC_FAILED(0x80);         // 128
+const ExecFlagType EXEC_CUSTOM(0x100);        // 256
+const ExecFlagType EXEC_SUBDOMAIN(0x200);     // 512
 
 namespace Moose
 {
