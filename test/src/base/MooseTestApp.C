@@ -12,6 +12,7 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 #include "MooseTestApp.h"
+#include "MooseTestAppTypes.h"
 #include "Moose.h"
 #include "Factory.h"
 #include "MooseSyntax.h"
@@ -289,6 +290,9 @@ MooseTestApp::MooseTestApp(const InputParameters & parameters) : MooseApp(parame
 
   Moose::associateSyntax(_syntax, _action_factory);
   MooseTestApp::associateSyntax(_syntax, _action_factory);
+
+  Moose::registerExecFlags();
+  MooseTestApp::registerExecFlags();
 }
 
 MooseTestApp::~MooseTestApp() {}
@@ -599,4 +603,10 @@ MooseTestApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
   registerAction(AddMatAndKernel, "add_material");
   registerAction(AddMatAndKernel, "add_variable");
   registerSyntax("AddMatAndKernel", "AddMatAndKernel");
+}
+
+void
+MooseTestApp::registerExecFlags()
+{
+  registerExecFlag(EXEC_JUST_GO, "just_go");
 }

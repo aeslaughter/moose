@@ -164,6 +164,15 @@ MooseEnumBase::addEnumerationName(const std::string & name, const int & value)
   _name_to_raw_name[upper] = name + " "; // add space to make the name unique for removal
 }
 
+void
+MooseEnumBase::addEnumerationName(const ExecFlagType & flag)
+{
+  const auto iter = Moose::execute_flags.find(flag);
+  if (iter == Moose::execute_flags.end())
+    mooseError("Unknown flag value of ", flag, ", the flag is likely not registered.");
+  addEnumerationName(iter->second, iter->first);
+}
+
 int
 MooseEnumBase::id(std::string name) const
 {

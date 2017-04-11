@@ -25,7 +25,6 @@
 
 namespace Moose
 {
-std::map<std::string, ExecFlagType> execstore_type_to_enum;
 std::map<std::string, QuadratureType> quadrature_type_to_enum;
 std::map<std::string, CoordinateSystemType> coordinate_system_type_to_enum;
 std::map<std::string, SolveType> solve_type_to_enum;
@@ -33,20 +32,6 @@ std::map<std::string, EigenSolveType> eigen_solve_type_to_enum;
 std::map<std::string, EigenProblemType> eigen_problem_type_to_enum;
 std::map<std::string, WhichEigenPairs> which_eigen_pairs_to_enum;
 std::map<std::string, LineSearchType> line_search_type_to_enum;
-
-void
-initExecStoreType()
-{
-  if (execstore_type_to_enum.empty())
-  {
-    execstore_type_to_enum["INITIAL"] = EXEC_INITIAL;
-    execstore_type_to_enum["LINEAR"] = EXEC_LINEAR;
-    execstore_type_to_enum["NONLINEAR"] = EXEC_NONLINEAR;
-    execstore_type_to_enum["TIMESTEP_END"] = EXEC_TIMESTEP_END;
-    execstore_type_to_enum["TIMESTEP_BEGIN"] = EXEC_TIMESTEP_BEGIN;
-    execstore_type_to_enum["CUSTOM"] = EXEC_CUSTOM;
-  }
-}
 
 void
 initQuadratureType()
@@ -153,21 +138,6 @@ initLineSearchType()
 #endif
 #endif
   }
-}
-
-template <>
-ExecFlagType
-stringToEnum(const std::string & s)
-{
-  initExecStoreType();
-
-  std::string upper(s);
-  std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
-
-  if (!execstore_type_to_enum.count(upper))
-    mooseError("Unknown execution flag: ", upper);
-
-  return execstore_type_to_enum[upper];
 }
 
 template <>
@@ -323,32 +293,10 @@ template <>
 std::string
 stringify(const ExecFlagType & t)
 {
-  switch (t)
-  {
-    case EXEC_INITIAL:
-      return EXEC_INITIAL_NAME;
-    case EXEC_LINEAR:
-      return EXEC_LINEAR_NAME;
-    case EXEC_NONLINEAR:
-      return EXEC_NONLINEAR_NAME;
-    case EXEC_TIMESTEP_END:
-      return EXEC_TIMESTEP_END_NAME;
-    case EXEC_TIMESTEP_BEGIN:
-      return EXEC_TIMESTEP_BEGIN_NAME;
-    case EXEC_CUSTOM:
-      return EXEC_CUSTOM_NAME;
-    case EXEC_FINAL:
-      return EXEC_FINAL_NAME;
-    case EXEC_FORCED:
-      return EXEC_FORCED_NAME;
-    case EXEC_FAILED:
-      return EXEC_FAILED_NAME;
-    case EXEC_SUBDOMAIN:
-      return EXEC_SUBDOMAIN_NAME;
-    case EXEC_NONE:
-      return EXEC_NONE_NAME;
-  }
-  return EXEC_NONE_NAME;
+  const auto iter = Moose::execute_flags.find(t);
+  if (iter != Moose::execute_flags.end())
+    return iter->second;
+  return Moose::execute_flags[EXEC_NONE];
 }
 
 std::string

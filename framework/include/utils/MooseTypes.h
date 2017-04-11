@@ -29,9 +29,6 @@
 #include <vector>
 #include <memory>
 
-// Forward Declarations
-class MultiMooseEnum;
-
 // DO NOT USE (Deprecated)
 #define MooseSharedPointer std::shared_ptr
 #define MooseSharedNamespace std
@@ -85,39 +82,6 @@ typedef unsigned int THREAD_ID;
 typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange;
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
-// The execute_on system in MOOSE relies on integer flags for storage and execution commands. The
-// validParams functions of the object (via SetupInterface) utilizes MultiMooseEnum for input
-// file syntax. In order to create arbitrary flags that are consistent and cause compiler errors
-// rather than runtime errors the registerExecFlag was defined to create two global values that are
-// needed for working with the new flags. For example, calling registerExecFlag(FOO, 12345) creates:
-//    EXEC_FOO = 12345
-//    EXEC_FOO_NAME = "FOO"
-//
-// Notice that the variables created by this macro are re-defined each time this header it included,
-// this was by design to avoid requiring a separate definition and declaration macros.
-typedef int ExecFlagType;
-typedef std::string ExecFlagName;
-#define registerExecFlag(name, number)                                                             \
-  const ExecFlagType EXEC_##name(number);                                                          \
-  const ExecFlagName EXEC_##name##_NAME(#name);
-
-// Previously ExecFlagType was an C++ enum. However, this did not allow for custom execute flags
-// to be defined and required a lot of conversion back and forth between the MultiMooseEnum and
-// the actual enum. The enum has now been replaced, but to allow other codes to continue to
-// operate without being modified this list of globals is defined.
-registerExecFlag(NONE, 0x00);           // 0
-registerExecFlag(INITIAL, 0x01);        // 1
-registerExecFlag(LINEAR, 0x02);         // 2
-registerExecFlag(NONLINEAR, 0x04);      // 4
-registerExecFlag(TIMESTEP_END, 0x08);   // 8
-registerExecFlag(TIMESTEP_BEGIN, 0x10); // 16
-registerExecFlag(FINAL, 0x20);          // 32
-registerExecFlag(FORCED, 0x40);         // 64
-registerExecFlag(FAILED, 0x80);         // 128
-registerExecFlag(CUSTOM, 0x100);        // 256
-registerExecFlag(SUBDOMAIN, 0x200);     // 512
-
-extern std::map<int, std::string> exec_flag_to_name;
 
 namespace Moose
 {
@@ -125,7 +89,6 @@ const SubdomainID ANY_BLOCK_ID = libMesh::Elem::invalid_subdomain_id - 1;
 const SubdomainID INVALID_BLOCK_ID = libMesh::Elem::invalid_subdomain_id;
 const BoundaryID ANY_BOUNDARY_ID = static_cast<BoundaryID>(-1);
 const BoundaryID INVALID_BOUNDARY_ID = libMesh::BoundaryInfo::invalid_id;
-
 
 /**
  * MaterialData types

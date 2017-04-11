@@ -21,6 +21,9 @@
 #include <map>
 #include <set>
 
+// MOOSE includes
+#include "MooseTypes.h"
+
 /**
  * The base class for both the MooseEnum and MultiMooseEnum classes.
  */
@@ -98,6 +101,7 @@ public:
    */
   void addEnumerationNames(const std::string & names);
   void addEnumerationName(const std::string & name, const int & value);
+  void addEnumerationName(const ExecFlagType & flag);
   ///@}
 
   /**

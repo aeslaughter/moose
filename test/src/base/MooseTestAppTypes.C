@@ -12,5 +12,5 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-// MOOSE includes
-#include "MooseTypes.h"
+#include "MooseTestAppTypes.h"
+const ExecFlagType EXEC_JUST_GO = 12345;
