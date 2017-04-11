@@ -178,6 +178,8 @@ public:
    */
   virtual bool isValid() const override { return !_current_ids.empty(); }
 
+  void removeEnumerationName(std::string name) final override;
+
   // InputParameters and Output is allowed to create an empty enum but is responsible for
   // filling it in after the fact
   friend class libMesh::Parameters;

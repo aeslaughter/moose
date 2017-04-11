@@ -326,7 +326,18 @@ MooseEnumTest::testExecuteEnum()
   CPPUNIT_ASSERT(exec_enum.get(0) == 42);
   CPPUNIT_ASSERT(exec_enum.id("final") == 42);
 
-  // try catch on id
+  try
+  {
+    exec_enum.id("wrong");
+    CPPUNIT_ASSERT(false); // Unreachable
+  }
+  catch (const std::exception & e)
+  {
+    std::string msg(e.what());
+    CPPUNIT_ASSERT(msg.find("The name wrong is not a possible enumeration value.") !=
+                   std::string::npos);
+  }
+
   // add/remove enumeration name and error checks for remove
   // doc string
 }
