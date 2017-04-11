@@ -13,6 +13,7 @@
 /****************************************************************/
 
 #include "TestPostprocessor.h"
+#include "MooseTestAppTypes.h"
 
 template <>
 InputParameters
@@ -23,7 +24,7 @@ validParams<TestPostprocessor>()
   params.addRequiredParam<MooseEnum>("test_type", test_type, "The type of test to perform");
   params.addParam<PostprocessorName>("report_name",
                                      "The name of the postprocessor value to report");
-  params.set<MultiMooseEnum>("execute_on").addEnumerationNames("just_go=12345");
+  params.set<MultiMooseEnum>("execute_on").addEnumerationName(EXEC_JUST_GO_NAME, EXEC_JUST_GO);
   return params;
 }
 
@@ -58,8 +59,10 @@ TestPostprocessor::getValue()
     return getPostprocessorValueOld("report_name");
 
   else if (_test_type == "custom_execute_on")
+  {
+    _console << "Flag Name: " << EXEC_JUST_GO_NAME << std::endl;
     return _execute_count++;
-
+  }
   // This should not be attainable
   else
   {

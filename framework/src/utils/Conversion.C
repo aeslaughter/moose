@@ -326,29 +326,29 @@ stringify(const ExecFlagType & t)
   switch (t)
   {
     case EXEC_INITIAL:
-      return "INITIAL";
+      return EXEC_INITIAL_NAME;
     case EXEC_LINEAR:
-      return "LINEAR";
+      return EXEC_LINEAR_NAME;
     case EXEC_NONLINEAR:
-      return "NONLINEAR";
+      return EXEC_NONLINEAR_NAME;
     case EXEC_TIMESTEP_END:
-      return "TIMESTEP_END";
+      return EXEC_TIMESTEP_END_NAME;
     case EXEC_TIMESTEP_BEGIN:
-      return "TIMESTEP_BEGIN";
+      return EXEC_TIMESTEP_BEGIN_NAME;
     case EXEC_CUSTOM:
-      return "CUSTOM";
+      return EXEC_CUSTOM_NAME;
     case EXEC_FINAL:
-      return "FINAL";
+      return EXEC_FINAL_NAME;
     case EXEC_FORCED:
-      return "FORCED";
+      return EXEC_FORCED_NAME;
     case EXEC_FAILED:
-      return "FAILED";
+      return EXEC_FAILED_NAME;
     case EXEC_SUBDOMAIN:
-      return "SUBDOMAIN";
+      return EXEC_SUBDOMAIN_NAME;
     case EXEC_NONE:
-      return "NONE";
+      return EXEC_NONE_NAME;
   }
-  return "";
+  return EXEC_NONE_NAME;
 }
 
 std::string

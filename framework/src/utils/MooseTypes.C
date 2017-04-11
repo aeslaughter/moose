@@ -12,6 +12,5 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
+// MOOSE includes
 #include "MooseTypes.h"
-
-registerExecFlag(JUST_GO, 12345);

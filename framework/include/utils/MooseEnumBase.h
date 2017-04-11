@@ -63,6 +63,12 @@ public:
   const std::vector<std::string> & getNames() const { return _names; }
 
   /**
+   * Method for returning a set of all valid enumeration ids for this instance.
+   * @returns A set of valid ids.
+   */
+  const std::set<int> & getIDs() const { return _ids; }
+
+  /**
    * Method for returning the raw name strings for this instance
    * @return a space separated list of names
    */
@@ -76,19 +82,28 @@ public:
 
   /**
    * Return the id given a name.
-   @return name The name of a valid enumeration.
+   @returns The id of a valid enumeration.
    */
   int id(std::string name) const;
 
   /**
-   * Adds possible enumeration names.
+   * Return the name given a id.
+   @returns The name of a valid enumeration.
+   */
+  const std::string & name(const int & id) const;
+
+  ///@{
+  /**
+   * Adds possible enumeration name(s).
    */
   void addEnumerationNames(const std::string & names);
+  void addEnumerationName(const std::string & name, const int & value);
+  ///@}
 
   /**
    * Removes possible enumeration names.
    */
-  void removeEnumerationNames(const std::string & names);\
+  void removeEnumerationNames(const std::string & names);
 
 protected:
   MooseEnumBase();
@@ -129,6 +144,9 @@ protected:
 
   /// The map of names to enumeration constants
   std::map<std::string, int> _name_to_id;
+
+  /// The map of names to enumeration constants
+  std::map<int, std::string> _id_to_name;
 
   /// The map of deprecated names and optional replacements
   std::map<std::string, std::string> _deprecated_names;

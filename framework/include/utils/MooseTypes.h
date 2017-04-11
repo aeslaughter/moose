@@ -85,30 +85,39 @@ typedef unsigned int THREAD_ID;
 typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange;
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
-typedef std::string ExecFlagName;
+// The execute_on system in MOOSE relies on integer flags for storage and execution commands. The
+// validParams functions of the object (via SetupInterface) utilizes MultiMooseEnum for input
+// file syntax. In order to create arbitrary flags that are consistent and cause compiler errors
+// rather than runtime errors the registerExecFlag was defined to create two global values that are
+// needed for working with the new flags. For example, calling registerExecFlag(FOO, 12345) creates:
+//    EXEC_FOO = 12345
+//    EXEC_FOO_NAME = "FOO"
+//
+// Notice that the variables created by this macro are re-defined each time this header it included,
+// this was by design to avoid requiring a separate definition and declaration macros.
 typedef int ExecFlagType;
-
-#define registerExecutionFlag(name, number) const ExecFlagType EXEC_##name(number);
-
-//  const ExecFlagName EXEC\_##name_NAME(#name)
-//  const std::string EXEC\_##name_ENUM(#name"="#number)
+typedef std::string ExecFlagName;
+#define registerExecFlag(name, number)                                                             \
+  const ExecFlagType EXEC_##name(number);                                                          \
+  const ExecFlagName EXEC_##name##_NAME(#name);
 
 // Previously ExecFlagType was an C++ enum. However, this did not allow for custom execute flags
 // to be defined and required a lot of conversion back and forth between the MultiMooseEnum and
 // the actual enum. The enum has now been replaced, but to allow other codes to continue to
 // operate without being modified this list of globals is defined.
+registerExecFlag(NONE, 0x00);           // 0
+registerExecFlag(INITIAL, 0x01);        // 1
+registerExecFlag(LINEAR, 0x02);         // 2
+registerExecFlag(NONLINEAR, 0x04);      // 4
+registerExecFlag(TIMESTEP_END, 0x08);   // 8
+registerExecFlag(TIMESTEP_BEGIN, 0x10); // 16
+registerExecFlag(FINAL, 0x20);          // 32
+registerExecFlag(FORCED, 0x40);         // 64
+registerExecFlag(FAILED, 0x80);         // 128
+registerExecFlag(CUSTOM, 0x100);        // 256
+registerExecFlag(SUBDOMAIN, 0x200);     // 512
 
-registerExecutionFlag(NONE, 0x00);           // 0
-registerExecutionFlag(INITIAL, 0x01);        // 1
-registerExecutionFlag(LINEAR, 0x02);         // 2
-registerExecutionFlag(NONLINEAR, 0x04);      // 4
-registerExecutionFlag(TIMESTEP_END, 0x08);   // 8
-registerExecutionFlag(TIMESTEP_BEGIN, 0x10); // 16
-registerExecutionFlag(FINAL, 0x20);          // 32
-registerExecutionFlag(FORCED, 0x40);         // 64
-registerExecutionFlag(FAILED, 0x80);         // 128
-registerExecutionFlag(CUSTOM, 0x100);        // 256
-registerExecutionFlag(SUBDOMAIN, 0x200);     // 512
+extern std::map<int, std::string> exec_flag_to_name;
 
 namespace Moose
 {
