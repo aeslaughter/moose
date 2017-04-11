@@ -22,9 +22,14 @@
 #include <set>
 
 // Forward declarations
+class MultiMooseEnum;
 namespace libMesh
 {
 class Parameters;
+}
+namespace MooseUtils
+{
+MultiMooseEnum createExecuteOnEnum(const std::string & default_flags);
 }
 
 typedef std::set<std::string>::const_iterator MooseEnumIterator;
@@ -78,8 +83,6 @@ public:
   bool operator==(const MultiMooseEnum & value) const;
   bool operator!=(const MultiMooseEnum & value) const;
   ///@}
-
-
 
   ///@{
   /**
@@ -189,7 +192,8 @@ public:
   // filling it in after the fact
   friend class libMesh::Parameters;
 
-  // SetupInterface can create empty MultiMooseEnums for the execution flags.
+  // The create function can build an empty MultiMooseEnums for the execution flags.
+  friend MultiMooseEnum MooseUtils::createExecuteOnEnum(const std::string & default_flags);
   friend class SetupInterface;
 
   /// Operator for printing to iostreams

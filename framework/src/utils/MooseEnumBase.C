@@ -93,6 +93,12 @@ MooseEnumBase::removeEnumerationNames(const std::string & names)
 }
 
 void
+MooseEnumBase::removeEnumerationName(const ExecFlagType & flag)
+{
+  removeEnumerationName(name(flag));
+}
+
+void
 MooseEnumBase::checkDeprecatedBase(const std::string & name_upper) const
 {
   std::map<std::string, std::string>::const_iterator it = _deprecated_names.find(name_upper);

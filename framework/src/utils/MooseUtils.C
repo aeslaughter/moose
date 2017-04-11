@@ -553,19 +553,17 @@ wildCardMatch(std::string name, std::string search_string)
 }
 
 MultiMooseEnum
-createExecuteOnEnum(const std::string & default_flags,
-                    const std::string & add_flags,
-                    const std::string & remove_flags)
+createExecuteOnEnum(const std::string & default_flags)
 {
-  MultiMooseEnum exec_enum("NONE=0x00 INITIAL=0x01 LINEAR=0x02 NONLINEAR=0x04 TIMESTEP_END=0x08 "
-                           "TIMESTEP_BEGIN=0x10 CUSTOM=0x100 SUBDOMAIN=0x200");
-
-  if (!add_flags.empty())
-    exec_enum.addEnumerationNames(add_flags);
-
-  if (!remove_flags.empty())
-    exec_enum.removeEnumerationNames(remove_flags);
-
+  MultiMooseEnum exec_enum;
+  exec_enum.addEnumerationName(EXEC_NONE);
+  exec_enum.addEnumerationName(EXEC_INITIAL);
+  exec_enum.addEnumerationName(EXEC_LINEAR);
+  exec_enum.addEnumerationName(EXEC_NONLINEAR);
+  exec_enum.addEnumerationName(EXEC_TIMESTEP_END);
+  exec_enum.addEnumerationName(EXEC_TIMESTEP_BEGIN);
+  exec_enum.addEnumerationName(EXEC_CUSTOM);
+  exec_enum.addEnumerationName(EXEC_SUBDOMAIN);
   exec_enum = default_flags;
   return exec_enum;
 }

@@ -51,8 +51,9 @@ validParams<Output>()
       "time_tolerance", 1e-14, "Time tolerance utilized checking start and end times");
 
   // Add the 'execute_on' input parameter for users to set
-  MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum("initial timestep_end",
-                                                           /*add=*/"FINAL=0x20 FAILED=0x80"));
+  MultiMooseEnum exec_enum(MooseUtils::createExecuteOnEnum("initial timestep_end"));
+  exec_enum.addEnumerationName(EXEC_FINAL);
+  exec_enum.addEnumerationName(EXEC_FAILED);
   params.addParam<MultiMooseEnum>("execute_on",
                                   exec_enum,
                                   MooseUtils::getExecuteOnEnumDocString(exec_enum));

@@ -1274,7 +1274,7 @@ bool _deprecated_is_error = false;
 
 bool _throw_on_error = false;
 
-std::map<ExecFlagType, ExecFlagName> execute_flags = std::map<ExecFlagType, ExecFlagName>();
+std::map<ExecFlagType, std::string> execute_flags = std::map<ExecFlagType, std::string>();
 
 } // namespace Moose
 

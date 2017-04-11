@@ -64,7 +64,6 @@ class FEProblemBase;
 // Define MOOSE execution flags, this cannot be done in MooseTypes because the registration calls
 // must be in Moose.C to remain consistent with other registration calls.
 typedef int ExecFlagType;
-typedef std::string ExecFlagName;
 extern const ExecFlagType EXEC_NONE;
 extern const ExecFlagType EXEC_INITIAL;
 extern const ExecFlagType EXEC_LINEAR;
@@ -114,7 +113,7 @@ extern bool _throw_on_error;
 /**
  * Storage for execute flags.
  */
-extern std::map<ExecFlagType, ExecFlagName> execute_flags;
+extern std::map<ExecFlagType, std::string> execute_flags;
 
 /**
  * Macros for coloring any output stream (_console, std::ostringstream, etc.)

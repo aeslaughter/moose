@@ -20,6 +20,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <cstdarg>
 
 // MOOSE includes
 #include "MooseTypes.h"
@@ -104,10 +105,13 @@ public:
   void addEnumerationName(const ExecFlagType & flag);
   ///@}
 
+  ///@{
   /**
-   * Removes possible enumeration names.
+   * Removes possible enumeration name(s.
    */
   void removeEnumerationNames(const std::string & names);
+  void removeEnumerationName(const ExecFlagType & flag);
+  ///@}
 
 protected:
   MooseEnumBase();

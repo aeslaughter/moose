@@ -668,7 +668,9 @@ template <class T>
 void
 AdvancedOutput<T>::addValidParams(InputParameters & params, const MultiMooseEnum & types)
 {
-  MultiMooseEnum empty_execute_on(MooseUtils::createExecuteOnEnum("", "FINAL=0x20 FAILED=0x80"));
+  MultiMooseEnum empty_execute_on(MooseUtils::createExecuteOnEnum());
+  empty_execute_on.addEnumerationName(EXEC_FINAL);
+  empty_execute_on.addEnumerationName(EXEC_FAILED);
 
   // Nodal output
   if (types.contains("nodal"))
