@@ -85,22 +85,30 @@ typedef unsigned int THREAD_ID;
 typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange;
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
+typedef std::string ExecFlagName;
+typedef int ExecFlagType;
+
+#define registerExecutionFlag(name, number) const ExecFlagType EXEC_##name(number);
+
+//  const ExecFlagName EXEC\_##name_NAME(#name)
+//  const std::string EXEC\_##name_ENUM(#name"="#number)
+
 // Previously ExecFlagType was an C++ enum. However, this did not allow for custom execute flags
 // to be defined and required a lot of conversion back and forth between the MultiMooseEnum and
 // the actual enum. The enum has now been replaced, but to allow other codes to continue to
 // operate without being modified this list of globals is defined.
-typedef int ExecFlagType;
-const ExecFlagType EXEC_NONE(0x00);           // 0
-const ExecFlagType EXEC_INITIAL(0x01);        // 1
-const ExecFlagType EXEC_LINEAR(0x02);         // 2
-const ExecFlagType EXEC_NONLINEAR(0x04);      // 4
-const ExecFlagType EXEC_TIMESTEP_END(0x08);   // 8
-const ExecFlagType EXEC_TIMESTEP_BEGIN(0x10); // 16
-const ExecFlagType EXEC_FINAL(0x20);          // 32
-const ExecFlagType EXEC_FORCED(0x40);         // 64
-const ExecFlagType EXEC_FAILED(0x80);         // 128
-const ExecFlagType EXEC_CUSTOM(0x100);        // 256
-const ExecFlagType EXEC_SUBDOMAIN(0x200);     // 512
+
+registerExecutionFlag(NONE, 0x00);           // 0
+registerExecutionFlag(INITIAL, 0x01);        // 1
+registerExecutionFlag(LINEAR, 0x02);         // 2
+registerExecutionFlag(NONLINEAR, 0x04);      // 4
+registerExecutionFlag(TIMESTEP_END, 0x08);   // 8
+registerExecutionFlag(TIMESTEP_BEGIN, 0x10); // 16
+registerExecutionFlag(FINAL, 0x20);          // 32
+registerExecutionFlag(FORCED, 0x40);         // 64
+registerExecutionFlag(FAILED, 0x80);         // 128
+registerExecutionFlag(CUSTOM, 0x100);        // 256
+registerExecutionFlag(SUBDOMAIN, 0x200);     // 512
 
 namespace Moose
 {
@@ -124,7 +132,7 @@ enum MaterialDataType
 };
 
 /**
- * Flag for AuxKernel related exeuction type.
+ * Flag for AuxKernel related execution type.
  */
 enum AuxGroup
 {

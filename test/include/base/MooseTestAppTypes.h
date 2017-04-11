@@ -13,4 +13,5 @@
 /****************************************************************/
 
 #include "MooseTypes.h"
-ExecFlagType EXEC_JUST_GO(12345);
+
+registerExecutionFlag(JUST_GO, 12345);
