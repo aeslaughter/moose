@@ -28,6 +28,7 @@ class MooseEnumTest : public CppUnit::TestFixture
   CPPUNIT_TEST(withNamesFromTest);
   CPPUNIT_TEST(testDeprecate);
   CPPUNIT_TEST(testErrors);
+  CPPUNIT_TEST(testExecuteEnum);
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -36,6 +37,7 @@ public:
   void withNamesFromTest();
   void testDeprecate();
   void testErrors();
+  void testExecuteEnum();
 };
 
 #endif // MOOSEENUMTEST_H
