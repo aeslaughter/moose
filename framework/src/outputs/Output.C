@@ -34,7 +34,7 @@ validParams<Output>()
 {
   // Get the parameters from the parent object
   InputParameters params = validParams<MooseObject>();
-  params += validParams<SetupInterface>();
+  // params += validParams<SetupInterface>();
 
   // Displaced Mesh options
   params.addParam<bool>(
@@ -57,11 +57,15 @@ validParams<Output>()
   //  params.addParam<MultiMooseEnum>("execute_on",
   //                                  exec_enum,
   //                                  MooseUtils::getExecuteOnEnumDocString(exec_enum));
-  params.set<MultiMooseEnum>("execute_on") = "initial timestep_end";
-  MooseUtils::addExecuteOnFlags(params, 2, EXEC_FINAL, EXEC_FAILED);
+  // params.set<MultiMooseEnum>("execute_on") = "initial timestep_end";
+  // MooseUtils::addExecuteOnFlags(params, 2, EXEC_FINAL, EXEC_FAILED);
+  MultiMooseEnum exec_enum(
+      "none initial linear nonlinear timestep_end timestep_begin custom failed final",
+      "initial timestep_end");
+  params.addParam<MultiMooseEnum>("execute_on", exec_enum, "foo");
 
   // Add ability to append to the 'execute_on' list
-  MultiMooseEnum exec_enum(params.get<MultiMooseEnum>("execute_on"));
+  //  MultiMooseEnum exec_enum(params.get<MultiMooseEnum>("execute_on"));
   exec_enum.clear();
   params.addParam<MultiMooseEnum>("additional_execute_on",
                                   exec_enum,
