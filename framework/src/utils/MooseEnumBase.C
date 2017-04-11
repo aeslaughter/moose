@@ -154,6 +154,7 @@ MooseEnumBase::addEnumerationName(const std::string & raw_name)
   _names.push_back(upper);
   _ids.insert(value);
   _name_to_id[upper] = value;
+  _name_to_raw_name[upper] = name_value[0] + " "; // add space to make the name unique for removal
 }
 
 int
@@ -178,5 +179,7 @@ MooseEnumBase::removeEnumerationName(std::string name)
     _ids.erase(_ids.find(_name_to_id[name]));
     _name_to_id.erase(_name_to_id.find(name));
     _names.erase(iter);
+    _raw_names.erase(_raw_names.find(_name_to_raw_name[name]), name.size() + 1);
+    _name_to_raw_name.erase(_name_to_raw_name.find(name));
   }
 }

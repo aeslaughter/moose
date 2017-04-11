@@ -133,6 +133,9 @@ protected:
   /// The map of deprecated names and optional replacements
   std::map<std::string, std::string> _deprecated_names;
 
+  /// Map id to raw name for removal
+  std::map<std::string, std::string> _name_to_raw_name;
+
   /**
    * The index of values assigned that are NOT values in this enum.  If this index is 0 (false) then
    * out of range values are not allowed.

@@ -117,11 +117,11 @@ public:
   template <typename T>
   T getEnum() const;
 
-  void removeEnumerationName(std::string name) final override;
-
 protected:
   /// Check whether the current value is deprecated when called
   virtual void checkDeprecated() const override;
+
+  void removeEnumerationName(std::string name) final override;
 
 private:
   /**

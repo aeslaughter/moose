@@ -573,11 +573,11 @@ createExecuteOnEnum(const std::string & default_flags,
 std::string
 getExecuteOnEnumDocString(const MultiMooseEnum & exec_enum)
 {
-  std::string doc("The list of flag(s) indicating when this object should be executed (\"");
+  std::string doc("The list of flag(s) indicating when this object should be executed, the available optoins include \'");
   for (const std::string & name : exec_enum.getNames())
-    doc += name + "\" V \"";
-  doc.erase(doc.end() - 5, doc.end());
-  doc += "\").";
+    doc += name + "', '";
+  doc.erase(doc.end() - 4, doc.end());
+  doc += "').";
   return doc;
 }
 
