@@ -1,6 +1,21 @@
-from markdown.util import etree
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import logging
-log = logging.getLogger(__name__)
+from markdown.util import etree
+
+LOG = logging.getLogger(__name__)
 
 class MarkdownTable(object):
     """
@@ -25,12 +40,12 @@ class MarkdownTable(object):
         Add a row to the table.
 
         Args:
-          *args: The items to include in the table (must be the same length as the supplied headers).
+          *args: Items to include in the table (must be the same length as the supplied headers).
         """
 
         if len(args) != len(self._column_headers):
-            msg = "The number of supplied items ({}) does not match the number of columns ({}).".format(len(args), len(self._column_headers))
-            raise Exception(msg)
+            msg = "The number of supplied items ({}) does not match the number of columns ({})."
+            raise Exception(msg.format(len(args), len(self._column_headers)))
 
         self._rows.append(args)
 
