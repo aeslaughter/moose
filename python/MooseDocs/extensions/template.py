@@ -77,7 +77,7 @@ class TemplatePostprocessor(Postprocessor):
         self._imageLinks(self.markdown.current, soup)
         self._markdownLinks(self.markdown.current, soup)
         self._contentSections(self.markdown.current, soup)
-        return soup.prettify()
+        return unicode(soup)
 
     @staticmethod
     def _insertFiles(filenames):
@@ -162,5 +162,5 @@ class TemplatePostprocessor(Postprocessor):
     def _tableofcontents(text, level='h2'):
         soup = bs4.BeautifulSoup(text, 'html.parser')
         for tag in soup.find_all(level):
-            if 'id' in tag.attrs:
+            if 'id' in tag.attrs and tag.contents:
                 yield (tag.contents[0], tag.attrs['id'])

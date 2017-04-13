@@ -136,6 +136,7 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['title'] = ('Extension Configuration Options', "The title to place above the generated table (title=None removes the heading)")
+        settings['title-level'] = ('h2', "The HTML level for the generated title.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -158,13 +159,14 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
         for key, value in ext.config.iteritems():
             table.addRow(key, repr(value[0]), value[1])
 
-        div = self.applyElementSettings(etree.Element('div'), settings)
-        if settings['title']:
-            h = etree.SubElement(div, 'h2')
-            h.text = settings['title']
-
-        div.append(table.html())
-        return div
+        if table:
+            div = self.applyElementSettings(etree.Element('div'), settings)
+            if settings['title']:
+                h = etree.SubElement(div, settings['title-level'])
+                h.text = settings['title']
+            div.append(table.html())
+            return div
+        return etree.Element('div') # return an empty div if no configuration options are available
 
 class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
     """
@@ -176,6 +178,7 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['title'] = ('Extension Command Settings', "The title to place above the generated table (title=None removes the heading)")
+        settings['title-level'] = ('h3', "The HTML level for the generated title.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -199,13 +202,15 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
         for key, value in obj.defaultSettings().iteritems():
             table.addRow(key, repr(value[0]), value[1])
 
-        div = self.applyElementSettings(etree.Element('div'), settings)
-        if settings['title']:
-            h = etree.SubElement(div, 'h2')
-            h.text = settings['title']
+        if table:
+            div = self.applyElementSettings(etree.Element('div'), settings)
+            if settings['title']:
+                h = etree.SubElement(div, settings['title-level'])
+                h.text = settings['title']
 
-        div.append(table.html())
-        return div
+            div.append(table.html())
+            return div
+        return etree.Element('div') # return an empty div if no settings are available
 
     def find(self, name):
         """
@@ -214,7 +219,8 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
         containers = [self.markdown.preprocessors,
                       self.markdown.inlinePatterns,
                       self.markdown.treeprocessors,
-                      self.markdown.postprocessors]
+                      self.markdown.postprocessors,
+                      self.markdown.parser.blockprocessors]
         for container in containers:
             if name in container:
                 return container[name]

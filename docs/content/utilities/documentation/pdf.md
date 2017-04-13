@@ -3,7 +3,15 @@ name:'PDF'
 # Generating PDFs
 
 The MOOSE documentation system is capable of creating latex (*.tex) files or PDFs from
-[MOOSE flavored markdown](moose_flavored_markdown.md).
+[MOOSE flavored markdown](moose_markdown/index.md).
+
+!include docs/content/utilities/documentation/config.md
+
+For example the file shown below is the pdf/latex configuration file from MOOSE. The most important
+portion of this files the the ["MooseDocs.extensions.template"](extensions/template.md) entry. This provides the template for
+resulting html, which in this case is setup for latex output.
+
+!text docs/latex.yml style=max-height:500px;overflow-y:scroll
 
 ## Creating Content
 
@@ -13,14 +21,10 @@ information regarding the MOOSE documentation system, including this page, to de
 !text docs/examples/report.md max-height=500px
 
 Notice that this markdown file has some special syntax located at the top. The PDF creation
-process involes generating a tex file, the file generated is based on [Jinja2](http://jinja.pocoo.org) template. The top commands are used to set template parameters from the markdown file.
-
-However, it is also possible to set these paramaters from the command-line as well, please refer
-to the `moosedocs.py latex --help` output for further details regarding the template paramters.
+process involves generating a tex file. The ["MooseDocs.extensions.template"](extensions/template.md) extension is based on [Jinja2](http://jinja.pocoo.org) template. The top commands are used to set template parameters from the markdown file.
 
 
 ## Building the PDF
-
 
 The `~/projects/moose/docs/moosedocs.py' python utility is used for converting the markdown
 that was created into a pdf.

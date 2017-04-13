@@ -17,7 +17,7 @@ class CSSExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
         md.preprocessors.add('moose_css_list', CSSPreprocessor(markdown_instance=md, **config), '_end')
-        md.parser.blockprocessors.add('css', CSSBlockProcessor(md.parser, **config), '_begin')
+        md.parser.blockprocessors.add('moose_css', CSSBlockProcessor(md.parser, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
     return CSSExtension(*args, **kwargs)

@@ -399,8 +399,9 @@ class MarkdownPreprocessor(MooseCommonExtension, Preprocessor):
         filename = MooseDocs.abspath(match.group(1))
         settings = self.getSettings(match.group(2))
         if not os.path.exists(filename):
-            log.error("Unknown markdown file to include: {}".format(filename))
-            return match.group(0)
+            msg = "Failed to located filename in following command.\n{}"
+            el = self.createErrorElement(msg.format(match.group(0)), title="Unknown Markdown File")
+            return etree.tostring(el)
         else:
             if settings['start'] or settings['end']:
                 content = TextPattern.extractLineRange(filename, settings['start'], settings['end'], settings['include_end'])

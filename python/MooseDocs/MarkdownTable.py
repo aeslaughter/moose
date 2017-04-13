@@ -35,6 +35,12 @@ class MarkdownTable(object):
         """
         return len(self._rows)
 
+    def __nonzero__(self):
+        """
+        bool operator.
+        """
+        return self.size() > 0
+
     def addRow(self, *args):
         """
         Add a row to the table.

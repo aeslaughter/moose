@@ -1,0 +1,460 @@
+\documentclass[]{report}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[paper=letterpaper, top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{graphicx}
+\usepackage[parfill]{parskip}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, filecolor=blue, urlcolor=blue}
+
+\usepackage{xparse}
+\usepackage{tabularx}
+\usepackage[table]{xcolor}
+\definecolor{code-background}{HTML}{ECF0F1}
+\definecolor{info-title}{HTML}{528452}
+\definecolor{info}{HTML}{82E0AA}
+\definecolor{note-title}{HTML}{3A7296}
+\definecolor{note}{HTML}{85C1E9}
+\definecolor{important-title}{HTML}{B100B0}
+\definecolor{important}{HTML}{FF00FF}
+\definecolor{warning-title}{HTML}{968B2B}
+\definecolor{warning}{HTML}{FFEC46}
+\definecolor{danger-title}{HTML}{B14D00}
+\definecolor{danger}{HTML}{F75E1D}
+\definecolor{error-title}{HTML}{940000}
+\definecolor{error}{HTML}{FFB4B4}
+
+\DeclareDocumentCommand{\admonition}{O{warning-title}O{warning}mm}
+{
+  \rowcolors{1}{#1}{#2}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabularx}{\textwidth}{X}
+    \textcolor[rgb]{1,1,1}{\textbf{#3}} \\ #4
+  \end{tabularx}
+  \rowcolors{1}{white}{white}
+}
+
+\usepackage[table]{listings}
+\usepackage{caption}
+%\DeclareCaptionFormat{listing}{#1#2#3}
+%\captionsetup[lstlisting]{format=listing, singlelinecheck=false, margin=0pt, ont={sf}}
+%\definecolor{code-background}{HTML}{ECF0F1}
+\lstset{language=sh, basicstyle=\footnotesize\rmfamily, breaklines=true, backgroundcolor=\color{code-background}}
+
+
+\begin{document}
+
+\newgeometry{top=2in}
+\begin{titlepage}
+  \begin{center}
+    \rule{\linewidth}{2pt}\par
+    \bigskip
+        {\huge \textbf{Single Source Documentation with MOOSE}}
+    \smallskip
+    \rule{\linewidth}{1pt}\par
+    
+    
+    \vfill
+    Andrew E. Slaughter\par
+    
+    \vfill
+    
+    Idaho National Laboratory\par
+    \medskip
+    
+    
+    \end{center}
+\end{titlepage}
+
+
+\tableofcontents\newpage
+
+\section{MOOSE Flavored Markdown\label{moose-flavored-markdown}}
+\par
+Documentation generated using MOOSE is generated using the \href{http://pythonhosted.org/Markdown/}{python-markdown} package,
+which includes the ability to use extensions from others as well as define custom extensions. This page outlines the
+extensions included as well as the custom syntax defined exclusively for documenting MOOSE source code.\subsection{Extensions\label{extensions}}\subsubsection{Symbol Conversion\label{symbol-conversion}}
+\par
+This package converts ASCII symbols for dashes, quotes, and ellipses to the correct html, for more information see the
+documentation for this package: \href{http://pythonhosted.org/Markdown/extensions/smarty.html}{SmartyPants}.\subsubsection{Markdown Include\label{markdown-include}}
+\par
+This package allows for other markdown file to be include within the current file by enclosing the markdown file to
+be included within \{! and !\}. For more information refer to the package documentation: \href{https://github.com/cmacmackin/markdown-include}{markdown-include}.\subsubsection{Mathematics\label{mathematics}}
+\par
+The enables the use of \href{http://www.mathjax.org}{MathJax} within markdown, refer to the package documentation for complete
+details: \href{https://github.com/mitya57/python-markdown-math}{python-markdown-math}.
+\par
+Inline math may be specified by enclosing the latex in single \texttt{\$}: $y=a\cdot x + b$. Additionally, stand-alone math may
+be enclosed in \texttt{\$\$}:
+\par
+\begin{equation}
+\begin\{equation\}
+\label\{eqn:test\}
+x=\frac\{1+y\}\{1+2z\textasciicircum~2\}.
+\end\{equation\}
+\end{equation}
+\par
+If the \texttt{\label\{eqn:test\}} was placed within the latex then it is possible to link to the equation using traditional latex syntax (\texttt{\eqref\{eqn:test\}}): Equation \href{#mjx-eqn-eqntest}{(??)}.\subsubsection{Admonition\label{admonition}}
+\par
+The \href{https://pythonhosted.org/Markdown/extensions/admonition.html}{admonition} package enables for important and critical
+items to be highlighted, using the syntax detailed below and the package documentation: \href{https://pythonhosted.org/Markdown/extensions/admonition.html}{admonition}.\begin{lstlisting}
+!!! type "An optional title"
+    A detailed message paragraph that is indented by 4 spaces and can include any number of lines.
+\end{lstlisting}
+\par
+The supported ``types'' for MOOSE are: ``info'', ``note'', ``important, ``warning'', ``danger'', and ``error.''\admonition[info-title][info]{Optional Info Title}{This is some information you want people to know about.}
+\admonition[note-title][note]{Optional Note Title}{This is an example of a note.}
+\admonition[important-title][important]{Optional Important Title}{This is an example of something important.}
+\admonition[warning-title][warning]{Optional Warning Title}{This is a warning.}
+\admonition[danger-title][danger]{Optional Danger Title}{This is something very dangerous.}
+\admonition[error-title][error]{Optional Error Title}{This is an error message.}
+\subsection{Automatic Links\label{automatic-links}}
+\par
+Moose Flavored Markdown is capable of automatically creating links based on Markdown filenames, which is
+especially useful when linking to generated pages. The syntax is identical to creating links as
+defined by [mkdocs], however the markdown path may be incomplete.\begin{itemize}
+\item \texttt{[/Diffusion.md]}: [/Diffusion.md]
+\item \texttt{[/Kernels/index..md]}: [systems/Kernels/index.md]
+\item \texttt{[Diffusion](/Diffusion.md)}: \href{/Diffusion.md}{Diffusion}
+\end{itemize}\subsection{Including MOOSE Source Files\label{including-moose-source-files}}
+\par
+It is possible to include complete or partial C++ or input files from the local MOOSE repository. The following sections detail the custom
+markdown syntax to needed, including the application of special settings in the form of key, value pairings that are supplied within
+the custom markdown. A complete list of available settings is provided in the \href{MooseFlavoredMarkdown.md#optional-settings}{Settings} of the included code.\admonition[note-title][note]{Note}{When including code the path specified should be defined from the ``root'' directory, which by default is the
+top level of the git repository (e.g., \textasciitilde~/projects/moose).}
+\subsubsection{Complete Files\label{complete-files}}
+\par
+You can include complete files from the repository using the \texttt{!text} syntax. For example, the following
+includes the complete code as shown.\begin{lstlisting}
+!text framework/src/kernels/Diffusion.C max-height=200px strip-extra-newlines=True overflow-y=scroll
+\end{lstlisting}
+\par
+\begin{lstlisting}[caption=\href{https://github.com/idaholab/moose/blob/master/framework/src/kernels/Diffusion.C}{framework/src/kernels/Diffusion.C}]
+#include "Diffusion.h"
+
+template&lt;&gt;
+InputParameters validParams
+<diffusion>
+ ()
+\{
+  InputParameters params = validParams
+ <kernel>
+  ();
+  params.addClassDescription("The Laplacian operator (\$-\\nabla \\cdot \\nabla u\$), with the weak form of \$(\\nabla \\phi\_i, \\nabla u\_h)\$.");
+  return params;
+\}
+
+Diffusion::Diffusion(const InputParameters \&amp; parameters) :
+    Kernel(parameters)
+\{
+\}
+
+Real
+Diffusion::computeQpResidual()
+\{
+  return \_grad\_u[\_qp] * \_grad\_test[\_i][\_qp];
+\}
+
+Real
+Diffusion::computeQpJacobian()
+\{
+  return \_grad\_phi[\_j][\_qp] * \_grad\_test[\_i][\_qp];
+\}
+\end{lstlisting}\subsubsection{Single Line Match\label{single-line-match}}
+\par
+It is possible to show a single line of a file by a snippet that allows the line to be located within
+the file. If multiple matches occur only the first match will be shown. For example, the call to\texttt{addClassDescription} can be shown by adding the following.\begin{lstlisting}
+!text framework/src/kernels/Diffusion.C line=addClassDescription
+\end{lstlisting}
+\par
+\begin{lstlisting}[caption=\href{https://github.com/idaholab/moose/blob/master/framework/src/kernels/Diffusion.C}{framework/src/kernels/Diffusion.C}]
+\begin{verbatim}
+  <button class="moose-copy-button btn" data-clipboard-target="#moose-code-block-1">
+   copy
+  </button>
+  \end{verbatim}  params.addClassDescription("The Laplacian operator (\$-\\nabla \\cdot \\nabla u\$), with the weak form of \$(\\nabla \\phi\_i, \\nabla u\_h)\$.");
+\end{lstlisting}\subsubsection{Range Line match\label{range-line-match}}
+\par
+Code starting and ending on lines containing a string is also possible by using the ``start' and ``end'
+options. If ``start' is omitted then the snippet will start at the beginning of the file. Similarly, if ``end'
+is omitted the snippet will include the remainder of the file content.\begin{lstlisting}
+!text test/tests/kernels/simple\_diffusion/simple\_diffusion.i start=Kernels end=Executioner overflow-y=scroll max-height=500px
+\end{lstlisting}
+\par
+\begin{lstlisting}[caption=\href{https://github.com/idaholab/moose/blob/master/test/tests/kernels/simple\_diffusion/simple\_diffusion.i}{test/tests/kernels/simple\_diffusion/simple\_diffusion.i}]
+copy[Kernels]
+  [./diff]
+    type = Diffusion
+    variable = u
+  [../]
+[]
+
+[BCs]
+  [./left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  [../]
+  [./right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  [../]
+[]
+\end{lstlisting}\subsubsection{Class Methods\label{class-methods}}
+\par
+By including a method name, in C++ syntax fashion, it is possible to include specific methods from C++ classes in MOOSE. For example,
+the following limits the included code to the \texttt{computeQpResidual} method.\begin{lstlisting}
+!clang framework/src/kernels/Diffusion.C method=computeQpResidual
+\end{lstlisting}!clang framework/src/kernels/Diffusion.C method=computeQpResidual\admonition[warning-title][warning]{Warning}{This method uses the clang parser directly, which can be slow. Thus, in general source code should be
+included using the line and range match methods above and this method reserved for cases where those methods
+fail to capture the necessary code.}
+\subsubsection{Input File Block\label{input-file-block}}
+\par
+By including a block name the included content will be limited to the content matching the supplied name. Notice that the supplied name may be approximate; however, if it is not unique only the first match will appear.\begin{lstlisting}
+!input test/tests/kernels/simple\_diffusion/simple\_diffusion.i block=Kernels
+\end{lstlisting}
+\par
+\begin{lstlisting}[caption=\href{https://github.com/idaholab/moose/blob/master/test/tests/kernels/simple\_diffusion/simple\_diffusion.i}{test/tests/kernels/simple\_diffusion/simple\_diffusion.i}]
+copy[Kernels]
+  [./diff]
+    type = 'Diffusion'
+    variable = 'u'
+  [../]
+[]
+\end{lstlisting}\subsubsection{Optional Settings\label{optional-settings}}
+\par
+The following options may be passed to control how the output is formatted.\begin{tabularx}{\linewidth}{llX}
+\hline
+Option &amp; Default &amp; Description \\
+\hlinestrip\_header &amp; True &amp; Toggles the removal of the MOOSE copyright header. \\
+repo\_link &amp; True &amp; Include a link to the source code on GitHub (``label'' must be True). \\
+label &amp; True &amp; Include a label with the filename before the code content block. \\
+overflow-y &amp; Scroll &amp; The action to take when the text overflow the html container (see \href{http://www.w3schools.com/cssref/css3\_pr\_overflow-y.asp}{overflow-y}). \\
+max-height &amp; 500px &amp; The maximum height of the code window (see \href{http://www.w3schools.com/cssref/pr\_dim\_max-height.asp}{max-height}). \\
+strip-extra-newlines &amp; False &amp; Remove excessive newlines from the included code. \\
+
+\end{tabularx}\subsection{MOOSE Syntax\label{moose-syntax}}
+\par
+A set of special keywords exist for creating MOOSE specific links and tables within your markdown, each are explained below. Note, the
+examples below refer to documentation associated with Kernels and/or the Diffusion Kernel. This should be replaced by
+the syntax for the system or object being documented.\begin{itemize}
+\item \texttt{!description /Kernels/Diffusion}: Inserts the class description (added via \texttt{addClassDescription} method) from the compiled application.
+\item \texttt{!parameters /Kernels/Diffusion}: Inserts tables describing the available input parameters for an object or action.
+\item \texttt{!inputfiles /Kernels/Diffusion}: Creates a list of input files that use the object or action.
+\item \texttt{!childobjects /Kernels/Diffusion}: Create a list of objects that inherit from the supplied object.
+\item \texttt{!subobjects /Kernels}: Creates a table of objects within the supplied system.
+\item \texttt{!subsystems /Adaptivity}: Creates a table of sub-systems within the supplied system.
+\end{itemize}\subsection{Images\label{images}}
+\par
+\begin{figure*}
+\includegraphics[width=\linewidth]{media/memory\_logger-plot\_multi.png}
+\caption{The \href{/memory\_logger.md}{memory\_logger} is a utility that allows the user to track the memory use of a simulation.}
+\end{figure*}
+\par
+It is possible to include images  with more flexibility than standard markdown.
+\par
+The markdown keyword for MOOSE images is \texttt{!image} followed by the filename as shown below. This command, like most of the other
+special MOOSE markdown commands except arbitrary html attributes. Therefore, any keyword, value pairs (e.g., \texttt{width=50\%}) are
+automatically applied to the \texttt{
+  <figure>
+   } tag of the image. For example, the following syntax was used to include the image on the right.\begin{lstlisting}
+!image docs/media/memory\_logger-plot\_multi.png width=30\% padding-left=20px float=right caption=The [memory\_logger](/memory\_logger.md) is a utility that allows the user to track the memory use of a simulation.
+\end{lstlisting}\subsection{Videos\label{videos}}
+\par
+Locally stored or hosted videos can be displayed using the \texttt{!video} syntax.
+\par
+\subsection{Slideshows\label{slideshows}}
+\par
+A sequence of images can be shown via a \texttt{slider}.
+By default the images will auto cycle between images.
+\par
+A simple example:\begin{lstlisting}
+!slider
+    intro.png
+    other*.png
+\end{lstlisting}
+\par
+This would create a slideshow with the first image as \texttt{intro.png} and the next images those that are matched by the wildcard \texttt{other*.png}.
+\par
+Valid options for the slider are standard CSS options (see example below).  Changing
+the interval between slides, transition time, and button layout is not possible
+at this time.
+\par
+CSS options for background images can be applied to individual images as keyword
+pairs.  Additionally, captions can be added to each image and
+modified with appropriate CSS options.
+\par
+Any option that appears after the image (but before ``caption'', if it exists)
+will be applied to the image.  Any option that
+appears after ``caption'' will be applied to the caption.
+\par
+A full slideshow example might be:\begin{lstlisting}
+!slider max-width=50\% left=220px
+    docs/media/memory\_logger-darkmode.png caption= Output of memory logging tool position=relative left=150px top=-150px
+    docs/media/testImage\_tallNarrow.png background-color=#F8F8FF caption= This is a tall, thin image color=red font-size=200\% width=200px height=100\%
+    docs/media/github*.png background-color=gray
+    docs/media/memory\_logger-plot\_multi.png
+\end{lstlisting}\begin{itemize}
+\item \includegraphics[width=\linewidth]{media/memory\_logger-darkmode.png}
+
+\item \includegraphics[width=\linewidth]{media/testImage\_tallNarrow.png}
+
+\item \includegraphics[width=\linewidth]{media/github-logo.png}
+
+\item \includegraphics[width=\linewidth]{media/github-mark-light.png}
+
+\item \includegraphics[width=\linewidth]{media/github-mark.png}
+
+\item \includegraphics[width=\linewidth]{media/memory\_logger-plot\_multi.png}
+
+\end{itemize}\subsection{Figures\label{figures}}
+\par
+When writing documentation it is customary to reference figures within text by number. To create a numbered figure use
+the \texttt{!figure} markdown syntax. This syntax operates nearly identically to the \texttt{!image} syntax with two exceptions.
+\par
+\begin{figure}
+\label{fig:memory\_logger}
+\includegraphics[width=\linewidth]{media/memory\_logger-plot\_multi.png}
+\caption{Figure 1: The numbered prefix is automatically applied to the caption.}
+\end{figure}
+\par
+First, the caption will automatically be prefixed with the figure number (e.g., Figure \href{#fig:memory\_logger}{1}). The
+numbering begins at one and is reset on each page. The prefix ``Figure'' can be modified by setting
+the ``prefix'' option as in Figure \href{#fig:dark\_mode}{2}.
+\par
+\begin{figure}
+\label{fig:dark\_mode}
+\includegraphics[width=\linewidth]{media/memory\_logger-darkmode.png}
+\caption{Fig. 2: The ``prefix'' setting changes the text that proceeds the number.}
+\end{figure}
+\par
+Secondly, the ``id'' setting must be supplied. This defines the name to which the figure should be referred in the text.
+\par
+Figures can be referenced with latex style reference commands. For example, using \texttt{\ref\{fig:memory\_logger\}} results in a
+reference to Figure \href{#fig:memory\_logger}{1}. If an invalid ``id'' is supplied the reference will displayed in red: \ref\{fig:invalid\_id\}.\subsection{Tables\label{tables}}
+\par
+Table 1: This is an example table with a caption.\begin{tabularx}{\linewidth}{llllX}
+\hline
+1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 \\
+\hline2 &amp; 4 &amp; 6 &amp; 8 &amp; 10 \\
+
+\end{tabularx}
+\par
+Similar to figures, tables can be referenced: Table \href{#table:testing}{1}.\subsection{Flow Charts\label{flow-charts}}
+\par
+The ability to include diagrams using \href{http://www.graphviz.org/}{GraphViz} using the \href{}{dot} language is provided.
+Simply, include the ``dot'' syntax in the markdown, being sure to include the keywords (``graph'' or
+``digraph'') on the start of a new line.\begin{itemize}
+\item The official page for the dot language is detailed here: \href{http://www.graphviz.org/content/dot-language}{dot}
+\item There are many sites that provide examples, for example:\begin{itemize}
+\item \href{https://en.wikipedia.org/wiki/DOT\_(graph\_description\_language)}{https://en.wikipedia.org/wiki/DOT\_(graph\_description\_language)}
+\item \href{http://graphs.grevian.org/example}{http://graphs.grevian.org/example}
+\end{itemize}
+\item There also exists live, online tools for writing dot:\begin{itemize}
+\item \href{http://dreampuf.github.io/GraphvizOnline/}{http://dreampuf.github.io/GraphvizOnline/}
+\item \href{http://www.webgraphviz.com/}{http://www.webgraphviz.com/}
+\end{itemize}
+\end{itemize}
+\par
+For example, the following dot syntax placed directly in the markdown produces the following graph.\begin{lstlisting}
+graph \{
+    bgcolor="#ffffff00" // transparent background
+    a -- b -- c;
+    b -- d;
+\}
+\end{lstlisting}\includegraphics[width=\linewidth]{media/tmp\_4eb263840e1141ebbab6d3900ec79dd9.moose.svg}
+\subsection{CSS Options\label{css-options}}\subsubsection{In-line CSS\label{in-line-css}}
+\par
+\begin{lstlisting}[caption=\href{https://github.com/idaholab/moose/blob/master/test/tests/kernels/simple\_diffusion/simple\_diffusion.i}{test/tests/kernels/simple\_diffusion/simple\_diffusion.i}]
+copy[Kernels]
+  [./diff]
+    type = Diffusion
+    variable = u
+  [../]
+[]
+
+[BCs]
+  [./left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  [../]
+  [./right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  [../]
+[]
+\end{lstlisting}
+\par
+You can provide any valid CSS attribute to any markdown extension (!text, !input, !clang, !image, !slideshow). Some extensions can not be controlled as much as others. For example the !slideshow extension ignores alignment attributes. Your milage may vary.
+\par
+Some of the most useful ones are perhaps width, float, align and padding. However, it is CSS. So be creative!
+\par
+In the following example, we will display an input code block. It will ``float' to the right, which should allow this section of text and elements, to appear to the left of the code block, and wrap around it.\begin{itemize}
+\item Keep in mind, that the actual element tag was placed in this document just beneath the ``In-line CSS'' title. This is because the placement of the element still applies to where it starts being drawn on the screen.
+\end{itemize}\admonition[info-title][info]{Info}{It should also work with admonitions}
+
+\par
+Markdown allowing an input code block to float to the right:\begin{lstlisting}
+!text test/tests/kernels/simple\_diffusion/simple\_diffusion.i start=Kernels end=Executioner float=right padding-left=20px font-size=smaller
+\end{lstlisting}\subsubsection{Block CSS Options\label{block-css-options}}
+\par
+You can apply a style sheet to a markdown paragraph through the use of !css extension:\begin{lstlisting}
+!css font-size=smaller margin-left=70\% color=red text-shadow=1px 1px 1px rgba(0,0,0,.4)
+This paragraph should be of a smaller red font with a black offset text shadow. The text
+will be aligned to the right due to the margin-left attribute (nice trick to preserve the
+'justify' attribute currently in use)
+
+An empty new line, designates the end of the css block.
+
+!css font-size=smaller margin-left=70\% color=red text-shadow=1px 1px 1px rgba(0,0,0,.4)
+Another paragraph modified by CSS.
+\end{lstlisting}
+\par
+This paragraph should be of a smaller red font with a black offset text shadow. The text
+will be aligned to the right due to the margin-left attribute (nice trick to preserve the
+``justify' attribute currently in use)
+\par
+An empty new line, designates the end of the css block.
+\par
+Another paragraph modified by CSS.\subsection{Build Status\label{build-status}}
+\par
+\$(document).ready(function()\{ \$("#buildstatus").load("https://moosebuild.org/mooseframework/");\});
+\par
+You can add a Civet build status widget to any page using !buildstatus http://url/to/civet
+\par
+Currently this will only work with Civet CI services.\begin{lstlisting}
+!buildstatus https://moosebuild.org/mooseframework/ float=right padding-left=10px
+\end{lstlisting}\admonition[note-title][note]{Note}{Be sure to follow your !buildstatus extension with an empty new line.}
+\subsection{Bibliographies\label{bibliographies}}
+\par
+It is possible to include citations using latex commands, the following commands are supported within the markdown.\begin{itemize}
+\item \texttt{\cite\{slaughter2015continuous\}}: \cite{slaughter2015continuous}
+\item \texttt{\citet\{wang2014diffusion\}}: \href{#wang2014diffusion}{Wang et al. (2014)}
+\item \texttt{\citep\{gaston2015physics\}}: (\href{#gaston2015physics}{Gaston et al., 2015})
+\end{itemize}
+\par
+The bibliography style may be set within a page using the latex command
+``. Three styles are currently available: ``unsrt', ``plain', ``alpha', and ``unsrtalpha'.
+\par
+The references are displayed by using the latex \texttt{\bibliography\{docs/bib/moose.bib\}} command. This command accepts a comma separated list of bibtex files (*.bib) to use to build citations and references. The files specified in this list must be given as a relative path to the root directory (e.g., \texttt{\textasciitilde~/projects/moose}) of the repository.\begin{enumerate}
+\item Andrew E Slaughter, John W Peterson, Derek R Gaston, Cody J Permann, David Andrš, and Jason M Miller.
+Continuous integration for concurrent moose framework and application development on github.\emph{Journal of Open Research Software}, 2015.
+URL: \href{http://doi.org/10.5334/jors.bx}{http://doi.org/10.5334/jors.bx}.
+\item Y. Wang, H. Zhang, and R.C. Martineau.
+Diffusion acceleration schemes for self-adjoint angular flux formulation with a void treatment.\emph{Nuclear Science and Engineering}, 176(2):201–225, 2014.
+URL: \href{http://dx.doi.org/10.13182/NSE12-83}{http://dx.doi.org/10.13182/NSE12-83}.
+\item D. R. Gaston, C. J. Permann, J. W. Peterson, A. E. Slaughter, D. Andrš, Y. Wang, M. P. Short, D. M. Perez, M. R. Tonks, J. Ortensi, and R. C. Martineau.
+Physics-based multiscale coupling for full core nuclear reactor simulation.\emph{Annals of Nuclear Energy, Special Issue on Multi-Physics Modelling of LWR Static and Transient Behaviour}, 84:45–54, October 2015.
+URL: \href{http://dx.doi.org/10.1016/j.anucene.2014.09.060}{http://dx.doi.org/10.1016/j.anucene.2014.09.060}.
+\end{enumerate}
+\end{document}
+  </figure>
+ </kernel>
+</diffusion>

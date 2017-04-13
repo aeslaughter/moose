@@ -33,10 +33,14 @@ class GlobalPreprocessor(MooseCommonExtension, Preprocessor):
     """
     Appends global links to markdown content
     """
+    @staticmethod
+    def defaultSettings():
+        return dict() # this extension doesn't have settings
+
     def __init__(self, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs),
         Preprocessor.__init__(self, markdown_instance)
-        self._globals = kwargs.pop('globals', [None])
+        self._globals = kwargs.pop('globals', dict())
 
     def run(self, lines):
         """

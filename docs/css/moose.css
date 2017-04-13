@@ -10,7 +10,7 @@ html, body {
 }
 
 .table-of-contents *,
-.moodr-bibliography *{
+.moose-bibliography *{
   text-align: left;
 }
 .nav ul:not(.browser-default) li{
@@ -30,6 +30,10 @@ html, body {
 
 .page-footer, .page-wrap:after {
   height: 142px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: left;
 }
 
 h1 {
@@ -60,6 +64,38 @@ ul {
      margin-left:1.5rem;
 }
 
+.moose-figure-caption,
+.moose-table-caption,
+.moose-image-caption {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 0px;
+}
+
+.moose-listing-caption-heading,
+.moose-table-caption-heading,
+.moose-figure-caption-heading
+{
+  font-size: larger;
+  font-weight: 500;
+}
+
+.moose-listing-caption-text,
+.moose-table-caption-text,
+.moose-figure-caption-text,
+{
+  font-size: larger;
+  font-weight: 300;
+}
+
+.moose-listing-caption,
+.moose-table-caption
+{
+  border-bottom-style: solid;
+  border-width: 2px;
+
+}
+
 .moose-site-generated{
     text-align: left;
     float: left;
@@ -84,14 +120,6 @@ ul {
 
 .moose-copy-button:hover{
   opacity:1;
-}
-
-.moose-figure-caption,
-.moose-table-caption,
-.moose-image-caption {
-    padding-left: 5px;
-    padding-right: 5px;
-    margin: 0px;
 }
 
 .toc-wrapper {

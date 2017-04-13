@@ -1,12 +1,8 @@
 # Documentation Setup and Configuration
 
-!!!warning
-    This system is currently experimental, under development, and subject to change. This page is being written as
-    the various components become available.
-
 MOOSE contains a single-source documentation system for creating websites, slideshows, and pdfs
 using [markdown](https://en.wikipedia.org/wiki/Markdown) syntax, including a custom syntax aimed to simply the
-process: [Moose Flavored Markdown](moose_flavored_markdown.md).
+process: [Moose Flavored Markdown](moose_markdown/index.md).
 
 ---
 
@@ -58,7 +54,7 @@ source activate docs
 (3) Install the additional python packages.
 
 ```bash
-pip install markdown markdown-include python-markdown-math bs4 pybtex jinja2 livereload
+pip install python-markdown-math bs4 pybtex jinja2 livereload lxml pylatexenc
 ```
 
 ## Configuration
@@ -71,47 +67,9 @@ First, you need the main executable ("moosedocs.py") within your application. Th
 cp ~/projects/moose/docs/moosedocs.py ~/projects/your_application_name/doc
 ```
 
-Second, you need to create a configuration file. Again, it is best to start by copying the file in MOOSE:
+At this point you are ready to begin creating a configuration file for one of the various forms
+of documentation that MooseDocs is capable of producing:
 
-```bash
-cp ~/projects/moose/docs/website.yml ~/projects/your_application_name/doc
-```
-
-The "website.yml" file that was copied will likely need to be modified for your application. This configuration file as
-well as all other paths within the documentation are always provided
-
-The following configuration options are available.
-
-| Options | Default | Description |
-| ------- | ------- | ----------- |
-| site_dir | "site" | Location that the website content will be copied when running the 'build' command.
-| navigation | navigation.yml | A yaml file containing the sites top navigation menu, which is limited to one nested level.
-| template | materilize.html | Name of the html template file to utilize, it must be located in the 'templates' directory.
-| template_arguments | dict() | A dictionary of template arguments that are passed to the template.
-| markdown_extensions | [] | A list of the markdown extensions to utilize when building the site.
-
-The MOOSE documentation system uses the [python markdown](http://pythonhosted.org/Markdown/) package from which a custom set of markdown
-was created, the available options for this package are listed in the table below as well as the configuration for MOOSE documentation.
-
-!text docs/website.yml max-height=400px overflow-y=scroll
-
-| Option       | Default | Description |
-| ------------ | ------- | ----------- |
-| executable   |         | The MOOSE application to execute to generate syntax. |
-| locations    | dict()  | A list of locations to search for objects and systems that should be documented. |
-| repo         |         | The location for the remote repository for creating hyperlinks. |
-| links        |         | Source code paths for generating code links. This options could contain headings (e.g., Tests), under each heading is a list of  directories that will be searched for input files and source code. |
-| slides       | False   | Enable the parsing for creating reveal.js slides. |
-| package      | False   | Enable the use of the MoosePackageParser. |
-| graphviz     | '/opt/moose/graphviz/bin' | The location of graphviz executable for use with diagrams. |
-| dot_ext      | 'svg'   | The file extension to utilize with graphviz dot execution. |
-
-The 'locations' option contains should contain sub-items, as shown above in the MOOSE configuration file. These sub-items
-include:
-
-| Option   | Description |
-| -------- | ----------- |
-| doxygen  | The path to the doxygen website, used for developer links. |
-| paths    | A list of paths to the source code (i.e., source and include directories).|
-| install  | The location where the markdown is located for this documentation sub-item. |
-| hide     | The MOOSE syntax to ignore. |
+* [Creating a Web-Site](documentation/website.md)
+* [Building a Presentation](documentation/presentation.md)
+* [Generating a PDF](documentation/pdf.md)

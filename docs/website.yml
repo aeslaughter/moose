@@ -1,3 +1,10 @@
+- toc
+- smarty
+- admonition
+- extra
+- meta
+- mdx_math:
+    enable_dollar_delimiter: True
 - MooseDocs.extensions.global:
     globals: !include docs/globals.yml
 - MooseDocs.extensions.bibtex

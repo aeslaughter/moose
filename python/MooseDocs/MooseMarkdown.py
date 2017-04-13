@@ -19,18 +19,7 @@ class MooseMarkdown(markdown.Markdown):
 
     def __init__(self, extensions=[], extension_configs=dict()):
 
-        # The member for holding the current MooseDocsMarkdownNodeBase object
-        self.current = None
-
-        # Add the required packages
-        extensions += ['toc', 'smarty', 'admonition', 'extra', 'meta', 'mdx_math']
-
-        # Configure packages
-        for config in ['mdx_math', 'markdown_include.include']:
-            if config not in extension_configs:
-                extension_configs[config] = dict()
-                extension_configs['mdx_math'].setdefault('enable_dollar_delimiter', True)
-        extension_configs['markdown_include.include'].setdefault('base_path', MooseDocs.ROOT_DIR)
+        self.current = None # member for holding the current MooseDocsMarkdownNodeBase object
         super(MooseMarkdown, self).__init__(extensions=extensions, extension_configs=extension_configs)
 
     def convert(self, node):

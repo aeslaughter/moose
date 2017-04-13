@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 class BibtexExtension(markdown.Extension):
     """
-    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.xk
+    Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.
     """
 
     def __init__(self, **kwargs):
@@ -51,6 +51,10 @@ class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
     RE_BIBLIOGRAPHY = r'(?<!`)\\bibliography\{(.*?)\}'
     RE_STYLE = r'(?<!`)\\bibliographystyle\{(.*?)\}'
     RE_CITE = r'(?<!`)\\(?P<cmd>cite|citet|citep)\{(?P<keys>.*?)\}'
+
+    @staticmethod
+    def defaultSettings():
+        return dict() # this extension doesn't have settings
 
     def __init__(self, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs),
