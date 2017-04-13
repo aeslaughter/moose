@@ -120,6 +120,9 @@ PorousFlowApp::PorousFlowApp(const InputParameters & parameters) : MooseApp(para
   FluidPropertiesApp::associateSyntax(_syntax, _action_factory);
   ChemicalReactionsApp::associateSyntax(_syntax, _action_factory);
   PorousFlowApp::associateSyntax(_syntax, _action_factory);
+
+  Moose::registerExecFlags();
+  PorousFlowApp::registerExecFlags();
 }
 
 PorousFlowApp::~PorousFlowApp() {}
@@ -247,5 +250,10 @@ PorousFlowApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 }
 void
 PorousFlowApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
+{
+}
+
+void
+PorousFlowApp::registerExecFlags()
 {
 }
