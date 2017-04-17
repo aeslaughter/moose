@@ -40,6 +40,7 @@ class MooseApp;
 class MooseEnum;
 class MooseObject;
 class MultiMooseEnum;
+class ExecuteOnEnum;
 class Problem;
 
 /**
@@ -525,8 +526,8 @@ public:
   void defaultCoupledValue(const std::string & coupling_name, Real value);
 
   /**
-  * Returns the auto build vectors for all parameters.
-  */
+   * Returns the auto build vectors for all parameters.
+   */
   const std::map<std::string, std::pair<std::string, std::string>> & getAutoBuildVectors() const;
 
   /**
@@ -1178,6 +1179,11 @@ void InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
                                                        const std::string & doc_string);
 
 template <>
+void InputParameters::addRequiredParam<ExecuteOnEnum>(const std::string & name,
+                                                      const ExecuteOnEnum & moose_enum,
+                                                      const std::string & doc_string);
+
+template <>
 void InputParameters::addRequiredParam<std::vector<MooseEnum>>(
     const std::string & name,
     const std::vector<MooseEnum> & moose_enums,
@@ -1192,6 +1198,10 @@ void InputParameters::addParam<MultiMooseEnum>(const std::string & /*name*/,
                                                const std::string & /*doc_string*/);
 
 template <>
+void InputParameters::addParam<ExecuteOnEnum>(const std::string & /*name*/,
+                                              const std::string & /*doc_string*/);
+
+template <>
 void InputParameters::addParam<std::vector<MooseEnum>>(const std::string & /*name*/,
                                                        const std::string & /*doc_string*/);
 
@@ -1204,6 +1214,11 @@ template <>
 void InputParameters::addDeprecatedParam<MultiMooseEnum>(const std::string & name,
                                                          const std::string & doc_string,
                                                          const std::string & deprecation_message);
+
+template <>
+void InputParameters::addDeprecatedParam<ExecuteOnEnum>(const std::string & name,
+                                                        const std::string & doc_string,
+                                                        const std::string & deprecation_message);
 
 template <>
 void InputParameters::addDeprecatedParam<std::vector<MooseEnum>>(
@@ -1263,6 +1278,11 @@ template <>
 const MultiMooseEnum & InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
                                                                        const InputParameters & pars,
                                                                        const MultiMooseEnum *);
+
+template <>
+const ExecuteOnEnum & InputParameters::getParamHelper<ExecuteOnEnum>(const std::string & name,
+                                                                     const InputParameters & pars,
+                                                                     const ExecuteOnEnum *);
 
 template <typename T>
 const std::vector<T> &

@@ -19,6 +19,7 @@
 #include "MooseTypes.h"
 #include "MooseUtils.h"
 #include "MultiMooseEnum.h"
+#include "ExecuteOnEnum.h"
 
 #include <cmath>
 
@@ -279,6 +280,9 @@ InputParameters::isParamValid(const std::string & name) const
     return get<MooseEnum>(name).isValid();
   else if (have_parameter<MultiMooseEnum>(name))
     return get<MultiMooseEnum>(name).isValid();
+  else if (have_parameter<ExecuteOnEnum>(name))
+    return get<ExecuteOnEnum>(name).isValid();
+
   else
     return _valid_params.find(name) != _valid_params.end();
 }
@@ -803,6 +807,18 @@ InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
 
 template <>
 void
+InputParameters::addRequiredParam<ExecuteOnEnum>(const std::string & name,
+                                                 const ExecuteOnEnum & moose_enum,
+                                                 const std::string & doc_string)
+{
+  InputParameters::set<ExecuteOnEnum>(name) =
+      moose_enum; // valid parameter is set by set_attributes
+  _required_params.insert(name);
+  _doc_string[name] = doc_string;
+}
+
+template <>
+void
 InputParameters::addRequiredParam<std::vector<MooseEnum>>(
     const std::string & name,
     const std::vector<MooseEnum> & moose_enums,
@@ -834,6 +850,15 @@ InputParameters::addParam<MultiMooseEnum>(const std::string & /*name*/,
 
 template <>
 void
+InputParameters::addParam<ExecuteOnEnum>(const std::string & /*name*/,
+                                         const std::string & /*doc_string*/)
+{
+  mooseError("You must supply a ExecuteOnEnum object when using addParam, even if the parameter "
+             "is not required!");
+}
+
+template <>
+void
 InputParameters::addParam<std::vector<MooseEnum>>(const std::string & /*name*/,
                                                   const std::string & /*doc_string*/)
 {
@@ -858,6 +883,16 @@ InputParameters::addDeprecatedParam<MultiMooseEnum>(const std::string & /*name*/
                                                     const std::string & /*deprecation_message*/)
 {
   mooseError("You must supply a MultiMooseEnum object and the deprecation string when using "
+             "addDeprecatedParam, even if the parameter is not required!");
+}
+
+template <>
+void
+InputParameters::addDeprecatedParam<ExecuteOnEnum>(const std::string & /*name*/,
+                                                   const std::string & /*doc_string*/,
+                                                   const std::string & /*deprecation_message*/)
+{
+  mooseError("You must supply a ExecuteOnEnum object and the deprecation string when using "
              "addDeprecatedParam, even if the parameter is not required!");
 }
 
@@ -966,4 +1001,13 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
                                                 const MultiMooseEnum *)
 {
   return pars.get<MultiMooseEnum>(name);
+}
+
+template <>
+const ExecuteOnEnum &
+InputParameters::getParamHelper<ExecuteOnEnum>(const std::string & name,
+                                               const InputParameters & pars,
+                                               const ExecuteOnEnum *)
+{
+  return pars.get<ExecuteOnEnum>(name);
 }

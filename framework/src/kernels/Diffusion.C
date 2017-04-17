@@ -13,18 +13,25 @@
 /****************************************************************/
 
 #include "Diffusion.h"
+#include "ExecuteOnEnum.h"
 
 template <>
 InputParameters
 validParams<Diffusion>()
 {
   InputParameters params = validParams<Kernel>();
+  ExecuteOnEnum exec_enum("foo bar", "bar");
+  params.addParam<ExecuteOnEnum>("testing", exec_enum, "testing");
   params.addClassDescription("The Laplacian operator ($-\\nabla \\cdot \\nabla u$), with the weak "
                              "form of $(\\nabla \\phi_i, \\nabla u_h)$.");
   return params;
 }
 
-Diffusion::Diffusion(const InputParameters & parameters) : Kernel(parameters) {}
+Diffusion::Diffusion(const InputParameters & parameters) : Kernel(parameters)
+{
+  const ExecuteOnEnum & e = getParam<ExecuteOnEnum>("testing");
+  std::cout << e << std::endl;
+}
 
 Real
 Diffusion::computeQpResidual()

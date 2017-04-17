@@ -31,6 +31,7 @@
   [./diff]
     type = Diffusion
     variable = u
+    testing = foo
   [../]
 []
 
