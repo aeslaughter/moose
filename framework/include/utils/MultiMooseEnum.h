@@ -199,6 +199,7 @@ public:
                                                         const std::set<ExecFlagType> &,
                                                         const std::set<ExecFlagType> &);
   friend class SetupInterface;
+  friend class ExecuteOnEnum;
 
   /// Operator for printing to iostreams
   friend std::ostream & operator<<(std::ostream & out, const MultiMooseEnum & obj);
