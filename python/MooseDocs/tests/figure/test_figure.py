@@ -9,7 +9,7 @@ class TestMooseFigure(MarkdownTestCase):
     """
 
     def testFigure(self):
-        md = '!figure docs/media/github-logo.png id=figure\n\n\\ref{figure}'
+        md = '!image docs/media/github-logo.png id=figure\n\n\\ref{figure}'
         self.assertConvert('test_Figure.html', md)
 
 if __name__ == '__main__':

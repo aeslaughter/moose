@@ -40,8 +40,8 @@ class IncludeExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
         md.preprocessors.add('moose_markdown_include', MarkdownPreprocessor(markdown_instance=md, **config), '_begin')
-        md.inlinePatterns.add('moose_input_block', InputPattern(markdown_instance=md, **config), '_begin')
-        md.inlinePatterns.add('moose_cpp_method', ClangPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose_input', InputPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose_clang', ClangPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_text', TextPattern(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
@@ -60,8 +60,7 @@ class TextPatternBase(MooseCommonExtension, Pattern):
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['strip_header'] = (True, "When True the MOOSE header is removed for display.")
-        settings['repo_link'] = (True, "Toggles the including of a link to the complete file in the repository.")
-        settings['label'] = (True, "Toggles the inclusion of the label above the included text.")
+        settings['caption'] = ('', "The text caption, if an empty string is provided a link to the filename is created, if None is provided no caption is applied, otherwise the text given is used.")
         settings['language'] = ('text', "The language to utilize for providing syntax highlighting.")
         settings['strip-extra-newlines'] = (True, "Removes extraneous new lines from the text.")
         settings['prefix'] = ('', "Text to include prior to the included text.")
@@ -140,15 +139,18 @@ class TextPatternBase(MooseCommonExtension, Pattern):
         el = self.applyElementSettings(etree.Element('div'), settings)
         el.set('class', 'moosedocs-code-div')
 
-        # Build label
-        if settings['repo_link'] and self._repo:
-            title = etree.SubElement(el, 'a')
-            title.set('href', os.path.join(self._repo, rel_filename))
-        else:
-            title = etree.SubElement(el, 'div')
+        # Build caption
+        cap_text = settings['caption']
+        if cap_text == '':
+            if self._repo:
+                cap_text = etree.Element('a')
+                cap_text.set('href', os.path.join(self._repo, rel_filename))
+                cap_text.text = rel_filename
+            else:
+                cap_text = rel_filename
 
-        if settings['label']:
-            title.text = label
+        caption = MooseDocs.extensions.caption_element(text=cap_text)
+        el.append(caption)
 
         # Build the code
         pre = etree.SubElement(el, 'pre')
@@ -165,7 +167,7 @@ class TextPattern(TextPatternBase):
     """
     A markdown extension for including complete source code files.
     """
-    RE = r'^!text\s+(.*?)(?:$|\s+)(.*)'
+    RE = r'^!text\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -270,7 +272,7 @@ class InputPattern(TextPatternBase):
     Markdown extension for extracting blocks from input files.
     """
 
-    CPP_RE = r'^!input\s+(.*?)(?:$|\s+)(.*)'
+    RE = r'^!input\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -279,7 +281,7 @@ class InputPattern(TextPatternBase):
         return settings
 
     def __init__(self, **kwargs):
-        TextPatternBase.__init__(self, self.CPP_RE, language='text', **kwargs)
+        TextPatternBase.__init__(self, self.RE, language='text', **kwargs)
 
     def handleMatch(self, match):
         """
@@ -317,7 +319,7 @@ class ClangPattern(TextPatternBase):
     """
 
     # REGEX for finding: !clang /path/to/file.C|h method=some_method
-    CPP_RE = r'^!clang\s+(.*?)(?:$|\s+)(.*)'
+    RE = r'^!clang\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -326,7 +328,7 @@ class ClangPattern(TextPatternBase):
         return settings
 
     def __init__(self, **kwargs):
-        super(ClangPattern, self).__init__(self.CPP_RE, language='cpp', **kwargs)
+        super(ClangPattern, self).__init__(self.RE, language='cpp', **kwargs)
 
         # The make command to execute
         self._make_dir = MooseDocs.abspath(kwargs.pop('make_dir'))

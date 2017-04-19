@@ -1,0 +1,45 @@
+<p>
+<div class="moosedocs-code-div" id="diffusion" style="">
+<p class="moose-listing-caption"><span class="moose-listing-caption-heading">Listing 1: </span><span class="moose-listing-caption-text">Diffusion Kernel</span></p>
+<pre class="language-text"><button class="moose-copy-button btn" data-clipboard-target="#moose-code-block-0">copy</button><code class="text" id="moose-code-block-0">#include &quot;Diffusion.h&quot;
+
+template&lt;&gt;
+InputParameters validParams&lt;Diffusion&gt;()
+{
+  InputParameters params = validParams&lt;Kernel&gt;();
+  params.addClassDescription(&quot;The Laplacian operator ($-\\nabla \\cdot \\nabla u$), with the weak form of $(\\nabla \\phi_i, \\nabla u_h)$.&quot;);
+  return params;
+}
+
+Diffusion::Diffusion(const InputParameters &amp; parameters) :
+    Kernel(parameters)
+{
+}
+
+Real
+Diffusion::computeQpResidual()
+{
+  return _grad_u[_qp] * _grad_test[_i][_qp];
+}
+
+Real
+Diffusion::computeQpJacobian()
+{
+  return _grad_phi[_j][_qp] * _grad_test[_i][_qp];
+}
+</code></pre>
+</div>
+</p>
+<p>
+<div class="moosedocs-code-div" id="diffusion_block" style="">
+<p class="moose-listing-caption"><span class="moose-listing-caption-heading">Listing 2: </span><span class="moose-listing-caption-text">Diffusion Kernel Input Syntax</span></p>
+<pre class="language-text"><button class="moose-copy-button btn" data-clipboard-target="#moose-code-block-1">copy</button><code class="text" id="moose-code-block-1">[Kernels]
+  [./diff]
+    type = 'Diffusion'
+    variable = 'u'
+  [../]
+[]
+</code></pre>
+</div>
+</p>
+<p>Listing <a class="moose-float-reference" href="#diffusion">1</a> and <a class="moose-float-reference" href="#diffusion_block">2</a>.</p>

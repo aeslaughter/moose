@@ -33,7 +33,6 @@ class MediaExtension(markdown.Extension):
 def makeExtension(*args, **kwargs):
     return MediaExtension(*args, **kwargs)
 
-
 class MediaPatternBase(MooseCommonExtension, Pattern):
     """
     Markdown extension for handling images.
@@ -93,8 +92,7 @@ class ImagePattern(MediaPatternBase):
     """
     Find !image /path/to/file attribute=setting
     """
-    RE = r'^!image\s+(.*?)(?:$|\s+)(.*)'
-    CLASS = 'moose-image-caption'
+    RE = r'^!image\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -112,6 +110,7 @@ class ImagePattern(MediaPatternBase):
 
         # Create the figure element
         div = self.applyElementSettings(etree.Element('div'), settings)
+        div.set('class', 'moose-image-div')
         card = etree.SubElement(div, 'div')
         card.set('class', 'card')
 
@@ -127,21 +126,16 @@ class ImagePattern(MediaPatternBase):
         img.set('class', 'materialboxed')
 
         # Add caption
-        if settings['caption']:
-            caption = etree.SubElement(card, 'div')
-            p = etree.SubElement(caption, 'p')
-            p.set('class', self.CLASS)
-            p.set('align', "justify")
-            p.text = settings['caption']
+        caption = MooseDocs.extensions.caption_element(text=settings['caption'])
+        card.append(caption)
 
         return div
-
 
 class VideoPattern(MediaPatternBase):
     """
     Find !video /path/to/file attribute=setting
     """
-    RE = r'^!video\s+(.*?)(?:$|\s+)(.*)'
+    RE = r'^!video\s+(.*?)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -149,8 +143,9 @@ class VideoPattern(MediaPatternBase):
         settings['controls'] = (True, "Display the video player controls.")
         settings['loop'] = (False, "Automatically loop the video.")
         settings['autoplay'] = (False, "Automatically start playing the video.")
-        settings['width'] = ('auto', "The width of the video player.")
-        settings['height'] = ('auto', "The height of the video player.")
+        settings['video-width'] = ('auto', "The width of the video player.")
+        settings['video-height'] = ('auto', "The height of the video player.")
+        settings['caption'] = (None, "The text for the video caption.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -163,24 +158,33 @@ class VideoPattern(MediaPatternBase):
         _, ext = os.path.splitext(filename)
 
         center = settings.pop('center')
-        v_opts = ['controls', 'loop', 'autoplay', 'width', 'height']
-        v_vals = [settings.pop(v) for v in v_opts]
+        v_opts = dict()
+        v_opts['controls'] = settings.pop('controls')
+        v_opts['loop'] = settings.pop('loop')
+        v_opts['autoplay'] = settings.pop('autoplay')
+        v_opts['width'] = settings.pop('video-width')
+        v_opts['height'] = settings.pop('video-height')
 
         div = self.applyElementSettings(etree.Element('div'), settings)
+        div.set('class', 'moose-video-div')
         if center:
             video = etree.SubElement(etree.SubElement(div, 'center'), 'video')
         else:
             video = etree.SubElement(div, 'video')
-        for i, v in enumerate(v_opts):
-            if v_vals[i]:
-                if isinstance(v_vals[i], bool):
-                    video.set(v, v)
+        for key, value in v_opts.iteritems():
+            if value:
+                if isinstance(value, bool):
+                    video.set(key, key)
                 else:
-                    video.set(v, v_vals[i])
+                    video.set(key, value)
 
         src = etree.SubElement(video, 'source')
         src.set('type', 'video/{}'.format(ext[1:]))
         src.set('src', filename)
+
+        caption = MooseDocs.extensions.caption_element(text=settings['caption'])
+        div.append(caption)
+
         return div
 
 class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
@@ -198,7 +202,14 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
     It is assumed image names will have the same filepath as on the webserver.
     """
 
-    RE = re.compile(r'^!\ ?slider(.*)')
+    RE = re.compile(r'^!\ ?slider(?P<settings>.*)')
+
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['caption'] = (None, "The text for the slider caption.")
+        return settings
+
 
     ImageInfo = collections.namedtuple('ImageInfo', 'filename img_settings caption_settings')
 
@@ -270,7 +281,7 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
         settings = self.getSettings(match.group(1))
 
         slider = etree.SubElement(parent, 'div')
-        slider.set('class', 'slider')
+        slider.set('class', 'slider moose-slider-div')
         self.applyElementSettings(slider, settings)
 
         ul = etree.SubElement(slider, 'ul')
@@ -288,3 +299,7 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
                 caption.set('class','caption')
                 caption.text = item.caption_settings.pop('caption', '')
                 caption = self.applyElementSettings(caption, item.caption_settings, keys=item.caption_settings.keys())
+
+
+        caption = MooseDocs.extensions.caption_element(text=settings['caption'])
+        slider.append(caption)

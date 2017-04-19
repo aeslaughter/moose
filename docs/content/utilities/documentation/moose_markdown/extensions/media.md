@@ -25,7 +25,7 @@ Locally stored or hosted videos can be displayed using the `!video` syntax. This
 fashion as the `!image` command, but also includes some extra settings as listed in the table
 below.
 
-!video http://clips.vorwaerts-gmbh.de/VfE.webm width=100%
+!video http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100%
 
 !extension-settings moose_video title=Command Settings (`!video`)
 

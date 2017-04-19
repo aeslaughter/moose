@@ -18,9 +18,22 @@ class MooseMarkdown(markdown.Markdown):
     """
 
     def __init__(self, extensions=[], extension_configs=dict()):
-
         self.current = None # member for holding the current MooseDocsMarkdownNodeBase object
         super(MooseMarkdown, self).__init__(extensions=extensions, extension_configs=extension_configs)
+
+    def getExtension(self, etype):
+        """
+        Return an extension instance.
+
+        Args:
+            etype[type]: The type of the extension to return.
+        """
+        out = None
+        for ext in self.registeredExtensions:
+            if isinstance(ext, etype):
+                out = ext
+                break
+        return out
 
     def convert(self, node):
         """

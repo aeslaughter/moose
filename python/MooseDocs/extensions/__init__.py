@@ -87,3 +87,38 @@ def create_system_collection(name, syntax, **kwargs):
     Return html element listing systems.
     """
     return create_collection(name, syntax, 'system', **kwargs)
+
+def caption_element(heading=None, text=None, class_='moose-caption'):
+    """
+    Create a caption Element.
+
+    Args:
+        heading[str, etree.Element]: The heading content.
+        text[str, etree.Element]: The caption text content.
+        class_[str]: The class for the entire p tag.
+        heading_class[str]: The class for the heading span.
+        text_class[str]: The class for the text span.
+    """
+
+    # The <p> tag
+    p = etree.Element('p')
+    p.set('class', class_)
+
+    # Heading
+    h_span = etree.SubElement(p, 'span')
+    h_span.set('class', class_ + '-heading')
+
+    if isinstance(heading, type(etree.Element('span'))): # etree.Element is a function
+        h_span.append(heading)
+    elif heading:
+        h_span.text = heading
+
+    # Text
+    t_span = etree.SubElement(p, 'span')
+    t_span.set('class', class_ + '-text')
+    if isinstance(text, type(etree.Element('span'))): # etree.Element is a function
+        t_span.append(text)
+    elif text:
+        t_span.text = text
+
+    return p
