@@ -27,9 +27,7 @@ reference to Figure \ref{fig:demo}. If an invalid "id" is supplied the reference
 
 
 
-<!--
-!video http://clips.vorwaerts-gmbh.de/VfE.webm video-width=1500px padding-right=10px float=left id=big_buck_bunny caption=Big Buck Bunny is an open-source animated short.
--->
+!video http://clips.vorwaerts-gmbh.de/VfE.webm width=150px padding-right=10px float=left id=big_buck_bunny caption=Big Buck Bunny is an open-source animated short.
 
 =======
 can be referenced with the latex style `\ref{}` command.
