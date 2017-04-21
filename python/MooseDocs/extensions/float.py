@@ -31,6 +31,7 @@ class FloatExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
 
+        """
         # Figures
         media_ext = md.getExtension(MediaExtension)
         if not media_ext:
@@ -97,8 +98,7 @@ class FloatExtension(markdown.Extension):
 
         unknown = UnknownReferencePattern(markdown_instance=md, **config)
         md.inlinePatterns.add('moose_unknown_reference', unknown, '_end')
-
-
+        """
 
 def makeExtension(*args, **kwargs):
     return FloatExtension(*args, **kwargs)

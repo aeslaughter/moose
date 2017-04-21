@@ -40,18 +40,20 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
     Usage:
      !media image_file.png|jpg|etc attribute=setting
     """
-    CLASSNAME = 'media'
+    COUNTER = collections.defaultdict(int)
 
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['caption'] = (None, "The caption text for the media element.")
         settings['card'] = (False, "Wrap the content in a materialize card.")
+        settings['counter'] = ('figure', "The counter group that this media item belongs. This is used by float extension to provide numbered references. Set this to None to avoid counting.")
         return settings
 
     def __init__(self, pattern, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
         Pattern.__init__(self, pattern, markdown_instance)
+        self._classname = kwargs.pop('classname', 'media')
 
     def handleMatch(self, match):
         """
@@ -65,6 +67,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         # Extract the filename and settings from regex
         rel_filename = match.group(2)
         settings = self.getSettings(match.group('settings'))
+        cname = settings['counter']
 
         # Determine the filename
         filename = None
@@ -81,7 +84,9 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
 
         # Create the outer <div> tag
         div = self.applyElementSettings(etree.Element('div'), settings)
-        div.set('class', 'moose-{}-div'.format(self.CLASSNAME))
+        div.set('class', 'moose-{}-div'.format(self._classname))
+        if cname is not None:
+            div.set('data-moose-count-{}'.format(cname), str(self.COUNTER[cname] + 1))
 
         # Add content and wrap within card elements
         element = div
@@ -99,6 +104,8 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         if caption_element:
             self._cardWrapper(element, caption_element, 'card-content', settings)
 
+        if cname is not None:
+            self.COUNTER[cname] += 1
         return div
 
     def _cardWrapper(self, parent, child, class_, settings):
@@ -123,7 +130,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         Return the caption element.
         """
         return MooseDocs.extensions.caption_element(text=settings['caption'],
-                                                    class_='moose-{}-caption'.format(self.CLASSNAME))
+                                                    class_='moose-{}-caption'.format(self._classname))
 
 
 class ImagePattern(MediaPatternBase):
@@ -131,7 +138,6 @@ class ImagePattern(MediaPatternBase):
     Find !image /path/to/file attribute=setting
     """
     RE = r'^!media\s+(.*?)(?:$|\s+)(?P<settings>.*)'
-    CLASSNAME = 'image'
 
     @staticmethod
     def defaultSettings():
@@ -140,6 +146,7 @@ class ImagePattern(MediaPatternBase):
         return settings
 
     def __init__(self, markdown_instance, **kwargs):
+        kwargs.setdefault('classname', 'image')
         super(ImagePattern, self).__init__(self.RE, markdown_instance, **kwargs)
 
     def createMediaElement(self, filename, settings):
@@ -162,7 +169,6 @@ class VideoPattern(MediaPatternBase):
     Creates a <video> tag for webm, ogg, or mp4 extensions.
     """
     RE = r'^!media\s+(.*?(webm|ogg|mp4))(?:$|\s+)(?P<settings>.*)'
-    CLASSNAME = 'video'
 
     @staticmethod
     def defaultSettings():
@@ -176,6 +182,7 @@ class VideoPattern(MediaPatternBase):
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
+        kwargs.setdefault('classname', 'video')
         super(VideoPattern, self).__init__(self.RE, markdown_instance, **kwargs)
 
     def createMediaElement(self, filename, settings):
