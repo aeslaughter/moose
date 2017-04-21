@@ -50,7 +50,6 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
-        settings['center'] = (False, "When True the contents are centered.")
         settings['caption'] = (None, "The caption text for the media element.")
         settings['card'] = (False, "Wrap the content in a materialize card.")
         return settings
@@ -92,7 +91,9 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         # Add content and wrap within card elements
         element = div
         if settings['card']:
-            element = etree.SubElement(div, 'div', attr={'class':'card', 'style':'margin-left:auto;margin-right:auto;'})
+            element = etree.SubElement(div, 'div')
+            element.set('class', 'card')
+            element.set('style', 'margin-left:auto;margin-right:auto;')
 
         # Add media content
         media_element = self.createMediaElement(filename, settings)
@@ -110,7 +111,8 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         Helper for optionally wrapping a materialize 'card'
         """
         if settings['card']:
-            card_element = etree.SubElement(parent, 'div', attr={'class':class_})
+            card_element = etree.SubElement(parent, 'div')
+            card_element.set('class', class_)
             card_element.append(child)
         else:
             parent.append(child)
@@ -153,6 +155,8 @@ class ImagePattern(MediaPatternBase):
         img.set('src', os.path.relpath(filename, os.getcwd()))
         if settings['materialboxed']:
             img.set('class', 'materialboxed')
+            if settings['caption']:
+                img.set('data-caption', settings['caption'])
 
         return img
 

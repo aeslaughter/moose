@@ -46,10 +46,6 @@ class MarkdownTestCase(unittest.TestCase):
                 if key not in cls.EXTENSIONS:
                     config.pop(key)
 
-        print config
-#        if not cls.TEMPLATE:
-#            config.pop('MooseDocs.extensions.template', None)
-
         cls.updateExtensions(config)
         cls.parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
         os.chdir(cls.WORKING_DIR)

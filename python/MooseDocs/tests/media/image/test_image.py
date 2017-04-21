@@ -17,21 +17,25 @@ class TestMooseImageFile(MarkdownTestCase):
         md = '!media docs/media/github-logo.png materialboxed=false'
         self.assertConvert('testImageDisableMaterializeBox.html', md)
 
-
-    @unittest.skip('')
     def testImageCaption(self):
-        md = '!image docs/media/github-logo.png caption=A test caption'
+        md = '!media docs/media/github-logo.png caption=A test caption'
         self.assertConvert('testImageCaption.html', md)
 
-    @unittest.skip('')
     def testImageSettings(self):
-        md = '!image docs/media/github-logo.png float=right width=30%'
-        self.assertConvert('test_ImageSettings.html', md)
+        md = '!media docs/media/github-logo.png float=right width=30%'
+        self.assertConvert('testImageSettings.html', md)
 
-    @unittest.skip('')
-    def testImageBadFile(self):
-        md = '!image docs/media/not_a_file.png'
-        self.assertConvert('test_ImageBadFile.html', md)
+    def testImageCard(self):
+        md = '!media docs/media/github-logo.png card=true'
+        self.assertConvert('testImageCard.html', md)
+
+    def testImageCardCaption(self):
+        md = '!media docs/media/github-logo.png card=1 caption=A test caption'
+        self.assertConvert('testImageCardCaption.html', md)
+
+    def testImageFileError(self):
+        md = '!media docs/media/not_a_file.png'
+        self.assertConvert('testImageFileError.html', md)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
