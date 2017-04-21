@@ -23,7 +23,7 @@ try:
 except:
     HAVE_MOOSE_CPP_PARSER = False
 
-class ListingsExtension(markdown.Extension):
+class ListingExtension(markdown.Extension):
     """
     Extension for adding including code and other text files.s
     """
@@ -31,7 +31,7 @@ class ListingsExtension(markdown.Extension):
         self.config = dict()
         self.config['repo'] = ['', "The remote repository to create hyperlinks."]
         self.config['make_dir'] = ['', "The location of the MakeFile for determining the include paths when using clang parser."]
-        super(IncludeExtension, self).__init__(**kwargs)
+        super(ListingExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
         """
@@ -44,10 +44,10 @@ class ListingsExtension(markdown.Extension):
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
-    return IncludeExtension(*args, **kwargs)
+    return ListingExtension(*args, **kwargs)
 
 
-class ListingsPatternBase(MooseCommonExtension, Pattern):
+class ListingPatternBase(MooseCommonExtension, Pattern):
     """
     Base class for pattern matching text blocks.
 
@@ -67,6 +67,7 @@ class ListingsPatternBase(MooseCommonExtension, Pattern):
         settings['suffix'] = ('', "Text to include after to the included text.")
         settings['indent'] = (0, "The level of indenting to apply to the included text.")
         settings['strip-leading-whitespace'] = (False, "When True leading white-space is removed from the included text.")
+        settings['counter'] = ('listing', "The counter group to associate wit this command.")
         return settings
 
     def __init__(self, pattern, markdown_instance=None, **kwargs):
@@ -141,17 +142,17 @@ class ListingsPatternBase(MooseCommonExtension, Pattern):
 
         # Build caption
         cap = MooseDocs.extensions.caption_element(settings)
-        dif.append(cap)
+        el.append(cap)
         if settings['link']:
             link = etree.Element('a')
             link.set('href', os.path.join(self._repo, rel_filename))
-            if cap.findall('span')[-1].get('class') == 'moose-listing-caption-text':
-                link.text = '({})'.format(os.path.basename(rel_filename))
-            else:
-                link.text = rel_filename
-            link['class'] = 'tooltipped'
-            link['data-tooltip'] = rel_filename
-            link['data-position'] = 'top'
+            link.text = os.path.basename(rel_filename)
+            for elem in cap.iter('span'):
+                link.text = '({})'.format(link.text)
+                break
+            link.set('class', 'moose-listings-caption-link tooltipped')
+            link.set('data-tooltip', rel_filename)
+            link.set('data-position', 'top')
             cap.append(link)
 
         # Build the code
@@ -165,7 +166,7 @@ class ListingsPatternBase(MooseCommonExtension, Pattern):
         return el
 
 
-class ListingPattern(ListingsPatternBase):
+class ListingPattern(ListingPatternBase):
     """
     A markdown extension for including complete source code files.
     """
@@ -173,7 +174,7 @@ class ListingPattern(ListingsPatternBase):
 
     @staticmethod
     def defaultSettings():
-        settings = ListingsPatternBase.defaultSettings()
+        settings = ListingPatternBase.defaultSettings()
         settings['line'] = (None, "A portion of text that unique identifies a single line to include.")
         settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
         settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
@@ -181,13 +182,12 @@ class ListingPattern(ListingsPatternBase):
         return settings
 
     def __init__(self, **kwargs):
-        super(TextPattern, self).__init__(self.RE, **kwargs)
+        super(ListingPattern, self).__init__(self.RE, **kwargs)
 
     def handleMatch(self, match):
         """
         Process the text file provided.
         """
-
         # Update the settings from regex match
         settings = self.getSettings(match.group(3))
 
@@ -269,7 +269,7 @@ class ListingPattern(ListingsPatternBase):
         return ''.join(lines[start_idx:end_idx])
 
 
-class InputPattern(ListingsPatternBase):
+class InputPattern(ListingPatternBase):
     """
     Markdown extension for extracting blocks from input files.
     """
@@ -278,12 +278,12 @@ class InputPattern(ListingsPatternBase):
 
     @staticmethod
     def defaultSettings():
-        settings = ListingsPatternBase.defaultSettings()
+        settings = ListingPatternBase.defaultSettings()
         settings['block'] = (None, "The input file syntax block to include.")
         return settings
 
     def __init__(self, **kwargs):
-        ListingsPatternBase.__init__(self, self.RE, language='text', **kwargs)
+        ListingPatternBase.__init__(self, self.RE, language='text', **kwargs)
 
     def handleMatch(self, match):
         """
@@ -291,7 +291,7 @@ class InputPattern(ListingsPatternBase):
         """
         settings = self.getSettings(match.group(3))
         if 'block' not in settings:
-            return ListingsPatternBase.handleMatch(self, match)
+            return ListingPatternBase.handleMatch(self, match)
 
         # Build the complete filename.
         rel_filename = match.group(2)
@@ -311,7 +311,7 @@ class InputPattern(ListingsPatternBase):
         label = match.group(2) if match.group(2) else rel_filename
         return self.createElement(label, content, filename, rel_filename, settings)
 
-class ClangPattern(ListingsPatternBase):
+class ClangPattern(ListingPatternBase):
     """
     A markdown extension for including source code snippets using clang python bindings.
 
@@ -325,7 +325,7 @@ class ClangPattern(ListingsPatternBase):
 
     @staticmethod
     def defaultSettings():
-        settings = ListingsPatternBase.defaultSettings()
+        settings = ListingPatternBase.defaultSettings()
         settings['method'] = (None, "The C++ method to return using the clang parser.")
         return settings
 
