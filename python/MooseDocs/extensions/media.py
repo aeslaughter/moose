@@ -27,7 +27,7 @@ class MediaExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
         md.inlinePatterns.add('moose_image', ImagePattern(markdown_instance=md, **config), '_begin')
-        md.inlinePatterns.add('moose_video', VideoPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose_video', VideoPattern(markdown_instance=md, **config), '<moose_image')
         md.parser.blockprocessors.add('moose_slider', SliderBlockProcessor(md.parser, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
@@ -38,12 +38,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
     Markdown extension for handling images.
 
     Usage:
-     !image image_file.png|jpg|etc attribute=setting
-
-    Settings:
-      caption[str]: Creates a figcaption tag with the supplied text applied.
-
-    All image filenames should be supplied as relative to the docs directory, i.e., media/my_image.png
+     !media image_file.png|jpg|etc attribute=setting
     """
     CLASSNAME = 'media'
 
@@ -162,9 +157,12 @@ class ImagePattern(MediaPatternBase):
 
 class VideoPattern(MediaPatternBase):
     """
-    Find !video /path/to/file attribute=setting
+    Find !media /path/to/file attribute=setting
+
+    Creates a <video> tag for webm, ogg, or mp4 extensions.
     """
-    RE = r'^!video\s+(.*?)(?:$|\s+)(?P<settings>.*)'
+    RE = r'^!media\s+(.*?(webm|ogg|mp4))(?:$|\s+)(?P<settings>.*)'
+    CLASSNAME = 'video'
 
     @staticmethod
     def defaultSettings():
@@ -186,7 +184,9 @@ class VideoPattern(MediaPatternBase):
         """
         _, ext = os.path.splitext(filename)
 
-        center = settings.pop('center')
+        # HTML5 video tag can accept non-paired attributes, which is not supported by the etree
+        # markdown util. However, the video tag does support "control=control" for legacy purposes,
+        # so that is what is done here.
         v_opts = dict()
         v_opts['controls'] = settings.pop('controls')
         v_opts['loop'] = settings.pop('loop')
@@ -194,12 +194,7 @@ class VideoPattern(MediaPatternBase):
         v_opts['width'] = settings.pop('video-width')
         v_opts['height'] = settings.pop('video-height')
 
-        div = self.applyElementSettings(etree.Element('div'), settings)
-        div.set('class', 'moose-video-div')
-        if center:
-            video = etree.SubElement(etree.SubElement(div, 'center'), 'video')
-        else:
-            video = etree.SubElement(div, 'video')
+        video = etree.Element('video')
         for key, value in v_opts.iteritems():
             if value:
                 if isinstance(value, bool):
@@ -210,11 +205,7 @@ class VideoPattern(MediaPatternBase):
         src = etree.SubElement(video, 'source')
         src.set('type', 'video/{}'.format(ext[1:]))
         src.set('src', filename)
-
-        caption = MooseDocs.extensions.caption_element(text=settings['caption'])
-        div.append(caption)
-
-        return div
+        return video
 
 class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
     """
