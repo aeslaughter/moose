@@ -14,7 +14,6 @@ from markdown.util import etree
 import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
 
-
 class MediaExtension(markdown.Extension):
     """
     Extension for adding media files via markdown.
@@ -88,10 +87,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         # Create the outer <div> tag
         div = self.applyElementSettings(etree.Element('div'), settings)
         div.set('class', 'moose-{}-div'.format(self._classname))
-        if settings['id']:
-            self.markdown.COUNTER[cname] += 1
-            div.set('data-moose-count'.format(cname), str(self.markdown.COUNTER[cname]))
-            div.set('data-moose-count-name', cname)
+        MooseDocs.extensions.increment_counter(div, settings, cnam)
 
         # Add content and wrap within card elements
         element = div

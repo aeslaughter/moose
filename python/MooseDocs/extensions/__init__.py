@@ -1,5 +1,6 @@
 import os
 from markdown.util import etree
+import MooseDocs
 
 def get_collection_items(info_objects, show_hidden=False):
     """
@@ -95,8 +96,8 @@ def caption_element(settings):
     Args:
         settings[dict]: Extension settings.
     """
-    cname = settings.get('counter', 'unknown').lower()
-    class_ = 'moose-{}-caption'.format(cname)
+    counter_name = settings.get('counter', 'unknown').lower()
+    class_ = 'moose-{}-caption'.format(counter_name)
 
     p = etree.Element('p')
     p.set('class', class_)
@@ -104,10 +105,26 @@ def caption_element(settings):
     if settings['id']:
         h_span = etree.SubElement(p, 'span')
         h_span.set('class', '{}-heading'.format(class_))
-        h_span.text = '{} {}: '.format(cname.title(), str(self.markdown.COUNTER[cname]))
+        h_span.text = '{} {}: '.format(counter_name.title(), str(MooseDocs.MooseMarkdown.COUNTER[counter_name]))
 
     if settings['caption']:
         t_span = etree.SubElement(p, 'span')
         t_span.set('class', '{}-text'.format(class_))
         t_span.text = settings['caption']
     return p
+
+def increment_counter(element, settings, counter_name):
+    """
+    If 'id' is given in the settings add the counter information to the supplied etree.Element and
+    increment the global counter.
+
+    Args:
+        element[etree.Element]: The element to modify with counter data.
+        settings[dict]: The MooseDocs extension settings, if 'id' is valid the counter increments.
+        counter_name[str]: The counter name.
+    """
+    if settings['id']:
+        counter_name = counter_name.lower()
+        MooseDocs.MooseMarkdown.COUNTER[counter_name] += 1
+        element.set('data-moose-count'.format(counter_name), str(MooseDocs.MooseMarkdown.COUNTER[counter_name]))
+        element.set('data-moose-count-name', counter_name)

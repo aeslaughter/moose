@@ -13,11 +13,11 @@
 - MooseDocs.extensions.devel
 - MooseDocs.extensions.materialize
 - MooseDocs.extensions.media
+- MooseDocs.extensions.tables
 - MooseDocs.extensions.include:
     repo: https://github.com/idaholab/moose/blob/master
     make_dir: modules/combined
-- MooseDocs.extensions.float
-- MooseDocs.extensions.equation
+- MooseDocs.extensions.refs
 - MooseDocs.extensions.template:
     template: website.html
     template_args:
