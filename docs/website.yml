@@ -7,7 +7,7 @@
     enable_dollar_delimiter: True
 - MooseDocs.extensions.global:
     globals: !include docs/globals.yml
-- MooseDocs.extensions.include:
+- MooseDocs.extensions.include
 - MooseDocs.extensions.bibtex
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram

@@ -1,0 +1,10 @@
+[Tests]
+  [./basic]
+    type = PythonUnitTest
+    commad = test_listings.py
+  [../]
+  [./clang]
+    type = PythonUnitTest
+    commad = test_clang.py
+  [../]
+[]

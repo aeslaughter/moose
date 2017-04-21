@@ -35,9 +35,9 @@ class ListingExtension(markdown.Extension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        #md.inlinePatterns.add('moose_input', InputPattern(markdown_instance=md, **config), '_begin')
-        #md.inlinePatterns.add('moose_clang', ClangPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose-input-listing', ListingInputPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
     return ListingExtension(*args, **kwargs)
@@ -73,8 +73,9 @@ class ListingPattern(MooseCommonExtension, Pattern):
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
+        regex = kwargs.pop('regex', self.RE)
         MooseCommonExtension.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
+        Pattern.__init__(self, regex, markdown_instance)
 
         # The root/repo settings
         self._repo = kwargs.pop('repo')
@@ -91,6 +92,16 @@ class ListingPattern(MooseCommonExtension, Pattern):
         filename = MooseDocs.abspath(rel_filename)
         if not os.path.exists(filename):
             return self.createErrorElement("Unable to locate file: {}".format(rel_filename))
+
+        # Figure out file extensions
+        if settings['language'] is None:
+            _, ext = os.path.splitext(rel_filename)
+            if ext in ['.C', '.h', '.cpp', '.hpp']:
+                settings['language'] = 'c++'
+            elif ext == '.py':
+                settings['language'] = 'python'
+            else:
+                settings['language'] = 'text'
 
         # Extract the content from the file
         content = self.extractContent(filename, settings)
@@ -275,32 +286,30 @@ class ListingInputPattern(ListingPattern):
     """
     Markdown extension for extracting blocks from input files.
     """
-
-    RE = r'^!listing\s+(?P<filename>.*?\.i)(?:$|\s+)(?P<settings>.*)'
-
     @staticmethod
     def defaultSettings():
         settings = ListingPattern.defaultSettings()
         settings['block'] = (None, "The input file syntax block to include.")
-        settings['language'][0] = 'text'
         return settings
 
     def __init__(self, **kwargs):
-        ListingPatternBase.__init__(self, self.RE, language='text', **kwargs)
+        regex = r'^!listing\s+(?P<filename>.*?\.i)(?:$|\s+)(?P<settings>.*)'
+        kwargs.setdefault('regex', regex)
+        super(ListingInputPattern, self).__init__(**kwargs)
 
     def extractContent(self, filename, settings):
         """
-        Extract input file content with GetPot parser if 'block' is available
+        Extract input file content with GetPot parser if 'block' is available. (override)
         """
-        if settings['block']:
-            parser = ParseGetPot(filename)
-            node = parser.root_node.getNode(settings['block'])
-            if node is not None:
-                content = node.createString()
-        else:
+        if not settings['block']:
             return super(ListingInputPattern, self).extractContent(filename, settings)
 
-class ClangPattern(ListingPattern):
+        parser = ParseGetPot(filename)
+        node = parser.root_node.getNode(settings['block'])
+        if node is not None:
+            return node.createString()
+
+class ListingClangPattern(ListingPattern):
     """
     A markdown extension for including source code snippets using clang python bindings.
 
@@ -314,12 +323,15 @@ class ClangPattern(ListingPattern):
 
     @staticmethod
     def defaultSettings():
-        settings = ListingPatternBase.defaultSettings()
+        settings = ListingPattern.defaultSettings()
         settings['method'] = (None, "The C++ method to return using the clang parser.")
+        settings['declaration'] = (False, "When True the declaration is returned, other size the definition is given.")
         return settings
 
     def __init__(self, **kwargs):
-        super(ClangPattern, self).__init__(self.RE, language='cpp', **kwargs)
+        regex = r'^!listing\s+(?P<filename>.*?\.[Ch])(?:$|\s+)(?P<settings>.*)'
+        kwargs.setdefault('regex', regex)
+        super(ListingClangPattern, self).__init__(**kwargs)
 
         # The make command to execute
         self._make_dir = MooseDocs.abspath(kwargs.pop('make_dir'))
@@ -329,38 +341,26 @@ class ClangPattern(ListingPattern):
 
     def handleMatch(self, match):
         """
-        Process the C++ file provided using clang.
+        Produce an error if the Clang parser is not setup correctly (override).
         """
-        # Update the settings from regex match
-        settings = self.getSettings(match.group(3))
+        settings = self.getSettings(match.group('settings'))
+        if not settings['method'] and not HAVE_MOOSE_CPP_PARSER:
+            return self.createErrorElement("Failed to load python clang python bindings.")
+        return super(ListingClangPattern, self).handleMatch(match)
 
-        # Extract relative filename
-        rel_filename = match.group(2).lstrip('/')
+    def extractContent(self, filename, settings):
+        """
+        Extract input file content with GetPot parser if 'block' is available. (override)
+        """
+        if not settings['method']:
+            return super(ListingClangPattern, self).extractContent(filename, settings)
 
-        # Error if the clang parser did not load
-        if not HAVE_MOOSE_CPP_PARSER:
-            log.error("Unable to load the MOOSE clang C++ parser.")
-            el = self.createErrorElement("Failed to load python clang python bindings.")
-            return el
-
-        # Read the file and create element
-        filename = MooseDocs.abspath(rel_filename)
-        if not os.path.exists(filename):
-            el = self.createErrorElement("C++ file not found: {}".format(rel_filename))
-
-        elif settings['method'] is None:
-            el = self.createErrorElement("Use of !clang syntax while not providing a method=some_method. If you wish to include the entire file, use !text instead.")
-
-        else:
-            log.debug('Parsing method "{}" from {}'.format(settings['method'], filename))
-
-            try:
-                parser = mooseutils.MooseSourceParser(self._make_dir)
-                parser.parse(filename)
-                decl, defn = parser.method(settings['method'])
-                el = self.createElement(match.group(2), defn, filename, rel_filename, settings)
-            except:
-                el = self.createErrorElement('Failed to parse method using clang, check that the supplied method name exists.')
-
-        # Return the Element object
-        return el
+        try:
+            parser = mooseutils.MooseSourceParser(self._make_dir)
+            parser.parse(filename)
+            decl, defn = parser.method(settings['method'])
+            if settings['declaration']:
+                return decl
+            return defn
+        except:
+            log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
