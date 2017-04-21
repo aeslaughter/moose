@@ -58,7 +58,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         settings = MooseCommonExtension.defaultSettings()
         settings['strip-header'] = (True, "When True the MOOSE header is removed for display.")
         settings['caption'] = (None, "The text caption, if an empty string is provided a link to the filename is created, if None is provided no caption is applied, otherwise the text given is used.")
-        settings['language'] = ('text', "The language to utilize for providing syntax highlighting.")
+        settings['language'] = (None, "The language to utilize for providing syntax highlighting.")
         settings['link'] = (True, "Include a link to the filename in the caption.")
         settings['strip-extra-newlines'] = (True, "Removes extraneous new lines from the text.")
         settings['prefix'] = ('', "Text to include prior to the included text.")
@@ -271,47 +271,34 @@ class ListingPattern(MooseCommonExtension, Pattern):
 
         return ''.join(lines[start_idx:end_idx])
 
-class InputPattern(ListingPattern):
+class ListingInputPattern(ListingPattern):
     """
     Markdown extension for extracting blocks from input files.
     """
 
-    RE = r'^!input\s+(.*?)(?:$|\s+)(?P<settings>.*)'
+    RE = r'^!listing\s+(?P<filename>.*?\.i)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
-        settings = ListingPatternBase.defaultSettings()
+        settings = ListingPattern.defaultSettings()
         settings['block'] = (None, "The input file syntax block to include.")
+        settings['language'][0] = 'text'
         return settings
 
     def __init__(self, **kwargs):
         ListingPatternBase.__init__(self, self.RE, language='text', **kwargs)
 
-    def handleMatch(self, match):
+    def extractContent(self, filename, settings):
         """
-        Process the input file supplied.
+        Extract input file content with GetPot parser if 'block' is available
         """
-        settings = self.getSettings(match.group(3))
-        if 'block' not in settings:
-            return ListingPatternBase.handleMatch(self, match)
-
-        # Build the complete filename.
-        rel_filename = match.group(2)
-        filename = MooseDocs.abspath(rel_filename)
-
-        # Read the file and create element
-        if not os.path.exists(filename):
-            return self.createErrorElement("The input file was not located: {}".format(rel_filename))
-
-        parser = ParseGetPot(filename)
-        node = parser.root_node.getNode(settings['block'])
-
-        if node == None:
-            return self.createErrorElement('Failed to find {} in {}.'.format(settings['block'], rel_filename))
-
-        content = node.createString()
-        label = match.group(2) if match.group(2) else rel_filename
-        return self.createElement(label, content, filename, rel_filename, settings)
+        if settings['block']:
+            parser = ParseGetPot(filename)
+            node = parser.root_node.getNode(settings['block'])
+            if node is not None:
+                content = node.createString()
+        else:
+            return super(ListingInputPattern, self).extractContent(filename, settings)
 
 class ClangPattern(ListingPattern):
     """
