@@ -2,20 +2,12 @@
 import os
 import unittest
 from MooseDocs.testing import MarkdownTestCase
-from MooseDocs.extensions.media import MediaPatternBase
 
 class TestFloat(MarkdownTestCase):
     """
     Test commands in MooseTextFile extension.
     """
     EXTENSIONS = ['MooseDocs.extensions.media', 'MooseDocs.extensions.float']
-
-    def setUp(self):
-        """
-        Clear counter before each run.
-        """
-        super(TestFloat, self).setUp()
-        MediaPatternBase.COUNTER.clear()
 
     def testFigure(self):
         md = '!media docs/media/github-logo.png caption=Testing Caption id=foo\n\nCreate a \\ref{foo} reference.'

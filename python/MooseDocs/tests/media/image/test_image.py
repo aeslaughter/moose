@@ -2,20 +2,12 @@
 import os
 import unittest
 from MooseDocs.testing import MarkdownTestCase
-from MooseDocs.extensions.media import MediaPatternBase
 
 class TestImage(MarkdownTestCase):
     """
     Test commands in MooseTextFile extension.
     """
     EXTENSIONS = ['MooseDocs.extensions.media']
-
-    def setUp(self):
-        """
-        Clear counter before each run.
-        """
-        super(TestImage, self).setUp()
-        MediaPatternBase.COUNTER.clear()
 
     def testDefault(self):
         md = '!media docs/media/github-logo.png'

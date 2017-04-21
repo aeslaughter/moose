@@ -149,8 +149,8 @@ class TextPatternBase(MooseCommonExtension, Pattern):
             else:
                 cap_text = rel_filename
 
-        caption = MooseDocs.extensions.caption_element(text=cap_text)
-        el.append(caption)
+        #caption = MooseDocs.extensions.caption_element(text=cap_text)
+        #el.append(caption)
 
         # Build the code
         pre = etree.SubElement(el, 'pre')

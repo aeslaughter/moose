@@ -3,6 +3,7 @@ html {
     color: rgba(0,0,0,1.0);
     font-size: large;
     text-align: justify;
+    font-weight: 300;
 }
 
 html, body {
@@ -66,23 +67,22 @@ ul {
 
 .moose-figure-caption,
 .moose-table-caption,
-.moose-image-caption {
-    padding-left: 5px;
-    padding-right: 5px;
+.moose-listing-caption {
     margin: 0px;
+    text-align: left;
 }
 
-.moose-listing-caption-heading,
+.moose-figure-caption-heading,
 .moose-table-caption-heading,
-.moose-figure-caption-heading
+.moose-listing-caption-heading
 {
   font-size: larger;
   font-weight: 500;
 }
 
-.moose-listing-caption-text,
+.moose-figure-caption-text,
 .moose-table-caption-text,
-.moose-figure-caption-text
+.moose-listing-caption-text
 {
   font-size: larger;
   font-weight: 300;
@@ -93,7 +93,6 @@ ul {
 {
   border-bottom-style: solid;
   border-width: 2px;
-
 }
 
 .moose-site-generated{

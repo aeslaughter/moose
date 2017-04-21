@@ -1,10 +1,12 @@
 import os
 import markdown
+import collections
 import logging
 log = logging.getLogger(__name__)
 
 import MooseDocs
 from MooseDocs.commands.MooseDocsMarkdownNodeBase import MooseDocsMarkdownNodeBase
+from MooseDocs.extensions.media import MediaPatternBase
 
 class MooseMarkdown(markdown.Markdown):
     """
@@ -16,6 +18,7 @@ class MooseMarkdown(markdown.Markdown):
     extension objects, namely MooseTemplate, could have access to the node object to allow for searching the tree
     for other pages. This should allow for cross page figure, equation, and table links to be created.
     """
+    COUNTER = collections.defaultdict(int)
 
     def __init__(self, extensions=[], extension_configs=dict()):
         self.current = None # member for holding the current MooseDocsMarkdownNodeBase object
@@ -49,6 +52,8 @@ class MooseMarkdown(markdown.Markdown):
         Args:
             content[str]: A markdown file or markdown content.
         """
+        self.COUNTER.clear()
+
         self.current = None
         if isinstance(node, MooseDocsMarkdownNodeBase):
             with open(node.source(), 'r') as fid:

@@ -40,8 +40,6 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
     Usage:
      !media image_file.png|jpg|etc attribute=setting
     """
-    COUNTER = collections.defaultdict(int)
-
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
@@ -67,7 +65,12 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         # Extract the filename and settings from regex
         rel_filename = match.group(2)
         settings = self.getSettings(match.group('settings'))
+
+        # Must have a counter name
         cname = settings['counter']
+        if cname is None:
+            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
+            cname = 'media'
 
         # Determine the filename
         filename = None
@@ -85,8 +88,9 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         # Create the outer <div> tag
         div = self.applyElementSettings(etree.Element('div'), settings)
         div.set('class', 'moose-{}-div'.format(self._classname))
-        if cname is not None:
-            div.set('data-moose-count'.format(cname), str(self.COUNTER[cname] + 1))
+        if settings['id']:
+            self.markdown.COUNTER[cname] += 1
+            div.set('data-moose-count'.format(cname), str(self.markdown.COUNTER[cname]))
             div.set('data-moose-count-name', cname)
 
         # Add content and wrap within card elements
@@ -101,12 +105,10 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         self._cardWrapper(element, media_element, 'card-image', settings)
 
         # Add caption
-        if settings['caption']:
-            caption_element = self.createCaptionElement(settings)
+        caption_element = self.createCaptionElement(settings)
+        if caption_element:
             self._cardWrapper(element, caption_element, 'card-content', settings)
 
-        if cname is not None:
-            self.COUNTER[cname] += 1
         return div
 
     def _cardWrapper(self, parent, child, class_, settings):
@@ -130,11 +132,20 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         """
         Return the caption element.
         """
+        cname = settings['counter'].lower()
         p = etree.Element('p')
-        p.set('class', 'moose-caption moose-{}-caption'.format(self._classname))
-        t_span = etree.SubElement(p, 'span')
-        t_span.set('class', 'moose-{}-caption-text'.format(self._classname))
-        t_span.text = settings['caption']
+        class_ = 'moose-{}-caption'.format(cname)
+        p.set('class', class_)
+
+        if settings['id']:
+            h_span = etree.SubElement(p, 'span')
+            h_span.set('class', '{}-heading'.format(class_))
+            h_span.text = '{} {}: '.format(cname.title(), str(self.markdown.COUNTER[cname]))
+
+        if settings['caption']:
+            t_span = etree.SubElement(p, 'span')
+            t_span.set('class', '{}-text'.format(class_))
+            t_span.text = settings['caption']
         return p
 
 
@@ -333,5 +344,5 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
                 caption = self.applyElementSettings(caption, item.caption_settings, keys=item.caption_settings.keys())
 
 
-        caption = MooseDocs.extensions.caption_element(text=settings['caption'])
-        slider.append(caption)
+        #caption = MooseDocs.extensions.caption_element(text=settings['caption'])
+        #slider.append(caption)
