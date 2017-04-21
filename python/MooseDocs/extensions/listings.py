@@ -1,6 +1,3 @@
-"""
-Syntax for including MOOSE source, input, and markdown files.
-"""
 import re
 import os
 import cgi
@@ -9,7 +6,6 @@ log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
-from markdown.preprocessors import Preprocessor
 from markdown.util import etree
 
 import MooseDocs
@@ -47,14 +43,16 @@ def makeExtension(*args, **kwargs):
     return ListingExtension(*args, **kwargs)
 
 
-class ListingPatternBase(MooseCommonExtension, Pattern):
+class ListingPattern(MooseCommonExtension, Pattern):
     """
-    Base class for pattern matching text blocks.
+    The basic object for creating code listings from files.
 
     Args:
       regex: The string containing the regular expression to match.
       language[str]: The code language (e.g., 'python' or 'c++')
     """
+    RE = r'^!listing\s+(?P<filename>.*?)(?:$|\s+)(?P<settings>.*)'
+
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
@@ -68,14 +66,43 @@ class ListingPatternBase(MooseCommonExtension, Pattern):
         settings['indent'] = (0, "The level of indenting to apply to the included text.")
         settings['strip-leading-whitespace'] = (False, "When True leading white-space is removed from the included text.")
         settings['counter'] = ('listing', "The counter group to associate wit this command.")
+        settings['line'] = (None, "A portion of text that unique identifies a single line to include.")
+        settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
+        settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
+        settings['include_end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
         return settings
 
-    def __init__(self, pattern, markdown_instance=None, **kwargs):
+    def __init__(self, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
-        Pattern.__init__(self, pattern, markdown_instance)
+        Pattern.__init__(self, self.RE, markdown_instance)
 
         # The root/repo settings
         self._repo = kwargs.pop('repo')
+
+    def handleMatch(self, match):
+        """
+        Process the text file provided.
+        """
+        # Update the settings from regex match
+        settings = self.getSettings(match.group(3))
+
+        # Read the file
+        rel_filename = match.group('filename').lstrip('/')
+        filename = MooseDocs.abspath(rel_filename)
+        if not os.path.exists(filename):
+            return self.createErrorElement("Unable to locate file: {}".format(rel_filename))
+
+        # Extract the content from the file
+        content = self.extractContent(filename, settings)
+        if content == None:
+            return self.createErrorElement("Failed to extract content from {}.".format(filename))
+
+        # Apply additional settings to content
+        content = self.prepareContent(content, settings)
+
+        # Return the Element object
+        el = self.createElement(content, rel_filename, settings)
+        return el
 
     def prepareContent(self, content, settings):
         """
@@ -119,7 +146,7 @@ class ListingPatternBase(MooseCommonExtension, Pattern):
 
         return content
 
-    def createElement(self, label, content, filename, rel_filename, settings):
+    def createElement(self, content, rel_filename, settings):
         """
         Create the code element from the supplied source code content.
 
@@ -133,14 +160,18 @@ class ListingPatternBase(MooseCommonExtension, Pattern):
         NOTE: The code related settings and clean up are applied in this method.
         """
 
-        # Strip extra new lines
-        content = self.prepareContent(content, settings)
+        # Must have a counter name
+        cname = settings['counter']
+        if cname is None:
+            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
+            cname = 'unknown'
 
         # Build outer div container
         el = self.applyElementSettings(etree.Element('div'), settings)
         el.set('class', 'moose-listing-div')
 
         # Build caption
+        MooseDocs.extensions.increment_counter(el, settings, cname)
         cap = MooseDocs.extensions.caption_element(settings)
         el.append(cap)
         if settings['link']:
@@ -165,38 +196,15 @@ class ListingPatternBase(MooseCommonExtension, Pattern):
 
         return el
 
-
-class ListingPattern(ListingPatternBase):
-    """
-    A markdown extension for including complete source code files.
-    """
-    RE = r'^!listing\s+(.*?)(?:$|\s+)(?P<settings>.*)'
-
-    @staticmethod
-    def defaultSettings():
-        settings = ListingPatternBase.defaultSettings()
-        settings['line'] = (None, "A portion of text that unique identifies a single line to include.")
-        settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
-        settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
-        settings['include_end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
-        return settings
-
-    def __init__(self, **kwargs):
-        super(ListingPattern, self).__init__(self.RE, **kwargs)
-
-    def handleMatch(self, match):
+    def extractContent(self, filename, settings):
         """
-        Process the text file provided.
+        Extract the content to display.
+
+        Args:
+            filename[str]: The absolute filename to read.
+            settings[dict]: The settings for the match.
         """
-        # Update the settings from regex match
-        settings = self.getSettings(match.group(3))
-
-        # Read the file
-        rel_filename = match.group(2).lstrip('/')
-        filename = MooseDocs.abspath(rel_filename)
-        if not os.path.exists(filename):
-            return self.createErrorElement("Unable to locate file: {}".format(rel_filename))
-
+        content = None
         if settings['line']:
             content = self.extractLine(filename, settings["line"])
 
@@ -207,12 +215,7 @@ class ListingPattern(ListingPatternBase):
             with open(filename) as fid:
                 content = fid.read()
 
-        if content == None:
-            return self.createErrorElement("Failed to extract content from {}.".format(filename))
-
-        # Return the Element object
-        el = self.createElement(match.group(2), content, filename, rel_filename, settings)
-        return el
+        return content
 
     @staticmethod
     def extractLine(filename, desired):
@@ -268,8 +271,7 @@ class ListingPattern(ListingPatternBase):
 
         return ''.join(lines[start_idx:end_idx])
 
-
-class InputPattern(ListingPatternBase):
+class InputPattern(ListingPattern):
     """
     Markdown extension for extracting blocks from input files.
     """
@@ -311,7 +313,7 @@ class InputPattern(ListingPatternBase):
         label = match.group(2) if match.group(2) else rel_filename
         return self.createElement(label, content, filename, rel_filename, settings)
 
-class ClangPattern(ListingPatternBase):
+class ClangPattern(ListingPattern):
     """
     A markdown extension for including source code snippets using clang python bindings.
 

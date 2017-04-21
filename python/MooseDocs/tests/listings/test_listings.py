@@ -9,9 +9,45 @@ class TestListings(MarkdownTestCase):
     """
     EXTENSIONS = ['MooseDocs.extensions.listings', 'MooseDocs.extensions.refs']
 
-    def testListing(self):
+    def testDefault(self):
         md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i'
-        self.assertConvert('testListing.html', md)
+        self.assertConvert('testDefault.html', md)
+
+    def testStart(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Outputs]'
+        self.assertConvert('testStart.html', md)
+
+    def testEnd(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i end=[Variables]'
+        self.assertConvert('testEnd.html', md)
+
+    def testStartEnd(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Variables] end=[BCs]'
+        self.assertConvert('testStartEnd.html', md)
+
+    def testStartEndIncludeEnd(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Variables] end=[BCs] include_end=True'
+        self.assertConvert('testStartEndIncludeEnd.html', md)
+
+    def testLine(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i line=ernel'
+        self.assertConvert('testLine.html', md)
+
+    def testContentError(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i line=notfound'
+        self.assertConvert('testContentError.html', md)
+
+    def testFileError(self):
+        md = '!listing test/tests/kernels/simple_diffusion/not_a_file.'
+        self.assertConvert('testFileError.html', md)
+
+    def testCaption(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Outputs] caption=Outputs Block'
+        self.assertConvert('testCaption.html', md)
+
+    def testCaptionId(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Outputs] id=foo caption=Outputs Block'
+        self.assertConvert('testCaptionId.html', md)
 
     """
     def testInputListing(self):

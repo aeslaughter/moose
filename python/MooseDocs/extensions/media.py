@@ -69,7 +69,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         cname = settings['counter']
         if cname is None:
             log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
-            cname = 'media'
+            cname = 'unknown'
 
         # Determine the filename
         filename = None
@@ -87,7 +87,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         # Create the outer <div> tag
         div = self.applyElementSettings(etree.Element('div'), settings)
         div.set('class', 'moose-{}-div'.format(self._classname))
-        MooseDocs.extensions.increment_counter(div, settings, cnam)
+        MooseDocs.extensions.increment_counter(div, settings, cname)
 
         # Add content and wrap within card elements
         element = div
