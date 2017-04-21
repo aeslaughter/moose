@@ -6,7 +6,9 @@ log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
+from markdown.preprocessors import Preprocessor
 from markdown.util import etree
+from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
 import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
@@ -38,6 +40,8 @@ class ListingExtension(markdown.Extension):
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose-input-listing', ListingInputPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
+        md.parser.blockprocessors.add('moose-listing-preprocessor',
+                                      MooseListingProcessor(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs):
     return ListingExtension(*args, **kwargs)
@@ -363,3 +367,57 @@ class ListingClangPattern(ListingPattern):
             return defn
         except:
             log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
+
+class MooseListingProcessor(MooseCommonExtension, Preprocessor):
+    """
+    A version of the built-in markdown fenced code that applies a caption and additional css.
+    """
+    RE = r'^!listing\s*(?P<settings>.*?)$'
+
+    @staticmethod
+    def defaultSettings():
+        settings = MooseCommonExtension.defaultSettings()
+        settings['caption'] = (None, "The caption text to place after the heading and number.")
+        settings['counter'] = ('listing', "The name of the global counter to utilized for numbering.")
+        return settings
+
+    def __init__(self, markdown_instance=None, **kwargs):
+        MooseCommonExtension.__init__(self, **kwargs)
+        Preprocessor.__init__(self, markdown_instance.parser)
+
+    def test(self, parent, block):
+        """
+        Test that the block has !listings syntax, if it does remove the top line and run the base
+        class test method to prepare for creating the actual code.
+        """
+        return re.search(self.RE, block, flags=re.MULTILINE)
+
+    def run(self, parent, blocks):
+        """
+        Create a table with caption.
+        """
+        # Strip the !table line and settings
+        lines = blocks.pop(0).split('\n')
+        blocks[0] = '\n'.join(lines[1:])
+        match = re.search(self.RE, lines[0], flags=re.MULTILINE)
+        settings = self.getSettings(match.group('settings'))
+
+        # Get the counter name
+        cname = settings['counter']
+        if cname is None:
+            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
+            cname = 'media'
+
+        # Create the containing <div> tag.
+        div = self.applyElementSettings(etree.SubElement(parent, 'div'), settings)
+        div.set('class', 'moose-listing-div')
+        MooseDocs.extensions.increment_counter(div, settings, cname)
+
+        # Create the caption tag
+        caption = MooseDocs.extensions.caption_element(settings)
+        div.insert(0, caption)
+
+        #new_block = '{}\n{}\n{}'.format()
+        blocks.insert(0, self.markdown.htmlStash(etree.tostring(div)[:-6], safe=True))
+        blocks.insert(2, self.markdown.htmlStash('</div>', safe=True))
+        #print

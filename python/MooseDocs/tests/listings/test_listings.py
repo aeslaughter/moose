@@ -93,6 +93,10 @@ class TestListings(MarkdownTestCase):
         md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Outputs] id=foo\n\n\\ref{foo}'
         self.assertConvert('testRef.html', md)
 
+    def testFenced(self):
+        md = '!listing caption=Foo id=bar\n```\nx+y=1;\n```'
+        self.assertConvert('testFenced.html', md)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

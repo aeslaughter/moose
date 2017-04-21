@@ -20,7 +20,7 @@ class TestInclude(MarkdownTestCase):
         self.assertIn('A well regulated Militia', html)
         self.assertIn('No Soldier shall', html)
         self.assertNotIn('The right of the people', html)
-        self.assertNotIn('!include', html)
+        self.assertNotIn('!include', html)k
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
