@@ -45,26 +45,34 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
 
     All image filenames should be supplied as relative to the docs directory, i.e., media/my_image.png
     """
+    CLASSNAME = 'media'
+
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['center'] = (False, "When True the contents are centered.")
+        settings['caption'] = (None, "The caption text for the media element.")
+        settings['card'] = (False, "Wrap the content in a materialize card.")
         return settings
 
     def __init__(self, pattern, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
         Pattern.__init__(self, pattern, markdown_instance)
 
-    def createImageElement(self, rel_filename, settings):
+    def handleMatch(self, match):
         """
         Create the element containing the image, this is a separate function to allow for other objects
-        (i.e., MooseFigure) to utilize this class to build similar html.
 
         Inputs:
           rel_filename[str]: The path to the image relative to the git repository.
           settings[dict]: The settings extracted via getSettings() method.
         """
-        # Read the file and create element
+
+        # Extract the filename and settings from regex
+        rel_filename = match.group(2)
+        settings = self.getSettings(match.group('settings'))
+
+        # Determine the filename
         filename = None
         repo = MooseDocs.abspath(rel_filename)
         local = os.path.abspath(os.path.join(os.getcwd(), rel_filename))
@@ -77,27 +85,61 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         else:
             return self.createErrorElement('File not found: {}'.format(rel_filename))
 
-        return self.createMediaElement(filename, settings)
+        # Create the outer <div> tag
+        div = self.applyElementSettings(etree.Element('div'), settings)
+        div.set('class', 'moose-{}-div'.format(self.CLASSNAME))
 
-    def handleMatch(self, match):
+        # Add content and wrap within card elements
+        element = div
+        if settings['card']:
+            element = etree.SubElement(div, 'div', attr={'class':'card', 'style':'margin-left:auto;margin-right:auto;'})
+
+        # Add media content
+        media_element = self.createMediaElement(filename, settings)
+        self._cardWrapper(element, media_element, 'card-image', settings)
+
+        # Add caption
+        caption_element = self.createCaptionElement(settings)
+        if caption_element:
+            self._cardWrapper(element, caption_element, 'card-content', settings)
+
+        return div
+
+    def _cardWrapper(self, parent, child, class_, settings):
         """
-        process settings associated with !image markdown
+        Helper for optionally wrapping a materialize 'card'
         """
-        rel_filename = match.group(2)
-        settings = self.getSettings(match.group(3))
-        return self.createImageElement(rel_filename, settings)
+        if settings['card']:
+            card_element = etree.SubElement(parent, 'div', attr={'class':class_})
+            card_element.append(child)
+        else:
+            parent.append(child)
+
+    def createMediaElement(self, filename, settings):
+        """
+        Return the actual media content.
+        """
+        raise mooseutils.MooseException('The createMediaElement method must be overridden.')
+
+    def createCaptionElement(self, settings):
+        """
+        Return the caption element.
+        """
+        return MooseDocs.extensions.caption_element(text=settings['caption'],
+                                                    class_='moose-{}-caption'.format(self.CLASSNAME))
 
 
 class ImagePattern(MediaPatternBase):
     """
     Find !image /path/to/file attribute=setting
     """
-    RE = r'^!image\s+(.*?)(?:$|\s+)(?P<settings>.*)'
+    RE = r'^!media\s+(.*?)(?:$|\s+)(?P<settings>.*)'
+    CLASSNAME = 'image'
 
     @staticmethod
     def defaultSettings():
         settings = MediaPatternBase.defaultSettings()
-        settings['caption'] = (None, "The text for the image caption.")
+        settings['materialboxed'] = (True, "Create Materialize boxed content.")
         return settings
 
     def __init__(self, markdown_instance, **kwargs):
@@ -107,29 +149,12 @@ class ImagePattern(MediaPatternBase):
         """
         Return the img tag.
         """
-
-        # Create the figure element
-        div = self.applyElementSettings(etree.Element('div'), settings)
-        div.set('class', 'moose-image-div')
-        card = etree.SubElement(div, 'div')
-        card.set('class', 'card')
-
-        if settings['center']:
-            style = card.get('style', '')
-            card.set('style', 'margin-left:auto;margin-right:auto;' + style)
-
-        img_card = etree.SubElement(card, 'div')
-        img_card.set('class', 'card-image')
-
-        img = etree.SubElement(img_card, 'img')
+        img = etree.Element('img')
         img.set('src', os.path.relpath(filename, os.getcwd()))
-        img.set('class', 'materialboxed')
+        if settings['materialboxed']:
+            img.set('class', 'materialboxed')
 
-        # Add caption
-        caption = MooseDocs.extensions.caption_element(text=settings['caption'])
-        card.append(caption)
-
-        return div
+        return img
 
 class VideoPattern(MediaPatternBase):
     """

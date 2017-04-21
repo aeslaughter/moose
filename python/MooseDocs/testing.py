@@ -21,11 +21,9 @@ class MarkdownTestCase(unittest.TestCase):
     Provides functions for converting markdown to html and asserting conversion against
     gold html files.
     """
-    parser = None
-    working_dir = os.getcwd()
-    TEMPLATE = False
+    WORKING_DIR = os.getcwd()
+    EXTENSIONS = [] # If provided only these extensions will be loaded
     CONFIG = 'website.yml'
-
 
     @classmethod
     def setUpClass(cls):
@@ -39,16 +37,25 @@ class MarkdownTestCase(unittest.TestCase):
         # Create the markdown object
         os.chdir(os.path.join(MooseDocs.MOOSE_DIR, 'docs'))
 
+        # Read the YAML configurations
         config = MooseDocs.load_config(cls.CONFIG)
-        if not cls.TEMPLATE:
-            config.pop('MooseDocs.extensions.template', None)
 
-        cls.updateExtensionConfigs(config)
+        # Update extension list
+        if cls.EXTENSIONS:
+            for key in config:
+                if key not in cls.EXTENSIONS:
+                    config.pop(key)
+
+        print config
+#        if not cls.TEMPLATE:
+#            config.pop('MooseDocs.extensions.template', None)
+
+        cls.updateExtensions(config)
         cls.parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
-        os.chdir(cls.working_dir)
+        os.chdir(cls.WORKING_DIR)
 
     @classmethod
-    def updateExtensionConfigs(cls, extension_configs):
+    def updateExtensions(cls, configs):
         """
         Method to change the arguments that come from the configuration file for
         specific tests.  This way one can test optional arguments without permanently
@@ -66,13 +73,13 @@ class MarkdownTestCase(unittest.TestCase):
         """
         Restore the working directory.
         """
-        os.chdir(self.working_dir)
+        os.chdir(self.WORKING_DIR)
 
     def readGold(self, name):
         """
         Read gold file in current directory.
         """
-        gold_name = os.path.join(self.working_dir, 'gold', os.path.basename(name))
+        gold_name = os.path.join(self.WORKING_DIR, 'gold', os.path.basename(name))
         self.assertTrue(os.path.exists(gold_name), "Failed to locate gold file: {}".format(gold_name))
         with open(gold_name) as fid:
             gold = fid.read().encode('utf-8').splitlines()

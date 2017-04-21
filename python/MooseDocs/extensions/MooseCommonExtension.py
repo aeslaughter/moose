@@ -75,7 +75,7 @@ class MooseCommonExtension(object):
           div = self.appyElementSettings(etree.Element('div'), settings)
         """
         for attr in keys:
-            if (attr in settings) and (settings[attr] != None):
+            if (attr in settings) and (settings[attr]):
                 element.set(attr, settings[attr])
         return element
 
