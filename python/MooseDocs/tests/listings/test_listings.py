@@ -26,7 +26,7 @@ class TestListings(MarkdownTestCase):
         self.assertConvert('testStartEnd.html', md)
 
     def testStartEndIncludeEnd(self):
-        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Variables] end=[BCs] include_end=True'
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Variables] end=[BCs] include-end=True'
         self.assertConvert('testStartEndIncludeEnd.html', md)
 
     def testLine(self):
@@ -48,6 +48,43 @@ class TestListings(MarkdownTestCase):
     def testCaptionId(self):
         md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i start=[Outputs] id=foo caption=Outputs Block'
         self.assertConvert('testCaptionId.html', md)
+
+    def testStripHeader(self):
+        md = '!listing framework/src/kernels/Diffusion.C end=template'
+        self.assertConvert('testStripHeader.html', md)
+
+    def testDisableStripHeader(self):
+        md = '!listing framework/src/kernels/Diffusion.C end=template strip-header=0'
+        self.assertConvert('testDisableStripHeader.html', md)
+
+    def testLanguage(self):
+        md = '!listing framework/src/kernels/Diffusion.C end=template language=foo'
+        self.assertConvert('testLanguage.html', md)
+
+    def testStripExtraNewLines(self):
+        md = '!listing framework/src/kernels/Diffusion.C end=Diffusion::Diffusion strip-extra-newlines=true'
+        self.assertConvert('testStripExtraNewLines.html', md)
+
+    def testDisableStripExtraNewLines(self):
+        md = '!listing framework/src/kernels/Diffusion.C end=Diffusion::Diffusion strip-extra-newlines=false'
+        self.assertConvert('testDisableStripExtraNewLines.html', md)
+
+    def testStripLeadingWhitespace(self):
+        md = '!listing framework/src/kernels/Diffusion.C line=Kernel(parameters) strip-leading-whitespace=1'
+        self.assertConvert('testStripLeadingWhitespace.html', md)
+
+    def testDisableStripLeadingWhitespace(self):
+        md = '!listing framework/src/kernels/Diffusion.C line=Kernel(parameters) strip-leading-whitespace=false'
+        self.assertConvert('testDisableStripLeadingWhitespace.html', md)
+
+    def testPrefixSuffix(self):
+        md = '!listing framework/src/kernels/Diffusion.C line=Kernel(parameters) strip-leading-whitespace=1 prefix=BEFORE suffix=AFTER'
+        self.assertConvert('testPrefixSuffix.html', md)
+
+    def testIndent(self):
+        md = '!listing framework/src/kernels/Diffusion.C line=Kernel(parameters) indent=8 strip-leading-whitespace=1'
+        self.assertConvert('testIndent.html', md)
+
 
     """
     def testInputListing(self):

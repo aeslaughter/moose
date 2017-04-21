@@ -56,7 +56,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
-        settings['strip_header'] = (True, "When True the MOOSE header is removed for display.")
+        settings['strip-header'] = (True, "When True the MOOSE header is removed for display.")
         settings['caption'] = (None, "The text caption, if an empty string is provided a link to the filename is created, if None is provided no caption is applied, otherwise the text given is used.")
         settings['language'] = ('text', "The language to utilize for providing syntax highlighting.")
         settings['link'] = (True, "Include a link to the filename in the caption.")
@@ -69,7 +69,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         settings['line'] = (None, "A portion of text that unique identifies a single line to include.")
         settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
         settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
-        settings['include_end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
+        settings['include-end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -121,12 +121,12 @@ class ListingPattern(MooseCommonExtension, Pattern):
             content = re.sub(r'(\n{3,})', '\n\n', content)
 
         # Strip header
-        if settings['strip_header']:
+        if settings['strip-header']:
             strt = content.find('/********')
             stop = content.rfind('*******/\n')
             content = content.replace(content[strt:stop+9], '')
 
-        # Strip leading white-space
+        # Strip leading/trailing white-space
         if settings['strip-leading-whitespace']:
             content = re.sub(r'^(\s+)', '', content, flags=re.MULTILINE)
 
@@ -209,7 +209,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
             content = self.extractLine(filename, settings["line"])
 
         elif settings['start'] or settings['end']:
-            content = self.extractLineRange(filename, settings['start'], settings['end'], settings['include_end'])
+            content = self.extractLineRange(filename, settings['start'], settings['end'], settings['include-end'])
 
         else:
             with open(filename) as fid:
@@ -247,7 +247,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
           filename[str]: The name of the file to examine.
           start[str|None]: The starting line (when None is provided the beginning is used).
           end[str|None]: The ending line (when None is provided the end is used).
-          include_end[bool]: If True then the end string is included
+          include-end[bool]: If True then the end string is included
         """
 
         # Read the lines
