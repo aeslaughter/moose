@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TotalVariableValue
 
-!inputfiles /UserObjects/TotalVariableValue
+!listingfiles /UserObjects/TotalVariableValue
 
 !childobjects /UserObjects/TotalVariableValue

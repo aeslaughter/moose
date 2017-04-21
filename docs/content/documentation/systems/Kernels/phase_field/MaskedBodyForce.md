@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MaskedBodyForce
 
-!inputfiles /Kernels/MaskedBodyForce
+!listingfiles /Kernels/MaskedBodyForce
 
 !childobjects /Kernels/MaskedBodyForce

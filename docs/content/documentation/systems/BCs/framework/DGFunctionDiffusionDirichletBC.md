@@ -5,6 +5,6 @@
 
 !parameters /BCs/DGFunctionDiffusionDirichletBC
 
-!inputfiles /BCs/DGFunctionDiffusionDirichletBC
+!listingfiles /BCs/DGFunctionDiffusionDirichletBC
 
 !childobjects /BCs/DGFunctionDiffusionDirichletBC

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsHardeningGaussian
 
-!inputfiles /UserObjects/TensorMechanicsHardeningGaussian
+!listingfiles /UserObjects/TensorMechanicsHardeningGaussian
 
 !childobjects /UserObjects/TensorMechanicsHardeningGaussian

@@ -5,6 +5,6 @@
 
 !parameters /Functions/SolutionFunction
 
-!inputfiles /Functions/SolutionFunction
+!listingfiles /Functions/SolutionFunction
 
 !childobjects /Functions/SolutionFunction

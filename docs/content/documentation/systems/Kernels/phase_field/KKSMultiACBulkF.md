@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSMultiACBulkF
 
-!inputfiles /Kernels/KKSMultiACBulkF
+!listingfiles /Kernels/KKSMultiACBulkF
 
 !childobjects /Kernels/KKSMultiACBulkF

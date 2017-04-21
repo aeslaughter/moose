@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/BoundsAux
 
-!inputfiles /AuxKernels/BoundsAux
+!listingfiles /AuxKernels/BoundsAux
 
 !childobjects /AuxKernels/BoundsAux

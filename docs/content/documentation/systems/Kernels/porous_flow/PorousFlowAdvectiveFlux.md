@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowAdvectiveFlux
 
-!inputfiles /Kernels/PorousFlowAdvectiveFlux
+!listingfiles /Kernels/PorousFlowAdvectiveFlux
 
 !childobjects /Kernels/PorousFlowAdvectiveFlux

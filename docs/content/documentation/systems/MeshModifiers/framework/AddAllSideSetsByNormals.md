@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/AddAllSideSetsByNormals
 
-!inputfiles /MeshModifiers/AddAllSideSetsByNormals
+!listingfiles /MeshModifiers/AddAllSideSetsByNormals
 
 !childobjects /MeshModifiers/AddAllSideSetsByNormals

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHPFCRFF
 
-!inputfiles /Kernels/CHPFCRFF
+!listingfiles /Kernels/CHPFCRFF
 
 !childobjects /Kernels/CHPFCRFF

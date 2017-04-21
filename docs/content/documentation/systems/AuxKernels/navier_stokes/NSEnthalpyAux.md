@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSEnthalpyAux
 
-!inputfiles /AuxKernels/NSEnthalpyAux
+!listingfiles /AuxKernels/NSEnthalpyAux
 
 !childobjects /AuxKernels/NSEnthalpyAux

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/NewmarkAccelAux
 
-!inputfiles /AuxKernels/NewmarkAccelAux
+!listingfiles /AuxKernels/NewmarkAccelAux
 
 !childobjects /AuxKernels/NewmarkAccelAux

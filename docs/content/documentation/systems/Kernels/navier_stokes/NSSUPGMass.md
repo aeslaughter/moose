@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSSUPGMass
 
-!inputfiles /Kernels/NSSUPGMass
+!listingfiles /Kernels/NSSUPGMass
 
 !childobjects /Kernels/NSSUPGMass

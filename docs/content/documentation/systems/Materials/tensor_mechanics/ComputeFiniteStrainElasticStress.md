@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeFiniteStrainElasticStress
 
-!inputfiles /Materials/ComputeFiniteStrainElasticStress
+!listingfiles /Materials/ComputeFiniteStrainElasticStress
 
 !childobjects /Materials/ComputeFiniteStrainElasticStress

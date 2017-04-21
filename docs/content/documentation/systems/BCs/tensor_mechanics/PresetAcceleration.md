@@ -5,6 +5,6 @@
 
 !parameters /BCs/PresetAcceleration
 
-!inputfiles /BCs/PresetAcceleration
+!listingfiles /BCs/PresetAcceleration
 
 !childobjects /BCs/PresetAcceleration

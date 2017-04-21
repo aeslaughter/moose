@@ -5,6 +5,6 @@
 
 !parameters /Kernels/AnisoHeatConduction
 
-!inputfiles /Kernels/AnisoHeatConduction
+!listingfiles /Kernels/AnisoHeatConduction
 
 !childobjects /Kernels/AnisoHeatConduction

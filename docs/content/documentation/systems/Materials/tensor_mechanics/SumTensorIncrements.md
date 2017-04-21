@@ -5,6 +5,6 @@
 
 !parameters /Materials/SumTensorIncrements
 
-!inputfiles /Materials/SumTensorIncrements
+!listingfiles /Materials/SumTensorIncrements
 
 !childobjects /Materials/SumTensorIncrements

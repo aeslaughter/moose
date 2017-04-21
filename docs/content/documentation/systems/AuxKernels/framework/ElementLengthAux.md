@@ -8,10 +8,10 @@ with the result. The element size calculation uses the [libMesh][] `hmin()` or `
 from the [`Elem`](https://libmesh.github.io/doxygen/classlibMesh_1_1Elem.html) class to compute the length.
 
 ## Example Syntax
-!input test/tests/auxkernels/element_length/element_length.i block=AuxKernels
+!listing test/tests/auxkernels/element_length/element_length.i block=AuxKernels
 
 !parameters /AuxKernels/ElementLengthAux
 
-!inputfiles /AuxKernels/ElementLengthAux
+!listingfiles /AuxKernels/ElementLengthAux
 
 !childobjects /AuxKernels/ElementLengthAux

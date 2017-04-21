@@ -5,6 +5,6 @@
 
 !parameters /Functions/CompositeFunction
 
-!inputfiles /Functions/CompositeFunction
+!listingfiles /Functions/CompositeFunction
 
 !childobjects /Functions/CompositeFunction

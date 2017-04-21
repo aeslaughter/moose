@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/FeatureVolumeFraction
 
-!inputfiles /Postprocessors/FeatureVolumeFraction
+!listingfiles /Postprocessors/FeatureVolumeFraction
 
 !childobjects /Postprocessors/FeatureVolumeFraction

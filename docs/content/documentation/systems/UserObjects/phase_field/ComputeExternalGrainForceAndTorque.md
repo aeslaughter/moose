@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ComputeExternalGrainForceAndTorque
 
-!inputfiles /UserObjects/ComputeExternalGrainForceAndTorque
+!listingfiles /UserObjects/ComputeExternalGrainForceAndTorque
 
 !childobjects /UserObjects/ComputeExternalGrainForceAndTorque

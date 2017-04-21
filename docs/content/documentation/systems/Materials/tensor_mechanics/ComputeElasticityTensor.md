@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeElasticityTensor
 
-!inputfiles /Materials/ComputeElasticityTensor
+!listingfiles /Materials/ComputeElasticityTensor
 
 !childobjects /Materials/ComputeElasticityTensor

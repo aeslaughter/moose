@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementAverageValue
 
-!inputfiles /Postprocessors/ElementAverageValue
+!listingfiles /Postprocessors/ElementAverageValue
 
 !childobjects /Postprocessors/ElementAverageValue

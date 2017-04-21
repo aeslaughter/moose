@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementIntegralVariablePostprocessor
 
-!inputfiles /UserObjects/ElementIntegralVariablePostprocessor
+!listingfiles /UserObjects/ElementIntegralVariablePostprocessor
 
 !childobjects /UserObjects/ElementIntegralVariablePostprocessor

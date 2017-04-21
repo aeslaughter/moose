@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/FeatureVolumeVectorPostprocessor
 
-!inputfiles /VectorPostprocessors/FeatureVolumeVectorPostprocessor
+!listingfiles /VectorPostprocessors/FeatureVolumeVectorPostprocessor
 
 !childobjects /VectorPostprocessors/FeatureVolumeVectorPostprocessor

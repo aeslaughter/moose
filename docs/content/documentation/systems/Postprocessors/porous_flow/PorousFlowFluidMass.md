@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/PorousFlowFluidMass
 
-!inputfiles /Postprocessors/PorousFlowFluidMass
+!listingfiles /Postprocessors/PorousFlowFluidMass
 
 !childobjects /Postprocessors/PorousFlowFluidMass

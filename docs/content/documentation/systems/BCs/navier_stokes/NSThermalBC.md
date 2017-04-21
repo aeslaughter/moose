@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSThermalBC
 
-!inputfiles /BCs/NSThermalBC
+!listingfiles /BCs/NSThermalBC
 
 !childobjects /BCs/NSThermalBC

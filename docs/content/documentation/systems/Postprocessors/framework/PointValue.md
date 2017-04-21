@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/PointValue
 
-!inputfiles /Postprocessors/PointValue
+!listingfiles /Postprocessors/PointValue
 
 !childobjects /Postprocessors/PointValue

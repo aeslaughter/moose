@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementH1Error
 
-!inputfiles /UserObjects/ElementH1Error
+!listingfiles /UserObjects/ElementH1Error
 
 !childobjects /UserObjects/ElementH1Error

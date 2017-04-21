@@ -2,6 +2,6 @@
 
 !parameters /DGKernels/AEFVKernel
 
-!inputfiles /DGKernels/AEFVKernel
+!listingfiles /DGKernels/AEFVKernel
 
 !childobjects /DGKernels/AEFVKernel

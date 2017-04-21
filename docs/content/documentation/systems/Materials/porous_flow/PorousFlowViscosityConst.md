@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowViscosityConst
 
-!inputfiles /Materials/PorousFlowViscosityConst
+!listingfiles /Materials/PorousFlowViscosityConst
 
 !childobjects /Materials/PorousFlowViscosityConst

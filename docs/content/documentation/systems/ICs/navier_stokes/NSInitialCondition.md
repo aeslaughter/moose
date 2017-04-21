@@ -2,6 +2,6 @@
 
 !parameters /ICs/NSInitialCondition
 
-!inputfiles /ICs/NSInitialCondition
+!listingfiles /ICs/NSInitialCondition
 
 !childobjects /ICs/NSInitialCondition

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/AverageElementSize
 
-!inputfiles /Postprocessors/AverageElementSize
+!listingfiles /Postprocessors/AverageElementSize
 
 !childobjects /Postprocessors/AverageElementSize

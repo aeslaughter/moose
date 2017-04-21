@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/Receiver
 
-!inputfiles /Postprocessors/Receiver
+!listingfiles /Postprocessors/Receiver
 
 !childobjects /Postprocessors/Receiver

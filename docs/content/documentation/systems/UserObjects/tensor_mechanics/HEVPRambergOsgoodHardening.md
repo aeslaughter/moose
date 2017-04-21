@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/HEVPRambergOsgoodHardening
 
-!inputfiles /UserObjects/HEVPRambergOsgoodHardening
+!listingfiles /UserObjects/HEVPRambergOsgoodHardening
 
 !childobjects /UserObjects/HEVPRambergOsgoodHardening

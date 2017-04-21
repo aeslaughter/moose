@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticJ2
 
-!inputfiles /UserObjects/TensorMechanicsPlasticJ2
+!listingfiles /UserObjects/TensorMechanicsPlasticJ2
 
 !childobjects /UserObjects/TensorMechanicsPlasticJ2

@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/Transform
 
-!inputfiles /MeshModifiers/Transform
+!listingfiles /MeshModifiers/Transform
 
 !childobjects /MeshModifiers/Transform

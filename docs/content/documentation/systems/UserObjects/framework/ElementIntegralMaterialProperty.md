@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementIntegralMaterialProperty
 
-!inputfiles /UserObjects/ElementIntegralMaterialProperty
+!listingfiles /UserObjects/ElementIntegralMaterialProperty
 
 !childobjects /UserObjects/ElementIntegralMaterialProperty

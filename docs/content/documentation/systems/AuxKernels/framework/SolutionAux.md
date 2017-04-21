@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/SolutionAux
 
-!inputfiles /AuxKernels/SolutionAux
+!listingfiles /AuxKernels/SolutionAux
 
 !childobjects /AuxKernels/SolutionAux

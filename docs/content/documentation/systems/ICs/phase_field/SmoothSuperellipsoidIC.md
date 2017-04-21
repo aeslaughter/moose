@@ -5,6 +5,6 @@
 
 !parameters /ICs/SmoothSuperellipsoidIC
 
-!inputfiles /ICs/SmoothSuperellipsoidIC
+!listingfiles /ICs/SmoothSuperellipsoidIC
 
 !childobjects /ICs/SmoothSuperellipsoidIC

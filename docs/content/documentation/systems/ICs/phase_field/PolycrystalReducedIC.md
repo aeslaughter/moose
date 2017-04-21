@@ -5,6 +5,6 @@
 
 !parameters /ICs/PolycrystalReducedIC
 
-!inputfiles /ICs/PolycrystalReducedIC
+!listingfiles /ICs/PolycrystalReducedIC
 
 !childobjects /ICs/PolycrystalReducedIC

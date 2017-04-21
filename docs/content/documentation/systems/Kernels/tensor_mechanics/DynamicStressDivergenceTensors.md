@@ -5,6 +5,6 @@
 
 !parameters /Kernels/DynamicStressDivergenceTensors
 
-!inputfiles /Kernels/DynamicStressDivergenceTensors
+!listingfiles /Kernels/DynamicStressDivergenceTensors
 
 !childobjects /Kernels/DynamicStressDivergenceTensors

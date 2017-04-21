@@ -5,6 +5,6 @@
 
 !parameters /BCs/PostprocessorDirichletBC
 
-!inputfiles /BCs/PostprocessorDirichletBC
+!listingfiles /BCs/PostprocessorDirichletBC
 
 !childobjects /BCs/PostprocessorDirichletBC

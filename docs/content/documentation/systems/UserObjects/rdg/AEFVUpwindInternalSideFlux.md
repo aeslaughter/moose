@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/AEFVUpwindInternalSideFlux
 
-!inputfiles /UserObjects/AEFVUpwindInternalSideFlux
+!listingfiles /UserObjects/AEFVUpwindInternalSideFlux
 
 !childobjects /UserObjects/AEFVUpwindInternalSideFlux

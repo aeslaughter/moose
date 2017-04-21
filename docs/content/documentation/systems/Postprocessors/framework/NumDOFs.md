@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumDOFs
 
-!inputfiles /Postprocessors/NumDOFs
+!listingfiles /Postprocessors/NumDOFs
 
 !childobjects /Postprocessors/NumDOFs

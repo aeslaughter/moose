@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/Residual
 
-!inputfiles /UserObjects/Residual
+!listingfiles /UserObjects/Residual
 
 !childobjects /UserObjects/Residual

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/RankTwoScalarAux
 
-!inputfiles /AuxKernels/RankTwoScalarAux
+!listingfiles /AuxKernels/RankTwoScalarAux
 
 !childobjects /AuxKernels/RankTwoScalarAux

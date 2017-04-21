@@ -1,18 +1,20 @@
 # MOOSE Flavored Markdown
 
-Documentation generated using MOOSE is generated using the [python-markdown] package,
-which includes the ability to use extensions from others as well as define custom extensions. The following pages outlines the
-outside extensions enabled as well as the custom extensions included with [MOOSE].
-extensions included as well as the custom syntax defined exclusively for documenting [MOOSE] source code.
+Documentation generated using MOOSE is generated using the [python-markdown] package, which includes
+the ability to use extensions from others as well as define custom extensions. The following pages
+outlines the outside extensions enabled as well as the custom extensions included with [MOOSE].
+extensions included as well as the custom syntax defined exclusively for documenting [MOOSE] source
+code.
 
 ## MooseDocs Extensions
+
 Much of the capability that enables the MooseDocs system to be useful for creating documentation
 stems from the set of custom extensions created. In general, these extensions add commands, which
 begin with an exclamation point (!) and some number of arguments. Therefore, each extension contains
 configuration options at the extension level and each command defined as a settings that can be
 applied.
 
-The Table \ref{moose-extensions} summarizes all of the available MooseDocs extensions and provides a link to
+\ref{moose-extensions} summarizes all of the available MooseDocs extensions and provides a link to
 another page that details the use and configuration of the extension as a well as a list of any
 commands add associated settings defined in the extension.
 
@@ -20,6 +22,7 @@ commands add associated settings defined in the extension.
 | Name | Description |
 | - | - |
 | [global](extensions/global.md) | Implements a global list of Markdown hyperlinks. |
+| (include)(extensions/include.md) | Enables recursive markdown inclusion. |
 | [bibtex](extensions/bibtex.md) | Allows LaTeX/BibTeX style citations and bibliographies. |
 | [css](extensions/css.md) | Enables [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) settings to be applied via markdown |
 | [diagram](extensions/diagram.md) | Automatically generates DOT/GraphVIZ diagrams. |

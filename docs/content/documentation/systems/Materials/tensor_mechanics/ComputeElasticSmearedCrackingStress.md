@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeElasticSmearedCrackingStress
 
-!inputfiles /Materials/ComputeElasticSmearedCrackingStress
+!listingfiles /Materials/ComputeElasticSmearedCrackingStress
 
 !childobjects /Materials/ComputeElasticSmearedCrackingStress

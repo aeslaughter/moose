@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSPressureAux
 
-!inputfiles /AuxKernels/NSPressureAux
+!listingfiles /AuxKernels/NSPressureAux
 
 !childobjects /AuxKernels/NSPressureAux

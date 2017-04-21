@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVWENOSlopeLimiting
 
-!inputfiles /UserObjects/CNSFVWENOSlopeLimiting
+!listingfiles /UserObjects/CNSFVWENOSlopeLimiting
 
 !childobjects /UserObjects/CNSFVWENOSlopeLimiting

@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSMomentumConvectiveWeakStagnationBC
 
-!inputfiles /BCs/NSMomentumConvectiveWeakStagnationBC
+!listingfiles /BCs/NSMomentumConvectiveWeakStagnationBC
 
 !childobjects /BCs/NSMomentumConvectiveWeakStagnationBC

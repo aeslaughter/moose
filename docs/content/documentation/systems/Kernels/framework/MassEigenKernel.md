@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MassEigenKernel
 
-!inputfiles /Kernels/MassEigenKernel
+!listingfiles /Kernels/MassEigenKernel
 
 !childobjects /Kernels/MassEigenKernel

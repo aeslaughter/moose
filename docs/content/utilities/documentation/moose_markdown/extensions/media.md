@@ -4,30 +4,30 @@ The media extension provides markdown commands for adding images, slideshow, and
 
 ## Images
 
-!image docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
+!media docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
 
 It is possible to include images with more flexibility than standard markdown.
 
-The markdown keyword for MOOSE images is `!image` followed by the filename as shown below. This
+The markdown keyword for MOOSE images is `!media` followed by the filename as shown below. This
 command, like most of the other special MOOSE markdown commands except arbitrary html attributes
 that are then applied to the "style" attribute. For example, the following syntax was used to
 include the image on the right.
 
 ```markdown
-!image docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
+!media docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
 ```
 
-!extension-settings moose_image title=Command Settings (`!image`)
+!extension-settings moose_image title=Command Settings (`!media`)
 
 ## Videos
 
-Locally stored or hosted videos can be displayed using the `!video` syntax. This works in the same
-fashion as the `!image` command, but also includes some extra settings as listed in the table
+Locally stored or hosted videos can be displayed using the `!media` syntax. This works in the same
+fashion as the `!media` command, but also includes some extra settings as listed in the table
 below.
 
-!video http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100%
+!media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100%
 
-!extension-settings moose_video title=Command Settings (`!video`)
+!extension-settings moose_video title=Command Settings (`!media`)
 
 
 ## Slideshows

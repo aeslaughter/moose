@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowRelativePermeabilityFLAC
 
-!inputfiles /Materials/PorousFlowRelativePermeabilityFLAC
+!listingfiles /Materials/PorousFlowRelativePermeabilityFLAC
 
 !childobjects /Materials/PorousFlowRelativePermeabilityFLAC

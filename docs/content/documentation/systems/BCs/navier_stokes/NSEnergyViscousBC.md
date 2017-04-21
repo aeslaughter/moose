@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSEnergyViscousBC
 
-!inputfiles /BCs/NSEnergyViscousBC
+!listingfiles /BCs/NSEnergyViscousBC
 
 !childobjects /BCs/NSEnergyViscousBC

@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/BlockDeleter
 
-!inputfiles /MeshModifiers/BlockDeleter
+!listingfiles /MeshModifiers/BlockDeleter
 
 !childobjects /MeshModifiers/BlockDeleter

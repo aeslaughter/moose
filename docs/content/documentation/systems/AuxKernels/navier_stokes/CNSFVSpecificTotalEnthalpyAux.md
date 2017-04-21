@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/CNSFVSpecificTotalEnthalpyAux
 
-!inputfiles /AuxKernels/CNSFVSpecificTotalEnthalpyAux
+!listingfiles /AuxKernels/CNSFVSpecificTotalEnthalpyAux
 
 !childobjects /AuxKernels/CNSFVSpecificTotalEnthalpyAux

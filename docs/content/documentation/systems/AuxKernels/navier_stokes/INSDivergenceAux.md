@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/INSDivergenceAux
 
-!inputfiles /AuxKernels/INSDivergenceAux
+!listingfiles /AuxKernels/INSDivergenceAux
 
 !childobjects /AuxKernels/INSDivergenceAux

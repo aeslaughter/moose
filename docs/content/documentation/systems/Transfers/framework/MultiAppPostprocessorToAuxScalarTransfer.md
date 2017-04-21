@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppPostprocessorToAuxScalarTransfer
 
-!inputfiles /Transfers/MultiAppPostprocessorToAuxScalarTransfer
+!listingfiles /Transfers/MultiAppPostprocessorToAuxScalarTransfer
 
 !childobjects /Transfers/MultiAppPostprocessorToAuxScalarTransfer

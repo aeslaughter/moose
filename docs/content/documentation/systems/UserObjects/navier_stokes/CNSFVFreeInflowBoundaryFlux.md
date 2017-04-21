@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVFreeInflowBoundaryFlux
 
-!inputfiles /UserObjects/CNSFVFreeInflowBoundaryFlux
+!listingfiles /UserObjects/CNSFVFreeInflowBoundaryFlux
 
 !childobjects /UserObjects/CNSFVFreeInflowBoundaryFlux

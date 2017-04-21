@@ -5,6 +5,6 @@
 
 !parameters /ScalarKernels/ODETimeDerivative
 
-!inputfiles /ScalarKernels/ODETimeDerivative
+!listingfiles /ScalarKernels/ODETimeDerivative
 
 !childobjects /ScalarKernels/ODETimeDerivative

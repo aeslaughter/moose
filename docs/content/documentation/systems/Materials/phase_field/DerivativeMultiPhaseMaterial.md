@@ -5,6 +5,6 @@
 
 !parameters /Materials/DerivativeMultiPhaseMaterial
 
-!inputfiles /Materials/DerivativeMultiPhaseMaterial
+!listingfiles /Materials/DerivativeMultiPhaseMaterial
 
 !childobjects /Materials/DerivativeMultiPhaseMaterial

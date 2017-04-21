@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHSplitVar
 
-!inputfiles /Kernels/CHSplitVar
+!listingfiles /Kernels/CHSplitVar
 
 !childobjects /Kernels/CHSplitVar

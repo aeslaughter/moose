@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumElems
 
-!inputfiles /UserObjects/NumElems
+!listingfiles /UserObjects/NumElems
 
 !childobjects /UserObjects/NumElems

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/SideAverageValue
 
-!inputfiles /UserObjects/SideAverageValue
+!listingfiles /UserObjects/SideAverageValue
 
 !childobjects /UserObjects/SideAverageValue

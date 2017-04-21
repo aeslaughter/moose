@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSEnergyInviscidSpecifiedBC
 
-!inputfiles /BCs/NSEnergyInviscidSpecifiedBC
+!listingfiles /BCs/NSEnergyInviscidSpecifiedBC
 
 !childobjects /BCs/NSEnergyInviscidSpecifiedBC

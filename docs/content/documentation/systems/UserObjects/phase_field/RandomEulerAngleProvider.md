@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/RandomEulerAngleProvider
 
-!inputfiles /UserObjects/RandomEulerAngleProvider
+!listingfiles /UserObjects/RandomEulerAngleProvider
 
 !childobjects /UserObjects/RandomEulerAngleProvider

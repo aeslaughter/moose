@@ -5,6 +5,6 @@
 
 !parameters /BCs/VacuumBC
 
-!inputfiles /BCs/VacuumBC
+!listingfiles /BCs/VacuumBC
 
 !childobjects /BCs/VacuumBC

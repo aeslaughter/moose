@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVRiemannInvariantBoundaryFlux
 
-!inputfiles /UserObjects/CNSFVRiemannInvariantBoundaryFlux
+!listingfiles /UserObjects/CNSFVRiemannInvariantBoundaryFlux
 
 !childobjects /UserObjects/CNSFVRiemannInvariantBoundaryFlux

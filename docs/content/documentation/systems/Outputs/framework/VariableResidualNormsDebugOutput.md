@@ -5,6 +5,6 @@
 
 !parameters /Outputs/VariableResidualNormsDebugOutput
 
-!inputfiles /Outputs/VariableResidualNormsDebugOutput
+!listingfiles /Outputs/VariableResidualNormsDebugOutput
 
 !childobjects /Outputs/VariableResidualNormsDebugOutput

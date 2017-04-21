@@ -5,6 +5,6 @@
 
 !parameters /Outputs/TopResidualDebugOutput
 
-!inputfiles /Outputs/TopResidualDebugOutput
+!listingfiles /Outputs/TopResidualDebugOutput
 
 !childobjects /Outputs/TopResidualDebugOutput

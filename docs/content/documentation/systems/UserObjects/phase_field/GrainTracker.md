@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/GrainTracker
 
-!inputfiles /UserObjects/GrainTracker
+!listingfiles /UserObjects/GrainTracker
 
 !childobjects /UserObjects/GrainTracker

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/PorousFlowHeatEnergy
 
-!inputfiles /Postprocessors/PorousFlowHeatEnergy
+!listingfiles /Postprocessors/PorousFlowHeatEnergy
 
 !childobjects /Postprocessors/PorousFlowHeatEnergy

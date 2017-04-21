@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementExtremeValue
 
-!inputfiles /Postprocessors/ElementExtremeValue
+!listingfiles /Postprocessors/ElementExtremeValue
 
 !childobjects /Postprocessors/ElementExtremeValue

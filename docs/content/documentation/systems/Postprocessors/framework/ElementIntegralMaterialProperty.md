@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementIntegralMaterialProperty
 
-!inputfiles /Postprocessors/ElementIntegralMaterialProperty
+!listingfiles /Postprocessors/ElementIntegralMaterialProperty
 
 !childobjects /Postprocessors/ElementIntegralMaterialProperty

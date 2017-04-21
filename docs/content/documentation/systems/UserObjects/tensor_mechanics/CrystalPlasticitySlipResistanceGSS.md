@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/CrystalPlasticitySlipResistanceGSS
 
-!inputfiles /UserObjects/CrystalPlasticitySlipResistanceGSS
+!listingfiles /UserObjects/CrystalPlasticitySlipResistanceGSS
 
 !childobjects /UserObjects/CrystalPlasticitySlipResistanceGSS

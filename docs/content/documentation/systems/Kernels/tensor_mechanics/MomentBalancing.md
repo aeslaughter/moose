@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MomentBalancing
 
-!inputfiles /Kernels/MomentBalancing
+!listingfiles /Kernels/MomentBalancing
 
 !childobjects /Kernels/MomentBalancing

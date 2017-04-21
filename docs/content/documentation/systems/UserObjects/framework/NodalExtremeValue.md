@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalExtremeValue
 
-!inputfiles /UserObjects/NodalExtremeValue
+!listingfiles /UserObjects/NodalExtremeValue
 
 !childobjects /UserObjects/NodalExtremeValue

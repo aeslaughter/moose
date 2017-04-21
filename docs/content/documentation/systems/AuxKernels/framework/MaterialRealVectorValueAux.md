@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/MaterialRealVectorValueAux
 
-!inputfiles /AuxKernels/MaterialRealVectorValueAux
+!listingfiles /AuxKernels/MaterialRealVectorValueAux
 
 !childobjects /AuxKernels/MaterialRealVectorValueAux

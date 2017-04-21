@@ -5,6 +5,6 @@
 
 !parameters /Outputs/MaterialPropertyDebugOutput
 
-!inputfiles /Outputs/MaterialPropertyDebugOutput
+!listingfiles /Outputs/MaterialPropertyDebugOutput
 
 !childobjects /Outputs/MaterialPropertyDebugOutput

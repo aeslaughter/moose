@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/EmptyPostprocessor
 
-!inputfiles /UserObjects/EmptyPostprocessor
+!listingfiles /UserObjects/EmptyPostprocessor
 
 !childobjects /UserObjects/EmptyPostprocessor

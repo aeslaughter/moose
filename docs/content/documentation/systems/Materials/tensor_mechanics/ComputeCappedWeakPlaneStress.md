@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeCappedWeakPlaneStress
 
-!inputfiles /Materials/ComputeCappedWeakPlaneStress
+!listingfiles /Materials/ComputeCappedWeakPlaneStress
 
 !childobjects /Materials/ComputeCappedWeakPlaneStress

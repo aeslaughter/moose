@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSMassUnspecifiedNormalFlowBC
 
-!inputfiles /BCs/NSMassUnspecifiedNormalFlowBC
+!listingfiles /BCs/NSMassUnspecifiedNormalFlowBC
 
 !childobjects /BCs/NSMassUnspecifiedNormalFlowBC

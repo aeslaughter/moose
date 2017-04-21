@@ -5,6 +5,6 @@
 
 !parameters /BCs/FunctionPresetBC
 
-!inputfiles /BCs/FunctionPresetBC
+!listingfiles /BCs/FunctionPresetBC
 
 !childobjects /BCs/FunctionPresetBC

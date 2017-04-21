@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/EulerAngleVariables2RGBAux
 
-!inputfiles /AuxKernels/EulerAngleVariables2RGBAux
+!listingfiles /AuxKernels/EulerAngleVariables2RGBAux
 
 !childobjects /AuxKernels/EulerAngleVariables2RGBAux

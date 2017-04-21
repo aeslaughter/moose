@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NearestPointLayeredAverage
 
-!inputfiles /UserObjects/NearestPointLayeredAverage
+!listingfiles /UserObjects/NearestPointLayeredAverage
 
 !childobjects /UserObjects/NearestPointLayeredAverage

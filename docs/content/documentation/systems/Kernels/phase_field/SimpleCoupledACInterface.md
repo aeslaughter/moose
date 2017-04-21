@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SimpleCoupledACInterface
 
-!inputfiles /Kernels/SimpleCoupledACInterface
+!listingfiles /Kernels/SimpleCoupledACInterface
 
 !childobjects /Kernels/SimpleCoupledACInterface

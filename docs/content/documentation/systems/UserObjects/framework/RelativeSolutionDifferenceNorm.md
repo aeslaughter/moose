@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/RelativeSolutionDifferenceNorm
 
-!inputfiles /UserObjects/RelativeSolutionDifferenceNorm
+!listingfiles /UserObjects/RelativeSolutionDifferenceNorm
 
 !childobjects /UserObjects/RelativeSolutionDifferenceNorm

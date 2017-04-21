@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TorqueReaction
 
-!inputfiles /UserObjects/TorqueReaction
+!listingfiles /UserObjects/TorqueReaction
 
 !childobjects /UserObjects/TorqueReaction

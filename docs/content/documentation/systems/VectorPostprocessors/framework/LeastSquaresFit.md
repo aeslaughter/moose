@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/LeastSquaresFit
 
-!inputfiles /VectorPostprocessors/LeastSquaresFit
+!listingfiles /VectorPostprocessors/LeastSquaresFit
 
 !childobjects /VectorPostprocessors/LeastSquaresFit

@@ -5,6 +5,6 @@
 
 !parameters /ICs/ClosePackIC
 
-!inputfiles /ICs/ClosePackIC
+!listingfiles /ICs/ClosePackIC
 
 !childobjects /ICs/ClosePackIC

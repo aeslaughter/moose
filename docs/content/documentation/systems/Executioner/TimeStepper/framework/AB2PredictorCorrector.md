@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/AB2PredictorCorrector
 
-!inputfiles /Executioner/TimeStepper/AB2PredictorCorrector
+!listingfiles /Executioner/TimeStepper/AB2PredictorCorrector
 
 !childobjects /Executioner/TimeStepper/AB2PredictorCorrector

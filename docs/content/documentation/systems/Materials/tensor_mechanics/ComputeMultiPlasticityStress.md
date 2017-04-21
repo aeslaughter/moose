@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeMultiPlasticityStress
 
-!inputfiles /Materials/ComputeMultiPlasticityStress
+!listingfiles /Materials/ComputeMultiPlasticityStress
 
 !childobjects /Materials/ComputeMultiPlasticityStress

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/HHPFCRFF
 
-!inputfiles /Kernels/HHPFCRFF
+!listingfiles /Kernels/HHPFCRFF
 
 !childobjects /Kernels/HHPFCRFF

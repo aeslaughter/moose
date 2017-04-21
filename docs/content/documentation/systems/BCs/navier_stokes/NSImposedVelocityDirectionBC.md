@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSImposedVelocityDirectionBC
 
-!inputfiles /BCs/NSImposedVelocityDirectionBC
+!listingfiles /BCs/NSImposedVelocityDirectionBC
 
 !childobjects /BCs/NSImposedVelocityDirectionBC

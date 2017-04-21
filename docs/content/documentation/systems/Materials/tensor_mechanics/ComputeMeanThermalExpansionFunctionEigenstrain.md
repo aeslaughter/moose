@@ -21,7 +21,7 @@ where $T$ is the current temperature and $\boldsymbol{I}$ is the identity matrix
 
 !parameters /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 
-!inputfiles /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
+!listingfiles /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 
 !childobjects /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 

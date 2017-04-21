@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVRiemannInvariantBCUserObject
 
-!inputfiles /UserObjects/CNSFVRiemannInvariantBCUserObject
+!listingfiles /UserObjects/CNSFVRiemannInvariantBCUserObject
 
 !childobjects /UserObjects/CNSFVRiemannInvariantBCUserObject

@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/BoundingBoxNodeSet
 
-!inputfiles /MeshModifiers/BoundingBoxNodeSet
+!listingfiles /MeshModifiers/BoundingBoxNodeSet
 
 !childobjects /MeshModifiers/BoundingBoxNodeSet

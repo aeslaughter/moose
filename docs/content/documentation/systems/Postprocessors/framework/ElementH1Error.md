@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementH1Error
 
-!inputfiles /Postprocessors/ElementH1Error
+!listingfiles /Postprocessors/ElementH1Error
 
 !childobjects /Postprocessors/ElementH1Error

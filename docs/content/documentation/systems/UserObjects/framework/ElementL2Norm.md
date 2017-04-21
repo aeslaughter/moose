@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementL2Norm
 
-!inputfiles /UserObjects/ElementL2Norm
+!listingfiles /UserObjects/ElementL2Norm
 
 !childobjects /UserObjects/ElementL2Norm

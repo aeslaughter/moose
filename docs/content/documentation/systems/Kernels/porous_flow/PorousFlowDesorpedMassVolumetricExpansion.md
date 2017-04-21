@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowDesorpedMassVolumetricExpansion
 
-!inputfiles /Kernels/PorousFlowDesorpedMassVolumetricExpansion
+!listingfiles /Kernels/PorousFlowDesorpedMassVolumetricExpansion
 
 !childobjects /Kernels/PorousFlowDesorpedMassVolumetricExpansion

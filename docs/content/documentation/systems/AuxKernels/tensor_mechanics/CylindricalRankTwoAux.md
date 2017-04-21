@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/CylindricalRankTwoAux
 
-!inputfiles /AuxKernels/CylindricalRankTwoAux
+!listingfiles /AuxKernels/CylindricalRankTwoAux
 
 !childobjects /AuxKernels/CylindricalRankTwoAux

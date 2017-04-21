@@ -21,6 +21,6 @@ This material generates new material properties that sum up the values and deriv
 
 !parameters /Materials/DerivativeSumMaterial
 
-!inputfiles /Materials/DerivativeSumMaterial
+!listingfiles /Materials/DerivativeSumMaterial
 
 !childobjects /Materials/DerivativeSumMaterial

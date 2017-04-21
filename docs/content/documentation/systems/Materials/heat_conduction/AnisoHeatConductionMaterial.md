@@ -5,6 +5,6 @@
 
 !parameters /Materials/AnisoHeatConductionMaterial
 
-!inputfiles /Materials/AnisoHeatConductionMaterial
+!listingfiles /Materials/AnisoHeatConductionMaterial
 
 !childobjects /Materials/AnisoHeatConductionMaterial

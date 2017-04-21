@@ -26,6 +26,6 @@ The material utilizes the derivatives of $C$ and $\epsilon$ to provide the deriv
 
 !parameters /Materials/ElasticEnergyMaterial
 
-!inputfiles /Materials/ElasticEnergyMaterial
+!listingfiles /Materials/ElasticEnergyMaterial
 
 !childobjects /Materials/ElasticEnergyMaterial

@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppPostprocessorInterpolationTransfer
 
-!inputfiles /Transfers/MultiAppPostprocessorInterpolationTransfer
+!listingfiles /Transfers/MultiAppPostprocessorInterpolationTransfer
 
 !childobjects /Transfers/MultiAppPostprocessorInterpolationTransfer

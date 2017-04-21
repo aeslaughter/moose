@@ -5,6 +5,6 @@
 
 !parameters /ICs/ScalarComponentIC
 
-!inputfiles /ICs/ScalarComponentIC
+!listingfiles /ICs/ScalarComponentIC
 
 !childobjects /ICs/ScalarComponentIC

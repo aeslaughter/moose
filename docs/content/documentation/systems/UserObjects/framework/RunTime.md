@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/RunTime
 
-!inputfiles /UserObjects/RunTime
+!listingfiles /UserObjects/RunTime
 
 !childobjects /UserObjects/RunTime

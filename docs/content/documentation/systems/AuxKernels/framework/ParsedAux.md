@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ParsedAux
 
-!inputfiles /AuxKernels/ParsedAux
+!listingfiles /AuxKernels/ParsedAux
 
 !childobjects /AuxKernels/ParsedAux

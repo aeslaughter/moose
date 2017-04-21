@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSEnergyInviscidSpecifiedDensityAndVelocityBC
 
-!inputfiles /BCs/NSEnergyInviscidSpecifiedDensityAndVelocityBC
+!listingfiles /BCs/NSEnergyInviscidSpecifiedDensityAndVelocityBC
 
 !childobjects /BCs/NSEnergyInviscidSpecifiedDensityAndVelocityBC

@@ -9,6 +9,6 @@ that arise from the gradient interface energy are handled separately in the [`CH
 
 !parameters /Kernels/CahnHilliardAniso
 
-!inputfiles /Kernels/CahnHilliardAniso
+!listingfiles /Kernels/CahnHilliardAniso
 
 !childobjects /Kernels/CahnHilliardAniso

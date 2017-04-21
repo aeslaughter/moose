@@ -5,6 +5,6 @@
 
 !parameters /Functions/ParsedGradFunction
 
-!inputfiles /Functions/ParsedGradFunction
+!listingfiles /Functions/ParsedGradFunction
 
 !childobjects /Functions/ParsedGradFunction

@@ -5,6 +5,6 @@
 
 !parameters /Materials/InterfaceOrientationMaterial
 
-!inputfiles /Materials/InterfaceOrientationMaterial
+!listingfiles /Materials/InterfaceOrientationMaterial
 
 !childobjects /Materials/InterfaceOrientationMaterial

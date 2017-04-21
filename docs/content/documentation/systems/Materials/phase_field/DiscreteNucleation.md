@@ -12,6 +12,6 @@ The `DiscreteNucleation` material is part of the [Discrete Nucleation system](Nu
 
 !parameters /Materials/DiscreteNucleation
 
-!inputfiles /Materials/DiscreteNucleation
+!listingfiles /Materials/DiscreteNucleation
 
 !childobjects /Materials/DiscreteNucleation

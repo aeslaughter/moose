@@ -5,6 +5,6 @@
 
 !parameters /Executioner/Predictor/AdamsPredictor
 
-!inputfiles /Executioner/Predictor/AdamsPredictor
+!listingfiles /Executioner/Predictor/AdamsPredictor
 
 !childobjects /Executioner/Predictor/AdamsPredictor

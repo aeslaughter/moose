@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSSUPGEnergy
 
-!inputfiles /Kernels/NSSUPGEnergy
+!listingfiles /Kernels/NSSUPGEnergy
 
 !childobjects /Kernels/NSSUPGEnergy

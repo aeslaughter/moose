@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVSlipBCUserObject
 
-!inputfiles /UserObjects/CNSFVSlipBCUserObject
+!listingfiles /UserObjects/CNSFVSlipBCUserObject
 
 !childobjects /UserObjects/CNSFVSlipBCUserObject

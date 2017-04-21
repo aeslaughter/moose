@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeReturnMappingStress
 
-!inputfiles /Materials/ComputeReturnMappingStress
+!listingfiles /Materials/ComputeReturnMappingStress
 
 !childobjects /Materials/ComputeReturnMappingStress

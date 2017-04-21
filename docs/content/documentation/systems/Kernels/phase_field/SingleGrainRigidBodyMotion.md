@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SingleGrainRigidBodyMotion
 
-!inputfiles /Kernels/SingleGrainRigidBodyMotion
+!listingfiles /Kernels/SingleGrainRigidBodyMotion
 
 !childobjects /Kernels/SingleGrainRigidBodyMotion

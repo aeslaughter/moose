@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/AverageNodalVariableValue
 
-!inputfiles /Postprocessors/AverageNodalVariableValue
+!listingfiles /Postprocessors/AverageNodalVariableValue
 
 !childobjects /Postprocessors/AverageNodalVariableValue

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumDOFs
 
-!inputfiles /UserObjects/NumDOFs
+!listingfiles /UserObjects/NumDOFs
 
 !childobjects /UserObjects/NumDOFs

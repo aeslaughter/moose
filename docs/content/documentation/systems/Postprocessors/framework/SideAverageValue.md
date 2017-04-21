@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/SideAverageValue
 
-!inputfiles /Postprocessors/SideAverageValue
+!listingfiles /Postprocessors/SideAverageValue
 
 !childobjects /Postprocessors/SideAverageValue

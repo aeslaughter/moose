@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/ParsedAddSideset
 
-!inputfiles /MeshModifiers/ParsedAddSideset
+!listingfiles /MeshModifiers/ParsedAddSideset
 
 !childobjects /MeshModifiers/ParsedAddSideset

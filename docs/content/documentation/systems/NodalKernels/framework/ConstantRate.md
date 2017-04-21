@@ -5,6 +5,6 @@
 
 !parameters /NodalKernels/ConstantRate
 
-!inputfiles /NodalKernels/ConstantRate
+!listingfiles /NodalKernels/ConstantRate
 
 !childobjects /NodalKernels/ConstantRate

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/OutputEulerAngles
 
-!inputfiles /AuxKernels/OutputEulerAngles
+!listingfiles /AuxKernels/OutputEulerAngles
 
 !childobjects /AuxKernels/OutputEulerAngles

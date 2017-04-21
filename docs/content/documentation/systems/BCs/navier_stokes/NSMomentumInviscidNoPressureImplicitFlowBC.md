@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSMomentumInviscidNoPressureImplicitFlowBC
 
-!inputfiles /BCs/NSMomentumInviscidNoPressureImplicitFlowBC
+!listingfiles /BCs/NSMomentumInviscidNoPressureImplicitFlowBC
 
 !childobjects /BCs/NSMomentumInviscidNoPressureImplicitFlowBC

@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSTemperatureL2
 
-!inputfiles /Kernels/NSTemperatureL2
+!listingfiles /Kernels/NSTemperatureL2
 
 !childobjects /Kernels/NSTemperatureL2

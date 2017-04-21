@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowRelativePermeabilityVG
 
-!inputfiles /Materials/PorousFlowRelativePermeabilityVG
+!listingfiles /Materials/PorousFlowRelativePermeabilityVG
 
 !childobjects /Materials/PorousFlowRelativePermeabilityVG

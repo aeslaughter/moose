@@ -5,6 +5,6 @@
 
 !parameters /Materials/GBEvolution
 
-!inputfiles /Materials/GBEvolution
+!listingfiles /Materials/GBEvolution
 
 !childobjects /Materials/GBEvolution

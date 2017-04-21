@@ -2,6 +2,6 @@
 
 !parameters /BCs/INSMomentumNoBCBCTractionForm
 
-!inputfiles /BCs/INSMomentumNoBCBCTractionForm
+!listingfiles /BCs/INSMomentumNoBCBCTractionForm
 
 !childobjects /BCs/INSMomentumNoBCBCTractionForm

@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowVolumetricStrain
 
-!inputfiles /Materials/PorousFlowVolumetricStrain
+!listingfiles /Materials/PorousFlowVolumetricStrain
 
 !childobjects /Materials/PorousFlowVolumetricStrain

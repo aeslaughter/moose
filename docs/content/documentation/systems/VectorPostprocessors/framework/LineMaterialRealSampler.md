@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/LineMaterialRealSampler
 
-!inputfiles /VectorPostprocessors/LineMaterialRealSampler
+!listingfiles /VectorPostprocessors/LineMaterialRealSampler
 
 !childobjects /VectorPostprocessors/LineMaterialRealSampler

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumNonlinearIterations
 
-!inputfiles /UserObjects/NumNonlinearIterations
+!listingfiles /UserObjects/NumNonlinearIterations
 
 !childobjects /UserObjects/NumNonlinearIterations

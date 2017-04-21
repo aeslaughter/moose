@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/TorqueReaction
 
-!inputfiles /Postprocessors/TorqueReaction
+!listingfiles /Postprocessors/TorqueReaction
 
 !childobjects /Postprocessors/TorqueReaction

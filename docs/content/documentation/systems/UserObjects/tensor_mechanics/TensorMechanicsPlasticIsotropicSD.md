@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticIsotropicSD
 
-!inputfiles /UserObjects/TensorMechanicsPlasticIsotropicSD
+!listingfiles /UserObjects/TensorMechanicsPlasticIsotropicSD
 
 !childobjects /UserObjects/TensorMechanicsPlasticIsotropicSD

@@ -5,6 +5,6 @@
 
 !parameters /Materials/AsymmetricCrossTermBarrierFunctionMaterial
 
-!inputfiles /Materials/AsymmetricCrossTermBarrierFunctionMaterial
+!listingfiles /Materials/AsymmetricCrossTermBarrierFunctionMaterial
 
 !childobjects /Materials/AsymmetricCrossTermBarrierFunctionMaterial

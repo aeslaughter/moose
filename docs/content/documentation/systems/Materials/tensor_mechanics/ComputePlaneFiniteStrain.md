@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputePlaneFiniteStrain
 
-!inputfiles /Materials/ComputePlaneFiniteStrain
+!listingfiles /Materials/ComputePlaneFiniteStrain
 
 !childobjects /Materials/ComputePlaneFiniteStrain

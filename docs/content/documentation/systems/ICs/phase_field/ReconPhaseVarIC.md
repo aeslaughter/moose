@@ -5,6 +5,6 @@
 
 !parameters /ICs/ReconPhaseVarIC
 
-!inputfiles /ICs/ReconPhaseVarIC
+!listingfiles /ICs/ReconPhaseVarIC
 
 !childobjects /ICs/ReconPhaseVarIC

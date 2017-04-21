@@ -1,8 +1,4 @@
 [Tests]
-  [./basic]
-    type = PythonUnitTest
-    input = test_input.py
-  [../]
   [./include]
     type = PythonUnitTest
     input = test_include.py

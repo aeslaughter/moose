@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHSplitConcentration
 
-!inputfiles /Kernels/CHSplitConcentration
+!listingfiles /Kernels/CHSplitConcentration
 
 !childobjects /Kernels/CHSplitConcentration

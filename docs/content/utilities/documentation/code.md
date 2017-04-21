@@ -15,7 +15,7 @@ of the `InputParameters` object. For example, in the [FunctionIC](framework/Func
 the following parameter documentation is added, which is then present in the parameter summary table of the
 generated site.
 
-!text framework/src/ics/FunctionIC.C line=addRequiredParam
+!listing framework/src/ics/FunctionIC.C line=addRequiredParam
 
 The string supplied in this function will appear in the parameter tables within the documentation that is generated.
 For example, see the parameter table for the [DirichletBC object](framework/DirichletBC.md).
@@ -24,7 +24,7 @@ Secondly, a short description should be supplied in each `addParam`, `addPrivate
 example, in the [Diffusion](framework/Diffusion.md) object the following class
 description.
 
-!text framework/src/kernels/Diffusion.C line=addClassDescription
+!listing framework/src/kernels/Diffusion.C line=addClassDescription
 
 When the documentation for this object is generated this string is added to the first portion of the page and the
 system overview table. For example, the [Kernels overview](systems/Kernels/index.md) includes a table with each object

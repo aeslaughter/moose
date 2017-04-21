@@ -5,6 +5,6 @@
 
 !parameters /NodalKernels/UserForcingFunctionNodalKernel
 
-!inputfiles /NodalKernels/UserForcingFunctionNodalKernel
+!listingfiles /NodalKernels/UserForcingFunctionNodalKernel
 
 !childobjects /NodalKernels/UserForcingFunctionNodalKernel

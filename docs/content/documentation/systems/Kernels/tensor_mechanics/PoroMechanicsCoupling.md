@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PoroMechanicsCoupling
 
-!inputfiles /Kernels/PoroMechanicsCoupling
+!listingfiles /Kernels/PoroMechanicsCoupling
 
 !childobjects /Kernels/PoroMechanicsCoupling

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumPicardIterations
 
-!inputfiles /Postprocessors/NumPicardIterations
+!listingfiles /Postprocessors/NumPicardIterations
 
 !childobjects /Postprocessors/NumPicardIterations

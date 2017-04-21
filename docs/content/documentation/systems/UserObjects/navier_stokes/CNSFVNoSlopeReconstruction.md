@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVNoSlopeReconstruction
 
-!inputfiles /UserObjects/CNSFVNoSlopeReconstruction
+!listingfiles /UserObjects/CNSFVNoSlopeReconstruction
 
 !childobjects /UserObjects/CNSFVNoSlopeReconstruction

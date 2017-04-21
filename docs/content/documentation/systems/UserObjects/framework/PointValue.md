@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PointValue
 
-!inputfiles /UserObjects/PointValue
+!listingfiles /UserObjects/PointValue
 
 !childobjects /UserObjects/PointValue

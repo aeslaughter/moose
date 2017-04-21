@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowPermeabilityKozenyCarman
 
-!inputfiles /Materials/PorousFlowPermeabilityKozenyCarman
+!listingfiles /Materials/PorousFlowPermeabilityKozenyCarman
 
 !childobjects /Materials/PorousFlowPermeabilityKozenyCarman

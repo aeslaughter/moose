@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeConcentrationDependentElasticityTensor
 
-!inputfiles /Materials/ComputeConcentrationDependentElasticityTensor
+!listingfiles /Materials/ComputeConcentrationDependentElasticityTensor
 
 !childobjects /Materials/ComputeConcentrationDependentElasticityTensor

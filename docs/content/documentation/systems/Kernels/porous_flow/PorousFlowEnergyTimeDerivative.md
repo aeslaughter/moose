@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowEnergyTimeDerivative
 
-!inputfiles /Kernels/PorousFlowEnergyTimeDerivative
+!listingfiles /Kernels/PorousFlowEnergyTimeDerivative
 
 !childobjects /Kernels/PorousFlowEnergyTimeDerivative

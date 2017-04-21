@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVGreenGaussSlopeReconstruction
 
-!inputfiles /UserObjects/CNSFVGreenGaussSlopeReconstruction
+!listingfiles /UserObjects/CNSFVGreenGaussSlopeReconstruction
 
 !childobjects /UserObjects/CNSFVGreenGaussSlopeReconstruction

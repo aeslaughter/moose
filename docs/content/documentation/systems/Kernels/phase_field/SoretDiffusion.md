@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SoretDiffusion
 
-!inputfiles /Kernels/SoretDiffusion
+!listingfiles /Kernels/SoretDiffusion
 
 !childobjects /Kernels/SoretDiffusion

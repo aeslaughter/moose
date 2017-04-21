@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppProjectionTransfer
 
-!inputfiles /Transfers/MultiAppProjectionTransfer
+!listingfiles /Transfers/MultiAppProjectionTransfer
 
 !childobjects /Transfers/MultiAppProjectionTransfer

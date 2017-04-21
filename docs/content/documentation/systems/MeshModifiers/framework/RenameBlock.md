@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/RenameBlock
 
-!inputfiles /MeshModifiers/RenameBlock
+!listingfiles /MeshModifiers/RenameBlock
 
 !childobjects /MeshModifiers/RenameBlock

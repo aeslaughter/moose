@@ -5,6 +5,6 @@
 
 !parameters /Kernels/LangevinNoise
 
-!inputfiles /Kernels/LangevinNoise
+!listingfiles /Kernels/LangevinNoise
 
 !childobjects /Kernels/LangevinNoise

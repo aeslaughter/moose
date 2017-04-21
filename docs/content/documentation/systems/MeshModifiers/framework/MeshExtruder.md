@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/MeshExtruder
 
-!inputfiles /MeshModifiers/MeshExtruder
+!listingfiles /MeshModifiers/MeshExtruder
 
 !childobjects /MeshModifiers/MeshExtruder

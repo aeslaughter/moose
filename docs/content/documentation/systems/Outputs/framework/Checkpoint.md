@@ -5,6 +5,6 @@
 
 !parameters /Outputs/Checkpoint
 
-!inputfiles /Outputs/Checkpoint
+!listingfiles /Outputs/Checkpoint
 
 !childobjects /Outputs/Checkpoint

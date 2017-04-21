@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSMomentumPressureWeakStagnationBC
 
-!inputfiles /BCs/NSMomentumPressureWeakStagnationBC
+!listingfiles /BCs/NSMomentumPressureWeakStagnationBC
 
 !childobjects /BCs/NSMomentumPressureWeakStagnationBC

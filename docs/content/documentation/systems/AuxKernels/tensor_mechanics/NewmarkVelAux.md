@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/NewmarkVelAux
 
-!inputfiles /AuxKernels/NewmarkVelAux
+!listingfiles /AuxKernels/NewmarkVelAux
 
 !childobjects /AuxKernels/NewmarkVelAux

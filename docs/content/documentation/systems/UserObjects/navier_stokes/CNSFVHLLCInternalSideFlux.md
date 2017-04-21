@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVHLLCInternalSideFlux
 
-!inputfiles /UserObjects/CNSFVHLLCInternalSideFlux
+!listingfiles /UserObjects/CNSFVHLLCInternalSideFlux
 
 !childobjects /UserObjects/CNSFVHLLCInternalSideFlux

@@ -5,6 +5,6 @@
 
 !parameters /ScalarKernels/GeneralizedPlaneStrain
 
-!inputfiles /ScalarKernels/GeneralizedPlaneStrain
+!listingfiles /ScalarKernels/GeneralizedPlaneStrain
 
 !childobjects /ScalarKernels/GeneralizedPlaneStrain

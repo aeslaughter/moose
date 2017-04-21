@@ -5,6 +5,6 @@
 
 !parameters /Functions/ConstantFunction
 
-!inputfiles /Functions/ConstantFunction
+!listingfiles /Functions/ConstantFunction
 
 !childobjects /Functions/ConstantFunction

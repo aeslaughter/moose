@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowPorosityTHM
 
-!inputfiles /Materials/PorousFlowPorosityTHM
+!listingfiles /Materials/PorousFlowPorosityTHM
 
 !childobjects /Materials/PorousFlowPorosityTHM

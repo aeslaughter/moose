@@ -23,11 +23,11 @@ the entire process is repeated at time $t+\Delta t$.
 The LevelSetOlssonReinitialization kernel is typically employed in a reinitialization sub-app (see the MOOSE
 [MultiApp](/MultiApps/index.md) system), within this context this Kernel is invoked with the `[Kernels]` as follows.
 
-!input modules/level_set/tests/reinitialization/reinit.i block=Kernels label=False
+!listing modules/level_set/tests/reinitialization/reinit.i block=Kernels label=False
 
 !parameters /Kernels/LevelSetOlssonReinitialization
 
-!inputfiles /Kernels/LevelSetOlssonReinitialization
+!listingfiles /Kernels/LevelSetOlssonReinitialization
 
 !childobjects /Kernels/LevelSetOlssonReinitialization
 

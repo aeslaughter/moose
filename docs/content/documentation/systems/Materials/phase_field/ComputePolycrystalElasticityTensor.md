@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputePolycrystalElasticityTensor
 
-!inputfiles /Materials/ComputePolycrystalElasticityTensor
+!listingfiles /Materials/ComputePolycrystalElasticityTensor
 
 !childobjects /Materials/ComputePolycrystalElasticityTensor

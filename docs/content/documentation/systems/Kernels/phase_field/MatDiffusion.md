@@ -12,6 +12,6 @@ where the diffusion coefficient $D$ is provided by the [function material](../..
 
 !parameters /Kernels/MatDiffusion
 
-!inputfiles /Kernels/MatDiffusion
+!listingfiles /Kernels/MatDiffusion
 
 !childobjects /Kernels/MatDiffusion

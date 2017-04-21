@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementAverageTimeDerivative
 
-!inputfiles /UserObjects/ElementAverageTimeDerivative
+!listingfiles /UserObjects/ElementAverageTimeDerivative
 
 !childobjects /UserObjects/ElementAverageTimeDerivative

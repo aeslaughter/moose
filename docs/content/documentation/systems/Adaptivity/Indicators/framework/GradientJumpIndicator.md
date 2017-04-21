@@ -5,6 +5,6 @@
 
 !parameters /Adaptivity/Indicators/GradientJumpIndicator
 
-!inputfiles /Adaptivity/Indicators/GradientJumpIndicator
+!listingfiles /Adaptivity/Indicators/GradientJumpIndicator
 
 !childobjects /Adaptivity/Indicators/GradientJumpIndicator

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/Gravity
 
-!inputfiles /Kernels/Gravity
+!listingfiles /Kernels/Gravity
 
 !childobjects /Kernels/Gravity

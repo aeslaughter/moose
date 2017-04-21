@@ -5,6 +5,6 @@
 
 !parameters /Outputs/Exodus
 
-!inputfiles /Outputs/Exodus
+!listingfiles /Outputs/Exodus
 
 !childobjects /Outputs/Exodus

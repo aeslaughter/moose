@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowNearestQp
 
-!inputfiles /Materials/PorousFlowNearestQp
+!listingfiles /Materials/PorousFlowNearestQp
 
 !childobjects /Materials/PorousFlowNearestQp

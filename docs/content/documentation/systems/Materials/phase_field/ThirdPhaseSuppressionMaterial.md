@@ -5,6 +5,6 @@
 
 !parameters /Materials/ThirdPhaseSuppressionMaterial
 
-!inputfiles /Materials/ThirdPhaseSuppressionMaterial
+!listingfiles /Materials/ThirdPhaseSuppressionMaterial
 
 !childobjects /Materials/ThirdPhaseSuppressionMaterial

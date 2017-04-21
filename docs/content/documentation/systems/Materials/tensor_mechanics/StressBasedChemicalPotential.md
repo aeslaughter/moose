@@ -5,6 +5,6 @@
 
 !parameters /Materials/StressBasedChemicalPotential
 
-!inputfiles /Materials/StressBasedChemicalPotential
+!listingfiles /Materials/StressBasedChemicalPotential
 
 !childobjects /Materials/StressBasedChemicalPotential

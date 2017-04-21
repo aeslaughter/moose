@@ -5,6 +5,6 @@
 
 !parameters /BCs/FunctionPenaltyDirichletBC
 
-!inputfiles /BCs/FunctionPenaltyDirichletBC
+!listingfiles /BCs/FunctionPenaltyDirichletBC
 
 !childobjects /BCs/FunctionPenaltyDirichletBC

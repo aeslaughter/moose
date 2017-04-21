@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/FeatureFloodCountAux
 
-!inputfiles /AuxKernels/FeatureFloodCountAux
+!listingfiles /AuxKernels/FeatureFloodCountAux
 
 !childobjects /AuxKernels/FeatureFloodCountAux

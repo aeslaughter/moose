@@ -14,7 +14,7 @@ $$
 
 !parameters /Materials/DerivativeTwoPhaseMaterial
 
-!inputfiles /Materials/DerivativeTwoPhaseMaterial
+!listingfiles /Materials/DerivativeTwoPhaseMaterial
 
 Note that the phase free energies usually have single well character. The global free energy
 landscape will however have a double well character in the examples above.

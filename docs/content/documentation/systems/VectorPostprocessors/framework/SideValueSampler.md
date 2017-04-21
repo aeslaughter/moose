@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/SideValueSampler
 
-!inputfiles /VectorPostprocessors/SideValueSampler
+!listingfiles /VectorPostprocessors/SideValueSampler
 
 !childobjects /VectorPostprocessors/SideValueSampler

@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowFluidPropertiesBase
 
-!inputfiles /Materials/PorousFlowFluidPropertiesBase
+!listingfiles /Materials/PorousFlowFluidPropertiesBase
 
 !childobjects /Materials/PorousFlowFluidPropertiesBase

@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeCosseratSmallStrain
 
-!inputfiles /Materials/ComputeCosseratSmallStrain
+!listingfiles /Materials/ComputeCosseratSmallStrain
 
 !childobjects /Materials/ComputeCosseratSmallStrain

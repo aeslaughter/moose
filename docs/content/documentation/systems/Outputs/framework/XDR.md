@@ -5,6 +5,6 @@
 
 !parameters /Outputs/XDR
 
-!inputfiles /Outputs/XDR
+!listingfiles /Outputs/XDR
 
 !childobjects /Outputs/XDR

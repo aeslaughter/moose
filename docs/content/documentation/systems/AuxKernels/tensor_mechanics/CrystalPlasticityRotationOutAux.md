@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/CrystalPlasticityRotationOutAux
 
-!inputfiles /AuxKernels/CrystalPlasticityRotationOutAux
+!listingfiles /AuxKernels/CrystalPlasticityRotationOutAux
 
 !childobjects /AuxKernels/CrystalPlasticityRotationOutAux

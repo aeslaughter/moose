@@ -5,6 +5,6 @@
 
 !parameters /Materials/GrainAdvectionVelocity
 
-!inputfiles /Materials/GrainAdvectionVelocity
+!listingfiles /Materials/GrainAdvectionVelocity
 
 !childobjects /Materials/GrainAdvectionVelocity

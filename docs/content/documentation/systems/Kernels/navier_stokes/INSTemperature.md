@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSTemperature
 
-!inputfiles /Kernels/INSTemperature
+!listingfiles /Kernels/INSTemperature
 
 !childobjects /Kernels/INSTemperature

@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSMassRZ
 
-!inputfiles /Kernels/INSMassRZ
+!listingfiles /Kernels/INSMassRZ
 
 !childobjects /Kernels/INSMassRZ

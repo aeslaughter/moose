@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/GrainForceAndTorqueSum
 
-!inputfiles /UserObjects/GrainForceAndTorqueSum
+!listingfiles /UserObjects/GrainForceAndTorqueSum
 
 !childobjects /UserObjects/GrainForceAndTorqueSum

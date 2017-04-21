@@ -5,6 +5,6 @@
 
 !parameters /Executioner/InversePowerMethod
 
-!inputfiles /Executioner/InversePowerMethod
+!listingfiles /Executioner/InversePowerMethod
 
 !childobjects /Executioner/InversePowerMethod

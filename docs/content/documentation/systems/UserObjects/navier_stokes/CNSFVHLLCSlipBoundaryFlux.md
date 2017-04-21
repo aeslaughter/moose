@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVHLLCSlipBoundaryFlux
 
-!inputfiles /UserObjects/CNSFVHLLCSlipBoundaryFlux
+!listingfiles /UserObjects/CNSFVHLLCSlipBoundaryFlux
 
 !childobjects /UserObjects/CNSFVHLLCSlipBoundaryFlux

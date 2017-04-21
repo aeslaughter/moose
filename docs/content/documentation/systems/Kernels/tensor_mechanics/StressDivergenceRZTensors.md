@@ -32,6 +32,6 @@ The calculation of the Jacobian is similarly complex, requiring up to four terms
 
 !parameters /Kernels/StressDivergenceRZTensors
 
-!inputfiles /Kernels/StressDivergenceRZTensors
+!listingfiles /Kernels/StressDivergenceRZTensors
 
 !childobjects /Kernels/StressDivergenceRZTensors

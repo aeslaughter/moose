@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/FunctionDT
 
-!inputfiles /Executioner/TimeStepper/FunctionDT
+!listingfiles /Executioner/TimeStepper/FunctionDT
 
 !childobjects /Executioner/TimeStepper/FunctionDT

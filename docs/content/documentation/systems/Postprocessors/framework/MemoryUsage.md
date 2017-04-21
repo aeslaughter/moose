@@ -23,6 +23,6 @@ on `TIMESTEP_END`.
 
 !parameters /Postprocessors/MemoryUsage
 
-!inputfiles /Postprocessors/MemoryUsage
+!listingfiles /Postprocessors/MemoryUsage
 
 !childobjects /Postprocessors/MemoryUsage

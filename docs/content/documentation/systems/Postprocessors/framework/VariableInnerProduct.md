@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/VariableInnerProduct
 
-!inputfiles /Postprocessors/VariableInnerProduct
+!listingfiles /Postprocessors/VariableInnerProduct
 
 !childobjects /Postprocessors/VariableInnerProduct

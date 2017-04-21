@@ -5,6 +5,6 @@
 
 !parameters /Materials/HeatConductionMaterial
 
-!inputfiles /Materials/HeatConductionMaterial
+!listingfiles /Materials/HeatConductionMaterial
 
 !childobjects /Materials/HeatConductionMaterial

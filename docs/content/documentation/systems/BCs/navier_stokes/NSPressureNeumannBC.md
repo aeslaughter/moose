@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSPressureNeumannBC
 
-!inputfiles /BCs/NSPressureNeumannBC
+!listingfiles /BCs/NSPressureNeumannBC
 
 !childobjects /BCs/NSPressureNeumannBC

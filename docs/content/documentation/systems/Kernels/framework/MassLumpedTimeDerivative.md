@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MassLumpedTimeDerivative
 
-!inputfiles /Kernels/MassLumpedTimeDerivative
+!listingfiles /Kernels/MassLumpedTimeDerivative
 
 !childobjects /Kernels/MassLumpedTimeDerivative

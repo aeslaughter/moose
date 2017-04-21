@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SimpleCHInterface
 
-!inputfiles /Kernels/SimpleCHInterface
+!listingfiles /Kernels/SimpleCHInterface
 
 !childobjects /Kernels/SimpleCHInterface

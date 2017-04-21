@@ -5,6 +5,6 @@
 
 !parameters /Kernels/HomogenizedHeatConduction
 
-!inputfiles /Kernels/HomogenizedHeatConduction
+!listingfiles /Kernels/HomogenizedHeatConduction
 
 !childobjects /Kernels/HomogenizedHeatConduction

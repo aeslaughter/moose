@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHMath
 
-!inputfiles /Kernels/CHMath
+!listingfiles /Kernels/CHMath
 
 !childobjects /Kernels/CHMath

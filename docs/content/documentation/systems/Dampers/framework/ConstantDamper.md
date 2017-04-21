@@ -5,6 +5,6 @@
 
 !parameters /Dampers/ConstantDamper
 
-!inputfiles /Dampers/ConstantDamper
+!listingfiles /Dampers/ConstantDamper
 
 !childobjects /Dampers/ConstantDamper

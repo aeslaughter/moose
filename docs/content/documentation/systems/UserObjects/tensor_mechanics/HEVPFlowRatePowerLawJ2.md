@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/HEVPFlowRatePowerLawJ2
 
-!inputfiles /UserObjects/HEVPFlowRatePowerLawJ2
+!listingfiles /UserObjects/HEVPFlowRatePowerLawJ2
 
 !childobjects /UserObjects/HEVPFlowRatePowerLawJ2

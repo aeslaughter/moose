@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/FindValueOnLine
 
-!inputfiles /UserObjects/FindValueOnLine
+!listingfiles /UserObjects/FindValueOnLine
 
 !childobjects /UserObjects/FindValueOnLine

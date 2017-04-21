@@ -5,6 +5,6 @@
 
 !parameters /Outputs/ControlOutput
 
-!inputfiles /Outputs/ControlOutput
+!listingfiles /Outputs/ControlOutput
 
 !childobjects /Outputs/ControlOutput

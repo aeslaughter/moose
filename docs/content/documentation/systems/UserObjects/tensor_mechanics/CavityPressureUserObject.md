@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/CavityPressureUserObject
 
-!inputfiles /UserObjects/CavityPressureUserObject
+!listingfiles /UserObjects/CavityPressureUserObject
 
 !childobjects /UserObjects/CavityPressureUserObject

@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeIsotropicElasticityTensor
 
-!inputfiles /Materials/ComputeIsotropicElasticityTensor
+!listingfiles /Materials/ComputeIsotropicElasticityTensor
 
 !childobjects /Materials/ComputeIsotropicElasticityTensor

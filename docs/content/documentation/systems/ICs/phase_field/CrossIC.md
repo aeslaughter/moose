@@ -5,6 +5,6 @@
 
 !parameters /ICs/CrossIC
 
-!inputfiles /ICs/CrossIC
+!listingfiles /ICs/CrossIC
 
 !childobjects /ICs/CrossIC

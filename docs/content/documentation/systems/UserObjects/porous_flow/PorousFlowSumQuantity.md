@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PorousFlowSumQuantity
 
-!inputfiles /UserObjects/PorousFlowSumQuantity
+!listingfiles /UserObjects/PorousFlowSumQuantity
 
 !childobjects /UserObjects/PorousFlowSumQuantity

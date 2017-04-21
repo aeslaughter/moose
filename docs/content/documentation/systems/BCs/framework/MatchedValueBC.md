@@ -5,6 +5,6 @@
 
 !parameters /BCs/MatchedValueBC
 
-!inputfiles /BCs/MatchedValueBC
+!listingfiles /BCs/MatchedValueBC
 
 !childobjects /BCs/MatchedValueBC

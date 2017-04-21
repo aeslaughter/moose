@@ -5,6 +5,6 @@
 
 !parameters /Controls/TimePeriod
 
-!inputfiles /Controls/TimePeriod
+!listingfiles /Controls/TimePeriod
 
 !childobjects /Controls/TimePeriod

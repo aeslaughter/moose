@@ -11,14 +11,14 @@ For example the file shown below is the pdf/latex configuration file from MOOSE.
 portion of this files the the ["MooseDocs.extensions.template"](extensions/template.md) entry. This provides the template for
 resulting html, which in this case is setup for latex output.
 
-!text docs/latex.yml style=max-height:500px;overflow-y:scroll
+!listing docs/latex.yml style=max-height:500px;overflow-y:scroll
 
 ## Creating Content
 
 Creating a pdf begins by creating a markdown file with the desired content. For example, the file `~/projects/moose/docs/examples/report.md` contained in MOOSE is a report containing all the
 information regarding the MOOSE documentation system, including this page, to demonstrate the capability and syntax.
 
-!text docs/examples/report.md max-height=500px
+!listing docs/examples/report.md max-height=500px
 
 Notice that this markdown file has some special syntax located at the top. The PDF creation
 process involves generating a tex file. The ["MooseDocs.extensions.template"](extensions/template.md) extension is based on [Jinja2](http://jinja.pocoo.org) template. The top commands are used to set template parameters from the markdown file.

@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSMachAux
 
-!inputfiles /AuxKernels/NSMachAux
+!listingfiles /AuxKernels/NSMachAux
 
 !childobjects /AuxKernels/NSMachAux

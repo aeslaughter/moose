@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeElasticityTensorCP
 
-!inputfiles /Materials/ComputeElasticityTensorCP
+!listingfiles /Materials/ComputeElasticityTensorCP
 
 !childobjects /Materials/ComputeElasticityTensorCP

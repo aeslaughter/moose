@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSEnergyWeakStagnationBC
 
-!inputfiles /BCs/NSEnergyWeakStagnationBC
+!listingfiles /BCs/NSEnergyWeakStagnationBC
 
 !childobjects /BCs/NSEnergyWeakStagnationBC

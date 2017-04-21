@@ -2,6 +2,6 @@
 
 !parameters /BCs/INSMomentumNoBCBCLaplaceForm
 
-!inputfiles /BCs/INSMomentumNoBCBCLaplaceForm
+!listingfiles /BCs/INSMomentumNoBCBCLaplaceForm
 
 !childobjects /BCs/INSMomentumNoBCBCLaplaceForm

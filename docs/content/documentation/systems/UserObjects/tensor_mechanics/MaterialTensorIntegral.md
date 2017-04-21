@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/MaterialTensorIntegral
 
-!inputfiles /UserObjects/MaterialTensorIntegral
+!listingfiles /UserObjects/MaterialTensorIntegral
 
 !childobjects /UserObjects/MaterialTensorIntegral

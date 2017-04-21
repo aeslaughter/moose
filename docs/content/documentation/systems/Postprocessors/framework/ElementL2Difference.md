@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementL2Difference
 
-!inputfiles /Postprocessors/ElementL2Difference
+!listingfiles /Postprocessors/ElementL2Difference
 
 !childobjects /Postprocessors/ElementL2Difference

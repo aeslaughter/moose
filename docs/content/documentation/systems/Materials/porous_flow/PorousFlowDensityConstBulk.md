@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowDensityConstBulk
 
-!inputfiles /Materials/PorousFlowDensityConstBulk
+!listingfiles /Materials/PorousFlowDensityConstBulk
 
 !childobjects /Materials/PorousFlowDensityConstBulk

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/FauxGrainTracker
 
-!inputfiles /UserObjects/FauxGrainTracker
+!listingfiles /UserObjects/FauxGrainTracker
 
 !childobjects /UserObjects/FauxGrainTracker

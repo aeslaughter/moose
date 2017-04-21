@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/TimeExtremeValue
 
-!inputfiles /Postprocessors/TimeExtremeValue
+!listingfiles /Postprocessors/TimeExtremeValue
 
 !childobjects /Postprocessors/TimeExtremeValue

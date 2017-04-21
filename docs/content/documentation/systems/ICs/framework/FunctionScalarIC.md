@@ -5,6 +5,6 @@
 
 !parameters /ICs/FunctionScalarIC
 
-!inputfiles /ICs/FunctionScalarIC
+!listingfiles /ICs/FunctionScalarIC
 
 !childobjects /ICs/FunctionScalarIC

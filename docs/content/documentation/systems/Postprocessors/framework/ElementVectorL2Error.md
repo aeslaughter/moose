@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementVectorL2Error
 
-!inputfiles /Postprocessors/ElementVectorL2Error
+!listingfiles /Postprocessors/ElementVectorL2Error
 
 !childobjects /Postprocessors/ElementVectorL2Error

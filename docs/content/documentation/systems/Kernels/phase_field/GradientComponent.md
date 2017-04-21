@@ -5,6 +5,6 @@
 
 !parameters /Kernels/GradientComponent
 
-!inputfiles /Kernels/GradientComponent
+!listingfiles /Kernels/GradientComponent
 
 !childobjects /Kernels/GradientComponent

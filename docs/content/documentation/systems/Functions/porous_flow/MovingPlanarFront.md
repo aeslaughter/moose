@@ -5,6 +5,6 @@
 
 !parameters /Functions/MovingPlanarFront
 
-!inputfiles /Functions/MovingPlanarFront
+!listingfiles /Functions/MovingPlanarFront
 
 !childobjects /Functions/MovingPlanarFront

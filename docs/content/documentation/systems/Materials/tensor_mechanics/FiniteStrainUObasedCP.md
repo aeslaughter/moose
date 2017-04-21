@@ -5,6 +5,6 @@
 
 !parameters /Materials/FiniteStrainUObasedCP
 
-!inputfiles /Materials/FiniteStrainUObasedCP
+!listingfiles /Materials/FiniteStrainUObasedCP
 
 !childobjects /Materials/FiniteStrainUObasedCP

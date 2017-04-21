@@ -5,6 +5,6 @@
 
 !parameters /Materials/PolynomialFreeEnergy
 
-!inputfiles /Materials/PolynomialFreeEnergy
+!listingfiles /Materials/PolynomialFreeEnergy
 
 !childobjects /Materials/PolynomialFreeEnergy

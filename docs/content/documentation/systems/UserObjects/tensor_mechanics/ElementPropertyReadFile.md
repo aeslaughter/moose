@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementPropertyReadFile
 
-!inputfiles /UserObjects/ElementPropertyReadFile
+!listingfiles /UserObjects/ElementPropertyReadFile
 
 !childobjects /UserObjects/ElementPropertyReadFile

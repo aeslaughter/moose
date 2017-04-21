@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeSmallStrain
 
-!inputfiles /Materials/ComputeSmallStrain
+!listingfiles /Materials/ComputeSmallStrain
 
 !childobjects /Materials/ComputeSmallStrain

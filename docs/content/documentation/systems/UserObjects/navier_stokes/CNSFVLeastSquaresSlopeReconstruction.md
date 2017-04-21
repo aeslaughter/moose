@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVLeastSquaresSlopeReconstruction
 
-!inputfiles /UserObjects/CNSFVLeastSquaresSlopeReconstruction
+!listingfiles /UserObjects/CNSFVLeastSquaresSlopeReconstruction
 
 !childobjects /UserObjects/CNSFVLeastSquaresSlopeReconstruction

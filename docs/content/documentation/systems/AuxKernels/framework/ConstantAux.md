@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ConstantAux
 
-!inputfiles /AuxKernels/ConstantAux
+!listingfiles /AuxKernels/ConstantAux
 
 !childobjects /AuxKernels/ConstantAux

@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVFreeInflowBCUserObject
 
-!inputfiles /UserObjects/CNSFVFreeInflowBCUserObject
+!listingfiles /UserObjects/CNSFVFreeInflowBCUserObject
 
 !childobjects /UserObjects/CNSFVFreeInflowBCUserObject

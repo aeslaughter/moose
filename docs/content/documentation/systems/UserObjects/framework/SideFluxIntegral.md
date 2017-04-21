@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/SideFluxIntegral
 
-!inputfiles /UserObjects/SideFluxIntegral
+!listingfiles /UserObjects/SideFluxIntegral
 
 !childobjects /UserObjects/SideFluxIntegral

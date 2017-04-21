@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowJoiner
 
-!inputfiles /Materials/PorousFlowJoiner
+!listingfiles /Materials/PorousFlowJoiner
 
 !childobjects /Materials/PorousFlowJoiner

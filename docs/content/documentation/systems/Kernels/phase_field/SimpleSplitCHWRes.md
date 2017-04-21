@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SimpleSplitCHWRes
 
-!inputfiles /Kernels/SimpleSplitCHWRes
+!listingfiles /Kernels/SimpleSplitCHWRes
 
 !childobjects /Kernels/SimpleSplitCHWRes

@@ -5,6 +5,6 @@
 
 !parameters /Outputs/Gnuplot
 
-!inputfiles /Outputs/Gnuplot
+!listingfiles /Outputs/Gnuplot
 
 !childobjects /Outputs/Gnuplot

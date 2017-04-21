@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/FeatureFloodCount
 
-!inputfiles /Postprocessors/FeatureFloodCount
+!listingfiles /Postprocessors/FeatureFloodCount
 
 !childobjects /Postprocessors/FeatureFloodCount

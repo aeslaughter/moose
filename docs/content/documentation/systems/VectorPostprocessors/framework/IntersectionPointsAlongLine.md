@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/IntersectionPointsAlongLine
 
-!inputfiles /VectorPostprocessors/IntersectionPointsAlongLine
+!listingfiles /VectorPostprocessors/IntersectionPointsAlongLine
 
 !childobjects /VectorPostprocessors/IntersectionPointsAlongLine

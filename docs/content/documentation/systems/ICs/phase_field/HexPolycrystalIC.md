@@ -5,6 +5,6 @@
 
 !parameters /ICs/HexPolycrystalIC
 
-!inputfiles /ICs/HexPolycrystalIC
+!listingfiles /ICs/HexPolycrystalIC
 
 !childobjects /ICs/HexPolycrystalIC

@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/SphericalAverage
 
-!inputfiles /VectorPostprocessors/SphericalAverage
+!listingfiles /VectorPostprocessors/SphericalAverage
 
 !childobjects /VectorPostprocessors/SphericalAverage

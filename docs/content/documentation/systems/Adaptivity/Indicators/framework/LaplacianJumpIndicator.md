@@ -5,6 +5,6 @@
 
 !parameters /Adaptivity/Indicators/LaplacianJumpIndicator
 
-!inputfiles /Adaptivity/Indicators/LaplacianJumpIndicator
+!listingfiles /Adaptivity/Indicators/LaplacianJumpIndicator
 
 !childobjects /Adaptivity/Indicators/LaplacianJumpIndicator

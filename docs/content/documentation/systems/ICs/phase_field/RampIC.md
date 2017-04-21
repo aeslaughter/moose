@@ -5,6 +5,6 @@
 
 !parameters /ICs/RampIC
 
-!inputfiles /ICs/RampIC
+!listingfiles /ICs/RampIC
 
 !childobjects /ICs/RampIC

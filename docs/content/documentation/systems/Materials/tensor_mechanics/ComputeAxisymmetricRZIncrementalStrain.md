@@ -13,6 +13,6 @@ Once the deformation gradient is calculated for the specific 2D geometry, the de
 
 !parameters /Materials/ComputeAxisymmetricRZIncrementalStrain
 
-!inputfiles /Materials/ComputeAxisymmetricRZIncrementalStrain
+!listingfiles /Materials/ComputeAxisymmetricRZIncrementalStrain
 
 !childobjects /Materials/ComputeAxisymmetricRZIncrementalStrain

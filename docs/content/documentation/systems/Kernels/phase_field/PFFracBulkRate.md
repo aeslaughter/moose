@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PFFracBulkRate
 
-!inputfiles /Kernels/PFFracBulkRate
+!listingfiles /Kernels/PFFracBulkRate
 
 !childobjects /Kernels/PFFracBulkRate

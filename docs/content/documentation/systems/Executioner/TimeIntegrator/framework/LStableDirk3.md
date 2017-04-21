@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/LStableDirk3
 
-!inputfiles /Executioner/TimeIntegrator/LStableDirk3
+!listingfiles /Executioner/TimeIntegrator/LStableDirk3
 
 !childobjects /Executioner/TimeIntegrator/LStableDirk3

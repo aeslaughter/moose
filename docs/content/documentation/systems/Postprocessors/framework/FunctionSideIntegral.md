@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/FunctionSideIntegral
 
-!inputfiles /Postprocessors/FunctionSideIntegral
+!listingfiles /Postprocessors/FunctionSideIntegral
 
 !childobjects /Postprocessors/FunctionSideIntegral

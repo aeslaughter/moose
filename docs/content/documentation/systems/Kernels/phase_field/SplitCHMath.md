@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SplitCHMath
 
-!inputfiles /Kernels/SplitCHMath
+!listingfiles /Kernels/SplitCHMath
 
 !childobjects /Kernels/SplitCHMath

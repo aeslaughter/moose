@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/FeatureVolumeFraction
 
-!inputfiles /UserObjects/FeatureVolumeFraction
+!listingfiles /UserObjects/FeatureVolumeFraction
 
 !childobjects /UserObjects/FeatureVolumeFraction

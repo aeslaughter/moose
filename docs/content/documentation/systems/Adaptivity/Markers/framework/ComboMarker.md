@@ -8,10 +8,10 @@ taking the maximum value of the marker value from the supplied markers. Therefor
 of an element takes precedence.
 
 ## Example Input Syntax
-!input test/tests/markers/combo_marker/combo_marker_test.i block=Adaptivity
+!listing test/tests/markers/combo_marker/combo_marker_test.i block=Adaptivity
 
 !parameters /Adaptivity/Markers/ComboMarker
 
-!inputfiles /Adaptivity/Markers/ComboMarker
+!listingfiles /Adaptivity/Markers/ComboMarker
 
 !childobjects /Adaptivity/Markers/ComboMarker

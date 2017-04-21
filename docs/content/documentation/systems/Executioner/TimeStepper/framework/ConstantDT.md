@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/ConstantDT
 
-!inputfiles /Executioner/TimeStepper/ConstantDT
+!listingfiles /Executioner/TimeStepper/ConstantDT
 
 !childobjects /Executioner/TimeStepper/ConstantDT

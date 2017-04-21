@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumNodes
 
-!inputfiles /UserObjects/NumNodes
+!listingfiles /UserObjects/NumNodes
 
 !childobjects /UserObjects/NumNodes

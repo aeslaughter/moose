@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementAverageTimeDerivative
 
-!inputfiles /Postprocessors/ElementAverageTimeDerivative
+!listingfiles /Postprocessors/ElementAverageTimeDerivative
 
 !childobjects /Postprocessors/ElementAverageTimeDerivative

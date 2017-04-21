@@ -2,6 +2,6 @@
 
 !parameters /ICs/CNSFVPressureIC
 
-!inputfiles /ICs/CNSFVPressureIC
+!listingfiles /ICs/CNSFVPressureIC
 
 !childobjects /ICs/CNSFVPressureIC

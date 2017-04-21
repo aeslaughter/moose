@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/LayeredIntegral
 
-!inputfiles /UserObjects/LayeredIntegral
+!listingfiles /UserObjects/LayeredIntegral
 
 !childobjects /UserObjects/LayeredIntegral

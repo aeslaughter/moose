@@ -5,6 +5,6 @@
 
 !parameters /BCs/PorousFlowSink
 
-!inputfiles /BCs/PorousFlowSink
+!listingfiles /BCs/PorousFlowSink
 
 !childobjects /BCs/PorousFlowSink

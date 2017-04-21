@@ -5,6 +5,6 @@
 
 !parameters /Dampers/BoundingValueNodalDamper
 
-!inputfiles /Dampers/BoundingValueNodalDamper
+!listingfiles /Dampers/BoundingValueNodalDamper
 
 !childobjects /Dampers/BoundingValueNodalDamper

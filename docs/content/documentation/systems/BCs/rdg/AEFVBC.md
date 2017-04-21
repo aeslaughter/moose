@@ -2,6 +2,6 @@
 
 !parameters /BCs/AEFVBC
 
-!inputfiles /BCs/AEFVBC
+!listingfiles /BCs/AEFVBC
 
 !childobjects /BCs/AEFVBC

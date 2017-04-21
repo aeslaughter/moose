@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/VariableTimeIntegrationAux
 
-!inputfiles /AuxKernels/VariableTimeIntegrationAux
+!listingfiles /AuxKernels/VariableTimeIntegrationAux
 
 !childobjects /AuxKernels/VariableTimeIntegrationAux

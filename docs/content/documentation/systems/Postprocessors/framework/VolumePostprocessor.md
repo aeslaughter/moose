@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/VolumePostprocessor
 
-!inputfiles /Postprocessors/VolumePostprocessor
+!listingfiles /Postprocessors/VolumePostprocessor
 
 !childobjects /Postprocessors/VolumePostprocessor

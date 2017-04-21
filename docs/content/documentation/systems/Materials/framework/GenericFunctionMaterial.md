@@ -5,6 +5,6 @@
 
 !parameters /Materials/GenericFunctionMaterial
 
-!inputfiles /Materials/GenericFunctionMaterial
+!listingfiles /Materials/GenericFunctionMaterial
 
 !childobjects /Materials/GenericFunctionMaterial

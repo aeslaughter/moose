@@ -5,6 +5,6 @@
 
 !parameters /ICs/RndBoundingBoxIC
 
-!inputfiles /ICs/RndBoundingBoxIC
+!listingfiles /ICs/RndBoundingBoxIC
 
 !childobjects /ICs/RndBoundingBoxIC

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticWeakPlaneTensileN
 
-!inputfiles /UserObjects/TensorMechanicsPlasticWeakPlaneTensileN
+!listingfiles /UserObjects/TensorMechanicsPlasticWeakPlaneTensileN
 
 !childobjects /UserObjects/TensorMechanicsPlasticWeakPlaneTensileN

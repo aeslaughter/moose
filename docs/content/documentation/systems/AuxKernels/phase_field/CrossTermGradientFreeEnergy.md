@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/CrossTermGradientFreeEnergy
 
-!inputfiles /AuxKernels/CrossTermGradientFreeEnergy
+!listingfiles /AuxKernels/CrossTermGradientFreeEnergy
 
 !childobjects /AuxKernels/CrossTermGradientFreeEnergy

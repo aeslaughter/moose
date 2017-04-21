@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/INSCourant
 
-!inputfiles /AuxKernels/INSCourant
+!listingfiles /AuxKernels/INSCourant
 
 !childobjects /AuxKernels/INSCourant

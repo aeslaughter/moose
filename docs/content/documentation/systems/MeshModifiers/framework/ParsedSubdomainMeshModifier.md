@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/ParsedSubdomainMeshModifier
 
-!inputfiles /MeshModifiers/ParsedSubdomainMeshModifier
+!listingfiles /MeshModifiers/ParsedSubdomainMeshModifier
 
 !childobjects /MeshModifiers/ParsedSubdomainMeshModifier

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/SelfAux
 
-!inputfiles /AuxKernels/SelfAux
+!listingfiles /AuxKernels/SelfAux
 
 !childobjects /AuxKernels/SelfAux

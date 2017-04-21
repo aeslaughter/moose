@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementExtremeValue
 
-!inputfiles /UserObjects/ElementExtremeValue
+!listingfiles /UserObjects/ElementExtremeValue
 
 !childobjects /UserObjects/ElementExtremeValue

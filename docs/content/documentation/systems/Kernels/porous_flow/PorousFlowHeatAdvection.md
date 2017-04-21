@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowHeatAdvection
 
-!inputfiles /Kernels/PorousFlowHeatAdvection
+!listingfiles /Kernels/PorousFlowHeatAdvection
 
 !childobjects /Kernels/PorousFlowHeatAdvection

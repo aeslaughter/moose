@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSMomentumViscousFlux
 
-!inputfiles /Kernels/NSMomentumViscousFlux
+!listingfiles /Kernels/NSMomentumViscousFlux
 
 !childobjects /Kernels/NSMomentumViscousFlux

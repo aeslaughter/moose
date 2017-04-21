@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumResidualEvaluations
 
-!inputfiles /Postprocessors/NumResidualEvaluations
+!listingfiles /Postprocessors/NumResidualEvaluations
 
 !childobjects /Postprocessors/NumResidualEvaluations

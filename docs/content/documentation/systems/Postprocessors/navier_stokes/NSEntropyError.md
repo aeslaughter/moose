@@ -2,6 +2,6 @@
 
 !parameters /Postprocessors/NSEntropyError
 
-!inputfiles /Postprocessors/NSEntropyError
+!listingfiles /Postprocessors/NSEntropyError
 
 !childobjects /Postprocessors/NSEntropyError

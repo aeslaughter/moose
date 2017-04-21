@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSStagnationPressureBC
 
-!inputfiles /BCs/NSStagnationPressureBC
+!listingfiles /BCs/NSStagnationPressureBC
 
 !childobjects /BCs/NSStagnationPressureBC

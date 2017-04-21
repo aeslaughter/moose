@@ -5,6 +5,6 @@
 
 !parameters /BCs/PresetDisplacement
 
-!inputfiles /BCs/PresetDisplacement
+!listingfiles /BCs/PresetDisplacement
 
 !childobjects /BCs/PresetDisplacement

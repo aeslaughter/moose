@@ -5,6 +5,6 @@
 
 !parameters /Executioner/Predictor/SimplePredictor
 
-!inputfiles /Executioner/Predictor/SimplePredictor
+!listingfiles /Executioner/Predictor/SimplePredictor
 
 !childobjects /Executioner/Predictor/SimplePredictor

@@ -21,14 +21,14 @@ cd ~/projects/moose/module/level_set/examples/rotating_circle
 ../../level_set-opt -i rotating_circle.i
 ```
 
-!text modules/level_set/examples/rotating_circle/circle_rotate.i max-height=300px overflow-y=scroll
+!listing modules/level_set/examples/rotating_circle/circle_rotate.i max-height=300px overflow-y=scroll
 
 ## Level Set Equation with SUPG
 Adding SUPG stabilization---set the [theory](level_set/theory.md) for details---mitigates the oscillations present in
 the first step, as shown in Figure \ref{circle_rotate_supg_out}. Adding the SUPG stabilization is trivial simply add
 the time and advection SUPG kernels to the input file ([circle_rotate_supg.i](https://github.com/idaholab/moose/tree/devel/modules/level_set/examples/rotating_circle/circle_rotate_supg.i)) shown previously, the kernels block will then appear as:
 
-!input modules/level_set/examples/rotating_circle/circle_rotate_supg.i block=Kernels label=False
+!listing modules/level_set/examples/rotating_circle/circle_rotate_supg.i block=Kernels label=False
 
 Adding the stabilization improve the numerical solution but it suffers from a loss of conservation of the phase field
 variable, as discussed in the [Area Comparison](#area_comparison) section and shown in Figure \ref{area_comparison}.
@@ -41,7 +41,7 @@ The master input file must add the necessary [MultiApps](/MultiApps/index.md) an
 blocks. For the problem at hand ([circle_rotate_master.i](https://github.com/idaholab/moose/tree/devel/modules/level_set/examples/rotating_circle/circle_rotate_master.i)) this easily accomplished by adding the following to the input file from the first step (i.e., do not
 include the SUPG kernels).
 
-!text modules/level_set/examples/rotating_circle/circle_rotate_master.i start=[MultiApps] end=[Outputs] max-height=300px overflow-y=scroll label=False
+!listing modules/level_set/examples/rotating_circle/circle_rotate_master.i start=[MultiApps] end=[Outputs] max-height=300px overflow-y=scroll label=False
 
 Next, the sub-application input file must be created, which is shown below. This input file mimics the master input
 file closely, with three notable exceptions. First, the [Kernels](/Kernels/index.md) block utilize the time
@@ -51,7 +51,7 @@ is set to use the [LevelSetReinitializationProblem](level_set/LevelSetReinitiali
 [UserObjects](/UserObjects/index.md) block includes a terminator, [LevelSetOlssonTerminator](level_set/LevelSetOlssonTerminator.md), which is responsible for stopping the reinitialization
 solve when steady-state is achieved according to the criteria defined by \citet{olsson2007conservative}.
 
-!text modules/level_set/examples/rotating_circle/circle_rotate_sub.i max-height=300px overflow-y=scroll
+!listing modules/level_set/examples/rotating_circle/circle_rotate_sub.i max-height=300px overflow-y=scroll
 
 Figure \ref{circle_rotate_master_out} shows the results of the bubble problem with reinitialization, the result looks
 similar to the SUPG result. However, if you consider the area conservation discussed in the [Area Comparison](#area_comparison) section, the reinitialization scheme yields the superior solution for this problem.

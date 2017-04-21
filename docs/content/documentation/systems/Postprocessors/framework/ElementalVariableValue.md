@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementalVariableValue
 
-!inputfiles /Postprocessors/ElementalVariableValue
+!listingfiles /Postprocessors/ElementalVariableValue
 
 !childobjects /Postprocessors/ElementalVariableValue

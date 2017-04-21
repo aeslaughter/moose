@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeDeformGradBasedStress
 
-!inputfiles /Materials/ComputeDeformGradBasedStress
+!listingfiles /Materials/ComputeDeformGradBasedStress
 
 !childobjects /Materials/ComputeDeformGradBasedStress

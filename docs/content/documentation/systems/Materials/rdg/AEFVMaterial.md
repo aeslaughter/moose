@@ -2,6 +2,6 @@
 
 !parameters /Materials/AEFVMaterial
 
-!inputfiles /Materials/AEFVMaterial
+!listingfiles /Materials/AEFVMaterial
 
 !childobjects /Materials/AEFVMaterial

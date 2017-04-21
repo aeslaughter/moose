@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/SideSetsFromPoints
 
-!inputfiles /MeshModifiers/SideSetsFromPoints
+!listingfiles /MeshModifiers/SideSetsFromPoints
 
 !childobjects /MeshModifiers/SideSetsFromPoints

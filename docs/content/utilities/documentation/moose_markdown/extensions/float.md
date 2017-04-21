@@ -6,7 +6,7 @@ the [media](extensions/media.md) and [include](extensions/include.md). When this
 included, adding the "id" and "caption" attributes to the commands below will automatically
 convert to command to include a numbered caption that can be referenced.
 
-* Listings: `!text`, `!input`, `!clang`
+* Listings: `!listing`, `!listing`, `!listing`
 * Figures: `!media`
 
 Additionally, this extension adds the `!table` command as detailed in [Tables](#tables) section.
@@ -14,7 +14,7 @@ Additionally, this extension adds the `!table` command as detailed in [Tables](#
 ## Figures
 
 When writing documentation it is customary to reference figures within text by number. To create a numbered figure use
-the `!image` or `!video` markdown syntax, but include an "id" options with the label desired for referencing. For example: `!image path/to/demo.png caption=The Caption id=fig:demo`
+the `!media` or `!media` markdown syntax, but include an "id" options with the label desired for referencing. For example: `!media path/to/demo.png caption=The Caption id=fig:demo`
 
 !media docs/media/memory_logger-plot_multi.png card=true width=300px float=right padding-left=20px caption=The numbered prefix is automatically applied to the caption. id=fig:demo
 
@@ -40,17 +40,17 @@ can be referenced with the latex style `\ref{}` command.
 
 ## Figures
 When writing documentation it is customary to reference figures within text by number. To create a numbered figure use
-the `!figure` markdown syntax. This syntax operates nearly identically to the `!image` syntax with two exceptions.
+the `!figure` markdown syntax. This syntax operates nearly identically to the `!media` syntax with two exceptions.
 
-!image docs/media/memory_logger-plot_multi.png width=250px caption=The numbered prefix is automatically applied to the caption. id=fig:memory_logger
+!media docs/media/memory_logger-plot_multi.png width=250px caption=The numbered prefix is automatically applied to the caption. id=fig:memory_logger
 
 First, the caption will automatically be prefixed with the figure number (e.g., Figure \ref{fig:memory_logger}). The
 numbering begins at one and is reset on each page. The prefix "Figure" can be modified by setting
 the "prefix" option as in Figure \ref{fig:dark_mode}.
 
-!image docs/media/memory_logger-darkmode.png width=250px id=fig:dark_mode prefix=Fig. caption=The "prefix" setting changes the text that proceeds the number.
+!media docs/media/memory_logger-darkmode.png width=250px id=fig:dark_mode prefix=Fig. caption=The "prefix" setting changes the text that proceeds the number.
 
-!video http://clips.vorwaerts-gmbh.de/VfE.webm video-width=1500px padding-right=10px float=left id=big_buck_bunny caption=Big Buck Bunny is an open-source animated short.
+!media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=1500px padding-right=10px float=left id=big_buck_bunny caption=Big Buck Bunny is an open-source animated short.
 
 Secondly, the "id" setting must be supplied. This defines the name to which the figure should be referred in the text.
 
@@ -70,4 +70,4 @@ Similar to figures, tables can be referenced: Table \ref{table:testing}.
 
 ## Listings
 
-!text framework/src/kernels/Diffusion.C id=diffusion caption=Diffusion Kernel
+!listing framework/src/kernels/Diffusion.C id=diffusion caption=Diffusion Kernel

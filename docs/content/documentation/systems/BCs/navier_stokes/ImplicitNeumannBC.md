@@ -2,6 +2,6 @@
 
 !parameters /BCs/ImplicitNeumannBC
 
-!inputfiles /BCs/ImplicitNeumannBC
+!listingfiles /BCs/ImplicitNeumannBC
 
 !childobjects /BCs/ImplicitNeumannBC

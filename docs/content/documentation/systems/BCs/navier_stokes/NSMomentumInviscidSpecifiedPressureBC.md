@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSMomentumInviscidSpecifiedPressureBC
 
-!inputfiles /BCs/NSMomentumInviscidSpecifiedPressureBC
+!listingfiles /BCs/NSMomentumInviscidSpecifiedPressureBC
 
 !childobjects /BCs/NSMomentumInviscidSpecifiedPressureBC

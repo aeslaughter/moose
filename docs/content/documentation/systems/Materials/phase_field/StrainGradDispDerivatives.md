@@ -5,6 +5,6 @@
 
 !parameters /Materials/StrainGradDispDerivatives
 
-!inputfiles /Materials/StrainGradDispDerivatives
+!listingfiles /Materials/StrainGradDispDerivatives
 
 !childobjects /Materials/StrainGradDispDerivatives

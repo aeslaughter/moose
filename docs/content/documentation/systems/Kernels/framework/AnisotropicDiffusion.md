@@ -5,6 +5,6 @@
 
 !parameters /Kernels/AnisotropicDiffusion
 
-!inputfiles /Kernels/AnisotropicDiffusion
+!listingfiles /Kernels/AnisotropicDiffusion
 
 !childobjects /Kernels/AnisotropicDiffusion

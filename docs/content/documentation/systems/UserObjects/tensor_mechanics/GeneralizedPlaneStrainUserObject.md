@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/GeneralizedPlaneStrainUserObject
 
-!inputfiles /UserObjects/GeneralizedPlaneStrainUserObject
+!listingfiles /UserObjects/GeneralizedPlaneStrainUserObject
 
 !childobjects /UserObjects/GeneralizedPlaneStrainUserObject

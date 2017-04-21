@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/AEFVFreeOutflowBoundaryFlux
 
-!inputfiles /UserObjects/AEFVFreeOutflowBoundaryFlux
+!listingfiles /UserObjects/AEFVFreeOutflowBoundaryFlux
 
 !childobjects /UserObjects/AEFVFreeOutflowBoundaryFlux

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ElementH1ErrorFunctionAux
 
-!inputfiles /AuxKernels/ElementH1ErrorFunctionAux
+!listingfiles /AuxKernels/ElementH1ErrorFunctionAux
 
 !childobjects /AuxKernels/ElementH1ErrorFunctionAux

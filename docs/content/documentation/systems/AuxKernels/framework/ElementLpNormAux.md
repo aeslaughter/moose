@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ElementLpNormAux
 
-!inputfiles /AuxKernels/ElementLpNormAux
+!listingfiles /AuxKernels/ElementLpNormAux
 
 !childobjects /AuxKernels/ElementLpNormAux

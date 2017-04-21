@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/Terminator
 
-!inputfiles /UserObjects/Terminator
+!listingfiles /UserObjects/Terminator
 
 !childobjects /UserObjects/Terminator

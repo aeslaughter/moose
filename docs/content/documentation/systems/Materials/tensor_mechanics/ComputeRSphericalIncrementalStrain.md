@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeRSphericalIncrementalStrain
 
-!inputfiles /Materials/ComputeRSphericalIncrementalStrain
+!listingfiles /Materials/ComputeRSphericalIncrementalStrain
 
 !childobjects /Materials/ComputeRSphericalIncrementalStrain

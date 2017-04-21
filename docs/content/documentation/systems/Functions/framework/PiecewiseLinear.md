@@ -5,6 +5,6 @@
 
 !parameters /Functions/PiecewiseLinear
 
-!inputfiles /Functions/PiecewiseLinear
+!listingfiles /Functions/PiecewiseLinear
 
 !childobjects /Functions/PiecewiseLinear

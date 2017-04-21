@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowIdealGas
 
-!inputfiles /Materials/PorousFlowIdealGas
+!listingfiles /Materials/PorousFlowIdealGas
 
 !childobjects /Materials/PorousFlowIdealGas

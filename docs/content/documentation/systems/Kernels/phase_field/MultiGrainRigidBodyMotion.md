@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MultiGrainRigidBodyMotion
 
-!inputfiles /Kernels/MultiGrainRigidBodyMotion
+!listingfiles /Kernels/MultiGrainRigidBodyMotion
 
 !childobjects /Kernels/MultiGrainRigidBodyMotion

@@ -5,6 +5,6 @@
 
 !parameters /BCs/FunctionNeumannBC
 
-!inputfiles /BCs/FunctionNeumannBC
+!listingfiles /BCs/FunctionNeumannBC
 
 !childobjects /BCs/FunctionNeumannBC

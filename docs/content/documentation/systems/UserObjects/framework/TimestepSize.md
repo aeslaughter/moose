@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TimestepSize
 
-!inputfiles /UserObjects/TimestepSize
+!listingfiles /UserObjects/TimestepSize
 
 !childobjects /UserObjects/TimestepSize

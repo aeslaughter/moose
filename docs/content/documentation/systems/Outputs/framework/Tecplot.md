@@ -5,6 +5,6 @@
 
 !parameters /Outputs/Tecplot
 
-!inputfiles /Outputs/Tecplot
+!listingfiles /Outputs/Tecplot
 
 !childobjects /Outputs/Tecplot

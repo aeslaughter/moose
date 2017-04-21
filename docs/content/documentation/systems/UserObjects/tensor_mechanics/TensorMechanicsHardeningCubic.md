@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsHardeningCubic
 
-!inputfiles /UserObjects/TensorMechanicsHardeningCubic
+!listingfiles /UserObjects/TensorMechanicsHardeningCubic
 
 !childobjects /UserObjects/TensorMechanicsHardeningCubic

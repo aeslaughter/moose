@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSMomentumTimeDerivative
 
-!inputfiles /Kernels/INSMomentumTimeDerivative
+!listingfiles /Kernels/INSMomentumTimeDerivative
 
 !childobjects /Kernels/INSMomentumTimeDerivative

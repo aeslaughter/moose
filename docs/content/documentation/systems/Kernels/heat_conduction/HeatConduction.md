@@ -5,6 +5,6 @@
 
 !parameters /Kernels/HeatConduction
 
-!inputfiles /Kernels/HeatConduction
+!listingfiles /Kernels/HeatConduction
 
 !childobjects /Kernels/HeatConduction

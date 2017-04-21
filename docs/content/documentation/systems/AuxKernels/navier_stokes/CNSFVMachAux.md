@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/CNSFVMachAux
 
-!inputfiles /AuxKernels/CNSFVMachAux
+!listingfiles /AuxKernels/CNSFVMachAux
 
 !childobjects /AuxKernels/CNSFVMachAux

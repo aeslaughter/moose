@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/SideSetsAroundSubdomain
 
-!inputfiles /MeshModifiers/SideSetsAroundSubdomain
+!listingfiles /MeshModifiers/SideSetsAroundSubdomain
 
 !childobjects /MeshModifiers/SideSetsAroundSubdomain

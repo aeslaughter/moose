@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSMomentumInviscidFluxWithGradP
 
-!inputfiles /Kernels/NSMomentumInviscidFluxWithGradP
+!listingfiles /Kernels/NSMomentumInviscidFluxWithGradP
 
 !childobjects /Kernels/NSMomentumInviscidFluxWithGradP

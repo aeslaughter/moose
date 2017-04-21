@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSMultiPhaseConcentration
 
-!inputfiles /Kernels/KKSMultiPhaseConcentration
+!listingfiles /Kernels/KKSMultiPhaseConcentration
 
 !childobjects /Kernels/KKSMultiPhaseConcentration

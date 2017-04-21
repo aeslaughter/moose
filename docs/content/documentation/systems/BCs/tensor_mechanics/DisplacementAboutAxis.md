@@ -5,6 +5,6 @@
 
 !parameters /BCs/DisplacementAboutAxis
 
-!inputfiles /BCs/DisplacementAboutAxis
+!listingfiles /BCs/DisplacementAboutAxis
 
 !childobjects /BCs/DisplacementAboutAxis

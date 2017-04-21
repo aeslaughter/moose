@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowRelativePermeabilityConst
 
-!inputfiles /Materials/PorousFlowRelativePermeabilityConst
+!listingfiles /Materials/PorousFlowRelativePermeabilityConst
 
 !childobjects /Materials/PorousFlowRelativePermeabilityConst

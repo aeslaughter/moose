@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/QuotientAux
 
-!inputfiles /AuxKernels/QuotientAux
+!listingfiles /AuxKernels/QuotientAux
 
 !childobjects /AuxKernels/QuotientAux

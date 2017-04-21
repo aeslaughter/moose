@@ -5,6 +5,6 @@
 
 !parameters /ICs/BimodalSuperellipsoidsIC
 
-!inputfiles /ICs/BimodalSuperellipsoidsIC
+!listingfiles /ICs/BimodalSuperellipsoidsIC
 
 !childobjects /ICs/BimodalSuperellipsoidsIC

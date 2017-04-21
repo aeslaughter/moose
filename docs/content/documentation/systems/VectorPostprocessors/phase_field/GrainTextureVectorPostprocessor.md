@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/GrainTextureVectorPostprocessor
 
-!inputfiles /VectorPostprocessors/GrainTextureVectorPostprocessor
+!listingfiles /VectorPostprocessors/GrainTextureVectorPostprocessor
 
 !childobjects /VectorPostprocessors/GrainTextureVectorPostprocessor

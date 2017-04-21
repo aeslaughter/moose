@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/PerformanceData
 
-!inputfiles /Postprocessors/PerformanceData
+!listingfiles /Postprocessors/PerformanceData
 
 !childobjects /Postprocessors/PerformanceData

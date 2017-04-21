@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeRSphericalFiniteStrain
 
-!inputfiles /Materials/ComputeRSphericalFiniteStrain
+!listingfiles /Materials/ComputeRSphericalFiniteStrain
 
 !childobjects /Materials/ComputeRSphericalFiniteStrain

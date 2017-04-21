@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/HomogenizedThermalConductivity
 
-!inputfiles /UserObjects/HomogenizedThermalConductivity
+!listingfiles /UserObjects/HomogenizedThermalConductivity
 
 !childobjects /UserObjects/HomogenizedThermalConductivity

@@ -5,6 +5,6 @@
 
 !parameters /DiracKernels/PorousFlowPolyLineSink
 
-!inputfiles /DiracKernels/PorousFlowPolyLineSink
+!listingfiles /DiracKernels/PorousFlowPolyLineSink
 
 !childobjects /DiracKernels/PorousFlowPolyLineSink

@@ -5,6 +5,6 @@
 
 !parameters /Materials/ConstantAnisotropicMobility
 
-!inputfiles /Materials/ConstantAnisotropicMobility
+!listingfiles /Materials/ConstantAnisotropicMobility
 
 !childobjects /Materials/ConstantAnisotropicMobility

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ACSEDGPoly
 
-!inputfiles /Kernels/ACSEDGPoly
+!listingfiles /Kernels/ACSEDGPoly
 
 !childobjects /Kernels/ACSEDGPoly

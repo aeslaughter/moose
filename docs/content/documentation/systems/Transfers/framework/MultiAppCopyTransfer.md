@@ -9,10 +9,10 @@ variables, including higher order, elemental, and nodal are supported. The only 
 meshes in the master and sub application must be identical.
 
 ## Example Syntax
-!input test/tests/transfers/multiapp_copy_transfer/linear_lagrange_to_sub/master.i block=Transfers
+!listing test/tests/transfers/multiapp_copy_transfer/linear_lagrange_to_sub/master.i block=Transfers
 
 !parameters /Transfers/MultiAppCopyTransfer
 
-!inputfiles /Transfers/MultiAppCopyTransfer
+!listingfiles /Transfers/MultiAppCopyTransfer
 
 !childobjects /Transfers/MultiAppCopyTransfer

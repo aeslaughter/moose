@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowMatrixInternalEnergy
 
-!inputfiles /Materials/PorousFlowMatrixInternalEnergy
+!listingfiles /Materials/PorousFlowMatrixInternalEnergy
 
 !childobjects /Materials/PorousFlowMatrixInternalEnergy

@@ -18,6 +18,6 @@ that arise from the gradient interface energy are handled separately in the [`CH
 
 !parameters /Kernels/CahnHilliard
 
-!inputfiles /Kernels/CahnHilliard
+!listingfiles /Kernels/CahnHilliard
 
 !childobjects /Kernels/CahnHilliard

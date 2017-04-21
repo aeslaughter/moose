@@ -5,6 +5,6 @@
 
 !parameters /ICs/Tricrystal2CircleGrainsIC
 
-!inputfiles /ICs/Tricrystal2CircleGrainsIC
+!listingfiles /ICs/Tricrystal2CircleGrainsIC
 
 !childobjects /ICs/Tricrystal2CircleGrainsIC

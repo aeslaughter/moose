@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/SolutionTimeAdaptiveDT
 
-!inputfiles /Executioner/TimeStepper/SolutionTimeAdaptiveDT
+!listingfiles /Executioner/TimeStepper/SolutionTimeAdaptiveDT
 
 !childobjects /Executioner/TimeStepper/SolutionTimeAdaptiveDT

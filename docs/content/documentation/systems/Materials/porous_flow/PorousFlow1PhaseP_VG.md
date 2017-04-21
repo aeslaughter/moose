@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlow1PhaseP_VG
 
-!inputfiles /Materials/PorousFlow1PhaseP_VG
+!listingfiles /Materials/PorousFlow1PhaseP_VG
 
 !childobjects /Materials/PorousFlow1PhaseP_VG

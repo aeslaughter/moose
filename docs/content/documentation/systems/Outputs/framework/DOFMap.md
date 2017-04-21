@@ -5,6 +5,6 @@
 
 !parameters /Outputs/DOFMap
 
-!inputfiles /Outputs/DOFMap
+!listingfiles /Outputs/DOFMap
 
 !childobjects /Outputs/DOFMap

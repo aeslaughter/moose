@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeRSphericalSmallStrain
 
-!inputfiles /Materials/ComputeRSphericalSmallStrain
+!listingfiles /Materials/ComputeRSphericalSmallStrain
 
 !childobjects /Materials/ComputeRSphericalSmallStrain

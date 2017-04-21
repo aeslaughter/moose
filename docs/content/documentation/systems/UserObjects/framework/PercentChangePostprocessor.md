@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PercentChangePostprocessor
 
-!inputfiles /UserObjects/PercentChangePostprocessor
+!listingfiles /UserObjects/PercentChangePostprocessor
 
 !childobjects /UserObjects/PercentChangePostprocessor

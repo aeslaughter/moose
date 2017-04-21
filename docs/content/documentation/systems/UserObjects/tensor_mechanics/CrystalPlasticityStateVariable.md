@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/CrystalPlasticityStateVariable
 
-!inputfiles /UserObjects/CrystalPlasticityStateVariable
+!listingfiles /UserObjects/CrystalPlasticityStateVariable
 
 !childobjects /UserObjects/CrystalPlasticityStateVariable

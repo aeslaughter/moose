@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeThermalExpansionEigenstrain
 
-!inputfiles /Materials/ComputeThermalExpansionEigenstrain
+!listingfiles /Materials/ComputeThermalExpansionEigenstrain
 
 !childobjects /Materials/ComputeThermalExpansionEigenstrain

@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/CrankNicolson
 
-!inputfiles /Executioner/TimeIntegrator/CrankNicolson
+!listingfiles /Executioner/TimeIntegrator/CrankNicolson
 
 !childobjects /Executioner/TimeIntegrator/CrankNicolson

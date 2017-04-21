@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ScalePostprocessor
 
-!inputfiles /Postprocessors/ScalePostprocessor
+!listingfiles /Postprocessors/ScalePostprocessor
 
 !childobjects /Postprocessors/ScalePostprocessor

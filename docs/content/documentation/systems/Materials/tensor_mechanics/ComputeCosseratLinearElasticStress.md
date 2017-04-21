@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeCosseratLinearElasticStress
 
-!inputfiles /Materials/ComputeCosseratLinearElasticStress
+!listingfiles /Materials/ComputeCosseratLinearElasticStress
 
 !childobjects /Materials/ComputeCosseratLinearElasticStress

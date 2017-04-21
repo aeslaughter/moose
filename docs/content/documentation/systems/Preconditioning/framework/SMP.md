@@ -5,6 +5,6 @@
 
 !parameters /Preconditioning/SMP
 
-!inputfiles /Preconditioning/SMP
+!listingfiles /Preconditioning/SMP
 
 !childobjects /Preconditioning/SMP

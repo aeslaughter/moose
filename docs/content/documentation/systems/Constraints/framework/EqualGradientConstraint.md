@@ -5,6 +5,6 @@
 
 !parameters /Constraints/EqualGradientConstraint
 
-!inputfiles /Constraints/EqualGradientConstraint
+!listingfiles /Constraints/EqualGradientConstraint
 
 !childobjects /Constraints/EqualGradientConstraint

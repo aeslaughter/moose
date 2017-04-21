@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SwitchingFunctionConstraintLagrange
 
-!inputfiles /Kernels/SwitchingFunctionConstraintLagrange
+!listingfiles /Kernels/SwitchingFunctionConstraintLagrange
 
 !childobjects /Kernels/SwitchingFunctionConstraintLagrange

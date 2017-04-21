@@ -5,10 +5,10 @@ the level set solution. This [MultiApp](/MultiApps/index.md) object requires tha
 reseting of the pseudo reinitialization time.
 
 ## Example Syntax
-!input modules/level_set/tests/reinitialization/master.i block=MultiApps label=False
+!listing modules/level_set/tests/reinitialization/master.i block=MultiApps label=False
 
 !parameters /MultiApps/LevelSetReinitializationMultiApp
 
-!inputfiles /MultiApps/LevelSetReinitializationMultiApp
+!listingfiles /MultiApps/LevelSetReinitializationMultiApp
 
 !childobjects /MultiApps/LevelSetReinitializationMultiApp

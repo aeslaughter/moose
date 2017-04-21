@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalNormalsEvaluator
 
-!inputfiles /UserObjects/NodalNormalsEvaluator
+!listingfiles /UserObjects/NodalNormalsEvaluator
 
 !childobjects /UserObjects/NodalNormalsEvaluator

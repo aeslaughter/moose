@@ -5,6 +5,6 @@
 
 !parameters /BCs/DashpotBC
 
-!inputfiles /BCs/DashpotBC
+!listingfiles /BCs/DashpotBC
 
 !childobjects /BCs/DashpotBC

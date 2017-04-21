@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSMomentumLaplaceForm
 
-!inputfiles /Kernels/INSMomentumLaplaceForm
+!listingfiles /Kernels/INSMomentumLaplaceForm
 
 !childobjects /Kernels/INSMomentumLaplaceForm

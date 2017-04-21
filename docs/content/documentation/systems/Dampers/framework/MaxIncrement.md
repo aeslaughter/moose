@@ -5,6 +5,6 @@
 
 !parameters /Dampers/MaxIncrement
 
-!inputfiles /Dampers/MaxIncrement
+!listingfiles /Dampers/MaxIncrement
 
 !childobjects /Dampers/MaxIncrement

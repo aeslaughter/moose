@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/PFCElementEnergyIntegral
 
-!inputfiles /Postprocessors/PFCElementEnergyIntegral
+!listingfiles /Postprocessors/PFCElementEnergyIntegral
 
 !childobjects /Postprocessors/PFCElementEnergyIntegral

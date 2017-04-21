@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticMohrCoulomb
 
-!inputfiles /UserObjects/TensorMechanicsPlasticMohrCoulomb
+!listingfiles /UserObjects/TensorMechanicsPlasticMohrCoulomb
 
 !childobjects /UserObjects/TensorMechanicsPlasticMohrCoulomb

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsHardeningExponential
 
-!inputfiles /UserObjects/TensorMechanicsHardeningExponential
+!listingfiles /UserObjects/TensorMechanicsHardeningExponential
 
 !childobjects /UserObjects/TensorMechanicsHardeningExponential

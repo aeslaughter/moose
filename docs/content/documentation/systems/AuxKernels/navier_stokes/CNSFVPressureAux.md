@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/CNSFVPressureAux
 
-!inputfiles /AuxKernels/CNSFVPressureAux
+!listingfiles /AuxKernels/CNSFVPressureAux
 
 !childobjects /AuxKernels/CNSFVPressureAux

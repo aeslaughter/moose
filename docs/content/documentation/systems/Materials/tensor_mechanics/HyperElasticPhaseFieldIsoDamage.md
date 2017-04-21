@@ -5,6 +5,6 @@
 
 !parameters /Materials/HyperElasticPhaseFieldIsoDamage
 
-!inputfiles /Materials/HyperElasticPhaseFieldIsoDamage
+!listingfiles /Materials/HyperElasticPhaseFieldIsoDamage
 
 !childobjects /Materials/HyperElasticPhaseFieldIsoDamage

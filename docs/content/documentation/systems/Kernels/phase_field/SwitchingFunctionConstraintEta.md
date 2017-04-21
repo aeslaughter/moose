@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SwitchingFunctionConstraintEta
 
-!inputfiles /Kernels/SwitchingFunctionConstraintEta
+!listingfiles /Kernels/SwitchingFunctionConstraintEta
 
 !childobjects /Kernels/SwitchingFunctionConstraintEta

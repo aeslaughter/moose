@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/FindValueOnLine
 
-!inputfiles /Postprocessors/FindValueOnLine
+!listingfiles /Postprocessors/FindValueOnLine
 
 !childobjects /Postprocessors/FindValueOnLine

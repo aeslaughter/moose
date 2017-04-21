@@ -13,6 +13,6 @@ where $t+1$ denotes quantities at the new step, and $t$ denotes quantities at th
 
 !parameters /Materials/ComputeInstantaneousThermalExpansionFunctionEigenstrain
 
-!inputfiles /Materials/ComputeInstantaneousThermalExpansionFunctionEigenstrain
+!listingfiles /Materials/ComputeInstantaneousThermalExpansionFunctionEigenstrain
 
 !childobjects /Materials/ComputeInstantaneousThermalExpansionFunctionEigenstrain

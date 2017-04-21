@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/LayeredSideFluxAverage
 
-!inputfiles /UserObjects/LayeredSideFluxAverage
+!listingfiles /UserObjects/LayeredSideFluxAverage
 
 !childobjects /UserObjects/LayeredSideFluxAverage

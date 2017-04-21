@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticDruckerPragerHyperbolic
 
-!inputfiles /UserObjects/TensorMechanicsPlasticDruckerPragerHyperbolic
+!listingfiles /UserObjects/TensorMechanicsPlasticDruckerPragerHyperbolic
 
 !childobjects /UserObjects/TensorMechanicsPlasticDruckerPragerHyperbolic

@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlow2PhasePP
 
-!inputfiles /Materials/PorousFlow2PhasePP
+!listingfiles /Materials/PorousFlow2PhasePP
 
 !childobjects /Materials/PorousFlow2PhasePP

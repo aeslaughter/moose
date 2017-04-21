@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementL2Error
 
-!inputfiles /Postprocessors/ElementL2Error
+!listingfiles /Postprocessors/ElementL2Error
 
 !childobjects /Postprocessors/ElementL2Error

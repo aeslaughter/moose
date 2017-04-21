@@ -5,6 +5,6 @@
 
 !parameters /Outputs/Nemesis
 
-!inputfiles /Outputs/Nemesis
+!listingfiles /Outputs/Nemesis
 
 !childobjects /Outputs/Nemesis

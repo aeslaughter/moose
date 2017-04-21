@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSStagnationTemperatureBC
 
-!inputfiles /BCs/NSStagnationTemperatureBC
+!listingfiles /BCs/NSStagnationTemperatureBC
 
 !childobjects /BCs/NSStagnationTemperatureBC

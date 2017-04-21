@@ -5,6 +5,6 @@
 
 !parameters /Materials/PFCTradMaterial
 
-!inputfiles /Materials/PFCTradMaterial
+!listingfiles /Materials/PFCTradMaterial
 
 !childobjects /Materials/PFCTradMaterial

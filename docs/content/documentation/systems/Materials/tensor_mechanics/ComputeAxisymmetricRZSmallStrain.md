@@ -10,6 +10,6 @@ Only minimal changes are required to adapt a plane strain problem to an axisymme
 
 !parameters /Materials/ComputeAxisymmetricRZSmallStrain
 
-!inputfiles /Materials/ComputeAxisymmetricRZSmallStrain
+!listingfiles /Materials/ComputeAxisymmetricRZSmallStrain
 
 !childobjects /Materials/ComputeAxisymmetricRZSmallStrain

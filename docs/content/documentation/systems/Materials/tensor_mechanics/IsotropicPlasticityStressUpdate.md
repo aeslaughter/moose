@@ -17,7 +17,7 @@ This class is based on the implicit integration algorithm in \cite{dunne2005intr
 
 !parameters /Materials/IsotropicPlasticityStressUpdate
 
-!inputfiles /Materials/IsotropicPlasticityStressUpdate
+!listingfiles /Materials/IsotropicPlasticityStressUpdate
 
 !childobjects /Materials/IsotropicPlasticityStressUpdate
 

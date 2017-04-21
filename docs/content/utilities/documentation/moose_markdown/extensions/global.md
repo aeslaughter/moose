@@ -13,6 +13,6 @@ to allow for commonly used links to be quickly and uniformly applied. The link d
 simply defined in the extension configuration [YAML] file, which within MOOSE points to another
 [YAML] file (global.yml), which is shown below.
 
-!text docs/globals.yml style=max-height:500px;overflow-y:scroll
+!listing docs/globals.yml style=max-height:500px;overflow-y:scroll
 
 !extension GlobalExtension

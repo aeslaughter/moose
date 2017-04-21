@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/MaterialRealDenseMatrixAux
 
-!inputfiles /AuxKernels/MaterialRealDenseMatrixAux
+!listingfiles /AuxKernels/MaterialRealDenseMatrixAux
 
 !childobjects /AuxKernels/MaterialRealDenseMatrixAux

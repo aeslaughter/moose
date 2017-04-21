@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeVariableBaseEigenStrain
 
-!inputfiles /Materials/ComputeVariableBaseEigenStrain
+!listingfiles /Materials/ComputeVariableBaseEigenStrain
 
 !childobjects /Materials/ComputeVariableBaseEigenStrain

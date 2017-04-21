@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/VariableGradientComponent
 
-!inputfiles /AuxKernels/VariableGradientComponent
+!listingfiles /AuxKernels/VariableGradientComponent
 
 !childobjects /AuxKernels/VariableGradientComponent

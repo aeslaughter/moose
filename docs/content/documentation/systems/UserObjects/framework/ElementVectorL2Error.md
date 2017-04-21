@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementVectorL2Error
 
-!inputfiles /UserObjects/ElementVectorL2Error
+!listingfiles /UserObjects/ElementVectorL2Error
 
 !childobjects /UserObjects/ElementVectorL2Error

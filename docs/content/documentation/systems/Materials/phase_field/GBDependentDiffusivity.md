@@ -5,6 +5,6 @@
 
 !parameters /Materials/GBDependentDiffusivity
 
-!inputfiles /Materials/GBDependentDiffusivity
+!listingfiles /Materials/GBDependentDiffusivity
 
 !childobjects /Materials/GBDependentDiffusivity

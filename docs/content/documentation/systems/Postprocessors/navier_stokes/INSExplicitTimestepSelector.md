@@ -2,6 +2,6 @@
 
 !parameters /Postprocessors/INSExplicitTimestepSelector
 
-!inputfiles /Postprocessors/INSExplicitTimestepSelector
+!listingfiles /Postprocessors/INSExplicitTimestepSelector
 
 !childobjects /Postprocessors/INSExplicitTimestepSelector

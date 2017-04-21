@@ -2,6 +2,6 @@
 
 !parameters /Postprocessors/CNSFVTimeStepLimit
 
-!inputfiles /Postprocessors/CNSFVTimeStepLimit
+!listingfiles /Postprocessors/CNSFVTimeStepLimit
 
 !childobjects /Postprocessors/CNSFVTimeStepLimit

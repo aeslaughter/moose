@@ -5,6 +5,6 @@
 
 !parameters /BCs/VectorNeumannBC
 
-!inputfiles /BCs/VectorNeumannBC
+!listingfiles /BCs/VectorNeumannBC
 
 !childobjects /BCs/VectorNeumannBC

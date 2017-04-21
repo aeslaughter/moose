@@ -5,6 +5,6 @@
 
 !parameters /BCs/NeumannBC
 
-!inputfiles /BCs/NeumannBC
+!listingfiles /BCs/NeumannBC
 
 !childobjects /BCs/NeumannBC

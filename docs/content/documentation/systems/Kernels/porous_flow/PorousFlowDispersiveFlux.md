@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowDispersiveFlux
 
-!inputfiles /Kernels/PorousFlowDispersiveFlux
+!listingfiles /Kernels/PorousFlowDispersiveFlux
 
 !childobjects /Kernels/PorousFlowDispersiveFlux

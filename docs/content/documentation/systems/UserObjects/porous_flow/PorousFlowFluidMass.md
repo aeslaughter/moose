@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PorousFlowFluidMass
 
-!inputfiles /UserObjects/PorousFlowFluidMass
+!listingfiles /UserObjects/PorousFlowFluidMass
 
 !childobjects /UserObjects/PorousFlowFluidMass

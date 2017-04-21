@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CoupledAllenCahn
 
-!inputfiles /Kernels/CoupledAllenCahn
+!listingfiles /Kernels/CoupledAllenCahn
 
 !childobjects /Kernels/CoupledAllenCahn

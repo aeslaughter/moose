@@ -5,6 +5,6 @@
 
 !parameters /BCs/WeakGradientBC
 
-!inputfiles /BCs/WeakGradientBC
+!listingfiles /BCs/WeakGradientBC
 
 !childobjects /BCs/WeakGradientBC

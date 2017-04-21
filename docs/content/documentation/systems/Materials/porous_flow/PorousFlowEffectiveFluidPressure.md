@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowEffectiveFluidPressure
 
-!inputfiles /Materials/PorousFlowEffectiveFluidPressure
+!listingfiles /Materials/PorousFlowEffectiveFluidPressure
 
 !childobjects /Materials/PorousFlowEffectiveFluidPressure

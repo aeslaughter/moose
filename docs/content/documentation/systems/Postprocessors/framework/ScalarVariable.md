@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ScalarVariable
 
-!inputfiles /Postprocessors/ScalarVariable
+!listingfiles /Postprocessors/ScalarVariable
 
 !childobjects /Postprocessors/ScalarVariable

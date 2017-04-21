@@ -5,6 +5,6 @@
 
 !parameters /MultiApps/TransientMultiApp
 
-!inputfiles /MultiApps/TransientMultiApp
+!listingfiles /MultiApps/TransientMultiApp
 
 !childobjects /MultiApps/TransientMultiApp

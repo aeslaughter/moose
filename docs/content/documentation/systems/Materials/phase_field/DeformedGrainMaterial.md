@@ -5,6 +5,6 @@
 
 !parameters /Materials/DeformedGrainMaterial
 
-!inputfiles /Materials/DeformedGrainMaterial
+!listingfiles /Materials/DeformedGrainMaterial
 
 !childobjects /Materials/DeformedGrainMaterial

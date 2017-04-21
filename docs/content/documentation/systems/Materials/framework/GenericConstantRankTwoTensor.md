@@ -5,6 +5,6 @@
 
 !parameters /Materials/GenericConstantRankTwoTensor
 
-!inputfiles /Materials/GenericConstantRankTwoTensor
+!listingfiles /Materials/GenericConstantRankTwoTensor
 
 !childobjects /Materials/GenericConstantRankTwoTensor

@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSTemperatureTimeDerivative
 
-!inputfiles /Kernels/INSTemperatureTimeDerivative
+!listingfiles /Kernels/INSTemperatureTimeDerivative
 
 !childobjects /Kernels/INSTemperatureTimeDerivative
