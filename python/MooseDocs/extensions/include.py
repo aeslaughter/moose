@@ -51,6 +51,7 @@ class MarkdownPreprocessor(MooseCommonExtension, Preprocessor):
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         l_settings = ListingPattern.defaultSettings()
+        settings['re'] = (None, "Python regular expression to use for removing text, with flags set to MULTILINE|DOTALL.")
         settings['start'] = l_settings['start']
         settings['end'] = l_settings['end']
         settings['include-end'] = l_settings['include-end']
@@ -70,15 +71,26 @@ class MarkdownPreprocessor(MooseCommonExtension, Preprocessor):
             msg = "Failed to located filename in following command.\n{}"
             el = self.createErrorElement(msg.format(match.group(0)), title="Unknown Markdown File")
             return etree.tostring(el)
-        else:
-            if settings['start'] or settings['end']:
-                content = ListingPattern.extractLineRange(filename, settings['start'],
+
+
+
+        if settings['start'] or settings['end']:
+            content = ListingPattern.extractLineRange(filename, settings['start'],
                                                           settings['end'], settings['include-end'])
-            else:
-                with open(filename, 'r') as fid:
-                    content = fid.read()
-            self._found = True
-            return content
+        else:
+            with open(filename, 'r') as fid:
+                content = fid.read()
+
+        if settings['re']:
+            match = re.search(settings['re'], content, flags=re.MULTILINE|re.DOTALL)
+            if not match:
+                msg = "Failed to located regex in following command.\n{}"
+                el = self.createErrorElement(msg.format(settings['re']), title="Failed Regex")
+                return etree.tostring(el)
+            content = match.group(0)
+
+        self._found = True
+        return content
 
     def run(self, lines):
         """

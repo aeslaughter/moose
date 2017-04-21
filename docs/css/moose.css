@@ -95,6 +95,11 @@ ul {
   border-width: 2px;
 }
 
+.moose-listing-link{
+  float:right;
+  data-position: bottom;
+}
+
 .moose-site-generated{
     text-align: left;
     float: left;

@@ -185,17 +185,6 @@ class ListingPattern(MooseCommonExtension, Pattern):
         MooseDocs.extensions.increment_counter(el, settings, cname)
         cap = MooseDocs.extensions.caption_element(settings)
         el.append(cap)
-        if settings['link']:
-            link = etree.Element('a')
-            link.set('href', os.path.join(self._repo, rel_filename))
-            link.text = os.path.basename(rel_filename)
-            for elem in cap.iter('span'):
-                link.text = '({})'.format(link.text)
-                break
-            link.set('class', 'moose-listings-caption-link tooltipped')
-            link.set('data-tooltip', rel_filename)
-            link.set('data-position', 'top')
-            cap.append(link)
 
         # Build the code
         pre = etree.SubElement(el, 'pre')
@@ -204,6 +193,16 @@ class ListingPattern(MooseCommonExtension, Pattern):
             code.set('class', settings['language'])
         content = cgi.escape(content, quote=True)
         code.text = self.markdown.htmlStash.store(content.strip('\n'))
+
+        # Filename link
+        if settings['link']:
+            link = etree.Element('div')
+            a = etree.SubElement(link, 'a')
+            a.set('href', os.path.join(self._repo, rel_filename))
+            a.text = '({})'.format(os.path.basename(rel_filename))
+            a.set('class', 'moose-listing-link tooltipped')
+            a.set('data-tooltip', rel_filename)
+            el.append(link)
 
         return el
 

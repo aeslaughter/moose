@@ -11,7 +11,7 @@ code.
 Much of the capability that enables the MooseDocs system to be useful for creating documentation
 stems from the set of custom extensions created. In general, these extensions add commands, which
 begin with an exclamation point (!) and some number of arguments. Therefore, each extension contains
-configuration options at the extension level and each command defined as a settings that can be
+configuration options at the extension level and each command defined has settings that can be
 applied.
 
 \ref{moose-extensions} summarizes all of the available MooseDocs extensions and provides a link to
@@ -22,7 +22,7 @@ commands add associated settings defined in the extension.
 | Name | Description |
 | - | - |
 | [global](extensions/global.md) | Implements a global list of Markdown hyperlinks. |
-| (include)(extensions/include.md) | Enables recursive markdown inclusion. |
+| [include](extensions/include.md) | Enables recursive markdown inclusion. |
 | [bibtex](extensions/bibtex.md) | Allows LaTeX/BibTeX style citations and bibliographies. |
 | [css](extensions/css.md) | Enables [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) settings to be applied via markdown |
 | [diagram](extensions/diagram.md) | Automatically generates DOT/GraphVIZ diagrams. |

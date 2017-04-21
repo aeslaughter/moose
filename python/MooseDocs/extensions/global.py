@@ -1,10 +1,19 @@
-"""
-Extension for adding globals to MooseDocs markdown.
-"""
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import markdown
 from markdown.preprocessors import Preprocessor
-import logging
-log = logging.getLogger(__name__)
 
 from MooseCommonExtension import MooseCommonExtension
 
@@ -24,9 +33,10 @@ class GlobalExtension(markdown.Extension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.preprocessors.add('moose_globals', GlobalPreprocessor(markdown_instance=md, **config), '_begin')
+        md.preprocessors.add('moose_globals',
+                             GlobalPreprocessor(markdown_instance=md, **config), '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return GlobalExtension(*args, **kwargs)
 
 class GlobalPreprocessor(MooseCommonExtension, Preprocessor):
@@ -38,7 +48,7 @@ class GlobalPreprocessor(MooseCommonExtension, Preprocessor):
         return dict() # this extension doesn't have settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs),
+        MooseCommonExtension.__init__(self, **kwargs)
         Preprocessor.__init__(self, markdown_instance)
         self._globals = kwargs.pop('globals', dict())
 
