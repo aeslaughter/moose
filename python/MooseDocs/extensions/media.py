@@ -105,7 +105,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         self._cardWrapper(element, media_element, 'card-image', settings)
 
         # Add caption
-        caption_element = self.createCaptionElement(settings)
+        caption_element = MooseDocs.extensions.caption_element(settings)
         if caption_element:
             self._cardWrapper(element, caption_element, 'card-content', settings)
 
@@ -127,27 +127,6 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         Return the actual media content.
         """
         raise mooseutils.MooseException('The createMediaElement method must be overridden.')
-
-    def createCaptionElement(self, settings):
-        """
-        Return the caption element.
-        """
-        cname = settings['counter'].lower()
-        p = etree.Element('p')
-        class_ = 'moose-{}-caption'.format(cname)
-        p.set('class', class_)
-
-        if settings['id']:
-            h_span = etree.SubElement(p, 'span')
-            h_span.set('class', '{}-heading'.format(class_))
-            h_span.text = '{} {}: '.format(cname.title(), str(self.markdown.COUNTER[cname]))
-
-        if settings['caption']:
-            t_span = etree.SubElement(p, 'span')
-            t_span.set('class', '{}-text'.format(class_))
-            t_span.text = settings['caption']
-        return p
-
 
 class ImagePattern(MediaPatternBase):
     """

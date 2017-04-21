@@ -79,7 +79,6 @@ class MooseCommonExtension(object):
                 element.set(attr, settings[attr])
         return element
 
-
     def createErrorElement(self, message, title='Markdown Parsing Error', parent=None, error=True):
         """
         Returns a tree element containing error message.

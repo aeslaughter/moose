@@ -87,3 +87,27 @@ def create_system_collection(name, syntax, **kwargs):
     Return html element listing systems.
     """
     return create_collection(name, syntax, 'system', **kwargs)
+
+def caption_element(settings):
+    """
+    Create a caption Element.
+
+    Args:
+        settings[dict]: Extension settings.
+    """
+    cname = settings.get('counter', 'unknown').lower()
+    class_ = 'moose-{}-caption'.format(cname)
+
+    p = etree.Element('p')
+    p.set('class', class_)
+
+    if settings['id']:
+        h_span = etree.SubElement(p, 'span')
+        h_span.set('class', '{}-heading'.format(class_))
+        h_span.text = '{} {}: '.format(cname.title(), str(self.markdown.COUNTER[cname]))
+
+    if settings['caption']:
+        t_span = etree.SubElement(p, 'span')
+        t_span.set('class', '{}-text'.format(class_))
+        t_span.text = settings['caption']
+    return p
