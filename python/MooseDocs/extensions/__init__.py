@@ -111,6 +111,7 @@ def caption_element(settings):
         t_span = etree.SubElement(p, 'span')
         t_span.set('class', '{}-text'.format(class_))
         t_span.text = settings['caption']
+
     return p
 
 def increment_counter(element, settings, counter_name):

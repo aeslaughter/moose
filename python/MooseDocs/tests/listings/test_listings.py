@@ -3,15 +3,15 @@ import os
 import unittest
 from MooseDocs.testing import MarkdownTestCase
 
-class TestFloat(MarkdownTestCase):
+class TestListings(MarkdownTestCase):
     """
-    Test commands in MooseTextFile extension.
+    Test the linstings extension
     """
-    EXTENSIONS = ['MooseDocs.extensions.media', 'MooseDocs.extensions.float']
+    EXTENSIONS = ['MooseDocs.extensions.listings', 'MooseDocs.extensions.refs']
 
-    def testFigure(self):
-        md = '!media docs/media/github-logo.png caption=Testing Caption id=foo\n\nCreate a \\ref{foo} reference.'
-        self.assertConvert('testFigure.html', md)
+    def testListing(self):
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i'
+        self.assertConvert('testListing.html', md)
 
     """
     def testInputListing(self):
