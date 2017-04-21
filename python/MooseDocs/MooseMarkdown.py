@@ -21,6 +21,13 @@ class MooseMarkdown(markdown.Markdown):
         self.current = None # member for holding the current MooseDocsMarkdownNodeBase object
         super(MooseMarkdown, self).__init__(extensions=extensions, extension_configs=extension_configs)
 
+    def requireExtension(self, required):
+        """
+        Raise an exception of the supplied extension type is not registered.
+        """
+        if not self.getExtension(required):
+            raise mooseutils.MooseException("The {} extension is required.".format(required.__name__))
+
     def getExtension(self, etype):
         """
         Return an extension instance.

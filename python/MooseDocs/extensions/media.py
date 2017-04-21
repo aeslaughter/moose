@@ -86,7 +86,8 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         div = self.applyElementSettings(etree.Element('div'), settings)
         div.set('class', 'moose-{}-div'.format(self._classname))
         if cname is not None:
-            div.set('data-moose-count-{}'.format(cname), str(self.COUNTER[cname] + 1))
+            div.set('data-moose-count'.format(cname), str(self.COUNTER[cname] + 1))
+            div.set('data-moose-count-name', cname)
 
         # Add content and wrap within card elements
         element = div
@@ -100,8 +101,8 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         self._cardWrapper(element, media_element, 'card-image', settings)
 
         # Add caption
-        caption_element = self.createCaptionElement(settings)
-        if caption_element:
+        if settings['caption']:
+            caption_element = self.createCaptionElement(settings)
             self._cardWrapper(element, caption_element, 'card-content', settings)
 
         if cname is not None:
@@ -129,8 +130,12 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         """
         Return the caption element.
         """
-        return MooseDocs.extensions.caption_element(text=settings['caption'],
-                                                    class_='moose-{}-caption'.format(self._classname))
+        p = etree.Element('p')
+        p.set('class', 'moose-caption moose-{}-caption'.format(self._classname))
+        t_span = etree.SubElement(p, 'span')
+        t_span.set('class', 'moose-{}-caption-text'.format(self._classname))
+        t_span.text = settings['caption']
+        return p
 
 
 class ImagePattern(MediaPatternBase):

@@ -2,8 +2,10 @@ import re
 import markdown
 import copy
 import logging
+import bs4
 log = logging.getLogger(__name__)
 
+from markdown.postprocessors import Postprocessor
 from markdown.preprocessors import Preprocessor
 from markdown.inlinepatterns import Pattern
 from markdown.extensions.tables import TableProcessor
@@ -30,6 +32,14 @@ class FloatExtension(markdown.Extension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
+
+        md.requireExtension(MediaExtension)
+
+        ref = FloatReferencePattern(markdown_instance=md, **config)
+        md.inlinePatterns.add('moose-reference', ref, '_end')
+
+        link = FloatPostprocessor(markdown_instance=md, **config)
+        md.postprocessors.add('moose-reference-link', link, '_end')
 
         """
         # Figures
@@ -103,33 +113,63 @@ class FloatExtension(markdown.Extension):
 def makeExtension(*args, **kwargs):
     return FloatExtension(*args, **kwargs)
 
-
-class FloatCountPreprocessor(Preprocessor, MooseCommonExtension):
+class FloatReferencePattern(Pattern):
     """
-    Tool for counting the number of floats (figures, tables, etc.)
+    Creates a span tag for unknown \ref commands.
     """
+    RE = r'(?<![`])(\\ref{(.*?)})'
 
-    def __init__(self, markdown_instance=None, patterns=[], **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
-        Preprocessor.__init__(self, markdown_instance)
+    def __init__(self, *args, **kwargs):
+        Pattern.__init__(self, self.RE, *args)
 
-        self._patterns = patterns
-        self._floats = dict()
+    def handleMatch(self, match):
+        el = etree.Element('span')
+        el.text = match.group(2)
+        el.set('class', 'moose-unknown-reference')
+        el.set('data-moose-float-id',  match.group(3))
+        return el
 
-    def run(self, lines):
+class FloatPostprocessor(Postprocessor):
+    """
+    """
+    def run(self, text):
+        soup = bs4.BeautifulSoup(text, 'lxml')
 
-        self._floats = dict()
-        index = 0
-        for pattern in self._patterns:
-            for match in re.finditer(pattern, '\n'.join(lines), flags=re.MULTILINE):
-                match_id = re.search(r'id\s*=\s*([A-Za-z0-9_\-:]+)', match.group('settings'))
-                if match_id:
-                    index += 1
-                    self._floats[match_id.group(1)] = index
-        return lines
+        # Iterator over all calls to \ref
+        for ref in soup.find_all('span', class_='moose-unknown-reference'):
+            id_ = ref['data-moose-float-id']
 
-    def getFloats(self):
-        return self._floats
+            # Search for the desired "id" attribute
+            media = soup.find(id=id_)
+            if media:
+
+                # Create the <span> that contains the float prefix (e.g., Figure 42)
+                span = soup.new_tag('span')
+                cname = media['data-moose-count-name']
+                num = media['data-moose-count']
+                span['class'] = 'moose-{}-caption-heading'.format(cname)
+                span.string = '{} {}: '.format(cname.title(), num)
+
+                # Insert the caption prefix, if the caption exists.
+                caption = media.find('p', class_='moose-caption'.format(cname))
+                if caption is None:
+                    log.error('The float references an object without a caption: {}'.format(ref.string))
+                    continue
+                caption.insert(0, span)
+
+                # Update the reference with a html link
+                a = soup.new_tag('a')
+                a['class'] = 'moose-reference'
+                a['data-moose-reference'] = ref.string
+                a['href'] = '#{}'.format(id_)
+                a.string = '{} {}'.format(cname.title(), num)
+                ref.replace_with(a)
+
+            else:
+                log.error('Unknown reference: {}'.format(ref.string))
+
+        return unicode(soup)
+
 
 class MooseTableProcessor(MooseCommonExtension, TableProcessor):
     """
@@ -196,132 +236,3 @@ class MooseTableProcessor(MooseCommonExtension, TableProcessor):
 
         # Create the table
         TableProcessor.run(self, div, blocks)
-
-class FloatReferencePattern(MooseCommonExtension, Pattern):
-    """
-    Defines syntax for referencing figures.
-    """
-    RE = r'(?<![`])\\ref{(.*?)}'
-
-    def __init__(self, markdown_instance=None, count=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
-
-        if not isinstance(count, FloatCountPreprocessor):
-            raise mooseutils.MooseException("The supplied preprocessor must be a FloatCountPreprocessor, but {} provided.".format(type(count)))
-
-        self._count = count
-
-    def handleMatch(self, match):
-        """
-        Display the figure number.
-        """
-        floats = self._count.getFloats()
-        float_id = match.group(2)
-        if float_id in floats:
-            el = etree.Element('a')
-            el.set('class', 'moose-float-reference')
-            el.set('href', '#' + match.group(2))
-            el.text = str(floats[match.group(2)])
-            return el
-
-class UnknownReferencePattern(Pattern):
-    """
-    Creates a span tag for unknown \ref commands.
-    """
-    RE = r'(?<![`])(\\ref{.*?})'
-
-    def __init__(self, *args, **kwargs):
-        Pattern.__init__(self, self.RE, *args)
-
-    def handleMatch(self, match):
-        el = etree.Element('span')
-        el.text = match.group(2)
-        el.set('class', 'moose-unknown-reference')
-        return el
-
-def gen_float(TEMPLATE, DIV_CLASS='moosedocs-code-div', CAPTION_CLASS='moose-caption',
-              HEADING='Listing', **kwargs):
-    """
-    Generates class for adding listing numbers to existing commands from the include extension.
-
-    Args:
-        TEMPLATE: The class type to generate.
-    """
-    class TextListingPattern(TEMPLATE):
-        """
-        Adds number listing prefix to code blocks.
-        """
-        @staticmethod
-        def defaultSettings():
-            settings = TEMPLATE.defaultSettings()
-            return settings
-
-        def __init__(self, markdown_instance=None, count=None, **kwargs):
-            super(TextListingPattern, self).__init__(markdown_instance=markdown_instance, **kwargs)
-            self._count = count
-            self._div_class = DIV_CLASS # location of the "id" tag attribute
-            self._caption_class = CAPTION_CLASS
-            self._heading = HEADING
-
-        def div(self, el):
-            """
-            Locates the desired 'div' element.
-            """
-            div = None
-            for item in el.iter('div'):
-                is_code = ('class' in item.attrib) and \
-                          (self._div_class in item.attrib['class']) and \
-                          ('id' in item.attrib) and \
-                          item.attrib['id']
-                if  is_code:
-                    div = item
-                    break
-            return div
-
-        def caption(self, el):
-            """
-            Locates the caption <p> tag and returns the element.
-            """
-            # Locate caption
-            cap = None
-            for item in el.iter('p'):
-                is_cap = ('class' in item.attrib) and \
-                         (self._caption_class in item.attrib['class'])
-                if is_cap:
-                    cap = item
-
-            # Locate parent
-            parent = None
-            for item in el.iter():
-                if cap in list(item):
-                    parent = item
-
-            # Remove old caption
-            idx = list(parent).index(cap)
-            parent.remove(cap)
-
-            return parent, idx, cap
-
-            return cap
-
-        def handleMatch(self, match):
-            el = super(TextListingPattern, self).handleMatch(match)
-            div = self.div(el)
-
-            if div:
-                settings = self.getSettings(match.group('settings'))
-                id_ = div.attrib['id']
-                floats = self._count.getFloats()
-                num = floats[id_]
-
-                # Add new caption
-                parent, idx, caption = self.caption(div)
-                text = list(caption)[-1].text
-                heading = '{} {}: '.format(self._heading, num)
-                new_caption = MooseDocs.extensions.caption_element(text=text, heading=heading,     class_='moose-{}-caption'.format(self._heading.lower()))
-                parent.insert(idx, new_caption)
-
-            return el
-
-    return TextListingPattern(**kwargs)
