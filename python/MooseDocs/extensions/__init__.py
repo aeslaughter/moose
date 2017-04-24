@@ -1,4 +1,5 @@
 import os
+import bs4
 from markdown.util import etree
 import MooseDocs
 
@@ -127,5 +128,9 @@ def increment_counter(element, settings, counter_name):
     if settings['id']:
         counter_name = counter_name.lower()
         MooseDocs.MooseMarkdown.COUNTER[counter_name] += 1
-        element.set('data-moose-count'.format(counter_name), str(MooseDocs.MooseMarkdown.COUNTER[counter_name]))
-        element.set('data-moose-count-name', counter_name)
+        if isinstance(element, bs4.Tag):
+            element['data-moose-count'] = str(MooseDocs.MooseMarkdown.COUNTER[counter_name])
+            element['data-moose-count-name'] =  counter_name
+        else:
+            element.set('data-moose-count', str(MooseDocs.MooseMarkdown.COUNTER[counter_name]))
+            element.set('data-moose-count-name', counter_name)

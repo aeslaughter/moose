@@ -1,4 +1,5 @@
 import re
+import bs4
 import copy
 from markdown.util import etree
 import logging
@@ -74,9 +75,14 @@ class MooseCommonExtension(object):
           settings = self.getSettings(settings_string)
           div = self.appyElementSettings(etree.Element('div'), settings)
         """
-        for attr in keys:
-            if (attr in settings) and (settings[attr]):
-                element.set(attr, settings[attr])
+        if isinstance(element, bs4.Tag):
+            for attr in keys:
+                if (attr in settings) and (settings[attr]):
+                    element[attr] = settings[attr]
+        else:
+            for attr in keys:
+                if (attr in settings) and (settings[attr]):
+                    element.set(attr, settings[attr])
         return element
 
     def createErrorElement(self, message, title='Markdown Parsing Error', parent=None, error=True):
