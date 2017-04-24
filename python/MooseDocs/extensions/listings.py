@@ -1,14 +1,17 @@
 import re
 import os
 import cgi
+import bs4
 import logging
 log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
-from markdown.preprocessors import Preprocessor
+from markdown.postprocessors import Postprocessor
+#from markdown.preprocessors import Preprocessor
+#from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
-from markdown.extensions.fenced_code import FencedBlockPreprocessor
+#from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
 import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
@@ -40,8 +43,11 @@ class ListingExtension(markdown.Extension):
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose-input-listing', ListingInputPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
-        md.parser.blockprocessors.add('moose-listing-preprocessor',
-                                      MooseListingProcessor(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose-listing-fenced',
+                              MooseListingProcessor(markdown_instance=md, **config), '_begin')
+        md.postprocessors.add('moose-listing-fenced-postprocessor',
+                              MooseListingPostprocessor(markdown_instance=md, **config), '_end')
+
 
 def makeExtension(*args, **kwargs):
     return ListingExtension(*args, **kwargs)
@@ -368,11 +374,21 @@ class ListingClangPattern(ListingPattern):
         except:
             log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
 
-class MooseListingProcessor(MooseCommonExtension, Preprocessor):
+class MooseListingProcessor(MooseCommonExtension, Pattern):
     """
-    A version of the built-in markdown fenced code that applies a caption and additional css.
+    Allows the !listing command to work with fenced code blocks.
+
+    !listing caption=foo
+    ```
+    x+1=2;
+    ```
+
+    This requires some trickery to work correctly with the markdown package. First, this class
+    creates the <div> with the caption and settings applied. However, the <code> block is placed
+    in the final html later, thus it is outside of the <div> created here. Therefore, the MooseListingPostprocessor is used to move the code into this div. I tried all sorts of ways
+    of doing this and this was the simplest.
     """
-    RE = r'^!listing\s*(?P<settings>.*?)$'
+    RE = r'^!listing\s*(?P<settings>.*?)\n'
 
     @staticmethod
     def defaultSettings():
@@ -383,41 +399,49 @@ class MooseListingProcessor(MooseCommonExtension, Preprocessor):
 
     def __init__(self, markdown_instance=None, **kwargs):
         MooseCommonExtension.__init__(self, **kwargs)
-        Preprocessor.__init__(self, markdown_instance.parser)
+        Pattern.__init__(self, self.RE, markdown_instance)
 
-    def test(self, parent, block):
+    def handleMatch(self, match):
         """
-        Test that the block has !listings syntax, if it does remove the top line and run the base
-        class test method to prepare for creating the actual code.
+        Handles listing command followed by fenced code block.
         """
-        return re.search(self.RE, block, flags=re.MULTILINE)
 
-    def run(self, parent, blocks):
-        """
-        Create a table with caption.
-        """
-        # Strip the !table line and settings
-        lines = blocks.pop(0).split('\n')
-        blocks[0] = '\n'.join(lines[1:])
-        match = re.search(self.RE, lines[0], flags=re.MULTILINE)
+        print match.group(3)
+        if not match.group(3).startswith('```'):
+            return
+
+        # Get settings and counter name
         settings = self.getSettings(match.group('settings'))
-
-        # Get the counter name
         cname = settings['counter']
         if cname is None:
             log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
             cname = 'media'
 
-        # Create the containing <div> tag.
-        div = self.applyElementSettings(etree.SubElement(parent, 'div'), settings)
-        div.set('class', 'moose-listing-div')
+        # Create the div that will contain the code with a caption. Note that the class name
+        # is setup to work with the MooseListingPostprocessor
+        div = self.applyElementSettings(etree.Element('div'), settings)
+        div.set('class', 'moose-listing-fenced-div')
         MooseDocs.extensions.increment_counter(div, settings, cname)
 
         # Create the caption tag
         caption = MooseDocs.extensions.caption_element(settings)
         div.insert(0, caption)
+        return div
 
-        #new_block = '{}\n{}\n{}'.format()
-        blocks.insert(0, self.markdown.htmlStash(etree.tostring(div)[:-6], safe=True))
-        blocks.insert(2, self.markdown.htmlStash('</div>', safe=True))
-        #print
+class MooseListingPostprocessor(Postprocessor):
+    """
+    When !listing is used before a fenced block (```) the actual code block needs to be moved
+    into the div above.
+    """
+    def __init__(self, markdown_instance=None, **kwargs):
+        super(MooseListingPostprocessor, self).__init__(markdown_instance)
+
+    def run(self, text):
+        soup = bs4.BeautifulSoup(text, "lxml")
+        div = soup.find('div', class_='moose-listing-fenced-div')
+        if div:
+            div['class'] = 'moose-listing-div'
+            print div.find_next_sibling()
+            div.append(div.find_next_sibling().extract())
+            return unicode(soup)
+        return text

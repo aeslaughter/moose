@@ -94,7 +94,8 @@ class TestListings(MarkdownTestCase):
         self.assertConvert('testRef.html', md)
 
     def testFenced(self):
-        md = '!listing caption=Foo id=bar\n```\nx+y=1;\n```'
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i\n\n'
+        md += '!listing caption=Foo id=bar\n```\nx+y=1;\n```'
         self.assertConvert('testFenced.html', md)
 
 
