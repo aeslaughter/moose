@@ -39,14 +39,14 @@ class ListingExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
 
+        md.inlinePatterns.add('moose-fenced-listing',
+                              ListingFenced(markdown_instance=md, **config), '_begin')
+
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
 
         md.inlinePatterns.add('moose-input-listing', ListingInputPattern(markdown_instance=md, **config), '_begin')
 
         md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
-
-        md.inlinePatterns.add('moose-fenced-listing',
-                              ListingFenced(markdown_instance=md, **config), '_begin')
 
         md.postprocessors.add('moose-listing-postprocessor',
                               ListingPostprocessor(markdown_instance=md, **config), '_end')
@@ -64,7 +64,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
       regex: The string containing the regular expression to match.
       language[str]: The code language (e.g., 'python' or 'c++')
     """
-    RE = r'^!listing\s+(?P<filename>.*?\.\w+)(?:$|\s+)(?P<settings>.*)'
+    RE = r'!listing\s+(?P<filename>.*\.\w+)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -305,7 +305,7 @@ class ListingInputPattern(ListingPattern):
         return settings
 
     def __init__(self, **kwargs):
-        regex = r'^!listing\s+(?P<filename>.*?\.i)(?:$|\s+)(?P<settings>.*)'
+        regex = r'!listing\s+(?P<filename>.*\.i)(?:$|\s+)(?P<settings>.*)'
         kwargs.setdefault('regex', regex)
         super(ListingInputPattern, self).__init__(**kwargs)
 
@@ -393,13 +393,8 @@ class ListingFenced(MooseCommonExtension, Pattern):
 
     def handleMatch(self, match):
 
-        print '\n\n'
-        print match.groups()
-        print '\n\n'
-
         # Get the counter name
         settings = self.getSettings(match.group('settings'))
-        print settings
         cname = settings['counter']
         if cname is None:
             log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
@@ -423,5 +418,10 @@ class ListingPostprocessor(Postprocessor):
         super(ListingPostprocessor, self).__init__()
 
     def run(self, text):
-        print text
-        return text
+        soup = bs4.BeautifulSoup(text, 'lxml')
+        for tag in soup.find_all('div', class_='moose-listing-div-fenced'):
+            pre = tag.find_next_sibling('pre')
+            if pre:
+                tag.append(tag.find_next_sibling('pre').extract())
+                tag['class'] = 'moose-listing-div'
+        return unicode(soup)
