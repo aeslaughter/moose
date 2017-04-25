@@ -9,7 +9,7 @@ class TestDiagramExtension(MarkdownTestCase):
     """
     Test that the MooseDiagram extension for using dot-language is working.
     """
-
+    EXTENSIONS = ['MooseDocs.extensions.diagram']
     REGEX = r'<img class="moose-diagram" src="media/tmp_(.*?)\.moose\.svg" style="background:transparent; border:0px" />'
 
     def testGraph(self):

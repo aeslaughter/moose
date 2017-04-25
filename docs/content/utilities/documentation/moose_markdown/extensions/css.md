@@ -38,8 +38,10 @@ The extra CSS settings 'float's the content to the right, which should allow thi
 
 
 ## Block CSS Options
-You can apply a style sheet to a markdown paragraph through the use of !css extension:
+You can apply a style sheet to a markdown paragraph through the use of `!css` command. For example,
+the markdown in \ref{css-markdown-example} is included in this document below.
 
+!listing id=css-markdown-example caption=Example markdown with CSS modifications.
 ```markdown
 !css font-size=smaller margin-left=70% color=red text-shadow=1px 1px 1px rgba(0,0,0,.4)
 This paragraph should be of a smaller red font with a black offset text shadow. The text
