@@ -138,7 +138,7 @@ ul {
 }
 
 a.moose-bad-link,
-span.moose-unknown-reference{
+a.moose-unknown-reference{
     color:red;
 }
 

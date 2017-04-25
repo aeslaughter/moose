@@ -27,10 +27,9 @@ Locally stored or hosted videos can be displayed using the `!media` syntax. This
 fashion as for [images](#images), but also includes some extra settings as listed in the section
 below.
 
-!media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100%
+!media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100% id=big_buck_bunny caption=["Big Buck Bunny"](https://en.wikipedia.org/wiki/Big_Buck_Bunny) is an open-source animated short.
 
 !extension-settings moose_video title=Video Command Settings (`!media`)
-
 
 ## Slideshows
 A sequence of images can be shown via a ["slider"](http://materializecss.com/media.html#slider). For example, \ref{slider-example} produces the slider shown in \ref{slider-figure}

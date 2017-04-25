@@ -48,10 +48,10 @@ class FloatReferencePattern(Pattern):
         Pattern.__init__(self, self.RE, *args)
 
     def handleMatch(self, match):
-        el = etree.Element('span')
+        el = etree.Element('a')
         el.text = match.group(2)
         el.set('class', 'moose-unknown-reference')
-        el.set('data-moose-float-id',  match.group(3))
+        el.set('data-moose-float-id', '#' + match.group(3))
         return el
 
 class EquationPattern(MooseCommonExtension, Pattern):

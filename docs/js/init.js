@@ -1,3 +1,42 @@
+// Add numbers to floats
+(function($){
+  var counts = {}
+  $('.moose-float-div').each(function(i, e)
+  {
+    var elem = $($(e))
+    var name = elem.data('moose-float-name')
+    if (name !== undefined)
+    {
+      if (counts[name] === undefined){ counts[name] = 0 }
+      counts[name] += 1
+      var num = $('.moose-float-caption-heading-number', elem)
+      num.text(counts[name].toString())
+      console.log("Located float: " + name + " " + num.text())
+    }
+
+  });
+})(jQuery);
+
+// Function for figure references
+$('.moose-unknown-reference').each(function(i, e) {
+  var elem = $($(e))
+  var float = $(elem.data('moose-float-id'))
+  var name = float.data('moose-float-name')
+  if (name !== undefined)
+  {
+    var num = $('.moose-float-caption-heading-number', float)
+    elem.text(name + " " + num.text().toString())
+    elem.removeClass('moose-unknown-reference')
+    elem.addClass('moose-reference')
+    elem.attr('href', elem.data('moose-float-id'))
+    console.log("Located reference to: " + name + " " + num.text())
+  }
+  else
+  {
+    console.error('Unable to located reference to float: ' + elem.text());
+  }
+});
+
 (function($){
   $(function(){
 
@@ -31,27 +70,6 @@ MathJax.Hub.Config({
 
 // Copy code button
 var clipboard = new Clipboard('.moose-copy-button');
-
-// Add numbers to floats
-(function($){
-  var counts = {}
-  $('.moose-float-div').each(function(i, e)
-  {
-    var elem = $($(e))
-    var name = elem.data('moose-float-name')
-    if (name !== undefined)
-    {
-      if (counts[name] === undefined){ counts[name] = 0 }
-      counts[name] += 1
-      var num = $('.moose-float-caption-heading-number', elem)
-      num.text(counts[name].toString())
-      console.log("Located float: " + name + " " + num.text())
-    }
-
-  });
-})(jQuery);
-
-
 
 // Function for latex equation references
 MathJax.Hub.Queue(function(){

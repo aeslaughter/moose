@@ -216,7 +216,7 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
     It is assumed image names will have the same filepath as on the webserver.
     """
 
-    RE = re.compile(r'^!media(?P<settings>.*)\n(\s+.*\..*)+')
+    RE = re.compile(r'^!media(?P<settings>.*)\n(\s+.*\..*)+', flags=re.MULTILINE)
 
     @staticmethod
     def defaultSettings():
@@ -292,23 +292,13 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
         Called when it is determined that we can process this block.
         This will convert the markdown into HTML
         """
-
         block = blocks.pop(0)
         match = self.RE.search(block)
         settings = self.getSettings(match.group('settings'))
 
-        slider = etree.SubElement(parent, 'div')
-        slider.set('class', 'slider moose-slider-div')
-        self.applyElementSettings(slider, settings)
-
-        # Build caption
-        cname = settings.pop('counter', None)
-        if cname is None:
-            log.error('The "counter" setting must be a valid string with !slider')
-            cname = 'unknown'
-        #MooseDocs.extensions.increment_counter(slider, settings, cname)
-        #cap = MooseDocs.extensions.caption_element(settings)
-        #slider.append(cap)
+        slider = self.createFloatElement(settings)
+        slider.set('class', 'slider moose-float-div moose-slider-div')
+        parent.append(slider)
 
         ul = etree.SubElement(slider, 'ul')
         ul.set('class', 'slides')
@@ -325,7 +315,3 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
                 caption.set('class','caption')
                 caption.text = item.caption_settings.pop('caption', '')
                 caption = self.applyElementSettings(caption, item.caption_settings, keys=item.caption_settings.keys())
-
-
-        #caption = MooseDocs.extensions.caption_element(text=settings['caption'])
-        #slider.append(caption)
