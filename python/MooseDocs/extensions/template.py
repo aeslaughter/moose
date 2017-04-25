@@ -27,7 +27,11 @@ class TemplateExtension(markdown.Extension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), '_end')
+
+        flag = '_end'
+        if 'moose_content_scroll' in md.postprocessors:
+            flag = '<moose_content_scroll'
+        md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), flag)
 
 def makeExtension(*args, **kwargs):
     return TemplateExtension(*args, **kwargs)

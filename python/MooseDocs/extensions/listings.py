@@ -189,13 +189,8 @@ class ListingPattern(MooseCommonExtension, Pattern):
             cname = 'unknown'
 
         # Build outer div container
-        el = self.applyElementSettings(etree.Element('div'), settings)
+        el = self.createFloatElement(settings)
         el.set('class', 'moose-listing-div')
-
-        # Build caption
-        #MooseDocs.extensions.increment_counter(el, settings, cname)
-        #cap = MooseDocs.extensions.caption_element(settings)
-        #el.append(cap)
 
         # Build the code
         pre = etree.SubElement(el, 'pre')
@@ -394,13 +389,8 @@ class ListingFenced(MooseCommonExtension, Pattern):
             log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
             cname = 'media'
 
-        div = self.applyElementSettings(etree.Element('div'), settings)
-        div.set('class', 'moose-listing-div-fenced')
-        #MooseDocs.extensions.increment_counter(div, settings, cname)
-
-        # Create the caption tag
-        #caption = MooseDocs.extensions.caption_element(settings)
-        #div.insert(0, caption)
+        div = self.createFloatElement(settings)
+        div.set('class', div.get('class') + ' moose-listing-div-fenced')
         return div
 
 class ListingPostprocessor(Postprocessor):
@@ -417,5 +407,4 @@ class ListingPostprocessor(Postprocessor):
             pre = tag.find_next_sibling('pre')
             if pre:
                 tag.append(tag.find_next_sibling('pre').extract())
-                tag['class'] = 'moose-listing-div'
         return unicode(soup)

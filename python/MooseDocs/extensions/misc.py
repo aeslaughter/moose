@@ -67,17 +67,18 @@ class ScrollPostprocessor(Postprocessor):
         Adds section for materialize scrollspy
         """
         soup = bs4.BeautifulSoup(text, 'lxml')
-        content = soup.find('div', id='moose-markdown-content')
-        if content is None:
+        div = soup.find('div', id='moose-markdown-content')
+        if div is None:
             return text
 
-        for h in content.find_all('h2'):
-            div = soup.new_tag('div')
-            div['class'] = 'section scrollspy'
-            h.insert_before(div)
-            for sibling in h.next_siblings:
-                if sibling.name == 'h2':
-                    break
-                div.append(sibling.extract())
-            div.insert(0, h.extract())
+        current = div
+        for tag in div.contents:
+            if isinstance(tag, bs4.element.Tag):
+                if tag.name == 'h2':
+                    current = soup.new_tag('div', id=tag.get('id', '#'))
+                    current.attrs['class'] = "section scrollspy"
+
+                if current != tag.parent:
+                    tag.wrap(current)
+
         return unicode(soup)

@@ -1,5 +1,5 @@
 html {
-    line-height: 1.75rem;
+    line-height: 2rem;
     color: rgba(0,0,0,1.0);
     font-size: 20px;
     text-align: justify;
@@ -65,6 +65,32 @@ ul {
      margin-left:1.5rem;
 }
 
+
+.moose-listing-div p.moose-float-caption
+{
+  border-bottom-style: solid;
+  border-width: 3px;
+  margin-bottom: 0;
+}
+
+.moose-table-div p.moose-float-caption
+{
+  border-bottom-style: solid;
+  border-width: 3px;
+  margin-bottom: 0;
+}
+
+.moose-table-div tr:first-child
+{
+  border-bottom-style: solid;
+  border-width: 1px;
+}
+
+.moose-listing-div pre
+{
+  margin-top: 0;
+}
+
 .moose-float-div p.moose-float-caption{
   text-align: left;
 }
@@ -74,19 +100,11 @@ ul {
   font-weight: 600;
 }
 
-
 .moose-figure-caption-text,
 .moose-table-caption-text,
 .moose-listing-caption-text
 {
   font-weight: 300;
-}
-
-.moose-listing-caption,
-.moose-table-caption
-{
-  border-bottom-style: solid;
-  border-width: 2px;
 }
 
 .moose-listing-link{

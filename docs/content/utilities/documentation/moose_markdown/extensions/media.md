@@ -4,7 +4,7 @@
 
 The media extension provides the `!media` markdown command for adding images, slideshow, and videos.
 As used throughout this section, the `!media` command can optionally created numbered "floats" by
-specifying the "id", as detailed on the [Numbered Floats](extensions/float.md) page.
+specifying the "id", as detailed on the [Numbered Floats](extensions/numbered_floats.md) page.
 
 ## Images
 
@@ -36,14 +36,14 @@ A sequence of images can be shown via a ["slider"](http://materializecss.com/med
 
 !listing id=slider-example caption=Syntax for the `!media` command that created \ref{slider-figure}.
 ```markdown
-!media max-width=50% left=220px
+!media style=width:50%;margin-left:auto;margin-right:auto; id=slider-figure caption=Example "slider".
     docs/media/memory_logger-darkmode.png caption= Output of memory logging tool position=relative left=150px top=-150px
     docs/media/testImage_tallNarrow.png background-color=#F8F8FF caption= This is a tall, thin image color=red font-size=200% width=200px height=100%
     docs/media/github*.png background-color=gray
     docs/media/memory_logger-plot_multi.png
 ```
 
-!media max-width=50% left=220px id=slider-figure
+!media style=width:50%;margin-left:auto;margin-right:auto; id=slider-figure caption=Example "slider".
     docs/media/memory_logger-darkmode.png caption= Output of memory logging tool position=relative left=150px top=-150px
     docs/media/testImage_tallNarrow.png background-color=#F8F8FF caption= This is a tall, thin image color=red font-size=200% width=200px height=100%
     docs/media/github*.png background-color=gray

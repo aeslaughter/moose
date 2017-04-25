@@ -135,8 +135,9 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
-        settings['title'] = ('Extension Configuration Options', "The title to place above the generated table (title=None removes the heading)")
-        settings['title-level'] = ('h2', "The HTML level for the generated title.")
+        settings['id'] = (None, "The id to utilize for the generated table. If not provided, the command will be used.")
+        settings['caption'] = (None, "The title to place above the generated table. If not provided it will be generated using the command.")
+        settings['counter'] = ('table', "The name of the float to associate the generated table.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -150,7 +151,10 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
         extensions = [obj.__class__.__name__ for obj in self.markdown.registeredExtensions]
         name = str(match.group(2))
         settings = self.getSettings(match.group(3))
-
+        if settings['id'] is None:
+            settings['id'] = name
+        if settings['caption'] is None:
+            settings['caption'] = 'Extension configuration options for {}.'.format(name)
         if name not in extensions:
             return self.createErrorElement('Unknown extension name: {}'.format(name))
 
@@ -160,10 +164,7 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
             table.addRow(key, repr(value[0]), value[1])
 
         if table:
-            div = self.applyElementSettings(etree.Element('div'), settings)
-            if settings['title']:
-                h = etree.SubElement(div, settings['title-level'])
-                h.text = settings['title']
+            div = self.createFloatElement(settings)
             div.append(table.html())
             return div
         return etree.Element('div') # return an empty div if no configuration options are available
@@ -177,8 +178,9 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
-        settings['title'] = ('Extension Command Settings', "The title to place above the generated table (title=None removes the heading)")
-        settings['title-level'] = ('h3', "The HTML level for the generated title.")
+        settings['id'] = (None, "The id to utilize for the generated table. If not provided, the command will be used.")
+        settings['caption'] = (None, "The title to place above the generated table. If not provided it will be generated using the command.")
+        settings['counter'] = ('table', "The name of the float to associate the generated table.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -191,6 +193,10 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
         """
         name = str(match.group(2))
         settings = self.getSettings(match.group(3))
+        if settings['id'] is None:
+            settings['id'] = name
+        if settings['caption'] is None:
+            settings['caption'] = 'Command settings for "{}" extension component.'.format(name)
 
         obj = self.find(name)
         if obj is None:
@@ -203,11 +209,7 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
             table.addRow(key, repr(value[0]), value[1])
 
         if table:
-            div = self.applyElementSettings(etree.Element('div'), settings)
-            if settings['title']:
-                h = etree.SubElement(div, settings['title-level'])
-                h.text = settings['title']
-
+            div = self.createFloatElement(settings)
             div.append(table.html())
             return div
         return etree.Element('div') # return an empty div if no settings are available

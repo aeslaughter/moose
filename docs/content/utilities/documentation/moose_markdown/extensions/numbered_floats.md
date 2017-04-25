@@ -1,4 +1,4 @@
-# FloatExtension
+# Numbered Floats
 
 The FloatExtension provides the ability to create numbered figures, tables, and code listings that
 can be referenced with the latex style `\ref{}` command. This extension works in union with

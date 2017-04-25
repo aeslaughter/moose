@@ -296,9 +296,12 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
         match = self.RE.search(block)
         settings = self.getSettings(match.group('settings'))
 
-        slider = self.createFloatElement(settings)
-        slider.set('class', 'slider moose-float-div moose-slider-div')
-        parent.append(slider)
+        div = self.createFloatElement(settings)
+        parent.append(div)
+
+        slider = etree.Element('div')
+        slider.set('class', 'slider')
+        div.insert(0, slider)
 
         ul = etree.SubElement(slider, 'ul')
         ul.set('class', 'slides')
