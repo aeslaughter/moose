@@ -32,6 +32,26 @@ MathJax.Hub.Config({
 // Copy code button
 var clipboard = new Clipboard('.moose-copy-button');
 
+// Add numbers to floats
+(function($){
+  var counts = {}
+  $('.moose-float-div').each(function(i, e)
+  {
+    var elem = $($(e))
+    var name = elem.data('moose-float-name')
+    if (name !== undefined)
+    {
+      if (counts[name] === undefined){ counts[name] = 0 }
+      counts[name] += 1
+      var num = $('.moose-float-caption-heading-number', elem)
+      num.text(counts[name].toString())
+      console.log("Located float: " + name + " " + num.text())
+    }
+
+  });
+})(jQuery);
+
+
 
 // Function for latex equation references
 MathJax.Hub.Queue(function(){

@@ -31,8 +31,8 @@ class RefExtension(markdown.Extension):
         ref = FloatReferencePattern(markdown_instance=md, **config)
         md.inlinePatterns.add('moose-ref', ref, '_end')
 
-        link = FloatPostprocessor(markdown_instance=md, **config)
-        md.postprocessors.add('moose-ref-link', link, '_end')
+        #link = FloatPostprocessor(markdown_instance=md, **config)
+        #md.postprocessors.add('moose-ref-link', link, '_end')
 
 
 def makeExtension(*args, **kwargs):
@@ -80,46 +80,3 @@ class EquationPattern(MooseCommonExtension, Pattern):
         el.set('href', '#' + mjx_id)
         el.text = '(??)'
         return el
-
-class FloatPostprocessor(Postprocessor):
-    """
-    Converts the <span> elements created by FloatReferencePattern into proper links to the figure.
-    """
-    def run(self, text):
-        soup = bs4.BeautifulSoup(text, 'lxml')
-
-        # Iterator over all calls to \ref
-        for ref in soup.find_all('span', class_='moose-unknown-reference'):
-            id_ = ref['data-moose-float-id']
-
-            # Search for the desired "id" attribute
-            media = soup.find(id=id_)
-            if media:
-
-                # Extract ref text items
-                cname = media['data-moose-count-name']
-                num = media['data-moose-count']
-
-                # Update the reference with a html link
-                a = soup.new_tag('a')
-                a['class'] = 'moose-ref'
-                a['data-moose-ref'] = ref.string
-                a['href'] = '#{}'.format(id_)
-                a.string = '{} {}'.format(cname.title(), num)
-                ref.replace_with(a)
-
-                # Tooltip
-                cap = media.find(class_='moose-{}-caption'.format(cname))
-                if cap:
-                    a['class'] += ' tooltipped'
-                    a['data-tooltip'] = unicode(cap.get_text())
-                    a['data-position'] = 'top'
-
-            else:
-                msg = 'Unknown reference {} in {}'.format(ref.string, self.markdown.current.source())
-                log.error(msg)
-                ref['class'] += ' tooltipped'
-                ref['data-tooltip'] = msg
-                ref['data-position'] = 'top'
-
-        return unicode(soup)

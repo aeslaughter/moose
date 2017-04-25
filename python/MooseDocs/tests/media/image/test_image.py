@@ -10,7 +10,7 @@ class TestImage(MarkdownTestCase):
     EXTENSIONS = ['MooseDocs.extensions.media']
 
     def testDefault(self):
-        md = '!media docs/media/github-logo.png
+        md = '!media docs/media/github-logo.png'
         self.assertConvert('testDefault.html', md)
 
     def testDefaultId(self):

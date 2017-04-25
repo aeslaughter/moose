@@ -85,6 +85,44 @@ class MooseCommonExtension(object):
                     element.set(attr, settings[attr])
         return element
 
+    def createFloatElement(self, settings):
+
+        cname = settings['counter']
+        if cname is None:
+            log.error('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
+            cname = 'unknown'
+
+        div = self.applyElementSettings(etree.Element('div'), settings)
+        div.set('class', 'moose-float-div moose-{}-div'.format(cname))
+
+        if settings.get('id', None) or settings.get('caption', None):
+            div.set('data-moose-float-name', cname.title())
+            p = etree.SubElement(div, 'p')
+            p.set('class', 'moose-float-caption')
+
+            if settings.get('id', None):
+                h_span = etree.SubElement(p, 'span')
+                h_span.set('class', 'moose-float-caption-heading')
+
+                h_span_text = etree.SubElement(h_span, 'span')
+                h_span_text.set('class', 'moose-float-caption-heading-label')
+                h_span_text.text = cname.title() + ' '
+
+                h_span_num = etree.SubElement(h_span, 'span')
+                h_span_num.set('class', 'moose-float-caption-heading-number')
+                h_span_num.text = '??'
+
+                h_span_suffix = etree.SubElement(h_span, 'span')
+                h_span_suffix.set('class', 'moose-float-caption-heading-suffix')
+                h_span_suffix.text = ': '
+
+            if settings.get('caption', None):
+                t_span = etree.SubElement(p, 'span')
+                t_span.set('class', 'moose-float-caption-text')
+                t_span.text = settings['caption']
+
+        return div
+
     def createErrorElement(self, message, title='Markdown Parsing Error', parent=None, error=True):
         """
         Returns a tree element containing error message.

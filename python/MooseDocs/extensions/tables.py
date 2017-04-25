@@ -76,11 +76,11 @@ class MooseTableProcessor(MooseCommonExtension, TableProcessor):
         # Create the containing <div> tag.
         div = self.applyElementSettings(etree.SubElement(parent, 'div'), settings)
         div.set('class', 'moose-table-div')
-        MooseDocs.extensions.increment_counter(div, settings, cname)
+        #MooseDocs.extensions.increment_counter(div, settings, cname)
 
         # Create the caption tag
-        caption = MooseDocs.extensions.caption_element(settings)
-        div.insert(0, caption)
+        #caption = MooseDocs.extensions.caption_element(settings)
+        #div.insert(0, caption)
 
         # Create the table
         TableProcessor.run(self, div, blocks)

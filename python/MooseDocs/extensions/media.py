@@ -65,12 +65,6 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         rel_filename = match.group('filename')
         settings = self.getSettings(match.group('settings'))
 
-        # Must have a counter name
-        cname = settings['counter']
-        if cname is None:
-            log.error('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
-            cname = 'unknown'
-
         # Determine the filename
         filename = None
         repo = MooseDocs.abspath(rel_filename)
@@ -84,38 +78,39 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         else:
             return self.createErrorElement('File not found: {}'.format(rel_filename))
 
-        # Create the outer <div> tag
-        div = self.applyElementSettings(etree.Element('div'), settings)
-        div.set('class', 'moose-{}-div'.format(self._classname))
-        MooseDocs.extensions.increment_counter(div, settings, cname)
-
-        # Add content and wrap within card elements
-        element = div
-        if settings.get('card', None):
-            element = etree.SubElement(div, 'div')
-            element.set('class', 'card')
-            element.set('style', 'margin-left:auto;margin-right:auto;')
-
-        # Add media content
+        # Create content
+        div = self.createFloatElement(settings)
         media_element = self.createMediaElement(filename, settings)
-        self._cardWrapper(element, media_element, 'card-image', settings)
+        div.insert(0, media_element)
 
-        # Add caption
-        caption_element = MooseDocs.extensions.caption_element(settings)
-        if caption_element:
-            self._cardWrapper(element, caption_element, 'card-content', settings)
+        if settings.get('card', None):
+            self._cardWrapper(div)
+
         return div
 
-    def _cardWrapper(self, parent, child, class_, settings):
+    def _cardWrapper(self, div):
         """
         Helper for optionally wrapping a materialize 'card'
         """
-        if settings.get('card', None):
-            card_element = etree.SubElement(parent, 'div')
-            card_element.set('class', class_)
-            card_element.append(child)
-        else:
-            parent.append(child)
+        img = div.find('img')
+        if img is not None:
+            div.remove(img)
+        cap = div.find('p')
+        if cap is not None:
+            div.remove(cap)
+
+        card = etree.SubElement(div, 'div')
+        card.set('class', 'card')
+        card.set('style', 'margin-left:auto;margin-right:auto;')
+
+        img_card = etree.SubElement(card, 'div')
+        img_card.set('class', 'card-image')
+        img_card.append(img)
+
+        if cap:
+            cap_card = etree.SubElement(card, 'div')
+            cap_card.set('class', 'card-content')
+            cap_card.append(cap)
 
     def createMediaElement(self, filename, settings):
         """
@@ -311,9 +306,9 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
         if cname is None:
             log.error('The "counter" setting must be a valid string with !slider')
             cname = 'unknown'
-        MooseDocs.extensions.increment_counter(slider, settings, cname)
-        cap = MooseDocs.extensions.caption_element(settings)
-        slider.append(cap)
+        #MooseDocs.extensions.increment_counter(slider, settings, cname)
+        #cap = MooseDocs.extensions.caption_element(settings)
+        #slider.append(cap)
 
         ul = etree.SubElement(slider, 'ul')
         ul.set('class', 'slides')

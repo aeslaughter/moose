@@ -193,9 +193,9 @@ class ListingPattern(MooseCommonExtension, Pattern):
         el.set('class', 'moose-listing-div')
 
         # Build caption
-        MooseDocs.extensions.increment_counter(el, settings, cname)
-        cap = MooseDocs.extensions.caption_element(settings)
-        el.append(cap)
+        #MooseDocs.extensions.increment_counter(el, settings, cname)
+        #cap = MooseDocs.extensions.caption_element(settings)
+        #el.append(cap)
 
         # Build the code
         pre = etree.SubElement(el, 'pre')
@@ -396,11 +396,11 @@ class ListingFenced(MooseCommonExtension, Pattern):
 
         div = self.applyElementSettings(etree.Element('div'), settings)
         div.set('class', 'moose-listing-div-fenced')
-        MooseDocs.extensions.increment_counter(div, settings, cname)
+        #MooseDocs.extensions.increment_counter(div, settings, cname)
 
         # Create the caption tag
-        caption = MooseDocs.extensions.caption_element(settings)
-        div.insert(0, caption)
+        #caption = MooseDocs.extensions.caption_element(settings)
+        #div.insert(0, caption)
         return div
 
 class ListingPostprocessor(Postprocessor):

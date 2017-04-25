@@ -65,19 +65,15 @@ ul {
      margin-left:1.5rem;
 }
 
-.moose-figure-caption,
-.moose-table-caption,
-.moose-listing-caption {
-    margin: 0px;
-    text-align: left;
+.moose-float-div p.moose-float-caption{
+  text-align: left;
 }
 
-.moose-figure-caption-heading,
-.moose-table-caption-heading,
-.moose-listing-caption-heading
+.moose-float-div span.moose-float-caption-heading
 {
   font-weight: 600;
 }
+
 
 .moose-figure-caption-text,
 .moose-table-caption-text,
