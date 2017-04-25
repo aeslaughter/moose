@@ -1,5 +1,6 @@
 import markdown
-from markdown.treeprocessors import Treeprocessor
+import bs4
+from markdown.postprocessors import Postprocessor
 from markdown.util import etree
 
 class MaterializeExtension(markdown.Extension):
@@ -12,37 +13,38 @@ class MaterializeExtension(markdown.Extension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.treeprocessors.add('moose_code_button', CopyTreeprocessor(markdown_instance=md, **config), '_end')
+        md.postprocessors.add('moose_code_button', CopyPostprocessor(markdown_instance=md, **config), '_end')
         md.treeprocessors.add('moose_content_scroll', ScrollTreeprocessor(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs):
     return MaterializeExtension(*args, **kwargs)
 
 
-class CopyTreeprocessor(Treeprocessor):
+class CopyPostprocessor(Postprocessor):
     """
     Adds "copy" button to code blocks and corrects the language class for working with Prism.js
     """
 
     def __init__(self, markdown_instance=None, **kwargs):
-        super(CopyTreeprocessor, self).__init__(markdown_instance)
+        super(CopyPostprocessor, self).__init__(markdown_instance)
 
-    def run(self, root):
+    def run(self, text):
         """
         Search the tree for <pre><code> blocks and add copy button.
         """
         count = 0
-        for pre in root.iter('pre'):
+        soup = bs4.BeautifulSoup(text, 'lxml')
+        for pre in root.find_all('pre'):
             code = pre.find('code')
-            if code is not None:
+            if code:
                 pre.set('class', 'language-{}'.format(code.get('class', 'text')))
 
-                id = code.get('id', 'moose-code-block-{}'.format(count))
-                code.set('id', id)
+                id_ = code.get('id', 'moose-code-block-{}'.format(count))
+                code.set('id', id+)
 
                 btn = etree.Element('button')
                 btn.set('class', 'moose-copy-button btn')
-                btn.set('data-clipboard-target', '#{}'.format(id))
+                btn.set('data-clipboard-target', '#{}'.format(id_))
                 btn.text = 'copy'
 
                 pre.insert(0, btn)
