@@ -71,14 +71,21 @@ class ScrollPostprocessor(Postprocessor):
         if div is None:
             return text
 
-        current = div
-        for tag in div.contents:
-            if isinstance(tag, bs4.element.Tag):
-                if tag.name == 'h2':
-                    current = soup.new_tag('div', id=tag.get('id', '#'))
-                    current.attrs['class'] = "section scrollspy"
+        # Group objects with h2 level headings
+        groups = [[]]
+        for child in list(div.contents):
+            if child.name == 'h2':
+                groups.append([])
+            groups[-1].append(child)
 
-                if current != tag.parent:
-                    tag.wrap(current)
+        # Add groups to wrapping <div> tag
+        for group in groups:
+            sec = soup.new_tag('div')
+            if isinstance(group[0], bs4.Tag):
+                sec['id'] = group[0].get('id', '#')
+                sec['class'] = 'section scrollspy'
+            div.append(sec)
+            for tag in group:
+                sec.append(tag)
 
         return unicode(soup)
