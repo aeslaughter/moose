@@ -8,6 +8,8 @@ class TestDevelExtension(MarkdownTestCase):
     """
     Test commands in MooseDocs devel extension.
     """
+    EXTENSIONS = ['MooseDocs.extensions.devel']
+    
     def readGold(self, name):
         """
         The parsed markdown contains a path to ".../moose/docs/".
@@ -24,7 +26,7 @@ class TestDevelExtension(MarkdownTestCase):
         self.assertConvert('test_BuildStatus.html', md)
 
     def testPackage(self):
-        md = '!MOOSEPACKAGE arch=centos7 return=link!'
+        md = '!moosepackage arch=centos7 return=link!'
         self.assertConvert('test_Package.html', md)
 
     def testConfig(self):

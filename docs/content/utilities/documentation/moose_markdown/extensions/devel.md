@@ -23,7 +23,7 @@ You can add a Civet build status widget to any page using `!buildstatus http://u
 ## Package Information
 Creates syntax for reading MOOSE redistributable package names and links.
 
-!extension-settings moose_package_parser title=Command Settings (`!MOOSEPACKAGE`)
+!extension-settings moose_package_parser title=Command Settings (`!moosepackage`)
 
 ## Extension Configuration and Settings
 

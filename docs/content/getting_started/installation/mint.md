@@ -20,7 +20,7 @@ m4
 
 * Download one our redistributables according to your version of Mint
 
-    * Mint 18: !MOOSEPACKAGE arch=mint18 return=link!
+    * Mint 18: !moosepackage arch=mint18 return=link!
 
 !include docs/content/getting_started/installation/install_redistributable_deb.md
 !include docs/content/getting_started/installation/clone_moose.md

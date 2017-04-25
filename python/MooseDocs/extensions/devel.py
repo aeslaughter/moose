@@ -88,7 +88,7 @@ class PackagePattern(MooseCommonExtension, Pattern):
     Markdown extension for extracting package arch and version.
     """
 
-    RE = r'!MOOSEPACKAGE\s*(.*?)!'
+    RE = r'!moosepackage\s*(.*?)!'
 
     @staticmethod
     def defaultSettings():

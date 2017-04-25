@@ -50,7 +50,7 @@ libglu1-mesa
 
 
 * Download our redistributatble package for Ubuntu 14.04
-    * !MOOSEPACKAGE arch=ubuntu14.04 return=link!
+    * !moosepackage arch=ubuntu14.04 return=link!
 
 !include docs/content/getting_started/installation/install_redistributable_deb.md
 

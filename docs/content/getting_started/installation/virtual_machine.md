@@ -9,7 +9,7 @@
 
 ## Download the Virtual Machine
 
-* Download !MOOSEPACKAGE arch=virtual return=link!
+* Download !moosepackage arch=virtual return=link!
 * When the download is complete, extract the contents anywhere you would like.
 * Double-clicking on this item should launch the VM. If you see a 'vmwarevm' extension on the item, you will need to go into this directory instead and double click on 'moose_3-29-2016.vmx' to launch the VM.
 

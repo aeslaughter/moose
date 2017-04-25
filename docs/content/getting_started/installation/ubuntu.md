@@ -25,8 +25,8 @@ libhwloc-dev
 
 * Download one of our redistributables according to your version of Ubuntu
 
-    * Ubuntu 16.04: !MOOSEPACKAGE arch=ubuntu16.04 return=link!
-    * Ubuntu 14.04: !MOOSEPACKAGE arch=ubuntu14.04 return=link!
+    * Ubuntu 16.04: !moosepackage arch=ubuntu16.04 return=link!
+    * Ubuntu 14.04: !moosepackage arch=ubuntu14.04 return=link!
 
 !include docs/content/getting_started/installation/install_redistributable_deb.md
 !include docs/content/getting_started/installation/clone_moose.md

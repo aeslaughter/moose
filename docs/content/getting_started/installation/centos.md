@@ -20,7 +20,7 @@ libX11-devel
 
 * Download one our redistributables according to your version of CentOS
 
-    * CentOS 7: !MOOSEPACKAGE arch=centos7 return=link!
+    * CentOS 7: !moosepackage arch=centos7 return=link!
 
 !include docs/content/getting_started/installation/install_redistributable_rpm.md
 !include docs/content/getting_started/installation/clone_moose.md
