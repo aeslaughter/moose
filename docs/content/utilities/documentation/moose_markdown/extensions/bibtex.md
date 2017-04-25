@@ -1,9 +1,10 @@
-MooseDocs BibTeX Extension
-The BibTeX file format for storing bibliography information is ubiquitous. Therefore to enable the creation of a set of common
-bibtex files that can be used with the markdown to create citations and bibliographies aids in rapid
-development of documentation.
+# MooseDocs BibTeX Extension
 
-The bibtex extension makes it possible to include citations using LaTeX commands. The following commands are supported within the markdown.
+The BibTeX file format for storing bibliography information is ubiquitous. Therefore, to enable the
+ability to create a common set of BibTeX files that can be used with the markdown to create
+citations and bibliographies aids in rapid development of documentation.
+
+The [BibTeX] extension makes it possible to include citations using LaTeX commands. The following commands are supported within the markdown.
 
 * `\cite{slaughter2015continuous}`: \cite{slaughter2015continuous}
 * `\citet{wang2014diffusion}`: \citet{wang2014diffusion}

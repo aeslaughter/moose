@@ -24,7 +24,7 @@ except:
 
 class ListingExtension(markdown.Extension):
     """
-    Extension for adding including code and other text files.s
+    Extension for adding including code and other text files.
     """
     def __init__(self, **kwargs):
         self.config = dict()
@@ -39,17 +39,17 @@ class ListingExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
 
-        md.inlinePatterns.add('moose-fenced-listing',
-                              ListingFenced(markdown_instance=md, **config), '_begin')
+        if 'fenced_code_block' in md.preprocessors:
+            md.inlinePatterns.add('moose-fenced-listing',
+                                  ListingFenced(markdown_instance=md, **config), '_begin')
+            md.postprocessors.add('moose-listing-postprocessor',
+                                  ListingPostprocessor(markdown_instance=md, **config), '_end')
 
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
 
         md.inlinePatterns.add('moose-input-listing', ListingInputPattern(markdown_instance=md, **config), '_begin')
 
         md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
-
-        md.postprocessors.add('moose-listing-postprocessor',
-                              ListingPostprocessor(markdown_instance=md, **config), '_end')
 
 
 def makeExtension(*args, **kwargs):
@@ -61,10 +61,9 @@ class ListingPattern(MooseCommonExtension, Pattern):
     The basic object for creating code listings from files.
 
     Args:
-      regex: The string containing the regular expression to match.
       language[str]: The code language (e.g., 'python' or 'c++')
     """
-    RE = r'!listing\s+(?P<filename>.*\.\w+)(?:$|\s+)(?P<settings>.*)'
+    RE = r'(?<!`)!listing\s+(?P<filename>.*\.\w+)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -86,9 +85,8 @@ class ListingPattern(MooseCommonExtension, Pattern):
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        regex = kwargs.pop('regex', self.RE)
         MooseCommonExtension.__init__(self, **kwargs)
-        Pattern.__init__(self, regex, markdown_instance)
+        Pattern.__init__(self, self.RE, markdown_instance)
 
         # The root/repo settings
         self._repo = kwargs.pop('repo')
@@ -97,7 +95,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         """
         Process the text file provided.
         """
-        # Update the settings from regex match
+        # Update the settings from g match
         settings = self.getSettings(match.group(3))
 
         # Read the file
@@ -298,6 +296,8 @@ class ListingInputPattern(ListingPattern):
     """
     Markdown extension for extracting blocks from input files.
     """
+    RE = r'(?<!`)!listing\s+(?P<filename>.*\.i)(?:$|\s+)(?P<settings>.*)'
+
     @staticmethod
     def defaultSettings():
         settings = ListingPattern.defaultSettings()
@@ -305,8 +305,6 @@ class ListingInputPattern(ListingPattern):
         return settings
 
     def __init__(self, **kwargs):
-        regex = r'!listing\s+(?P<filename>.*\.i)(?:$|\s+)(?P<settings>.*)'
-        kwargs.setdefault('regex', regex)
         super(ListingInputPattern, self).__init__(**kwargs)
 
     def extractContent(self, filename, settings):
@@ -329,9 +327,7 @@ class ListingClangPattern(ListingPattern):
       make_dir[str]: (required) The MOOSE application directory for running make command.
       **kwargs: key, value arguments passed to base class.
     """
-
-    # REGEX for finding: !clang /path/to/file.C|h method=some_method
-    RE = r'^!clang\s+(.*?)(?:$|\s+)(?P<settings>.*)'
+    RE = '(?<!`)!listing\s+(?P<filename>.*\.[Ch])(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -341,8 +337,6 @@ class ListingClangPattern(ListingPattern):
         return settings
 
     def __init__(self, **kwargs):
-        regex = r'^!listing\s+(?P<filename>.*?\.[Ch])(?:$|\s+)(?P<settings>.*)'
-        kwargs.setdefault('regex', regex)
         super(ListingClangPattern, self).__init__(**kwargs)
 
         # The make command to execute
@@ -378,7 +372,7 @@ class ListingClangPattern(ListingPattern):
             log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
 
 class ListingFenced(MooseCommonExtension, Pattern):
-    RE = r'!listing\s*(?P<settings>.*)'
+    RE = r'(?<!`)!listing\s*(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():

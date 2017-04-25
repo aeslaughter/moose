@@ -4,8 +4,10 @@ directly into sections of text using the `!css` command.
 
 ## In-line CSS
 
-You can provide valid CSS attributes to any of the [MOOSE markdown extensions](moose_flavored_markdown/index.md#MooseDocs-extensions) markdown extensions (e.g., !listing). In
-general, it is possible to set "id" and "style" attributes via the options following the command.
+You can provide valid CSS attributes to any of the commands within a [MOOSE markdown
+extension](moose_flavored_markdown/index.md#MooseDocs-extensions) (e.g.,
+`!listing`). In general, it is possible to set "id" and "style" attributes via the options following
+the command.
 
 ```
 !listing test/tests/kernels/simple_diffusion/simple_diffusion.i id=diffusion style=float:right;padding-left:20px;width:300px
@@ -60,4 +62,4 @@ An empty new line, designates the end of the css block.
 !css font-size=smaller margin-left=70% color=red text-shadow=1px 1px 1px rgba(0,0,0,.4)
 Another paragraph modified by CSS.
 
-!extension-settings moose_css title=!css Command Settings
+!extension-settings moose_css title=Command Settings (`!css`)

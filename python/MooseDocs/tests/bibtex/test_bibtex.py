@@ -8,6 +8,7 @@ class TestBibtexExtension(MarkdownTestCase):
     """
     Tests that Bibtex is working correctly.
     """
+    EXTENSIONS = ['MooseDocs.extensions.bibtex']
     def readGold(self, name):
         """
         The parsed markdown contains a path to ".../moose/docs/bib/moose.bib".
@@ -19,13 +20,13 @@ class TestBibtexExtension(MarkdownTestCase):
         return html
 
     @classmethod
-    def updateExtensionConfigs(cls, extension_configs):
+    def updateExtensions(cls, configs):
         """
         Method to change the arguments that come from the configuration file for
         specific tests.  This way one can test optional arguments without permanently
         changing the configuration file.
         """
-        extension_configs['MooseDocs.extensions.bibtex']['macro_files'] =\
+        configs['MooseDocs.extensions.bibtex']['macro_files'] =\
             ['docs/bib/macro_test_abbrev.bib']
 
     def testCite(self):

@@ -95,14 +95,13 @@ class TestListings(MarkdownTestCase):
         self.assertConvert('testRef.html', md)
 
     def testFenced(self):
-        filename = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'utilities', 'documentation', 'moose_markdown', 'extensions', 'include.md')
-        with open(filename, 'r') as fid:
-            md = fid.read()
-        #md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i id=foo\n\n'
-        #md += 'Testing testings.\n\n!listing caption=Foo id=bar\n```\nx+y=1;\n```'
-        #self.convert(md)
-        #self.assertTrue(False)
+        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i id=foo\n\n'
+        md += 'Testing testings.\n\n!listing caption=Foo id=bar\n```\nx+y=1;\n```'
         self.assertConvert('testFenced.html', md)
+
+    def testListingTick(self):
+        md = 'This should (`!listing`) be a paragraph.'
+        self.assertConvert('testListingTick.html', md)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

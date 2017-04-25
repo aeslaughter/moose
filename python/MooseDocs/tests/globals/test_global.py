@@ -8,7 +8,7 @@ class TestGlobalExtension(MarkdownTestCase):
     """
     Test commands in GlobalExtension
     """
-
+    EXTENSIONS = ['MooseDocs.extensions.global']
     def testLink(self):
         self.assertConvert('test_Link.html', '[libMesh]')
 
