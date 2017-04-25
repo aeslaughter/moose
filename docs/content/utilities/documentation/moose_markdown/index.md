@@ -6,6 +6,11 @@ outlines the outside extensions enabled as well as the custom extensions include
 extensions included as well as the custom syntax defined exclusively for documenting [MOOSE] source
 code.
 
+!!! note
+    When including filenames as arguments to a markdown command the path specified should be defined
+    from the "root" directory, which by default is the top level of the git repository (e.g.,
+    ~/projects/moose).
+
 ## MooseDocs Extensions
 
 Much of the capability that enables the MooseDocs system to be useful for creating documentation
@@ -29,7 +34,9 @@ commands add associated settings defined in the extension.
 | [devel](extensions/devel.md) | Adds the ability to extract configuration and commands settings in addition to build status and MOOSE package information (MOOSE developer tools). |
 | [materialize](extensions/misc.md) | Adds code copy button and scrolling contents to html. |
 | [media](extensions/media.md) | Adds markdown for including images, sliders, and videos. |
-| [float](extensions/listings.md) | Markdown syntax for numbered figure, tables, and listings. |
+| [tables](extensions/tables.md) | Markdown syntax for captioned and numbered tables. |
+| [listings](extensions/listings.md) | Markdown syntax for captioned and numbered code blocks. |
+
 
 
 ## Python-Markdown Extensions
