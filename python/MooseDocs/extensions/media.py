@@ -62,13 +62,13 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         """
 
         # Extract the filename and settings from regex
-        rel_filename = match.group(2)
+        rel_filename = match.group('filename')
         settings = self.getSettings(match.group('settings'))
 
         # Must have a counter name
         cname = settings['counter']
         if cname is None:
-            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
+            log.error('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
             cname = 'unknown'
 
         # Determine the filename
@@ -126,9 +126,9 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
 
 class ImagePattern(MediaPatternBase):
     """
-    Find !image /path/to/file attribute=setting
+    Find !media /path/to/file attribute=setting
     """
-    RE = r'^!media\s+(.*?)(?:$|\s+)(?P<settings>.*)'
+    RE = r'!media\s+(?P<filename>.*\.\w+)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -220,14 +220,14 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
     It is assumed image names will have the same filepath as on the webserver.
     """
 
-    RE = re.compile(r'^!\ ?slider(?P<settings>.*)')
+    RE = re.compile(r'^!media(?P<settings>.*)\n(\s+.*\..*)+')
 
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['caption'] = (None, "The text for the slider caption.")
+        settings['counter'] = ('figure', "The counter group that this media item belongs. This is used by float extension to provide numbered references.")
         return settings
-
 
     ImageInfo = collections.namedtuple('ImageInfo', 'filename img_settings caption_settings')
 
@@ -272,6 +272,9 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
             img_settings.setdefault('background-color', 'white')
             caption_settings = self.getSettings(matches.group(3).strip())
 
+            img_settings.pop('counter')
+            caption_settings.pop('counter')
+
             new_files = glob.glob(MooseDocs.abspath(fname))
             if not new_files:
                 log.error('Parser unable to detect file(s) {} in media.py'.format(fname))
@@ -296,16 +299,25 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
 
         block = blocks.pop(0)
         match = self.RE.search(block)
-        settings = self.getSettings(match.group(1))
+        settings = self.getSettings(match.group('settings'))
 
         slider = etree.SubElement(parent, 'div')
         slider.set('class', 'slider moose-slider-div')
         self.applyElementSettings(slider, settings)
 
+        # Build caption
+        cname = settings.pop('counter', None)
+        if cname is None:
+            log.error('The "counter" setting must be a valid string with !slider')
+            cname = 'unknown'
+        MooseDocs.extensions.increment_counter(slider, settings, cname)
+        cap = MooseDocs.extensions.caption_element(settings)
+        slider.append(cap)
+
         ul = etree.SubElement(slider, 'ul')
         ul.set('class', 'slides')
 
-        for item in self.parseFilenames(block[match.end()+1:]):
+        for item in self.parseFilenames(block[match.end('settings')+1:]):
             li = etree.SubElement(ul, 'li')
             img = etree.SubElement(li, 'img')
             img.set('src', item.filename)

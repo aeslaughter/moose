@@ -10,20 +10,18 @@ class TestVideo(MarkdownTestCase):
     """
     EXTENSIONS = ['MooseDocs.extensions.media']
 
-    def setUp(self):
-        """
-        Clear counter before each run.
-        """
-        super(TestVideo, self).setUp()
-        MediaPatternBase.COUNTER.clear()
-
     def testDefault(self):
-        md = '!media http://clips.vorwaerts-gmbh.de/VfE.webm counter=None'
+        md = '!media http://clips.vorwaerts-gmbh.de/VfE.webm'
         self.assertConvert('testDefault.html', md)
 
     def testSettings(self):
-        md = '!media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100% autoplay=True counter=None'
+        md = '!media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100% autoplay=True'
         self.assertConvert('testSettings.html', md)
+
+    def testDefaultId(self):
+        md = '!media http://clips.vorwaerts-gmbh.de/VfE.webm id=foo caption=A video'
+        self.assertConvert('testDefaultId.html', md)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
