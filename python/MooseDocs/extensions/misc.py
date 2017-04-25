@@ -14,7 +14,7 @@ class MiscExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
         md.postprocessors.add('moose_code_button', CopyPostprocessor(markdown_instance=md, **config), '_end')
-        #md.treeprocessors.add('moose_content_scroll', ScrollTreeprocessor(markdown_instance=md, **config), '_end')
+        md.postprocessors.add('moose_content_scroll', ScrollPostprocessor(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs):
     return MiscExtension(*args, **kwargs)
@@ -53,31 +53,31 @@ class CopyPostprocessor(Postprocessor):
         return unicode(soup)
 
 
-class ScrollTreeprocessor(Postprocessor):
+class ScrollPostprocessor(Postprocessor):
     """
     Adds a 'div' tag around h2 levels with class of 'section scrollspy' to allow scrollable contents
     on right-hand side of pages.
     """
 
     def __init__(self, markdown_instance=None, **kwargs):
-        super(ScrollTreeprocessor, self).__init__(markdown_instance)
+        super(ScrollPostprocessor, self).__init__(markdown_instance)
 
-    def run(self, root):
+    def run(self, text):
         """
         Adds section for materialize scrollspy
         """
+        soup = bs4.BeautifulSoup(text, 'lxml')
+        content = soup.find('div', id='moose-markdown-content')
+        if content is None:
+            return text
 
-        div = root.find('div')
-        if (div is not None) and (div.get('id', None) == 'moose-markdown-content'):
-            current = div
-            parent = div
-            for el in div.iter():
-                if el.name == 'h2':
-                    parent = current
-                    current = etree.Element('div', id=tag.get('id', '#'))
-                    current.set('class', "section scrollspy")
-
-                if current != parent:
-                    parent.append(current)
-                    current.append(el)
-                    parent.remove(el)
+        for h in content.find_all('h2'):
+            div = soup.new_tag('div')
+            div['class'] = 'section scrollspy'
+            h.insert_before(div)
+            for sibling in h.next_siblings:
+                if sibling.name == 'h2':
+                    break
+                div.append(sibling.extract())
+            div.insert(0, h.extract())
+        return unicode(soup)

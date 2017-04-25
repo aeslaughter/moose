@@ -27,9 +27,9 @@ commands add associated settings defined in the extension.
 | [css](extensions/css.md) | Enables [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) settings to be applied via markdown |
 | [diagram](extensions/diagram.md) | Automatically generates DOT/GraphVIZ diagrams. |
 | [devel](extensions/devel.md) | Adds the ability to extract configuration and commands settings in addition to build status and MOOSE package information (MOOSE developer tools). |
-| [materialize](extensions/materialize.md) | Adds code copy button and scrolling contents to html. |
+| [materialize](extensions/misc.md) | Adds code copy button and scrolling contents to html. |
 | [media](extensions/media.md) | Adds markdown for including images, sliders, and videos. |
-| [float](extensions/float.md) | Markdown syntax for numbered figure, tables, and listings. |
+| [float](extensions/listings.md) | Markdown syntax for numbered figure, tables, and listings. |
 
 
 ## Python-Markdown Extensions
