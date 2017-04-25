@@ -91,7 +91,7 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
 
         # Add content and wrap within card elements
         element = div
-        if settings['card']:
+        if settings.get('card', None):
             element = etree.SubElement(div, 'div')
             element.set('class', 'card')
             element.set('style', 'margin-left:auto;margin-right:auto;')
@@ -104,14 +104,13 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         caption_element = MooseDocs.extensions.caption_element(settings)
         if caption_element:
             self._cardWrapper(element, caption_element, 'card-content', settings)
-
         return div
 
     def _cardWrapper(self, parent, child, class_, settings):
         """
         Helper for optionally wrapping a materialize 'card'
         """
-        if settings['card']:
+        if settings.get('card', None):
             card_element = etree.SubElement(parent, 'div')
             card_element.set('class', class_)
             card_element.append(child)
@@ -146,6 +145,7 @@ class ImagePattern(MediaPatternBase):
         """
         img = etree.Element('img')
         img.set('src', os.path.relpath(filename, os.getcwd()))
+        img.set('width', '100%')
         if settings['materialboxed']:
             img.set('class', 'materialboxed')
             if settings['caption']:
@@ -159,7 +159,7 @@ class VideoPattern(MediaPatternBase):
 
     Creates a <video> tag for webm, ogg, or mp4 extensions.
     """
-    RE = r'^!media\s+(.*?(webm|ogg|mp4))(?:$|\s+)(?P<settings>.*)'
+    RE = r'^!media\s+(?P<filename>.*\.(webm|ogg|mp4))(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -170,6 +170,7 @@ class VideoPattern(MediaPatternBase):
         settings['video-width'] = ('auto', "The width of the video player.")
         settings['video-height'] = ('auto', "The height of the video player.")
         settings['caption'] = (None, "The text for the video caption.")
+        settings.pop('card')
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):

@@ -1,77 +1,55 @@
 # MediaExtension
 
-The media extension provides markdown commands for adding images, slideshow, and videos.
+!media docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right id=memory_logger caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
+
+The media extension provides the `!media` markdown command for adding images, slideshow, and videos.
+As used throughout this section, the `!media` command can optionally created numbered "floats" by
+specifying the "id", as detailed on the [Numbered Floats](extensions/float.md) page.
 
 ## Images
 
-!media docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
-
-It is possible to include images with more flexibility than standard markdown.
+It is possible to include images with more flexibility than standard markdown. For example, \ref{memory_logger} was produced using the markdown listed in \ref{image-example}.
 
 The markdown keyword for MOOSE images is `!media` followed by the filename as shown below. This
 command, like most of the other special MOOSE markdown commands except arbitrary html attributes
-that are then applied to the "style" attribute. For example, the following syntax was used to
-include the image on the right.
+that are then applied to the "style" attribute.
 
+!listing id=image-example caption=Markdown used in this document to produce \ref{memory_logger}.
 ```markdown
 !media docs/media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
 ```
 
-!extension-settings moose_image title=Command Settings (`!media`)
+!extension-settings moose_image title=Image Command Settings (`!media`)
 
 ## Videos
 
 Locally stored or hosted videos can be displayed using the `!media` syntax. This works in the same
-fashion as the `!media` command, but also includes some extra settings as listed in the table
+fashion as for [images](#images), but also includes some extra settings as listed in the section
 below.
 
 !media http://clips.vorwaerts-gmbh.de/VfE.webm video-width=100%
 
-!extension-settings moose_video title=Command Settings (`!media`)
+!extension-settings moose_video title=Video Command Settings (`!media`)
 
 
 ## Slideshows
-A sequence of images can be shown via a `slider`.
-By default the images will auto cycle between images.
+A sequence of images can be shown via a ["slider"](http://materializecss.com/media.html#slider). For example, \ref{slider-example} produces the slider shown in \ref{slider-figure}
 
-A simple example:
-
+!listing id=slider-example caption=Syntax for the `!media` command that created \ref{slider-figure}.
 ```markdown
-!slider
-    intro.png
-    other*.png
-```
-
-This would create a slideshow with the first image as `intro.png` and the next images those that are matched by the wildcard `other*.png`.
-
-Valid options for the slider are standard CSS options (see example below).  Changing
-the interval between slides, transition time, and button layout is not possible
-at this time.
-
-CSS options for background images can be applied to individual images as keyword
-pairs.  Additionally, captions can be added to each image and
-modified with appropriate CSS options.
-
-Any option that appears after the image (but before "caption", if it exists)
-will be applied to the image.  Any option that
-appears after "caption" will be applied to the caption.
-
-A full slideshow example might be:
-```markdown
-!slider max-width=50% left=220px
+!media max-width=50% left=220px
     docs/media/memory_logger-darkmode.png caption= Output of memory logging tool position=relative left=150px top=-150px
     docs/media/testImage_tallNarrow.png background-color=#F8F8FF caption= This is a tall, thin image color=red font-size=200% width=200px height=100%
     docs/media/github*.png background-color=gray
     docs/media/memory_logger-plot_multi.png
 ```
 
-!slider max-width=50% left=220px
+!media max-width=50% left=220px id=slider-figure
     docs/media/memory_logger-darkmode.png caption= Output of memory logging tool position=relative left=150px top=-150px
     docs/media/testImage_tallNarrow.png background-color=#F8F8FF caption= This is a tall, thin image color=red font-size=200% width=200px height=100%
     docs/media/github*.png background-color=gray
     docs/media/memory_logger-plot_multi.png
 
-!extension-settings moose_slider title=Command Settings (`!slider`)
-
+!extension-settings moose_slider title=Slider Command Settings (`!media`)
 
 !extension MediaExtension title=MediaExtension Configuration Options

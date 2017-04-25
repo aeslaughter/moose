@@ -22,6 +22,5 @@ class TestVideo(MarkdownTestCase):
         md = '!media http://clips.vorwaerts-gmbh.de/VfE.webm id=foo caption=A video'
         self.assertConvert('testDefaultId.html', md)
 
-
 if __name__ == '__main__':
     unittest.main(verbosity=2)

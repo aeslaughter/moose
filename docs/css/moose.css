@@ -1,7 +1,7 @@
 html {
     line-height: 1.75rem;
     color: rgba(0,0,0,1.0);
-    font-size: large;
+    font-size: 20px;
     text-align: justify;
     font-weight: 300;
 }
@@ -76,15 +76,13 @@ ul {
 .moose-table-caption-heading,
 .moose-listing-caption-heading
 {
-  font-size: larger;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .moose-figure-caption-text,
 .moose-table-caption-text,
 .moose-listing-caption-text
 {
-  font-size: larger;
   font-weight: 300;
 }
 
