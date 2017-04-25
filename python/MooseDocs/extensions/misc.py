@@ -3,7 +3,7 @@ import bs4
 from markdown.postprocessors import Postprocessor
 from markdown.util import etree
 
-class MaterializeExtension(markdown.Extension):
+class MiscExtension(markdown.Extension):
     """
     Extension for adding materialize specific css to converted markdown.
     """
@@ -14,10 +14,10 @@ class MaterializeExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
         md.postprocessors.add('moose_code_button', CopyPostprocessor(markdown_instance=md, **config), '_end')
-        md.treeprocessors.add('moose_content_scroll', ScrollTreeprocessor(markdown_instance=md, **config), '_end')
+        #md.treeprocessors.add('moose_content_scroll', ScrollTreeprocessor(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs):
-    return MaterializeExtension(*args, **kwargs)
+    return MiscExtension(*args, **kwargs)
 
 
 class CopyPostprocessor(Postprocessor):
@@ -34,24 +34,26 @@ class CopyPostprocessor(Postprocessor):
         """
         count = 0
         soup = bs4.BeautifulSoup(text, 'lxml')
-        for pre in root.find_all('pre'):
+        for pre in soup.find_all('pre'):
             code = pre.find('code')
-            if code:
-                pre.set('class', 'language-{}'.format(code.get('class', 'text')))
+            if pre and code:
+                lang = code.get('class', 'text')
+                pre['class'] = 'language-{}'.format(lang)
 
                 id_ = code.get('id', 'moose-code-block-{}'.format(count))
-                code.set('id', id+)
+                code['id'] = id_
 
-                btn = etree.Element('button')
-                btn.set('class', 'moose-copy-button btn')
-                btn.set('data-clipboard-target', '#{}'.format(id_))
-                btn.text = 'copy'
+                btn = soup.new_tag('button')
+                btn['class'] = 'moose-copy-button btn'
+                btn['data-clipboard-target'] = '#{}'.format(id_)
+                btn.string = 'copy'
 
                 pre.insert(0, btn)
                 count += 1
+        return unicode(soup)
 
 
-class ScrollTreeprocessor(Treeprocessor):
+class ScrollTreeprocessor(Postprocessor):
     """
     Adds a 'div' tag around h2 levels with class of 'section scrollspy' to allow scrollable contents
     on right-hand side of pages.

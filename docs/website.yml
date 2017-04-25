@@ -12,7 +12,7 @@
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram
 - MooseDocs.extensions.devel
-- MooseDocs.extensions.materialize
+- MooseDocs.extensions.misc
 - MooseDocs.extensions.media
 - MooseDocs.extensions.tables
 - MooseDocs.extensions.listings:
