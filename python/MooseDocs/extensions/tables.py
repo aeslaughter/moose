@@ -67,20 +67,9 @@ class MooseTableProcessor(MooseCommonExtension, TableProcessor):
         match = re.search(self.RE, lines[0], flags=re.MULTILINE)
         settings = self.getSettings(match.group('settings'))
 
-        # Get the counter name
-        cname = settings['counter']
-        if cname is None:
-            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
-            cname = 'media'
-
         # Create the containing <div> tag.
-        div = self.applyElementSettings(etree.SubElement(parent, 'div'), settings)
-        div.set('class', 'moose-table-div')
-        #MooseDocs.extensions.increment_counter(div, settings, cname)
-
-        # Create the caption tag
-        #caption = MooseDocs.extensions.caption_element(settings)
-        #div.insert(0, caption)
+        div = self.createFloatElement(settings)
+        parent.append(div)
 
         # Create the table
         TableProcessor.run(self, div, blocks)

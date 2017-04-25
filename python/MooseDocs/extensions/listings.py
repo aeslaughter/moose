@@ -190,7 +190,6 @@ class ListingPattern(MooseCommonExtension, Pattern):
 
         # Build outer div container
         el = self.createFloatElement(settings)
-        el.set('class', 'moose-listing-div')
 
         # Build the code
         pre = etree.SubElement(el, 'pre')

@@ -96,11 +96,11 @@ class MooseCommonExtension(object):
         div.set('class', 'moose-float-div moose-{}-div'.format(cname))
 
         if settings.get('id', None) or settings.get('caption', None):
-            div.set('data-moose-float-name', cname.title())
             p = etree.SubElement(div, 'p')
             p.set('class', 'moose-float-caption')
 
             if settings.get('id', None):
+                div.set('data-moose-float-name', cname.title())
                 h_span = etree.SubElement(p, 'span')
                 h_span.set('class', 'moose-float-caption-heading')
 

@@ -72,9 +72,9 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
         if rel_filename.startswith('http'):
             filename = rel_filename
         elif os.path.exists(repo):
-            filename = repo
+            filename = os.path.relpath(repo, os.getcwd())
         elif os.path.exists(local):
-            filename = local
+            filename = os.path.relpath(local, os.getcwd())
         else:
             return self.createErrorElement('File not found: {}'.format(rel_filename))
 
@@ -122,7 +122,7 @@ class ImagePattern(MediaPatternBase):
     """
     Find !media /path/to/file attribute=setting
     """
-    RE = r'!media\s+(?P<filename>.*\.\w+)(?:$|\s+)(?P<settings>.*)'
+    RE = r'!media\s+(?P<filename>.*?)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -139,7 +139,7 @@ class ImagePattern(MediaPatternBase):
         Return the img tag.
         """
         img = etree.Element('img')
-        img.set('src', os.path.relpath(filename, os.getcwd()))
+        img.set('src', filename)
         img.set('width', '100%')
         if settings['materialboxed']:
             img.set('class', 'materialboxed')
