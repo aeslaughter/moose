@@ -7,7 +7,7 @@ class TestImage(MarkdownTestCase):
     """
     Test commands in MooseTextFile extension.
     """
-    EXTENSIONS = ['MooseDocs.extensions.media']
+    EXTENSIONS = ['MooseDocs.extensions.media', 'MooseDocs.extensions.refs']
 
     def testDefault(self):
         md = '!media docs/media/github-logo.png'
