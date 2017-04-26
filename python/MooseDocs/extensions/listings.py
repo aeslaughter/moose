@@ -315,6 +315,8 @@ class ListingInputPattern(ListingPattern):
         if node is not None:
             return node.createString()
 
+        return super(ListingInputPattern, self).extractContent(filename, settings)
+
 class ListingClangPattern(ListingPattern):
     """
     A markdown extension for including source code snippets using clang python bindings.
@@ -328,7 +330,7 @@ class ListingClangPattern(ListingPattern):
     @staticmethod
     def defaultSettings():
         settings = ListingPattern.defaultSettings()
-        settings['method'] = (None, "The C++ method to return using the clang parser.")
+        settings['method'] = (None, "The C++ method to return using the clang parser. Using, this will bypass other extracting settings (e.g., 'begin' and 'end').")
         settings['declaration'] = (False, "When True the declaration is returned, other size the definition is given.")
         return settings
 
