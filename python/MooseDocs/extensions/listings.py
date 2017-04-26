@@ -41,7 +41,7 @@ class ListingExtension(markdown.Extension):
 
         # Replace the standard fenced code to a version that handles !listing line
         if 'fenced_code_block' in md.preprocessors:
-            md.preprocessors.add('fenced_code_block',
+            md.preprocessors.add('moose_fenced_code_block',
                                  ListingFencedBlockPreprocessor(md),
                                  "<fenced_code_block")
 
@@ -371,6 +371,7 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
     """
     Adds the ability to proceed a fenced code block with !listing command.
     """
+    RE = '(?<!`)!listing\s*(?P<settings>.*)'
     LANG_TAG = ' class="language-%s"'
 
     @staticmethod
@@ -384,39 +385,55 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
     def __init__(self, markdown_instance=None, **config):
         MooseCommonExtension.__init__(self, **config)
         FencedBlockPreprocessor.__init__(self, markdown_instance)
+        self._remove = []
+
+    def sub(self, text, match):
+
+
+        idx = text.rfind('\n', 0, match.start(0)-1)
+        if idx:
+            listing = re.search(self.RE, text[idx+1:match.start(0)-1])
+            if listing:
+
+                self._remove.append(text[idx+1:match.start(0)-1])
+                #text = text[:idx] + text[match.start(0)]
+
+                lines = match.group(0).split('\n')
+
+                placeholder = markdown.util.HTML_PLACEHOLDER % self.markdown.htmlStash.html_counter
+                settings = self.getSettings(listing.group('settings'))
+                div = self.createFloatElement(settings)
+
+                if settings['copy-button']:
+                    code_id = 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT)
+                    btn = self.createCopyButton(code_id)
+                    self.CODE_WRAP = '<pre%s>{}<code id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
+
+                lines = super(ListingFencedBlockPreprocessor, self).run(lines)
+
+                start = self.markdown.htmlStash.store(etree.tostring(div)[:-6], safe=True)
+                end = self.markdown.htmlStash.store('</div>', safe=True)
+
+                idx = lines.index(placeholder)
+                lines.insert(idx+1, end)
+                lines.insert(idx, start)
+                return '\n'.join(lines)
+
+        return match.group(0)
 
     def run(self, lines):
         """
         Preprocess the lines by wrapping the listing <div> around the fenced code.
         """
 
-        # Set the default cold wrapping, with the language in the <pre> block for prisim.js
-        self.CODE_WRAP = '<pre%s><code>%s</code></pre>'
+        self._remove = []
 
-        # If the FENCED_BLOCK_RE is proceed by !listing wrap the results.
         text = '\n'.join(lines)
-        listing_re = r'(?<!`)!listing\s*(?P<settings>.*)\n' + self.FENCED_BLOCK_RE.pattern
-        match = re.search(listing_re, text, flags=re.MULTILINE|re.DOTALL|re.VERBOSE)
-        if match:
-            placeholder = markdown.util.HTML_PLACEHOLDER % self.markdown.htmlStash.html_counter
-            settings = self.getSettings(match.group('settings'))
-            div = self.createFloatElement(settings)
+        text = self.FENCED_BLOCK_RE.sub(lambda m: self.sub(text, m), text)
 
-            if settings['copy-button']:
-                code_id = 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT)
-                btn = self.createCopyButton(code_id)
-                self.CODE_WRAP = '<pre%s>{}<code id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
+        for s in self._remove:
+            text = text.replace(s, '')
 
-            lines = super(ListingFencedBlockPreprocessor, self).run(lines)
-
-            start = self.markdown.htmlStash.store(etree.tostring(div)[:-6], safe=True)
-            end = self.markdown.htmlStash.store('</div>', safe=True)
-
-            idx = lines.index(placeholder)
-            lines.insert(idx+1, end)
-            lines.insert(idx, start)
-
-        else:
-            lines = super(ListingFencedBlockPreprocessor, self).run(lines)
-
-        return lines
+        # Restore the code wrapping
+        self.CODE_WRAP = '<pre%s><code>%s</code></pre>'
+        return text.split('\n')

@@ -8,10 +8,10 @@ You can include complete files from the repository. For example, the
 following creates the code listing in \ref{complete}.
 
 ```markdown
-!listing framework/src/kernels/Diffusion.C id=complete caption=Code listing showing a complete file. style=max-height:200px;overflow-y:scroll strip-extra-newlines=True
+!listing framework/src/kernels/Diffusion.C id=complete caption=Code listing showing a complete file. style=max-height:250px;overflow-y:scroll
 ```
 
-!listing framework/src/kernels/Diffusion.C id=complete caption=Code listing showing a complete file. style=max-height:250px;overflow-y:scroll strip-extra-newlines=True
+!listing framework/src/kernels/Diffusion.C id=complete caption=Code listing showing a complete file. style=max-height:250px;overflow-y:scroll
 
 ## Single Line Match
 It is possible to show a single line of a file by including a snippet that allows the line to be
@@ -44,7 +44,9 @@ method.
 !listing framework/src/kernels/Diffusion.C method=computeQpResidual id=clang caption=Code listing using the clang parser.
 ```
 
+<!--
 !listing framework/src/kernels/Diffusion.C method=computeQpResidual id=clang caption=Code listing using the clang parser.
+-->
 
 !!! warning "Warning"
     This method uses the clang parser directly, which can be slow. Thus, in general source code should be
@@ -61,8 +63,17 @@ By including a block name the included content will be limited to the content ma
 
 !listing test/tests/kernels/simple_diffusion/simple_diffusion.i block=Kernels id=input caption=Code listing of [MOOSE] input file block.
 
-
 ## Fenced Code Blocks
+
+The `!listing` command can also be utilized to wrap inline fenced code blocks, by placing the command on the line before the fenced code as shown in \ref{fenced}.
+
+!listing id=fenced caption=Example markdown of a fenced code block with the listing command.
+~~~
+!listing id=combo caption=That's amazing! I've got the same combination on my luggage!
+```c++
+int combo = 12345;
+```
+~~~
 
 
 ## Extension Configuration

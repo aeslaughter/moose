@@ -29,8 +29,6 @@ class TemplateExtension(markdown.Extension):
         config = self.getConfigs()
 
         flag = '_end'
-        if 'moose_content_scroll' in md.postprocessors:
-            flag = '<moose_content_scroll'
         md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), flag)
 
 def makeExtension(*args, **kwargs):

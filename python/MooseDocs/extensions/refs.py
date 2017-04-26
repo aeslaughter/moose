@@ -1,13 +1,14 @@
 import os
 import re
 import collections
+import bs4
 import logging
 log = logging.getLogger(__name__)
 
 import markdown
 from markdown.util import etree
 from markdown.inlinepatterns import Pattern
-from markdown.treeprocessors import Treeprocessor
+from markdown.postprocessors import Postprocessor
 
 import MooseDocs
 from MooseCommonExtension import MooseCommonExtension
@@ -33,7 +34,7 @@ class RefExtension(markdown.Extension):
         md.inlinePatterns.add('moose-ref', ref, '_end')
 
         link = FloatLinker(markdown_instance=md, **config)
-        md.treeprocessors.add('moose-ref-linker', link, '_end')
+        md.postprocessors.add('moose-ref-linker', link, '_end')
 
 
 def makeExtension(*args, **kwargs):
@@ -83,32 +84,33 @@ class EquationPattern(MooseCommonExtension, Pattern):
         return el
 
 
-class FloatLinker(Treeprocessor):
+class FloatLinker(Postprocessor):
 
     def __init__(self, markdown_instance=None, **kwargs):
         super(FloatLinker, self).__init__(markdown_instance)
 
-    def run(self, root):
+    def run(self, text):
 
+        soup = bs4.BeautifulSoup(text, 'html.parser')
         lookup = dict()
         counts = collections.defaultdict(int)
 
         # Number the floats
-        for div in root.iter('div'):
+        for div in soup.find_all('div', class_='moose-float-div'):
             name = div.get('data-moose-float-name', None)
             if name:
+                span = div.find('span', class_='moose-float-caption-heading-number')
                 counts[name] += 1
                 lookup[div.get('id').lower()] = (name, counts[name])
-                for span in div.iter('span'):
-                    if span.get('class') == 'moose-float-caption-heading-number':
-                      span.text = str(counts[name])
+                span.string.replace_with(str(counts[name]))
 
         # Update references
-        for a in root.iter('a'):
-            if a.get('class') == 'moose-unknown-reference':
-                id_ = a.get('data-moose-float-id').lower()
-                if id_ in lookup:
-                    name, num = lookup[id_]
-                    a.text = '{} {}'.format(name, num)
-                    a.set('href', '#{}'.format(name))
-                    a.set('class', 'moose-float-reference')
+        for a in soup.find_all('a', class_='moose-unknown-reference'):
+            id_ = a.get('data-moose-float-id').lower()
+            if id_ in lookup:
+                name, num = lookup[id_]
+                a.string.replace_with('{} {}'.format(name, num))
+                a['href'] = '#{}'.format(name)
+                a['class'] = 'moose-float-reference'
+
+        return unicode(soup)

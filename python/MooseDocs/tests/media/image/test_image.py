@@ -57,5 +57,10 @@ class TestImage(MarkdownTestCase):
         md = '!media docs/media/not_a_file.png'
         self.assertConvert('testFileError.html', md)
 
+    def testRef(self):
+        md = '!media docs/media/github-logo.png id=foo\n\n\\ref{foo}'
+        self.assertConvert('testRef.html', md)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

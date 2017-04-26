@@ -6,7 +6,7 @@ from MooseDocs.testing import MarkdownTestCase
 
 class TestListings(MarkdownTestCase):
     """
-    Test the linstings extension
+    Test the listings extension
     """
     EXTENSIONS = ['MooseDocs.extensions.listings', 'MooseDocs.extensions.refs', 'extra']
 
@@ -99,8 +99,9 @@ class TestListings(MarkdownTestCase):
         self.assertConvert('testRef.html', md)
 
     def testFenced(self):
-        md = 'First fence.\n\n!listing caption=First id=one\n```\nx+y=1;\n```\n\n'
-        md += 'Second fence without listing.\n\n```python\nx+z=2;\n```'
+        md = 'First fence without listing.\n\n```python\nx+y=1;\n```\n\n'
+        md += 'Second fence without listing.\n\n```python\nx+z=2;\n```\n\n'
+        md += 'Third fence.\n\n!listing caption=Third id=three\n```\nz+y=3;\n```\n\n'
         self.assertConvert('testFenced.html', md)
 
     def testFencedNoButton(self):
