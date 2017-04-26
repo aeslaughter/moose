@@ -1,6 +1,5 @@
 import os
 import re
-import bs4
 import collections
 import logging
 log = logging.getLogger(__name__)
@@ -91,8 +90,6 @@ class FloatLinker(Treeprocessor):
 
     def run(self, root):
 
-        #soup = bs4.BeautifulSoup(text, "lxml")
-
         lookup = dict()
         counts = collections.defaultdict(int)
 
@@ -115,11 +112,3 @@ class FloatLinker(Treeprocessor):
                     a.text = '{} {}'.format(name, num)
                     a.set('href', '#{}'.format(name))
                     a.set('class', 'moose-float-reference')
-
-
-
-        #print lookup
-        #print counts
-        #soup.html.unwrap()
-        #soup.body.unwrap()
-        #return unicode(soup)

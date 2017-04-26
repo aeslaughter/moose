@@ -80,7 +80,6 @@ class TemplatePostprocessor(Postprocessor):
         soup = bs4.BeautifulSoup(complete, 'html.parser')
         self._imageLinks(self.markdown.current, soup)
         self._markdownLinks(self.markdown.current, soup)
-        self._contentSections(self.markdown.current, soup)
         return unicode(soup)
 
     @staticmethod
@@ -143,24 +142,6 @@ class TemplatePostprocessor(Postprocessor):
                 url = node.relpath(found[0].url())
                 #log.debug('Converting link: {} --> {}'.format(href, url))
                 link['href'] = url
-
-    @staticmethod
-    def _contentSections(node, soup):
-        """
-        Add div sections for scrollspy to work correctly with materialize.
-        """
-        # Add materialize sections for table-of-contents
-        div = soup.find('div', id='moose-markdown-content')
-        if div:
-            current = div
-            for tag in div.contents:
-                if isinstance(tag, bs4.element.Tag):
-                    if tag.name == 'h2':
-                        current = soup.new_tag('div', id=tag.get('id', '#'))
-                        current.attrs['class'] = "section scrollspy"
-
-                    if current != tag.parent:
-                        tag.wrap(current)
 
     @staticmethod
     def _tableofcontents(text, level='h2'):

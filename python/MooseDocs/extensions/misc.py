@@ -30,6 +30,7 @@ class ScrollContents(Treeprocessor):
         """
         Adds section for materialize scrollspy
         """
+
         section = root
         for el in list(root):
             if el.tag == 'h2':
