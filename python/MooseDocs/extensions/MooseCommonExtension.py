@@ -9,6 +9,8 @@ class MooseCommonExtension(object):
     """
     Class containing commonly used routines.
     """
+    COPY_BUTTON_COUNT = 0
+
     @staticmethod
     def defaultSettings():
         settings = dict()
@@ -156,3 +158,14 @@ class MooseCommonExtension(object):
         if error:
             log.error('{}: {}'.format(title, message))
         return el
+
+    @staticmethod
+    def createCopyButton(tag_id):
+        """
+        Create a copy button.
+        """
+        btn = etree.Element('button')
+        btn.set('class', 'moose-copy-button btn')
+        btn.set('data-clipboard-target', '#{}'.format(tag_id))
+        btn.text = 'copy'
+        return btn

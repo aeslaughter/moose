@@ -11,6 +11,7 @@ from markdown.util import etree
 from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
 import MooseDocs
+from MooseDocs import MooseMarkdown
 from MooseCommonExtension import MooseCommonExtension
 
 from FactorySystem import ParseGetPot
@@ -81,6 +82,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
         settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
         settings['include-end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
+        settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -181,20 +183,15 @@ class ListingPattern(MooseCommonExtension, Pattern):
         NOTE: The code related settings and clean up are applied in this method.
         """
 
-        # Must have a counter name
-        cname = settings['counter']
-        if cname is None:
-            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
-            cname = 'unknown'
-
         # Build outer div container
+        MooseMarkdown.CODE_BLOCK_COUNT += 1
         el = self.createFloatElement(settings)
 
         # Build the code
         pre = etree.SubElement(el, 'pre')
         code = etree.SubElement(pre, 'code')
         if settings['language']:
-            code.set('class', settings['language'])
+            code.set('class', 'language-{}'.format(settings['language']))
         content = cgi.escape(content, quote=True)
         code.text = self.markdown.htmlStash.store(content.strip('\n'))
 
@@ -207,6 +204,12 @@ class ListingPattern(MooseCommonExtension, Pattern):
             a.set('class', 'moose-listing-link tooltipped')
             a.set('data-tooltip', rel_filename)
             el.append(link)
+
+        # Copy button
+        if settings['copy-button']:
+            code.set('id', 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT))
+            btn = self.createCopyButton(code.get('id'))
+            pre.insert(0, btn)
 
         return el
 
@@ -368,12 +371,14 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
     """
     Adds the ability to proceed a fenced code block with !listing command.
     """
+    LANG_TAG = ' class="language-%s"'
 
     @staticmethod
     def defaultSettings():
         settings = MooseCommonExtension.defaultSettings()
         settings['caption'] = (None, "The caption text to place after the heading and number.")
         settings['counter'] = ('listing', "The name of the global counter to utilized for numbering.")
+        settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
         return settings
 
     def __init__(self, markdown_instance=None, **config):
@@ -385,6 +390,9 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
         Preprocess the lines by wrapping the listing <div> around the fenced code.
         """
 
+        # Set the default cold wrapping, with the language in the <pre> block for prisim.js
+        self.CODE_WRAP = '<pre%s><code>%s</code></pre>'
+
         # If the FENCED_BLOCK_RE is proceed by !listing wrap the results.
         text = '\n'.join(lines)
         listing_re = r'(?<!`)!listing\s*(?P<settings>.*)\n' + self.FENCED_BLOCK_RE.pattern
@@ -393,6 +401,11 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
             placeholder = markdown.util.HTML_PLACEHOLDER % self.markdown.htmlStash.html_counter
             settings = self.getSettings(match.group('settings'))
             div = self.createFloatElement(settings)
+
+            if settings['copy-button']:
+                code_id = 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT)
+                btn = self.createCopyButton(code_id)
+                self.CODE_WRAP = '<pre%s>{}<code id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
 
             lines = super(ListingFencedBlockPreprocessor, self).run(lines)
 

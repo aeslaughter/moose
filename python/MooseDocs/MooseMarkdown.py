@@ -18,7 +18,7 @@ class MooseMarkdown(markdown.Markdown):
     extension objects, namely MooseTemplate, could have access to the node object to allow for searching the tree
     for other pages. This should allow for cross page figure, equation, and table links to be created.
     """
-    COUNTER = collections.defaultdict(int)
+    CODE_BLOCK_COUNT = 0
 
     def __init__(self, extensions=[], extension_configs=dict()):
         self.current = None # member for holding the current MooseDocsMarkdownNodeBase object
@@ -52,7 +52,7 @@ class MooseMarkdown(markdown.Markdown):
         Args:
             content[str]: A markdown file or markdown content.
         """
-        self.COUNTER.clear()
+        MooseMarkdown.CODE_BLOCK_COUNT = 0
 
         self.current = None
         if isinstance(node, MooseDocsMarkdownNodeBase):
