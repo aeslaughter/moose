@@ -1,13 +1,12 @@
 import re
 import os
 import cgi
-import bs4
 import logging
 log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
-from markdown.postprocessors import Postprocessor
+from markdown.treeprocessors import Treeprocessor
 from markdown.util import etree
 from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
@@ -39,11 +38,11 @@ class ListingExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
 
+        # Replace the standard fenced code to a version that handles !listing line
         if 'fenced_code_block' in md.preprocessors:
-            md.inlinePatterns.add('moose-fenced-listing',
-                                  ListingFenced(markdown_instance=md, **config), '_begin')
-            md.postprocessors.add('moose-listing-postprocessor',
-                                  ListingPostprocessor(markdown_instance=md, **config), '_end')
+            md.preprocessors.add('fenced_code_block',
+                                 ListingFencedBlockPreprocessor(md),
+                                 "<fenced_code_block")
 
         md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
 
@@ -365,8 +364,10 @@ class ListingClangPattern(ListingPattern):
         except:
             log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
 
-class ListingFenced(MooseCommonExtension, Pattern):
-    RE = r'(?<!`)!listing\s*(?P<settings>.*)'
+class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtension):
+    """
+    Adds the ability to proceed a fenced code block with !listing command.
+    """
 
     @staticmethod
     def defaultSettings():
@@ -375,35 +376,34 @@ class ListingFenced(MooseCommonExtension, Pattern):
         settings['counter'] = ('listing', "The name of the global counter to utilized for numbering.")
         return settings
 
-    def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
+    def __init__(self, markdown_instance=None, **config):
+        MooseCommonExtension.__init__(self, **config)
+        FencedBlockPreprocessor.__init__(self, markdown_instance)
 
-    def handleMatch(self, match):
+    def run(self, lines):
+        """
+        Preprocess the lines by wrapping the listing <div> around the fenced code.
+        """
 
-        # Get the counter name
-        settings = self.getSettings(match.group('settings'))
-        cname = settings['counter']
-        if cname is None:
-            log.mooseError('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
-            cname = 'media'
+        # If the FENCED_BLOCK_RE is proceed by !listing wrap the results.
+        text = '\n'.join(lines)
+        listing_re = r'(?<!`)!listing\s*(?P<settings>.*)\n' + self.FENCED_BLOCK_RE.pattern
+        match = re.search(listing_re, text, flags=re.MULTILINE|re.DOTALL|re.VERBOSE)
+        if match:
+            placeholder = markdown.util.HTML_PLACEHOLDER % self.markdown.htmlStash.html_counter
+            settings = self.getSettings(match.group('settings'))
+            div = self.createFloatElement(settings)
 
-        div = self.createFloatElement(settings)
-        div.set('class', div.get('class') + ' moose-listing-div-fenced')
-        return div
+            lines = super(ListingFencedBlockPreprocessor, self).run(lines)
 
-class ListingPostprocessor(Postprocessor):
-    """
-    When !listing is used before a fenced block (```) the actual code block needs to be moved
-    into the div above.
-    """
-    def __init__(self, **kwargs):
-        super(ListingPostprocessor, self).__init__()
+            start = self.markdown.htmlStash.store(etree.tostring(div)[:-6], safe=True)
+            end = self.markdown.htmlStash.store('</div>', safe=True)
 
-    def run(self, text):
-        soup = bs4.BeautifulSoup(text, 'lxml')
-        for tag in soup.find_all('div', class_='moose-listing-div-fenced'):
-            pre = tag.find_next_sibling('pre')
-            if pre:
-                tag.append(tag.find_next_sibling('pre').extract())
-        return unicode(soup)
+            idx = lines.index(placeholder)
+            lines.insert(idx+1, end)
+            lines.insert(idx, start)
+
+        else:
+            lines = super(ListingFencedBlockPreprocessor, self).run(lines)
+
+        return lines

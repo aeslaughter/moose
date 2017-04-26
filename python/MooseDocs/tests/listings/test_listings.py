@@ -95,8 +95,8 @@ class TestListings(MarkdownTestCase):
         self.assertConvert('testRef.html', md)
 
     def testFenced(self):
-        md = '!listing test/tests/kernels/simple_diffusion/simple_diffusion.i id=foo\n\n'
-        md += 'Testing testings.\n\n!listing caption=Foo id=bar\n```\nx+y=1;\n```'
+        md = 'First fence.\n\n!listing caption=First id=one\n```\nx+y=1;\n```\n\n'
+        md += 'Second fence without listing.\n\n```\nx+z=2;\n```'
         self.assertConvert('testFenced.html', md)
 
     def testListingTick(self):

@@ -1,5 +1,4 @@
 import os
-import bs4
 from markdown.util import etree
 import MooseDocs
 
