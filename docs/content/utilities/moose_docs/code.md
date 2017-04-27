@@ -1,6 +1,6 @@
 # Documenting MOOSE Code
 
-MOOSE and MOOSE-based applications generally focus on creating C++ objects (e.g., Kernels, BCs, etc.), so it is important that these object are documented to allow other developers and users to understand the purpose of these objects. The [MOOSE documentation system](utilities/documentation/index.md) aims to make documenting objects straightforward and natural. Moreover, accessing the object documentation is simple and allows for documentation to remain up-to-date as the code continues to advance.
+MOOSE and MOOSE-based applications generally focus on creating C++ objects (e.g., Kernels, BCs, etc.), so it is important that these object are documented to allow other developers and users to understand the purpose of these objects. The [MOOSE documentation system](utilities/moose_docs/index.md) aims to make documenting objects straightforward and natural. Moreover, accessing the object documentation is simple and allows for documentation to remain up-to-date as the code continues to advance.
 
 There are two primary locations that documentation should be added for code: in the source code itself and in markdown detailed description files.
 
@@ -34,9 +34,9 @@ listed; the table includes the class description from the source code.
 
 A detailed description should be provided in addition to the generated, in-code documentation for an object by creating a markdown file using
 [MOOSE Flavored Markdown](moose_markdown/index.md). The created file must be stored in a file named according to the
-registered MOOSE syntax within the "install" directory explained in the [Configuration](documentation/setup.md#configuration) section. For example, the details for the [Diffision](framework/Diffusion.md) are in the `framework/docs/content/framework/systems/Kernels/Diffusion.md` file.
+registered MOOSE syntax within the "install" directory explained in the [Configuration](moose_docs/setup.md#configuration) section. For example, the details for the [Diffision](framework/Diffusion.md) are in the `framework/docs/content/framework/systems/Kernels/Diffusion.md` file.
 
-Stubs (minimal markdown files) for the systems and objects in MOOSE-based applications can be generated using the "moosedocs.py" script. Once created these files should be modified with additional details and are then available for use when generating a [web-site](utilities/documentation/website.md), [presentations](utilities/documentation/presentation.md), or [PDFs](utilities/documentation/pdf.md).
+Stubs (minimal markdown files) for the systems and objects in MOOSE-based applications can be generated using the "moosedocs.py" script. Once created these files should be modified with additional details and are then available for use when generating a [web-site](utilities/moose_docs/website.md), [presentations](utilities/moose_docs/presentation.md), or [PDFs](utilities/moose_docs/pdf.md).
 
 To generate the stub files run the "generate" command as follows:
 

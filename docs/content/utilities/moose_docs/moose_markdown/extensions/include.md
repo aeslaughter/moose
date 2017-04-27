@@ -8,11 +8,11 @@ below to capture text from the [global](extensions/global.md) extension.
 
 !listing id=include-example caption=An example `!include` command for retrieving markdown from another file.
 ```
-!include docs/content/utilities/documentation/moose_markdown/extensions/global.md re=The\sglobal.*?applied\.
+!include docs/content/utilities/moose_docs/moose_markdown/extensions/global.md re=The\sglobal.*?applied\.
 ```
 
 The following content is extracted from the [global](extensions/global.md) extension:
-!include docs/content/utilities/documentation/moose_markdown/extensions/global.md re=The\sglobal.*?applied\.
+!include docs/content/utilities/moose_docs/moose_markdown/extensions/global.md re=The\sglobal.*?applied\.
 
 !extension IncludeExtension caption=Configure Options for IncludeExtension
 

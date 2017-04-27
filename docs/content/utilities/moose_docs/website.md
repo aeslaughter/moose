@@ -1,6 +1,6 @@
 # Creating a Web-site
 
-The primary motivation behind the [MOOSE documentation system](utilities/documentation/index.md) was
+The primary motivation behind the [MOOSE documentation system](utilities/moose_docs/index.md) was
 to create a customizable, maintainable web-site for the MOOSE framework and modules. However, it was
 important to the the MOOSE developers that this system be available to application developers as
 well to enable for MOOSE-based applications to be well-documented using a common syntax.
@@ -11,7 +11,7 @@ steps listed on this page that include creating [content](#creating-web-site-con
 layout](#web-site-layout), [viewing](#viewing-your-web-site), and [deploying](#web-site-deployment)
 the site.
 
-!include docs/content/utilities/documentation/config.md
+!include docs/content/utilities/moose_docs/config.md
 
 For example the file shown below is the website configuration file from MOOSE. The most important
 portion of this files the the "MooseDocs.extensions.template" entry. This provides the template for

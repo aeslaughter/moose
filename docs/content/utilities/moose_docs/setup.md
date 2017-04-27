@@ -70,6 +70,6 @@ cp ~/projects/moose/docs/moosedocs.py ~/projects/your_application_name/doc
 At this point you are ready to begin creating a configuration file for one of the various forms
 of documentation that MooseDocs is capable of producing:
 
-* [Creating a Web-Site](documentation/website.md)
-* [Building a Presentation](documentation/presentation.md)
-* [Generating a PDF](documentation/pdf.md)
+* [Creating a Web-Site](moose_docs/website.md)
+* [Building a Presentation](moose_docs/presentation.md)
+* [Generating a PDF](moose_docs/pdf.md)

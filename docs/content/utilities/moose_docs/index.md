@@ -20,8 +20,8 @@ created so it is possible to develop syntax to meet the needs of any project.
 
 The following links provide additional details on the MOOSE documentation system:
 
-* [Setup and Configuration](documentation/setup.md)
-* [Creating a Web-Site](documentation/website.md)
-* [Building a Presentation](documentation/presentation.md)
-* [Generating a PDF](documentation/pdf.md)
-* [Moose Style Markdown](documentation/moose_markdown/index.md)
+* [Setup and Configuration](moose_docs/setup.md)
+* [Creating a Web-Site](moose_docs/website.md)
+* [Building a Presentation](moose_docs/presentation.md)
+* [Generating a PDF](moose_docs/pdf.md)
+* [Moose Style Markdown](moose_docs/moose_markdown/index.md)

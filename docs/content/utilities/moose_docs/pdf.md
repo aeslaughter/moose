@@ -5,7 +5,7 @@ name:'PDF'
 The MOOSE documentation system is capable of creating latex (*.tex) files or PDFs from
 [MOOSE flavored markdown](moose_markdown/index.md).
 
-!include docs/content/utilities/documentation/config.md
+!include docs/content/utilities/moose_docs/config.md
 
 For example the file shown below is the pdf/latex configuration file from MOOSE. The most important
 portion of this files the the ["MooseDocs.extensions.template"](extensions/templates.md) entry. This provides the template for
