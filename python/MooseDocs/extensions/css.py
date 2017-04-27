@@ -1,8 +1,18 @@
-"""
-css extension for MooseDocs markdown.
-"""
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import re
-
 
 from markdown.preprocessors import Preprocessor
 from markdown.blockprocessors import BlockProcessor
@@ -12,6 +22,9 @@ from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
 
 class CSSExtension(MooseMarkdownExtension):
+    """
+    Adds CSS support via the !css command to MooseDocs markdown.
+    """
 
     @staticmethod
     def defaultConfig():
@@ -20,12 +33,14 @@ class CSSExtension(MooseMarkdownExtension):
 
     def extendMarkdown(self, md, md_globals):
         """
-        Adds specialized css editing support for MOOSE flavored markdown (i.e., !css markdown syntax)
+        Adds specialized css support for MOOSE flavored markdown (i.e., !css markdown syntax)
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.preprocessors.add('moose_css_list', CSSPreprocessor(markdown_instance=md, **config), '_end')
-        md.parser.blockprocessors.add('moose_css', CSSBlockProcessor(md.parser, **config), '_begin')
+        md.preprocessors.add('moose_css_list',
+                             CSSPreprocessor(markdown_instance=md, **config), '_end')
+        md.parser.blockprocessors.add('moose_css',
+                                      CSSBlockProcessor(md.parser, **config), '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return CSSExtension(*args, **kwargs)
@@ -95,14 +110,17 @@ class CSSPreprocessor(Preprocessor, MooseMarkdownCommon):
 
     def run(self, lines):
         """
-        Searches the raw markdown lines for '!css followed by a line beginning with '*', '-', or '1' and creates
-        a div around the area if found.
+        Searches the raw markdown lines for '!css followed by a line beginning with '*', '-', or '1'
+        and creates a div around the area if found.
 
         Args:
           lines[list]: List of markdown lines to preprocess.
         """
         content = '\n'.join(lines)
-        content = re.sub(r'^(!css\s*(.*?)\n)(.*?)^$', self._injectListCSS, content, flags=re.MULTILINE|re.DOTALL)
+        content = re.sub(r'^(!css\s*(.*?)\n)(.*?)^$',
+                         self._injectListCSS,
+                         content,
+                         flags=re.MULTILINE|re.DOTALL)
         return content.split('\n')
 
     def _injectListCSS(self, match):
@@ -111,7 +129,8 @@ class CSSPreprocessor(Preprocessor, MooseMarkdownCommon):
         """
         if match.group(3).strip()[0] in self.START_CHARS:
             settings = self.getSettings(match.group(2))
-            string = ['{}={}'.format(key, str(value)) for key, value in settings.iteritems() if value]
+            string = ['{}={}'.format(key, str(value)) \
+                      for key, value in settings.iteritems() if value]
             strt = self.markdown.htmlStash.store(u'<div {}>'.format(' '.join(string)), safe=True)
             stop = self.markdown.htmlStash.store(u'</div>', safe=True)
             return '\n\n{}\n\n{}\n\n{}\n\n'.format(strt, match.group(3), stop)
