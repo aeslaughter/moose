@@ -1,25 +1,48 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import os
 import mooseutils
-import MooseDocs
 
 class MooseDocsNode(object):
     """
     General node for creating tree structure of documentation.
 
-    This serves as the base class for other node objects that create content; this base node is a place holder node
-    that doesn't contain any markdown content.
+    This serves as the base class for other node objects that create content; this base node is a
+    place holder node that doesn't contain any markdown content.
 
-    The main purpose of the nodes is to accept the necessary "state" in the object construction, but the build() method
-    actually performs the work. This allows the nodes to be executed by multithreading.
+    The main purpose of the nodes is to accept the necessary "state" in the object construction, but
+    the build() method actually performs the work. This allows the nodes to be executed by
+    multithreading.
+
+    Args:
+        name[str]: (Required) The name of the node, the root node should have empty string (str())
+        site_dir[str]: The destination directory for the generated html.
+        parent[MooseDocsNode]: If the node has a parent it can be supplied, this object will be
+                               append to the parent automatically.
     """
 
     def __init__(self, name=None, site_dir=os.path.relpath(os.getcwd()), parent=None):
 
         if (name is None) or (not isinstance(name, str)):
-            raise mooseutils.MooseException('The "name" string must be supplied to the MooseDocsNode object.')
+            raise mooseutils.MooseException('The "name" string must be supplied to the ' \
+                                            'MooseDocsNode object.')
 
         if (site_dir is None) or (not isinstance(site_dir, str)) or not os.path.isdir(site_dir):
-            raise mooseutils.MooseException('The "site_dir" must be a string and a valid directory.')
+            raise mooseutils.MooseException('The "site_dir" must be a string and a valid ' \
+                                            'directory.')
 
 
         self.__name = name
@@ -61,15 +84,18 @@ class MooseDocsNode(object):
                 return node
         return root_helper(self)
 
-    def source(self):
+    def source(self): #pylint: disable=no-self-use, unused-argument
         """
-        Return the source information.
+        Return the source information. (absract)
         """
         return None
 
     def append(self, child):
         """
         Add a child node.
+
+        Args:
+            child[MooseDocsNode]: Node to add as a child of this node.
         """
         self.__children.append(child)
 
@@ -110,8 +136,8 @@ class MooseDocsNode(object):
         path = os.path.join(self.__site_dir, *crumbs)
         return path.rstrip('/')
 
-    def url(self, *args, **kwargs):
+    def url(self, *args, **kwargs): #pylint: disable=no-self-use, unused-argument
         """
-        Return the url to the page being created.
+        Return the url to the page being created. (abstact)
         """
         return None

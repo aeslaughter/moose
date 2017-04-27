@@ -70,7 +70,7 @@ class Builder(object):
 
         self._site_dir = site_dir
         md_file = os.path.join(os.getcwd(), 'content', 'index.md')
-        self._root = MarkdownNode(name='', markdown=md_file, parser=parser, site_dir=self._site_dir)
+        self._root = MarkdownNode(name=str(), markdown=md_file, parser=parser, site_dir=self._site_dir)
         make_tree(os.path.dirname(md_file), self._root, self._site_dir, parser)
         self._pages = [self._root] + list(flat(self._root))
 
