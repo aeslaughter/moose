@@ -68,9 +68,9 @@ mesh and field data for the simulation.
 
 ## Results
 
-!figure docs/media/level_set/example_circle_16.gif width=40% margin-left=10px float=right id=example_circle_16 caption=Results of executing [circle_16.i] showing the "phi" field variable and the  0.5 contour initially (black) and as the solution progresses (green).
+!media docs/media/level_set/example_circle_16.gif width=40% margin-left=10px float=right id=example_circle_16 caption=Results of executing [circle_16.i] showing the "phi" field variable and the  0.5 contour initially (black) and as the solution progresses (green).
 
-Figure \ref{example_circle_16} show the results of the simulation defined by executing the [circle_16.i] input file,
+\ref{example_circle_16} show the results of the simulation defined by executing the [circle_16.i] input file,
 which can be done using the following commands.
 
 ```bash
@@ -83,7 +83,7 @@ initial circle translates at a 45 degree angle and performs three complete trans
 cycles could be achieved by altering the end time in the Executioner block.
 
 Ideally, the circle would maintain it shape throughout the simulation since it is simply being advected by a constant
-velocity. This is not the case in the results shown in Figure \ref{example_circle_16}, which clearly shows the
+velocity. This is not the case in the results shown in \ref{example_circle_16}, which clearly shows the
 initial circle being deformed during the simulation.
 
 One method to improve the solution is to increase the number of finite elements in the mesh, which can be done
@@ -99,7 +99,7 @@ a function of the element size (see [LevelSetCFLCondition](level_set/LevelSetCFL
 example, the increased number of timesteps and the increased problem size are noticeable but do not cause an
 intractable increase of run time.
 
-!figure docs/media/level_set/example_circle_64.gif width=40% margin-left=10px float=right id=example_circle_64 caption=Results of executing [circle_16.i], with two uniform refinement levels, showing the "phi" field variable and the  0.5 contour initially (black) and as the solution progresses (green).
+!media docs/media/level_set/example_circle_64.gif width=40% margin-left=10px float=right id=example_circle_64 caption=Results of executing [circle_16.i], with two uniform refinement levels, showing the "phi" field variable and the  0.5 contour initially (black) and as the solution progresses (green).
 
-Figure \ref{example_circle_64} shows the results from running [circle_16.i] with two uniform refinements applied, the
+\ref{example_circle_64} shows the results from running [circle_16.i] with two uniform refinements applied, the
 improvement in the solution is drastic and for this simple example may be adequate.

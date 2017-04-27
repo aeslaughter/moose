@@ -109,7 +109,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         if settings['language'] is None:
             _, ext = os.path.splitext(rel_filename)
             if ext in ['.C', '.h', '.cpp', '.hpp']:
-                settings['language'] = 'c++'
+                settings['language'] = 'cpp'
             elif ext == '.py':
                 settings['language'] = 'python'
             else:
@@ -398,7 +398,6 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
             if listing:
 
                 self._remove.append(text[idx+1:match.start(0)-1])
-                #text = text[:idx] + text[match.start(0)]
 
                 lines = match.group(0).split('\n')
 
@@ -409,7 +408,7 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
                 if settings['copy-button']:
                     code_id = 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT)
                     btn = self.createCopyButton(code_id)
-                    self.CODE_WRAP = '<pre%s>{}<code id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
+                    self.CODE_WRAP = '<pre>{}<code %s id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
 
                 lines = super(ListingFencedBlockPreprocessor, self).run(lines)
 
@@ -437,5 +436,5 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
             text = text.replace(s, '')
 
         # Restore the code wrapping
-        self.CODE_WRAP = '<pre%s><code>%s</code></pre>'
+        self.CODE_WRAP = '<pre><code %s>%s</code></pre>'
         return text.split('\n')

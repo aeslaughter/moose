@@ -85,7 +85,7 @@ ul {
     background: beige;
 }
 
-.moose-table-div tr:first-child
+.moose-table-header-tr
 {
   border-bottom-style: solid;
   border-width: 1px;
@@ -110,6 +110,8 @@ ul {
 
 .moose-float-div p.moose-float-caption{
   text-align: left;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 .moose-float-div span.moose-float-caption-heading

@@ -78,7 +78,7 @@ Like for C++ files, [MOOSE] input files also have additional capability, mainly 
 The `!listing` command can also be utilized to wrap inline fenced code blocks, by placing the command on the line before the fenced code as shown in \ref{fenced}.
 
 !listing id=fenced caption=Example markdown of a fenced code block with the listing command.
-~~~
+~~~markdown
 !listing id=combo caption=That's amazing! I've got the same combination on my luggage!
 ```c++
 int combo = 12345;

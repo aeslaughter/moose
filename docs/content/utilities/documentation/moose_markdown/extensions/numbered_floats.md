@@ -36,7 +36,7 @@ the markdown used to produce \ref{nature}. Additionally, the "caption" setting s
 !media http://lorempixel.com/200/200/nature/ id=nature caption=A random nature image. style=width:200px;float:right;margin-left:20px
 ```
 
-This figure can then be reference anywhere in the markdown file using a LaTeX style reference command. For, example the markdown `\ref{nature}` produces the following link and automatically adds the "Figure" prefix: \ref{nature}.
+This figure can then be reference anywhere in the markdown file using a LaTeX style reference command. For, example the markdown `\ref{nature}` produces the following link and automatically adds the "Figure" prefix: \ref{nature}. The `\ref` command is defined by the ["refs"](extensions/refs.md) extension.
 
 !media http://lorempixel.com/200/200/sports/ id=sports caption=A random sports image. style=width:200px;float:right;margin-left:20px
 
