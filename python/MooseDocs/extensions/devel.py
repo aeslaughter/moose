@@ -162,7 +162,10 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
         ext = self.markdown.registeredExtensions[extensions.index(name)]
         table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
         for key, value in ext.defaultConfig().iteritems():
-            table.addRow(key, repr(value[0]), value[1])
+            if value[0]:
+                table.addRow(key, repr(value[0]), value[1])
+            else:
+                table.addRow(key, '', value[1])
 
         if table:
             div = self.createFloatElement(settings)
