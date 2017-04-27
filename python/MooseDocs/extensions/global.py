@@ -16,7 +16,7 @@ import markdown
 from markdown.preprocessors import Preprocessor
 
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 
 class GlobalExtension(MooseMarkdownExtension):
     """
@@ -40,7 +40,7 @@ class GlobalExtension(MooseMarkdownExtension):
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return GlobalExtension(*args, **kwargs)
 
-class GlobalPreprocessor(MooseCommonExtension, Preprocessor):
+class GlobalPreprocessor(MooseMarkdownCommon, Preprocessor):
     """
     Appends global links to markdown content
     """
@@ -49,7 +49,7 @@ class GlobalPreprocessor(MooseCommonExtension, Preprocessor):
         return dict() # this extension doesn't have settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Preprocessor.__init__(self, markdown_instance)
         self._globals = kwargs.pop('globals', dict())
 

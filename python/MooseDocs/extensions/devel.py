@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 import markdown
 from markdown.inlinepatterns import Pattern
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 import MooseDocs
 
 class DevelExtension(MooseMarkdownExtension):
@@ -39,7 +39,7 @@ def makeExtension(*args, **kwargs):
     return DevelExtension(*args, **kwargs)
 
 
-class BuildStatusPattern(MooseCommonExtension, Pattern):
+class BuildStatusPattern(MooseMarkdownCommon, Pattern):
     """
     Markdown extension for add Build Status widget.
 
@@ -52,7 +52,7 @@ class BuildStatusPattern(MooseCommonExtension, Pattern):
     RE = r'^!buildstatus\s+(.*?)(?:$|\s+)(.*)'
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
     def handleMatch(self, match):
@@ -84,7 +84,7 @@ class BuildStatusPattern(MooseCommonExtension, Pattern):
         return parent_div
 
 
-class PackagePattern(MooseCommonExtension, Pattern):
+class PackagePattern(MooseMarkdownCommon, Pattern):
     """
     Markdown extension for extracting package arch and version.
     """
@@ -93,13 +93,13 @@ class PackagePattern(MooseCommonExtension, Pattern):
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['arch'] = (None, "The architecture to return (e.g., osx10.12)")
         settings['return'] = (None, "The information to return ('link' or 'name')")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
         # Load the yaml data containing package information
@@ -127,7 +127,7 @@ class PackagePattern(MooseCommonExtension, Pattern):
         return el
 
 
-class ExtensionConfigPattern(MooseCommonExtension, Pattern):
+class ExtensionConfigPattern(MooseMarkdownCommon, Pattern):
     """
     Extension for display MarkdownExtension config options in a table.
     """
@@ -135,14 +135,14 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['id'] = (None, "The id to utilize for the generated table. If not provided, the command will be used.")
         settings['caption'] = (None, "The title to place above the generated table. If not provided it will be generated using the command.")
         settings['counter'] = ('table', "The name of the float to associate the generated table.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
     def handleMatch(self, match):
@@ -173,27 +173,27 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
             return div
         return etree.Element('div') # return an empty div if no configuration options are available
 
-class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
+class ExtensionSettingsPattern(MooseMarkdownCommon, Pattern):
     """
-    Provides a table for the MooseCommonExtension settings.
+    Provides a table for the MooseMarkdownCommon settings.
     """
     RE = r'^!extension-settings\s+(.*?)\s*(?:$|\s+)(.*)'
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['id'] = (None, "The id to utilize for the generated table. If not provided, the command will be used.")
         settings['caption'] = (None, "The title to place above the generated table. If not provided it will be generated using the command.")
         settings['counter'] = ('table', "The name of the float to associate the generated table.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
     def handleMatch(self, match):
         """
-        Creates table of MooseCommonExtension settings.
+        Creates table of MooseMarkdownCommon settings.
         """
         name = str(match.group(2))
         settings = self.getSettings(match.group(3))
@@ -205,12 +205,15 @@ class ExtensionSettingsPattern(MooseCommonExtension, Pattern):
         obj = self.find(name)
         if obj is None:
             return self.createErrorElement('Unknown extension module: {}'.format(name))
-        elif not isinstance(obj, MooseCommonExtension):
-            return self.createErrorElement('The extension module must be a "{}" object, but a "{}" was found.'.format(MooseCommonExtension.__name__, type(obj).__name__))
+        elif not isinstance(obj, MooseMarkdownCommon):
+            return self.createErrorElement('The extension module must be a "{}" object, but a "{}" was found.'.format(MooseMarkdownCommon.__name__, type(obj).__name__))
 
         table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
         for key, value in obj.defaultSettings().iteritems():
-            table.addRow(key, repr(value[0]), value[1])
+            if value[0]:
+                table.addRow(key, repr(value[0]), value[1])
+            else:
+                table.addRow(key, '', value[1])
 
         if table:
             div = self.createFloatElement(settings)

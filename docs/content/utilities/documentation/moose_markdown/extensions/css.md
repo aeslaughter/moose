@@ -5,7 +5,7 @@ directly into sections of text using the `!css` command.
 ## In-line CSS
 
 You can provide valid CSS attributes to any of the commands within a [MOOSE markdown
-extension](moose_flavored_markdown/index.md#MooseDocs-extensions) (e.g.,
+extension](moose_markdown/index.md#moosedocs-extensions) (e.g.,
 `!listing`). In general, it is possible to set "id" and "style" attributes via the options following
 the command.
 

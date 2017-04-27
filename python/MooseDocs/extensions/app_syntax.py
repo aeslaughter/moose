@@ -9,7 +9,7 @@ import mooseutils
 from markdown.util import etree
 from markdown.inlinepatterns import Pattern
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 from MooseObjectParameterTable import MooseObjectParameterTable
 import MooseDocs
 
@@ -112,7 +112,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
 def makeExtension(*args, **kwargs):
     return AppSyntaxExtension(*args, **kwargs)
 
-class MooseSyntaxBase(MooseCommonExtension, Pattern):
+class MooseSyntaxBase(MooseMarkdownCommon, Pattern):
     """
     Base for MOOSE system/object pattern matching.
 
@@ -123,7 +123,7 @@ class MooseSyntaxBase(MooseCommonExtension, Pattern):
     """
 
     def __init__(self, regex, markdown_instance=None, syntax=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, regex, markdown_instance)
 
         self._syntax = syntax
@@ -319,7 +319,6 @@ class MooseDescription(MooseSyntaxBase):
     """
     Creates parameter tables for Actions and MooseObjects.
     """
-
     RE = r'^!description\s+(.*?)(?:$|\s+)(.*)'
 
     def __init__(self, **kwargs):

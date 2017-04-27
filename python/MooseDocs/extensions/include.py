@@ -21,7 +21,7 @@ from markdown.util import etree
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 from listings import ListingPattern
 
 class IncludeExtension(MooseMarkdownExtension):
@@ -45,7 +45,7 @@ class IncludeExtension(MooseMarkdownExtension):
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return IncludeExtension(*args, **kwargs)
 
-class MarkdownPreprocessor(MooseCommonExtension, Preprocessor):
+class MarkdownPreprocessor(MooseMarkdownCommon, Preprocessor):
     """
     An recursive include command for including a markdown file from within another. This adds the
     ability to specify start/end string to include only portions for the markdown.
@@ -54,7 +54,7 @@ class MarkdownPreprocessor(MooseCommonExtension, Preprocessor):
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         l_settings = ListingPattern.defaultSettings()
         settings['re'] = (None, "Python regular expression to use for removing text, with flags set to MULTILINE|DOTALL.")
         settings['start'] = l_settings['start']

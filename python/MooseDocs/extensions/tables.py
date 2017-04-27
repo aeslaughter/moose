@@ -12,7 +12,7 @@ from markdown.extensions.tables import TableProcessor
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 
 class TableExtension(MooseMarkdownExtension):
     """
@@ -34,7 +34,7 @@ class TableExtension(MooseMarkdownExtension):
 def makeExtension(*args, **kwargs):
     return TableExtension(*args, **kwargs)
 
-class MooseTableProcessor(MooseCommonExtension, TableProcessor):
+class MooseTableProcessor(MooseMarkdownCommon, TableProcessor):
     """
     A special version of the built-in markdown tables that applies a caption and additional css.
     """
@@ -42,13 +42,13 @@ class MooseTableProcessor(MooseCommonExtension, TableProcessor):
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['caption'] = (None, "The caption text to place after the float heading and number.")
         settings['counter'] = ('table', "The name of the global counter to utilized for numbering.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         TableProcessor.__init__(self, markdown_instance.parser)
 
     def test(self, parent, block):

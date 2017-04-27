@@ -9,7 +9,7 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
 
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 
 class CSSExtension(MooseMarkdownExtension):
 
@@ -31,7 +31,7 @@ def makeExtension(*args, **kwargs):
     return CSSExtension(*args, **kwargs)
 
 
-class CSSBlockProcessor(BlockProcessor, MooseCommonExtension):
+class CSSBlockProcessor(BlockProcessor, MooseMarkdownCommon):
     """
     Markdown extension for applying CSS styles to paragraph
     Markdown syntax is:
@@ -47,7 +47,7 @@ class CSSBlockProcessor(BlockProcessor, MooseCommonExtension):
     MATCHES_FOUND = 0
 
     def __init__(self, parser, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         BlockProcessor.__init__(self, parser)
 
     def test(self, parent, block):
@@ -82,7 +82,7 @@ class CSSBlockProcessor(BlockProcessor, MooseCommonExtension):
         self.parser.parseChunk(top_div, block)
 
 
-class CSSPreprocessor(Preprocessor, MooseCommonExtension):
+class CSSPreprocessor(Preprocessor, MooseMarkdownCommon):
     """
     Allows the !css syntax to work with lists and tables.
     """
@@ -90,7 +90,7 @@ class CSSPreprocessor(Preprocessor, MooseCommonExtension):
     START_CHARS = ['1', '*', '-', '|']
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Preprocessor.__init__(self, markdown_instance)
 
     def run(self, lines):

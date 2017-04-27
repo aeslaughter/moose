@@ -4,7 +4,7 @@ from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
 
-class MooseCommonExtension(object):
+class MooseMarkdownCommon(object):
     """
     Class containing commonly used routines.
     """

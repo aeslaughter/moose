@@ -8,7 +8,7 @@ import uuid
 import markdown
 from markdown.blockprocessors import BlockProcessor
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def makeExtension(*args, **kwargs):
     return DiagramExtension(*args, **kwargs)
 
 
-class DiagramBlockProcessor(BlockProcessor, MooseCommonExtension):
+class DiagramBlockProcessor(BlockProcessor, MooseMarkdownCommon):
     """
     Extension to allow for dot diagrams.
     """
@@ -44,7 +44,7 @@ class DiagramBlockProcessor(BlockProcessor, MooseCommonExtension):
     RE = re.compile(r'^(graph|digraph)(.*)')
 
     def __init__(self, md, graphviz=None, ext='svg', **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         BlockProcessor.__init__(self, md)
 
         # Location of the graphviz

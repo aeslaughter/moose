@@ -1,4 +1,5 @@
 import os
+import re
 import copy
 import jinja2
 import bs4
@@ -134,14 +135,18 @@ class TemplatePostprocessor(Postprocessor):
         # Loop over <a> tags and update links containing .md to point to .html
         for link in soup('a'):
             href = link.get('href')
-            if href and (not href.startswith('http')) and href.endswith('.md'):
+            if href and (not href.startswith('http')) and '.md' in href:
+
+                # Split filename from section link (#)
+                parts = href.split('#')
+
+                # Populate the list of found files
                 found = []
-                finder(node.root(), href, found)
+                finder(node.root(), parts[0], found)
 
                 # Error if file not found or if multiple files found
                 if not found:
-                    #TODO: convert to error when MOOSE is clean
-                    log.warning('Failed to locate page for markdown file {} in {}'.format(href, node.source()))
+                    log.error('Failed to locate page for markdown file {} in {}'.format(href, node.source()))
                     link['class'] = 'moose-bad-link'
                     continue
 
@@ -153,7 +158,9 @@ class TemplatePostprocessor(Postprocessor):
 
                 # Update the link with the located page
                 url = node.relpath(found[0].url())
-                #log.debug('Converting link: {} --> {}'.format(href, url))
+                if len(parts) == 2:
+                    url += '#' + parts[1]
+                log.debug('Converting link: {} --> {}'.format(href, url))
                 link['href'] = url
 
     @staticmethod

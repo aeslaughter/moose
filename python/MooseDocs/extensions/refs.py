@@ -12,7 +12,7 @@ from markdown.postprocessors import Postprocessor
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 
 
 class RefExtension(MooseMarkdownExtension):
@@ -63,7 +63,7 @@ class FloatReferencePattern(Pattern):
         el.set('data-moose-float-id', match.group(3))
         return el
 
-class EquationPattern(MooseCommonExtension, Pattern):
+class EquationPattern(MooseMarkdownCommon, Pattern):
     """
     Defines syntax for referencing MathJax equations with \label defined.
 
@@ -76,7 +76,7 @@ class EquationPattern(MooseCommonExtension, Pattern):
     RE = r'(?<!`)\\eqref{(.*?)}'
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
     def handleMatch(self, match):

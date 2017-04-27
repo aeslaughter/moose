@@ -13,7 +13,7 @@ from markdown.util import etree
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 
 class MediaExtension(MooseMarkdownExtension):
     """
@@ -37,7 +37,7 @@ class MediaExtension(MooseMarkdownExtension):
 def makeExtension(*args, **kwargs):
     return MediaExtension(*args, **kwargs)
 
-class MediaPatternBase(MooseCommonExtension, Pattern):
+class MediaPatternBase(MooseMarkdownCommon, Pattern):
     """
     Markdown extension for handling images.
 
@@ -46,14 +46,14 @@ class MediaPatternBase(MooseCommonExtension, Pattern):
     """
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['caption'] = (None, "The caption text for the media element.")
         settings['card'] = (False, "Wrap the content in a materialize card.")
         settings['counter'] = ('figure', "The counter group that this media item belongs. This is used by float extension to provide numbered references. Set this to None to avoid counting.")
         return settings
 
     def __init__(self, pattern, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, pattern, markdown_instance)
         self._classname = kwargs.pop('classname', 'media')
 
@@ -206,7 +206,7 @@ class VideoPattern(MediaPatternBase):
         src.set('src', filename)
         return video
 
-class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
+class SliderBlockProcessor(BlockProcessor, MooseMarkdownCommon):
     """
     Markdown extension for showing a Materialize carousel of images.
     Markdown syntax is:
@@ -225,7 +225,7 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['caption'] = (None, "The text for the slider caption.")
         settings['counter'] = ('figure', "The counter group that this media item belongs. This is used by float extension to provide numbered references.")
         return settings
@@ -233,7 +233,7 @@ class SliderBlockProcessor(BlockProcessor, MooseCommonExtension):
     ImageInfo = collections.namedtuple('ImageInfo', 'filename img_settings caption_settings')
 
     def __init__(self, parser, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         BlockProcessor.__init__(self, parser)
 
     def parseFilenames(self, filenames_block):

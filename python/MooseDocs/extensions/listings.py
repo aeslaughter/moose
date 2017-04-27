@@ -13,7 +13,7 @@ from markdown.extensions.fenced_code import FencedBlockPreprocessor
 import MooseDocs
 from MooseDocs import MooseMarkdown
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 
 from FactorySystem import ParseGetPot
 
@@ -59,7 +59,7 @@ def makeExtension(*args, **kwargs):
     return ListingExtension(*args, **kwargs)
 
 
-class ListingPattern(MooseCommonExtension, Pattern):
+class ListingPattern(MooseMarkdownCommon, Pattern):
     """
     The basic object for creating code listings from files.
 
@@ -70,7 +70,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['strip-header'] = (True, "When True the MOOSE header is removed for display.")
         settings['caption'] = (None, "The text caption, if an empty string is provided a link to the filename is created, if None is provided no caption is applied, otherwise the text given is used.")
         settings['language'] = (None, "The language to utilize for providing syntax highlighting.")
@@ -90,7 +90,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs)
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Pattern.__init__(self, self.RE, markdown_instance)
 
         # The root/repo settings
@@ -377,7 +377,7 @@ class ListingClangPattern(ListingPattern):
         except:
             log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
 
-class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtension):
+class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseMarkdownCommon):
     """
     Adds the ability to proceed a fenced code block with !listing command.
     """
@@ -386,14 +386,14 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
 
     @staticmethod
     def defaultSettings():
-        settings = MooseCommonExtension.defaultSettings()
+        settings = MooseMarkdownCommon.defaultSettings()
         settings['caption'] = (None, "The caption text to place after the heading and number.")
         settings['counter'] = ('listing', "The name of the global counter to utilized for numbering.")
         settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
         return settings
 
     def __init__(self, markdown_instance=None, **config):
-        MooseCommonExtension.__init__(self, **config)
+        MooseMarkdownCommon.__init__(self, **config)
         FencedBlockPreprocessor.__init__(self, markdown_instance)
         self._remove = []
 

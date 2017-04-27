@@ -15,7 +15,7 @@ from pybtex.database.input.bibtex import UndefinedMacro as undefined_macro_excep
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseCommonExtension import MooseCommonExtension
+from MooseMarkdownCommon import MooseMarkdownCommon
 from markdown.preprocessors import Preprocessor
 from markdown.util import etree
 
@@ -45,7 +45,7 @@ class BibtexExtension(MooseMarkdownExtension):
 def makeExtension(*args, **kwargs):
     return BibtexExtension(*args, **kwargs)
 
-class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
+class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
     """
     Creates per-page bibliographies using latex syntax.
     """
@@ -59,7 +59,7 @@ class BibtexPreprocessor(MooseCommonExtension, Preprocessor):
         return dict() # this extension doesn't have settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseCommonExtension.__init__(self, **kwargs),
+        MooseMarkdownCommon.__init__(self, **kwargs),
         Preprocessor.__init__(self, markdown_instance)
         self._macro_files = kwargs.pop('macro_files', None)
 
