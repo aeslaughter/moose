@@ -59,6 +59,6 @@ class MooseMarkdown(markdown.Markdown):
         if isinstance(md, MarkdownNode):
             self.current = md
         else:
-            self.current = MarkdownNode(md)
+            self.current = MarkdownNode(md, name='')
 
         return super(MooseMarkdown, self).convert(self.current.content)

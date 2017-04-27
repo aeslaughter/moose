@@ -12,9 +12,7 @@
 #                                                               #
 #              See COPYRIGHT for full restrictions              #
 #################################################################
-import markdown
 from markdown.preprocessors import Preprocessor
-
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
 
