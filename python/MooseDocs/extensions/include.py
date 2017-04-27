@@ -15,7 +15,6 @@
 import re
 import os
 
-import markdown
 from markdown.preprocessors import Preprocessor
 from markdown.util import etree
 
@@ -40,7 +39,7 @@ class IncludeExtension(MooseMarkdownExtension):
         md.registerExtension(self)
         config = self.getConfigs()
         md.preprocessors.add('moose-markdown-include',
-                             MarkdownPreprocessor(markdown_instance=md, **config), '>fenced_code_block')
+                             MarkdownPreprocessor(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return IncludeExtension(*args, **kwargs)
@@ -56,7 +55,8 @@ class MarkdownPreprocessor(MooseMarkdownCommon, Preprocessor):
     def defaultSettings():
         settings = MooseMarkdownCommon.defaultSettings()
         l_settings = ListingPattern.defaultSettings()
-        settings['re'] = (None, "Python regular expression to use for removing text, with flags set to MULTILINE|DOTALL.")
+        settings['re'] = (None, "Python regular expression to use for removing text, with flags " \
+                                "set to MULTILINE|DOTALL.")
         settings['start'] = l_settings['start']
         settings['end'] = l_settings['end']
         settings['include-end'] = l_settings['include-end']
@@ -77,11 +77,9 @@ class MarkdownPreprocessor(MooseMarkdownCommon, Preprocessor):
             el = self.createErrorElement(msg.format(match.group(0)), title="Unknown Markdown File")
             return etree.tostring(el)
 
-
-
         if settings['start'] or settings['end']:
             content = ListingPattern.extractLineRange(filename, settings['start'],
-                                                          settings['end'], settings['include-end'])
+                                                      settings['end'], settings['include-end'])
         else:
             with open(filename, 'r') as fid:
                 content = fid.read()
