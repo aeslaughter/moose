@@ -55,7 +55,7 @@ class ListingExtension(MooseMarkdownExtension):
         md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return ListingExtension(*args, **kwargs)
 
 

@@ -1,27 +1,33 @@
-"""
-Bibtex extension for MooseDocs markdown.
-"""
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import shutil
-import sys
 import os
 import re
 import io
-import traceback
-import markdown
+import logging
 
-from pybtex.plugin import find_plugin
+from pybtex.plugin import find_plugin, PluginNotFound
 from pybtex.database import BibliographyData, parse_file
-from pybtex.database.input.bibtex import UndefinedMacro as undefined_macro_exception
+from pybtex.database.input.bibtex import UndefinedMacro
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
 from markdown.preprocessors import Preprocessor
-from markdown.util import etree
 
-import logging
-log = logging.getLogger(__name__)
-
+LOG = logging.getLogger(__name__)
 
 class BibtexExtension(MooseMarkdownExtension):
     """
@@ -31,7 +37,8 @@ class BibtexExtension(MooseMarkdownExtension):
     @staticmethod
     def defaultConfig():
         config = MooseMarkdownExtension.defaultConfig()
-        config['macro_files'] = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
+        config['macro_files'] = ['', "List of paths to files that contain macros to be used in " \
+                                     " bibtex parsing."]
         return config
 
     def extendMarkdown(self, md, md_globals):
@@ -40,9 +47,10 @@ class BibtexExtension(MooseMarkdownExtension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.preprocessors.add('moose_bibtex', BibtexPreprocessor(markdown_instance=md, **config), '_end')
+        md.preprocessors.add('moose_bibtex',
+                             BibtexPreprocessor(markdown_instance=md, **config), '_end')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return BibtexExtension(*args, **kwargs)
 
 class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
@@ -59,9 +67,11 @@ class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
         return dict() # this extension doesn't have settings
 
     def __init__(self, markdown_instance=None, **kwargs):
-        MooseMarkdownCommon.__init__(self, **kwargs),
+        MooseMarkdownCommon.__init__(self, **kwargs)
         Preprocessor.__init__(self, markdown_instance)
         self._macro_files = kwargs.pop('macro_files', None)
+        self._bibtex = None
+        self._citations = []
 
     def parseBibtexFile(self, bibfile):
         """
@@ -72,16 +82,16 @@ class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
         """
 
         if self._macro_files:
-            tBib_path = MooseDocs.abspath("tBib.bib")
-            with open(tBib_path, "wb") as tBib:
-                for tFile in self._macro_files:
-                    with open(MooseDocs.abspath(tFile.strip()), "rb") as inFile:
-                        shutil.copyfileobj(inFile, tBib)
-                with open(bibfile, "rb") as inFile:
-                    shutil.copyfileobj(inFile, tBib)
-            data = parse_file(tBib_path)
-            if os.path.isfile(tBib_path):
-                os.remove(tBib_path)
+            t_bib_path = MooseDocs.abspath("tBib.bib")
+            with open(t_bib_path, "wb") as t_bib:
+                for t_file in self._macro_files:
+                    with open(MooseDocs.abspath(t_file.strip()), "rb") as in_file:
+                        shutil.copyfileobj(in_file, t_bib)
+                with open(bibfile, "rb") as in_file:
+                    shutil.copyfileobj(in_file, t_bib)
+            data = parse_file(t_bib_path)
+            if os.path.isfile(t_bib_path):
+                os.remove(t_bib_path)
         else:
             data = parse_file(bibfile)
 
@@ -101,20 +111,13 @@ class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
         bibfiles = []
         match = re.search(self.RE_BIBLIOGRAPHY, content)
         if match:
-            bib_string = match.group(0)
             for bfile in match.group(1).split(','):
                 try:
                     bibfiles.append(MooseDocs.abspath(bfile.strip()))
                     data = self.parseBibtexFile(bibfiles[-1])
-                except Exception as e:
-                    if isinstance(e,undefined_macro_exception):
-                        log.error('Undefined macro in bibtex file: {}, '\
-                          'specify macro_files arguments in configuration file (e.g. website.yml)'\
-                          .format(bfile.strip()))
-                    else:
-                        log.error('Failed to parse bibtex file: {}'.format(bfile.strip()))
-                    traceback.print_exc(e)
-                    return lines
+                except UndefinedMacro:
+                    LOG.error('Undefined macro in bibtex file: %s, specify macro_files arguments ' \
+                              'in configuration file (e.g. website.yml)', bfile.strip())
                 self._bibtex.add_entries(data.entries.iteritems())
         else:
             return lines
@@ -125,8 +128,8 @@ class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
             content = content.replace(match.group(0), '')
             try:
                 style = find_plugin('pybtex.style.formatting', match.group(1))
-            except:
-                log.error('Unknown bibliography style "{}"'.format(match.group(1)))
+            except PluginNotFound:
+                LOG.error('Unknown bibliography style "%s"', match.group(1))
                 return lines
 
         else:
@@ -145,14 +148,18 @@ class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
             backend().write_to_stream(formatted_bibliography, stream)
 
             # Strip the bib items from the formatted html
-            html = re.findall(r'\<dd\>(.*?)\</dd\>', stream.getvalue(), flags=re.MULTILINE|re.DOTALL)
+            html = re.findall(r'\<dd\>(.*?)\</dd\>', stream.getvalue(),
+                              flags=re.MULTILINE|re.DOTALL)
 
             # Produces an ordered list with anchors to the citations
-            output = u'<ol class="moose-bibliography" data-moose-bibfiles="{}">\n'.format(str(bibfiles))
+            output = u'<ol class="moose-bibliography" data-moose-bibfiles="{}">\n'
+            output = output.format(str(bibfiles))
             for i, item in enumerate(html):
                 output += u'<li name="{}">{}</li>\n'.format(self._citations[i], item)
             output += u'</ol>\n'
-            content = re.sub(self.RE_BIBLIOGRAPHY, self.markdown.htmlStash.store(output, safe=True), content)
+            content = re.sub(self.RE_BIBLIOGRAPHY,
+                             self.markdown.htmlStash.store(output, safe=True),
+                             content)
 
         return content.split('\n')
 
@@ -171,7 +178,7 @@ class BibtexPreprocessor(MooseMarkdownCommon, Preprocessor):
 
             # Error if the key is not found and move on
             if key not in self._bibtex.entries:
-                log.error('Unknown bibtext key: {}'.format(key))
+                LOG.error('Unknown bibtext key: %s', key)
                 continue
 
             # Build the author list

@@ -31,7 +31,7 @@ class TableExtension(MooseMarkdownExtension):
         config = self.getConfigs()
         md.parser.blockprocessors.add('moose_table', MooseTableProcessor(markdown_instance=md, **config), '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return TableExtension(*args, **kwargs)
 
 class MooseTableProcessor(MooseMarkdownCommon, TableProcessor):

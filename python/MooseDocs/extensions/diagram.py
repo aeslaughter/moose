@@ -32,7 +32,7 @@ class DiagramExtension(MooseMarkdownExtension):
         config = self.getConfigs()
         md.parser.blockprocessors.add('moose_diagrams', DiagramBlockProcessor(md.parser, **config), '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return DiagramExtension(*args, **kwargs)
 
 

@@ -35,7 +35,7 @@ class DevelExtension(MooseMarkdownExtension):
         md.inlinePatterns.add('moose_extension_config', ExtensionConfigPattern(markdown_instance=md, **config), '_begin')
         md.inlinePatterns.add('moose_extension_component_settings', ExtensionSettingsPattern(markdown_instance=md, **config), '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return DevelExtension(*args, **kwargs)
 
 

@@ -109,7 +109,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         system_list = MooseActionList(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_system_list', system_list, '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return AppSyntaxExtension(*args, **kwargs)
 
 class MooseSyntaxBase(MooseMarkdownCommon, Pattern):

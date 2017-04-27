@@ -27,7 +27,7 @@ class HTML2LatexExtension(MooseMarkdownExtension):
         md.postprocessors.add('moose_latex', LatexPostprocessor(markdown_instance=md, **config), loc)
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return HTML2LatexExtension(*args, **kwargs)
 
 class LatexPostprocessor(Postprocessor):

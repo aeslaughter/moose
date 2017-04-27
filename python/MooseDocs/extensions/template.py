@@ -37,7 +37,7 @@ class TemplateExtension(MooseMarkdownExtension):
         config['syntax'] = ext.syntax
         md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), '_end')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return TemplateExtension(*args, **kwargs)
 
 class TemplatePostprocessor(Postprocessor):

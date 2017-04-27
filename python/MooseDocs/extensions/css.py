@@ -27,7 +27,7 @@ class CSSExtension(MooseMarkdownExtension):
         md.preprocessors.add('moose_css_list', CSSPreprocessor(markdown_instance=md, **config), '_end')
         md.parser.blockprocessors.add('moose_css', CSSBlockProcessor(md.parser, **config), '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return CSSExtension(*args, **kwargs)
 
 

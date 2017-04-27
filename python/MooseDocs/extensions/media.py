@@ -34,7 +34,7 @@ class MediaExtension(MooseMarkdownExtension):
         md.inlinePatterns.add('moose_video', VideoPattern(markdown_instance=md, **config), '<moose_image')
         md.parser.blockprocessors.add('moose_slider', SliderBlockProcessor(md.parser, **config), '_begin')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return MediaExtension(*args, **kwargs)
 
 class MediaPatternBase(MooseMarkdownCommon, Pattern):

@@ -44,7 +44,7 @@ class RefExtension(MooseMarkdownExtension):
         md.postprocessors.add('moose-ref-linker', link, '_end')
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return RefExtension(*args, **kwargs)
 
 class FloatReferencePattern(Pattern):

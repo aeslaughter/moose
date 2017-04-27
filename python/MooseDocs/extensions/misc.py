@@ -20,7 +20,7 @@ class MiscExtension(MooseMarkdownExtension):
         config = self.getConfigs()
         md.treeprocessors.add('moose_content_scroll', ScrollContents(markdown_instance=md, **config), '_end')
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return MiscExtension(*args, **kwargs)
 
 class ScrollContents(Treeprocessor):
