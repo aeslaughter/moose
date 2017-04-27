@@ -19,6 +19,7 @@
     repo: https://github.com/idaholab/moose/blob/master
     make_dir: modules/combined
 - MooseDocs.extensions.refs
+- MooseDocs.extensions.app_syntax: !include docs/app_syntax.yml
 - MooseDocs.extensions.template:
     template: website.html
     template_args:
@@ -26,4 +27,3 @@
         logo: docs/media/moose_logo_small.png
         repo_url: https://github.com/idaholab/moose/
         navigation: docs/navigation.yml
-- MooseDocs.extensions.app_syntax: !include docs/app_syntax.yml

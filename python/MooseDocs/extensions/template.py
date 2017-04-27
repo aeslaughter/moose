@@ -8,6 +8,7 @@ from markdown.postprocessors import Postprocessor
 import logging
 log = logging.getLogger(__name__)
 import MooseDocs
+from app_syntax import AppSyntaxExtension
 
 class TemplateExtension(markdown.Extension):
     """
@@ -28,8 +29,10 @@ class TemplateExtension(markdown.Extension):
         md.registerExtension(self)
         config = self.getConfigs()
 
-        flag = '_end'
-        md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), flag)
+        md.requireExtension(AppSyntaxExtension)
+        ext = md.getExtension(AppSyntaxExtension)
+        config['syntax'] = ext.syntax
+        md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs):
     return TemplateExtension(*args, **kwargs)
@@ -43,7 +46,7 @@ class TemplatePostprocessor(Postprocessor):
         self._template = config.pop('template')
         self._template_args = config.pop('template_args', dict())
         self._environment_args = config.pop('environment_args', dict())
-
+        self._syntax = config.pop('syntax')
         self._node = None
 
     @property
@@ -57,6 +60,7 @@ class TemplatePostprocessor(Postprocessor):
         """
         env.globals['insert_files'] = self._insertFiles
         env.globals['editMarkdown'] = self._editMarkdown
+        env.globals['mooseCode'] = self._code
 
     def run(self, text):
         """
@@ -72,6 +76,7 @@ class TemplatePostprocessor(Postprocessor):
         template_args.update(meta)
         template_args['content'] = text
         template_args['tableofcontents'] = self._tableofcontents(text)
+        template_args['doxygen'] = self._doxygen()
         if 'navigation' in template_args:
             template_args['navigation'] = MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
 
@@ -161,3 +166,34 @@ class TemplatePostprocessor(Postprocessor):
         Return the url to the markdown file for this object.
         """
         return os.path.join(repo_url, 'edit', 'devel', MooseDocs.relpath(self.node.source()))
+
+    def _doxygen(self):
+        # Build a complete list of objects
+        for syntax in self._syntax.itervalues():
+            for obj in syntax.objects().itervalues():
+                if obj.name == self.node.name():
+                    return syntax.doxygen(obj.name)
+
+    def _code(self, repo_url):
+        """
+        Return the GitHub/GitLab addresses for the associated C/h files.
+
+        Args:
+          repo_url[str]: Web address to use as the base for creating the edit link
+        """
+        info = []
+        for key, syntax in self._syntax.iteritems():
+            for obj in syntax.objects().itervalues():
+                if obj.name == self.node.name():
+                    info.append(obj)
+            for obj in syntax.actions().itervalues():
+                if obj.name == self.node.name():
+                    info.append(obj)
+
+        output = []
+        for obj in info:
+            for filename in obj.code:
+                rel_filename = MooseDocs.relpath(filename)
+                output.append( (os.path.basename(rel_filename), os.path.join(repo_url, 'blob', 'master', rel_filename)) )
+
+        return output

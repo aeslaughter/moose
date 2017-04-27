@@ -100,9 +100,6 @@ class MooseDocsNode(object):
             return path
         return os.path.relpath(os.path.join(self.__site_dir, path), self.path())
 
-    def sitedir(self):
-        return self.__site_dir
-
     def path(self):
         """
         Return the current path based on the node location in the tree.

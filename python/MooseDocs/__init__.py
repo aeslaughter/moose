@@ -167,48 +167,6 @@ def load_config(config_file, **kwargs):
                 value[k] = v
     return out
 
-def get_app_syntax_extension(parser):
-    """
-    Return the MooseMarkdownExtension instance from the Markdown parser, if it exists.
-    """
-    for ext in parser.registeredExtensions:
-        if isinstance(ext, extensions.app_syntax.AppSyntaxExtension):
-            return ext
-
-def read_markdown(md_file):
-    """
-    Reads and removes meta data (key, value pairs) from the top of a markdown file.
-
-    Inputs:
-      md_file[str]: The *.md file or text to convert.
-    """
-
-    # Read file, if provided
-    if os.path.isfile(md_file):
-        with open(md_file, 'r') as fid:
-            content = fid.read().decode('utf-8')
-    else:
-        content = md_file
-
-    # Extract meta data
-    output = dict()
-    count = 0
-    lines = content.splitlines()
-    for line in lines:
-        if line == '':
-            break
-        match = re.search(r'^(?P<key>[A-Za-z0-9_-]+)\s*:\s*(?P<value>.*)', line)
-        if match:
-            try:
-                value = eval(match.group('value'))
-            except:
-                value = match.group('value')
-            output[match.group('key')] = value
-            count += 1
-        else:
-            break
-    return '\n'.join(lines[count:]), output
-
 def purge(extensions):
     """
     Removes generated files from repository.

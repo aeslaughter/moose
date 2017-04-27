@@ -2,7 +2,7 @@ import os
 import logging
 import subprocess
 import MooseDocs
-from MooseDocsMarkdownNodeBase import MooseDocsMarkdownNodeBase
+from MarkdownNode import MarkdownNode
 log = logging.getLogger(__name__)
 
 def latex_options(parser):
@@ -29,7 +29,7 @@ def latex_options(parser):
     parser.add_argument('--today', type=bool, default=True, help="Insert the current date on the titlepage, requires 'title' option.")
     parser.add_argument('--institution', type=str, default=None, help="Insert the institution on the titlepage, requires 'title' option.")
 
-class LatexBuilder(MooseDocsMarkdownNodeBase):
+class LatexBuilder(MarkdownNode):
     """
     Creates TeX and/or PDF from markdown.
     """

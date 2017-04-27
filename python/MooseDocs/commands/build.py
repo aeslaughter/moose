@@ -171,9 +171,9 @@ def build(config_file=None, site_dir=None, num_threads=None,
         server.watch(os.path.join(os.getcwd(), 'fonts'), builder.copyFiles)
 
         # Watch the files and directories that require complete rebuild
-        moose_extension = MooseDocs.get_app_syntax_extension(parser)
-        if moose_extension:
-            server.watch(os.path.join(os.getcwd(), moose_extension.getConfig('executable')), build_complete)
+        #moose_extension = parser.getExtension)
+        #if moose_extension:
+        #    server.watch(os.path.join(os.getcwd(), moose_extension.getConfig('executable')), build_complete)
         server.watch(config_file, build_complete)
         server.watch('templates', builder.build)
 

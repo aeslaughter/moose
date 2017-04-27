@@ -4,8 +4,9 @@ import collections
 import logging
 log = logging.getLogger(__name__)
 
+import mooseutils
 import MooseDocs
-from MooseDocs.commands.MooseDocsMarkdownNodeBase import MooseDocsMarkdownNodeBase
+from MooseDocs.commands.MarkdownNode import MarkdownNode
 from MooseDocs.extensions.media import MediaPatternBase
 
 class MooseMarkdown(markdown.Markdown):
@@ -21,7 +22,7 @@ class MooseMarkdown(markdown.Markdown):
     CODE_BLOCK_COUNT = 0
 
     def __init__(self, extensions=[], extension_configs=dict()):
-        self.current = None # member for holding the current MooseDocsMarkdownNodeBase object
+        self.current = None # member for holding the current MarkdownNode object
         super(MooseMarkdown, self).__init__(extensions=extensions, extension_configs=extension_configs)
 
     def requireExtension(self, required):
@@ -55,7 +56,7 @@ class MooseMarkdown(markdown.Markdown):
         MooseMarkdown.CODE_BLOCK_COUNT = 0
 
         self.current = None
-        if isinstance(node, MooseDocsMarkdownNodeBase):
+        if isinstance(node, MarkdownNode):
             with open(node.source(), 'r') as fid:
                 md = fid.read().decode('utf-8')
             self.current = node

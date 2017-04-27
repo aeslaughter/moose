@@ -5,20 +5,15 @@ log = logging.getLogger(__name__)
 import MooseDocs
 from MooseDocsNode import MooseDocsNode
 
-class MooseDocsMarkdownNodeBase(MooseDocsNode):
+class MarkdownNode(MooseDocsNode):
     """
     Node for converting markdown to html.
     """
     def __init__(self, md_file=None, parser=None, **kwargs):
-        super(MooseDocsMarkdownNodeBase, self).__init__(**kwargs)
+        super(MarkdownNode, self).__init__(**kwargs)
 
         if (not md_file) or (not os.path.exists(md_file)):
             raise Exception('The supplied markdown file must exists: {}'.format(md_file))
-
-        # Extract the MooseLinkDatabase for creating source and doxygen links
-        #ext = MooseDocs.get_app_syntax_extension(parser)
-        #self._syntax = ext.syntax if ext else dict()
-        self._syntax = dict()
 
         self._parser = parser
         self._md_file = md_file

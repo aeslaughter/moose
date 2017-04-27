@@ -4,7 +4,7 @@ import livereload
 import logging
 import bs4
 import MooseDocs
-from MooseDocsMarkdownNodeBase import MooseDocsMarkdownNodeBase
+from MarkdownNode import MarkdownNode
 log = logging.getLogger(__name__)
 
 def presentation_options(parser):
@@ -23,7 +23,7 @@ def presentation_options(parser):
     parser.add_argument('--scripts', type=str, nargs='+', default=[os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'js', 'init.js')], help="A list of additional js files to inject into the presentation html file (%(default)s).")
     return presentation
 
-class PresentationBuilder(MooseDocsMarkdownNodeBase):
+class PresentationBuilder(MarkdownNode):
     """
     Adds a copy of image files to the destination directory.
     """
