@@ -16,8 +16,9 @@ class MooseDocsMarkdownNodeBase(MooseDocsNode):
             raise Exception('The supplied markdown file must exists: {}'.format(md_file))
 
         # Extract the MooseLinkDatabase for creating source and doxygen links
-        ext = MooseDocs.get_app_syntax_extension(parser)
-        self._syntax = ext.syntax if ext else dict()
+        #ext = MooseDocs.get_app_syntax_extension(parser)
+        #self._syntax = ext.syntax if ext else dict()
+        self._syntax = dict()
 
         self._parser = parser
         self._md_file = md_file

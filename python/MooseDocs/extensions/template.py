@@ -44,11 +44,19 @@ class TemplatePostprocessor(Postprocessor):
         self._template_args = config.pop('template_args', dict())
         self._environment_args = config.pop('environment_args', dict())
 
+        self._node = None
+
+    @property
+    def node(self):
+        self._node = self.markdown.current
+        return self._node
+
     def globals(self, env):
         """
         Defines global template functions.
         """
         env.globals['insert_files'] = self._insertFiles
+        env.globals['editMarkdown'] = self._editMarkdown
 
     def run(self, text):
         """
@@ -147,3 +155,9 @@ class TemplatePostprocessor(Postprocessor):
         for tag in soup.find_all(level):
             if 'id' in tag.attrs and tag.contents:
                 yield (tag.contents[0], tag.attrs['id'])
+
+    def _editMarkdown(self, repo_url):
+        """
+        Return the url to the markdown file for this object.
+        """
+        return os.path.join(repo_url, 'edit', 'devel', MooseDocs.relpath(self.node.source()))
