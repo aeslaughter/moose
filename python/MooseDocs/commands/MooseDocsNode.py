@@ -12,7 +12,7 @@ class MooseDocsNode(object):
     actually performs the work. This allows the nodes to be executed by multithreading.
     """
 
-    def __init__(self, name=None, site_dir=None, parent=None):
+    def __init__(self, name=None, site_dir=os.getcwd(), parent=None):
 
         if (name is None) or (not isinstance(name, str)):
             raise Exception('The "name" must be supplied to the MooseDocsNode object.')

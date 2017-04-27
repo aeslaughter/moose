@@ -81,7 +81,7 @@ class LatexBuilder(MarkdownNode):
             if os.path.exists(tmp):
                 os.remove(tmp)
 
-def latex(config_file=None, output=None, md_file=None, **kwargs):
+def latex(config_file=None, output=None, markdown=None, **kwargs):
     """
     Command for converting markdown file to latex.
     """
@@ -91,5 +91,5 @@ def latex(config_file=None, output=None, md_file=None, **kwargs):
     parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
     site_dir, _ = os.path.splitext(md_file)
-    root = LatexBuilder(output, name='', md_file=md_file, parser=parser, site_dir=site_dir)
+    root = LatexBuilder(output, name='', markdown=md_file, parser=parser, site_dir=site_dir)
     root.build()

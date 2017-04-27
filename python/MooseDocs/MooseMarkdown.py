@@ -11,11 +11,11 @@ from MooseDocs.extensions.media import MediaPatternBase
 
 class MooseMarkdown(markdown.Markdown):
     """
-    A custom Markdown object for handling raw text, markdown files, or MooseDocsMarkdownNode objects.
+    A custom Markdown object for handling raw text, markdown files, or MarkdownNode objects.
 
     Additionally, this class automatically loads the required markdown extensions.
 
-    The key to this class is allowing the Markdown object to work with MooseDocsMarkdownNode objects such that the
+    The key to this class is allowing the Markdown object to work with MarkdownNode objects such that the
     extension objects, namely MooseTemplate, could have access to the node object to allow for searching the tree
     for other pages. This should allow for cross page figure, equation, and table links to be created.
     """
@@ -46,27 +46,19 @@ class MooseMarkdown(markdown.Markdown):
                 break
         return out
 
-    def convert(self, node):
+    def convert(self, md):
         """
         Convert the raw text, markdown file, or node to html.
 
         Args:
-            content[str]: A markdown file or markdown content.
+            md[str]: A markdown file, markdown content, or MarkdownNode
         """
         MooseMarkdown.CODE_BLOCK_COUNT = 0
-
         self.current = None
-        if isinstance(node, MarkdownNode):
-            with open(node.source(), 'r') as fid:
-                md = fid.read().decode('utf-8')
-            self.current = node
-            log.debug('Parsing markdown: {}'.format(node.source()))
-            html = super(MooseMarkdown, self).convert(md)
-            self.current = None
-            return html
-        elif os.path.isfile(node):
-            with open(node, 'r') as fid:
-                md = fid.read().decode('utf-8')
-            return super(MooseMarkdown, self).convert(md)
+
+        if isinstance(md, MarkdownNode):
+            self.current = md
         else:
-            return super(MooseMarkdown, self).convert(node)
+            self.current = MarkdownNode(md)
+
+        return super(MooseMarkdown, self).convert(self.current.content)

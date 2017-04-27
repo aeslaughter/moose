@@ -9,27 +9,46 @@ class MarkdownNode(MooseDocsNode):
     """
     Node for converting markdown to html.
     """
-    def __init__(self, md_file=None, parser=None, **kwargs):
+    def __init__(self, markdown=None, parser=None, **kwargs):
         super(MarkdownNode, self).__init__(**kwargs)
 
-        if (not md_file) or (not os.path.exists(md_file)):
-            raise Exception('The supplied markdown file must exists: {}'.format(md_file))
+        if markdown is None:
+            raise Exception('A markdown file or content must be supplied.')
 
-        self._parser = parser
-        self._md_file = md_file
+        self.__parser = parser
+        self.__content = None
+        self.__md_file = None
+
+        if os.path.isfile(markdown):
+            self.__md_file = markdown
+        else:
+            self.__content = markdown
+
 
     def source(self):
         """
         Return the source markdown file.
         """
-        return self._md_file
+        return self.__md_file
 
-    def build(self, lock=None):
+    @property
+    def content(self):
+        if self.__md_file:
+            with open(self.__md_file, 'r') as fid:
+                self.__content = fid.read().decode('utf-8')
+        return self.__content
+
+    def convert(self):
         """
         Converts the markdown to html.
         """
-        content = self._parser.convert(self)
-        self.write(content, lock)
+        return self.__parser.convert(self)
+
+    def build(self, lock=None):
+        """
+        Converts the markdown to html and writes result html to file.
+        """
+        self.write(self.convert(), lock)
 
     def write(self, content, lock=None):
         """

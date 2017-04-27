@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 import MooseDocs
 from MooseDocsNode import MooseDocsNode
-from MooseDocsMarkdownNode import MooseDocsMarkdownNode
+from MarkdownNode import MarkdownNode
 
 
 def build_options(parser):
@@ -28,7 +28,7 @@ def build_options(parser):
 
 def make_tree(directory, node, site_dir, parser):
     """
-    Create the tree structure of NavigationNode/MooseDocsMarkdownNode objects
+    Create the tree structure of NavigationNode/MarkdownNode objects
     """
     for p in os.listdir(directory):
 
@@ -38,13 +38,13 @@ def make_tree(directory, node, site_dir, parser):
 
         if os.path.isfile(path) and (path.endswith('.md')):
             name = os.path.basename(path)[:-3]
-            child = MooseDocsMarkdownNode(name=name, parent=node, md_file=path, site_dir=site_dir, parser=parser)
+            child = MarkdownNode(name=name, parent=node, markdown=path, site_dir=site_dir, parser=parser)
 
         elif os.path.isdir(path) and (p not in ['.', '..']):
             name = os.path.basename(path)
             md = os.path.join(path, 'index.md')
             if os.path.exists(md):
-                child = MooseDocsMarkdownNode(name=name, parent=node, md_file=md, site_dir=site_dir, parser=parser)
+                child = MarkdownNode(name=name, parent=node, markdown=md, site_dir=site_dir, parser=parser)
             else:
                 child = MooseDocsNode(name=name, parent=node, site_dir=site_dir)
             make_tree(path, child, site_dir, parser)
@@ -57,7 +57,7 @@ def flat(node):
       node[NavigationNode]: The root node to flatten from
     """
     for child in node:
-        if isinstance(child, MooseDocsMarkdownNode):
+        if isinstance(child, MarkdownNode):
             yield child
         for c in flat(child):
             yield c
@@ -70,7 +70,7 @@ class Builder(object):
 
         self._site_dir = site_dir
         md_file = os.path.join(os.getcwd(), 'content', 'index.md')
-        self._root = MooseDocsMarkdownNode(name='', md_file=md_file, parser=parser, site_dir=self._site_dir)
+        self._root = MarkdownNode(name='', markdown=md_file, parser=parser, site_dir=self._site_dir)
         make_tree(os.path.dirname(md_file), self._root, self._site_dir, parser)
         self._pages = [self._root] + list(flat(self._root))
 

@@ -26,7 +26,7 @@ class TestTemplate(MarkdownTestCase):
         Convenience function for converting markdown to html.
         """
         super(TestTemplate, cls).setUpClass()
-        node = MooseDocsMarkdownNode(name='test', md_file='input.md', parser=cls.parser, site_dir=cls.WORKING_DIR)
+        node = MooseDocsMarkdownNode(name='test', markdown='input.md', parser=cls.parser, site_dir=cls.WORKING_DIR)
         node.build()
 
         with open(node.url(), 'r') as fid:

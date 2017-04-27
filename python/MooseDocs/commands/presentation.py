@@ -42,7 +42,7 @@ class PresentationBuilder(MarkdownNode):
 
         self.write(soup.prettify())
 
-def presentation(config_file=None, md_file=None, output=None, serve=None, port=None, host=None, template=None, **template_args):
+def presentation(config_file=None, markdown=None, output=None, serve=None, port=None, host=None, template=None, **template_args):
     """
     MOOSE markdown presentation blaster.
     """
@@ -52,7 +52,7 @@ def presentation(config_file=None, md_file=None, output=None, serve=None, port=N
     parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
     site_dir, _ = os.path.splitext(md_file)
-    root = PresentationBuilder(name='', md_file=md_file, parser=parser, site_dir=site_dir)
+    root = PresentationBuilder(name='', markdown=md_file, parser=parser, site_dir=site_dir)
     root.build()
 
     if serve:
