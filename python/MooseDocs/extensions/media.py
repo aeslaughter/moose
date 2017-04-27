@@ -12,12 +12,17 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
 
 import MooseDocs
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 
-class MediaExtension(markdown.Extension):
+class MediaExtension(MooseMarkdownExtension):
     """
     Extension for adding media files via markdown.
     """
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """

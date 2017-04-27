@@ -12,6 +12,7 @@ from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
 import MooseDocs
 from MooseDocs import MooseMarkdown
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 
 from FactorySystem import ParseGetPot
@@ -22,15 +23,16 @@ try:
 except:
     HAVE_MOOSE_CPP_PARSER = False
 
-class ListingExtension(markdown.Extension):
+class ListingExtension(MooseMarkdownExtension):
     """
     Extension for adding including code and other text files.
     """
-    def __init__(self, **kwargs):
-        self.config = dict()
-        self.config['repo'] = ['', "The remote repository to create hyperlinks."]
-        self.config['make_dir'] = ['', "The location of the MakeFile for determining the include paths when using clang parser."]
-        super(ListingExtension, self).__init__(**kwargs)
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        config['repo'] = ['', "The remote repository to create hyperlinks."]
+        config['make_dir'] = ['', "The location of the MakeFile for determining the include paths when using clang parser."]
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """
@@ -84,7 +86,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
         settings['include-end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
         settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
-        settings['pre-style'] = ("overflow-y:scroll;max-height:350px", "Style attributes to apply to <code> block.")
+        settings['pre-style'] = ("overflow-y:scroll;max-height:350px", "Style attributes to apply to the code area.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):

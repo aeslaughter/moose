@@ -11,12 +11,18 @@ log = logging.getLogger(__name__)
 from markdown.extensions.tables import TableProcessor
 
 import MooseDocs
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 
-class TableExtension(markdown.Extension):
+class TableExtension(MooseMarkdownExtension):
     """
     Extension for adding !table command for controlling
     """
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        return config
+
     def extendMarkdown(self, md, md_globals):
         """
         Adds Bibtex support for MOOSE flavored markdown.

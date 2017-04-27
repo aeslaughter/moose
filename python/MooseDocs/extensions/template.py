@@ -8,19 +8,21 @@ from markdown.postprocessors import Postprocessor
 import logging
 log = logging.getLogger(__name__)
 import MooseDocs
+from MooseMarkdownExtension import MooseMarkdownExtension
 from app_syntax import AppSyntaxExtension
 
-class TemplateExtension(markdown.Extension):
+
+class TemplateExtension(MooseMarkdownExtension):
     """
     Extension for applying template to converted markdown.
     """
-
-    def __init__(self, **kwargs):
-        self.config = dict()
-        self.config['template'] = ['', "The jinja2 template to apply."]
-        self.config['template_args'] = [dict(), "Arguments passed to to the MooseTemplate Postprocessor."]
-        self.config['environment_args'] = [dict(), "Arguments passed to the jinja2.Environment."]
-        super(TemplateExtension, self).__init__(**kwargs)
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        config['template'] = ['', "The jinja2 template to apply."]
+        config['template_args'] = [dict(), "Arguments passed to to the MooseTemplate Postprocessor."]
+        config['environment_args'] = [dict(), "Arguments passed to the jinja2.Environment."]
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """

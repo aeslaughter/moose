@@ -8,7 +8,7 @@ The MOOSE documentation system is capable of creating latex (*.tex) files or PDF
 !include docs/content/utilities/documentation/config.md
 
 For example the file shown below is the pdf/latex configuration file from MOOSE. The most important
-portion of this files the the ["MooseDocs.extensions.template"](extensions/template.md) entry. This provides the template for
+portion of this files the the ["MooseDocs.extensions.template"](extensions/templates.md) entry. This provides the template for
 resulting html, which in this case is setup for latex output.
 
 !listing docs/latex.yml
@@ -21,7 +21,7 @@ information regarding the MOOSE documentation system, including this page, to de
 !listing docs/examples/report.md max-height=500px
 
 Notice that this markdown file has some special syntax located at the top. The PDF creation
-process involves generating a tex file. The ["MooseDocs.extensions.template"](extensions/template.md) extension is based on [Jinja2](http://jinja.pocoo.org) template. The top commands are used to set template parameters from the markdown file.
+process involves generating a tex file. The ["MooseDocs.extensions.template"](extensions/templates.md) extension is based on [Jinja2](http://jinja.pocoo.org) template. The top commands are used to set template parameters from the markdown file.
 
 
 ## Building the PDF

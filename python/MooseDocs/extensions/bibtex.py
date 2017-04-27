@@ -14,6 +14,7 @@ from pybtex.database import BibliographyData, parse_file
 from pybtex.database.input.bibtex import UndefinedMacro as undefined_macro_exception
 
 import MooseDocs
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 from markdown.preprocessors import Preprocessor
 from markdown.util import etree
@@ -22,15 +23,16 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class BibtexExtension(markdown.Extension):
+class BibtexExtension(MooseMarkdownExtension):
     """
     Extension for adding bibtex style references and bibliographies to MOOSE flavored markdown.
     """
 
-    def __init__(self, **kwargs):
-        self.config = dict()
-        self.config['macro_files'] = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
-        super(BibtexExtension, self).__init__(**kwargs)
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        config['macro_files'] = ['', "List of paths to files that contain macros to be used in bibtex parsing."]
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """

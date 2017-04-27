@@ -7,21 +7,22 @@ import re
 import uuid
 import markdown
 from markdown.blockprocessors import BlockProcessor
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 from markdown.util import etree
 import logging
 log = logging.getLogger(__name__)
 
-class DiagramExtension(markdown.Extension):
+class DiagramExtension(MooseMarkdownExtension):
     """
-    Extension for adding dot diagrams to MOOSE flavored markdown.xk
+    Extension for adding dot diagrams to MOOSE flavored markdown.
     """
-
-    def __init__(self, **kwargs):
-        self.config = dict()
-        self.config['graphviz'] = ['/opt/moose/graphviz/bin', 'The location of graphviz executable for use with diagrams.']
-        self.config['dot_ext'] = ['svg', "The graphviz/dot output file extension (default: svg)."]
-        super(DiagramExtension, self).__init__(**kwargs)
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        config['graphviz'] = ['/opt/moose/graphviz/bin', 'The location of graphviz executable for use with diagrams.']
+        config['dot_ext'] = ['svg', "The graphviz/dot output file extension (default: svg)."]
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """

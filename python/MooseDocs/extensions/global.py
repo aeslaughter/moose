@@ -15,17 +15,18 @@
 import markdown
 from markdown.preprocessors import Preprocessor
 
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 
-class GlobalExtension(markdown.Extension):
+class GlobalExtension(MooseMarkdownExtension):
     """
     Extension for adding global markdown style link ids.
     """
-
-    def __init__(self, **kwargs):
-        self.config = dict()
-        self.config['globals'] = ['', "List of global markdown links (e.g., [foo]: bar)."]
-        super(GlobalExtension, self).__init__(**kwargs)
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        config['globals'] = ['', "List of global markdown links (e.g., [foo]: bar)."]
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """

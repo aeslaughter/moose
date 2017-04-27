@@ -11,16 +11,23 @@ from markdown.inlinepatterns import Pattern
 from markdown.postprocessors import Postprocessor
 
 import MooseDocs
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 
 
-class RefExtension(markdown.Extension):
+class RefExtension(MooseMarkdownExtension):
     """
     Adds \ref and \eqref support.
 
     \eqref: works with MathJax equation reference support.
     \ref: works with captions create with MooseDocs (see tables.py, media.py).
     """
+
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        return config
+
     def extendMarkdown(self, md, md_globals):
         """
         Adds \eqref support for MOOSE flavored markdown.

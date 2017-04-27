@@ -20,7 +20,7 @@ The [media](extensions/media.md) extensionq provides a robust solution for inclu
 with a "Figure" prefix.
 
 * `!table` <br>
-The [table](extensions/table.md) extension provides a command for adding captions to the traditional
+The [table](extensions/tables.md) extension provides a command for adding captions to the traditional
 markdown table syntax. Floats generated with this command, by default, are numbered with a
 "Table" prefix.
 

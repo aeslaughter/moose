@@ -13,7 +13,7 @@ x=\frac{1+y}{1+2z^2}.
 \end{equation}
 
 !listing id=eqref-example caption=Example of markdown syntax to enable equation references.
-```
+```markdown
 \begin{equation}
 \label{eqn:test}
 x=\frac{1+y}{1+2z^2}.
@@ -30,6 +30,6 @@ the markdown to create label link to the float: \ref{cat}.
 !media http://lorempixel.com/400/200/cats/ id=cat caption=A random cat image. style=width:100%;float:right
 
 !listing id=media-example caption=Example of markdown syntax to enable float references.
-```
+```markdown
 !media http://lorempixel.com/200/200/cats/ id=cat caption=A random cat image. style=width:32%;float:right;
 ```

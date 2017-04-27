@@ -20,13 +20,18 @@ from markdown.preprocessors import Preprocessor
 from markdown.util import etree
 
 import MooseDocs
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 from listings import ListingPattern
 
-class IncludeExtension(markdown.Extension):
+class IncludeExtension(MooseMarkdownExtension):
     """
     Extension for recursive including of partial or complete markdown files.
     """
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """

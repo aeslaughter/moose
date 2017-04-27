@@ -9,19 +9,20 @@ log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 import MooseDocs
 
-class DevelExtension(markdown.Extension):
+class DevelExtension(MooseMarkdownExtension):
     """
-    Extension for adding developer tools to MOOSE flavored markdown.xk
+    Extension for adding developer tools to MOOSE flavored markdown.
     """
-
-    def __init__(self, **kwargs):
-        self.config = dict()
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
         default = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'packages.yml')
-        self.config['package_file'] = [default, "The 'package.yml' configuration file."]
-        super(DevelExtension, self).__init__(**kwargs)
+        config['package_file'] = [default, "The 'package.yml' configuration file."]
+        return config
 
     def extendMarkdown(self, md, md_globals):
         """
@@ -160,7 +161,7 @@ class ExtensionConfigPattern(MooseCommonExtension, Pattern):
 
         ext = self.markdown.registeredExtensions[extensions.index(name)]
         table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
-        for key, value in ext.config.iteritems():
+        for key, value in ext.defaultConfig().iteritems():
             table.addRow(key, repr(value[0]), value[1])
 
         if table:

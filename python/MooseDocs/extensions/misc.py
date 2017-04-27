@@ -1,11 +1,17 @@
 import markdown
 from markdown.treeprocessors import Treeprocessor
 from markdown.util import etree
+from MooseMarkdownExtension import MooseMarkdownExtension
 
-class MiscExtension(markdown.Extension):
+class MiscExtension(MooseMarkdownExtension):
     """
     Extension for adding materialize specific css to converted markdown.
     """
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        return config
+
     def extendMarkdown(self, md, md_globals):
         """
         Adds materialize specific css to the converted html.

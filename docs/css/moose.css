@@ -119,6 +119,10 @@ ul {
   font-weight: 600;
 }
 
+.moose-figure-div p.moose-float-caption{
+  margin-bottom: 30px;
+}
+
 .moose-figure-caption-text,
 .moose-table-caption-text,
 .moose-listing-caption-text

@@ -3,13 +3,21 @@ css extension for MooseDocs markdown.
 """
 import re
 
-import markdown
+
 from markdown.preprocessors import Preprocessor
 from markdown.blockprocessors import BlockProcessor
 from markdown.util import etree
+
+from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseCommonExtension import MooseCommonExtension
 
-class CSSExtension(markdown.Extension):
+class CSSExtension(MooseMarkdownExtension):
+
+    @staticmethod
+    def defaultConfig():
+        config = MooseMarkdownExtension.defaultConfig()
+        return config
+
     def extendMarkdown(self, md, md_globals):
         """
         Adds specialized css editing support for MOOSE flavored markdown (i.e., !css markdown syntax)
@@ -32,8 +40,8 @@ class CSSBlockProcessor(BlockProcessor, MooseCommonExtension):
 
     Where <options> are key=value pairs.
     """
-
     RE = re.compile(r'^!css(.*)$', flags=re.MULTILINE)
+
     # If there are multiple css blocks on the same page then
     # they need to have different ids
     MATCHES_FOUND = 0
