@@ -17,7 +17,7 @@ For example the file shown below is the website configuration file from MOOSE. T
 portion of this files the the "MooseDocs.extensions.template" entry. This provides the template for
 resulting html, which in this case is setup for website display.
 
-!listing docs/website.yml style=max-height:500px;overflow-y:scroll
+!listing docs/website.yml
 
 ## Creating Web-Site Content
 Adding content to the web-site is as simple as creating a markdown file with content. The only requirement is
@@ -28,7 +28,7 @@ The final step when preparing an application site is to define the website navig
 the documentation directory. This file is used to define the navigation menu located at the top of the website if you are using the default
 template.
 
-!listing docs/navigation.yml style=max-height:400px;overflow-y:scroll
+!listing docs/navigation.yml
 
 ## Viewing your Web-site
 When you want to view your documentation website, you must serve the site to a local server. This is done as:

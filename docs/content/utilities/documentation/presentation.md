@@ -9,7 +9,7 @@ For example the file shown below is the presentation configuration file from MOO
 portion of this files the the "MooseDocs.extensions.template" entry. This provides the template for
 resulting html, which in this case is setup for an html presentation.
 
-!listing docs/presentation.yml style=max-height:500px;overflow-y:scroll
+!listing docs/presentation.yml
 
 ## Creating Content
 

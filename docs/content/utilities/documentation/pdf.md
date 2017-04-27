@@ -11,7 +11,7 @@ For example the file shown below is the pdf/latex configuration file from MOOSE.
 portion of this files the the ["MooseDocs.extensions.template"](extensions/template.md) entry. This provides the template for
 resulting html, which in this case is setup for latex output.
 
-!listing docs/latex.yml style=max-height:500px;overflow-y:scroll
+!listing docs/latex.yml
 
 ## Creating Content
 

@@ -41,6 +41,7 @@ class ListingExtension(markdown.Extension):
 
         # Replace the standard fenced code to a version that handles !listing line
         if 'fenced_code_block' in md.preprocessors:
+            FencedBlockPreprocessor.LANG_TAG = ' class="language-%s"'
             md.preprocessors.add('moose_fenced_code_block',
                                  ListingFencedBlockPreprocessor(md),
                                  "<fenced_code_block")
@@ -83,6 +84,7 @@ class ListingPattern(MooseCommonExtension, Pattern):
         settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
         settings['include-end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
         settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
+        settings['pre-style'] = ("overflow-y:scroll;max-height:350px", "Style attributes to apply to <code> block.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -210,6 +212,10 @@ class ListingPattern(MooseCommonExtension, Pattern):
             code.set('id', 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT))
             btn = self.createCopyButton(code.get('id'))
             pre.insert(0, btn)
+
+        # Code style
+        if settings['pre-style']:
+            pre.set('style', settings['pre-style'])
 
         return el
 
@@ -408,7 +414,7 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
                 if settings['copy-button']:
                     code_id = 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT)
                     btn = self.createCopyButton(code_id)
-                    self.CODE_WRAP = '<pre>{}<code %s id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
+                    self.CODE_WRAP = '<pre>{}<code%s id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
 
                 lines = super(ListingFencedBlockPreprocessor, self).run(lines)
 
@@ -436,5 +442,5 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseCommonExtensi
             text = text.replace(s, '')
 
         # Restore the code wrapping
-        self.CODE_WRAP = '<pre><code %s>%s</code></pre>'
+        self.CODE_WRAP = '<pre><code%s>%s</code></pre>'
         return text.split('\n')

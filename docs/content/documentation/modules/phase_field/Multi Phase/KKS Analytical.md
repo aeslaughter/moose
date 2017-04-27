@@ -29,7 +29,7 @@ along $y=0$, the results are output to a CSV file, and plotted together with the
 1D analytical solution. (We will use no-flux boundary conditions, so a boundary
 conditions block is not required in the input file.)
 
-!listing modules/phase_field/examples/kim-kim-suzuki/kks_example_noflux.i max-height=300px strip-extra-newlines=True overflow-y=scroll
+!listing modules/phase_field/examples/kim-kim-suzuki/kks_example_noflux.i
 
 # Verification against analytical solution
 
@@ -71,6 +71,6 @@ $L^2$ error versus $h$ for $\eta$ in this problem. As expected, on a log-log sca
 the points are fit well by a straight line. The slope was determined to be 1.995,
 in good agreement with the expected value of 2.
 
-!listing modules/phase_field/examples/kim-kim-suzuki/kks_example_dirichlet.i max-height=300px strip-extra-newlines=True overflow-y=scroll
+!listing modules/phase_field/examples/kim-kim-suzuki/kks_example_dirichlet.i
 
 \bibliography{docs/bib/phase_field.bib}

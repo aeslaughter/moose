@@ -86,11 +86,11 @@ files, snippets, or inline. Again, the "float" numbering works with all the vers
 `!listings` command. For example, \ref{diffusion} shows a complete C file, \ref{kernels}
 provides an input file block, and \ref{inline} is an inline fenced code block.
 
-!listing framework/src/kernels/Diffusion.C style=max-height:200px;overflow-y:scroll id=diffusion caption=Diffusion Kernel in a scrolling code listing.
+!listing framework/src/kernels/Diffusion.C id=diffusion caption=Diffusion Kernel in a scrolling code listing.
 
 !listing test/tests/kernels/simple_diffusion/simple_diffusion.i id=kernels caption=The `Kernels` block. block=Kernels
 
 !listing id=inline caption=An inline code snippet showing the markdown for producing a scrolling code block as in \ref{diffusion}.
 ```
-!listing framework/src/kernels/Diffusion.C style=max-height:200px;overflow-y:scroll id=diffusion caption=Diffusion Kernel in a scrolling code listing.
+!listing framework/src/kernels/Diffusion.C id=diffusion caption=Diffusion Kernel in a scrolling code listing.
 ```

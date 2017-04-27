@@ -16,4 +16,4 @@ The nucleation free energy penalty is added to the physical free energy contribu
 ## Example
 An example input file is located at
 
-!listing modules/phase_field/examples/nucleation/cahn_hilliard.i overflow-y=scroll max-height=500px language=puppet
+!listing modules/phase_field/examples/nucleation/cahn_hilliard.i
