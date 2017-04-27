@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHSplitChemicalPotential
 
-!listingfiles /Kernels/CHSplitChemicalPotential
+!inputfiles /Kernels/CHSplitChemicalPotential
 
 !childobjects /Kernels/CHSplitChemicalPotential

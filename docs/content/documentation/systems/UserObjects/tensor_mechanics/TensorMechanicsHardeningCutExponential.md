@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsHardeningCutExponential
 
-!listingfiles /UserObjects/TensorMechanicsHardeningCutExponential
+!inputfiles /UserObjects/TensorMechanicsHardeningCutExponential
 
 !childobjects /UserObjects/TensorMechanicsHardeningCutExponential

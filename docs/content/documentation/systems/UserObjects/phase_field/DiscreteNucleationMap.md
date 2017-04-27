@@ -14,6 +14,6 @@ The `DiscreteNucleationMap` is part of the [Discrete Nucleation system](Nucleati
 
 !parameters /UserObjects/DiscreteNucleationMap
 
-!listingfiles /UserObjects/DiscreteNucleationMap
+!inputfiles /UserObjects/DiscreteNucleationMap
 
 !childobjects /UserObjects/DiscreteNucleationMap

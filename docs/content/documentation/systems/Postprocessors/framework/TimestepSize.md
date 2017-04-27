@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/TimestepSize
 
-!listingfiles /Postprocessors/TimestepSize
+!inputfiles /Postprocessors/TimestepSize
 
 !childobjects /Postprocessors/TimestepSize

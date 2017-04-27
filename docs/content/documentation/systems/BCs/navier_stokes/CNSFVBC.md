@@ -2,6 +2,6 @@
 
 !parameters /BCs/CNSFVBC
 
-!listingfiles /BCs/CNSFVBC
+!inputfiles /BCs/CNSFVBC
 
 !childobjects /BCs/CNSFVBC

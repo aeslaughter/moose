@@ -8,6 +8,6 @@ weighted average of the level set variables values at each quadrature point of a
 
 !parameters /UserObjects/LevelSetVolume
 
-!listingfiles /UserObjects/LevelSetVolume
+!inputfiles /UserObjects/LevelSetVolume
 
 !childobjects /UserObjects/LevelSetVolume

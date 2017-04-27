@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/SideFluxAverage
 
-!listingfiles /Postprocessors/SideFluxAverage
+!inputfiles /Postprocessors/SideFluxAverage
 
 !childobjects /Postprocessors/SideFluxAverage

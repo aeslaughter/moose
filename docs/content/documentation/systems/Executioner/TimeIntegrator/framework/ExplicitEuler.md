@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/ExplicitEuler
 
-!listingfiles /Executioner/TimeIntegrator/ExplicitEuler
+!inputfiles /Executioner/TimeIntegrator/ExplicitEuler
 
 !childobjects /Executioner/TimeIntegrator/ExplicitEuler

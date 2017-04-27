@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/NearestNodeValueAux
 
-!listingfiles /AuxKernels/NearestNodeValueAux
+!inputfiles /AuxKernels/NearestNodeValueAux
 
 !childobjects /AuxKernels/NearestNodeValueAux

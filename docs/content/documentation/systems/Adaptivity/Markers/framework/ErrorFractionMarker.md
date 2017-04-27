@@ -19,6 +19,6 @@ applied:
 
 !parameters /Adaptivity/Markers/ErrorFractionMarker
 
-!listingfiles /Adaptivity/Markers/ErrorFractionMarker
+!inputfiles /Adaptivity/Markers/ErrorFractionMarker
 
 !childobjects /Adaptivity/Markers/ErrorFractionMarker

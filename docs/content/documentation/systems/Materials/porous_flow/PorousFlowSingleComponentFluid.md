@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowSingleComponentFluid
 
-!listingfiles /Materials/PorousFlowSingleComponentFluid
+!inputfiles /Materials/PorousFlowSingleComponentFluid
 
 !childobjects /Materials/PorousFlowSingleComponentFluid

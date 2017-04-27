@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PorousFlowDictator
 
-!listingfiles /UserObjects/PorousFlowDictator
+!inputfiles /UserObjects/PorousFlowDictator
 
 !childobjects /UserObjects/PorousFlowDictator

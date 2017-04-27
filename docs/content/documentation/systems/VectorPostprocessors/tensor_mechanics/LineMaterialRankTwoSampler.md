@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/LineMaterialRankTwoSampler
 
-!listingfiles /VectorPostprocessors/LineMaterialRankTwoSampler
+!inputfiles /VectorPostprocessors/LineMaterialRankTwoSampler
 
 !childobjects /VectorPostprocessors/LineMaterialRankTwoSampler

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementL2Norm
 
-!listingfiles /Postprocessors/ElementL2Norm
+!inputfiles /Postprocessors/ElementL2Norm
 
 !childobjects /Postprocessors/ElementL2Norm

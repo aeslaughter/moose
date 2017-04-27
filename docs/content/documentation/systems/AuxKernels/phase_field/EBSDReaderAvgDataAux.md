@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/EBSDReaderAvgDataAux
 
-!listingfiles /AuxKernels/EBSDReaderAvgDataAux
+!inputfiles /AuxKernels/EBSDReaderAvgDataAux
 
 !childobjects /AuxKernels/EBSDReaderAvgDataAux

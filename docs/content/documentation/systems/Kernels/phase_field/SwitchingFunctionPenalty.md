@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SwitchingFunctionPenalty
 
-!listingfiles /Kernels/SwitchingFunctionPenalty
+!inputfiles /Kernels/SwitchingFunctionPenalty
 
 !childobjects /Kernels/SwitchingFunctionPenalty

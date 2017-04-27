@@ -5,6 +5,6 @@
 
 !parameters /AuxScalarKernels/QuotientScalarAux
 
-!listingfiles /AuxScalarKernels/QuotientScalarAux
+!inputfiles /AuxScalarKernels/QuotientScalarAux
 
 !childobjects /AuxScalarKernels/QuotientScalarAux

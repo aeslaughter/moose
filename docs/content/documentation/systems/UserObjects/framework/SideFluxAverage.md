@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/SideFluxAverage
 
-!listingfiles /UserObjects/SideFluxAverage
+!inputfiles /UserObjects/SideFluxAverage
 
 !childobjects /UserObjects/SideFluxAverage

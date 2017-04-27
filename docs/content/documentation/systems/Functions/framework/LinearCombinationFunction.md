@@ -5,6 +5,6 @@
 
 !parameters /Functions/LinearCombinationFunction
 
-!listingfiles /Functions/LinearCombinationFunction
+!inputfiles /Functions/LinearCombinationFunction
 
 !childobjects /Functions/LinearCombinationFunction

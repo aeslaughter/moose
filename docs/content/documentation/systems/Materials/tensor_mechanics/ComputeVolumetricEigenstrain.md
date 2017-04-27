@@ -12,6 +12,6 @@ specified volumetric strain.
 
 !parameters /Materials/ComputeVolumetricEigenstrain
 
-!listingfiles /Materials/ComputeVolumetricEigenstrain
+!inputfiles /Materials/ComputeVolumetricEigenstrain
 
 !childobjects /Materials/ComputeVolumetricEigenstrain

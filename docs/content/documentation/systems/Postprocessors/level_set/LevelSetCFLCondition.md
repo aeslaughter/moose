@@ -36,6 +36,6 @@ at some level below the timestep limitation.
 
 !parameters /UserObjects/LevelSetCFLCondition
 
-!listingfiles /UserObjects/LevelSetCFLCondition
+!inputfiles /UserObjects/LevelSetCFLCondition
 
 !childobjects /UserObjects/LevelSetCFLCondition

@@ -5,6 +5,6 @@
 
 !parameters /Outputs/XDA
 
-!listingfiles /Outputs/XDA
+!inputfiles /Outputs/XDA
 
 !childobjects /Outputs/XDA

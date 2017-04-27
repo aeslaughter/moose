@@ -5,6 +5,6 @@
 
 !parameters /Materials/VolumeDeformGradCorrectedStress
 
-!listingfiles /Materials/VolumeDeformGradCorrectedStress
+!inputfiles /Materials/VolumeDeformGradCorrectedStress
 
 !childobjects /Materials/VolumeDeformGradCorrectedStress

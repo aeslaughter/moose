@@ -26,6 +26,6 @@ adjacent to elements marked for refinement.
 
 !parameters /Adaptivity/Markers/ValueThresholdMarker
 
-!listingfiles /Adaptivity/Markers/ValueThresholdMarker
+!inputfiles /Adaptivity/Markers/ValueThresholdMarker
 
 !childobjects /Adaptivity/Markers/ValueThresholdMarker

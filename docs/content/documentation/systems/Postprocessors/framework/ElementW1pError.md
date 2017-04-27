@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementW1pError
 
-!listingfiles /Postprocessors/ElementW1pError
+!inputfiles /Postprocessors/ElementW1pError
 
 !childobjects /Postprocessors/ElementW1pError

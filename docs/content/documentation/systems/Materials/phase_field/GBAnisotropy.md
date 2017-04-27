@@ -5,6 +5,6 @@
 
 !parameters /Materials/GBAnisotropy
 
-!listingfiles /Materials/GBAnisotropy
+!inputfiles /Materials/GBAnisotropy
 
 !childobjects /Materials/GBAnisotropy

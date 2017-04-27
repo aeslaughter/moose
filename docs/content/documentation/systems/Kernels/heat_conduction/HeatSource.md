@@ -5,6 +5,6 @@
 
 !parameters /Kernels/HeatSource
 
-!listingfiles /Kernels/HeatSource
+!inputfiles /Kernels/HeatSource
 
 !childobjects /Kernels/HeatSource

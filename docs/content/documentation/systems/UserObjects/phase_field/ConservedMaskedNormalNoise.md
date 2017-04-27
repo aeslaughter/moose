@@ -6,6 +6,6 @@
 
 !parameters /UserObjects/ConservedMaskedNormalNoise
 
-!listingfiles /UserObjects/ConservedMaskedNormalNoise
+!inputfiles /UserObjects/ConservedMaskedNormalNoise
 
 !childobjects /UserObjects/ConservedMaskedNormalNoise

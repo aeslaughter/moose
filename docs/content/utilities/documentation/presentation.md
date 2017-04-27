@@ -31,5 +31,5 @@ script.
 To view the slides, simply open the index.html file created with a web-browser. On OSX you can preform the following.
 
 ```bash
-open ~/projects/reveal.js/index.html
+open ~/projects/examples/presentation/index.html
 ```

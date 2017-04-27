@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/PostprocessorDT
 
-!listingfiles /Executioner/TimeStepper/PostprocessorDT
+!inputfiles /Executioner/TimeStepper/PostprocessorDT
 
 !childobjects /Executioner/TimeStepper/PostprocessorDT

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/FeatureFloodCount
 
-!listingfiles /UserObjects/FeatureFloodCount
+!inputfiles /UserObjects/FeatureFloodCount
 
 !childobjects /UserObjects/FeatureFloodCount

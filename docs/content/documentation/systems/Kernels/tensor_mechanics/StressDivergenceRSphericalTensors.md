@@ -24,6 +24,6 @@ $$
 
 !parameters /Kernels/StressDivergenceRSphericalTensors
 
-!listingfiles /Kernels/StressDivergenceRSphericalTensors
+!inputfiles /Kernels/StressDivergenceRSphericalTensors
 
 !childobjects /Kernels/StressDivergenceRSphericalTensors

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/PorousFlowPropertyAux
 
-!listingfiles /AuxKernels/PorousFlowPropertyAux
+!inputfiles /AuxKernels/PorousFlowPropertyAux
 
 !childobjects /AuxKernels/PorousFlowPropertyAux

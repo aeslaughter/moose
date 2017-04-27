@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/AverageElementSize
 
-!listingfiles /UserObjects/AverageElementSize
+!inputfiles /UserObjects/AverageElementSize
 
 !childobjects /UserObjects/AverageElementSize

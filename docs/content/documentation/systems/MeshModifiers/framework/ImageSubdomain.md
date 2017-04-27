@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/ImageSubdomain
 
-!listingfiles /MeshModifiers/ImageSubdomain
+!inputfiles /MeshModifiers/ImageSubdomain
 
 !childobjects /MeshModifiers/ImageSubdomain

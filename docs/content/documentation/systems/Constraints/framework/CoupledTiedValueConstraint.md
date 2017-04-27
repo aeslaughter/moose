@@ -5,6 +5,6 @@
 
 !parameters /Constraints/CoupledTiedValueConstraint
 
-!listingfiles /Constraints/CoupledTiedValueConstraint
+!inputfiles /Constraints/CoupledTiedValueConstraint
 
 !childobjects /Constraints/CoupledTiedValueConstraint

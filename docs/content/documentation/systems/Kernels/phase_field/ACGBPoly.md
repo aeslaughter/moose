@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ACGBPoly
 
-!listingfiles /Kernels/ACGBPoly
+!inputfiles /Kernels/ACGBPoly
 
 !childobjects /Kernels/ACGBPoly

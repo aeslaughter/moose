@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/AxisymmetricCenterlineAverageValue
 
-!listingfiles /Postprocessors/AxisymmetricCenterlineAverageValue
+!inputfiles /Postprocessors/AxisymmetricCenterlineAverageValue
 
 !childobjects /Postprocessors/AxisymmetricCenterlineAverageValue

@@ -5,6 +5,6 @@
 
 !parameters /Constraints/EqualValueConstraint
 
-!listingfiles /Constraints/EqualValueConstraint
+!inputfiles /Constraints/EqualValueConstraint
 
 !childobjects /Constraints/EqualValueConstraint

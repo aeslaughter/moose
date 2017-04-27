@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ACMultiInterface
 
-!listingfiles /Kernels/ACMultiInterface
+!inputfiles /Kernels/ACMultiInterface
 
 !childobjects /Kernels/ACMultiInterface

@@ -5,6 +5,6 @@
 
 !parameters /Materials/FluxBasedStrainIncrement
 
-!listingfiles /Materials/FluxBasedStrainIncrement
+!inputfiles /Materials/FluxBasedStrainIncrement
 
 !childobjects /Materials/FluxBasedStrainIncrement

@@ -5,6 +5,6 @@
 
 !parameters /DiracKernels/PorousFlowSquarePulsePointSource
 
-!listingfiles /DiracKernels/PorousFlowSquarePulsePointSource
+!inputfiles /DiracKernels/PorousFlowSquarePulsePointSource
 
 !childobjects /DiracKernels/PorousFlowSquarePulsePointSource

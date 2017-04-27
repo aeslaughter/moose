@@ -19,6 +19,6 @@ independently.
 
 !parameters /Mesh/GeneratedMesh
 
-!listingfiles /Mesh/GeneratedMesh
+!inputfiles /Mesh/GeneratedMesh
 
 !childobjects /Mesh/GeneratedMesh

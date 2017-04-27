@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSSplitCHCRes
 
-!listingfiles /Kernels/KKSSplitCHCRes
+!inputfiles /Kernels/KKSSplitCHCRes
 
 !childobjects /Kernels/KKSSplitCHCRes

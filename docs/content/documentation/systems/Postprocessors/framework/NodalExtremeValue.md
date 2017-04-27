@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalExtremeValue
 
-!listingfiles /Postprocessors/NodalExtremeValue
+!inputfiles /Postprocessors/NodalExtremeValue
 
 !childobjects /Postprocessors/NodalExtremeValue

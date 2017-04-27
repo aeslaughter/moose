@@ -11,6 +11,6 @@ input file.
 
 !parameters /Problem/LevelSetReinitializationProblem
 
-!listingfiles /Problem/LevelSetReinitializationProblem
+!inputfiles /Problem/LevelSetReinitializationProblem
 
 !childobjects /Problem/LevelSetReinitializationProblem

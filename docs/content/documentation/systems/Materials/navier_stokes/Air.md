@@ -2,6 +2,6 @@
 
 !parameters /Materials/Air
 
-!listingfiles /Materials/Air
+!inputfiles /Materials/Air
 
 !childobjects /Materials/Air

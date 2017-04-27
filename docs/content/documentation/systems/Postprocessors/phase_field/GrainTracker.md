@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/GrainTracker
 
-!listingfiles /Postprocessors/GrainTracker
+!inputfiles /Postprocessors/GrainTracker
 
 !childobjects /Postprocessors/GrainTracker

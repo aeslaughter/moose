@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/BreakBoundaryOnSubdomain
 
-!listingfiles /MeshModifiers/BreakBoundaryOnSubdomain
+!inputfiles /MeshModifiers/BreakBoundaryOnSubdomain
 
 !childobjects /MeshModifiers/BreakBoundaryOnSubdomain

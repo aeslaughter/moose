@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/ConstantVectorPostprocessor
 
-!listingfiles /VectorPostprocessors/ConstantVectorPostprocessor
+!inputfiles /VectorPostprocessors/ConstantVectorPostprocessor
 
 !childobjects /VectorPostprocessors/ConstantVectorPostprocessor

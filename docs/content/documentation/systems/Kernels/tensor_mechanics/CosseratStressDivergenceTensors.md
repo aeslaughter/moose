@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CosseratStressDivergenceTensors
 
-!listingfiles /Kernels/CosseratStressDivergenceTensors
+!inputfiles /Kernels/CosseratStressDivergenceTensors
 
 !childobjects /Kernels/CosseratStressDivergenceTensors

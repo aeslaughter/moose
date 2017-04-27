@@ -2,6 +2,6 @@
 
 !parameters /BCs/INSTemperatureNoBCBC
 
-!listingfiles /BCs/INSTemperatureNoBCBC
+!inputfiles /BCs/INSTemperatureNoBCBC
 
 !childobjects /BCs/INSTemperatureNoBCBC

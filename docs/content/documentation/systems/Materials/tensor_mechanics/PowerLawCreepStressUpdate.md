@@ -5,6 +5,6 @@
 
 !parameters /Materials/PowerLawCreepStressUpdate
 
-!listingfiles /Materials/PowerLawCreepStressUpdate
+!inputfiles /Materials/PowerLawCreepStressUpdate
 
 !childobjects /Materials/PowerLawCreepStressUpdate

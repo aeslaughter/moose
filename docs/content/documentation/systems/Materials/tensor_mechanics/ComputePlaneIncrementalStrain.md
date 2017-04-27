@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputePlaneIncrementalStrain
 
-!listingfiles /Materials/ComputePlaneIncrementalStrain
+!inputfiles /Materials/ComputePlaneIncrementalStrain
 
 !childobjects /Materials/ComputePlaneIncrementalStrain

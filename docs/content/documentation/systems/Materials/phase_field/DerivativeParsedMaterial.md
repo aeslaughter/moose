@@ -52,6 +52,6 @@ Add `outputs=exodus` to the material block to automatically write all derivative
 
 !parameters /Materials/DerivativeParsedMaterial
 
-!listingfiles /Materials/DerivativeParsedMaterial
+!inputfiles /Materials/DerivativeParsedMaterial
 
 !childobjects /Materials/DerivativeParsedMaterial

@@ -5,6 +5,6 @@
 
 !parameters /Materials/InclusionProperties
 
-!listingfiles /Materials/InclusionProperties
+!inputfiles /Materials/InclusionProperties
 
 !childobjects /Materials/InclusionProperties

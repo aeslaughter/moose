@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ConservativeAdvection
 
-!listingfiles /Kernels/ConservativeAdvection
+!inputfiles /Kernels/ConservativeAdvection
 
 !childobjects /Kernels/ConservativeAdvection

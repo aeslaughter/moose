@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSGravityPower
 
-!listingfiles /Kernels/NSGravityPower
+!inputfiles /Kernels/NSGravityPower
 
 !childobjects /Kernels/NSGravityPower

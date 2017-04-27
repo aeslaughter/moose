@@ -25,7 +25,7 @@ with SUPG stabilization.
 
 !parameters /Kernels/LevelSetTimeDerivativeSUPG
 
-!listingfiles /Kernels/LevelSetTimeDerivativeSUPG
+!inputfiles /Kernels/LevelSetTimeDerivativeSUPG
 
 !childobjects /Kernels/LevelSetTimeDerivativeSUPG
 

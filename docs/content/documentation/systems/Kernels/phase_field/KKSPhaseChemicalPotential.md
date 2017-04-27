@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSPhaseChemicalPotential
 
-!listingfiles /Kernels/KKSPhaseChemicalPotential
+!inputfiles /Kernels/KKSPhaseChemicalPotential
 
 !childobjects /Kernels/KKSPhaseChemicalPotential

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/TotalVariableValue
 
-!listingfiles /Postprocessors/TotalVariableValue
+!inputfiles /Postprocessors/TotalVariableValue
 
 !childobjects /Postprocessors/TotalVariableValue

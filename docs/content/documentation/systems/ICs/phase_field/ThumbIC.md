@@ -5,6 +5,6 @@
 
 !parameters /ICs/ThumbIC
 
-!listingfiles /ICs/ThumbIC
+!inputfiles /ICs/ThumbIC
 
 !childobjects /ICs/ThumbIC

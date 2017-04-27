@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SplitCHParsed
 
-!listingfiles /Kernels/SplitCHParsed
+!inputfiles /Kernels/SplitCHParsed
 
 !childobjects /Kernels/SplitCHParsed

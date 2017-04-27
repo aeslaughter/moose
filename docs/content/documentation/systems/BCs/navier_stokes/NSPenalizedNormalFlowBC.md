@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSPenalizedNormalFlowBC
 
-!listingfiles /BCs/NSPenalizedNormalFlowBC
+!inputfiles /BCs/NSPenalizedNormalFlowBC
 
 !childobjects /BCs/NSPenalizedNormalFlowBC

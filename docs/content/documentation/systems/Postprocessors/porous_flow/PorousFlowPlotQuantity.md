@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/PorousFlowPlotQuantity
 
-!listingfiles /Postprocessors/PorousFlowPlotQuantity
+!inputfiles /Postprocessors/PorousFlowPlotQuantity
 
 !childobjects /Postprocessors/PorousFlowPlotQuantity

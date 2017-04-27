@@ -5,6 +5,6 @@
 
 !parameters /Materials/FiniteStrainCPSlipRateRes
 
-!listingfiles /Materials/FiniteStrainCPSlipRateRes
+!inputfiles /Materials/FiniteStrainCPSlipRateRes
 
 !childobjects /Materials/FiniteStrainCPSlipRateRes

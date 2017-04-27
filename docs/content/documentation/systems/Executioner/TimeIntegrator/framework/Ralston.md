@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/Ralston
 
-!listingfiles /Executioner/TimeIntegrator/Ralston
+!inputfiles /Executioner/TimeIntegrator/Ralston
 
 !childobjects /Executioner/TimeIntegrator/Ralston

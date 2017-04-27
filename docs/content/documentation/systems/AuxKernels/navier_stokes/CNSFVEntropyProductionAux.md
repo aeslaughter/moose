@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/CNSFVEntropyProductionAux
 
-!listingfiles /AuxKernels/CNSFVEntropyProductionAux
+!inputfiles /AuxKernels/CNSFVEntropyProductionAux
 
 !childobjects /AuxKernels/CNSFVEntropyProductionAux

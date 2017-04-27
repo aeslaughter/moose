@@ -5,6 +5,6 @@
 
 !parameters /Outputs/CSV
 
-!listingfiles /Outputs/CSV
+!inputfiles /Outputs/CSV
 
 !childobjects /Outputs/CSV

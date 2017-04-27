@@ -2,6 +2,6 @@
 
 !parameters /ICs/CNSFVMachIC
 
-!listingfiles /ICs/CNSFVMachIC
+!inputfiles /ICs/CNSFVMachIC
 
 !childobjects /ICs/CNSFVMachIC

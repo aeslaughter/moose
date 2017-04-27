@@ -17,6 +17,6 @@ be divisible by $2^u$ where $u$ is the value of the ```uniform_refine``` paramet
 
 !parameters /Mesh/EBSDMesh
 
-!listingfiles /Mesh/EBSDMesh
+!inputfiles /Mesh/EBSDMesh
 
 !childobjects /Mesh/EBSDMesh

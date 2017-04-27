@@ -24,6 +24,6 @@ refinement.
 
 !parameters /Adaptivity/Markers/ValueRangeMarker
 
-!listingfiles /Adaptivity/Markers/ValueRangeMarker
+!inputfiles /Adaptivity/Markers/ValueRangeMarker
 
 !childobjects /Adaptivity/Markers/ValueRangeMarker

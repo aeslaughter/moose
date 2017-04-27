@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSChorinCorrector
 
-!listingfiles /Kernels/INSChorinCorrector
+!inputfiles /Kernels/INSChorinCorrector
 
 !childobjects /Kernels/INSChorinCorrector

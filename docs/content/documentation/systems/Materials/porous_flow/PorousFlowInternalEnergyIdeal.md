@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowInternalEnergyIdeal
 
-!listingfiles /Materials/PorousFlowInternalEnergyIdeal
+!inputfiles /Materials/PorousFlowInternalEnergyIdeal
 
 !childobjects /Materials/PorousFlowInternalEnergyIdeal

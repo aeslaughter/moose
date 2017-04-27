@@ -5,6 +5,6 @@
 
 !parameters /BCs/PresetVelocity
 
-!listingfiles /BCs/PresetVelocity
+!inputfiles /BCs/PresetVelocity
 
 !childobjects /BCs/PresetVelocity

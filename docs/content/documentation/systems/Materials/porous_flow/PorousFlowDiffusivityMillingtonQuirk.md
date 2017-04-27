@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowDiffusivityMillingtonQuirk
 
-!listingfiles /Materials/PorousFlowDiffusivityMillingtonQuirk
+!inputfiles /Materials/PorousFlowDiffusivityMillingtonQuirk
 
 !childobjects /Materials/PorousFlowDiffusivityMillingtonQuirk

@@ -5,6 +5,6 @@
 
 !parameters /Outputs/Console
 
-!listingfiles /Outputs/Console
+!inputfiles /Outputs/Console
 
 !childobjects /Outputs/Console

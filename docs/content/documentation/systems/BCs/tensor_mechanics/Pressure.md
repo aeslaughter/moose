@@ -5,6 +5,6 @@
 
 !parameters /BCs/Pressure
 
-!listingfiles /BCs/Pressure
+!inputfiles /BCs/Pressure
 
 !childobjects /BCs/Pressure

@@ -5,6 +5,6 @@
 
 !parameters /BCs/DiffusionFluxBC
 
-!listingfiles /BCs/DiffusionFluxBC
+!inputfiles /BCs/DiffusionFluxBC
 
 !childobjects /BCs/DiffusionFluxBC

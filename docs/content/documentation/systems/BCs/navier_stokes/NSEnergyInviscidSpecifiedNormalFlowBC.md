@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSEnergyInviscidSpecifiedNormalFlowBC
 
-!listingfiles /BCs/NSEnergyInviscidSpecifiedNormalFlowBC
+!inputfiles /BCs/NSEnergyInviscidSpecifiedNormalFlowBC
 
 !childobjects /BCs/NSEnergyInviscidSpecifiedNormalFlowBC

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/DebugResidualAux
 
-!listingfiles /AuxKernels/DebugResidualAux
+!inputfiles /AuxKernels/DebugResidualAux
 
 !childobjects /AuxKernels/DebugResidualAux

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticTensileMulti
 
-!listingfiles /UserObjects/TensorMechanicsPlasticTensileMulti
+!inputfiles /UserObjects/TensorMechanicsPlasticTensileMulti
 
 !childobjects /UserObjects/TensorMechanicsPlasticTensileMulti

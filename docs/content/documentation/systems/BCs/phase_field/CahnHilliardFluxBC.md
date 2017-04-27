@@ -5,6 +5,6 @@
 
 !parameters /BCs/CahnHilliardFluxBC
 
-!listingfiles /BCs/CahnHilliardFluxBC
+!inputfiles /BCs/CahnHilliardFluxBC
 
 !childobjects /BCs/CahnHilliardFluxBC

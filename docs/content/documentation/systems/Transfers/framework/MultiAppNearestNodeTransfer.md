@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppNearestNodeTransfer
 
-!listingfiles /Transfers/MultiAppNearestNodeTransfer
+!inputfiles /Transfers/MultiAppNearestNodeTransfer
 
 !childobjects /Transfers/MultiAppNearestNodeTransfer

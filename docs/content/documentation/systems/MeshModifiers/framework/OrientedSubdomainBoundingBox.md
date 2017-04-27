@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/OrientedSubdomainBoundingBox
 
-!listingfiles /MeshModifiers/OrientedSubdomainBoundingBox
+!inputfiles /MeshModifiers/OrientedSubdomainBoundingBox
 
 !childobjects /MeshModifiers/OrientedSubdomainBoundingBox

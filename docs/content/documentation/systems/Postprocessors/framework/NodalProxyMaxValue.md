@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalProxyMaxValue
 
-!listingfiles /Postprocessors/NodalProxyMaxValue
+!inputfiles /Postprocessors/NodalProxyMaxValue
 
 !childobjects /Postprocessors/NodalProxyMaxValue

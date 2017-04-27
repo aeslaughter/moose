@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ElementH1SemiError
 
-!listingfiles /Postprocessors/ElementH1SemiError
+!inputfiles /Postprocessors/ElementH1SemiError
 
 !childobjects /Postprocessors/ElementH1SemiError

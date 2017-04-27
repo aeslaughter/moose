@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSMomentumViscousBC
 
-!listingfiles /BCs/NSMomentumViscousBC
+!inputfiles /BCs/NSMomentumViscousBC
 
 !childobjects /BCs/NSMomentumViscousBC

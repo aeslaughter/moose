@@ -5,6 +5,6 @@
 
 !parameters /BCs/SinDirichletBC
 
-!listingfiles /BCs/SinDirichletBC
+!inputfiles /BCs/SinDirichletBC
 
 !childobjects /BCs/SinDirichletBC

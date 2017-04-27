@@ -5,6 +5,6 @@
 
 !parameters /ICs/ConstantIC
 
-!listingfiles /ICs/ConstantIC
+!inputfiles /ICs/ConstantIC
 
 !childobjects /ICs/ConstantIC

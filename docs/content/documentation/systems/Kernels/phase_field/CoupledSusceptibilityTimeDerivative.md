@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CoupledSusceptibilityTimeDerivative
 
-!listingfiles /Kernels/CoupledSusceptibilityTimeDerivative
+!inputfiles /Kernels/CoupledSusceptibilityTimeDerivative
 
 !childobjects /Kernels/CoupledSusceptibilityTimeDerivative

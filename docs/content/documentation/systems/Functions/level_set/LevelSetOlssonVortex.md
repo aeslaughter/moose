@@ -13,7 +13,7 @@ Example Input Syntax
 
 !parameters /Functions/LevelSetOlssonVortex
 
-!listingfiles /Functions/LevelSetOlssonVortex
+!inputfiles /Functions/LevelSetOlssonVortex
 
 !childobjects /Functions/LevelSetOlssonVortex
 

@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeLayeredCosseratElasticityTensor
 
-!listingfiles /Materials/ComputeLayeredCosseratElasticityTensor
+!inputfiles /Materials/ComputeLayeredCosseratElasticityTensor
 
 !childobjects /Materials/ComputeLayeredCosseratElasticityTensor

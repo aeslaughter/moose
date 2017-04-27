@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ACGrGrElasticDrivingForce
 
-!listingfiles /Kernels/ACGrGrElasticDrivingForce
+!inputfiles /Kernels/ACGrGrElasticDrivingForce
 
 !childobjects /Kernels/ACGrGrElasticDrivingForce

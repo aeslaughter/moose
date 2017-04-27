@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeStrainIncrementBasedStress
 
-!listingfiles /Materials/ComputeStrainIncrementBasedStress
+!inputfiles /Materials/ComputeStrainIncrementBasedStress
 
 !childobjects /Materials/ComputeStrainIncrementBasedStress

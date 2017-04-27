@@ -5,6 +5,6 @@
 
 !parameters /Executioner/Transient
 
-!listingfiles /Executioner/Transient
+!inputfiles /Executioner/Transient
 
 !childobjects /Executioner/Transient

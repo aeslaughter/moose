@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ScalarVariable
 
-!listingfiles /UserObjects/ScalarVariable
+!inputfiles /UserObjects/ScalarVariable
 
 !childobjects /UserObjects/ScalarVariable

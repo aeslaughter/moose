@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ScalarL2Error
 
-!listingfiles /UserObjects/ScalarL2Error
+!inputfiles /UserObjects/ScalarL2Error
 
 !childobjects /UserObjects/ScalarL2Error

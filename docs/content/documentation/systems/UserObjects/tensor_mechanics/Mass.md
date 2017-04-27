@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/Mass
 
-!listingfiles /UserObjects/Mass
+!inputfiles /UserObjects/Mass
 
 !childobjects /UserObjects/Mass

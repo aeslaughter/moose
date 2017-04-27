@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalSum
 
-!listingfiles /UserObjects/NodalSum
+!inputfiles /UserObjects/NodalSum
 
 !childobjects /UserObjects/NodalSum

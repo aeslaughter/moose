@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CoupledForce
 
-!listingfiles /Kernels/CoupledForce
+!inputfiles /Kernels/CoupledForce
 
 !childobjects /Kernels/CoupledForce

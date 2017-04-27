@@ -5,6 +5,6 @@
 
 !parameters /BCs/ConvectiveFluxFunction
 
-!listingfiles /BCs/ConvectiveFluxFunction
+!inputfiles /BCs/ConvectiveFluxFunction
 
 !childobjects /BCs/ConvectiveFluxFunction

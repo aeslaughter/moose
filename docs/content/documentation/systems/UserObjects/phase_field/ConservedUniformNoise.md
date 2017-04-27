@@ -6,6 +6,6 @@
 
 !parameters /UserObjects/ConservedUniformNoise
 
-!listingfiles /UserObjects/ConservedUniformNoise
+!inputfiles /UserObjects/ConservedUniformNoise
 
 !childobjects /UserObjects/ConservedUniformNoise

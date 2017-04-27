@@ -5,6 +5,6 @@
 
 !parameters /BCs/CoupledConvectiveFlux
 
-!listingfiles /BCs/CoupledConvectiveFlux
+!inputfiles /BCs/CoupledConvectiveFlux
 
 !childobjects /BCs/CoupledConvectiveFlux

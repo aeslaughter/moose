@@ -5,6 +5,6 @@
 
 !parameters /Kernels/Reaction
 
-!listingfiles /Kernels/Reaction
+!inputfiles /Kernels/Reaction
 
 !childobjects /Kernels/Reaction

@@ -5,6 +5,6 @@
 
 !parameters /Materials/SwitchingFunctionMaterial
 
-!listingfiles /Materials/SwitchingFunctionMaterial
+!inputfiles /Materials/SwitchingFunctionMaterial
 
 !childobjects /Materials/SwitchingFunctionMaterial

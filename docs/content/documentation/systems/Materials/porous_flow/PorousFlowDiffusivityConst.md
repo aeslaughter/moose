@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowDiffusivityConst
 
-!listingfiles /Materials/PorousFlowDiffusivityConst
+!inputfiles /Materials/PorousFlowDiffusivityConst
 
 !childobjects /Materials/PorousFlowDiffusivityConst

@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/LineFunctionSampler
 
-!listingfiles /VectorPostprocessors/LineFunctionSampler
+!inputfiles /VectorPostprocessors/LineFunctionSampler
 
 !childobjects /VectorPostprocessors/LineFunctionSampler

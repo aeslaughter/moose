@@ -5,6 +5,6 @@
 
 !parameters /MultiApps/FullSolveMultiApp
 
-!listingfiles /MultiApps/FullSolveMultiApp
+!inputfiles /MultiApps/FullSolveMultiApp
 
 !childobjects /MultiApps/FullSolveMultiApp

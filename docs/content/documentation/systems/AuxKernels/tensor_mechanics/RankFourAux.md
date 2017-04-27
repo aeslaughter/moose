@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/RankFourAux
 
-!listingfiles /AuxKernels/RankFourAux
+!inputfiles /AuxKernels/RankFourAux
 
 !childobjects /AuxKernels/RankFourAux

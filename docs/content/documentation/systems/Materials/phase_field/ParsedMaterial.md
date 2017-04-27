@@ -15,6 +15,6 @@ It will be 0 for phase 1, -1 for phase 2, and 1 for phase 3
 
 !parameters /Materials/ParsedMaterial
 
-!listingfiles /Materials/ParsedMaterial
+!inputfiles /Materials/ParsedMaterial
 
 !childobjects /Materials/ParsedMaterial

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalSum
 
-!listingfiles /Postprocessors/NodalSum
+!inputfiles /Postprocessors/NodalSum
 
 !childobjects /Postprocessors/NodalSum

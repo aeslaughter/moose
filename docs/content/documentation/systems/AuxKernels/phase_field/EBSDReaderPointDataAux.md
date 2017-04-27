@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/EBSDReaderPointDataAux
 
-!listingfiles /AuxKernels/EBSDReaderPointDataAux
+!inputfiles /AuxKernels/EBSDReaderPointDataAux
 
 !childobjects /AuxKernels/EBSDReaderPointDataAux

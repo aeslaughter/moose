@@ -12,6 +12,6 @@ The `DiscreteNucleationInserter` is part of the [Discrete Nucleation system](Nuc
 
 !parameters /UserObjects/DiscreteNucleationInserter
 
-!listingfiles /UserObjects/DiscreteNucleationInserter
+!inputfiles /UserObjects/DiscreteNucleationInserter
 
 !childobjects /UserObjects/DiscreteNucleationInserter

@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVCharacteristicBCUserObject
 
-!listingfiles /UserObjects/CNSFVCharacteristicBCUserObject
+!inputfiles /UserObjects/CNSFVCharacteristicBCUserObject
 
 !childobjects /UserObjects/CNSFVCharacteristicBCUserObject

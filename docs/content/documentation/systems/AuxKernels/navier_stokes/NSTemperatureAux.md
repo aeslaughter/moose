@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSTemperatureAux
 
-!listingfiles /AuxKernels/NSTemperatureAux
+!inputfiles /AuxKernels/NSTemperatureAux
 
 !childobjects /AuxKernels/NSTemperatureAux

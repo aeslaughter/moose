@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/Heun
 
-!listingfiles /Executioner/TimeIntegrator/Heun
+!inputfiles /Executioner/TimeIntegrator/Heun
 
 !childobjects /Executioner/TimeIntegrator/Heun

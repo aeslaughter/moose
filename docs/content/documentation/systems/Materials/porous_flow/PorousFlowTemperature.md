@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowTemperature
 
-!listingfiles /Materials/PorousFlowTemperature
+!inputfiles /Materials/PorousFlowTemperature
 
 !childobjects /Materials/PorousFlowTemperature

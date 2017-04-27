@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppPostprocessorTransfer
 
-!listingfiles /Transfers/MultiAppPostprocessorTransfer
+!inputfiles /Transfers/MultiAppPostprocessorTransfer
 
 !childobjects /Transfers/MultiAppPostprocessorTransfer

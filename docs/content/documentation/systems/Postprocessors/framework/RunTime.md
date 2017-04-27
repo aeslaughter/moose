@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/RunTime
 
-!listingfiles /Postprocessors/RunTime
+!inputfiles /Postprocessors/RunTime
 
 !childobjects /Postprocessors/RunTime

@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSMassInviscidFlux
 
-!listingfiles /Kernels/NSMassInviscidFlux
+!inputfiles /Kernels/NSMassInviscidFlux
 
 !childobjects /Kernels/NSMassInviscidFlux

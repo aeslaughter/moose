@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsHardeningConstant
 
-!listingfiles /UserObjects/TensorMechanicsHardeningConstant
+!inputfiles /UserObjects/TensorMechanicsHardeningConstant
 
 !childobjects /UserObjects/TensorMechanicsHardeningConstant

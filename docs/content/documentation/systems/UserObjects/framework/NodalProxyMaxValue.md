@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalProxyMaxValue
 
-!listingfiles /UserObjects/NodalProxyMaxValue
+!inputfiles /UserObjects/NodalProxyMaxValue
 
 !childobjects /UserObjects/NodalProxyMaxValue

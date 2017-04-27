@@ -5,6 +5,6 @@ This model computes an elasticity tensor for which the elastic moduli, prescribe
 
 !parameters /Materials/ComputeVariableIsotropicElasticityTensor
 
-!listingfiles /Materials/ComputeVariableIsotropicElasticityTensor
+!inputfiles /Materials/ComputeVariableIsotropicElasticityTensor
 
 !childobjects /Materials/ComputeVariableIsotropicElasticityTensor

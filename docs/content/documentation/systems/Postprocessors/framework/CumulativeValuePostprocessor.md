@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/CumulativeValuePostprocessor
 
-!listingfiles /Postprocessors/CumulativeValuePostprocessor
+!inputfiles /Postprocessors/CumulativeValuePostprocessor
 
 !childobjects /Postprocessors/CumulativeValuePostprocessor

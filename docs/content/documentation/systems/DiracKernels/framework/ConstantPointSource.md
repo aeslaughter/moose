@@ -5,6 +5,6 @@
 
 !parameters /DiracKernels/ConstantPointSource
 
-!listingfiles /DiracKernels/ConstantPointSource
+!inputfiles /DiracKernels/ConstantPointSource
 
 !childobjects /DiracKernels/ConstantPointSource

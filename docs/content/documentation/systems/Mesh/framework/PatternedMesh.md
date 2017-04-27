@@ -18,6 +18,6 @@ file, as shown below, to create the pattern shown in Figure 3.
 
 !parameters /Mesh/PatternedMesh
 
-!listingfiles /Mesh/PatternedMesh
+!inputfiles /Mesh/PatternedMesh
 
 !childobjects /Mesh/PatternedMesh

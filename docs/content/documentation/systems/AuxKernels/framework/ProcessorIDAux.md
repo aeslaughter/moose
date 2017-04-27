@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ProcessorIDAux
 
-!listingfiles /AuxKernels/ProcessorIDAux
+!inputfiles /AuxKernels/ProcessorIDAux
 
 !childobjects /AuxKernels/ProcessorIDAux

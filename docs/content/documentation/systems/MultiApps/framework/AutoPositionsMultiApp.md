@@ -5,6 +5,6 @@
 
 !parameters /MultiApps/AutoPositionsMultiApp
 
-!listingfiles /MultiApps/AutoPositionsMultiApp
+!inputfiles /MultiApps/AutoPositionsMultiApp
 
 !childobjects /MultiApps/AutoPositionsMultiApp

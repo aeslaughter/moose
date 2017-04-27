@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/SolutionUserObject
 
-!listingfiles /UserObjects/SolutionUserObject
+!inputfiles /UserObjects/SolutionUserObject
 
 !childobjects /UserObjects/SolutionUserObject

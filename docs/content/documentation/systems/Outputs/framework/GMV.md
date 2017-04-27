@@ -5,6 +5,6 @@
 
 !parameters /Outputs/GMV
 
-!listingfiles /Outputs/GMV
+!inputfiles /Outputs/GMV
 
 !childobjects /Outputs/GMV

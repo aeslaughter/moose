@@ -56,7 +56,7 @@ This syntax is not yet supported by the doc system:
 
 !parameters /Modules/TensorMechanics/Master*
 
-!listingfiles /Modules/TensorMechanics/Master/*
+!inputfiles /Modules/TensorMechanics/Master/*
 
 !childobjects /Modules/TensorMechanics/Master/*
 -->

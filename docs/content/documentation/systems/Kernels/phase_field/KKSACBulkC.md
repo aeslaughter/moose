@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSACBulkC
 
-!listingfiles /Kernels/KKSACBulkC
+!inputfiles /Kernels/KKSACBulkC
 
 !childobjects /Kernels/KKSACBulkC

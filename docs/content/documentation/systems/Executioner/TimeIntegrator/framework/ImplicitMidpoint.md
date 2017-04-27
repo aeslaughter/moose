@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/ImplicitMidpoint
 
-!listingfiles /Executioner/TimeIntegrator/ImplicitMidpoint
+!inputfiles /Executioner/TimeIntegrator/ImplicitMidpoint
 
 !childobjects /Executioner/TimeIntegrator/ImplicitMidpoint

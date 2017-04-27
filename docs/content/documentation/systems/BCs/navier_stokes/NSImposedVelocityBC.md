@@ -2,6 +2,6 @@
 
 !parameters /BCs/NSImposedVelocityBC
 
-!listingfiles /BCs/NSImposedVelocityBC
+!inputfiles /BCs/NSImposedVelocityBC
 
 !childobjects /BCs/NSImposedVelocityBC

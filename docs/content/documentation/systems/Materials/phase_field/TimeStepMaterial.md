@@ -5,6 +5,6 @@
 
 !parameters /Materials/TimeStepMaterial
 
-!listingfiles /Materials/TimeStepMaterial
+!inputfiles /Materials/TimeStepMaterial
 
 !childobjects /Materials/TimeStepMaterial

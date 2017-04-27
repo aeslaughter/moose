@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowEffectiveStressCoupling
 
-!listingfiles /Kernels/PorousFlowEffectiveStressCoupling
+!inputfiles /Kernels/PorousFlowEffectiveStressCoupling
 
 !childobjects /Kernels/PorousFlowEffectiveStressCoupling

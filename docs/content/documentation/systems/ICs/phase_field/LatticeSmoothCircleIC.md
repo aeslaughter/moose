@@ -5,6 +5,6 @@
 
 !parameters /ICs/LatticeSmoothCircleIC
 
-!listingfiles /ICs/LatticeSmoothCircleIC
+!inputfiles /ICs/LatticeSmoothCircleIC
 
 !childobjects /ICs/LatticeSmoothCircleIC

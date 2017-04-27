@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeVolumetricDeformGrad
 
-!listingfiles /Materials/ComputeVolumetricDeformGrad
+!inputfiles /Materials/ComputeVolumetricDeformGrad
 
 !childobjects /Materials/ComputeVolumetricDeformGrad

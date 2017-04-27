@@ -5,6 +5,6 @@
 
 !parameters /DiracKernels/GapHeatPointSourceMaster
 
-!listingfiles /DiracKernels/GapHeatPointSourceMaster
+!inputfiles /DiracKernels/GapHeatPointSourceMaster
 
 !childobjects /DiracKernels/GapHeatPointSourceMaster

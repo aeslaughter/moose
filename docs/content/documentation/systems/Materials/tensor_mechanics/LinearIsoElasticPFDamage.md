@@ -5,6 +5,6 @@
 
 !parameters /Materials/LinearIsoElasticPFDamage
 
-!listingfiles /Materials/LinearIsoElasticPFDamage
+!inputfiles /Materials/LinearIsoElasticPFDamage
 
 !childobjects /Materials/LinearIsoElasticPFDamage

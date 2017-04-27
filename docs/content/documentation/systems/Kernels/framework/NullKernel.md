@@ -5,6 +5,6 @@
 
 !parameters /Kernels/NullKernel
 
-!listingfiles /Kernels/NullKernel
+!inputfiles /Kernels/NullKernel
 
 !childobjects /Kernels/NullKernel

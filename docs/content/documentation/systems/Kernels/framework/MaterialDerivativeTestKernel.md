@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MaterialDerivativeTestKernel
 
-!listingfiles /Kernels/MaterialDerivativeTestKernel
+!inputfiles /Kernels/MaterialDerivativeTestKernel
 
 !childobjects /Kernels/MaterialDerivativeTestKernel

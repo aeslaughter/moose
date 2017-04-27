@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/AverageNodalVariableValue
 
-!listingfiles /UserObjects/AverageNodalVariableValue
+!inputfiles /UserObjects/AverageNodalVariableValue
 
 !childobjects /UserObjects/AverageNodalVariableValue

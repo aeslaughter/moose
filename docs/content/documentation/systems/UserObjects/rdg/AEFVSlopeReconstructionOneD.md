@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/AEFVSlopeReconstructionOneD
 
-!listingfiles /UserObjects/AEFVSlopeReconstructionOneD
+!inputfiles /UserObjects/AEFVSlopeReconstructionOneD
 
 !childobjects /UserObjects/AEFVSlopeReconstructionOneD

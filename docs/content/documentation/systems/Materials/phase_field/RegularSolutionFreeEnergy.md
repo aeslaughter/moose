@@ -5,6 +5,6 @@
 
 !parameters /Materials/RegularSolutionFreeEnergy
 
-!listingfiles /Materials/RegularSolutionFreeEnergy
+!inputfiles /Materials/RegularSolutionFreeEnergy
 
 !childobjects /Materials/RegularSolutionFreeEnergy

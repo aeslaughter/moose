@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementAverageValue
 
-!listingfiles /UserObjects/ElementAverageValue
+!inputfiles /UserObjects/ElementAverageValue
 
 !childobjects /UserObjects/ElementAverageValue

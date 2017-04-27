@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSPhaseConcentration
 
-!listingfiles /Kernels/KKSPhaseConcentration
+!inputfiles /Kernels/KKSPhaseConcentration
 
 !childobjects /Kernels/KKSPhaseConcentration

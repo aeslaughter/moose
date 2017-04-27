@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHSplitFlux
 
-!listingfiles /Kernels/CHSplitFlux
+!inputfiles /Kernels/CHSplitFlux
 
 !childobjects /Kernels/CHSplitFlux

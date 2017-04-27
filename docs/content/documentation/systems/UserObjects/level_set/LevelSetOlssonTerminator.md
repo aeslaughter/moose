@@ -16,6 +16,6 @@ is repeated at time $t+\Delta t$.
 
 !parameters /UserObjects/LevelSetOlssonTerminator
 
-!listingfiles /UserObjects/LevelSetOlssonTerminator
+!inputfiles /UserObjects/LevelSetOlssonTerminator
 
 !childobjects /UserObjects/LevelSetOlssonTerminator

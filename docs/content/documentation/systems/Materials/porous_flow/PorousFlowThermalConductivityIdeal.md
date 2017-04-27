@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowThermalConductivityIdeal
 
-!listingfiles /Materials/PorousFlowThermalConductivityIdeal
+!inputfiles /Materials/PorousFlowThermalConductivityIdeal
 
 !childobjects /Materials/PorousFlowThermalConductivityIdeal

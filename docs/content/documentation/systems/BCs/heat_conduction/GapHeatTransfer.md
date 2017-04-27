@@ -5,6 +5,6 @@
 
 !parameters /BCs/GapHeatTransfer
 
-!listingfiles /BCs/GapHeatTransfer
+!inputfiles /BCs/GapHeatTransfer
 
 !childobjects /BCs/GapHeatTransfer

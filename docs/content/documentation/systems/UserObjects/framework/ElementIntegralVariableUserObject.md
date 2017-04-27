@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementIntegralVariableUserObject
 
-!listingfiles /UserObjects/ElementIntegralVariableUserObject
+!inputfiles /UserObjects/ElementIntegralVariableUserObject
 
 !childobjects /UserObjects/ElementIntegralVariableUserObject

@@ -30,7 +30,7 @@ as follows.
 
 !parameters /Kernels/LevelSetForcingFunctionSUPG
 
-!listingfiles /Kernels/LevelSetForcingFunctionSUPG
+!inputfiles /Kernels/LevelSetForcingFunctionSUPG
 
 !childobjects /Kernels/LevelSetForcingFunctionSUPG
 

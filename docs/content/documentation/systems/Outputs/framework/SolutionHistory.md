@@ -5,6 +5,6 @@
 
 !parameters /Outputs/SolutionHistory
 
-!listingfiles /Outputs/SolutionHistory
+!inputfiles /Outputs/SolutionHistory
 
 !childobjects /Outputs/SolutionHistory

@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSMomentumTractionForm
 
-!listingfiles /Kernels/INSMomentumTractionForm
+!inputfiles /Kernels/INSMomentumTractionForm
 
 !childobjects /Kernels/INSMomentumTractionForm

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumNonlinearIterations
 
-!listingfiles /Postprocessors/NumNonlinearIterations
+!inputfiles /Postprocessors/NumNonlinearIterations
 
 !childobjects /Postprocessors/NumNonlinearIterations

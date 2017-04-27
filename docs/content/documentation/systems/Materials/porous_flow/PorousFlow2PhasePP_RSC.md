@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlow2PhasePP_RSC
 
-!listingfiles /Materials/PorousFlow2PhasePP_RSC
+!inputfiles /Materials/PorousFlow2PhasePP_RSC
 
 !childobjects /Materials/PorousFlow2PhasePP_RSC

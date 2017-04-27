@@ -11,6 +11,6 @@
 
 !parameters /Kernels/HeatCapacityConductionTimeDerivative
 
-!listingfiles /Kernels/HeatCapacityConductionTimeDerivative
+!inputfiles /Kernels/HeatCapacityConductionTimeDerivative
 
 !childobjects /Kernels/HeatCapacityConductionTimeDerivative

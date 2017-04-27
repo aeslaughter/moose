@@ -5,6 +5,6 @@
 
 !parameters /Kernels/KKSCHBulk
 
-!listingfiles /Kernels/KKSCHBulk
+!inputfiles /Kernels/KKSCHBulk
 
 !childobjects /Kernels/KKSCHBulk

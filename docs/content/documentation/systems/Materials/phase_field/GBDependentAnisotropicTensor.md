@@ -5,6 +5,6 @@
 
 !parameters /Materials/GBDependentAnisotropicTensor
 
-!listingfiles /Materials/GBDependentAnisotropicTensor
+!inputfiles /Materials/GBDependentAnisotropicTensor
 
 !childobjects /Materials/GBDependentAnisotropicTensor

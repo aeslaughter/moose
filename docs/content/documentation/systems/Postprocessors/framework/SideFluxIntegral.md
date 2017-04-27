@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/SideFluxIntegral
 
-!listingfiles /Postprocessors/SideFluxIntegral
+!inputfiles /Postprocessors/SideFluxIntegral
 
 !childobjects /Postprocessors/SideFluxIntegral

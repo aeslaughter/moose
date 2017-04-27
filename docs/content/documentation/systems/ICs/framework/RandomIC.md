@@ -5,6 +5,6 @@
 
 !parameters /ICs/RandomIC
 
-!listingfiles /ICs/RandomIC
+!inputfiles /ICs/RandomIC
 
 !childobjects /ICs/RandomIC

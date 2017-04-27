@@ -5,6 +5,6 @@
 
 !parameters /Kernels/BodyForce
 
-!listingfiles /Kernels/BodyForce
+!inputfiles /Kernels/BodyForce
 
 !childobjects /Kernels/BodyForce

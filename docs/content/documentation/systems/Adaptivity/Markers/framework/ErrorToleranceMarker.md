@@ -16,6 +16,6 @@ element is define for coarsening or refinement using a hard tolerances:
 
 !parameters /Adaptivity/Markers/ErrorToleranceMarker
 
-!listingfiles /Adaptivity/Markers/ErrorToleranceMarker
+!inputfiles /Adaptivity/Markers/ErrorToleranceMarker
 
 !childobjects /Adaptivity/Markers/ErrorToleranceMarker

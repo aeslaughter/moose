@@ -5,6 +5,6 @@
 
 !parameters /Materials/MultiPhaseStressMaterial
 
-!listingfiles /Materials/MultiPhaseStressMaterial
+!inputfiles /Materials/MultiPhaseStressMaterial
 
 !childobjects /Materials/MultiPhaseStressMaterial

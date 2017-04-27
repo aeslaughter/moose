@@ -5,6 +5,6 @@
 
 !parameters /Functions/ImageFunction
 
-!listingfiles /Functions/ImageFunction
+!inputfiles /Functions/ImageFunction
 
 !childobjects /Functions/ImageFunction

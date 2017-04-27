@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ExecutionerAttributeReporter
 
-!listingfiles /Postprocessors/ExecutionerAttributeReporter
+!inputfiles /Postprocessors/ExecutionerAttributeReporter
 
 !childobjects /Postprocessors/ExecutionerAttributeReporter

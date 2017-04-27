@@ -5,6 +5,6 @@
 
 !parameters /ICs/ScalarConstantIC
 
-!listingfiles /ICs/ScalarConstantIC
+!inputfiles /ICs/ScalarConstantIC
 
 !childobjects /ICs/ScalarConstantIC

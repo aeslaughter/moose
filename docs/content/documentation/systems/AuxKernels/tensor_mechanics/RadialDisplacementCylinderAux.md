@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/RadialDisplacementCylinderAux
 
-!listingfiles /AuxKernels/RadialDisplacementCylinderAux
+!inputfiles /AuxKernels/RadialDisplacementCylinderAux
 
 !childobjects /AuxKernels/RadialDisplacementCylinderAux

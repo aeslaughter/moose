@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumResidualEvaluations
 
-!listingfiles /UserObjects/NumResidualEvaluations
+!inputfiles /UserObjects/NumResidualEvaluations
 
 !childobjects /UserObjects/NumResidualEvaluations

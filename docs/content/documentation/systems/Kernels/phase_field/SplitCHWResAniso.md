@@ -5,6 +5,6 @@
 
 !parameters /Kernels/SplitCHWResAniso
 
-!listingfiles /Kernels/SplitCHWResAniso
+!inputfiles /Kernels/SplitCHWResAniso
 
 !childobjects /Kernels/SplitCHWResAniso

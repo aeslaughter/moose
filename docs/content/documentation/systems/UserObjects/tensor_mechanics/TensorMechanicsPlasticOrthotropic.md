@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticOrthotropic
 
-!listingfiles /UserObjects/TensorMechanicsPlasticOrthotropic
+!inputfiles /UserObjects/TensorMechanicsPlasticOrthotropic
 
 !childobjects /UserObjects/TensorMechanicsPlasticOrthotropic

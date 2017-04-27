@@ -5,6 +5,6 @@
 
 !parameters /Kernels/StressDivergenceTensorsTruss
 
-!listingfiles /Kernels/StressDivergenceTensorsTruss
+!inputfiles /Kernels/StressDivergenceTensorsTruss
 
 !childobjects /Kernels/StressDivergenceTensorsTruss

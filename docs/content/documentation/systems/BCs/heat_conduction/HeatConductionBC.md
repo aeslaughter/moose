@@ -5,6 +5,6 @@
 
 !parameters /BCs/HeatConductionBC
 
-!listingfiles /BCs/HeatConductionBC
+!inputfiles /BCs/HeatConductionBC
 
 !childobjects /BCs/HeatConductionBC

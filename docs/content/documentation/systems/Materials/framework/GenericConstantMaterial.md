@@ -5,6 +5,6 @@
 
 !parameters /Materials/GenericConstantMaterial
 
-!listingfiles /Materials/GenericConstantMaterial
+!inputfiles /Materials/GenericConstantMaterial
 
 !childobjects /Materials/GenericConstantMaterial

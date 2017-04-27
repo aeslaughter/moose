@@ -5,6 +5,6 @@
 
 !parameters /BCs/PostprocessorNeumannBC
 
-!listingfiles /BCs/PostprocessorNeumannBC
+!inputfiles /BCs/PostprocessorNeumannBC
 
 !childobjects /BCs/PostprocessorNeumannBC

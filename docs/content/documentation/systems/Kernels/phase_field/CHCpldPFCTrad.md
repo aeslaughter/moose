@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHCpldPFCTrad
 
-!listingfiles /Kernels/CHCpldPFCTrad
+!inputfiles /Kernels/CHCpldPFCTrad
 
 !childobjects /Kernels/CHCpldPFCTrad

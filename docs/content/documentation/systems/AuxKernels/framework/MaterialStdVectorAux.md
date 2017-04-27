@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/MaterialStdVectorAux
 
-!listingfiles /AuxKernels/MaterialStdVectorAux
+!inputfiles /AuxKernels/MaterialStdVectorAux
 
 !childobjects /AuxKernels/MaterialStdVectorAux

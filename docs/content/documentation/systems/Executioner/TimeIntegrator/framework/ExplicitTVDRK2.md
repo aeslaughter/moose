@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/ExplicitTVDRK2
 
-!listingfiles /Executioner/TimeIntegrator/ExplicitTVDRK2
+!inputfiles /Executioner/TimeIntegrator/ExplicitTVDRK2
 
 !childobjects /Executioner/TimeIntegrator/ExplicitTVDRK2

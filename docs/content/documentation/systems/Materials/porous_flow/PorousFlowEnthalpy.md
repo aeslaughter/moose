@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowEnthalpy
 
-!listingfiles /Materials/PorousFlowEnthalpy
+!inputfiles /Materials/PorousFlowEnthalpy
 
 !childobjects /Materials/PorousFlowEnthalpy

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PFFracCoupledInterface
 
-!listingfiles /Kernels/PFFracCoupledInterface
+!inputfiles /Kernels/PFFracCoupledInterface
 
 !childobjects /Kernels/PFFracCoupledInterface

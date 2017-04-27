@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ACInterfaceKobayashi2
 
-!listingfiles /Kernels/ACInterfaceKobayashi2
+!inputfiles /Kernels/ACInterfaceKobayashi2
 
 !childobjects /Kernels/ACInterfaceKobayashi2

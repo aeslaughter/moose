@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticSimpleTester
 
-!listingfiles /UserObjects/TensorMechanicsPlasticSimpleTester
+!inputfiles /UserObjects/TensorMechanicsPlasticSimpleTester
 
 !childobjects /UserObjects/TensorMechanicsPlasticSimpleTester

@@ -8,6 +8,6 @@ coefficient $D$.
 
 !parameters /Kernels/MatAnisoDiffusion
 
-!listingfiles /Kernels/MatAnisoDiffusion
+!inputfiles /Kernels/MatAnisoDiffusion
 
 !childobjects /Kernels/MatAnisoDiffusion

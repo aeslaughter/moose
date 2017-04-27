@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputePlaneSmallStrain
 
-!listingfiles /Materials/ComputePlaneSmallStrain
+!inputfiles /Materials/ComputePlaneSmallStrain
 
 !childobjects /Materials/ComputePlaneSmallStrain

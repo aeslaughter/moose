@@ -5,6 +5,6 @@
 
 !parameters /Materials/MathEBFreeEnergy
 
-!listingfiles /Materials/MathEBFreeEnergy
+!inputfiles /Materials/MathEBFreeEnergy
 
 !childobjects /Materials/MathEBFreeEnergy

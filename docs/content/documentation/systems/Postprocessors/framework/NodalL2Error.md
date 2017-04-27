@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalL2Error
 
-!listingfiles /Postprocessors/NodalL2Error
+!inputfiles /Postprocessors/NodalL2Error
 
 !childobjects /Postprocessors/NodalL2Error

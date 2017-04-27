@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementL2Difference
 
-!listingfiles /UserObjects/ElementL2Difference
+!inputfiles /UserObjects/ElementL2Difference
 
 !childobjects /UserObjects/ElementL2Difference

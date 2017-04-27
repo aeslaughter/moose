@@ -17,6 +17,6 @@ then defined.
 
 !parameters /Adaptivity/Markers/OrientedBoxMarker
 
-!listingfiles /Adaptivity/Markers/OrientedBoxMarker
+!inputfiles /Adaptivity/Markers/OrientedBoxMarker
 
 !childobjects /Adaptivity/Markers/OrientedBoxMarker

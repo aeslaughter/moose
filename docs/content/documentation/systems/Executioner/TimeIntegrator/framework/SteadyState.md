@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/SteadyState
 
-!listingfiles /Executioner/TimeIntegrator/SteadyState
+!inputfiles /Executioner/TimeIntegrator/SteadyState
 
 !childobjects /Executioner/TimeIntegrator/SteadyState

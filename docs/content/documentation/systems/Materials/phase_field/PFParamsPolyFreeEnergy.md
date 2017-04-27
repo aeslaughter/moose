@@ -5,6 +5,6 @@
 
 !parameters /Materials/PFParamsPolyFreeEnergy
 
-!listingfiles /Materials/PFParamsPolyFreeEnergy
+!inputfiles /Materials/PFParamsPolyFreeEnergy
 
 !childobjects /Materials/PFParamsPolyFreeEnergy

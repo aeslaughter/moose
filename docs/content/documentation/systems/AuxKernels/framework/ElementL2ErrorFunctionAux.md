@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ElementL2ErrorFunctionAux
 
-!listingfiles /AuxKernels/ElementL2ErrorFunctionAux
+!inputfiles /AuxKernels/ElementL2ErrorFunctionAux
 
 !childobjects /AuxKernels/ElementL2ErrorFunctionAux

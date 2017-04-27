@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsHardeningPowerRule
 
-!listingfiles /UserObjects/TensorMechanicsHardeningPowerRule
+!inputfiles /UserObjects/TensorMechanicsHardeningPowerRule
 
 !childobjects /UserObjects/TensorMechanicsHardeningPowerRule

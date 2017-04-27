@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/FunctionSideIntegral
 
-!listingfiles /UserObjects/FunctionSideIntegral
+!inputfiles /UserObjects/FunctionSideIntegral
 
 !childobjects /UserObjects/FunctionSideIntegral

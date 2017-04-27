@@ -12,6 +12,6 @@ the generated mesh is sized to the dimensions of the images and creates one elem
 
 !parameters /Mesh/ImageMesh
 
-!listingfiles /Mesh/ImageMesh
+!inputfiles /Mesh/ImageMesh
 
 !childobjects /Mesh/ImageMesh

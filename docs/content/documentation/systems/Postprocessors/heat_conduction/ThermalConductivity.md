@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ThermalConductivity
 
-!listingfiles /Postprocessors/ThermalConductivity
+!inputfiles /Postprocessors/ThermalConductivity
 
 !childobjects /Postprocessors/ThermalConductivity

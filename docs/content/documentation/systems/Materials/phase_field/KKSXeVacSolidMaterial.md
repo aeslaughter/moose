@@ -5,6 +5,6 @@
 
 !parameters /Materials/KKSXeVacSolidMaterial
 
-!listingfiles /Materials/KKSXeVacSolidMaterial
+!inputfiles /Materials/KKSXeVacSolidMaterial
 
 !childobjects /Materials/KKSXeVacSolidMaterial

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowHeatVolumetricExpansion
 
-!listingfiles /Kernels/PorousFlowHeatVolumetricExpansion
+!inputfiles /Kernels/PorousFlowHeatVolumetricExpansion
 
 !childobjects /Kernels/PorousFlowHeatVolumetricExpansion

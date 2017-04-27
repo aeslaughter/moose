@@ -5,6 +5,6 @@
 
 !parameters /Constraints/GapConductanceConstraint
 
-!listingfiles /Constraints/GapConductanceConstraint
+!inputfiles /Constraints/GapConductanceConstraint
 
 !childobjects /Constraints/GapConductanceConstraint

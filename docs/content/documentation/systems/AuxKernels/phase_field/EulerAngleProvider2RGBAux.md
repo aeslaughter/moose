@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/EulerAngleProvider2RGBAux
 
-!listingfiles /AuxKernels/EulerAngleProvider2RGBAux
+!inputfiles /AuxKernels/EulerAngleProvider2RGBAux
 
 !childobjects /AuxKernels/EulerAngleProvider2RGBAux

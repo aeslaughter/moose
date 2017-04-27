@@ -5,6 +5,6 @@
 
 !parameters /Materials/VariableGradientMaterial
 
-!listingfiles /Materials/VariableGradientMaterial
+!inputfiles /Materials/VariableGradientMaterial
 
 !childobjects /Materials/VariableGradientMaterial

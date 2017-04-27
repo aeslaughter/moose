@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/VolumeHistogram
 
-!listingfiles /VectorPostprocessors/VolumeHistogram
+!inputfiles /VectorPostprocessors/VolumeHistogram
 
 !childobjects /VectorPostprocessors/VolumeHistogram

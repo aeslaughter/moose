@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/PointValueSampler
 
-!listingfiles /VectorPostprocessors/PointValueSampler
+!inputfiles /VectorPostprocessors/PointValueSampler
 
 !childobjects /VectorPostprocessors/PointValueSampler

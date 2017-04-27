@@ -5,6 +5,6 @@
 
 !parameters /Kernels/MatReaction
 
-!listingfiles /Kernels/MatReaction
+!inputfiles /Kernels/MatReaction
 
 !childobjects /Kernels/MatReaction

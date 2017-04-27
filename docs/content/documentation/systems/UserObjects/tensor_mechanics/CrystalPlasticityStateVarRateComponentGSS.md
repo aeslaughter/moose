@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/CrystalPlasticityStateVarRateComponentGSS
 
-!listingfiles /UserObjects/CrystalPlasticityStateVarRateComponentGSS
+!inputfiles /UserObjects/CrystalPlasticityStateVarRateComponentGSS
 
 !childobjects /UserObjects/CrystalPlasticityStateVarRateComponentGSS

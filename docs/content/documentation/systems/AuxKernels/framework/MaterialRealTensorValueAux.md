@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/MaterialRealTensorValueAux
 
-!listingfiles /AuxKernels/MaterialRealTensorValueAux
+!inputfiles /AuxKernels/MaterialRealTensorValueAux
 
 !childobjects /AuxKernels/MaterialRealTensorValueAux

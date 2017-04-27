@@ -27,7 +27,7 @@ The LevelSetOlssonReinitialization kernel is typically employed in a reinitializ
 
 !parameters /Kernels/LevelSetOlssonReinitialization
 
-!listingfiles /Kernels/LevelSetOlssonReinitialization
+!inputfiles /Kernels/LevelSetOlssonReinitialization
 
 !childobjects /Kernels/LevelSetOlssonReinitialization
 

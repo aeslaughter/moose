@@ -5,6 +5,6 @@
 
 !parameters /Constraints/LinearNodalConstraint
 
-!listingfiles /Constraints/LinearNodalConstraint
+!inputfiles /Constraints/LinearNodalConstraint
 
 !childobjects /Constraints/LinearNodalConstraint

@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/DT2
 
-!listingfiles /Executioner/TimeStepper/DT2
+!inputfiles /Executioner/TimeStepper/DT2
 
 !childobjects /Executioner/TimeStepper/DT2

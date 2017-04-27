@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PerformanceData
 
-!listingfiles /UserObjects/PerformanceData
+!inputfiles /UserObjects/PerformanceData
 
 !childobjects /UserObjects/PerformanceData

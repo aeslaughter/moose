@@ -5,6 +5,6 @@
 
 !parameters /DiracKernels/PorousFlowPeacemanBorehole
 
-!listingfiles /DiracKernels/PorousFlowPeacemanBorehole
+!inputfiles /DiracKernels/PorousFlowPeacemanBorehole
 
 !childobjects /DiracKernels/PorousFlowPeacemanBorehole

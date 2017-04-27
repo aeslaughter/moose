@@ -18,6 +18,6 @@ that arise from the gradient interface energy are handled separately in the [`AC
 
 !parameters /Kernels/AllenCahn
 
-!listingfiles /Kernels/AllenCahn
+!inputfiles /Kernels/AllenCahn
 
 !childobjects /Kernels/AllenCahn

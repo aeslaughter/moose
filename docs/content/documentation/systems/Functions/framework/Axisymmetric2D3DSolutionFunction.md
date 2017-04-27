@@ -5,6 +5,6 @@
 
 !parameters /Functions/Axisymmetric2D3DSolutionFunction
 
-!listingfiles /Functions/Axisymmetric2D3DSolutionFunction
+!inputfiles /Functions/Axisymmetric2D3DSolutionFunction
 
 !childobjects /Functions/Axisymmetric2D3DSolutionFunction

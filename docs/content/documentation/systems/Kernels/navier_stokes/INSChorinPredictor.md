@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSChorinPredictor
 
-!listingfiles /Kernels/INSChorinPredictor
+!inputfiles /Kernels/INSChorinPredictor
 
 !childobjects /Kernels/INSChorinPredictor

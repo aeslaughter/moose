@@ -5,6 +5,6 @@
 
 !parameters /Materials/PhaseNormalTensor
 
-!listingfiles /Materials/PhaseNormalTensor
+!inputfiles /Materials/PhaseNormalTensor
 
 !childobjects /Materials/PhaseNormalTensor

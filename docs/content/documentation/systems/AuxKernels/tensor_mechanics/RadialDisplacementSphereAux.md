@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/RadialDisplacementSphereAux
 
-!listingfiles /AuxKernels/RadialDisplacementSphereAux
+!inputfiles /AuxKernels/RadialDisplacementSphereAux
 
 !childobjects /AuxKernels/RadialDisplacementSphereAux

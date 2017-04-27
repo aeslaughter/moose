@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/AEFVSlopeLimitingOneD
 
-!listingfiles /UserObjects/AEFVSlopeLimitingOneD
+!inputfiles /UserObjects/AEFVSlopeLimitingOneD
 
 !childobjects /UserObjects/AEFVSlopeLimitingOneD

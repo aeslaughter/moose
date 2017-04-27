@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/PenetrationAux
 
-!listingfiles /AuxKernels/PenetrationAux
+!inputfiles /AuxKernels/PenetrationAux
 
 !childobjects /AuxKernels/PenetrationAux

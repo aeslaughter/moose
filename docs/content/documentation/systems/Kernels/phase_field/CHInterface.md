@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHInterface
 
-!listingfiles /Kernels/CHInterface
+!inputfiles /Kernels/CHInterface
 
 !childobjects /Kernels/CHInterface

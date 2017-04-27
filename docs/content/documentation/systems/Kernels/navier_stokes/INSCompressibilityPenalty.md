@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSCompressibilityPenalty
 
-!listingfiles /Kernels/INSCompressibilityPenalty
+!inputfiles /Kernels/INSCompressibilityPenalty
 
 !childobjects /Kernels/INSCompressibilityPenalty

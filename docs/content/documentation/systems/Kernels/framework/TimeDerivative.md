@@ -5,6 +5,6 @@
 
 !parameters /Kernels/TimeDerivative
 
-!listingfiles /Kernels/TimeDerivative
+!inputfiles /Kernels/TimeDerivative
 
 !childobjects /Kernels/TimeDerivative

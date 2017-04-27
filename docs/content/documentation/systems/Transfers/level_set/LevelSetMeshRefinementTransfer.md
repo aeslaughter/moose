@@ -13,6 +13,6 @@ this transfer is performed by the [LevelSetMeshRefinementTransfer](#).
 
 !parameters /Transfers/LevelSetMeshRefinementTransfer
 
-!listingfiles /Transfers/LevelSetMeshRefinementTransfer
+!inputfiles /Transfers/LevelSetMeshRefinementTransfer
 
 !childobjects /Transfers/LevelSetMeshRefinementTransfer

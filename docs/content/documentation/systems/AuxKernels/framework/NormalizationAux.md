@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/NormalizationAux
 
-!listingfiles /AuxKernels/NormalizationAux
+!inputfiles /AuxKernels/NormalizationAux
 
 !childobjects /AuxKernels/NormalizationAux

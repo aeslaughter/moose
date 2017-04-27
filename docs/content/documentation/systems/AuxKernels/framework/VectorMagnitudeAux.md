@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/VectorMagnitudeAux
 
-!listingfiles /AuxKernels/VectorMagnitudeAux
+!inputfiles /AuxKernels/VectorMagnitudeAux
 
 !childobjects /AuxKernels/VectorMagnitudeAux

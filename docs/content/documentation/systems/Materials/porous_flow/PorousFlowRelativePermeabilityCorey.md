@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowRelativePermeabilityCorey
 
-!listingfiles /Materials/PorousFlowRelativePermeabilityCorey
+!inputfiles /Materials/PorousFlowRelativePermeabilityCorey
 
 !childobjects /Materials/PorousFlowRelativePermeabilityCorey

@@ -5,6 +5,6 @@
 
 !parameters /Kernels/InertialForce
 
-!listingfiles /Kernels/InertialForce
+!inputfiles /Kernels/InertialForce
 
 !childobjects /Kernels/InertialForce

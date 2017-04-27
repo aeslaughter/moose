@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSEnergyViscousFlux
 
-!listingfiles /Kernels/NSEnergyViscousFlux
+!inputfiles /Kernels/NSEnergyViscousFlux
 
 !childobjects /Kernels/NSEnergyViscousFlux

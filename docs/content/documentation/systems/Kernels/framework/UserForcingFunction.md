@@ -5,6 +5,6 @@
 
 !parameters /Kernels/UserForcingFunction
 
-!listingfiles /Kernels/UserForcingFunction
+!inputfiles /Kernels/UserForcingFunction
 
 !childobjects /Kernels/UserForcingFunction

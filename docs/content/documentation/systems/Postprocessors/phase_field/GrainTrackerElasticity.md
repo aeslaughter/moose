@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/GrainTrackerElasticity
 
-!listingfiles /Postprocessors/GrainTrackerElasticity
+!inputfiles /Postprocessors/GrainTrackerElasticity
 
 !childobjects /Postprocessors/GrainTrackerElasticity

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ExecutionerAttributeReporter
 
-!listingfiles /UserObjects/ExecutionerAttributeReporter
+!inputfiles /UserObjects/ExecutionerAttributeReporter
 
 !childobjects /UserObjects/ExecutionerAttributeReporter

@@ -5,6 +5,6 @@
 
 !parameters /ICs/PFCFreezingIC
 
-!listingfiles /ICs/PFCFreezingIC
+!inputfiles /ICs/PFCFreezingIC
 
 !childobjects /ICs/PFCFreezingIC

@@ -5,6 +5,6 @@
 
 !parameters /Adaptivity/Indicators/AnalyticalIndicator
 
-!listingfiles /Adaptivity/Indicators/AnalyticalIndicator
+!inputfiles /Adaptivity/Indicators/AnalyticalIndicator
 
 !childobjects /Adaptivity/Indicators/AnalyticalIndicator

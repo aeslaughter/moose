@@ -5,6 +5,6 @@ This model computes a material property using a piecewise linear interpolation t
 
 !parameters /Materials/PiecewiseLinearInterpolationMaterial
 
-!listingfiles /Materials/PiecewiseLinearInterpolationMaterial
+!inputfiles /Materials/PiecewiseLinearInterpolationMaterial
 
 !childobjects /Materials/PiecewiseLinearInterpolationMaterial

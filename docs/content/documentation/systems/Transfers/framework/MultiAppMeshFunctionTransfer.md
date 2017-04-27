@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppMeshFunctionTransfer
 
-!listingfiles /Transfers/MultiAppMeshFunctionTransfer
+!inputfiles /Transfers/MultiAppMeshFunctionTransfer
 
 !childobjects /Transfers/MultiAppMeshFunctionTransfer

@@ -5,6 +5,6 @@
 
 !parameters /Materials/FiniteStrainCrystalPlasticity
 
-!listingfiles /Materials/FiniteStrainCrystalPlasticity
+!inputfiles /Materials/FiniteStrainCrystalPlasticity
 
 !childobjects /Materials/FiniteStrainCrystalPlasticity

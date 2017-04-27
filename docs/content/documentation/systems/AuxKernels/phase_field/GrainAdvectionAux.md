@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/GrainAdvectionAux
 
-!listingfiles /AuxKernels/GrainAdvectionAux
+!inputfiles /AuxKernels/GrainAdvectionAux
 
 !childobjects /AuxKernels/GrainAdvectionAux

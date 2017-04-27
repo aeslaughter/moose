@@ -5,6 +5,6 @@
 
 !parameters /ICs/TricrystalTripleJunctionIC
 
-!listingfiles /ICs/TricrystalTripleJunctionIC
+!inputfiles /ICs/TricrystalTripleJunctionIC
 
 !childobjects /ICs/TricrystalTripleJunctionIC

@@ -12,6 +12,6 @@ input file.
 
 !parameters /Problem/LevelSetProblem
 
-!listingfiles /Problem/LevelSetProblem
+!inputfiles /Problem/LevelSetProblem
 
 !childobjects /Problem/LevelSetProblem

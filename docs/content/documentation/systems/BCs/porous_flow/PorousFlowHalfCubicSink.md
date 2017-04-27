@@ -5,6 +5,6 @@
 
 !parameters /BCs/PorousFlowHalfCubicSink
 
-!listingfiles /BCs/PorousFlowHalfCubicSink
+!inputfiles /BCs/PorousFlowHalfCubicSink
 
 !childobjects /BCs/PorousFlowHalfCubicSink

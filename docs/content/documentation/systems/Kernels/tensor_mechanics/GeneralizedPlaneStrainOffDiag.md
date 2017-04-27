@@ -5,6 +5,6 @@
 
 !parameters /Kernels/GeneralizedPlaneStrainOffDiag
 
-!listingfiles /Kernels/GeneralizedPlaneStrainOffDiag
+!inputfiles /Kernels/GeneralizedPlaneStrainOffDiag
 
 !childobjects /Kernels/GeneralizedPlaneStrainOffDiag

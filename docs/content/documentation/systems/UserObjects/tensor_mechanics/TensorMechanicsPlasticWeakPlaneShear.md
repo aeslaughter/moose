@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticWeakPlaneShear
 
-!listingfiles /UserObjects/TensorMechanicsPlasticWeakPlaneShear
+!inputfiles /UserObjects/TensorMechanicsPlasticWeakPlaneShear
 
 !childobjects /UserObjects/TensorMechanicsPlasticWeakPlaneShear

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalVariableValue
 
-!listingfiles /Postprocessors/NodalVariableValue
+!inputfiles /Postprocessors/NodalVariableValue
 
 !childobjects /Postprocessors/NodalVariableValue

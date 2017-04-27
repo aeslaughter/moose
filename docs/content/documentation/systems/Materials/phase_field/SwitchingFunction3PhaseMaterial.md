@@ -5,6 +5,6 @@
 
 !parameters /Materials/SwitchingFunction3PhaseMaterial
 
-!listingfiles /Materials/SwitchingFunction3PhaseMaterial
+!inputfiles /Materials/SwitchingFunction3PhaseMaterial
 
 !childobjects /Materials/SwitchingFunction3PhaseMaterial

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/PFCEnergyDensity
 
-!listingfiles /AuxKernels/PFCEnergyDensity
+!inputfiles /AuxKernels/PFCEnergyDensity
 
 !childobjects /AuxKernels/PFCEnergyDensity

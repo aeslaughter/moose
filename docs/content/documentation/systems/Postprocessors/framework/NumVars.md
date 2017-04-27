@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumVars
 
-!listingfiles /Postprocessors/NumVars
+!inputfiles /Postprocessors/NumVars
 
 !childobjects /Postprocessors/NumVars

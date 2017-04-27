@@ -7,6 +7,6 @@
 
 !parameters /Adaptivity/Markers/UniformMarker
 
-!listingfiles /Adaptivity/Markers/UniformMarker
+!inputfiles /Adaptivity/Markers/UniformMarker
 
 !childobjects /Adaptivity/Markers/UniformMarker

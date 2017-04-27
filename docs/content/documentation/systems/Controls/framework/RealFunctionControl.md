@@ -5,6 +5,6 @@
 
 !parameters /Controls/RealFunctionControl
 
-!listingfiles /Controls/RealFunctionControl
+!inputfiles /Controls/RealFunctionControl
 
 !childobjects /Controls/RealFunctionControl

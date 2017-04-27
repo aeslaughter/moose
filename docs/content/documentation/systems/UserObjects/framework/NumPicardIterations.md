@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumPicardIterations
 
-!listingfiles /UserObjects/NumPicardIterations
+!inputfiles /UserObjects/NumPicardIterations
 
 !childobjects /UserObjects/NumPicardIterations

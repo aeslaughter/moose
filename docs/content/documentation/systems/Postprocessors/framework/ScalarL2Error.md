@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/ScalarL2Error
 
-!listingfiles /Postprocessors/ScalarL2Error
+!inputfiles /Postprocessors/ScalarL2Error
 
 !childobjects /Postprocessors/ScalarL2Error

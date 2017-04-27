@@ -20,6 +20,6 @@ file snippet below, these three square meshes are joined into a single mesh as s
 
 !parameters /Mesh/StitchedMesh
 
-!listingfiles /Mesh/StitchedMesh
+!inputfiles /Mesh/StitchedMesh
 
 !childobjects /Mesh/StitchedMesh

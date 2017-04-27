@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSSplitMomentum
 
-!listingfiles /Kernels/INSSplitMomentum
+!inputfiles /Kernels/INSSplitMomentum
 
 !childobjects /Kernels/INSSplitMomentum

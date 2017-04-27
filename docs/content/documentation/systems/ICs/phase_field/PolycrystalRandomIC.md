@@ -5,6 +5,6 @@
 
 !parameters /ICs/PolycrystalRandomIC
 
-!listingfiles /ICs/PolycrystalRandomIC
+!inputfiles /ICs/PolycrystalRandomIC
 
 !childobjects /ICs/PolycrystalRandomIC

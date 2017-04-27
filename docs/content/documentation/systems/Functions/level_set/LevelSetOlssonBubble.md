@@ -11,7 +11,7 @@ For example, the following code creates a "bubble" in the lower left corner in a
 
 !parameters /Functions/LevelSetOlssonBubble
 
-!listingfiles /Functions/LevelSetOlssonBubble
+!inputfiles /Functions/LevelSetOlssonBubble
 
 !childobjects /Functions/LevelSetOlssonBubble
 References

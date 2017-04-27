@@ -5,6 +5,6 @@
 
 !parameters /Kernels/ACGrGrPoly
 
-!listingfiles /Kernels/ACGrGrPoly
+!inputfiles /Kernels/ACGrGrPoly
 
 !childobjects /Kernels/ACGrGrPoly

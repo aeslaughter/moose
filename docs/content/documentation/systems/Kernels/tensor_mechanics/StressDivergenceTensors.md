@@ -10,6 +10,6 @@ For a detailed explanation of the settings for `use_displaced_mesh` in mechanics
 
 !parameters /Kernels/StressDivergenceTensors
 
-!listingfiles /Kernels/StressDivergenceTensors
+!inputfiles /Kernels/StressDivergenceTensors
 
 !childobjects /Kernels/StressDivergenceTensors

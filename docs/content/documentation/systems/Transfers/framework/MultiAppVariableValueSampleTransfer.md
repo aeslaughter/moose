@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppVariableValueSampleTransfer
 
-!listingfiles /Transfers/MultiAppVariableValueSampleTransfer
+!inputfiles /Transfers/MultiAppVariableValueSampleTransfer
 
 !childobjects /Transfers/MultiAppVariableValueSampleTransfer

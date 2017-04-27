@@ -66,6 +66,6 @@ be on a square grid rather than a hex grid.
 
 The `EBSDReader` supports additional custom data columns.
 
-!listingfiles /UserObjects/EBSDReader
+!inputfiles /UserObjects/EBSDReader
 
 !childobjects /UserObjects/EBSDReader

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/LayeredSideIntegral
 
-!listingfiles /UserObjects/LayeredSideIntegral
+!inputfiles /UserObjects/LayeredSideIntegral
 
 !childobjects /UserObjects/LayeredSideIntegral

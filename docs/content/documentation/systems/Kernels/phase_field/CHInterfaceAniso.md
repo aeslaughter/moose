@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CHInterfaceAniso
 
-!listingfiles /Kernels/CHInterfaceAniso
+!inputfiles /Kernels/CHInterfaceAniso
 
 !childobjects /Kernels/CHInterfaceAniso

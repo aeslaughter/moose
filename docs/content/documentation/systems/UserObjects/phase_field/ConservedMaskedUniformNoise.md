@@ -6,6 +6,6 @@
 
 !parameters /UserObjects/ConservedMaskedUniformNoise
 
-!listingfiles /UserObjects/ConservedMaskedUniformNoise
+!inputfiles /UserObjects/ConservedMaskedUniformNoise
 
 !childobjects /UserObjects/ConservedMaskedUniformNoise

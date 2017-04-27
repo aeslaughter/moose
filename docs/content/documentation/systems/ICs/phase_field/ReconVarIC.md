@@ -5,6 +5,6 @@
 
 !parameters /ICs/ReconVarIC
 
-!listingfiles /ICs/ReconVarIC
+!inputfiles /ICs/ReconVarIC
 
 !childobjects /ICs/ReconVarIC

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalMaxValue
 
-!listingfiles /Postprocessors/NodalMaxValue
+!inputfiles /Postprocessors/NodalMaxValue
 
 !childobjects /Postprocessors/NodalMaxValue

@@ -83,7 +83,7 @@ where $\mathrm{av}_{el}()$ is the average value for the entire element. The stra
 
 !parameters /Materials/ComputeFiniteStrain
 
-!listingfiles /Materials/ComputeFiniteStrain
+!inputfiles /Materials/ComputeFiniteStrain
 
 !listing modules/tensor_mechanics/tests/finite_strain_elastic/finite_strain_elastic_new_test.i start=strain end=stress
 

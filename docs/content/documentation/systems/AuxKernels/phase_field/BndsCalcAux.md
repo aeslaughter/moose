@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/BndsCalcAux
 
-!listingfiles /AuxKernels/BndsCalcAux
+!inputfiles /AuxKernels/BndsCalcAux
 
 !childobjects /AuxKernels/BndsCalcAux

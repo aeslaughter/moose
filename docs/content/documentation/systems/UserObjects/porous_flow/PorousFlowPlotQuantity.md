@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PorousFlowPlotQuantity
 
-!listingfiles /UserObjects/PorousFlowPlotQuantity
+!inputfiles /UserObjects/PorousFlowPlotQuantity
 
 !childobjects /UserObjects/PorousFlowPlotQuantity

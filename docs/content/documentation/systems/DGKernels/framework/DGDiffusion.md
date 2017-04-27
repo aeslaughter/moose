@@ -5,6 +5,6 @@
 
 !parameters /DGKernels/DGDiffusion
 
-!listingfiles /DGKernels/DGDiffusion
+!inputfiles /DGKernels/DGDiffusion
 
 !childobjects /DGKernels/DGDiffusion

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NumVars
 
-!listingfiles /UserObjects/NumVars
+!inputfiles /UserObjects/NumVars
 
 !childobjects /UserObjects/NumVars

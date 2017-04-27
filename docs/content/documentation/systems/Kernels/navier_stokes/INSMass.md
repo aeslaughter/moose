@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSMass
 
-!listingfiles /Kernels/INSMass
+!inputfiles /Kernels/INSMass
 
 !childobjects /Kernels/INSMass

@@ -5,6 +5,6 @@
 
 !parameters /Materials/FiniteStrainHyperElasticViscoPlastic
 
-!listingfiles /Materials/FiniteStrainHyperElasticViscoPlastic
+!inputfiles /Materials/FiniteStrainHyperElasticViscoPlastic
 
 !childobjects /Materials/FiniteStrainHyperElasticViscoPlastic

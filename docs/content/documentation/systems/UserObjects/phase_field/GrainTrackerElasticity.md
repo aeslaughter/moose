@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/GrainTrackerElasticity
 
-!listingfiles /UserObjects/GrainTrackerElasticity
+!inputfiles /UserObjects/GrainTrackerElasticity
 
 !childobjects /UserObjects/GrainTrackerElasticity

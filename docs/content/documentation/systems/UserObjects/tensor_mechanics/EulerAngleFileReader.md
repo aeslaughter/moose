@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/EulerAngleFileReader
 
-!listingfiles /UserObjects/EulerAngleFileReader
+!inputfiles /UserObjects/EulerAngleFileReader
 
 !childobjects /UserObjects/EulerAngleFileReader

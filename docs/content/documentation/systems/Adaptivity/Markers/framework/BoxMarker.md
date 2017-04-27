@@ -14,6 +14,6 @@ dimensions of the problem.
 
 !parameters /Adaptivity/Markers/BoxMarker
 
-!listingfiles /Adaptivity/Markers/BoxMarker
+!inputfiles /Adaptivity/Markers/BoxMarker
 
 !childobjects /Adaptivity/Markers/BoxMarker

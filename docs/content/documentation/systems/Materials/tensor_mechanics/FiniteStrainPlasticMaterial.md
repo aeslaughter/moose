@@ -5,6 +5,6 @@
 
 !parameters /Materials/FiniteStrainPlasticMaterial
 
-!listingfiles /Materials/FiniteStrainPlasticMaterial
+!inputfiles /Materials/FiniteStrainPlasticMaterial
 
 !childobjects /Materials/FiniteStrainPlasticMaterial

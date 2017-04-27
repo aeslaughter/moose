@@ -5,6 +5,6 @@
 
 !parameters /AuxScalarKernels/FunctionScalarAux
 
-!listingfiles /AuxScalarKernels/FunctionScalarAux
+!inputfiles /AuxScalarKernels/FunctionScalarAux
 
 !childobjects /AuxScalarKernels/FunctionScalarAux

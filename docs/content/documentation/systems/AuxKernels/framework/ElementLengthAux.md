@@ -12,6 +12,6 @@ from the [`Elem`](https://libmesh.github.io/doxygen/classlibMesh_1_1Elem.html) c
 
 !parameters /AuxKernels/ElementLengthAux
 
-!listingfiles /AuxKernels/ElementLengthAux
+!inputfiles /AuxKernels/ElementLengthAux
 
 !childobjects /AuxKernels/ElementLengthAux

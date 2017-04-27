@@ -5,6 +5,6 @@
 
 !parameters /Preconditioning/FDP
 
-!listingfiles /Preconditioning/FDP
+!inputfiles /Preconditioning/FDP
 
 !childobjects /Preconditioning/FDP

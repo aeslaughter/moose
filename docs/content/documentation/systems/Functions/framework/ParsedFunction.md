@@ -5,6 +5,6 @@
 
 !parameters /Functions/ParsedFunction
 
-!listingfiles /Functions/ParsedFunction
+!inputfiles /Functions/ParsedFunction
 
 !childobjects /Functions/ParsedFunction

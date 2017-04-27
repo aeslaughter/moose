@@ -11,9 +11,8 @@ customizable markdown syntax---[Moose Style Markdown](moose_markdown/index.md)--
 features tailored to documenting MOOSE code:
 
 * Object descriptions and input parameters tables may be automatically generated from applications.
-* Lists of cross-referencing links to examples and source code that use or inherit from your objects
-* may be created. Tools for placing source code without copying code allow documentation to change
-* with the code, without modification.
+* Lists of cross-referencing links to examples and source code that use or inherit from your objects may be created.
+* Tools for placing source code without copying code allow documentation to change with the code, without modification.
 
 The single source markdown files may be converted into various media forms include web-sites (like
 this one), slide shows, and pdfs (via latex). Most importantly, custom markdown syntax is easily

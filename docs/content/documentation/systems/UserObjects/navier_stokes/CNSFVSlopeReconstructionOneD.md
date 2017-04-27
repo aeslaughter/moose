@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVSlopeReconstructionOneD
 
-!listingfiles /UserObjects/CNSFVSlopeReconstructionOneD
+!inputfiles /UserObjects/CNSFVSlopeReconstructionOneD
 
 !childobjects /UserObjects/CNSFVSlopeReconstructionOneD

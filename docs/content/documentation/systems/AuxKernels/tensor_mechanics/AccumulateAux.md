@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/AccumulateAux
 
-!listingfiles /AuxKernels/AccumulateAux
+!inputfiles /AuxKernels/AccumulateAux
 
 !childobjects /AuxKernels/AccumulateAux

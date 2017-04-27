@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/VariableInnerProduct
 
-!listingfiles /UserObjects/VariableInnerProduct
+!inputfiles /UserObjects/VariableInnerProduct
 
 !childobjects /UserObjects/VariableInnerProduct

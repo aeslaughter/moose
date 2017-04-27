@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/MaterialRealAux
 
-!listingfiles /AuxKernels/MaterialRealAux
+!inputfiles /AuxKernels/MaterialRealAux
 
 !childobjects /AuxKernels/MaterialRealAux

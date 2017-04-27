@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/ElasticEnergyAux
 
-!listingfiles /AuxKernels/ElasticEnergyAux
+!inputfiles /AuxKernels/ElasticEnergyAux
 
 !childobjects /AuxKernels/ElasticEnergyAux

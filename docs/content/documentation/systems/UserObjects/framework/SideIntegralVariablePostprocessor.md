@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/SideIntegralVariablePostprocessor
 
-!listingfiles /UserObjects/SideIntegralVariablePostprocessor
+!inputfiles /UserObjects/SideIntegralVariablePostprocessor
 
 !childobjects /UserObjects/SideIntegralVariablePostprocessor

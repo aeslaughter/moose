@@ -5,6 +5,6 @@
 
 !parameters /Modules/TensorMechanics/GeneralizedPlaneStrain
 
-!listingfiles /Modules/TensorMechanics/GeneralizedPlaneStrain
+!inputfiles /Modules/TensorMechanics/GeneralizedPlaneStrain
 
 !childobjects /Modules/TensorMechanics/GeneralizedPlaneStrain

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/KKSGlobalFreeEnergy
 
-!listingfiles /AuxKernels/KKSGlobalFreeEnergy
+!inputfiles /AuxKernels/KKSGlobalFreeEnergy
 
 !childobjects /AuxKernels/KKSGlobalFreeEnergy

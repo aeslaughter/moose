@@ -5,6 +5,6 @@
 
 !parameters /Transfers/MultiAppUserObjectTransfer
 
-!listingfiles /Transfers/MultiAppUserObjectTransfer
+!inputfiles /Transfers/MultiAppUserObjectTransfer
 
 !childobjects /Transfers/MultiAppUserObjectTransfer

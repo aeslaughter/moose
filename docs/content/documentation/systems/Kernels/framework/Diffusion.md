@@ -15,6 +15,6 @@ $$\frac{\partial R_i(u_h)}{\partial u_j} = (\nabla \phi_i, \nabla \psi_j).$$
 
 !parameters /Kernels/Diffusion
 
-!listingfiles /Kernels/Diffusion
+!inputfiles /Kernels/Diffusion
 
 !childobjects /Kernels/Diffusion

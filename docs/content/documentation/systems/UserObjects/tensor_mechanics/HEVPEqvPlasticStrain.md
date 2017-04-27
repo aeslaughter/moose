@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/HEVPEqvPlasticStrain
 
-!listingfiles /UserObjects/HEVPEqvPlasticStrain
+!inputfiles /UserObjects/HEVPEqvPlasticStrain
 
 !childobjects /UserObjects/HEVPEqvPlasticStrain

@@ -5,6 +5,6 @@
 
 !parameters /Materials/PFCRFFMaterial
 
-!listingfiles /Materials/PFCRFFMaterial
+!inputfiles /Materials/PFCRFFMaterial
 
 !childobjects /Materials/PFCRFFMaterial

@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/TotalFreeEnergy
 
-!listingfiles /AuxKernels/TotalFreeEnergy
+!inputfiles /AuxKernels/TotalFreeEnergy
 
 !childobjects /AuxKernels/TotalFreeEnergy

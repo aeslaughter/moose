@@ -22,6 +22,6 @@ The $W_{ij}$ is a matrix of all coefficients for the pair terms.
 
 !parameters /Materials/CrossTermBarrierFunctionMaterial
 
-!listingfiles /Materials/CrossTermBarrierFunctionMaterial
+!inputfiles /Materials/CrossTermBarrierFunctionMaterial
 
 !childobjects /Materials/CrossTermBarrierFunctionMaterial

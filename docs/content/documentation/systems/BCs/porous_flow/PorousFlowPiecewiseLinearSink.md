@@ -5,6 +5,6 @@
 
 !parameters /BCs/PorousFlowPiecewiseLinearSink
 
-!listingfiles /BCs/PorousFlowPiecewiseLinearSink
+!inputfiles /BCs/PorousFlowPiecewiseLinearSink
 
 !childobjects /BCs/PorousFlowPiecewiseLinearSink

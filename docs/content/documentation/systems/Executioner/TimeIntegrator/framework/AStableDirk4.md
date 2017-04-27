@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeIntegrator/AStableDirk4
 
-!listingfiles /Executioner/TimeIntegrator/AStableDirk4
+!inputfiles /Executioner/TimeIntegrator/AStableDirk4
 
 !childobjects /Executioner/TimeIntegrator/AStableDirk4

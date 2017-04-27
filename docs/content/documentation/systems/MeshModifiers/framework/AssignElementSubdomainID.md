@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/AssignElementSubdomainID
 
-!listingfiles /MeshModifiers/AssignElementSubdomainID
+!inputfiles /MeshModifiers/AssignElementSubdomainID
 
 !childobjects /MeshModifiers/AssignElementSubdomainID

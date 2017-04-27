@@ -40,6 +40,6 @@ complete simulation.
 
 !parameters /Mesh/TiledMesh
 
-!listingfiles /Mesh/TiledMesh
+!inputfiles /Mesh/TiledMesh
 
 !childobjects /Mesh/TiledMesh

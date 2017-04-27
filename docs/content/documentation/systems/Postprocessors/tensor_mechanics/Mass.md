@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/Mass
 
-!listingfiles /Postprocessors/Mass
+!inputfiles /Postprocessors/Mass
 
 !childobjects /Postprocessors/Mass

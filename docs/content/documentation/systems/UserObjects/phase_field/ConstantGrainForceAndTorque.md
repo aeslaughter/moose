@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ConstantGrainForceAndTorque
 
-!listingfiles /UserObjects/ConstantGrainForceAndTorque
+!inputfiles /UserObjects/ConstantGrainForceAndTorque
 
 !childobjects /UserObjects/ConstantGrainForceAndTorque

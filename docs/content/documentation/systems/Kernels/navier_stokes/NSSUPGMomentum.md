@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSSUPGMomentum
 
-!listingfiles /Kernels/NSSUPGMomentum
+!inputfiles /Kernels/NSSUPGMomentum
 
 !childobjects /Kernels/NSSUPGMomentum

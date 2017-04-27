@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowRelativePermeabilityBW
 
-!listingfiles /Materials/PorousFlowRelativePermeabilityBW
+!inputfiles /Materials/PorousFlowRelativePermeabilityBW
 
 !childobjects /Materials/PorousFlowRelativePermeabilityBW

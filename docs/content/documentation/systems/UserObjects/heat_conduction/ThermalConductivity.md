@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ThermalConductivity
 
-!listingfiles /UserObjects/ThermalConductivity
+!inputfiles /UserObjects/ThermalConductivity
 
 !childobjects /UserObjects/ThermalConductivity

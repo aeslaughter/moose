@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowPermeabilityExponential
 
-!listingfiles /Materials/PorousFlowPermeabilityExponential
+!inputfiles /Materials/PorousFlowPermeabilityExponential
 
 !childobjects /Materials/PorousFlowPermeabilityExponential

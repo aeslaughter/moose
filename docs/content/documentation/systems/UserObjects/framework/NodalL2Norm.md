@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalL2Norm
 
-!listingfiles /UserObjects/NodalL2Norm
+!inputfiles /UserObjects/NodalL2Norm
 
 !childobjects /UserObjects/NodalL2Norm

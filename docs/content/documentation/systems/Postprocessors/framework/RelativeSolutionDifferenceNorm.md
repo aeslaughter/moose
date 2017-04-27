@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/RelativeSolutionDifferenceNorm
 
-!listingfiles /Postprocessors/RelativeSolutionDifferenceNorm
+!inputfiles /Postprocessors/RelativeSolutionDifferenceNorm
 
 !childobjects /Postprocessors/RelativeSolutionDifferenceNorm

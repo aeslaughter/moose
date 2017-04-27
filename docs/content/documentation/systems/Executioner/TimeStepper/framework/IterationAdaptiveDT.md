@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/IterationAdaptiveDT
 
-!listingfiles /Executioner/TimeStepper/IterationAdaptiveDT
+!inputfiles /Executioner/TimeStepper/IterationAdaptiveDT
 
 !childobjects /Executioner/TimeStepper/IterationAdaptiveDT

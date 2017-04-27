@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/FunctionAux
 
-!listingfiles /AuxKernels/FunctionAux
+!inputfiles /AuxKernels/FunctionAux
 
 !childobjects /AuxKernels/FunctionAux

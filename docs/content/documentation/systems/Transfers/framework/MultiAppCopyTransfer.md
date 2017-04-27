@@ -13,6 +13,6 @@ meshes in the master and sub application must be identical.
 
 !parameters /Transfers/MultiAppCopyTransfer
 
-!listingfiles /Transfers/MultiAppCopyTransfer
+!inputfiles /Transfers/MultiAppCopyTransfer
 
 !childobjects /Transfers/MultiAppCopyTransfer

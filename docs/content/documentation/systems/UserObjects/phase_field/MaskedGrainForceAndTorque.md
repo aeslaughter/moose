@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/MaskedGrainForceAndTorque
 
-!listingfiles /UserObjects/MaskedGrainForceAndTorque
+!inputfiles /UserObjects/MaskedGrainForceAndTorque
 
 !childobjects /UserObjects/MaskedGrainForceAndTorque

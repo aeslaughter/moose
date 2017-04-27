@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSVelocityAux
 
-!listingfiles /AuxKernels/NSVelocityAux
+!inputfiles /AuxKernels/NSVelocityAux
 
 !childobjects /AuxKernels/NSVelocityAux

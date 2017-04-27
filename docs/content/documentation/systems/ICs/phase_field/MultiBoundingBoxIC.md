@@ -5,6 +5,6 @@
 
 !parameters /ICs/MultiBoundingBoxIC
 
-!listingfiles /ICs/MultiBoundingBoxIC
+!inputfiles /ICs/MultiBoundingBoxIC
 
 !childobjects /ICs/MultiBoundingBoxIC

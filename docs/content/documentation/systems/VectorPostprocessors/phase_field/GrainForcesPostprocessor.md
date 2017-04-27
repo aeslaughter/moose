@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/GrainForcesPostprocessor
 
-!listingfiles /VectorPostprocessors/GrainForcesPostprocessor
+!inputfiles /VectorPostprocessors/GrainForcesPostprocessor
 
 !childobjects /VectorPostprocessors/GrainForcesPostprocessor

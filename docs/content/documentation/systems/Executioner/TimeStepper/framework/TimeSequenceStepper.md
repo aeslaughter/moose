@@ -5,6 +5,6 @@
 
 !parameters /Executioner/TimeStepper/TimeSequenceStepper
 
-!listingfiles /Executioner/TimeStepper/TimeSequenceStepper
+!inputfiles /Executioner/TimeStepper/TimeSequenceStepper
 
 !childobjects /Executioner/TimeStepper/TimeSequenceStepper

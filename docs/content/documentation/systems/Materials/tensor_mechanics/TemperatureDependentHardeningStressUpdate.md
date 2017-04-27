@@ -5,6 +5,6 @@
 
 !parameters /Materials/TemperatureDependentHardeningStressUpdate
 
-!listingfiles /Materials/TemperatureDependentHardeningStressUpdate
+!inputfiles /Materials/TemperatureDependentHardeningStressUpdate
 
 !childobjects /Materials/TemperatureDependentHardeningStressUpdate

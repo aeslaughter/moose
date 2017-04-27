@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSEnergyThermalFlux
 
-!listingfiles /Kernels/NSEnergyThermalFlux
+!inputfiles /Kernels/NSEnergyThermalFlux
 
 !childobjects /Kernels/NSEnergyThermalFlux

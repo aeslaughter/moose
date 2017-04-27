@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/NodalValueSampler
 
-!listingfiles /VectorPostprocessors/NodalValueSampler
+!inputfiles /VectorPostprocessors/NodalValueSampler
 
 !childobjects /VectorPostprocessors/NodalValueSampler

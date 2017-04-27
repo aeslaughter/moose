@@ -5,6 +5,6 @@
 
 !parameters /BCs/OneDEqualValueConstraintBC
 
-!listingfiles /BCs/OneDEqualValueConstraintBC
+!inputfiles /BCs/OneDEqualValueConstraintBC
 
 !childobjects /BCs/OneDEqualValueConstraintBC

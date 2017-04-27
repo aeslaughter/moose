@@ -5,6 +5,6 @@
 
 !parameters /MeshModifiers/AddExtraNodeset
 
-!listingfiles /MeshModifiers/AddExtraNodeset
+!inputfiles /MeshModifiers/AddExtraNodeset
 
 !childobjects /MeshModifiers/AddExtraNodeset

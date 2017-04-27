@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalL2Error
 
-!listingfiles /UserObjects/NodalL2Error
+!inputfiles /UserObjects/NodalL2Error
 
 !childobjects /UserObjects/NodalL2Error

@@ -2,6 +2,6 @@
 
 !parameters /Kernels/NSEnergyInviscidFlux
 
-!listingfiles /Kernels/NSEnergyInviscidFlux
+!inputfiles /Kernels/NSEnergyInviscidFlux
 
 !childobjects /Kernels/NSEnergyInviscidFlux

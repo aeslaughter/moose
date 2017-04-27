@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/HomogenizedThermalConductivity
 
-!listingfiles /Postprocessors/HomogenizedThermalConductivity
+!inputfiles /Postprocessors/HomogenizedThermalConductivity
 
 !childobjects /Postprocessors/HomogenizedThermalConductivity

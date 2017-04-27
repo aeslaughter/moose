@@ -37,6 +37,6 @@ The following input can be executed with the MOOSE Phase Field module executable
 
 !parameters /UserObjects/SolutionRasterizer
 
-!listingfiles /UserObjects/SolutionRasterizer
+!inputfiles /UserObjects/SolutionRasterizer
 
 !childobjects /UserObjects/SolutionRasterizer

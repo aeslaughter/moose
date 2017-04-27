@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeVariableElasticConstantStress
 
-!listingfiles /Materials/ComputeVariableElasticConstantStress
+!inputfiles /Materials/ComputeVariableElasticConstantStress
 
 !childobjects /Materials/ComputeVariableElasticConstantStress

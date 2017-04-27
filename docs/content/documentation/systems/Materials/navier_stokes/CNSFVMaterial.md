@@ -2,6 +2,6 @@
 
 !parameters /Materials/CNSFVMaterial
 
-!listingfiles /Materials/CNSFVMaterial
+!inputfiles /Materials/CNSFVMaterial
 
 !childobjects /Materials/CNSFVMaterial

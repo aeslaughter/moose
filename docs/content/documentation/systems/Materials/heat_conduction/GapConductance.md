@@ -5,6 +5,6 @@
 
 !parameters /Materials/GapConductance
 
-!listingfiles /Materials/GapConductance
+!inputfiles /Materials/GapConductance
 
 !childobjects /Materials/GapConductance

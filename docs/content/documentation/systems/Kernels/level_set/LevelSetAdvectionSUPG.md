@@ -26,7 +26,7 @@ with SUPG stabilization.
 
 !parameters /Kernels/LevelSetAdvectionSUPG
 
-!listingfiles /Kernels/LevelSetAdvectionSUPG
+!inputfiles /Kernels/LevelSetAdvectionSUPG
 
 !childobjects /Kernels/LevelSetAdvectionSUPG
 

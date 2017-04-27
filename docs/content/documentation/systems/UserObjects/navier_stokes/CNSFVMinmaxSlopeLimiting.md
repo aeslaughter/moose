@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVMinmaxSlopeLimiting
 
-!listingfiles /UserObjects/CNSFVMinmaxSlopeLimiting
+!inputfiles /UserObjects/CNSFVMinmaxSlopeLimiting
 
 !childobjects /UserObjects/CNSFVMinmaxSlopeLimiting

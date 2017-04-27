@@ -5,6 +5,6 @@
 
 !parameters /Kernels/CoupledTimeDerivative
 
-!listingfiles /Kernels/CoupledTimeDerivative
+!inputfiles /Kernels/CoupledTimeDerivative
 
 !childobjects /Kernels/CoupledTimeDerivative

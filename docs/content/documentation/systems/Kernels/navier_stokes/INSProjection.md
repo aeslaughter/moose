@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSProjection
 
-!listingfiles /Kernels/INSProjection
+!inputfiles /Kernels/INSProjection
 
 !childobjects /Kernels/INSProjection

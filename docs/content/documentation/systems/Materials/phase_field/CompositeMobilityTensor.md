@@ -5,6 +5,6 @@
 
 !parameters /Materials/CompositeMobilityTensor
 
-!listingfiles /Materials/CompositeMobilityTensor
+!inputfiles /Materials/CompositeMobilityTensor
 
 !childobjects /Materials/CompositeMobilityTensor

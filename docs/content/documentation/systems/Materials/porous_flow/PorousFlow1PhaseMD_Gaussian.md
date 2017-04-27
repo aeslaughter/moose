@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlow1PhaseMD_Gaussian
 
-!listingfiles /Materials/PorousFlow1PhaseMD_Gaussian
+!inputfiles /Materials/PorousFlow1PhaseMD_Gaussian
 
 !childobjects /Materials/PorousFlow1PhaseMD_Gaussian

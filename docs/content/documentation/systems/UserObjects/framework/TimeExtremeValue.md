@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TimeExtremeValue
 
-!listingfiles /UserObjects/TimeExtremeValue
+!inputfiles /UserObjects/TimeExtremeValue
 
 !childobjects /UserObjects/TimeExtremeValue

@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementalVariableValue
 
-!listingfiles /UserObjects/ElementalVariableValue
+!inputfiles /UserObjects/ElementalVariableValue
 
 !childobjects /UserObjects/ElementalVariableValue

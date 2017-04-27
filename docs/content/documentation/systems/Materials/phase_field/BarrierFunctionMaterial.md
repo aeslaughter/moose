@@ -18,6 +18,6 @@ $$
 
 !parameters /Materials/BarrierFunctionMaterial
 
-!listingfiles /Materials/BarrierFunctionMaterial
+!inputfiles /Materials/BarrierFunctionMaterial
 
 !childobjects /Materials/BarrierFunctionMaterial

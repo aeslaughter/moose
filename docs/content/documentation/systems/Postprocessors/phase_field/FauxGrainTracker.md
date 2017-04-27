@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/FauxGrainTracker
 
-!listingfiles /Postprocessors/FauxGrainTracker
+!inputfiles /Postprocessors/FauxGrainTracker
 
 !childobjects /Postprocessors/FauxGrainTracker

@@ -5,6 +5,6 @@
 
 !parameters /Materials/ComputeIncrementalSmallStrain
 
-!listingfiles /Materials/ComputeIncrementalSmallStrain
+!inputfiles /Materials/ComputeIncrementalSmallStrain
 
 !childobjects /Materials/ComputeIncrementalSmallStrain

@@ -5,6 +5,6 @@
 
 !parameters /ICs/FunctionIC
 
-!listingfiles /ICs/FunctionIC
+!inputfiles /ICs/FunctionIC
 
 !childobjects /ICs/FunctionIC

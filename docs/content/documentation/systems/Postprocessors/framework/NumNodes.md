@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumNodes
 
-!listingfiles /Postprocessors/NumNodes
+!inputfiles /Postprocessors/NumNodes
 
 !childobjects /Postprocessors/NumNodes

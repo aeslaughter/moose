@@ -5,6 +5,6 @@
 
 !parameters /Preconditioning/FSP
 
-!listingfiles /Preconditioning/FSP
+!inputfiles /Preconditioning/FSP
 
 !childobjects /Preconditioning/FSP

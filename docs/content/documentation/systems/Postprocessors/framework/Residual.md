@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/Residual
 
-!listingfiles /Postprocessors/Residual
+!inputfiles /Postprocessors/Residual
 
 !childobjects /Postprocessors/Residual

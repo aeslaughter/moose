@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/HEVPLinearHardening
 
-!listingfiles /UserObjects/HEVPLinearHardening
+!inputfiles /UserObjects/HEVPLinearHardening
 
 !childobjects /UserObjects/HEVPLinearHardening

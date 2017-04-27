@@ -2,6 +2,6 @@
 
 !parameters /Kernels/INSChorinPressurePoisson
 
-!listingfiles /Kernels/INSChorinPressurePoisson
+!inputfiles /Kernels/INSChorinPressurePoisson
 
 !childobjects /Kernels/INSChorinPressurePoisson

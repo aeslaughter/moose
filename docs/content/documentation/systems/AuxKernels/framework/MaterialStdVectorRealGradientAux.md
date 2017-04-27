@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/MaterialStdVectorRealGradientAux
 
-!listingfiles /AuxKernels/MaterialStdVectorRealGradientAux
+!inputfiles /AuxKernels/MaterialStdVectorRealGradientAux
 
 !childobjects /AuxKernels/MaterialStdVectorRealGradientAux

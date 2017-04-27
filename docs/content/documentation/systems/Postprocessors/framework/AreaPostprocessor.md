@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/AreaPostprocessor
 
-!listingfiles /Postprocessors/AreaPostprocessor
+!inputfiles /Postprocessors/AreaPostprocessor
 
 !childobjects /Postprocessors/AreaPostprocessor

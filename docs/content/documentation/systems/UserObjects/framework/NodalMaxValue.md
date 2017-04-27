@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalMaxValue
 
-!listingfiles /UserObjects/NodalMaxValue
+!inputfiles /UserObjects/NodalMaxValue
 
 !childobjects /UserObjects/NodalMaxValue

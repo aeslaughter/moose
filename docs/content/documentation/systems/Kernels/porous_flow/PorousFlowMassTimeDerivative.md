@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowMassTimeDerivative
 
-!listingfiles /Kernels/PorousFlowMassTimeDerivative
+!inputfiles /Kernels/PorousFlowMassTimeDerivative
 
 !childobjects /Kernels/PorousFlowMassTimeDerivative

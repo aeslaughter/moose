@@ -5,6 +5,6 @@
 
 !parameters /Kernels/PorousFlowPlasticHeatEnergy
 
-!listingfiles /Kernels/PorousFlowPlasticHeatEnergy
+!inputfiles /Kernels/PorousFlowPlasticHeatEnergy
 
 !childobjects /Kernels/PorousFlowPlasticHeatEnergy

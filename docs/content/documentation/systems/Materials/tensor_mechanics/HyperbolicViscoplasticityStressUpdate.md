@@ -14,7 +14,7 @@ This class is based on the implicit integration algorithm in \cite{dunne2005intr
 
 !parameters /Materials/HyperbolicViscoplasticityStressUpdate
 
-!listingfiles /Materials/HyperbolicViscoplasticityStressUpdate
+!inputfiles /Materials/HyperbolicViscoplasticityStressUpdate
 
 !childobjects /Materials/HyperbolicViscoplasticityStressUpdate
 

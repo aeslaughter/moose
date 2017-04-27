@@ -22,6 +22,6 @@ kernel ([TimeDerivative](framework/TimeDerivative.md)).
 
 !parameters /Kernels/LevelSetAdvection
 
-!listingfiles /Kernels/LevelSetAdvection
+!inputfiles /Kernels/LevelSetAdvection
 
 !childobjects /Kernels/LevelSetAdvection

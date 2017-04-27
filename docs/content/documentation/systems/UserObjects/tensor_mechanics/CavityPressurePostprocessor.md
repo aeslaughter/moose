@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/CavityPressurePostprocessor
 
-!listingfiles /UserObjects/CavityPressurePostprocessor
+!inputfiles /UserObjects/CavityPressurePostprocessor
 
 !childobjects /UserObjects/CavityPressurePostprocessor

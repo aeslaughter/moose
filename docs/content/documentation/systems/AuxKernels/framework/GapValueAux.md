@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/GapValueAux
 
-!listingfiles /AuxKernels/GapValueAux
+!inputfiles /AuxKernels/GapValueAux
 
 !childobjects /AuxKernels/GapValueAux

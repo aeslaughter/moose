@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSSpecificVolumeAux
 
-!listingfiles /AuxKernels/NSSpecificVolumeAux
+!inputfiles /AuxKernels/NSSpecificVolumeAux
 
 !childobjects /AuxKernels/NSSpecificVolumeAux

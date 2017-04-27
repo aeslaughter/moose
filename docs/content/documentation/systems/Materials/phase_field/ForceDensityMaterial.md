@@ -5,6 +5,6 @@
 
 !parameters /Materials/ForceDensityMaterial
 
-!listingfiles /Materials/ForceDensityMaterial
+!inputfiles /Materials/ForceDensityMaterial
 
 !childobjects /Materials/ForceDensityMaterial

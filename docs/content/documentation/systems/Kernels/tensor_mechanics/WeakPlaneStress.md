@@ -5,6 +5,6 @@
 
 !parameters /Kernels/WeakPlaneStress
 
-!listingfiles /Kernels/WeakPlaneStress
+!inputfiles /Kernels/WeakPlaneStress
 
 !childobjects /Kernels/WeakPlaneStress

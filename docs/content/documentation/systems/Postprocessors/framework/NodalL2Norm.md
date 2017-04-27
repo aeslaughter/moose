@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NodalL2Norm
 
-!listingfiles /Postprocessors/NodalL2Norm
+!inputfiles /Postprocessors/NodalL2Norm
 
 !childobjects /Postprocessors/NodalL2Norm

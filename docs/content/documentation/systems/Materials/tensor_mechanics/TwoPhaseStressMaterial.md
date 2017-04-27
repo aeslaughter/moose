@@ -5,6 +5,6 @@
 
 !parameters /Materials/TwoPhaseStressMaterial
 
-!listingfiles /Materials/TwoPhaseStressMaterial
+!inputfiles /Materials/TwoPhaseStressMaterial
 
 !childobjects /Materials/TwoPhaseStressMaterial

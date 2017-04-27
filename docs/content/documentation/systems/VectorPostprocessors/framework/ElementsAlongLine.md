@@ -5,6 +5,6 @@
 
 !parameters /VectorPostprocessors/ElementsAlongLine
 
-!listingfiles /VectorPostprocessors/ElementsAlongLine
+!inputfiles /VectorPostprocessors/ElementsAlongLine
 
 !childobjects /VectorPostprocessors/ElementsAlongLine

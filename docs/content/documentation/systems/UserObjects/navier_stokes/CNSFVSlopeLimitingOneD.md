@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVSlopeLimitingOneD
 
-!listingfiles /UserObjects/CNSFVSlopeLimitingOneD
+!inputfiles /UserObjects/CNSFVSlopeLimitingOneD
 
 !childobjects /UserObjects/CNSFVSlopeLimitingOneD

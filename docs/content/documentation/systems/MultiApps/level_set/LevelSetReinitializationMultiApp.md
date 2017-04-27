@@ -9,6 +9,6 @@ reseting of the pseudo reinitialization time.
 
 !parameters /MultiApps/LevelSetReinitializationMultiApp
 
-!listingfiles /MultiApps/LevelSetReinitializationMultiApp
+!inputfiles /MultiApps/LevelSetReinitializationMultiApp
 
 !childobjects /MultiApps/LevelSetReinitializationMultiApp

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/NumLinearIterations
 
-!listingfiles /Postprocessors/NumLinearIterations
+!inputfiles /Postprocessors/NumLinearIterations
 
 !childobjects /Postprocessors/NumLinearIterations

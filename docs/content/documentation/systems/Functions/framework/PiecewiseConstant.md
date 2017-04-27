@@ -5,6 +5,6 @@
 
 !parameters /Functions/PiecewiseConstant
 
-!listingfiles /Functions/PiecewiseConstant
+!inputfiles /Functions/PiecewiseConstant
 
 !childobjects /Functions/PiecewiseConstant

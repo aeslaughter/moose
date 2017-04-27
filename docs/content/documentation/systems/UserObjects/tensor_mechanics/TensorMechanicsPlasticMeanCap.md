@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/TensorMechanicsPlasticMeanCap
 
-!listingfiles /UserObjects/TensorMechanicsPlasticMeanCap
+!inputfiles /UserObjects/TensorMechanicsPlasticMeanCap
 
 !childobjects /UserObjects/TensorMechanicsPlasticMeanCap

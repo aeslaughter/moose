@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalVariableValue
 
-!listingfiles /UserObjects/NodalVariableValue
+!inputfiles /UserObjects/NodalVariableValue
 
 !childobjects /UserObjects/NodalVariableValue

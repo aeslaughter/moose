@@ -12,6 +12,6 @@ of an element takes precedence.
 
 !parameters /Adaptivity/Markers/ComboMarker
 
-!listingfiles /Adaptivity/Markers/ComboMarker
+!inputfiles /Adaptivity/Markers/ComboMarker
 
 !childobjects /Adaptivity/Markers/ComboMarker

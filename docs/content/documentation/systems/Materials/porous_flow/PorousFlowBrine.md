@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowBrine
 
-!listingfiles /Materials/PorousFlowBrine
+!inputfiles /Materials/PorousFlowBrine
 
 !childobjects /Materials/PorousFlowBrine

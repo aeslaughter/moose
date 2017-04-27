@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/PorousFlowDarcyVelocityComponent
 
-!listingfiles /AuxKernels/PorousFlowDarcyVelocityComponent
+!inputfiles /AuxKernels/PorousFlowDarcyVelocityComponent
 
 !childobjects /AuxKernels/PorousFlowDarcyVelocityComponent

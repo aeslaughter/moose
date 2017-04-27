@@ -5,6 +5,6 @@
 
 !parameters /Functions/SplineFunction
 
-!listingfiles /Functions/SplineFunction
+!inputfiles /Functions/SplineFunction
 
 !childobjects /Functions/SplineFunction

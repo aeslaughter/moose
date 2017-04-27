@@ -5,6 +5,6 @@
 
 !parameters /NodalKernels/TimeDerivativeNodalKernel
 
-!listingfiles /NodalKernels/TimeDerivativeNodalKernel
+!inputfiles /NodalKernels/TimeDerivativeNodalKernel
 
 !childobjects /NodalKernels/TimeDerivativeNodalKernel

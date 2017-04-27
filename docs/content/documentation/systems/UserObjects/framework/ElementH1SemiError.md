@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/ElementH1SemiError
 
-!listingfiles /UserObjects/ElementH1SemiError
+!inputfiles /UserObjects/ElementH1SemiError
 
 !childobjects /UserObjects/ElementH1SemiError

@@ -25,6 +25,6 @@ Extension   | Description
 
 !parameters /Mesh/FileMesh
 
-!listingfiles /Mesh/FileMesh
+!inputfiles /Mesh/FileMesh
 
 !childobjects /Mesh/FileMesh

@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/DifferencePostprocessor
 
-!listingfiles /Postprocessors/DifferencePostprocessor
+!inputfiles /Postprocessors/DifferencePostprocessor
 
 !childobjects /Postprocessors/DifferencePostprocessor

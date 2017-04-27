@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalNormalsPreprocessor
 
-!listingfiles /UserObjects/NodalNormalsPreprocessor
+!inputfiles /UserObjects/NodalNormalsPreprocessor
 
 !childobjects /UserObjects/NodalNormalsPreprocessor

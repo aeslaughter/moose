@@ -2,6 +2,6 @@
 
 !parameters /UserObjects/CNSFVHLLCInflowOutflowBoundaryFlux
 
-!listingfiles /UserObjects/CNSFVHLLCInflowOutflowBoundaryFlux
+!inputfiles /UserObjects/CNSFVHLLCInflowOutflowBoundaryFlux
 
 !childobjects /UserObjects/CNSFVHLLCInflowOutflowBoundaryFlux

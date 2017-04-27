@@ -12,6 +12,6 @@ Once the deformation gradient is calculated for the specific 2D geometry, the de
 
 !parameters /Materials/ComputeAxisymmetricRZFiniteStrain
 
-!listingfiles /Materials/ComputeAxisymmetricRZFiniteStrain
+!inputfiles /Materials/ComputeAxisymmetricRZFiniteStrain
 
 !childobjects /Materials/ComputeAxisymmetricRZFiniteStrain

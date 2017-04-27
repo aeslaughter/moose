@@ -5,6 +5,6 @@
 
 !parameters /Functions/ParsedVectorFunction
 
-!listingfiles /Functions/ParsedVectorFunction
+!inputfiles /Functions/ParsedVectorFunction
 
 !childobjects /Functions/ParsedVectorFunction

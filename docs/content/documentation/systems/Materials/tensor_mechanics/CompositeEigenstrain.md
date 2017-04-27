@@ -5,6 +5,6 @@
 
 !parameters /Materials/CompositeEigenstrain
 
-!listingfiles /Materials/CompositeEigenstrain
+!inputfiles /Materials/CompositeEigenstrain
 
 !childobjects /Materials/CompositeEigenstrain

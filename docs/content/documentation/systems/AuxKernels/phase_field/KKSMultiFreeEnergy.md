@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/KKSMultiFreeEnergy
 
-!listingfiles /AuxKernels/KKSMultiFreeEnergy
+!inputfiles /AuxKernels/KKSMultiFreeEnergy
 
 !childobjects /AuxKernels/KKSMultiFreeEnergy

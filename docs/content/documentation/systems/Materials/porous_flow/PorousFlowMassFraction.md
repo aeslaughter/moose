@@ -5,6 +5,6 @@
 
 !parameters /Materials/PorousFlowMassFraction
 
-!listingfiles /Materials/PorousFlowMassFraction
+!inputfiles /Materials/PorousFlowMassFraction
 
 !childobjects /Materials/PorousFlowMassFraction

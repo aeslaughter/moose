@@ -5,6 +5,6 @@
 
 !parameters /ScalarKernels/ParsedODEKernel
 
-!listingfiles /ScalarKernels/ParsedODEKernel
+!inputfiles /ScalarKernels/ParsedODEKernel
 
 !childobjects /ScalarKernels/ParsedODEKernel

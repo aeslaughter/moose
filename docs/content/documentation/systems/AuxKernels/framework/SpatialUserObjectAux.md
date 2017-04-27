@@ -5,6 +5,6 @@
 
 !parameters /AuxKernels/SpatialUserObjectAux
 
-!listingfiles /AuxKernels/SpatialUserObjectAux
+!inputfiles /AuxKernels/SpatialUserObjectAux
 
 !childobjects /AuxKernels/SpatialUserObjectAux

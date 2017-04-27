@@ -14,6 +14,6 @@ $$
 
 !parameters /Materials/MultiBarrierFunctionMaterial
 
-!listingfiles /Materials/MultiBarrierFunctionMaterial
+!inputfiles /Materials/MultiBarrierFunctionMaterial
 
 !childobjects /Materials/MultiBarrierFunctionMaterial

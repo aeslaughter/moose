@@ -5,6 +5,6 @@
 
 !parameters /ICs/RndSmoothCircleIC
 
-!listingfiles /ICs/RndSmoothCircleIC
+!inputfiles /ICs/RndSmoothCircleIC
 
 !childobjects /ICs/RndSmoothCircleIC

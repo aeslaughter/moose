@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/NodalNormalsCorner
 
-!listingfiles /UserObjects/NodalNormalsCorner
+!inputfiles /UserObjects/NodalNormalsCorner
 
 !childobjects /UserObjects/NodalNormalsCorner

@@ -5,6 +5,6 @@
 
 !parameters /ScalarKernels/NodalEqualValueConstraint
 
-!listingfiles /ScalarKernels/NodalEqualValueConstraint
+!inputfiles /ScalarKernels/NodalEqualValueConstraint
 
 !childobjects /ScalarKernels/NodalEqualValueConstraint

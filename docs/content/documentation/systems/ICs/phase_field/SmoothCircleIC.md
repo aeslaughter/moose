@@ -5,6 +5,6 @@
 
 !parameters /ICs/SmoothCircleIC
 
-!listingfiles /ICs/SmoothCircleIC
+!inputfiles /ICs/SmoothCircleIC
 
 !childobjects /ICs/SmoothCircleIC

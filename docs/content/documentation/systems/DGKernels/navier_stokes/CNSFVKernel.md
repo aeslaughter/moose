@@ -2,6 +2,6 @@
 
 !parameters /DGKernels/CNSFVKernel
 
-!listingfiles /DGKernels/CNSFVKernel
+!inputfiles /DGKernels/CNSFVKernel
 
 !childobjects /DGKernels/CNSFVKernel

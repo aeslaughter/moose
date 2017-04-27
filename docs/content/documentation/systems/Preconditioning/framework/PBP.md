@@ -5,6 +5,6 @@
 
 !parameters /Preconditioning/PBP
 
-!listingfiles /Preconditioning/PBP
+!inputfiles /Preconditioning/PBP
 
 !childobjects /Preconditioning/PBP

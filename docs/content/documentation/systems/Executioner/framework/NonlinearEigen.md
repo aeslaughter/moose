@@ -5,6 +5,6 @@
 
 !parameters /Executioner/NonlinearEigen
 
-!listingfiles /Executioner/NonlinearEigen
+!inputfiles /Executioner/NonlinearEigen
 
 !childobjects /Executioner/NonlinearEigen

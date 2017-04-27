@@ -5,6 +5,6 @@
 
 !parameters /Materials/PFFracBulkRateMaterial
 
-!listingfiles /Materials/PFFracBulkRateMaterial
+!inputfiles /Materials/PFFracBulkRateMaterial
 
 !childobjects /Materials/PFFracBulkRateMaterial

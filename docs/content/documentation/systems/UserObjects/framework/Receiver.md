@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/Receiver
 
-!listingfiles /UserObjects/Receiver
+!inputfiles /UserObjects/Receiver
 
 !childobjects /UserObjects/Receiver

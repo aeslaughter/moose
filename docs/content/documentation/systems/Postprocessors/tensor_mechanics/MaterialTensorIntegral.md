@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/MaterialTensorIntegral
 
-!listingfiles /Postprocessors/MaterialTensorIntegral
+!inputfiles /Postprocessors/MaterialTensorIntegral
 
 !childobjects /Postprocessors/MaterialTensorIntegral

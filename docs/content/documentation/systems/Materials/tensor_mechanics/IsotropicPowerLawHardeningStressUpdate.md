@@ -22,6 +22,6 @@ $$
 
 !parameters /Materials/IsotropicPowerLawHardeningStressUpdate
 
-!listingfiles /Materials/IsotropicPowerLawHardeningStressUpdate
+!inputfiles /Materials/IsotropicPowerLawHardeningStressUpdate
 
 !childobjects /Materials/IsotropicPowerLawHardeningStressUpdate

@@ -5,6 +5,6 @@
 
 !parameters /Executioner/Steady
 
-!listingfiles /Executioner/Steady
+!inputfiles /Executioner/Steady
 
 !childobjects /Executioner/Steady

@@ -2,6 +2,6 @@
 
 !parameters /AuxKernels/NSInternalEnergyAux
 
-!listingfiles /AuxKernels/NSInternalEnergyAux
+!inputfiles /AuxKernels/NSInternalEnergyAux
 
 !childobjects /AuxKernels/NSInternalEnergyAux

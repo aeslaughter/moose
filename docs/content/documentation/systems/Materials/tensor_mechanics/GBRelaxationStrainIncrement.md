@@ -5,6 +5,6 @@
 
 !parameters /Materials/GBRelaxationStrainIncrement
 
-!listingfiles /Materials/GBRelaxationStrainIncrement
+!inputfiles /Materials/GBRelaxationStrainIncrement
 
 !childobjects /Materials/GBRelaxationStrainIncrement

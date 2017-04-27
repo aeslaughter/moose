@@ -5,6 +5,6 @@
 
 !parameters /Kernels/OutOfPlanePressure
 
-!listingfiles /Kernels/OutOfPlanePressure
+!inputfiles /Kernels/OutOfPlanePressure
 
 !childobjects /Kernels/OutOfPlanePressure

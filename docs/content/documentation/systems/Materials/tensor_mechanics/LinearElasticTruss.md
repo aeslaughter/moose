@@ -5,6 +5,6 @@
 
 !parameters /Materials/LinearElasticTruss
 
-!listingfiles /Materials/LinearElasticTruss
+!inputfiles /Materials/LinearElasticTruss
 
 !childobjects /Materials/LinearElasticTruss

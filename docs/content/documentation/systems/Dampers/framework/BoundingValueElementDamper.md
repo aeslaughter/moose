@@ -5,6 +5,6 @@
 
 !parameters /Dampers/BoundingValueElementDamper
 
-!listingfiles /Dampers/BoundingValueElementDamper
+!inputfiles /Dampers/BoundingValueElementDamper
 
 !childobjects /Dampers/BoundingValueElementDamper

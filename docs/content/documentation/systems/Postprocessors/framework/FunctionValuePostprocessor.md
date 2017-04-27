@@ -5,6 +5,6 @@
 
 !parameters /Postprocessors/FunctionValuePostprocessor
 
-!listingfiles /Postprocessors/FunctionValuePostprocessor
+!inputfiles /Postprocessors/FunctionValuePostprocessor
 
 !childobjects /Postprocessors/FunctionValuePostprocessor

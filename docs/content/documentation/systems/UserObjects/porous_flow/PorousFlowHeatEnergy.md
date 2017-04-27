@@ -5,6 +5,6 @@
 
 !parameters /UserObjects/PorousFlowHeatEnergy
 
-!listingfiles /UserObjects/PorousFlowHeatEnergy
+!inputfiles /UserObjects/PorousFlowHeatEnergy
 
 !childobjects /UserObjects/PorousFlowHeatEnergy

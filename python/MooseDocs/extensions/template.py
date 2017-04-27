@@ -135,7 +135,7 @@ class TemplatePostprocessor(Postprocessor):
         # Loop over <a> tags and update links containing .md to point to .html
         for link in soup('a'):
             href = link.get('href')
-            if href and (not href.startswith('http')) and '.md' in href:
+            if href and (not href.startswith('http')) and ('.md' in href):
 
                 # Split filename from section link (#)
                 parts = href.split('#')
