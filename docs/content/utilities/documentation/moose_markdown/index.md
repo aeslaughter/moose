@@ -1,25 +1,18 @@
 # MOOSE Flavored Markdown
 
-Documentation generated using MOOSE is generated using the [python-markdown] package, which includes
-the ability to use extensions from others as well as define custom extensions. The following pages
-outlines the outside extensions enabled as well as the custom extensions included with [MOOSE].
-extensions included as well as the custom syntax defined exclusively for documenting [MOOSE] source
-code.
-
-!!! note
-    When including filenames as arguments to a markdown command the path specified should be defined
-    from the "root" directory, which by default is the top level of the git repository (e.g.,
-    ~/projects/moose).
+Documentation generated using MOOSE is generated using the [python-markdown] package,
+which includes the ability to use extensions from others as well as define custom extensions. The following pages outlines the
+outside extensions enabled as well as the custom extensions included with [MOOSE].
+extensions included as well as the custom syntax defined exclusively for documenting [MOOSE] source code.
 
 ## MooseDocs Extensions
-
 Much of the capability that enables the MooseDocs system to be useful for creating documentation
 stems from the set of custom extensions created. In general, these extensions add commands, which
 begin with an exclamation point (!) and some number of arguments. Therefore, each extension contains
-configuration options at the extension level and each command defined has settings that can be
+configuration options at the extension level and each command defined as a settings that can be
 applied.
 
-\ref{moose-extensions} summarizes all of the available MooseDocs extensions and provides a link to
+The Table \ref{moose-extensions} summarizes all of the available MooseDocs extensions and provides a link to
 another page that details the use and configuration of the extension as a well as a list of any
 commands add associated settings defined in the extension.
 
@@ -27,17 +20,17 @@ commands add associated settings defined in the extension.
 | Name | Description |
 | - | - |
 | [global](extensions/global.md) | Implements a global list of Markdown hyperlinks. |
-| [include](extensions/include.md) | Enables recursive markdown inclusion. |
 | [bibtex](extensions/bibtex.md) | Allows LaTeX/BibTeX style citations and bibliographies. |
 | [css](extensions/css.md) | Enables [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) settings to be applied via markdown |
 | [diagram](extensions/diagram.md) | Automatically generates DOT/GraphVIZ diagrams. |
 | [devel](extensions/devel.md) | Adds the ability to extract configuration and commands settings in addition to build status and MOOSE package information (MOOSE developer tools). |
-| [materialize](extensions/misc.md) | Adds code copy button and scrolling contents to html. |
+| [materialize](extensions/materialize.md) | Adds code copy button and scrolling contents to html. |
 | [media](extensions/media.md) | Adds markdown for including images, sliders, and videos. |
-| [tables](extensions/tables.md) | Markdown syntax for captioned and numbered tables. |
-| [listings](extensions/listings.md) | Markdown syntax for captioned and numbered code blocks. |
-
-
+| [listings](extensions/tables.md) | Markdown syntax for numbered tables. |
+| [listings](extensions/listings.md) | Markdown syntax for numbered code blocks. |
+| [refs](extensions/refs.md) | Implements latex style references to numbered floats (e.g., figures and tables) |
+| [templates](extensions/templates.md) | Allows for converted markdown to be applied to arbitrary templates. |
+| [app_syntax](extensions/app_syntax.md) | Adds markdown syntax for extracting content from MOOSE source code. |
 
 ## Python-Markdown Extensions
 
