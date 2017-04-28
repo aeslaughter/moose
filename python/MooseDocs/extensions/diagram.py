@@ -1,17 +1,30 @@
-"""
-Markdown syntax for dot diagrams.
-"""
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import os
 import subprocess
 import re
 import uuid
-import markdown
+import logging
+
 from markdown.blockprocessors import BlockProcessor
+from markdown.util import etree
+
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
-from markdown.util import etree
-import logging
-log = logging.getLogger(__name__)
+
+LOG = logging.getLogger(__name__)
 
 class DiagramExtension(MooseMarkdownExtension):
     """
@@ -20,7 +33,8 @@ class DiagramExtension(MooseMarkdownExtension):
     @staticmethod
     def defaultConfig():
         config = MooseMarkdownExtension.defaultConfig()
-        config['graphviz'] = ['/opt/moose/graphviz/bin', 'The location of graphviz executable for use with diagrams.']
+        config['graphviz'] = ['/opt/moose/graphviz/bin',
+                              'The location of graphviz executable for use with diagrams.']
         config['dot_ext'] = ['svg', "The graphviz/dot output file extension (default: svg)."]
         return config
 
@@ -30,7 +44,9 @@ class DiagramExtension(MooseMarkdownExtension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.parser.blockprocessors.add('moose_diagrams', DiagramBlockProcessor(md.parser, **config), '_begin')
+        md.parser.blockprocessors.add('moose_diagrams',
+                                      DiagramBlockProcessor(md.parser, **config),
+                                      '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return DiagramExtension(*args, **kwargs)
@@ -83,9 +99,9 @@ class DiagramBlockProcessor(BlockProcessor, MooseMarkdownCommon):
         # Execute graphviz to generate the svg file
         try:
             cmd = [executable, '-T' + self._ext, dot_file, '-o', out_file]
-            output = subprocess.check_output(cmd)
-            log.debug('Created SVG chart using dot: {}'.format(out_file))
-        except:
+            subprocess.check_output(cmd)
+            LOG.debug('Created SVG chart using dot: %s', out_file)
+        except OSError:
             if os.path.exists(dot_file):
                 os.remove(dot_file)
             return self.createErrorElement(block, title='Failed to execute Graphviz', parent=parent)
