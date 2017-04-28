@@ -1,18 +1,26 @@
-"""
-Extension for adding globals to MooseDocs markdown.
-"""
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import re
-import markdown
-from markdown.util import etree
-from markdown.preprocessors import Preprocessor
 import logging
-log = logging.getLogger(__name__)
 
 from markdown.extensions.tables import TableProcessor
 
-import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
+
+LOG = logging.getLogger(__name__)
 
 class TableExtension(MooseMarkdownExtension):
     """
@@ -29,7 +37,8 @@ class TableExtension(MooseMarkdownExtension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.parser.blockprocessors.add('moose_table', MooseTableProcessor(markdown_instance=md, **config), '_begin')
+        md.parser.blockprocessors.add('moose_table',
+                                      MooseTableProcessor(markdown_instance=md, **config), '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return TableExtension(*args, **kwargs)
@@ -43,8 +52,8 @@ class MooseTableProcessor(MooseMarkdownCommon, TableProcessor):
     @staticmethod
     def defaultSettings():
         settings = MooseMarkdownCommon.defaultSettings()
-        settings['caption'] = (None, "The caption text to place after the float heading and number.")
-        settings['counter'] = ('table', "The name of the global counter to utilized for numbering.")
+        settings['caption'] = (None, "The caption to place after the float heading and number.")
+        settings['counter'] = ('table', "The name of global counter to utilized for numbering.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
