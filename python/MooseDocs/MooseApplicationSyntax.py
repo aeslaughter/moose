@@ -1,10 +1,25 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import os
 import re
 import collections
 import logging
-log = logging.getLogger(__name__)
 import MooseDocs
-import cPickle as pickle
+
+LOG = logging.getLogger(__name__)
 
 class MooseInfoBase(object):
     """
@@ -12,7 +27,8 @@ class MooseInfoBase(object):
     """
     STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->\n'
 
-    def __init__(self, node, code=[], install='', group='', hidden=False, generate=False, check=True):
+    def __init__(self, node, code=[], install='', group='', hidden=False, generate=False,
+                 check=True):
 
         # Define public parameters to be accessible
         self.syntax = node['name']
@@ -41,7 +57,8 @@ class MooseInfoBase(object):
 
         # Error if the filename does not exist and create a stub if desired
         elif not os.path.exists(self.markdown):
-            log.error("No documentation for {}. Documentation for this object should be created in: {}".format(self.key, self.markdown))
+            LOG.error("No documentation for %s. Documentation for this object should be "
+                      "created in: %s", self.key, self.markdown)
             if self._generate:
                 self.generate()
 
@@ -56,7 +73,8 @@ class MooseInfoBase(object):
         with open(self.markdown, 'r') as fid:
             lines = fid.readlines()
         if MooseInfoBase.STUB_HEADER in lines[0]:
-            log.error("A MOOSE generated stub page for {} exists, but no content was added. Add documentation content to {}.".format(self.key, self.markdown))
+            LOG.error("A MOOSE generated stub page for %s exists, but no content was "
+                      "added. Add documentation content to %s.", self.key, self.markdown)
 
     def generate(self):
         pass
@@ -77,7 +95,8 @@ class MooseObjectInfo(MooseInfoBase):
 
         # Test for class description
         if not self.description:
-            log.error("No class description for {}. The 'addClassDescription' method should be used in the objects validParams function.".format(self.key))
+            LOG.error("No class description for %s. The 'addClassDescription' method should be "
+                      "used in the objects validParams function.", self.key)
 
     def generate(self):
         """
@@ -96,7 +115,7 @@ class MooseObjectInfo(MooseInfoBase):
         if not os.path.exists(loc):
             os.makedirs(loc)
         with open(self.markdown, 'w') as fid:
-            log.info('Creating stub page for MOOSE object {}: {}'.format(self.key, self.markdown))
+            LOG.info('Creating stub page for MOOSE object %s: %s', self.key, self.markdown)
             fid.write(stub)
 
 class MooseActionInfo(MooseInfoBase):
@@ -123,34 +142,41 @@ class MooseActionInfo(MooseInfoBase):
         if not os.path.exists(loc):
             os.makedirs(loc)
         with open(self.markdown, 'w') as fid:
-            log.info('Creating stub page for MOOSE action {}: {}'.format(self.key, self.markdown))
+            LOG.info('Creating stub page for MOOSE action %s: %s', self.key, self.markdown)
             fid.write(stub)
-            log.error("No documentation for {}. Documentation for this system should be created in: {}".format(self.key, self.markdown))
+            LOG.error("No documentation for %s. Documentation for this system should be created"
+                      " in: %s", self.key, self.markdown)
 
 class MooseApplicationSyntax(object):
     """
-    An object for handling the registered object and action syntax for a specific set of directories.
+    An object for handling the registered object and action syntax for a specific set of
+    directories.
 
-    A compiled MOOSE application contains all included libraries (i.e., framework, modules, and other applications), thus
-    when an application is executed with --yaml in includes the complete syntax.
+    A compiled MOOSE application contains all included libraries (i.e., framework, modules, and
+    other applications), thus when an application is executed with --yaml in includes the complete
+    syntax.
 
-    To allow for documentation to be generated to only include the objects and syntax specific to an application the syntax
-    defined in the application source directory must be separated from that of the entire library. This object builds maps to
-    the registered objects and syntax specific to the application.
+    To allow for documentation to be generated to only include the objects and syntax specific to an
+    application the syntax defined in the application source directory must be separated from that
+    of the entire library. This object builds maps to the registered objects and syntax specific to
+    the application.
 
     Args:
-      yaml_data[MooseYaml]: The MooseYaml object obtained by running the application with --yaml option.
+      yaml_data[MooseYaml]: MooseYaml object obtained by running the application with --yaml option.
       paths[list]: Valid source directory to extract syntax.
       doxygen[str]: The URL to the doxygen page.
-      doxygen_name_style[str]: 'upper' (classMyClassName) and 'lower' (class_my_class_name) Doxygen html class format switch.
-      group[str]: The name of the syntax group (i.e., the key used in the 'locations' configuration for MooseMarkdownExtension)
+      doxygen_name_style[str]: Doxygen html class format switch: 'upper' (classMyClassName) and
+                              'lower' (class_my_class_name)
+      group[str]: The name of the syntax group (i.e., the key used in the 'locations' configuration
+                  for MooseMarkdownExtension)
       name[str]: The display name for the syntax group (e.g., Phase Field)
       install[str]: The install directory for the generating stub markdown files
       generate[bool]: When True the call to 'check' will generate stub markdown pages.
       hide[list]: A list of syntax to ignore for error checking and generation.
     """
 
-    def __init__(self, yaml_data, paths=[], doxygen=None, name=None, doxygen_name_style='upper', group=None, install=None, generate=False, hide=[]):
+    def __init__(self, yaml_data, paths=[], doxygen=None, name=None, doxygen_name_style='upper',
+                 group=None, install=None, generate=False, hide=[]):
 
         # Public member for syntax object name (i.e., the location name in the configuration file)
         self._name = name
@@ -172,7 +198,7 @@ class MooseApplicationSyntax(object):
         for path in paths:
             full_path = MooseDocs.abspath(path)
             if not os.path.exists(full_path):
-                log.critical("Unknown source directory supplied: {}".format(full_path))
+                LOG.critical("Unknown source directory supplied: %s", full_path)
                 raise IOError(full_path)
             self._updateSyntax(path, objects, actions)
 
@@ -184,13 +210,13 @@ class MooseApplicationSyntax(object):
                 if node['subblocks']:
                     continue
 
-                info = MooseObjectInfo(node,
-                                       code=self._filenames[value],
-                                       install=install,
-                                       group=self._group,
-                                       generate=generate,
-                                       hidden=self.hidden(node['name']))
-                self._objects[info.key] = info
+                obj_info = MooseObjectInfo(node,
+                                           code=self._filenames[value],
+                                           install=install,
+                                           group=self._group,
+                                           generate=generate,
+                                           hidden=self.hidden(node['name']))
+                self._objects[obj_info.key] = obj_info
 
         # Create MooseActionInfo objects
         for key, value in actions.iteritems():
@@ -234,7 +260,8 @@ class MooseApplicationSyntax(object):
         Returns the complete Doxygen website path for the supplied C++ object name.
         """
         if self._doxygen_name_style == 'lower':
-            convert = lambda str: re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', '_\\1', str).lower().strip('_')
+            regex = r'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
+            convert = lambda x: re.sub(regex, '_\\1', x).lower().strip('_')
             return os.path.join(self._doxygen, "class_{}.html".format(convert(name)))
         else:
             return os.path.join(self._doxygen, "class{}.html".format(name))
@@ -285,7 +312,8 @@ class MooseApplicationSyntax(object):
         if prefix:
             out = []
             for item in items.itervalues():
-                if (item.key == prefix and include_self) or (item.key != prefix and os.path.dirname(item.key) == prefix):
+                if (item.key == prefix and include_self) or \
+                   (item.key != prefix and os.path.dirname(item.key) == prefix):
                     out.append(item)
             return out
         else:
@@ -298,9 +326,12 @@ class MooseApplicationSyntax(object):
         Args:
           path[str]: A valid source directory to inspect.
         """
+        reg_re = r'(?<!\:)register(?!RecoverableData|edError)\w+?\((?P<key>\w+)\);'
+        reg_named_re = r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);'
+        action_re = r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]'
 
         # Walk the directory, looking for files with the supplied extension.
-        for root, dirs, files in os.walk(MooseDocs.abspath(path), topdown=False):
+        for root, _, files in os.walk(MooseDocs.abspath(path), topdown=False):
             for filename in files:
                 fullfile = os.path.join(root, filename)
 
@@ -320,23 +351,23 @@ class MooseApplicationSyntax(object):
                                 self._filenames[key].append(src)
 
                     # Map of registered objects
-                    for match in re.finditer(r'(?<!\:)register(?!RecoverableData|edError)\w+?\((?P<key>\w+)\);', content):
+                    for match in re.finditer(reg_re, content):
                         key = match.group('key')
                         objects[key] = key
 
                     # Map of named registered objects
-                    for match in re.finditer(r'registerNamed\w+?\((?P<class>\w+),\s*"(?P<key>\w+)"\);', content):
+                    for match in re.finditer(reg_named_re, content):
                         name = match.group('class')
                         key = match.group('key')
                         objects[key] = name
 
                     # Action syntax map
-                    for match in re.finditer(r'registerActionSyntax\("(?P<action>\w+)"\s*,\s*"(?P<key>.*?)\"[,\);]', content):
+                    for match in re.finditer(action_re, content):
                         key = match.group('key')
                         action = match.group('action')
                         actions[key].add(action)
 
-        for root, dirs, files in os.walk(path, topdown=False):
+        for root, _, files in os.walk(path, topdown=False):
             for filename in files:
                 fullfile = os.path.join(root, filename)
 

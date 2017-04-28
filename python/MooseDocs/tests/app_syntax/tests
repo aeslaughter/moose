@@ -1,5 +1,5 @@
 [Tests]
-  [./syntax]
+  [./ApplicationSyntax]
     type = PythonUnitTest
     input = test_ApplicationSyntax.py
   [../]

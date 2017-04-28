@@ -38,17 +38,17 @@ class MarkdownNode(MooseDocsNode):
                 self.__content = fid.read().decode('utf-8')
         return self.__content
 
+    def convert(self):
+        """
+        Converts the markdown to html.
+        """
+        return self.__parser.convert(selfg
+
     def build(self, lock=None):
         """
         Converts the markdown to html and writes result html to file.
         """
         self.write(self.convert(), lock)
-
-    def convert(self):
-        """
-        Converts the markdown to html.
-        """
-        return self.__parser.convert(self)
 
     def write(self, content, lock=None):
         """
