@@ -3,4 +3,8 @@
     type = PythonUnitTest
     input = test_ApplicationSyntax.py
   [../]
+  [./object_syntax]
+    type = PythonUnitTest
+    input = test_object_syntax.py
+  [../]
 []
