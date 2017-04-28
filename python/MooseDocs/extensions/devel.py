@@ -1,17 +1,29 @@
-"""
-Markdown for developer information: buildstatus and package data.
-"""
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import os
-from markdown.util import etree
-from markdown.util import AtomicString
 import logging
-log = logging.getLogger(__name__)
 
-import markdown
+from markdown.util import etree, AtomicString
 from markdown.inlinepatterns import Pattern
+
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
+
 import MooseDocs
+
+LOG = logging.getLogger(__name__)
 
 class DevelExtension(MooseMarkdownExtension):
     """
@@ -30,10 +42,22 @@ class DevelExtension(MooseMarkdownExtension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.inlinePatterns.add('moose_build_status', BuildStatusPattern(markdown_instance=md, **config), '_begin')
-        md.inlinePatterns.add('moose_package_parser', PackagePattern(markdown_instance=md, **config), '_end')
-        md.inlinePatterns.add('moose_extension_config', ExtensionConfigPattern(markdown_instance=md, **config), '_begin')
-        md.inlinePatterns.add('moose_extension_component_settings', ExtensionSettingsPattern(markdown_instance=md, **config), '_begin')
+
+        md.inlinePatterns.add('moose_build_status',
+                              BuildStatusPattern(markdown_instance=md, **config),
+                              '_begin')
+
+        md.inlinePatterns.add('moose_package_parser',
+                              PackagePattern(markdown_instance=md, **config),
+                              '_end')
+
+        md.inlinePatterns.add('moose_extension_config',
+                              ExtensionConfigPattern(markdown_instance=md, **config),
+                              '_begin')
+
+        md.inlinePatterns.add('moose_extension_component_settings',
+                              ExtensionSettingsPattern(markdown_instance=md, **config),
+                              '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return DevelExtension(*args, **kwargs)
@@ -75,7 +99,8 @@ class BuildStatusPattern(MooseMarkdownCommon, Pattern):
         jquery_script.set('src', 'http://code.jquery.com/jquery-1.11.0.min.js')
 
         # We need to inform SmartyPants to not format for paragraph use
-        build_status_script.text = AtomicString('$(document).ready(function(){ $("#buildstatus").load("%s");});' % (url))
+        build_status_script.text = \
+            AtomicString('$(document).ready(function(){ $("#buildstatus").load("%s");});' % (url))
 
         # Set some necessary defaults for our child div
         child_div.set('id', 'buildstatus')
@@ -112,7 +137,8 @@ class PackagePattern(MooseMarkdownCommon, Pattern):
         # Update the settings from regex match
         settings = self.getSettings(match.group(2))
         if not settings.has_key('arch') or not settings.has_key('return'):
-            el = self.createErrorElement('Invalid MOOSEPACKAGE markdown syntax. Requires arch=, return=link|name')
+            el = self.createErrorElement('Invalid MOOSEPACKAGE markdown syntax. '\
+                                         'Requires arch=, return=link|name')
         else:
             if settings['arch'] not in self.package.keys():
                 el = self.createErrorElement('"arch" not found in packages.yml')
@@ -136,8 +162,10 @@ class ExtensionConfigPattern(MooseMarkdownCommon, Pattern):
     @staticmethod
     def defaultSettings():
         settings = MooseMarkdownCommon.defaultSettings()
-        settings['id'] = (None, "The id to utilize for the generated table. If not provided, the command will be used.")
-        settings['caption'] = (None, "The title to place above the generated table. If not provided it will be generated using the command.")
+        settings['id'] = (None, "The id to utilize for the generated table. If not provided, " \
+                                "the command will be used.")
+        settings['caption'] = (None, "The title to place above the generated table. If not " \
+                                     "provided it will be generated using the command.")
         settings['counter'] = ('table', "The name of the float to associate the generated table.")
         return settings
 
@@ -182,8 +210,10 @@ class ExtensionSettingsPattern(MooseMarkdownCommon, Pattern):
     @staticmethod
     def defaultSettings():
         settings = MooseMarkdownCommon.defaultSettings()
-        settings['id'] = (None, "The id to utilize for the generated table. If not provided, the command will be used.")
-        settings['caption'] = (None, "The title to place above the generated table. If not provided it will be generated using the command.")
+        settings['id'] = (None, "The id to utilize for the generated table. If not provided, " \
+                                "the command will be used.")
+        settings['caption'] = (None, "The title to place above the generated table. If not " \
+                                     "provided it will be generated using the command.")
         settings['counter'] = ('table', "The name of the float to associate the generated table.")
         return settings
 
@@ -206,7 +236,9 @@ class ExtensionSettingsPattern(MooseMarkdownCommon, Pattern):
         if obj is None:
             return self.createErrorElement('Unknown extension module: {}'.format(name))
         elif not isinstance(obj, MooseMarkdownCommon):
-            return self.createErrorElement('The extension module must be a "{}" object, but a "{}" was found.'.format(MooseMarkdownCommon.__name__, type(obj).__name__))
+            msg = 'The extension module must be a "{}" object, but a "{}" was found.'
+            return self.createErrorElement(msg.format(MooseMarkdownCommon.__name__,
+                                                      type(obj).__name__))
 
         table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
         for key, value in obj.defaultSettings().iteritems():
