@@ -1,12 +1,24 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import re
 import os
 import cgi
 import logging
-log = logging.getLogger(__name__)
 
 import markdown
 from markdown.inlinepatterns import Pattern
-from markdown.treeprocessors import Treeprocessor
 from markdown.util import etree
 from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
@@ -17,10 +29,12 @@ from MooseMarkdownCommon import MooseMarkdownCommon
 
 from FactorySystem import ParseGetPot
 
+LOG = logging.getLogger(__name__)
+
 try:
     import mooseutils.MooseSourceParser
     HAVE_MOOSE_CPP_PARSER = True
-except:
+except ImportError:
     HAVE_MOOSE_CPP_PARSER = False
 
 class ListingExtension(MooseMarkdownExtension):
@@ -31,7 +45,8 @@ class ListingExtension(MooseMarkdownExtension):
     def defaultConfig():
         config = MooseMarkdownExtension.defaultConfig()
         config['repo'] = ['', "The remote repository to create hyperlinks."]
-        config['make_dir'] = ['', "The location of the MakeFile for determining the include paths when using clang parser."]
+        config['make_dir'] = ['', "The location of the MakeFile for determining the include " \
+                                  "paths when using clang parser."]
         return config
 
     def extendMarkdown(self, md, md_globals):
@@ -48,12 +63,17 @@ class ListingExtension(MooseMarkdownExtension):
                                  ListingFencedBlockPreprocessor(md),
                                  "<fenced_code_block")
 
-        md.inlinePatterns.add('moose-listing', ListingPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose-listing',
+                              ListingPattern(markdown_instance=md, **config),
+                              '_begin')
 
-        md.inlinePatterns.add('moose-input-listing', ListingInputPattern(markdown_instance=md, **config), '_begin')
+        md.inlinePatterns.add('moose-input-listing',
+                              ListingInputPattern(markdown_instance=md, **config),
+                              '_begin')
 
-        md.inlinePatterns.add('moose-clang-listing', ListingClangPattern(markdown_instance=md, **config), '_begin')
-
+        md.inlinePatterns.add('moose-clang-listing',
+                              ListingClangPattern(markdown_instance=md, **config),
+                              '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return ListingExtension(*args, **kwargs)
@@ -72,21 +92,31 @@ class ListingPattern(MooseMarkdownCommon, Pattern):
     def defaultSettings():
         settings = MooseMarkdownCommon.defaultSettings()
         settings['strip-header'] = (True, "When True the MOOSE header is removed for display.")
-        settings['caption'] = (None, "The text caption, if an empty string is provided a link to the filename is created, if None is provided no caption is applied, otherwise the text given is used.")
+        settings['caption'] = (None, "The text caption, if an empty string is provided a link to " \
+                                     "the filename is created, if None is provided no caption is " \
+                                     "applied, otherwise the text given is used.")
         settings['language'] = (None, "The language to utilize for providing syntax highlighting.")
         settings['link'] = (True, "Include a link to the filename in the caption.")
         settings['strip-extra-newlines'] = (True, "Removes extraneous new lines from the text.")
         settings['prefix'] = ('', "Text to include prior to the included text.")
         settings['suffix'] = ('', "Text to include after to the included text.")
         settings['indent'] = (0, "The level of indenting to apply to the included text.")
-        settings['strip-leading-whitespace'] = (False, "When True leading white-space is removed from the included text.")
+        settings['strip-leading-whitespace'] = (False, "When True leading white-space is removed " \
+                                                       "from the included text.")
         settings['counter'] = ('listing', "The counter group to associate wit this command.")
-        settings['line'] = (None, "A portion of text that unique identifies a single line to include.")
-        settings['start'] = (None, "A portion of text that unique identifies the starting location for including text, if not provided the beginning of the file is utilized.")
-        settings['end'] = (None, "A portion of text that unique identifies the ending location for including text, if not provided the end of the file is used. By default this line is not included in the display.")
-        settings['include-end'] = (False, "When True the texted captured by the 'end' setting is included in the displayed text.")
+        settings['line'] = (None, "A portion of text that unique identifies a single line to " \
+                                  "include.")
+        settings['start'] = (None, "A portion of text that unique identifies the starting " \
+                                   "location for including text, if not provided the beginning " \
+                                   "of the file is utilized.")
+        settings['end'] = (None, "A portion of text that unique identifies the ending location " \
+                                 "for including text, if not provided the end of the file is " \
+                                 "used. By default this line is not included in the display.")
+        settings['include-end'] = (False, "When True the texted captured by the 'end' setting is " \
+                                          "included in the displayed text.")
         settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
-        settings['pre-style'] = ("overflow-y:scroll;max-height:350px", "Style attributes to apply to the code area.")
+        settings['pre-style'] = ("overflow-y:scroll;max-height:350px",
+                                 "Style attributes to apply to the code area.")
         return settings
 
     def __init__(self, markdown_instance=None, **kwargs):
@@ -121,7 +151,7 @@ class ListingPattern(MooseMarkdownCommon, Pattern):
 
         # Extract the content from the file
         content = self.extractContent(filename, settings)
-        if content == None:
+        if content is None:
             return self.createErrorElement("Failed to extract content from {}.".format(filename))
 
         # Apply additional settings to content
@@ -131,7 +161,8 @@ class ListingPattern(MooseMarkdownCommon, Pattern):
         el = self.createElement(content, rel_filename, settings)
         return el
 
-    def prepareContent(self, content, settings):
+    @staticmethod
+    def prepareContent(content, settings):
         """
         Prepare the convent for conversion to Element object.
 
@@ -160,10 +191,10 @@ class ListingPattern(MooseMarkdownCommon, Pattern):
         # Add indent
         if settings['indent'] > 0:
             lines = content.split('\n')
-            content = []
+            c = []
             for line in lines:
-                content.append('{}{}'.format(' '*int(settings['indent']), line))
-            content = '\n'.join(content)
+                c.append('{}{}'.format(' '*int(settings['indent']), line))
+            content = '\n'.join(c)
 
         # Prefix/suffix
         if settings['prefix']:
@@ -234,7 +265,10 @@ class ListingPattern(MooseMarkdownCommon, Pattern):
             content = self.extractLine(filename, settings["line"])
 
         elif settings['start'] or settings['end']:
-            content = self.extractLineRange(filename, settings['start'], settings['end'], settings['include-end'])
+            content = self.extractLineRange(filename,
+                                            settings['start'],
+                                            settings['end'],
+                                            settings['include-end'])
 
         else:
             with open(filename) as fid:
@@ -333,13 +367,16 @@ class ListingClangPattern(ListingPattern):
       make_dir[str]: (required) The MOOSE application directory for running make command.
       **kwargs: key, value arguments passed to base class.
     """
-    RE = '(?<!`)!listing\s+(?P<filename>.*\.[Ch])(?:$|\s+)(?P<settings>.*)'
+    RE = r'(?<!`)!listing\s+(?P<filename>.*\.[Ch])(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
         settings = ListingPattern.defaultSettings()
-        settings['method'] = (None, "The C++ method to return using the clang parser. Using, this will bypass other extracting settings (e.g., 'begin' and 'end').")
-        settings['declaration'] = (False, "When True the declaration is returned, other size the definition is given.")
+        settings['method'] = (None, "The C++ method to return using the clang parser. Using, " \
+                                    "this will bypass other extracting settings (e.g., 'begin' " \
+                                    "and 'end').")
+        settings['declaration'] = (False, "When True the declaration is returned, other size the " \
+                                          "definition is given.")
         return settings
 
     def __init__(self, **kwargs):
@@ -348,8 +385,7 @@ class ListingClangPattern(ListingPattern):
         # The make command to execute
         self._make_dir = MooseDocs.abspath(kwargs.pop('make_dir'))
         if not os.path.exists(os.path.join(self._make_dir, 'Makefile')):
-            log.error("Invalid path provided for make: {}".format(self._make_dir))
-            raise Exception('Critical Error')
+            LOG.error("Invalid path provided for make: %s", self._make_dir)
 
     def handleMatch(self, match):
         """
@@ -374,21 +410,23 @@ class ListingClangPattern(ListingPattern):
             if settings['declaration']:
                 return decl
             return defn
-        except:
-            log.error('Failed to parser file ({}) with clang for the {} method.'.format(filename, settings['method']))
+        except Exception: #pylint: disable=broad-except
+            LOG.error('Failed to parser file (%s) with clang for the %s method.',
+                      filename,
+                      settings['method'])
 
 class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseMarkdownCommon):
     """
     Adds the ability to proceed a fenced code block with !listing command.
     """
-    RE = '(?<!`)!listing\s*(?P<settings>.*)'
+    RE = r'(?<!`)!listing\s*(?P<settings>.*)'
     LANG_TAG = ' class="language-%s"'
 
     @staticmethod
     def defaultSettings():
         settings = MooseMarkdownCommon.defaultSettings()
         settings['caption'] = (None, "The caption text to place after the heading and number.")
-        settings['counter'] = ('listing', "The name of the global counter to utilized for numbering.")
+        settings['counter'] = ('listing', "The name of global counter to utilized for numbering.")
         settings['copy-button'] = (True, "Enable/disable the inclusion of a copy button.")
         return settings
 
@@ -398,31 +436,42 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseMarkdownCommo
         self._remove = []
 
     def sub(self, text, match):
-
+        """
+        Substitution function that captures !listings command above a fenced code block.
+        """
 
         idx = text.rfind('\n', 0, match.start(0)-1)
         if idx:
             listing = re.search(self.RE, text[idx+1:match.start(0)-1])
             if listing:
 
+                # Stash the !listing line to be removed
                 self._remove.append(text[idx+1:match.start(0)-1])
 
-                lines = match.group(0).split('\n')
-
+                # The html stash that will contain the fenced code block
                 placeholder = markdown.util.HTML_PLACEHOLDER % self.markdown.htmlStash.html_counter
+
+                # Build the containing <div>
                 settings = self.getSettings(listing.group('settings'))
                 div = self.createFloatElement(settings)
 
+                # Add a copy button
                 if settings['copy-button']:
                     code_id = 'moose-code-block-{}'.format(MooseMarkdown.CODE_BLOCK_COUNT)
                     btn = self.createCopyButton(code_id)
-                    self.CODE_WRAP = '<pre>{}<code%s id={}>%s</code></pre>'.format(etree.tostring(btn), code_id)
+                    string = '<pre>{}<code%s id={}>%s</code></pre>'.format(etree.tostring(btn),
+                                                                           code_id)
+                    self.CODE_WRAP = string #pylint: disable=invalid-name
 
+                # Parse the fenced code block
+                lines = match.group(0).split('\n')
                 lines = super(ListingFencedBlockPreprocessor, self).run(lines)
 
+                # String of html tags to wrap fenced content with
                 start = self.markdown.htmlStash.store(etree.tostring(div)[:-6], safe=True)
                 end = self.markdown.htmlStash.store('</div>', safe=True)
 
+                # Add the wrapped html around the fenced block
                 idx = lines.index(placeholder)
                 lines.insert(idx+1, end)
                 lines.insert(idx, start)
@@ -444,5 +493,5 @@ class ListingFencedBlockPreprocessor(FencedBlockPreprocessor, MooseMarkdownCommo
             text = text.replace(s, '')
 
         # Restore the code wrapping
-        self.CODE_WRAP = '<pre><code%s>%s</code></pre>'
+        self.CODE_WRAP = '<pre><code%s>%s</code></pre>'#pylint: disable=invalid-name
         return text.split('\n')

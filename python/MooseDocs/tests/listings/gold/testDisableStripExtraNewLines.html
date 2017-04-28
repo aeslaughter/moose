@@ -1,13 +1,13 @@
 <p>
 <div class="moose-float-div moose-listing-div">
-<pre><code class="language-c++">#include &quot;Diffusion.h&quot;
+<pre style="overflow-y:scroll;max-height:350px"><code class="language-cpp">#include "Diffusion.h"
 
 
 template&lt;&gt;
 InputParameters validParams&lt;Diffusion&gt;()
 {
   InputParameters params = validParams&lt;Kernel&gt;();
-  params.addClassDescription(&quot;The Laplacian operator ($-\\nabla \\cdot \\nabla u$), with the weak form of $(\\nabla \\phi_i, \\nabla u_h)$.&quot;);
+  params.addClassDescription("The Laplacian operator ($-\\nabla \\cdot \\nabla u$), with the weak form of $(\\nabla \\phi_i, \\nabla u_h)$.");
   return params;
 }
 </code></pre>
