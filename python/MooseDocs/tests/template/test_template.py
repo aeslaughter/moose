@@ -2,8 +2,9 @@
 import os
 import bs4
 import unittest
+import mooseutils
 from MooseDocs.testing import MarkdownTestCase
-from MooseDocs.commands.MooseDocsMarkdownNode import MooseDocsMarkdownNode
+from MooseDocs.commands.MarkdownNode import MarkdownNode
 
 class TestTemplate(MarkdownTestCase):
     """
@@ -26,23 +27,16 @@ class TestTemplate(MarkdownTestCase):
         Convenience function for converting markdown to html.
         """
         super(TestTemplate, cls).setUpClass()
-        node = MooseDocsMarkdownNode(name='test', markdown='input.md', parser=cls.parser, site_dir=cls.WORKING_DIR)
+        node = MarkdownNode(name='test', markdown='input.md', parser=cls.parser, site_dir=cls.WORKING_DIR)
         node.build()
 
         with open(node.url(), 'r') as fid:
-            html = fid.read()
-        cls.soup = bs4.BeautifulSoup(html, "html.parser")
+            cls.html = fid.read()
+        cls.soup = bs4.BeautifulSoup(cls.html, "html.parser")
 
     def testContent(self):
-
         self.assertIsNotNone(self.soup.find('h2'))
-
-#class TestRequiredError(MarkdownTestCase):
-#    EXTENSIONS = ['MooseDocs.extensions.template', 'meta']
-#
-#    def testError()
-
-
+        self.assertIn('More Content', self.html)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,13 +1,24 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import os
-import re
 import copy
+import logging
+
 import jinja2
 import bs4
-import shutil
-import markdown
 from markdown.postprocessors import Postprocessor
-import logging
-log = logging.getLogger(__name__)
 
 import mooseutils
 
@@ -15,6 +26,7 @@ import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
 from app_syntax import AppSyntaxExtension
 
+LOG = logging.getLogger(__name__)
 
 class TemplateExtension(MooseMarkdownExtension):
     """
@@ -24,7 +36,7 @@ class TemplateExtension(MooseMarkdownExtension):
     def defaultConfig():
         config = MooseMarkdownExtension.defaultConfig()
         config['template'] = ['', "The jinja2 template to apply."]
-        config['template_args'] = [dict(), "Arguments passed to to the MooseTemplate Postprocessor."]
+        config['template_args'] = [dict(), "Arguments passed to the MooseTemplate Postprocessor."]
         config['environment_args'] = [dict(), "Arguments passed to the jinja2.Environment."]
         return config
 
@@ -39,13 +51,14 @@ class TemplateExtension(MooseMarkdownExtension):
         md.requireExtension(AppSyntaxExtension)
 
         try:
-            value = md.preprocessors.index('meta')
+            md.preprocessors.index('meta')
         except ValueError:
             raise mooseutils.MooseException("The 'meta' extension is required.")
 
         ext = md.getExtension(AppSyntaxExtension)
         config['syntax'] = ext.syntax
-        md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), '_end')
+        md.postprocessors.add('moose_template',
+                              TemplatePostprocessor(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return TemplateExtension(*args, **kwargs)
@@ -91,10 +104,12 @@ class TemplatePostprocessor(Postprocessor):
         template_args['tableofcontents'] = self._tableofcontents(text)
         template_args['doxygen'] = self._doxygen()
         if 'navigation' in template_args:
-            template_args['navigation'] = MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
+            template_args['navigation'] = \
+                MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
 
         # Execute template and return result
-        paths = [os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'templates'), os.path.join(os.getcwd(), 'templates')]
+        paths = [os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'templates'),
+                 os.path.join(os.getcwd(), 'templates')]
         env = jinja2.Environment(loader=jinja2.FileSystemLoader(paths), **self._environment_args)
         self.globals(env)
         template = env.get_template(self._template)
@@ -128,7 +143,8 @@ class TemplatePostprocessor(Postprocessor):
         for img in soup('img'):
             img['src'] = node.relpath(img['src'])
 
-    def _markdownLinks(self, node, soup):
+    @staticmethod
+    def _markdownLinks(node, soup):
         """
         Performs auto linking of markdown files.
         """
@@ -156,21 +172,23 @@ class TemplatePostprocessor(Postprocessor):
 
                 # Error if file not found or if multiple files found
                 if not found:
-                    log.error('Failed to locate page for markdown file {} in {}'.format(href, node.source()))
+                    LOG.error('Failed to locate page for markdown file %s in %s',
+                              href, node.source())
                     link['class'] = 'moose-bad-link'
                     continue
 
                 elif len(found) > 1:
-                    msg = 'Found multiple pages matching the supplied markdown file {} in {}:'.format(href, node.source())
+                    msg = 'Found multiple pages matching the supplied markdown file {} in {}:' \
+                          .format(href, node.source())
                     for f in found:
                         msg += '\n    {}'.format(f.source())
-                    log.error(msg)
+                    LOG.error(msg)
 
                 # Update the link with the located page
                 url = node.relpath(found[0].url())
                 if len(parts) == 2:
                     url += '#' + parts[1]
-                log.debug('Converting link: {} --> {}'.format(href, url))
+                LOG.debug('Converting link: %s --> %s', href, url)
                 link['href'] = url
 
     @staticmethod
@@ -201,7 +219,7 @@ class TemplatePostprocessor(Postprocessor):
           repo_url[str]: Web address to use as the base for creating the edit link
         """
         info = []
-        for key, syntax in self._syntax.iteritems():
+        for syntax in self._syntax.itervalues():
             for obj in syntax.objects().itervalues():
                 if obj.name == self.node.name():
                     info.append(obj)
@@ -213,6 +231,7 @@ class TemplatePostprocessor(Postprocessor):
         for obj in info:
             for filename in obj.code:
                 rel_filename = MooseDocs.relpath(filename)
-                output.append( (os.path.basename(rel_filename), os.path.join(repo_url, 'blob', 'master', rel_filename)) )
+                output.append((os.path.basename(rel_filename),
+                               os.path.join(repo_url, 'blob', 'master', rel_filename)))
 
         return output
