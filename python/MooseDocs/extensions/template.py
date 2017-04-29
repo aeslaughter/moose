@@ -8,6 +8,9 @@ import markdown
 from markdown.postprocessors import Postprocessor
 import logging
 log = logging.getLogger(__name__)
+
+import mooseutils
+
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
 from app_syntax import AppSyntaxExtension
@@ -32,7 +35,14 @@ class TemplateExtension(MooseMarkdownExtension):
         md.registerExtension(self)
         config = self.getConfigs()
 
+        # Check for required dependencies.
         md.requireExtension(AppSyntaxExtension)
+
+        try:
+            value = md.postprocessors.index('meta')
+        except ValueError:
+            raise mooseutils.MooseException("The 'meta' extension is required.")
+
         ext = md.getExtension(AppSyntaxExtension)
         config['syntax'] = ext.syntax
         md.postprocessors.add('moose_template', TemplatePostprocessor(markdown_instance=md, **config), '_end')

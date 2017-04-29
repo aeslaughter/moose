@@ -42,7 +42,7 @@ class MarkdownNode(MooseDocsNode):
         """
         Converts the markdown to html.
         """
-        return self.__parser.convert(selfg
+        return self.__parser.convert(self)
 
     def build(self, lock=None):
         """

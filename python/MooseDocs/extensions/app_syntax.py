@@ -1,9 +1,22 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import os
 import collections
 import cPickle as pickle
 import logging
-log = logging.getLogger(__name__)
-
 import mooseutils
 
 from markdown.util import etree
@@ -12,6 +25,8 @@ from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
 from MooseObjectParameterTable import MooseObjectParameterTable
 import MooseDocs
+
+LOG = logging.getLogger(__name__)
 
 class AppSyntaxExtension(MooseMarkdownExtension):
     """
@@ -23,7 +38,8 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         config['executable'] = ['', "The executable to utilize for generating application syntax."]
         config['locations'] = [dict(), "The locations to parse for syntax."]
         config['repo'] = ['', "The remote repository to create hyperlinks."]
-        config['links'] = [dict(), "The set of paths for generating input file and source code links to objects."]
+        config['links'] = [dict(), "The set of paths for generating input file and source code "
+                                   "links to objects."]
         config['install'] = ['', "The location to install system and object documentation."]
         return config
 
@@ -46,23 +62,24 @@ class AppSyntaxExtension(MooseMarkdownExtension):
 
         if os.path.exists(cache) and (os.path.getmtime(cache) >= os.path.getmtime(cache)):
             with open(cache, 'r') as fid:
-                log.debug('Reading MooseYaml Pickle: ' + cache)
+                LOG.debug('Reading MooseYaml Pickle: ' + cache)
                 return mooseutils.MooseYaml(pickle.load(fid))
 
         elif not (exe or os.path.exists(exe)):
-            log.critical('The executable does not exist: {}'.format(exe))
+            LOG.critical('The executable does not exist: %s', exe)
             raise Exception('Critical Error')
 
         else:
-            log.debug("Executing {} to extract syntax.".format(exe))
+            LOG.debug("Executing %s to extract syntax.", exe)
             try:
                 raw = mooseutils.runExe(exe, '--yaml')
                 with open(cache, 'w') as fid:
-                    log.debug('Writing MooseYaml Pickle: ' + cache)
+                    LOG.debug('Writing MooseYaml Pickle: ' + cache)
                     pickle.dump(raw, fid)
                 return mooseutils.MooseYaml(raw)
             except:
-                log.critical('Failed to read YAML file, MOOSE and modules are likely not compiled correctly.')
+                LOG.critical('Failed to read YAML file, MOOSE and modules are likely not compiled'
+                             ' correctly.')
                 raise Exception('Critical Error')
 
 
@@ -80,7 +97,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
 
         # Generate YAML data from application
         # Populate the database for input file and children objects
-        log.debug('Creating input file and source code use database.')
+        LOG.debug('Creating input file and source code use database.')
         database = MooseDocs.MooseLinkDatabase(**config)
 
         # Populate the syntax
@@ -100,13 +117,15 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         desc = MooseDescription(markdown_instance=md, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_description', desc, '_begin')
 
-        object_markdown = MooseObjectSyntax(markdown_instance=md, syntax=self.syntax, database=database, **config)
+        object_markdown = MooseObjectSyntax(markdown_instance=md, syntax=self.syntax,
+                                            database=database, **config)
         md.inlinePatterns.add('moose_object_syntax', object_markdown, '_begin')
 
         system_markdown = MooseActionSyntax(markdown_instance=md, syntax=self.syntax, **config)
         md.inlinePatterns.add('moose_system_syntax', system_markdown, '_begin')
 
-        system_list = MooseActionList(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax, **config)
+        system_list = MooseActionList(markdown_instance=md, yaml=exe_yaml, syntax=self.syntax,
+                                      **config)
         md.inlinePatterns.add('moose_system_list', system_list, '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
@@ -130,11 +149,11 @@ class MooseSyntaxBase(MooseMarkdownCommon, Pattern):
 
         # Error if the syntax was not supplied
         if not isinstance(self._syntax, dict):
-            log.error("A dictionary of MooseApplicationSyntax objects must be supplied.")
+            LOG.error("A dictionary of MooseApplicationSyntax objects must be supplied.")
 
     def getInfo(self, name):
         info = self.getObject(name)
-        if info == None:
+        if info is None:
             return self.getAction(name)
         return info
 
@@ -160,7 +179,7 @@ class MooseParameters(MooseSyntaxBase):
     @staticmethod
     def defaultSettings():
         settings = MooseSyntaxBase.defaultSettings()
-        settings['title'] = ('Input Parameters', "The title to include prior to the parameter table.")
+        settings['title'] = ('Input Parameters', "Title to include prior to the parameter table.")
         settings['title_level'] = (2, "The HTML heading level to apply to the title")
         return settings
 
@@ -179,9 +198,11 @@ class MooseParameters(MooseSyntaxBase):
         # Locate description
         info = self.getInfo(syntax)
         if not info:
-            return self.createErrorElement('Failed to locate MooseObject or Action for the command: !parameters {}'.format(syntax))
+            return self.createErrorElement('Failed to locate MooseObject or Action for the '
+                                           'command: !parameters {}'.format(syntax))
 
-        # Create the tables (generate 'Required' and 'Optional' initially so that they come out in the proper order)
+        # Create the tables (generate 'Required' and 'Optional' initially so that they come out in
+        # the proper order)
         tables = collections.OrderedDict()
         tables['Required'] = MooseObjectParameterTable()
         tables['Optional'] = MooseObjectParameterTable()
@@ -198,11 +219,11 @@ class MooseParameters(MooseSyntaxBase):
                 tables[name] = MooseObjectParameterTable()
             tables[name].addParam(param)
 
-        # Produces a debug message if parameters are empty, but generally we just want to include the
-        # !parameters command, if parameters exist then a table is produce otherwise nothing happens. This
-        # will allow for parameters to be added and the table appear if it was empty.
+        # Produces a debug message if parameters are empty, but generally we just want to include
+        # the !parameters command, if parameters exist then a table is produce otherwise nothing
+        # happens. This will allow for parameters to be added and the table appear if it was empty.
         if not any(tables.values()):
-            log.debug('Unable to locate parameters for {}'.format(info.name))
+            LOG.debug('Unable to locate parameters for %s.', info.name)
         else:
             el = self.applyElementSettings(etree.Element('div'), settings)
             if settings['title']:
@@ -223,8 +244,8 @@ class MooseObjectSyntax(MooseSyntaxBase):
     !<Keyword> <YAML Syntax> key=value, key1=value1, etc...
 
     Keywords Available:
-      !inputfiles - Returns a set of lists containing links to the input files that use the syntax
-      !childobjects - Returns a set of lists containing links to objects that inherit from this class
+      !inputfiles: Returns a set of lists containing links to the input files that use the syntax
+      !childobjects: Returns a set of lists containing links to objects that inherit from this class
     """
 
     RE = r'^!(inputfiles|childobjects)\s+(.*?)(?:$|\s+)(.*)'
@@ -252,7 +273,8 @@ class MooseObjectSyntax(MooseSyntaxBase):
         # Locate description
         info = self.getObject(syntax)
         if not info:
-            el = self.createErrorElement('Failed to locate MooseObject with syntax in command: !{} {}'.format(action, syntax), error=False)
+            el = self.createErrorElement('Failed to locate MooseObject with syntax in command: '
+                                         '!{} {}'.format(action, syntax), error=False)
         elif action == 'inputfiles':
             el = self.inputfilesElement(info, settings)
         elif action == 'childobjects':
@@ -289,7 +311,8 @@ class MooseObjectSyntax(MooseSyntaxBase):
         self._listhelper(info, 'Child Objects', el, self._child_objects)
         return el
 
-    def _listhelper(self, info, title, parent, items):
+    @staticmethod
+    def _listhelper(info, title, parent, items):
         """
         Helper method for dumping link lists.
 
@@ -336,12 +359,14 @@ class MooseDescription(MooseSyntaxBase):
         # Locate description
         info = self.getInfo(syntax)
         if not info:
-            return self.createErrorElement('Failed to locate MooseObject or Action for the command: !description {}'.format(syntax))
+            return self.createErrorElement('Failed to locate MooseObject or Action for the '
+                                           'command:!description {}'.format(syntax))
 
-        # Create an Error element, but do not produce warning/error log because the
+        # Create an Error element, but do not produce warning/error LOG because the
         # moosedocs check/generate commands produce errors.
-        if info.description == None:
-            return self.createErrorElement('Failed to locate class description for {} syntax.'.format(info.name), warning=None)
+        if info.description is None:
+            return self.createErrorElement('Failed to locate class description for {} '
+                                           'syntax.'.format(info.name), error=False)
 
         # Create the html element with supplied styles
         el = self.applyElementSettings(etree.Element('p'), settings)
@@ -411,7 +436,8 @@ class MooseActionList(MooseSyntaxBase):
                 continue
 
             # Attempt to build the sub-objects table
-            collection = MooseDocs.extensions.create_object_collection(action.key, self._syntax, groups=groups, show_hidden=settings['show_hidden'])
+            collection = MooseDocs.extensions.create_object_collection(action.key, \
+                            self._syntax, groups=groups, show_hidden=settings['show_hidden'])
 
             # Do nothing if the table is empty or the supplied group is not desired
             if (not collection) and (action.group not in groups):
@@ -423,7 +449,8 @@ class MooseActionList(MooseSyntaxBase):
             for i in range(len(folder)):
                 current = '/'.join(folder[0:i+1])
 
-                # If a <div> with the current name exists, use it, otherwise create the <div> and associated heading
+                 # If a <div> with the current name exists, use it, otherwise create the <div> and
+                 # associated heading
                 if current in folder_divs:
                     div = folder_divs[current]
                 else:
@@ -472,7 +499,8 @@ class MooseActionSyntax(MooseSyntaxBase):
     @staticmethod
     def defaultSettings():
         settings = MooseSyntaxBase.defaultSettings()
-        settings['title'] = ('default', "The title display prior to tables ('default' provides a tile with the action name)")
+        settings['title'] = ('default', "The title display prior to tables ('default' provides a "
+                                        "title with the action name)")
         settings['title_level'] = (2, "The HTML heading level to apply to the title.")
         return settings
 
