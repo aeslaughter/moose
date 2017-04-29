@@ -27,8 +27,11 @@ class MooseInfoBase(object):
     """
     STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->\n'
 
-    def __init__(self, node, code=[], install='', group='', hidden=False, generate=False,
+    def __init__(self, node, code=None, install='', group='', hidden=False, generate=False,
                  check=True):
+
+        if code is None:
+            code = []
 
         # Define public parameters to be accessible
         self.syntax = node['name']
@@ -175,8 +178,14 @@ class MooseApplicationSyntax(object):
       hide[list]: A list of syntax to ignore for error checking and generation.
     """
 
-    def __init__(self, yaml_data, paths=[], doxygen=None, name=None, doxygen_name_style='upper',
-                 group=None, install=None, generate=False, hide=[]):
+    def __init__(self, yaml_data, paths=None, doxygen=None, name=None, doxygen_name_style='upper',
+                 group=None, install=None, generate=False, hide=None):
+
+        # Defaults
+        if paths is None:
+            paths = []
+        if hide is None:
+            hide = []
 
         # Public member for syntax object name (i.e., the location name in the configuration file)
         self._name = name

@@ -1,11 +1,28 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import os
 import re
 import collections
-from markdown.util import etree
 import logging
-log = logging.getLogger(__name__)
+
+from markdown.util import etree
 
 import MooseDocs
+
+LOG = logging.getLogger(__name__)
 
 class Item(object):
     """
@@ -44,7 +61,8 @@ class MooseLinkDatabase(object):
     INPUT_RE = re.compile(r'\btype\s*=\s*(?P<key>\w+)\b')
     HEADER_RE = re.compile(r'\bpublic\s+(?P<key>\w+)\b')
 
-    def __init__(self, repo=None, links=None, **kwargs):
+    # This object is passed a general config dict() to it may have other arguments.
+    def __init__(self, repo=None, links=None, **kwargs): #pylint: disable=unused-argument
         self._repo = repo
         self.inputs = collections.OrderedDict()
         self.children = collections.OrderedDict()
@@ -57,7 +75,6 @@ class MooseLinkDatabase(object):
                 for base, _, files in os.walk(MooseDocs.abspath(path), topdown=False):
                     for filename in files:
                         full_name = os.path.join(base, filename)
-                        rel_name = MooseDocs.relpath(full_name)
                         if filename.endswith('.i'):
                             self.search(full_name, self.INPUT_RE, self.inputs[key])
                         elif filename.endswith('.h'):
@@ -69,7 +86,8 @@ class MooseLinkDatabase(object):
 
         Args:
           filename[str]: The filename to open for searching.
-          regex: The compiled re to use for searching file, it must contain a "key" group for building database.
+          regex: The compiled re to use for searching file, it must contain a "key" group for
+                 building database.
           database: The database (dict) to append if the key is located.
         """
         match = False
