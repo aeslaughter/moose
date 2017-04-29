@@ -47,33 +47,41 @@ class TemplateExtension(MooseMarkdownExtension):
         md.registerExtension(self)
         config = self.getConfigs()
 
-        # Check for required dependencies.
-        md.requireExtension(AppSyntaxExtension)
-
-        try:
-            md.preprocessors.index('meta')
-        except ValueError:
-            raise mooseutils.MooseException("The 'meta' extension is required.")
-
-        ext = md.getExtension(AppSyntaxExtension)
-        config['syntax'] = ext.syntax
         md.postprocessors.add('moose_template',
                               TemplatePostprocessor(markdown_instance=md, **config), '_end')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     return TemplateExtension(*args, **kwargs)
 
-class TemplatePostprocessor(Postprocessor):
+class TemplatePostprocessorBase(Postprocessor):
     """
-    Extension for applying converted html content to an jinja2 template.
+    Base for creating extensions that apply markdown converted html content to an jinja2 template.
+
+    Generally, to create template extension there are only two methods that should be overridden:
+        globals: Allows for new functions to be added to the jinja2.Environment.
+        arguments: Allows for new template arguments to be added prior to application.
+
+    For an example, see the TemplatePostprocessor in this file.
+
+    NOTE: Be sure to call the base class of these methods to get the functionality of this base
+          class. However, both expect the inputs to be modified in-place (i.e., pass by reference),
+          thus no return statements are needed.
     """
     def __init__(self, markdown_instance, **config):
-        super(TemplatePostprocessor, self).__init__(markdown_instance)
+        super(TemplatePostprocessorBase, self).__init__(markdown_instance)
         self._template = config.pop('template')
         self._template_args = config.pop('template_args', dict())
         self._environment_args = config.pop('environment_args', dict())
-        self._syntax = config.pop('syntax')
+
+        # Storage for node property.
         self._node = None
+
+        # The 'markdown.extensions.meta' extension is required, but the 'meta' extension doesn't get
+        # registered so the list of preprocessors is checked.
+        try:
+            self.markdown.preprocessors.index('meta')
+        except ValueError:
+            raise mooseutils.MooseException("The 'meta' extension is required.")
 
     @property
     def node(self):
@@ -82,15 +90,33 @@ class TemplatePostprocessor(Postprocessor):
 
     def globals(self, env):
         """
-        Defines global template functions.
+        Defines global template functions. (virtual)
+
+        Args:
+            env[jinja2.Environment]: Template object for adding global functions.
         """
         env.globals['insert_files'] = self._insertFiles
-        env.globals['editMarkdown'] = self._editMarkdown
-        env.globals['mooseCode'] = self._code
+
+    def arguments(self, template_args, text):
+        """
+        Method for modifying the template arguments to be applied to the jinja2 templates engine.
+
+        Args:
+            template_args[dict]: Template arguments to be applied to jinja2 template.
+            text[str]: Convert markdown to be applied via the 'content' template argument.
+        """
+        template_args['content'] = text
+
+        if 'navigation' in template_args:
+            template_args['navigation'] = \
+                MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
 
     def run(self, text):
         """
         Apply the converted text to an jinja2 template and return the result.
+
+        Args:
+            text[str]: Converted markdown to be applied to the template.
         """
         # Update the meta data to proper python types
         meta = dict()
@@ -100,12 +126,7 @@ class TemplatePostprocessor(Postprocessor):
         # Define template arguments
         template_args = copy.copy(self._template_args)
         template_args.update(meta)
-        template_args['content'] = text
-        template_args['tableofcontents'] = self._tableofcontents(text)
-        template_args['doxygen'] = self._doxygen()
-        if 'navigation' in template_args:
-            template_args['navigation'] = \
-                MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
+        self.arguments(template_args, text)
 
         # Execute template and return result
         paths = [os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'templates'),
@@ -191,8 +212,42 @@ class TemplatePostprocessor(Postprocessor):
                 LOG.debug('Converting link: %s --> %s', href, url)
                 link['href'] = url
 
+
+class TemplatePostprocessor(TemplatePostprocessorBase):
+    """
+    A template extension that works with the 'MooseDocs.extensions.app_syntax' extension.
+    """
+    def __init__(self, *args, **kwargs):
+        super(TemplatePostprocessor, self).__init__(*args, **kwargs)
+
+        # The 'MooseDocs.extensions.app_syntax' are required
+        self.markdown.requireExtension(AppSyntaxExtension)
+
+        # Store the MooseApplicationSyntax object for use later.
+        ext = self.markdown.getExtension(AppSyntaxExtension)
+        self._syntax = ext.syntax
+
+    def globals(self, env):
+        """
+        Add MOOSE syntax related functions for the template.
+        """
+        super(TemplatePostprocessor, self).globals(env)
+        env.globals['editMarkdown'] = self._editMarkdown
+        env.globals['mooseCode'] = self._code
+
+    def arguments(self, template_args, text):
+        """
+        Add MOOSE syntax related arguments to the template arguments.
+        """
+        super(TemplatePostprocessor, self).arguments(template_args, text)
+        template_args['tableofcontents'] = self._tableofcontents(text)
+        template_args['doxygen'] = self._doxygen()
+
     @staticmethod
     def _tableofcontents(text, level='h2'):
+        """
+        Returns the h2 (default) tags for the supplied html text.
+        """
         soup = bs4.BeautifulSoup(text, 'html.parser')
         for tag in soup.find_all(level):
             if 'id' in tag.attrs and tag.contents:
@@ -205,7 +260,9 @@ class TemplatePostprocessor(Postprocessor):
         return os.path.join(repo_url, 'edit', 'devel', MooseDocs.relpath(self.node.source()))
 
     def _doxygen(self):
-        # Build a complete list of objects
+        """
+        Return the doxygen link, if it exists.
+        """
         for syntax in self._syntax.itervalues():
             for obj in syntax.objects().itervalues():
                 if obj.name == self.node.name():
