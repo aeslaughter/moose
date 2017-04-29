@@ -46,5 +46,15 @@ class TestMooseObjectSyntax(MarkdownTestCase):
         html = self.convert(md)
         self.assertIn('<p></p>', html)
 
+    def testSystemsList(self):
+        md = '!systems'
+        html = self.convert(md)
+        self.assertIn('<h2 id="adaptivity">Adaptivity', html)
+        self.assertIn('<h3 id="adaptivity/markers">Adaptivity/Markers', html)
+        self.assertIn('<div class="collapsible-header moose-group-header">Framework Objects</div>',
+                      html)
+        self.assertIn('Adaptivity/Markers/framework/BoxMarker.md">BoxMarker</a>',
+                      html)
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

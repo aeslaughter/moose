@@ -39,7 +39,7 @@ class TemplateExtension(MooseMarkdownExtension):
         md.requireExtension(AppSyntaxExtension)
 
         try:
-            value = md.postprocessors.index('meta')
+            value = md.preprocessors.index('meta')
         except ValueError:
             raise mooseutils.MooseException("The 'meta' extension is required.")
 
