@@ -7,17 +7,19 @@
     enable_dollar_delimiter: True
 - MooseDocs.extensions.global:
     globals: !include docs/globals.yml
+- MooseDocs.extensions.include
 - MooseDocs.extensions.bibtex
 - MooseDocs.extensions.css
 - MooseDocs.extensions.diagram
 - MooseDocs.extensions.devel
-- MooseDocs.extensions.materialize
+- MooseDocs.extensions.misc
 - MooseDocs.extensions.media
-- MooseDocs.extensions.equation
-- MooseDocs.extensions.include:
+- MooseDocs.extensions.tables
+- MooseDocs.extensions.listings:
     repo: https://github.com/idaholab/moose/blob/master
     make_dir: modules/combined
-- MooseDocs.extensions.float
+- MooseDocs.extensions.refs
+- MooseDocs.extensions.app_syntax: !include docs/app_syntax.yml
 - MooseDocs.extensions.template:
     template: presentation.html
     template_args:
@@ -25,5 +27,4 @@
         logo: docs/media/moose_logo_small.png
         repo_url: https://github.com/idaholab/moose/
         navigation: docs/navigation.yml
-- MooseDocs.extensions.app_syntax: !include docs/app_syntax.yml
 - MooseDocs.extensions.presentation

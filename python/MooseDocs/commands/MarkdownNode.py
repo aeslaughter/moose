@@ -24,7 +24,6 @@ class MarkdownNode(MooseDocsNode):
         else:
             self.__content = markdown
 
-
     def source(self):
         """
         Return the source markdown file.

@@ -28,7 +28,7 @@ class PresentationBuilder(MarkdownNode):
     Adds a copy of image files to the destination directory.
     """
     def build(self):
-        content = self._parser.convert(self)
+        content = self.convert()
         soup = bs4.BeautifulSoup(content, 'html.parser')
         for img in soup('img'):
             name = os.path.basename(img['src'])
@@ -42,7 +42,7 @@ class PresentationBuilder(MarkdownNode):
 
         self.write(soup.prettify())
 
-def presentation(config_file=None, markdown=None, output=None, serve=None, port=None, host=None, template=None, **template_args):
+def presentation(config_file=None, md_file=None, output=None, serve=None, port=None, host=None, template=None, **template_args):
     """
     MOOSE markdown presentation blaster.
     """
@@ -52,6 +52,8 @@ def presentation(config_file=None, markdown=None, output=None, serve=None, port=
     parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
 
     site_dir, _ = os.path.splitext(md_file)
+    if not os.path.isdir(site_dir):
+        os.mkdir(site_dir)
     root = PresentationBuilder(name='', markdown=md_file, parser=parser, site_dir=site_dir)
     root.build()
 
