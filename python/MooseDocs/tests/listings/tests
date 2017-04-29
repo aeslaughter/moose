@@ -1,10 +1,10 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    command = test_listings.py
+    input = test_listings.py
   [../]
   [./clang]
     type = PythonUnitTest
-    command = test_clang.py
+    input = test_clang.py
   [../]
 []

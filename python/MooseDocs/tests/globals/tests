@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    command = test_global.py
+    input = test_global.py
   [../]
 []

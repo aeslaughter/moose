@@ -1,15 +1,15 @@
 [Tests]
   [./generation]
     type = PythonUnitTest
-    command = test_generation.py
+    input = test_generation.py
     skip = 'WIP'
   [../]
   [./elements]
     type = PythonUnitTest
-    command = test_elements.py
+    input = test_elements.py
   [../]
   [./moose_elements]
     type = PythonUnitTest
-    command = test_moose_elements.py
+    input = test_moose_elements.py
   [../]
 []

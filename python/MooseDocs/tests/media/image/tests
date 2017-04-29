@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    command = test_image.py
+    input = test_image.py
   [../]
 []

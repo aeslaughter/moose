@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    command = test_diagram.py
+    input = test_diagram.py
   [../]
 []

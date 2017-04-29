@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    command = test_markdown_extensions.py
+    input = test_markdown_extensions.py
   [../]
 []

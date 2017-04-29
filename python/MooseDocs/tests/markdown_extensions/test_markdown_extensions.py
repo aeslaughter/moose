@@ -7,6 +7,7 @@ class TestMarkdownExtensions(MarkdownTestCase):
     Tests that the configuration file sets up the markdown conversion, including
     that the basic (i.e., non-MOOSE) extensions are working.
     """
+    EXTENSIONS = ['toc', 'smarty', 'admonition', 'extra', 'meta', 'mdx_math']
 
     def testConvert(self):
         md = "Testing"
