@@ -1,14 +1,14 @@
 [Tests]
   [./ApplicationSyntax]
     type = PythonUnitTest
-    input = test_ApplicationSyntax.py
+    command = test_ApplicationSyntax.py
   [../]
   [./objects]
     type = PythonUnitTest
-    input = test_object_syntax.py
+    command = test_object_syntax.py
   [../]
   [./systems]
     type = PythonUnitTest
-    input = test_system_syntax.py
+    command = test_system_syntax.py
   [../]
 []

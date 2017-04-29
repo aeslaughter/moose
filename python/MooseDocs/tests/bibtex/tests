@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    input = test_bibtex.py
+    command = test_bibtex.py
   [../]
 []

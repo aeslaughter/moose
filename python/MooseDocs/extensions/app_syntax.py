@@ -360,7 +360,7 @@ class MooseDescription(MooseSyntaxBase):
         info = self.getInfo(syntax)
         if not info:
             return self.createErrorElement('Failed to locate MooseObject or Action for the '
-                                           'command:!description {}'.format(syntax))
+                                           'command: !description {}'.format(syntax))
 
         # Create an Error element, but do not produce warning/error LOG because the
         # moosedocs check/generate commands produce errors.

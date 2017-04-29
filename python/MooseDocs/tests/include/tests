@@ -1,6 +1,6 @@
 [Tests]
   [./include]
     type = PythonUnitTest
-    input = test_include.py
+    command = test_include.py
   [../]
 []

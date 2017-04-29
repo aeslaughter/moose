@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    input = test_video.py
+    command = test_video.py
   [../]
 []

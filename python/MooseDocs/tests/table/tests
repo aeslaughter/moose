@@ -1,6 +1,6 @@
 [Tests]
   [./basic]
     type = PythonUnitTest
-    input = test_table.py
+    command = test_table.py
   [../]
 []
