@@ -93,3 +93,4 @@ def latex(config_file=None, output=None, markdown=None, **kwargs):
     site_dir, _ = os.path.splitext(md_file)
     root = LatexBuilder(output, name='', markdown=md_file, parser=parser, site_dir=site_dir)
     root.build()
+    return None

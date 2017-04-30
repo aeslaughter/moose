@@ -179,3 +179,5 @@ def build(config_file=None, site_dir=None, num_threads=None,
 
         # Start the server
         server.serve(root=site_dir, host=host, port=port, restart_delay=0)
+
+    return None

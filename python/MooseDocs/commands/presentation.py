@@ -61,3 +61,4 @@ def presentation(config_file=None, md_file=None, output=None, serve=None, port=N
         server = livereload.Server()
         server.watch(md_file, root.build)
         server.serve(root=site_dir, host=host, port=port, restart_delay=0)
+    return None

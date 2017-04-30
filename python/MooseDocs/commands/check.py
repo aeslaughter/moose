@@ -39,3 +39,5 @@ def check(config_file=None, locations=None, generate=None):
                 syntax = MooseDocs.MooseApplicationSyntax(yaml, generate=generate, install=ext_config['install'], **value)
                 log.info("Checking documentation for '{}'.".format(key))
                 syntax.check()
+
+    return None
