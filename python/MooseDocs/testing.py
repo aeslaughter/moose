@@ -1,8 +1,21 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import os
 import inspect
 import unittest
 import difflib
-import markdown
 import bs4
 import MooseDocs
 from MooseDocs.html2latex import Translator, BasicExtension, MooseExtension
@@ -12,8 +25,9 @@ def text_diff(text, gold):
     Helper for creating nicely formatted text diff message.
     """
     result = list(difflib.ndiff(gold, text))
-    n =  len(max(result, key=len))
-    msg = "\nThe supplied text differs from the gold as follows:\n{0}\n{1}\n{0}".format('~'*n, '\n'.join(result).encode('utf-8'))
+    n = len(max(result, key=len))
+    msg = "\nThe supplied text differs from the gold as follows:\n{0}\n{1}\n{0}" \
+         .format('~'*n, '\n'.join(result).encode('utf-8'))
     return msg
 
 class MarkdownTestCase(unittest.TestCase):
@@ -76,23 +90,25 @@ class MarkdownTestCase(unittest.TestCase):
         Read gold file in current directory.
         """
         gold_name = os.path.join(self.WORKING_DIR, 'gold', os.path.basename(name))
-        self.assertTrue(os.path.exists(gold_name), "Failed to locate gold file: {}".format(gold_name))
+        self.assertTrue(os.path.exists(gold_name),
+                        "Failed to locate gold file: {}".format(gold_name))
         with open(gold_name) as fid:
             gold = fid.read().encode('utf-8').splitlines()
         return gold
 
-    def convert(self, md):
+    def convert(self, md_text):
         """
         Convenience function for converting markdown to html.
         """
-        return self.parser.convert(md)
+        return self.parser.convert(md_text)
 
-    def assertMarkdown(self, md, gold):
+    def assertMarkdown(self, md_text, gold):
         """
         Convert the supplied markdown and compare the supplied gold.
         """
-        html = self.parser.convert(md)
-        print ('\n{:>15}: {}'*3).format('MARKDOWN', repr(md), 'HTML', repr(html), 'HTMLs (GOLD)', repr(gold))
+        html = self.parser.convert(md_text)
+        print ('\n{:>15}: {}'*3).format('MARKDOWN', repr(md_text), 'HTML', repr(html),
+                                        'HTML (GOLD)', repr(gold))
         self.assertEqual(html, gold, text_diff(html.splitlines(), gold.splitlines()))
 
     def assertTextFile(self, name):
@@ -100,7 +116,8 @@ class MarkdownTestCase(unittest.TestCase):
         Assert method for comparing converted html (text) against the text in gold file.
 
         Inputs:
-            name[str]: Name of html file to open, there should be a corresponding file in the gold directory.
+            name[str]: Name of html file to open, there should be a corresponding file in the gold
+                       directory.
         """
         # Read text file
         self.assertTrue(os.path.exists(name), "Failed to locate test output file: {}".format(name))
@@ -111,17 +128,17 @@ class MarkdownTestCase(unittest.TestCase):
         gold = self.readGold(name)
         self.assertEqual(text, gold, text_diff(text, gold))
 
-    def assertConvert(self, name, md):
+    def assertConvert(self, name, md_text):
         """
         Assert that markdown is converted to html, compared against gold file.
 
         Inputs:
             name[str]: The name of the html file to create.
-            md[str]: The markdown text to convert and create.
+            md_texg[str]: The markdown text to convert and create.
         """
         name = os.path.join(self._path, name)
         with open(name, 'w') as fid:
-            fid.write(self.parser.convert(md))
+            fid.write(self.parser.convert(md_text))
         self.assertTextFile(name)
 
     def assertConvertFile(self, name, md_name):
@@ -135,7 +152,8 @@ class MarkdownTestCase(unittest.TestCase):
 
         # Read the markdown file
         md_name = os.path.join(self._path, md_name)
-        self.assertTrue(os.path.exists(md_name), "Failed to locate markdown file: {}".format(md_name))
+        self.assertTrue(os.path.exists(md_name),
+                        "Failed to locate markdown file: {}".format(md_name))
         with open(md_name, 'r') as fid:
             md = fid.read()
 
@@ -169,13 +187,15 @@ class TestLatexBase(MarkdownTestCase):
         Assert markdown to latex conversion.
         """
         tex = self.convert(html)
-        print ('\n{:>15}: {}'*3).format('HTML', repr(html), 'TEX', repr(tex), 'TEX (GOLD)', repr(gold))
+        print ('\n{:>15}: {}'*3).format('HTML', repr(html), 'TEX', repr(tex), 'TEX (GOLD)',
+                                        repr(gold))
         self.assertEqual(tex, gold, text_diff(tex.splitlines(), gold.splitlines()))
 
-    def soup(self, html_file):
+    @staticmethod
+    def soup(html_file):
         """
         Assert markdown to latex conversion from an html file.
         """
         with open(html_file, 'r') as fid:
             html = fid.read()
-        return bs4.BeautifulSoup(html, 'lxml')
+        return bs4.BeautifulSoup(html, 'html.parser')

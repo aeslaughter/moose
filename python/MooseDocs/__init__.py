@@ -21,7 +21,6 @@ import multiprocessing
 import collections
 import logging
 
-
 import extensions
 import commands
 from MooseMarkdown import MooseMarkdown
@@ -191,20 +190,20 @@ def load_config(config_file, **kwargs):
                 value[k] = v
     return out
 
-def purge(ext):
+def purge(exts):
     """
     Removes generated files from repository.
 
     Args:
-      ext[list]: List of file extensions to purge (e.g., 'png'); it will be prefixed with
+      exts[list]: List of file extensions to purge (e.g., 'png'); it will be prefixed with
                  '.moose.' so the files actually removed are '.moose.png'.
     """
-    for i, ext in enumerate(ext):
-        ext[i] = '.moose.{}'.format(ext)
+    for i, ext in enumerate(exts):
+        exts[i] = '.moose.{}'.format(ext)
 
     for root, _, files in os.walk(os.getcwd(), topdown=False):
         for name in files:
-            if any([name.endswith(ext) for ext in ext]):
+            if any([name.endswith(ext) for ext in exts]):
                 full_file = os.path.join(root, name)
                 MOOSEDOCS_LOG.debug('Removing: %s', full_file)
                 os.remove(full_file)
