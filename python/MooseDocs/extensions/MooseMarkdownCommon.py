@@ -1,12 +1,30 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import re
 import copy
-from markdown.util import etree
 import logging
-log = logging.getLogger(__name__)
+
+from markdown.util import etree
+
+LOG = logging.getLogger(__name__)
 
 class MooseMarkdownCommon(object):
     """
-    Class containing commonly used routines.
+    Class containing commonly used routines, which should always be used with a markdown instance
+    such as a Pattern or other object that has a "self.markdown" attribute.
     """
     COPY_BUTTON_COUNT = 0
 
@@ -17,7 +35,7 @@ class MooseMarkdownCommon(object):
         settings['style'] = ('', "The 'style' to be applied to the outer HTML tag.")
         return settings
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs): #pylint: disable=unused-argument
 
         # Store the default settings
         self.__settings = dict()
@@ -26,10 +44,8 @@ class MooseMarkdownCommon(object):
 
     def getSettings(self, settings_line):
         """
-        Parses a string of space separated key=value pairs.
-        This supports having values with spaces in them.
-        So something like "key0=foo bar key1=value1"
-        is supported.
+        Parses a string of space separated key=value pairs. This supports having values with spaces
+        in them. So something like "key0=foo bar key1=value1" is supported.
 
         Input:
           settings_line[str]: Line to parse
@@ -37,10 +53,8 @@ class MooseMarkdownCommon(object):
           dict of values that were parsed
         """
 
-        # Crazy RE capable of many things
-        # like understanding key=value pairs with spaces in them!
-        SETTINGS_RE = re.compile("([^\s=]+)=(.*?)(?=(?:\s[^\s=]+=|$))")
-        matches = SETTINGS_RE.findall(settings_line.strip())
+        # Crazy RE capable of many things like understanding key=value pairs with spaces in them!
+        matches = re.findall(r'([^\s=]+)=(.*?)(?=(?:\s[^\s=]+=|$))', settings_line.strip())
 
         options = copy.copy(self.__settings)
         if len(matches) == 0:
@@ -56,7 +70,7 @@ class MooseMarkdownCommon(object):
                 elif value.lower() == 'none':
                     value = None
                 elif all([v.isdigit() for v in value]):
-                    value = float(value)
+                    value = float(value) #pylint: disable=redefined-variable-type
                 options[key] = value
             else:
                 options['style'] += '{}:{};'.format(key, value)
@@ -65,7 +79,7 @@ class MooseMarkdownCommon(object):
 
 
     @staticmethod
-    def applyElementSettings(element, settings, keys=['id', 'class', 'style']):
+    def applyElementSettings(element, settings, keys=None):
         """
         Returns supplied element with style attributes.
 
@@ -76,7 +90,7 @@ class MooseMarkdownCommon(object):
           settings = self.getSettings(settings_string)
           div = self.appyElementSettings(etree.Element('div'), settings)
         """
-        for attr in keys:
+        for attr in keys if keys else ['id', 'class', 'style']:
             if (attr in settings) and (settings[attr]):
                 element.set(attr, settings[attr])
         return element
@@ -85,7 +99,8 @@ class MooseMarkdownCommon(object):
 
         cname = settings['counter']
         if cname is None:
-            log.error('The "counter" setting must be a valid string ({})'.format(self.markdown.current.source()))
+            LOG.error('The "counter" setting must be a valid string (%s)',
+                      self.markdown.current.source()) #pylint: disable=no-member
             cname = 'unknown'
 
         div = self.applyElementSettings(etree.Element('div'), settings)
@@ -119,7 +134,8 @@ class MooseMarkdownCommon(object):
 
         return div
 
-    def createErrorElement(self, message, title='Markdown Parsing Error', parent=None, error=True):
+    @staticmethod
+    def createErrorElement(message, title='Markdown Parsing Error', parent=None, error=True):
         """
         Returns a tree element containing error message.
 
@@ -135,7 +151,7 @@ class MooseMarkdownCommon(object):
             message[str]: The message to display in the alert box.
             title[str]: Set the title (default: "Markdown Parsing Error")
             parent[etree.Element]: The parent element that should contain the error message
-            error[bool]: Log an error (default: True).
+            error[bool]: LOG an error (default: True).
         """
         if parent:
             el = etree.SubElement(parent, 'div')
@@ -150,7 +166,7 @@ class MooseMarkdownCommon(object):
         msg = etree.SubElement(el, 'p')
         msg.text = message
         if error:
-            log.error('{}: {}'.format(title, message))
+            LOG.error('%s: %s', title, message)
         return el
 
     @staticmethod
