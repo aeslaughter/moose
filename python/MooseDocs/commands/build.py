@@ -1,52 +1,79 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import os
 import math
 import multiprocessing
-import markdown
 import shutil
-import livereload
 from distutils.dir_util import copy_tree
 import logging
-log = logging.getLogger(__name__)
+
+import livereload
 
 import MooseDocs
 from MooseDocsNode import MooseDocsNode
 from MarkdownNode import MarkdownNode
 
+LOG = logging.getLogger(__name__)
 
 def build_options(parser):
     """
     Command-line options for build command.
     """
-    parser.add_argument('--config-file', type=str, default='website.yml', help="The configuration file to use for building the documentation using MOOSE. (Default: %(default)s)")
-    parser.add_argument('--num-threads', '-j', type=int, default=multiprocessing.cpu_count(), help="Specify the number of threads to build pages with.")
-    parser.add_argument('--template', type=str, default='website.html', help="The template html file to utilize (Default: %(default)s).")
+    parser.add_argument('--config-file', type=str, default='website.yml',
+                        help="The configuration file to use for building the documentation using "
+                             "MOOSE. (Default: %(default)s)")
+    parser.add_argument('--num-threads', '-j', type=int, default=multiprocessing.cpu_count(),
+                        help="Specify the number of threads to build pages with.")
+    parser.add_argument('--template', type=str, default='website.html',
+                        help="The template html file to utilize (Default: %(default)s).")
 
-    parser.add_argument('--host', default='127.0.0.1', type=str, help="The local host location for live web server (default: %(default)s).")
-    parser.add_argument('--port', default='8000', type=str, help="The local host port for live web server (default: %(default)s).")
-    parser.add_argument('--site-dir', type=str, default=os.path.join(MooseDocs.ROOT_DIR, 'site'), help="The location to build the website content (Default: %(default)s).")
-    parser.add_argument('--serve', action='store_true', help="Serve the presentation with live reloading, the 'site_dir' is ignored for this case.")
+    parser.add_argument('--host', default='127.0.0.1', type=str,
+                        help="The local host location for live web server (default: %(default)s).")
+    parser.add_argument('--port', default='8000', type=str,
+                        help="The local host port for live web server (default: %(default)s).")
+    parser.add_argument('--site-dir', type=str, default=os.path.join(MooseDocs.ROOT_DIR, 'site'),
+                        help="The location to build the website content (Default: %(default)s).")
+    parser.add_argument('--serve', action='store_true',
+                        help="Serve the presentation with live reloading, the 'site_dir' is "
+                             "ignored for this case.")
 
 def make_tree(directory, node, site_dir, parser):
     """
     Create the tree structure of NavigationNode/MarkdownNode objects
     """
     for p in os.listdir(directory):
-
+        child = None
         path = os.path.join(directory, p)
         if p in ['index.md', 'index.html']:
             continue
 
         if os.path.isfile(path) and (path.endswith('.md')):
             name = os.path.basename(path)[:-3]
-            child = MarkdownNode(name=name, parent=node, markdown=path, site_dir=site_dir, parser=parser)
+            MarkdownNode(name=name, parent=node, markdown=path, site_dir=site_dir, parser=parser)
 
         elif os.path.isdir(path) and (p not in ['.', '..']):
             name = os.path.basename(path)
             md = os.path.join(path, 'index.md')
+            #pylint: disable=redefined-variable-type
             if os.path.exists(md):
-                child = MarkdownNode(name=name, parent=node, markdown=md, site_dir=site_dir, parser=parser)
+                child = MarkdownNode(name=name, parent=node, markdown=md, site_dir=site_dir,
+                                     parser=parser)
             else:
                 child = MooseDocsNode(name=name, parent=node, site_dir=site_dir)
+            #pylint: enable=redefined-variable-type
             make_tree(path, child, site_dir, parser)
 
 def flat(node):
@@ -70,7 +97,8 @@ class Builder(object):
 
         self._site_dir = site_dir
         md_file = os.path.join(os.getcwd(), 'content', 'index.md')
-        self._root = MarkdownNode(name=str(), markdown=md_file, parser=parser, site_dir=self._site_dir)
+        self._root = MarkdownNode(name=str(), markdown=md_file, parser=parser,
+                                  site_dir=self._site_dir)
         make_tree(os.path.dirname(md_file), self._root, self._site_dir, parser)
         self._pages = [self._root] + list(flat(self._root))
 
@@ -85,10 +113,10 @@ class Builder(object):
         Build all the pages in parallel.
         """
 
-        def make_chunks(l, n):
-            n = int(math.ceil(len(l)/float(n)))
-            for i in range(0, len(l), n):
-                yield l[i:i + n]
+        def make_chunks(local, num):
+            num = int(math.ceil(len(local)/float(num)))
+            for i in range(0, len(local), num):
+                yield local[i:i + num]
 
         def build_pages(pages, lock):
             for page in pages:
@@ -124,7 +152,7 @@ class Builder(object):
             helper(os.path.join(from_dir, 'media'), os.path.join(self._site_dir, 'media'))
 
 def build(config_file=None, site_dir=None, num_threads=None,
-               clean=False, serve=False, host=None, port=None, **kwargs):
+          clean=False, serve=False, host=None, port=None, **kwargs):
     """
     The main build command.
     """
@@ -135,7 +163,7 @@ def build(config_file=None, site_dir=None, num_threads=None,
 
     # Clean/create site directory
     if clean and os.path.exists(site_dir):
-        log.info('Cleaning build directory: {}'.format(site_dir))
+        LOG.info('Cleaning build directory: %s', site_dir)
         shutil.rmtree(site_dir)
 
     # Create the "temp" directory
@@ -171,9 +199,6 @@ def build(config_file=None, site_dir=None, num_threads=None,
         server.watch(os.path.join(os.getcwd(), 'fonts'), builder.copyFiles)
 
         # Watch the files and directories that require complete rebuild
-        #moose_extension = parser.getExtension)
-        #if moose_extension:
-        #    server.watch(os.path.join(os.getcwd(), moose_extension.getConfig('executable')), build_complete)
         server.watch(config_file, build_complete)
         server.watch('templates', builder.build)
 
