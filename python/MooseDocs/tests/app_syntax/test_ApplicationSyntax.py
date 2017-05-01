@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import os
 import unittest
-import MooseDocs
-from MooseDocs.MooseApplicationSyntax import MooseObjectInfo
+
 import mooseutils
+
+import MooseDocs
+from MooseDocs.common.MooseApplicationSyntax import MooseObjectInfo
 
 class TestMooseApplicationSyntax(unittest.TestCase):
 
@@ -24,7 +26,7 @@ class TestMooseApplicationSyntax(unittest.TestCase):
         framework['group'] = 'framework'
         framework['install'] = options['install']
         framework['hide'] = ['/AuxKernels'] # use to test hide
-        cls._syntax = MooseDocs.MooseApplicationSyntax(cls._yaml, **framework)
+        cls._syntax = MooseDocs.common.MooseApplicationSyntax(cls._yaml, **framework)
 
     def testHasObjects(self):
         self.assertTrue(self._syntax.hasObject('/Kernels/Diffusion'))

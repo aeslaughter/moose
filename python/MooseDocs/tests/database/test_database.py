@@ -10,7 +10,7 @@ class TestMooseLinkDatabase(unittest.TestCase):
 
         config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'website.yml'))
         options = config['MooseDocs.extensions.app_syntax']
-        cls.database = MooseDocs.MooseLinkDatabase(**options)
+        cls.database = MooseDocs.common.MooseLinkDatabase(**options)
 
     def testTests(self):
         """

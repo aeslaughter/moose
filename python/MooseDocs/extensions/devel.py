@@ -18,6 +18,7 @@ import logging
 from markdown.util import etree, AtomicString
 from markdown.inlinepatterns import Pattern
 
+from .. import common
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
 
@@ -188,7 +189,7 @@ class ExtensionConfigPattern(MooseMarkdownCommon, Pattern):
             return self.createErrorElement('Unknown extension name: {}'.format(name))
 
         ext = self.markdown.registeredExtensions[extensions.index(name)]
-        table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
+        table = common.MarkdownTable('Name', 'Default', 'Description')
         for key, value in ext.defaultConfig().iteritems():
             if value[0]:
                 table.addRow(key, repr(value[0]), value[1])
@@ -240,7 +241,7 @@ class ExtensionSettingsPattern(MooseMarkdownCommon, Pattern):
             return self.createErrorElement(msg.format(MooseMarkdownCommon.__name__,
                                                       type(obj).__name__))
 
-        table = MooseDocs.MarkdownTable('Name', 'Default', 'Description')
+        table = common.MarkdownTable('Name', 'Default', 'Description')
         for key, value in obj.defaultSettings().iteritems():
             if value[0]:
                 table.addRow(key, repr(value[0]), value[1])

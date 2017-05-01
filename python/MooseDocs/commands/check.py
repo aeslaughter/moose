@@ -1,7 +1,24 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
+
 import os
 import mooseutils
 import logging
 log = logging.getLogger(__name__)
+
+from .. import common
 import MooseDocs
 
 
@@ -36,7 +53,7 @@ def check(config_file=None, locations=None, generate=None):
         for key, value in loc.iteritems():
             if (locations == None) or (key in locations):
                 value['group'] = key
-                syntax = MooseDocs.MooseApplicationSyntax(yaml, generate=generate, install=ext_config['install'], **value)
+                syntax = common.MooseApplicationSyntax(yaml, generate=generate, install=ext_config['install'], **value)
                 log.info("Checking documentation for '{}'.".format(key))
                 syntax.check()
 

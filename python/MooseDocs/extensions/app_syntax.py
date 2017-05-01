@@ -24,6 +24,7 @@ from markdown.inlinepatterns import Pattern
 from MooseMarkdownExtension import MooseMarkdownExtension
 from MooseMarkdownCommon import MooseMarkdownCommon
 from MooseObjectParameterTable import MooseObjectParameterTable
+from .. import common
 import MooseDocs
 
 LOG = logging.getLogger(__name__)
@@ -98,7 +99,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         # Generate YAML data from application
         # Populate the database for input file and children objects
         LOG.debug('Creating input file and source code use database.')
-        database = MooseDocs.MooseLinkDatabase(**config)
+        database = common.MooseLinkDatabase(**config)
 
         # Populate the syntax
         self.syntax = collections.OrderedDict()
@@ -108,7 +109,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
             options.setdefault('group', key)
             options.setdefault('name', key.replace('_', ' ').title())
             options.setdefault('install', config['install'])
-            self.syntax[key] = MooseDocs.MooseApplicationSyntax(exe_yaml, **options)
+            self.syntax[key] = common.MooseApplicationSyntax(exe_yaml, **options)
 
         # Inline Patterns
         params = MooseParameters(markdown_instance=md, syntax=self.syntax, **config)

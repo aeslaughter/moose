@@ -24,9 +24,6 @@ import logging
 import extensions
 import commands
 from MooseMarkdown import MooseMarkdown
-from MarkdownTable import MarkdownTable
-from MooseApplicationSyntax import MooseApplicationSyntax
-from MooseLinkDatabase import MooseLinkDatabase
 
 import mooseutils
 
