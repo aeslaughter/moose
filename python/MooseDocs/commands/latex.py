@@ -41,7 +41,7 @@ def latex_options(parser):
                         help="The website for where markdown links should be connected in "
                              "latex/pdf file.")
     parser.add_argument('--hrule', type=bool, default=False,
-                        help="Disable the use use of \hrule in generated latex "
+                        help="Disable the use use of \\hrule in generated latex "
                              "(default: %(default)s).")
 
     heading_defaults = ['section', 'subsection', 'subsubsection', 'textbf', 'underline', 'emph']
@@ -50,7 +50,7 @@ def latex_options(parser):
                              "document, all must be supplied and only commands valid in the latex "
                              "body are allowed.")
     parser.add_argument('--documentclass', default='article',
-                        help="Set the contents of the \documentclass command "
+                        help="Set the contents of the \\documentclass command "
                              "(default: %(default)s).")
     parser.add_argument('--paper', default='letterpaper',
                         help="Set the papersize to utilize (default: %(default)s).")
@@ -79,7 +79,7 @@ class LatexBuilder(MarkdownNode):
     """
     def __init__(self, output=None, **kwargs):
         super(LatexBuilder, self).__init__(**kwargs)
-        self._output = output if output else self._md_file.replace('.md', '.pdf')
+        self._output = output if output else self.source().replace('.md', '.pdf')
         self._tex_output = self._output.replace('.pdf', '.tex')
 
     def write(self, *args, **kwargs):
@@ -91,15 +91,15 @@ class LatexBuilder(MarkdownNode):
         if self._output.endswith('.pdf'):
             self.generatePDF(self._tex_output)
 
-    def url(self, parent=None):
+    def url(self, parent=None): #pylint: disable=unused-argument
         """
         Path to the tex file to be created.
         """
         return self._tex_output
 
-    def path(self, parent=None):
+    def path(self): #pylint: disable=unused-argument
         """
-
+        Return the *.tex file to be creted.
         """
         return os.path.dirname(self._tex_output)
 
@@ -111,7 +111,7 @@ class LatexBuilder(MarkdownNode):
 
         # Working directory
         cwd = os.path.abspath(os.path.dirname(tex_file))
-        
+
         # Call pdflatex
         local_file = os.path.basename(tex_file)
 
@@ -126,7 +126,7 @@ class LatexBuilder(MarkdownNode):
             if os.path.exists(tmp):
                 os.remove(tmp)
 
-def latex(config_file=None, output=None, markdown=None, **kwargs):
+def latex(config_file=None, output=None, md_file=None, **kwargs):
     """
     Command for converting markdown file to latex.
     """
