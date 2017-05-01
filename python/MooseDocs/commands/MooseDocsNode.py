@@ -99,7 +99,7 @@ class MooseDocsNode(object):
         """
         self.__children.append(child)
 
-    def build(self, *args, **kwargs):
+    def build(self, lock=None): #pylint: disable=unused-argument
         """
         Main command that builds content, this is called from the build.py script.
         """
@@ -136,8 +136,8 @@ class MooseDocsNode(object):
         path = os.path.join(self.__site_dir, *crumbs)
         return path.rstrip('/')
 
-    def url(self, *args, **kwargs): #pylint: disable=no-self-use, unused-argument
+    def url(self, parent=None): #pylint: disable=no-self-use, unused-argument
         """
-        Return the url to the page being created. (abstact)
+        Return the url to the page being created. (abstract)
         """
         return None

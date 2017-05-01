@@ -1,19 +1,33 @@
+#pylint: disable=missing-docstring
+#################################################################
+#                   DO NOT MODIFY THIS HEADER                   #
+#  MOOSE - Multiphysics Object Oriented Simulation Environment  #
+#                                                               #
+#            (c) 2010 Battelle Energy Alliance, LLC             #
+#                      ALL RIGHTS RESERVED                      #
+#                                                               #
+#           Prepared by Battelle Energy Alliance, LLC           #
+#             Under Contract No. DE-AC07-05ID14517              #
+#              With the U. S. Department of Energy              #
+#                                                               #
+#              See COPYRIGHT for full restrictions              #
+#################################################################
 import os
 import logging
-log = logging.getLogger(__name__)
-
-import MooseDocs
+import mooseutils
 from MooseDocsNode import MooseDocsNode
+
+LOG = logging.getLogger(__name__)
 
 class MarkdownNode(MooseDocsNode):
     """
-    Node for converting markdown to html.
+    Tree node associated with a markdown file to be converted.
     """
     def __init__(self, markdown=None, parser=None, **kwargs):
         super(MarkdownNode, self).__init__(**kwargs)
 
         if markdown is None:
-            raise Exception('A markdown file or content must be supplied.')
+            raise mooseutils.MooseException('A markdown file or content must be supplied.')
 
         self.__parser = parser
         self.__content = None
@@ -53,8 +67,9 @@ class MarkdownNode(MooseDocsNode):
         """
         Write the supplied content to the html file.
         """
-        # Make sure the destination directory exists, if it already does do nothing. If it does not exist try to create
-        # it, but include a try statement because it might get created by another process.
+        # Make sure the destination directory exists, if it already does do nothing. If it does not
+        # exist try to create it, but include a try statement because it might get created by
+        # another process.
         destination = self.path()
         if lock: # Lock is not supplied or needed with build function is called from the liveserver
             with lock:
@@ -66,7 +81,7 @@ class MarkdownNode(MooseDocsNode):
 
         # Write the file
         with open(self.url(), 'w') as fid:
-            log.debug('Creating {}'.format(self.url()))
+            LOG.debug('Creating %s', self.url())
             fid.write(content.encode('utf-8'))
 
     def url(self, parent=None):
