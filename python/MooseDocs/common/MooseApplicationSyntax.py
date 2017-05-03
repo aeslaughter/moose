@@ -186,13 +186,15 @@ class MooseApplicationSyntax(object):
     """
 
     def __init__(self, yaml_data, paths=None, doxygen=None, name=None, doxygen_name_style='upper',
-                 group=None, install=None, generate=False, hide=None):
+                 group=None, install=None, generate=False, hide=None, root=None):
 
         # Defaults
         if paths is None:
             paths = []
         if hide is None:
             hide = []
+        if install is None:
+            raise mooseutils.MooseException('The "install" directory must be supplied.')
 
         # Public member for syntax object name (i.e., the location name in the configuration file)
         self._name = name
@@ -200,7 +202,6 @@ class MooseApplicationSyntax(object):
 
         self._yaml_data = yaml_data
         self._hide = hide
-        install = MooseDocs.abspath(install) if install else None
         self._doxygen = doxygen
         self._doxygen_name_style = doxygen_name_style
 
@@ -212,16 +213,16 @@ class MooseApplicationSyntax(object):
         actions = collections.defaultdict(set)
         objects = dict()
         for path in paths:
-            full_path = MooseDocs.abspath(path)
+            root_dir = MooseDocs.git_directory(cwd=os.path.dirname(path))
+            full_path = os.path.abspath(os.path.join(root_dir, path))
             if not os.path.exists(full_path):
                 LOG.critical("Unknown source directory supplied: %s", full_path)
                 raise IOError(full_path)
-            self._updateSyntax(path, objects, actions)
+            self._updateSyntax(full_path, objects, actions)
 
         # Create MooseObjectInfo objects
         for key, value in objects.iteritems():
             for node in self._yaml_data['/' + key]:
-
                 # Skip this node if it has subblocks, which is not possible for MooseObjects
                 if node['subblocks']:
                     continue
@@ -363,7 +364,7 @@ class MooseApplicationSyntax(object):
                     r'\s*,\s*"(?P<key>.*?)\"[,\);]'
 
         # Walk the directory, looking for files with the supplied extension.
-        for root, _, files in os.walk(MooseDocs.abspath(path), topdown=False):
+        for root, _, files in os.walk(path, topdown=False):
             for filename in files:
                 fullfile = os.path.join(root, filename)
 

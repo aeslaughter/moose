@@ -16,6 +16,7 @@
 import os
 import logging
 import mooseutils
+import MooseDocs
 from MooseDocsNode import MooseDocsNode
 
 LOG = logging.getLogger(__name__)
@@ -33,11 +34,14 @@ class MarkdownNode(MooseDocsNode):
         self.__parser = parser
         self.__content = None
         self.__md_file = None
+        self.__root_dir = None
 
         if os.path.isfile(markdown):
             self.__md_file = markdown
+            self.__root_dir = MooseDocs.git_directory(cwd=os.path.dirname(self.__md_file))
         else:
             self.__content = markdown
+            self.__root_dir = MooseDocs.git_directory()
 
     def source(self):
         """
@@ -54,6 +58,25 @@ class MarkdownNode(MooseDocsNode):
             with open(self.__md_file, 'r') as fid:
                 self.__content = fid.read().decode('utf-8')
         return self.__content
+
+    def abspath(self, *args):
+        """
+        Create an absolute path from paths that are given relative to the repository directory.
+
+        Inputs:
+            *args: Path defined relative to the git repository root directory.
+        """
+        return os.path.abspath(os.path.join(self.__root_dir, *args))
+
+    def relpath(abs_path):
+        """
+        Create a relative path from the absolute path given relative to the ROOT_DIR.
+
+        Inputs:
+            abs_path[str]: Absolute path that to be converted to a relative path to the git
+                           repository root directory
+        """
+        return os.path.relpath(abs_path, self.__root_dir)
 
     def convert(self):
         """

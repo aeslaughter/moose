@@ -100,7 +100,7 @@ class MediaPatternBase(MooseMarkdownCommon, Pattern):
 
         # Determine the filename
         filename = None
-        repo = MooseDocs.abspath(rel_filename)
+        repo = self.node.abspath(rel_filename)
         local = os.path.abspath(os.path.join(os.getcwd(), rel_filename))
         if rel_filename.startswith('http'):
             filename = rel_filename

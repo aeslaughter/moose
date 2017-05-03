@@ -43,25 +43,14 @@ ROOT_DIR = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
 
 TEMP_DIR = os.path.abspath(os.path.join(os.getenv('HOME'), '.local', 'share', 'moose'))
 
-def abspath(*args):
+def git_directory(cwd=os.getcwd()):
     """
-    Create an absolute path from paths that are given relative to the ROOT_DIR.
-
-    Inputs:
-      *args: Path(s) defined relative to the git repository root directory as defined in ROOT_DIR.
+    Return the repository root directory.
     """
-    return os.path.abspath(os.path.join(ROOT_DIR, *args))
+    return subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
+                                   cwd=cwd,
+                                   stderr=subprocess.STDOUT).strip('\n')
 
-
-def relpath(abs_path):
-    """
-    Create a relative path from the absolute path given relative to the ROOT_DIR.
-
-    Inputs:
-      abs_path[str]: Absolute path that to be converted to a relative path to the git repository
-                     root directory as defined in ROOT_DIR
-    """
-    return os.path.relpath(abs_path, ROOT_DIR)
 
 def html_id(string):
     """
@@ -80,7 +69,7 @@ class Loader(yaml.Loader):
         Allow for the embedding of yaml files.
         http://stackoverflow.com/questions/528281/how-can-i-include-an-yaml-file-inside-another
         """
-        filename = abspath(self.construct_scalar(node))
+        filename = os.path.abspath(os.path.join(git_directory(), self.construct_scalar(node)))
         if os.path.exists(filename):
             with open(filename, 'r') as f:
                 return yaml.load(f, Loader)

@@ -46,7 +46,7 @@ class ListingExtension(MooseMarkdownExtension):
     def defaultConfig():
         config = MooseMarkdownExtension.defaultConfig()
         config['repo'] = ['', "The remote repository to create hyperlinks."]
-        config['make_dir'] = [MooseDocs.ROOT_DIR,
+        config['make_dir'] = [MooseDocs.git_directory(),
                               "The location of the MakeFile for determining the include " \
                               "paths when using clang parser."]
         return config

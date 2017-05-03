@@ -44,6 +44,10 @@ class MooseMarkdownCommon(object):
         for key, value in self.defaultSettings().iteritems():
             self.__settings[key] = value[0]
 
+    @property
+    def node(self):
+        return self.markdown.current
+
     def getSettings(self, settings_line):
         """
         Parses a string of space separated key=value pairs. This supports having values with spaces
