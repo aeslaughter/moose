@@ -186,7 +186,7 @@ class MooseApplicationSyntax(object):
     """
 
     def __init__(self, yaml_data, paths=None, doxygen=None, name=None, doxygen_name_style='upper',
-                 group=None, install=None, generate=False, hide=None, root=None):
+                 group=None, install=None, generate=False, hide=None, submodule=''):
 
         # Defaults
         if paths is None:
@@ -213,8 +213,8 @@ class MooseApplicationSyntax(object):
         actions = collections.defaultdict(set)
         objects = dict()
         for path in paths:
-            root_dir = MooseDocs.git_directory(cwd=os.path.dirname(path))
-            full_path = os.path.abspath(os.path.join(root_dir, path))
+            #root_dir = MooseDocs.git_directory(cwd=os.path.dirname(path))
+            full_path = os.path.abspath(os.path.join(MooseDocs.ROOT_DIR, submodule, path))
             if not os.path.exists(full_path):
                 LOG.critical("Unknown source directory supplied: %s", full_path)
                 raise IOError(full_path)

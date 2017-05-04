@@ -39,6 +39,8 @@ class MooseMarkdownCommon(object):
 
     def __init__(self, **kwargs): #pylint: disable=unused-argument
 
+        self.__local_markdown = kwargs.pop('markdown_instance', None)
+
         # Store the default settings
         self.__settings = dict()
         for key, value in self.defaultSettings().iteritems():
@@ -46,6 +48,8 @@ class MooseMarkdownCommon(object):
 
     @property
     def node(self):
+        if self.__local_markdown:
+            return self.__local_markdown.current
         return self.markdown.current
 
     def getSettings(self, settings_line):

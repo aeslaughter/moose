@@ -30,11 +30,11 @@ class Item(object):
     List item object.
 
     Args:
-      filename[str]: The absoulte path to the file.
+      filename[str]: The absolute path to the file.
       repo[str]: The repository url to append the relative path.
     """
     def __init__(self, filename, repo):
-        self.filename = MooseDocs.relpath(filename).lstrip('/')
+        self.filename = os.path.relpath(filename, MooseDocs.ROOT_DIR).lstrip('/')
         self.remote = '{}/{}'.format(repo.rstrip('/'), self.filename)
 
     def html(self):

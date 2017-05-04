@@ -41,9 +41,9 @@ class TestMooseDocsNode(unittest.TestCase):
 
         # The path should be the supplied directory with the name() as a folder
         self.assertEqual(node.path(), os.path.join(os.getcwd(), 'only'))
-        self.assertEqual(node.relpath('../misc'), '../../misc')
+        self.assertEqual(node.sitepath('../misc'), '../../misc')
 
-        self.assertEqual(node.relpath('http:://foo.com'), 'http:://foo.com')
+        self.assertEqual(node.sitepath('http:://foo.com'), 'http:://foo.com')
 
     def testSiteDir(self):
         node = MooseDocsNode(name='only', site_dir='site')
@@ -51,7 +51,7 @@ class TestMooseDocsNode(unittest.TestCase):
 
         # The path should be the supplied directory with the name() as a folder
         self.assertEqual(node.path(), os.path.relpath(os.path.join(os.getcwd(), 'site', 'only')))
-        self.assertEqual(node.relpath('foo/misc'), '../foo/misc')
+        self.assertEqual(node.sitepath('foo/misc'), '../foo/misc')
 
     def testTree(self):
         """
@@ -91,14 +91,14 @@ class TestMooseDocsNode(unittest.TestCase):
         for node in [node3, node4, node5]:
             self.assertEqual(list(node), [])
 
-        # relpath()
+        # sitepath()
         # For these tests how to get from the calling node to the supplied path.
-        self.assertEqual(node0.relpath('node2'), 'node2')
-        self.assertEqual(node1.relpath('node2'), '../node2')
-        self.assertEqual(node2.relpath('node2'), '.')
-        self.assertEqual(node3.relpath('node2'), '../../node2')
-        self.assertEqual(node4.relpath('node2'), '..')
-        self.assertEqual(node5.relpath('node2'), '..')
+        self.assertEqual(node0.sitepath('node2'), 'node2')
+        self.assertEqual(node1.sitepath('node2'), '../node2')
+        self.assertEqual(node2.sitepath('node2'), '.')
+        self.assertEqual(node3.sitepath('node2'), '../../node2')
+        self.assertEqual(node4.sitepath('node2'), '..')
+        self.assertEqual(node5.sitepath('node2'), '..')
 
         # parent()
         self.assertIs(node0.parent(), None)

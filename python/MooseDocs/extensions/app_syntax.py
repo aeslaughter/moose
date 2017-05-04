@@ -109,6 +109,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         for item in config['locations']:
             key = item.keys()[0]
             options = item.values()[0]
+            options.setdefault('submodule', '')
             options.setdefault('group', key)
             options.setdefault('name', key.replace('_', ' ').title())
             options.setdefault('install', config['install'])

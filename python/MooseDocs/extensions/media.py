@@ -46,15 +46,10 @@ class MediaExtension(MooseMarkdownExtension):
         """
         md.registerExtension(self)
         config = self.getConfigs()
-        md.inlinePatterns.add('moose_image',
-                              ImagePattern(markdown_instance=md, **config),
-                              '_begin')
-        md.inlinePatterns.add('moose_video',
-                              VideoPattern(markdown_instance=md, **config),
-                              '<moose_image')
-        md.parser.blockprocessors.add('moose_slider',
-                                      SliderBlockProcessor(md.parser, **config),
-                                      '_begin')
+        config['markdown_instance'] = md
+        md.inlinePatterns.add('moose_image', ImagePattern(**config), '_begin')
+        md.inlinePatterns.add('moose_video', VideoPattern(**config), '<moose_image')
+        md.parser.blockprocessors.add('moose_slider', SliderBlockProcessor(**config), '_begin')
 
 def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
     """
@@ -262,9 +257,9 @@ class SliderBlockProcessor(BlockProcessor, MooseMarkdownCommon):
 
     ImageInfo = collections.namedtuple('ImageInfo', 'filename img_settings caption_settings')
 
-    def __init__(self, parser, **kwargs):
-        MooseMarkdownCommon.__init__(self, **kwargs)
-        BlockProcessor.__init__(self, parser)
+    def __init__(self, markdown_instance=None, **kwargs):
+        MooseMarkdownCommon.__init__(self, markdown_instance=markdown_instance, **kwargs)
+        BlockProcessor.__init__(self, markdown_instance.parser)
 
     def parseFilenames(self, filenames_block):
         """

@@ -28,7 +28,7 @@ class TestMooseObjectSyntax(MarkdownTestCase):
         self.assertIn('<h2>Available Sub-Objects</h2>', html)
         self.assertIn('<div class="collapsible-header moose-group-header">Framework Objects' \
                       '</div>', html)
-        loc = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'documentation', 'systems',
+        loc = os.path.join('docs', 'content', 'documentation', 'systems',
                            'Adaptivity', 'Markers', 'framework', 'BoxMarker.md')
         self.assertIn('<div class="moose-collection-name col l4"><a href="{}">BoxMarker</a></div>' \
                       .format(loc), html)
@@ -49,7 +49,7 @@ class TestMooseObjectSyntax(MarkdownTestCase):
         self.assertIn('<h2>Available Sub-Systems</h2>', html)
         self.assertIn('<div class="collapsible-header moose-group-header">Framework Systems</div>',
                       html)
-        loc = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'documentation', 'systems',
+        loc = os.path.join('docs', 'content', 'documentation', 'systems',
                            'Adaptivity', 'Markers', 'index.md')
         self.assertIn('<div class="moose-collection-name col l4"><a href="{}">Markers</a></div>'. \
                       format(loc), html)

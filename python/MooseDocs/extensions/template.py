@@ -263,7 +263,7 @@ class TemplatePostprocessor(TemplatePostprocessorBase):
         """
         Return the url to the markdown file for this object.
         """
-        return os.path.join(repo_url, 'edit', 'devel', MooseDocs.relpath(self.node.source()))
+        return os.path.join(repo_url, 'edit', 'devel', self.node.relpath(self.node.source()))
 
     def _doxygen(self):
         """
@@ -293,7 +293,7 @@ class TemplatePostprocessor(TemplatePostprocessorBase):
         output = []
         for obj in info:
             for filename in obj.code:
-                rel_filename = MooseDocs.relpath(filename)
+                rel_filename = self.node.relpath(filename)
                 output.append((os.path.basename(rel_filename),
                                os.path.join(repo_url, 'blob', 'master', rel_filename)))
 

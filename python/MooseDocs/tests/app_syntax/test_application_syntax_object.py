@@ -56,9 +56,9 @@ class TestMooseApplicationSyntax(unittest.TestCase):
 
     def testMooseObjectInfo(self):
         obj = self._syntax.getObject('/Adaptivity/Markers/BoxMarker')
-        h = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include', 'markers', 'BoxMarker.h')
-        c = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'src', 'markers', 'BoxMarker.C')
-        md = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'documentation', 'systems',
+        h = os.path.join(MooseDocs.ROOT_DIR, 'framework', 'include', 'markers', 'BoxMarker.h')
+        c = os.path.join(MooseDocs.ROOT_DIR, 'framework', 'src', 'markers', 'BoxMarker.C')
+        md = os.path.join('docs', 'content', 'documentation', 'systems',
                           'Adaptivity', 'Markers', 'framework', 'BoxMarker.md')
 
         self.assertEqual(obj.name, 'BoxMarker')
@@ -81,10 +81,10 @@ class TestMooseApplicationSyntax(unittest.TestCase):
 
     def testMooseActionInfo(self):
         obj = self._syntax.getAction('/Mesh')
-        md = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'documentation', 'systems',
+        md = os.path.join('docs', 'content', 'documentation', 'systems',
                           'Mesh', 'index.md')
-        inc = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include', 'actions')
-        src = os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'src', 'actions')
+        inc = os.path.join(MooseDocs.ROOT_DIR, 'framework', 'include', 'actions')
+        src = os.path.join(MooseDocs.ROOT_DIR, 'framework', 'src', 'actions')
         code = []
         for name in ['SetupMeshCompleteAction', 'SetupMeshAction', 'CreateDisplacedProblemAction']:
             code.append(os.path.join(inc, name + '.h'))
