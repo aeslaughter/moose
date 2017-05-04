@@ -73,7 +73,7 @@ class MooseLinkDatabase(object):
             self.children[key] = dict()
 
             for path in paths:
-                for base, _, files in os.walk(MooseDocs.abspath(path), topdown=False):
+                for base, _, files in os.walk(os.path.join(MooseDocs.ROOT_DIR, path), topdown=False):
                     for filename in files:
                         full_name = os.path.join(base, filename)
                         if filename.endswith('.i'):

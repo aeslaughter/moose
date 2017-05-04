@@ -308,7 +308,7 @@ class SliderBlockProcessor(BlockProcessor, MooseMarkdownCommon):
             img_settings.pop('counter')
             caption_settings.pop('counter')
 
-            new_files = glob.glob(MooseDocs.abspath(fname))
+            new_files = glob.glob(self.node.abspath(fname))
             if not new_files:
                 LOG.error('Parser unable to detect file(s) %s in media.py', fname)
                 return []

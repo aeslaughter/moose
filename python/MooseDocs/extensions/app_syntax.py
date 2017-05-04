@@ -54,7 +54,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         self.syntax = None
 
         # Create the absolute path to the executable
-        self.setConfig('executable', MooseDocs.abspath(self.getConfig('executable')))
+        self.setConfig('executable', os.path.join(MooseDocs.ROOT_DIR, self.getConfig('executable')))
 
     def execute(self):
         """

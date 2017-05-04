@@ -115,7 +115,7 @@ class TemplatePostprocessorBase(Postprocessor):
 
         if 'navigation' in template_args:
             template_args['navigation'] = \
-                MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
+                MooseDocs.yaml_load(self.node.abspath(template_args['navigation']))
 
     def run(self, text):
         """
@@ -148,8 +148,7 @@ class TemplatePostprocessorBase(Postprocessor):
         self._markdownLinks(self.markdown.current, soup)
         return unicode(soup)
 
-    @staticmethod
-    def _insertFiles(filenames):
+    def _insertFiles(self, filenames):
         """
         Helper function for jinja2 to read css file and return as string.
         """
@@ -158,7 +157,7 @@ class TemplatePostprocessorBase(Postprocessor):
 
         out = []
         for filename in filenames:
-            with open(MooseDocs.abspath(filename), 'r') as fid:
+            with open(self.node.abspath(filename), 'r') as fid:
                 out += [fid.read().strip('\n')]
         return '\n'.join(out)
 

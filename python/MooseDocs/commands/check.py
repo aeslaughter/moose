@@ -50,7 +50,7 @@ def check(config_file=None, locations=None, generate=None):
     ext_config = config[app_ext]
 
     # Run the executable
-    exe = MooseDocs.abspath(ext_config['executable'])
+    exe = os.path.join(MooseDocs.ROOT_DIR, ext_config['executable'])
     if not os.path.exists(exe):
         raise IOError('The executable does not exist: {}'.format(exe))
     else:

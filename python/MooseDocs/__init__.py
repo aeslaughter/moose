@@ -37,10 +37,6 @@ MOOSE_DIR = os.getenv('MOOSE_DIR', os.path.join(os.getcwd(), '..', 'moose'))
 if not os.path.exists(MOOSE_DIR):
     MOOSE_DIR = os.path.join(os.getenv('HOME'), 'projects', 'moose')
 
-ROOT_DIR = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
-                                   cwd=os.getcwd(),
-                                   stderr=subprocess.STDOUT).strip('\n')
-
 TEMP_DIR = os.path.abspath(os.path.join(os.getenv('HOME'), '.local', 'share', 'moose'))
 
 def git_directory(cwd=os.getcwd()):
@@ -50,7 +46,7 @@ def git_directory(cwd=os.getcwd()):
     return subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
                                    cwd=cwd,
                                    stderr=subprocess.STDOUT).strip('\n')
-
+ROOT_DIR = git_directory()
 
 def html_id(string):
     """

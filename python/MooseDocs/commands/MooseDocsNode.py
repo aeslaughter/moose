@@ -119,7 +119,7 @@ class MooseDocsNode(object):
         breadcrumb_helper(self)
         return crumbs
 
-    def relpath(self, path):
+    def sitepath(self, path):
         """
         Returns the relative path to the supplied path compared to the current pages location.
 

@@ -74,7 +74,7 @@ class MarkdownPreprocessor(MooseMarkdownCommon, Preprocessor):
         """
         Substitution function for the re.sub function.
         """
-        filename = MooseDocs.abspath(match.group(1))
+        filename = self.node.abspath(match.group(1))
         settings = self.getSettings(match.group(2))
         if not os.path.exists(filename):
             msg = "Failed to located filename in following command.\n{}"

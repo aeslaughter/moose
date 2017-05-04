@@ -138,7 +138,7 @@ class ListingPattern(MooseMarkdownCommon, Pattern):
 
         # Read the file
         rel_filename = match.group('filename').lstrip('/')
-        filename = MooseDocs.abspath(rel_filename)
+        filename = self.node.abspath(rel_filename)
         if not os.path.exists(filename):
             return self.createErrorElement("Unable to locate file: {}".format(rel_filename))
 
@@ -386,7 +386,7 @@ class ListingClangPattern(ListingPattern):
         super(ListingClangPattern, self).__init__(**kwargs)
 
         # The make command to execute
-        self._make_dir = MooseDocs.abspath(kwargs.pop('make_dir'))
+        self._make_dir = os.path.join(MooseDocs.ROOT_DIR, kwargs.pop('make_dir'))
         if not os.path.exists(os.path.join(self._make_dir, 'Makefile')):
             LOG.error("Invalid path provided for make: %s", self._make_dir)
 
