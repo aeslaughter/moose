@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumNodes
-!description /UserObjects/NumNodes
+!syntax description /UserObjects/NumNodes
 
-!parameters /UserObjects/NumNodes
+!syntax parameters /UserObjects/NumNodes
 
-!inputfiles /UserObjects/NumNodes
+!syntax inputs /UserObjects/NumNodes
 
-!childobjects /UserObjects/NumNodes
+!syntax children /UserObjects/NumNodes

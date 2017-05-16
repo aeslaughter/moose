@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHInterface
-!description /Kernels/CHInterface
+!syntax description /Kernels/CHInterface
 
-!parameters /Kernels/CHInterface
+!syntax parameters /Kernels/CHInterface
 
-!inputfiles /Kernels/CHInterface
+!syntax inputs /Kernels/CHInterface
 
-!childobjects /Kernels/CHInterface
+!syntax children /Kernels/CHInterface

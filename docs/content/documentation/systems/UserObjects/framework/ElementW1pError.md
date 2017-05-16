@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementW1pError
-!description /UserObjects/ElementW1pError
+!syntax description /UserObjects/ElementW1pError
 
-!parameters /UserObjects/ElementW1pError
+!syntax parameters /UserObjects/ElementW1pError
 
-!inputfiles /UserObjects/ElementW1pError
+!syntax inputs /UserObjects/ElementW1pError
 
-!childobjects /UserObjects/ElementW1pError
+!syntax children /UserObjects/ElementW1pError

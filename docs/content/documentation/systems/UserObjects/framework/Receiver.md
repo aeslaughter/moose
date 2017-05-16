@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Receiver
-!description /UserObjects/Receiver
+!syntax description /UserObjects/Receiver
 
-!parameters /UserObjects/Receiver
+!syntax parameters /UserObjects/Receiver
 
-!inputfiles /UserObjects/Receiver
+!syntax inputs /UserObjects/Receiver
 
-!childobjects /UserObjects/Receiver
+!syntax children /UserObjects/Receiver

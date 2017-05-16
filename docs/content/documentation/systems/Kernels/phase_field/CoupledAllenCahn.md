@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CoupledAllenCahn
-!description /Kernels/CoupledAllenCahn
+!syntax description /Kernels/CoupledAllenCahn
 
-!parameters /Kernels/CoupledAllenCahn
+!syntax parameters /Kernels/CoupledAllenCahn
 
-!inputfiles /Kernels/CoupledAllenCahn
+!syntax inputs /Kernels/CoupledAllenCahn
 
-!childobjects /Kernels/CoupledAllenCahn
+!syntax children /Kernels/CoupledAllenCahn

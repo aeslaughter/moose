@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SimpleACInterface
-!description /Kernels/SimpleACInterface
+!syntax description /Kernels/SimpleACInterface
 
-!parameters /Kernels/SimpleACInterface
+!syntax parameters /Kernels/SimpleACInterface
 
-!inputfiles /Kernels/SimpleACInterface
+!syntax inputs /Kernels/SimpleACInterface
 
-!childobjects /Kernels/SimpleACInterface
+!syntax children /Kernels/SimpleACInterface

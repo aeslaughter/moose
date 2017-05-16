@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputeThermalExpansionEigenstrain
-!description /Materials/ComputeThermalExpansionEigenstrain
+!syntax description /Materials/ComputeThermalExpansionEigenstrain
 
-!parameters /Materials/ComputeThermalExpansionEigenstrain
+!syntax parameters /Materials/ComputeThermalExpansionEigenstrain
 
-!inputfiles /Materials/ComputeThermalExpansionEigenstrain
+!syntax inputs /Materials/ComputeThermalExpansionEigenstrain
 
-!childobjects /Materials/ComputeThermalExpansionEigenstrain
+!syntax children /Materials/ComputeThermalExpansionEigenstrain

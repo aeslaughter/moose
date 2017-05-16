@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSCHBulk
-!description /Kernels/KKSCHBulk
+!syntax description /Kernels/KKSCHBulk
 
-!parameters /Kernels/KKSCHBulk
+!syntax parameters /Kernels/KKSCHBulk
 
-!inputfiles /Kernels/KKSCHBulk
+!syntax inputs /Kernels/KKSCHBulk
 
-!childobjects /Kernels/KKSCHBulk
+!syntax children /Kernels/KKSCHBulk

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SideFluxAverage
-!description /UserObjects/SideFluxAverage
+!syntax description /UserObjects/SideFluxAverage
 
-!parameters /UserObjects/SideFluxAverage
+!syntax parameters /UserObjects/SideFluxAverage
 
-!inputfiles /UserObjects/SideFluxAverage
+!syntax inputs /UserObjects/SideFluxAverage
 
-!childobjects /UserObjects/SideFluxAverage
+!syntax children /UserObjects/SideFluxAverage

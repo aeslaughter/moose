@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TimestepSize
-!description /UserObjects/TimestepSize
+!syntax description /UserObjects/TimestepSize
 
-!parameters /UserObjects/TimestepSize
+!syntax parameters /UserObjects/TimestepSize
 
-!inputfiles /UserObjects/TimestepSize
+!syntax inputs /UserObjects/TimestepSize
 
-!childobjects /UserObjects/TimestepSize
+!syntax children /UserObjects/TimestepSize

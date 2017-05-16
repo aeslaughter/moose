@@ -14,14 +14,14 @@ individual object pages listed below.
 
 !listing test/tests/auxkernels/solution_aux/build.i block=Mesh label=None
 
-!subobjects /Mesh title=None
+!syntax objects /Mesh title=None
 
-!subsystems /Mesh
+!syntax subsystems /Mesh
 
 ## Common Input Parameters
 The following is a complete list of input file parameters that may be applied to all types of mesh objects.
 
-!parameters /Mesh title=None
+!syntax parameters /Mesh title=None
 
 
 

@@ -49,14 +49,14 @@ defaults for the Master action subblocks.
 
 The following parameters are valid:
 
-!parameters /Modules/TensorMechanics/Master
+!syntax parameters /Modules/TensorMechanics/Master
 
 <!--
 This syntax is not yet supported by the doc system:
 
-!parameters /Modules/TensorMechanics/Master*
+!syntax parameters /Modules/TensorMechanics/Master*
 
-!inputfiles /Modules/TensorMechanics/Master/*
+!syntax inputs /Modules/TensorMechanics/Master/*
 
-!childobjects /Modules/TensorMechanics/Master/*
+!syntax children /Modules/TensorMechanics/Master/*
 -->

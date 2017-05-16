@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ScalarKernels System
-!parameters /ScalarKernels
+!syntax parameters /ScalarKernels
 
-!subobjects /ScalarKernels
+!syntax objects /ScalarKernels
 

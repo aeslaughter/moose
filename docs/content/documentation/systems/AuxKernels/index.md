@@ -1,7 +1,6 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AuxKernels System
-!parameters /AuxKernels
+!syntax parameters /AuxKernels
 
-!subobjects /AuxKernels
-
+!syntax objects /AuxKernels

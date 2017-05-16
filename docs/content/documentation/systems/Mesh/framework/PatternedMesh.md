@@ -1,5 +1,5 @@
 # PatternedMesh
-!description /Mesh/PatternedMesh
+!syntax description /Mesh/PatternedMesh
 
 The `PatternedMesh` object is similar to [TiledMesh](framework/TiledMesh.md) but restricted to two dimensions but
 adds the ability to create a tile pattern from an arbitrary number of input meshes.
@@ -16,8 +16,8 @@ file, as shown below, to create the pattern shown in Figure 3.
 !media docs/media/mesh/patterned_mesh_in.png float=right width=32% caption=Fig 3: Resulting mesh created using PatternedMesh.
 
 
-!parameters /Mesh/PatternedMesh
+!syntax parameters /Mesh/PatternedMesh
 
-!inputfiles /Mesh/PatternedMesh
+!syntax inputs /Mesh/PatternedMesh
 
-!childobjects /Mesh/PatternedMesh
+!syntax children /Mesh/PatternedMesh

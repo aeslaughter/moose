@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ACMultiInterface
-!description /Kernels/ACMultiInterface
+!syntax description /Kernels/ACMultiInterface
 
-!parameters /Kernels/ACMultiInterface
+!syntax parameters /Kernels/ACMultiInterface
 
-!inputfiles /Kernels/ACMultiInterface
+!syntax inputs /Kernels/ACMultiInterface
 
-!childobjects /Kernels/ACMultiInterface
+!syntax children /Kernels/ACMultiInterface

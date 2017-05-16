@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PointValue
-!description /UserObjects/PointValue
+!syntax description /UserObjects/PointValue
 
-!parameters /UserObjects/PointValue
+!syntax parameters /UserObjects/PointValue
 
-!inputfiles /UserObjects/PointValue
+!syntax inputs /UserObjects/PointValue
 
-!childobjects /UserObjects/PointValue
+!syntax children /UserObjects/PointValue

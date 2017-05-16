@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LinearIsoElasticPFDamage
-!description /Materials/LinearIsoElasticPFDamage
+!syntax description /Materials/LinearIsoElasticPFDamage
 
-!parameters /Materials/LinearIsoElasticPFDamage
+!syntax parameters /Materials/LinearIsoElasticPFDamage
 
-!inputfiles /Materials/LinearIsoElasticPFDamage
+!syntax inputs /Materials/LinearIsoElasticPFDamage
 
-!childobjects /Materials/LinearIsoElasticPFDamage
+!syntax children /Materials/LinearIsoElasticPFDamage

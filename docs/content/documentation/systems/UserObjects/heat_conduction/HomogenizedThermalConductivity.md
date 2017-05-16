@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # HomogenizedThermalConductivity
-!description /UserObjects/HomogenizedThermalConductivity
+!syntax description /UserObjects/HomogenizedThermalConductivity
 
-!parameters /UserObjects/HomogenizedThermalConductivity
+!syntax parameters /UserObjects/HomogenizedThermalConductivity
 
-!inputfiles /UserObjects/HomogenizedThermalConductivity
+!syntax inputs /UserObjects/HomogenizedThermalConductivity
 
-!childobjects /UserObjects/HomogenizedThermalConductivity
+!syntax children /UserObjects/HomogenizedThermalConductivity

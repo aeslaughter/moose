@@ -1,6 +1,6 @@
 
 # ErrorFractionMarker
-!description /Adaptivity/Markers/ErrorFractionMarker
+!syntax description /Adaptivity/Markers/ErrorFractionMarker
 
 ## Description
 The `ErrorFractionMarker` utilizes the value from an
@@ -17,8 +17,8 @@ applied:
 ## Example Input Syntax
 !listing test/tests/markers/error_fraction_marker/error_fraction_marker_test.i block=Adaptivity
 
-!parameters /Adaptivity/Markers/ErrorFractionMarker
+!syntax parameters /Adaptivity/Markers/ErrorFractionMarker
 
-!inputfiles /Adaptivity/Markers/ErrorFractionMarker
+!syntax inputs /Adaptivity/Markers/ErrorFractionMarker
 
-!childobjects /Adaptivity/Markers/ErrorFractionMarker
+!syntax children /Adaptivity/Markers/ErrorFractionMarker

@@ -17,10 +17,10 @@ as shown in \ref{file-mesh-valid-params}. Notice, that the `addClassDescription`
 by the [MOOSE] input file syntax for the object as follows.
 
 ```markdown
-!description /Mesh/FileMesh style=color:green
+!syntax description /Mesh/FileMesh style=color:green
 ```
 
-!description /Mesh/FileMesh style=color:green
+!syntax description /Mesh/FileMesh style=color:green
 
 !listing framework/src/mesh/FileMesh.C start=template<> end=FileMesh::FileMesh id=file-mesh-valid-params caption=The validParams function from the [FileMesh] object.
 
@@ -33,7 +33,7 @@ object. For example, considering the [FileMesh] object, the complete list of inp
 provided using the following markdown command, the results of which are shown on the [Input Parameters](framework/FileMesh.md#input-parameters) section of the [FileMesh] page.
 
 ```markdown
-!parameters /Mesh/FileMesh
+!syntax parameters /Mesh/FileMesh
 ```
 
 !extension-settings moose_parameters caption=Command settings for `!parameters` command.
@@ -42,49 +42,49 @@ provided using the following markdown command, the results of which are shown on
 
 In many cases it is useful to know where in the examples, tutorials, or tests an object is utilized
 in an input file as well as what other objects may inherit from an object. Therefore, two commands
-are provided to create these lists: `!inputfiles` and `!childobjects`, respectively.
+are provided to create these lists: `!syntax inputs` and `!syntax children`, respectively.
 
 For example, the following markdown is included on the [Diffusion] page, these commands create the
 [Input Files](framework/Diffusion.md#input-files) and [Child Objects](framework/Diffusion.md#child-objects) sections, respectively.
 
 
 ```markdown
-!inputfiles /Mesh/FileMesh
+!syntax inputs /Mesh/FileMesh
 
-!childobjects /Mesh/FileMesh
+!syntax children /Mesh/FileMesh
 ```
 
-!extension-settings moose_object_syntax caption=Command settings for `!inputfiles` and `!childobjects` commands.
+!extension-settings moose_object_syntax caption=Command settings for `!syntax inputs` and `!syntax children` commands.
 
 ## Sub-Objects and Sub-Systems Lists
 
 Similarly, to the how an object is used it is also desirable to list the available objects for a
-certain system, this can be done using the `!subobjects` and `!subsystems` commands.`
+certain system, this can be done using the `!syntax objects` and `!syntax subsystems` commands.`
 
-* `!subobjects`<br>
+* `!syntax objects`<br>
 For input file syntax that can take arbitrary object blocks (e.g., [Mesh]) a list of the available
 objects for the given syntax can be created using this command. For example, the [Example Syntax and Mesh Objects](/Mesh/index.md#example-syntax-and-mesh-objects) sections was generated
 using the following.
 
 ```markdown
-!subobjects /Mesh title=None
+!syntax objects /Mesh title=None
 ```
 
-* `!subsystems`<br>
+* `!syntax subsystems`<br>
 For input file syntax that contain additional sub-blocks (e.g., [Adaptivity]) a list of the
 available sub-sytems for the given syntax can be created using this command. For example, the [Available Sub-Systems](systems/Adaptivity/index.md#available-sub-systems) sections was generated
 using the following.
 
 ```markdown
-!subsystems /Adaptivity
+!syntax subsystems /Adaptivity
 ```
 
 ## Complete System Lists
 
-To present a complete view of all the available syntax and objects the `!systems` command exists,
+To present a complete view of all the available syntax and objects the `!syntax complete` command exists,
 this command is used to create pages such as the [MOOSE Systems](documentation/systems/index.md) pages.
 
-!extension-settings moose_system_list caption=Command settings for `!systems` command.
+!extension-settings moose_system_list caption=Command settings for `!syntax complete` command.
 
 [FileMesh]: /framework/FileMesh.md
 [Diffusion]: /framework/Diffusion.md

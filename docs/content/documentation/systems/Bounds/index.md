@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Bounds System
-!parameters /Bounds
+!syntax parameters /Bounds
 
-!subobjects /Bounds
+!syntax objects /Bounds
 

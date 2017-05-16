@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TimeExtremeValue
-!description /UserObjects/TimeExtremeValue
+!syntax description /UserObjects/TimeExtremeValue
 
-!parameters /UserObjects/TimeExtremeValue
+!syntax parameters /UserObjects/TimeExtremeValue
 
-!inputfiles /UserObjects/TimeExtremeValue
+!syntax inputs /UserObjects/TimeExtremeValue
 
-!childobjects /UserObjects/TimeExtremeValue
+!syntax children /UserObjects/TimeExtremeValue

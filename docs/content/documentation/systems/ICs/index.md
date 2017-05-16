@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ICs System
-!parameters /ICs
+!syntax parameters /ICs
 
-!subobjects /ICs
+!syntax objects /ICs
 

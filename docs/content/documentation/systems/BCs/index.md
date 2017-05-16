@@ -1,9 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # BCs System
-!parameters /BCs
+!syntax parameters /BCs
 
-!subobjects /BCs
+!syntax objects /BCs
 
-!subsystems /BCs
+!syntax subsystems /BCs
 

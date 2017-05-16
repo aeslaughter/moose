@@ -11,8 +11,8 @@ to obtain numerical results. The general procedure is:
 ## Example Input Syntax
 !listing modules/stochastic_tools/tests/samplers/monte_carlo/sampler_materials_test.i block=Samplers
 
-!parameters /Samplers/MonteCarloSampler
+!syntax parameters /Samplers/MonteCarloSampler
 
-!inputfiles /Samplers/MonteCarloSampler
+!syntax inputs /Samplers/MonteCarloSampler
 
-!childobjects /Samplers/MonteCarloSampler
+!syntax children /Samplers/MonteCarloSampler

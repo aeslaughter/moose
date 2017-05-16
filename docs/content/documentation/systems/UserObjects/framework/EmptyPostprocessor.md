@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # EmptyPostprocessor
-!description /UserObjects/EmptyPostprocessor
+!syntax description /UserObjects/EmptyPostprocessor
 
-!parameters /UserObjects/EmptyPostprocessor
+!syntax parameters /UserObjects/EmptyPostprocessor
 
-!inputfiles /UserObjects/EmptyPostprocessor
+!syntax inputs /UserObjects/EmptyPostprocessor
 
-!childobjects /UserObjects/EmptyPostprocessor
+!syntax children /UserObjects/EmptyPostprocessor

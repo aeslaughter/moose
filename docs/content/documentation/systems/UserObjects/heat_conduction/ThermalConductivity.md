@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ThermalConductivity
-!description /UserObjects/ThermalConductivity
+!syntax description /UserObjects/ThermalConductivity
 
-!parameters /UserObjects/ThermalConductivity
+!syntax parameters /UserObjects/ThermalConductivity
 
-!inputfiles /UserObjects/ThermalConductivity
+!syntax inputs /UserObjects/ThermalConductivity
 
-!childobjects /UserObjects/ThermalConductivity
+!syntax children /UserObjects/ThermalConductivity

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FeatureFloodCount
-!description /UserObjects/FeatureFloodCount
+!syntax description /UserObjects/FeatureFloodCount
 
-!parameters /UserObjects/FeatureFloodCount
+!syntax parameters /UserObjects/FeatureFloodCount
 
-!inputfiles /UserObjects/FeatureFloodCount
+!syntax inputs /UserObjects/FeatureFloodCount
 
-!childobjects /UserObjects/FeatureFloodCount
+!syntax children /UserObjects/FeatureFloodCount

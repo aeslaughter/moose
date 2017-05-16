@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementalVariableValue
-!description /UserObjects/ElementalVariableValue
+!syntax description /UserObjects/ElementalVariableValue
 
-!parameters /UserObjects/ElementalVariableValue
+!syntax parameters /UserObjects/ElementalVariableValue
 
-!inputfiles /UserObjects/ElementalVariableValue
+!syntax inputs /UserObjects/ElementalVariableValue
 
-!childobjects /UserObjects/ElementalVariableValue
+!syntax children /UserObjects/ElementalVariableValue

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaterialTensorIntegral
-!description /UserObjects/MaterialTensorIntegral
+!syntax description /UserObjects/MaterialTensorIntegral
 
-!parameters /UserObjects/MaterialTensorIntegral
+!syntax parameters /UserObjects/MaterialTensorIntegral
 
-!inputfiles /UserObjects/MaterialTensorIntegral
+!syntax inputs /UserObjects/MaterialTensorIntegral
 
-!childobjects /UserObjects/MaterialTensorIntegral
+!syntax children /UserObjects/MaterialTensorIntegral

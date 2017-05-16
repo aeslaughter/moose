@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementIntegralMaterialProperty
-!description /UserObjects/ElementIntegralMaterialProperty
+!syntax description /UserObjects/ElementIntegralMaterialProperty
 
-!parameters /UserObjects/ElementIntegralMaterialProperty
+!syntax parameters /UserObjects/ElementIntegralMaterialProperty
 
-!inputfiles /UserObjects/ElementIntegralMaterialProperty
+!syntax inputs /UserObjects/ElementIntegralMaterialProperty
 
-!childobjects /UserObjects/ElementIntegralMaterialProperty
+!syntax children /UserObjects/ElementIntegralMaterialProperty

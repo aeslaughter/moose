@@ -1,5 +1,5 @@
 #RadialReturnStressUpdate
-!description /Materials/RadialReturnStressUpdate
+!syntax description /Materials/RadialReturnStressUpdate
 
 
 ###Algorithm References
@@ -61,7 +61,7 @@ Additionally, new radial return methods must also overwrite a single method from
 More details on how to write the equivalent yield surface equation for a creep model are given in Dunne and Petrinic.
 
 
-!childobjects /Materials/RadialReturnStressUpdate
+!syntax children /Materials/RadialReturnStressUpdate
 
 ## References
 \bibliographystyle{unsrt}

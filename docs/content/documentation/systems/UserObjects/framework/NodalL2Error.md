@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalL2Error
-!description /UserObjects/NodalL2Error
+!syntax description /UserObjects/NodalL2Error
 
-!parameters /UserObjects/NodalL2Error
+!syntax parameters /UserObjects/NodalL2Error
 
-!inputfiles /UserObjects/NodalL2Error
+!syntax inputs /UserObjects/NodalL2Error
 
-!childobjects /UserObjects/NodalL2Error
+!syntax children /UserObjects/NodalL2Error

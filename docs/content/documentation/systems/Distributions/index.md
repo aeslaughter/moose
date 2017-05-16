@@ -6,9 +6,9 @@ It provides support for several probability distributions.
 ## Example Syntax
 !input modules/stochastic_tools/tests/distributions/distribution_pps/distribution_pps.i block=Distributions
 
-!parameters /Distributions
+!syntax parameters /Distributions
 
-!subobjects /Distributions
+!syntax objects /Distributions
 
-!subsystems /Distributions
+!syntax subsystems /Distributions
 

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSACBulkF
-!description /Kernels/KKSACBulkF
+!syntax description /Kernels/KKSACBulkF
 
-!parameters /Kernels/KKSACBulkF
+!syntax parameters /Kernels/KKSACBulkF
 
-!inputfiles /Kernels/KKSACBulkF
+!syntax inputs /Kernels/KKSACBulkF
 
-!childobjects /Kernels/KKSACBulkF
+!syntax children /Kernels/KKSACBulkF

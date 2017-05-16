@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumNonlinearIterations
-!description /UserObjects/NumNonlinearIterations
+!syntax description /UserObjects/NumNonlinearIterations
 
-!parameters /UserObjects/NumNonlinearIterations
+!syntax parameters /UserObjects/NumNonlinearIterations
 
-!inputfiles /UserObjects/NumNonlinearIterations
+!syntax inputs /UserObjects/NumNonlinearIterations
 
-!childobjects /UserObjects/NumNonlinearIterations
+!syntax children /UserObjects/NumNonlinearIterations

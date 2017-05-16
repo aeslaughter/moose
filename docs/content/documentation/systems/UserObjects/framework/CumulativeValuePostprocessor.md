@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CumulativeValuePostprocessor
-!description /UserObjects/CumulativeValuePostprocessor
+!syntax description /UserObjects/CumulativeValuePostprocessor
 
-!parameters /UserObjects/CumulativeValuePostprocessor
+!syntax parameters /UserObjects/CumulativeValuePostprocessor
 
-!inputfiles /UserObjects/CumulativeValuePostprocessor
+!syntax inputs /UserObjects/CumulativeValuePostprocessor
 
-!childobjects /UserObjects/CumulativeValuePostprocessor
+!syntax children /UserObjects/CumulativeValuePostprocessor

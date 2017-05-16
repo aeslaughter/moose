@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MultiApps System
-!parameters /MultiApps
+!syntax parameters /MultiApps
 
-!subobjects /MultiApps
+!syntax objects /MultiApps
 

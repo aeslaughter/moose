@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FunctionSideIntegral
-!description /UserObjects/FunctionSideIntegral
+!syntax description /UserObjects/FunctionSideIntegral
 
-!parameters /UserObjects/FunctionSideIntegral
+!syntax parameters /UserObjects/FunctionSideIntegral
 
-!inputfiles /UserObjects/FunctionSideIntegral
+!syntax inputs /UserObjects/FunctionSideIntegral
 
-!childobjects /UserObjects/FunctionSideIntegral
+!syntax children /UserObjects/FunctionSideIntegral

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumVars
-!description /UserObjects/NumVars
+!syntax description /UserObjects/NumVars
 
-!parameters /UserObjects/NumVars
+!syntax parameters /UserObjects/NumVars
 
-!inputfiles /UserObjects/NumVars
+!syntax inputs /UserObjects/NumVars
 
-!childobjects /UserObjects/NumVars
+!syntax children /UserObjects/NumVars

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalExtremeValue
-!description /UserObjects/NodalExtremeValue
+!syntax description /UserObjects/NodalExtremeValue
 
-!parameters /UserObjects/NodalExtremeValue
+!syntax parameters /UserObjects/NodalExtremeValue
 
-!inputfiles /UserObjects/NodalExtremeValue
+!syntax inputs /UserObjects/NodalExtremeValue
 
-!childobjects /UserObjects/NodalExtremeValue
+!syntax children /UserObjects/NodalExtremeValue

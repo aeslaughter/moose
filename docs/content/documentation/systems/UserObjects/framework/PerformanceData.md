@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PerformanceData
-!description /UserObjects/PerformanceData
+!syntax description /UserObjects/PerformanceData
 
-!parameters /UserObjects/PerformanceData
+!syntax parameters /UserObjects/PerformanceData
 
-!inputfiles /UserObjects/PerformanceData
+!syntax inputs /UserObjects/PerformanceData
 
-!childobjects /UserObjects/PerformanceData
+!syntax children /UserObjects/PerformanceData

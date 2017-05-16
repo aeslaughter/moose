@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DiracKernels System
-!parameters /DiracKernels
+!syntax parameters /DiracKernels
 
-!subobjects /DiracKernels
+!syntax objects /DiracKernels
 

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalVariableValue
-!description /UserObjects/NodalVariableValue
+!syntax description /UserObjects/NodalVariableValue
 
-!parameters /UserObjects/NodalVariableValue
+!syntax parameters /UserObjects/NodalVariableValue
 
-!inputfiles /UserObjects/NodalVariableValue
+!syntax inputs /UserObjects/NodalVariableValue
 
-!childobjects /UserObjects/NodalVariableValue
+!syntax children /UserObjects/NodalVariableValue

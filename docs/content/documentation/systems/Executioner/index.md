@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Executioner System
-!parameters /Executioner
+!syntax parameters /Executioner
 
-!subsystems /Executioner
+!syntax subsystems /Executioner
 

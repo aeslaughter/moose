@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalMaxValue
-!description /UserObjects/NodalMaxValue
+!syntax description /UserObjects/NodalMaxValue
 
-!parameters /UserObjects/NodalMaxValue
+!syntax parameters /UserObjects/NodalMaxValue
 
-!inputfiles /UserObjects/NodalMaxValue
+!syntax inputs /UserObjects/NodalMaxValue
 
-!childobjects /UserObjects/NodalMaxValue
+!syntax children /UserObjects/NodalMaxValue

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PorousFlowFluidMass
-!description /UserObjects/PorousFlowFluidMass
+!syntax description /UserObjects/PorousFlowFluidMass
 
-!parameters /UserObjects/PorousFlowFluidMass
+!syntax parameters /UserObjects/PorousFlowFluidMass
 
-!inputfiles /UserObjects/PorousFlowFluidMass
+!syntax inputs /UserObjects/PorousFlowFluidMass
 
-!childobjects /UserObjects/PorousFlowFluidMass
+!syntax children /UserObjects/PorousFlowFluidMass

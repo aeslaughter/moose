@@ -17,10 +17,10 @@ where $a$ and $b$ are the lower bound and upper bound for the uniform distributi
 ## Example Input Syntax
 !input modules/stochastic_tools/tests/distributions/distribution_pps/distribution_pps.i block=Distributions
 
-!parameters /Distributions/UniformDistribution
+!syntax parameters /Distributions/UniformDistribution
 
-!inputfiles /Distributions/UniformDistribution
+!syntax inputs /Distributions/UniformDistribution
 
-!childobjects /Distributions/UniformDistribution
+!syntax children /Distributions/UniformDistribution
 
 

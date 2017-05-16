@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Transfers System
-!parameters /Transfers
+!syntax parameters /Transfers
 
-!subobjects /Transfers
+!syntax objects /Transfers
 

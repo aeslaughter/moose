@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # HHPFCRFF
-!description /Kernels/HHPFCRFF
+!syntax description /Kernels/HHPFCRFF
 
-!parameters /Kernels/HHPFCRFF
+!syntax parameters /Kernels/HHPFCRFF
 
-!inputfiles /Kernels/HHPFCRFF
+!syntax inputs /Kernels/HHPFCRFF
 
-!childobjects /Kernels/HHPFCRFF
+!syntax children /Kernels/HHPFCRFF

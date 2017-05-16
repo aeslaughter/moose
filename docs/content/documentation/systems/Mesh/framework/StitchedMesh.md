@@ -1,5 +1,5 @@
 # StitchedMesh
-!description /Mesh/StitchedMesh
+!syntax description /Mesh/StitchedMesh
 
 ## Overview
 The `StitchedMesh` object allows for multiple mesh files to be "stitched" together to form a single mesh for use
@@ -18,8 +18,8 @@ file snippet below, these three square meshes are joined into a single mesh as s
 
 !media docs/media/mesh/stitched_mesh_out.png caption=Fig. 4: Resulting "stitched" mesh from combination of three square meshes.
 
-!parameters /Mesh/StitchedMesh
+!syntax parameters /Mesh/StitchedMesh
 
-!inputfiles /Mesh/StitchedMesh
+!syntax inputs /Mesh/StitchedMesh
 
-!childobjects /Mesh/StitchedMesh
+!syntax children /Mesh/StitchedMesh

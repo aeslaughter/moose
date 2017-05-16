@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Residual
-!description /UserObjects/Residual
+!syntax description /UserObjects/Residual
 
-!parameters /UserObjects/Residual
+!syntax parameters /UserObjects/Residual
 
-!inputfiles /UserObjects/Residual
+!syntax inputs /UserObjects/Residual
 
-!childobjects /UserObjects/Residual
+!syntax children /UserObjects/Residual

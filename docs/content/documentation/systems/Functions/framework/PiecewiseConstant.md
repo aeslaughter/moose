@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PiecewiseConstant
-!description /Functions/PiecewiseConstant
+!syntax description /Functions/PiecewiseConstant
 
-!parameters /Functions/PiecewiseConstant
+!syntax parameters /Functions/PiecewiseConstant
 
-!inputfiles /Functions/PiecewiseConstant
+!syntax inputs /Functions/PiecewiseConstant
 
-!childobjects /Functions/PiecewiseConstant
+!syntax children /Functions/PiecewiseConstant

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # VariableInnerProduct
-!description /UserObjects/VariableInnerProduct
+!syntax description /UserObjects/VariableInnerProduct
 
-!parameters /UserObjects/VariableInnerProduct
+!syntax parameters /UserObjects/VariableInnerProduct
 
-!inputfiles /UserObjects/VariableInnerProduct
+!syntax inputs /UserObjects/VariableInnerProduct
 
-!childobjects /UserObjects/VariableInnerProduct
+!syntax children /UserObjects/VariableInnerProduct

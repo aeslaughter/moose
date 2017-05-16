@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumResidualEvaluations
-!description /UserObjects/NumResidualEvaluations
+!syntax description /UserObjects/NumResidualEvaluations
 
-!parameters /UserObjects/NumResidualEvaluations
+!syntax parameters /UserObjects/NumResidualEvaluations
 
-!inputfiles /UserObjects/NumResidualEvaluations
+!syntax inputs /UserObjects/NumResidualEvaluations
 
-!childobjects /UserObjects/NumResidualEvaluations
+!syntax children /UserObjects/NumResidualEvaluations

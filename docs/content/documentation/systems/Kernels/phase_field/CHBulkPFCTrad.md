@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHBulkPFCTrad
-!description /Kernels/CHBulkPFCTrad
+!syntax description /Kernels/CHBulkPFCTrad
 
-!parameters /Kernels/CHBulkPFCTrad
+!syntax parameters /Kernels/CHBulkPFCTrad
 
-!inputfiles /Kernels/CHBulkPFCTrad
+!syntax inputs /Kernels/CHBulkPFCTrad
 
-!childobjects /Kernels/CHBulkPFCTrad
+!syntax children /Kernels/CHBulkPFCTrad

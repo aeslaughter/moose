@@ -1,6 +1,6 @@
 #ComputeMeanThermalExpansionEigenstrain
 
-!description /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
+!syntax description /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 ## Description
 
 This model computes the eigenstrain tensor resulting from isotropic thermal expansion where the temperature-dependent thermal expansion is defined by a user-supplied function that describes the mean thermal expansion coefficient $\bar{\alpha}$ as a function of temperature, $T$. This function is defined relative to a reference temperature, $T_{ref}$, such that the total expansion at a given temperature relative to the refererence temperature is $\bar{\alpha}(T-T_{ref})$.  Following the notation of \cite{niffenegger2012proper}, $\bar{\alpha}_{(T_{ref},T)}$ is defined as:
@@ -19,11 +19,11 @@ $$
 
 where $T$ is the current temperature and $\boldsymbol{I}$ is the identity matrix.  Note that this does not include a correction to account for the ratio of $L_{(T_{sf})}$ to $L_{(T_{ref})}$, because as discussed in \cite{niffenegger2012proper}, that ratio is very close to 1.
 
-!parameters /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
+!syntax parameters /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 
-!inputfiles /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
+!syntax inputs /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 
-!childobjects /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
+!syntax children /Materials/ComputeMeanThermalExpansionFunctionEigenstrain
 
 ## References
 \bibliographystyle{unsrt}

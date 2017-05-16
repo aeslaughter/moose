@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementExtremeValue
-!description /UserObjects/ElementExtremeValue
+!syntax description /UserObjects/ElementExtremeValue
 
-!parameters /UserObjects/ElementExtremeValue
+!syntax parameters /UserObjects/ElementExtremeValue
 
-!inputfiles /UserObjects/ElementExtremeValue
+!syntax inputs /UserObjects/ElementExtremeValue
 
-!childobjects /UserObjects/ElementExtremeValue
+!syntax children /UserObjects/ElementExtremeValue

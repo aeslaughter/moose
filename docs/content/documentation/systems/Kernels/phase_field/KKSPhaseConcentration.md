@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSPhaseConcentration
-!description /Kernels/KKSPhaseConcentration
+!syntax description /Kernels/KKSPhaseConcentration
 
-!parameters /Kernels/KKSPhaseConcentration
+!syntax parameters /Kernels/KKSPhaseConcentration
 
-!inputfiles /Kernels/KKSPhaseConcentration
+!syntax inputs /Kernels/KKSPhaseConcentration
 
-!childobjects /Kernels/KKSPhaseConcentration
+!syntax children /Kernels/KKSPhaseConcentration

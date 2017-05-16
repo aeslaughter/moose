@@ -1,5 +1,5 @@
 # Adaptivity System
-!parameters /Adaptivity
+!syntax parameters /Adaptivity
 
 ## h-Adaptivity
 
@@ -21,4 +21,4 @@ elements are created when the element is refined. Coarsening happens in reverse,
 "parent" element is reactivated. The original mesh starts at refinement level 0. Each time an element is split, the
 children are assigned a refinement level one higher than their parents.
 
-!subsystems /Adaptivity
+!syntax subsystems /Adaptivity

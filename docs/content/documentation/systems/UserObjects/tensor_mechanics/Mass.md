@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Mass
-!description /UserObjects/Mass
+!syntax description /UserObjects/Mass
 
-!parameters /UserObjects/Mass
+!syntax parameters /UserObjects/Mass
 
-!inputfiles /UserObjects/Mass
+!syntax inputs /UserObjects/Mass
 
-!childobjects /UserObjects/Mass
+!syntax children /UserObjects/Mass

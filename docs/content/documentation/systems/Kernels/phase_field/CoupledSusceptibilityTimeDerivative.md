@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CoupledSusceptibilityTimeDerivative
-!description /Kernels/CoupledSusceptibilityTimeDerivative
+!syntax description /Kernels/CoupledSusceptibilityTimeDerivative
 
-!parameters /Kernels/CoupledSusceptibilityTimeDerivative
+!syntax parameters /Kernels/CoupledSusceptibilityTimeDerivative
 
-!inputfiles /Kernels/CoupledSusceptibilityTimeDerivative
+!syntax inputs /Kernels/CoupledSusceptibilityTimeDerivative
 
-!childobjects /Kernels/CoupledSusceptibilityTimeDerivative
+!syntax children /Kernels/CoupledSusceptibilityTimeDerivative

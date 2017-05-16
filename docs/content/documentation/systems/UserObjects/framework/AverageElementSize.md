@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AverageElementSize
-!description /UserObjects/AverageElementSize
+!syntax description /UserObjects/AverageElementSize
 
-!parameters /UserObjects/AverageElementSize
+!syntax parameters /UserObjects/AverageElementSize
 
-!inputfiles /UserObjects/AverageElementSize
+!syntax inputs /UserObjects/AverageElementSize
 
-!childobjects /UserObjects/AverageElementSize
+!syntax children /UserObjects/AverageElementSize

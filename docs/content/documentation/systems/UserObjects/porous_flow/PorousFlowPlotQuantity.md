@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PorousFlowPlotQuantity
-!description /UserObjects/PorousFlowPlotQuantity
+!syntax description /UserObjects/PorousFlowPlotQuantity
 
-!parameters /UserObjects/PorousFlowPlotQuantity
+!syntax parameters /UserObjects/PorousFlowPlotQuantity
 
-!inputfiles /UserObjects/PorousFlowPlotQuantity
+!syntax inputs /UserObjects/PorousFlowPlotQuantity
 
-!childobjects /UserObjects/PorousFlowPlotQuantity
+!syntax children /UserObjects/PorousFlowPlotQuantity

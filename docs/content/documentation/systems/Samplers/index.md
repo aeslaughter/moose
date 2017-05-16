@@ -7,9 +7,9 @@ Input parameters will be perturbed using associated distributions from the Distr
 ## Example Syntax
 !listing modules/stochastic_tools/tests/samplers/monte_carlo/sampler_materials_test.i block=Samplers
 
-!parameters /Samplers
+!syntax parameters /Samplers
 
-!subobjects /Samplers
+!syntax objects /Samplers
 
-!subsystems /Samplers
+!syntax subsystems /Samplers
 

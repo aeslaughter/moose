@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TotalVariableValue
-!description /UserObjects/TotalVariableValue
+!syntax description /UserObjects/TotalVariableValue
 
-!parameters /UserObjects/TotalVariableValue
+!syntax parameters /UserObjects/TotalVariableValue
 
-!inputfiles /UserObjects/TotalVariableValue
+!syntax inputs /UserObjects/TotalVariableValue
 
-!childobjects /UserObjects/TotalVariableValue
+!syntax children /UserObjects/TotalVariableValue

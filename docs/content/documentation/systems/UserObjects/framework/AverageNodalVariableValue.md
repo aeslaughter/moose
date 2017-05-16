@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AverageNodalVariableValue
-!description /UserObjects/AverageNodalVariableValue
+!syntax description /UserObjects/AverageNodalVariableValue
 
-!parameters /UserObjects/AverageNodalVariableValue
+!syntax parameters /UserObjects/AverageNodalVariableValue
 
-!inputfiles /UserObjects/AverageNodalVariableValue
+!syntax inputs /UserObjects/AverageNodalVariableValue
 
-!childobjects /UserObjects/AverageNodalVariableValue
+!syntax children /UserObjects/AverageNodalVariableValue

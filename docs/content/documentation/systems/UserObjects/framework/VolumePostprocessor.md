@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # VolumePostprocessor
-!description /UserObjects/VolumePostprocessor
+!syntax description /UserObjects/VolumePostprocessor
 
-!parameters /UserObjects/VolumePostprocessor
+!syntax parameters /UserObjects/VolumePostprocessor
 
-!inputfiles /UserObjects/VolumePostprocessor
+!syntax inputs /UserObjects/VolumePostprocessor
 
-!childobjects /UserObjects/VolumePostprocessor
+!syntax children /UserObjects/VolumePostprocessor

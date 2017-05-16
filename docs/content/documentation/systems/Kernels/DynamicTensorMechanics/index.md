@@ -1,5 +1,5 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DynamicTensorMechanics System
-!parameters /Kernels/DynamicTensorMechanics
+!syntax parameters /Kernels/DynamicTensorMechanics
 

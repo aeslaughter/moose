@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSSplitCHCRes
-!description /Kernels/KKSSplitCHCRes
+!syntax description /Kernels/KKSSplitCHCRes
 
-!parameters /Kernels/KKSSplitCHCRes
+!syntax parameters /Kernels/KKSSplitCHCRes
 
-!inputfiles /Kernels/KKSSplitCHCRes
+!syntax inputs /Kernels/KKSSplitCHCRes
 
-!childobjects /Kernels/KKSSplitCHCRes
+!syntax children /Kernels/KKSSplitCHCRes

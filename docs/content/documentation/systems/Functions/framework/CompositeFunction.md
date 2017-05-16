@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CompositeFunction
-!description /Functions/CompositeFunction
+!syntax description /Functions/CompositeFunction
 
-!parameters /Functions/CompositeFunction
+!syntax parameters /Functions/CompositeFunction
 
-!inputfiles /Functions/CompositeFunction
+!syntax inputs /Functions/CompositeFunction
 
-!childobjects /Functions/CompositeFunction
+!syntax children /Functions/CompositeFunction

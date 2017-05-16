@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PorousFlowHeatEnergy
-!description /UserObjects/PorousFlowHeatEnergy
+!syntax description /UserObjects/PorousFlowHeatEnergy
 
-!parameters /UserObjects/PorousFlowHeatEnergy
+!syntax parameters /UserObjects/PorousFlowHeatEnergy
 
-!inputfiles /UserObjects/PorousFlowHeatEnergy
+!syntax inputs /UserObjects/PorousFlowHeatEnergy
 
-!childobjects /UserObjects/PorousFlowHeatEnergy
+!syntax children /UserObjects/PorousFlowHeatEnergy

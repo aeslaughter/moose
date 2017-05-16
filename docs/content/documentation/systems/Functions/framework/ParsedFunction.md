@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ParsedFunction
-!description /Functions/ParsedFunction
+!syntax description /Functions/ParsedFunction
 
-!parameters /Functions/ParsedFunction
+!syntax parameters /Functions/ParsedFunction
 
-!inputfiles /Functions/ParsedFunction
+!syntax inputs /Functions/ParsedFunction
 
-!childobjects /Functions/ParsedFunction
+!syntax children /Functions/ParsedFunction

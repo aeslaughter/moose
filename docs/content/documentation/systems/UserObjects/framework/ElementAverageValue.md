@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementAverageValue
-!description /UserObjects/ElementAverageValue
+!syntax description /UserObjects/ElementAverageValue
 
-!parameters /UserObjects/ElementAverageValue
+!syntax parameters /UserObjects/ElementAverageValue
 
-!inputfiles /UserObjects/ElementAverageValue
+!syntax inputs /UserObjects/ElementAverageValue
 
-!childobjects /UserObjects/ElementAverageValue
+!syntax children /UserObjects/ElementAverageValue

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GrainTracker
-!description /UserObjects/GrainTracker
+!syntax description /UserObjects/GrainTracker
 
-!parameters /UserObjects/GrainTracker
+!syntax parameters /UserObjects/GrainTracker
 
-!inputfiles /UserObjects/GrainTracker
+!syntax inputs /UserObjects/GrainTracker
 
-!childobjects /UserObjects/GrainTracker
+!syntax children /UserObjects/GrainTracker

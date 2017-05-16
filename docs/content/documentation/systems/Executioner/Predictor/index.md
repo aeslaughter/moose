@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Predictor System
-!parameters /Executioner/Predictor
+!syntax parameters /Executioner/Predictor
 
-!subsystems /Executioner/Predictor
+!syntax subsystems /Executioner/Predictor
 

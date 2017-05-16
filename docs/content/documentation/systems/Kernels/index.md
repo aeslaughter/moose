@@ -165,4 +165,4 @@ return _test[_i][_qp] * _phi[_j][_qp] * _du_dot_du[_qp];
 Several specialized kernel types exist in MOOSE each with useful
 functionality.  Details for each are in the sections below.
 
-!subobjects /Kernels
+!syntax objects /Kernels

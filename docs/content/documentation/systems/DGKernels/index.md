@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DGKernels System
-!parameters /DGKernels
+!syntax parameters /DGKernels
 
-!subobjects /DGKernels
+!syntax objects /DGKernels
 

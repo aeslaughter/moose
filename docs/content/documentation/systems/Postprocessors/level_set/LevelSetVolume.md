@@ -6,8 +6,8 @@ weighted average of the level set variables values at each quadrature point of a
 ## Example Syntax
 !listing modules/level_set/tests/reinitialization/master.i block=area indent=2 prefix=[Postprocessors] suffix=[] label=False
 
-!parameters /UserObjects/LevelSetVolume
+!syntax parameters /UserObjects/LevelSetVolume
 
-!inputfiles /UserObjects/LevelSetVolume
+!syntax inputs /UserObjects/LevelSetVolume
 
-!childobjects /UserObjects/LevelSetVolume
+!syntax children /UserObjects/LevelSetVolume

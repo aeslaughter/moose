@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AxisymmetricCenterlineAverageValue
-!description /UserObjects/AxisymmetricCenterlineAverageValue
+!syntax description /UserObjects/AxisymmetricCenterlineAverageValue
 
-!parameters /UserObjects/AxisymmetricCenterlineAverageValue
+!syntax parameters /UserObjects/AxisymmetricCenterlineAverageValue
 
-!inputfiles /UserObjects/AxisymmetricCenterlineAverageValue
+!syntax inputs /UserObjects/AxisymmetricCenterlineAverageValue
 
-!childobjects /UserObjects/AxisymmetricCenterlineAverageValue
+!syntax children /UserObjects/AxisymmetricCenterlineAverageValue

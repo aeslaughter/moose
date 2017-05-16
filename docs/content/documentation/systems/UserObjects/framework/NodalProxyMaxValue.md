@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalProxyMaxValue
-!description /UserObjects/NodalProxyMaxValue
+!syntax description /UserObjects/NodalProxyMaxValue
 
-!parameters /UserObjects/NodalProxyMaxValue
+!syntax parameters /UserObjects/NodalProxyMaxValue
 
-!inputfiles /UserObjects/NodalProxyMaxValue
+!syntax inputs /UserObjects/NodalProxyMaxValue
 
-!childobjects /UserObjects/NodalProxyMaxValue
+!syntax children /UserObjects/NodalProxyMaxValue

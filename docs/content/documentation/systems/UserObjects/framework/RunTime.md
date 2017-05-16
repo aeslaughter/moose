@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RunTime
-!description /UserObjects/RunTime
+!syntax description /UserObjects/RunTime
 
-!parameters /UserObjects/RunTime
+!syntax parameters /UserObjects/RunTime
 
-!inputfiles /UserObjects/RunTime
+!syntax inputs /UserObjects/RunTime
 
-!childobjects /UserObjects/RunTime
+!syntax children /UserObjects/RunTime

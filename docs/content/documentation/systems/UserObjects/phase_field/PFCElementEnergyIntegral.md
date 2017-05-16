@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFCElementEnergyIntegral
-!description /UserObjects/PFCElementEnergyIntegral
+!syntax description /UserObjects/PFCElementEnergyIntegral
 
-!parameters /UserObjects/PFCElementEnergyIntegral
+!syntax parameters /UserObjects/PFCElementEnergyIntegral
 
-!inputfiles /UserObjects/PFCElementEnergyIntegral
+!syntax inputs /UserObjects/PFCElementEnergyIntegral
 
-!childobjects /UserObjects/PFCElementEnergyIntegral
+!syntax children /UserObjects/PFCElementEnergyIntegral

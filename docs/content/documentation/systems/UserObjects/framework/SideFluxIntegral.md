@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SideFluxIntegral
-!description /UserObjects/SideFluxIntegral
+!syntax description /UserObjects/SideFluxIntegral
 
-!parameters /UserObjects/SideFluxIntegral
+!syntax parameters /UserObjects/SideFluxIntegral
 
-!inputfiles /UserObjects/SideFluxIntegral
+!syntax inputs /UserObjects/SideFluxIntegral
 
-!childobjects /UserObjects/SideFluxIntegral
+!syntax children /UserObjects/SideFluxIntegral

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHInterfaceAniso
-!description /Kernels/CHInterfaceAniso
+!syntax description /Kernels/CHInterfaceAniso
 
-!parameters /Kernels/CHInterfaceAniso
+!syntax parameters /Kernels/CHInterfaceAniso
 
-!inputfiles /Kernels/CHInterfaceAniso
+!syntax inputs /Kernels/CHInterfaceAniso
 
-!childobjects /Kernels/CHInterfaceAniso
+!syntax children /Kernels/CHInterfaceAniso

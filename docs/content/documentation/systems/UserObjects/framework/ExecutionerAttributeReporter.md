@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ExecutionerAttributeReporter
-!description /UserObjects/ExecutionerAttributeReporter
+!syntax description /UserObjects/ExecutionerAttributeReporter
 
-!parameters /UserObjects/ExecutionerAttributeReporter
+!syntax parameters /UserObjects/ExecutionerAttributeReporter
 
-!inputfiles /UserObjects/ExecutionerAttributeReporter
+!syntax inputs /UserObjects/ExecutionerAttributeReporter
 
-!childobjects /UserObjects/ExecutionerAttributeReporter
+!syntax children /UserObjects/ExecutionerAttributeReporter

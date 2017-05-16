@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSMultiACBulkF
-!description /Kernels/KKSMultiACBulkF
+!syntax description /Kernels/KKSMultiACBulkF
 
-!parameters /Kernels/KKSMultiACBulkF
+!syntax parameters /Kernels/KKSMultiACBulkF
 
-!inputfiles /Kernels/KKSMultiACBulkF
+!syntax inputs /Kernels/KKSMultiACBulkF
 
-!childobjects /Kernels/KKSMultiACBulkF
+!syntax children /Kernels/KKSMultiACBulkF

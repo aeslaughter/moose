@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RelativeSolutionDifferenceNorm
-!description /UserObjects/RelativeSolutionDifferenceNorm
+!syntax description /UserObjects/RelativeSolutionDifferenceNorm
 
-!parameters /UserObjects/RelativeSolutionDifferenceNorm
+!syntax parameters /UserObjects/RelativeSolutionDifferenceNorm
 
-!inputfiles /UserObjects/RelativeSolutionDifferenceNorm
+!syntax inputs /UserObjects/RelativeSolutionDifferenceNorm
 
-!childobjects /UserObjects/RelativeSolutionDifferenceNorm
+!syntax children /UserObjects/RelativeSolutionDifferenceNorm

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumDOFs
-!description /UserObjects/NumDOFs
+!syntax description /UserObjects/NumDOFs
 
-!parameters /UserObjects/NumDOFs
+!syntax parameters /UserObjects/NumDOFs
 
-!inputfiles /UserObjects/NumDOFs
+!syntax inputs /UserObjects/NumDOFs
 
-!childobjects /UserObjects/NumDOFs
+!syntax children /UserObjects/NumDOFs

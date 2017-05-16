@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GradientComponent
-!description /Kernels/GradientComponent
+!syntax description /Kernels/GradientComponent
 
-!parameters /Kernels/GradientComponent
+!syntax parameters /Kernels/GradientComponent
 
-!inputfiles /Kernels/GradientComponent
+!syntax inputs /Kernels/GradientComponent
 
-!childobjects /Kernels/GradientComponent
+!syntax children /Kernels/GradientComponent

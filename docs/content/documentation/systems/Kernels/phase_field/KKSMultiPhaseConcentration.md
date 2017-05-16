@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSMultiPhaseConcentration
-!description /Kernels/KKSMultiPhaseConcentration
+!syntax description /Kernels/KKSMultiPhaseConcentration
 
-!parameters /Kernels/KKSMultiPhaseConcentration
+!syntax parameters /Kernels/KKSMultiPhaseConcentration
 
-!inputfiles /Kernels/KKSMultiPhaseConcentration
+!syntax inputs /Kernels/KKSMultiPhaseConcentration
 
-!childobjects /Kernels/KKSMultiPhaseConcentration
+!syntax children /Kernels/KKSMultiPhaseConcentration

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PiecewiseLinear
-!description /Functions/PiecewiseLinear
+!syntax description /Functions/PiecewiseLinear
 
-!parameters /Functions/PiecewiseLinear
+!syntax parameters /Functions/PiecewiseLinear
 
-!inputfiles /Functions/PiecewiseLinear
+!syntax inputs /Functions/PiecewiseLinear
 
-!childobjects /Functions/PiecewiseLinear
+!syntax children /Functions/PiecewiseLinear

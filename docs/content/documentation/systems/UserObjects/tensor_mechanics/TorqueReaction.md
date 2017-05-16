@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TorqueReaction
-!description /UserObjects/TorqueReaction
+!syntax description /UserObjects/TorqueReaction
 
-!parameters /UserObjects/TorqueReaction
+!syntax parameters /UserObjects/TorqueReaction
 
-!inputfiles /UserObjects/TorqueReaction
+!syntax inputs /UserObjects/TorqueReaction
 
-!childobjects /UserObjects/TorqueReaction
+!syntax children /UserObjects/TorqueReaction

@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # VectorPostprocessors System
-!parameters /VectorPostprocessors
+!syntax parameters /VectorPostprocessors
 
-!subobjects /VectorPostprocessors
+!syntax objects /VectorPostprocessors
 

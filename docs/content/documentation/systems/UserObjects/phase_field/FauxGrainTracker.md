@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FauxGrainTracker
-!description /UserObjects/FauxGrainTracker
+!syntax description /UserObjects/FauxGrainTracker
 
-!parameters /UserObjects/FauxGrainTracker
+!syntax parameters /UserObjects/FauxGrainTracker
 
-!inputfiles /UserObjects/FauxGrainTracker
+!syntax inputs /UserObjects/FauxGrainTracker
 
-!childobjects /UserObjects/FauxGrainTracker
+!syntax children /UserObjects/FauxGrainTracker

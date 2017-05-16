@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PercentChangePostprocessor
-!description /UserObjects/PercentChangePostprocessor
+!syntax description /UserObjects/PercentChangePostprocessor
 
-!parameters /UserObjects/PercentChangePostprocessor
+!syntax parameters /UserObjects/PercentChangePostprocessor
 
-!inputfiles /UserObjects/PercentChangePostprocessor
+!syntax inputs /UserObjects/PercentChangePostprocessor
 
-!childobjects /UserObjects/PercentChangePostprocessor
+!syntax children /UserObjects/PercentChangePostprocessor

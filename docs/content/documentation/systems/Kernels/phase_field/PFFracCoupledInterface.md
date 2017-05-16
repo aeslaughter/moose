@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFFracCoupledInterface
-!description /Kernels/PFFracCoupledInterface
+!syntax description /Kernels/PFFracCoupledInterface
 
-!parameters /Kernels/PFFracCoupledInterface
+!syntax parameters /Kernels/PFFracCoupledInterface
 
-!inputfiles /Kernels/PFFracCoupledInterface
+!syntax inputs /Kernels/PFFracCoupledInterface
 
-!childobjects /Kernels/PFFracCoupledInterface
+!syntax children /Kernels/PFFracCoupledInterface

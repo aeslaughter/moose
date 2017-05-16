@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SideAverageValue
-!description /UserObjects/SideAverageValue
+!syntax description /UserObjects/SideAverageValue
 
-!parameters /UserObjects/SideAverageValue
+!syntax parameters /UserObjects/SideAverageValue
 
-!inputfiles /UserObjects/SideAverageValue
+!syntax inputs /UserObjects/SideAverageValue
 
-!childobjects /UserObjects/SideAverageValue
+!syntax children /UserObjects/SideAverageValue

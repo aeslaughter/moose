@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalSum
-!description /UserObjects/NodalSum
+!syntax description /UserObjects/NodalSum
 
-!parameters /UserObjects/NodalSum
+!syntax parameters /UserObjects/NodalSum
 
-!inputfiles /UserObjects/NodalSum
+!syntax inputs /UserObjects/NodalSum
 
-!childobjects /UserObjects/NodalSum
+!syntax children /UserObjects/NodalSum

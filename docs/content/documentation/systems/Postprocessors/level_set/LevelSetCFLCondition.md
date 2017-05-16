@@ -34,8 +34,8 @@ at some level below the timestep limitation.
 
 !listing modules/level_set/tests/reinitialization/master.i block=Executioner label=False
 
-!parameters /UserObjects/LevelSetCFLCondition
+!syntax parameters /UserObjects/LevelSetCFLCondition
 
-!inputfiles /UserObjects/LevelSetCFLCondition
+!syntax inputs /UserObjects/LevelSetCFLCondition
 
-!childobjects /UserObjects/LevelSetCFLCondition
+!syntax children /UserObjects/LevelSetCFLCondition

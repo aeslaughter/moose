@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FindValueOnLine
-!description /UserObjects/FindValueOnLine
+!syntax description /UserObjects/FindValueOnLine
 
-!parameters /UserObjects/FindValueOnLine
+!syntax parameters /UserObjects/FindValueOnLine
 
-!inputfiles /UserObjects/FindValueOnLine
+!syntax inputs /UserObjects/FindValueOnLine
 
-!childobjects /UserObjects/FindValueOnLine
+!syntax children /UserObjects/FindValueOnLine

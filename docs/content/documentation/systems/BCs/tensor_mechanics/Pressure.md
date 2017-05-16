@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Pressure
-!description /BCs/Pressure
+!syntax description /BCs/Pressure actions=False
 
-!parameters /BCs/Pressure
+!syntax parameters /BCs/Pressure actions=False
 
-!inputfiles /BCs/Pressure
+!syntax inputs /BCs/Pressure actions=False
 
-!childobjects /BCs/Pressure
+!syntax children /BCs/Pressure actions=False

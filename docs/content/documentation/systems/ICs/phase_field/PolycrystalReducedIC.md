@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalReducedIC
-!description /ICs/PolycrystalReducedIC
+!syntax description /ICs/PolycrystalReducedIC
 
-!parameters /ICs/PolycrystalReducedIC
+!syntax parameters /ICs/PolycrystalReducedIC
 
-!inputfiles /ICs/PolycrystalReducedIC
+!syntax inputs /ICs/PolycrystalReducedIC
 
-!childobjects /ICs/PolycrystalReducedIC
+!syntax children /ICs/PolycrystalReducedIC

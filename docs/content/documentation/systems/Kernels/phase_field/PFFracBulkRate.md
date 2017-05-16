@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFFracBulkRate
-!description /Kernels/PFFracBulkRate
+!syntax description /Kernels/PFFracBulkRate
 
-!parameters /Kernels/PFFracBulkRate
+!syntax parameters /Kernels/PFFracBulkRate
 
-!inputfiles /Kernels/PFFracBulkRate
+!syntax inputs /Kernels/PFFracBulkRate
 
-!childobjects /Kernels/PFFracBulkRate
+!syntax children /Kernels/PFFracBulkRate

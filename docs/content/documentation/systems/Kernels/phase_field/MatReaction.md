@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MatReaction
-!description /Kernels/MatReaction
+!syntax description /Kernels/MatReaction
 
-!parameters /Kernels/MatReaction
+!syntax parameters /Kernels/MatReaction
 
-!inputfiles /Kernels/MatReaction
+!syntax inputs /Kernels/MatReaction
 
-!childobjects /Kernels/MatReaction
+!syntax children /Kernels/MatReaction

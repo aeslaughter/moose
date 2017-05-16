@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LangevinNoise
-!description /Kernels/LangevinNoise
+!syntax description /Kernels/LangevinNoise
 
-!parameters /Kernels/LangevinNoise
+!syntax parameters /Kernels/LangevinNoise
 
-!inputfiles /Kernels/LangevinNoise
+!syntax inputs /Kernels/LangevinNoise
 
-!childobjects /Kernels/LangevinNoise
+!syntax children /Kernels/LangevinNoise

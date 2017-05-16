@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GrainTrackerElasticity
-!description /UserObjects/GrainTrackerElasticity
+!syntax description /UserObjects/GrainTrackerElasticity
 
-!parameters /UserObjects/GrainTrackerElasticity
+!syntax parameters /UserObjects/GrainTrackerElasticity
 
-!inputfiles /UserObjects/GrainTrackerElasticity
+!syntax inputs /UserObjects/GrainTrackerElasticity
 
-!childobjects /UserObjects/GrainTrackerElasticity
+!syntax children /UserObjects/GrainTrackerElasticity

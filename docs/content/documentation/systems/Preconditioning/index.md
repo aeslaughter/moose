@@ -1,9 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Preconditioning System
-!parameters /Preconditioning
+!syntax parameters /Preconditioning
 
-!subobjects /Preconditioning
+!syntax objects /Preconditioning
 
-!subsystems /Preconditioning
+!syntax subsystems /Preconditioning
 

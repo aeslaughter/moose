@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FeatureVolumeFraction
-!description /UserObjects/FeatureVolumeFraction
+!syntax description /UserObjects/FeatureVolumeFraction
 
-!parameters /UserObjects/FeatureVolumeFraction
+!syntax parameters /UserObjects/FeatureVolumeFraction
 
-!inputfiles /UserObjects/FeatureVolumeFraction
+!syntax inputs /UserObjects/FeatureVolumeFraction
 
-!childobjects /UserObjects/FeatureVolumeFraction
+!syntax children /UserObjects/FeatureVolumeFraction

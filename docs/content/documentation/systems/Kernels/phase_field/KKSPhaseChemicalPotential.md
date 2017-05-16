@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSPhaseChemicalPotential
-!description /Kernels/KKSPhaseChemicalPotential
+!syntax description /Kernels/KKSPhaseChemicalPotential
 
-!parameters /Kernels/KKSPhaseChemicalPotential
+!syntax parameters /Kernels/KKSPhaseChemicalPotential
 
-!inputfiles /Kernels/KKSPhaseChemicalPotential
+!syntax inputs /Kernels/KKSPhaseChemicalPotential
 
-!childobjects /Kernels/KKSPhaseChemicalPotential
+!syntax children /Kernels/KKSPhaseChemicalPotential

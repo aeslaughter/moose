@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RunTime
-!description /Postprocessors/RunTime
+!syntax description /Postprocessors/RunTime
 
-!parameters /Postprocessors/RunTime
+!syntax parameters /Postprocessors/RunTime
 
-!inputfiles /Postprocessors/RunTime
+!syntax inputs /Postprocessors/RunTime
 
-!childobjects /Postprocessors/RunTime
+!syntax children /Postprocessors/RunTime

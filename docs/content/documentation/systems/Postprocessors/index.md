@@ -1,7 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Postprocessors System
-!parameters /Postprocessors
+!syntax parameters /Postprocessors
 
-!subobjects /Postprocessors
+!syntax objects /Postprocessors
 

@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHMath
-!description /Kernels/CHMath
+!syntax description /Kernels/CHMath
 
-!parameters /Kernels/CHMath
+!syntax parameters /Kernels/CHMath
 
-!inputfiles /Kernels/CHMath
+!syntax inputs /Kernels/CHMath
 
-!childobjects /Kernels/CHMath
+!syntax children /Kernels/CHMath

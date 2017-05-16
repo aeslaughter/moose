@@ -1,10 +1,10 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ScalarVariable
-!description /UserObjects/ScalarVariable
+!syntax description /UserObjects/ScalarVariable
 
-!parameters /UserObjects/ScalarVariable
+!syntax parameters /UserObjects/ScalarVariable
 
-!inputfiles /UserObjects/ScalarVariable
+!syntax inputs /UserObjects/ScalarVariable
 
-!childobjects /UserObjects/ScalarVariable
+!syntax children /UserObjects/ScalarVariable
