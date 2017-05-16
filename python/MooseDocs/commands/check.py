@@ -13,14 +13,10 @@
 #                               See COPYRIGHT for full restrictions                                #
 ####################################################################################################
 #pylint: enable=missing-docstring
-
-import os
 import logging
 
-import mooseutils
-
 import MooseDocs
-from .. import common
+from MooseDocs.extensions.app_syntax import AppSyntaxExtension
 
 LOG = logging.getLogger(__name__)
 
@@ -31,41 +27,32 @@ def check_options(parser):
     parser.add_argument('--config-file', type=str, default='website.yml',
                         help="The configuration file to use for building the documentation using "
                              "MOOSE. (Default: %(default)s)")
-    parser.add_argument('--locations', nargs='+',
-                        help="List of locations to consider, names should match the keys listed "
-                             "in the configuration file.")
+    parser.add_argument('--template', type=str, default='website.html',
+                        help="The template html file to utilize (default: %(default)s).")
     parser.add_argument('--generate', action='store_true',
                         help="When checking the application for complete documentation generate "
                              "any missing markdown documentation files.")
+    parser.add_argument('--dump', action='store_true',
+                        help="Dump the complete MooseDocs syntax tree to the screen.")
 
-def check(config_file=None, locations=None, generate=None):
+
+def check(config_file=None, generate=None, dump=None, template=None, **template_args):
     """
     Performs checks and optionally generates stub pages for missing documentation.
     """
-    # Read the configuration
-    app_ext = 'MooseDocs.extensions.app_syntax'
-    config = MooseDocs.load_config(config_file)
-    if app_ext not in config:
-        mooseutils.MooseException("The 'check' utility requires the 'app_syntax' extension.")
-    ext_config = config[app_ext]
 
-    # Run the executable
-    exe = MooseDocs.abspath(ext_config['executable'])
-    if not os.path.exists(exe):
-        raise IOError('The executable does not exist: {}'.format(exe))
-    else:
-        LOG.debug("Executing %s to extract syntax.", exe)
-        raw = mooseutils.runExe(exe, '--yaml')
-        yaml = mooseutils.MooseYaml(raw)
+    # Create the markdown parser and get the AppSyntaxExtension
+    config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
+    parser = MooseDocs.MooseMarkdown(config)
+    ext = parser.getExtension(AppSyntaxExtension)
+    syntax = ext.getMooseAppSyntax()
 
-    # Populate the syntax
-    for loc in ext_config['locations']:
-        for key, value in loc.iteritems():
-            if (locations is None) or (key in locations):
-                value['group'] = key
-                syntax = common.MooseApplicationSyntax(yaml, generate=generate,
-                                                       install=ext_config['install'], **value)
-                LOG.info("Checking documentation for '%s'.", key)
-                syntax.check()
+    # Dump the complete syntax tree if desired
+    if dump:
+        print syntax
+
+    # Check all nodes for documentation
+    for node in syntax.findall():
+        node.check(ext.getConfig('install'), generate)
 
     return None

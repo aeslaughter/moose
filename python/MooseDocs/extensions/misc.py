@@ -55,7 +55,13 @@ class ScrollContents(Treeprocessor):
         """
         Adds section for materialize scrollspy
         """
+        self.addScrollSpy(root)
 
+    @staticmethod
+    def addScrollSpy(root):
+        """
+        Helper method for apply scrollspy sections to an element.
+        """
         section = root
         for el in list(root):
             if el.tag == 'h2':

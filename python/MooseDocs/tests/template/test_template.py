@@ -17,6 +17,7 @@
 import unittest
 import bs4
 
+import MooseDocs
 from MooseDocs.testing import MarkdownTestCase
 from MooseDocs.commands.MarkdownNode import MarkdownNode
 
@@ -31,11 +32,15 @@ class TestTemplate(MarkdownTestCase):
         changing the configuration file.
         """
         configs['MooseDocs.extensions.template']['template'] = 'testing.html'
+        configs['MooseDocs.extensions.app_syntax']['hide']['framework'].append('/Functions')
+        configs['MooseDocs.extensions.app_syntax']['hide']['phase_field'].append('/ICs')
 
     @classmethod
     def setUpClass(cls):
         super(TestTemplate, cls).setUpClass()
-        node = MarkdownNode(name='test', markdown='input.md', parser=cls.parser,
+
+        # Use BoxMarker.md to test Doxygen and Code lookups
+        node = MarkdownNode(name='BoxMarker', markdown='input.md', parser=cls.parser,
                             site_dir=cls.WORKING_DIR)
         node.build()
 
@@ -46,6 +51,33 @@ class TestTemplate(MarkdownTestCase):
     def testContent(self):
         self.assertIsNotNone(self.soup.find('h2'))
         self.assertIn('More Content', self.html)
+
+    def testDoxygen(self):
+        a = self.soup.find('a')
+        self.assertIsNotNone(a)
+        self.assertIn('classBoxMarker.html', str(a))
+        self.assertIn('Doxygen', str(a))
+
+    def testCode(self):
+        html = str(self.soup)
+        self.assertIn('href="https://github.com/idaholab/moose/blob/master/framework/include/'\
+                      'markers/BoxMarker.h"', html)
+        self.assertIn('href="https://github.com/idaholab/moose/blob/master/framework/src/'\
+                      'markers/BoxMarker.C"', html)
+
+    def testHidden(self):
+        md = '!syntax objects /Functions'
+        html = self.convert(md)
+        gold = '<a class="moose-bad-link" data-moose-disable-link-error="1" ' \
+               'href="{}/docs/content/documentation/systems' \
+               '/Functions/framework/ParsedVectorFunction.md">ParsedVectorFunction</a>'
+        self.assertIn(gold.format(MooseDocs.MOOSE_DIR.rstrip('/')), html)
+
+    def testPolycrystalICs(self):
+        md = '[Foo](/ICs/PolycrystalICs/index.md)'
+        html = self.convert(md)
+        gold = '<a class="moose-bad-link" href="/ICs/PolycrystalICs/index.md">'
+        self.assertIn(gold, html)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

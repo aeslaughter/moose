@@ -1,23 +1,8 @@
-- toc
-- smarty
-- admonition
-- extra
-- meta
-- mdx_math:
-    enable_dollar_delimiter: True
 - MooseDocs.extensions.global:
     globals: !include docs/globals.yml
-- MooseDocs.extensions.bibtex
-- MooseDocs.extensions.css
-- MooseDocs.extensions.diagram
-- MooseDocs.extensions.devel
-- MooseDocs.extensions.materialize
-- MooseDocs.extensions.media
-- MooseDocs.extensions.equation
 - MooseDocs.extensions.include:
     repo: https://github.com/idaholab/moose/blob/master
     make_dir: modules/combined
-- MooseDocs.extensions.float
 - MooseDocs.extensions.template:
     template: latex.tex
     environment_args:

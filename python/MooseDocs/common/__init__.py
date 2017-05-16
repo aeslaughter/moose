@@ -13,7 +13,8 @@
 #                               See COPYRIGHT for full restrictions                                #
 ####################################################################################################
 #pylint: enable=missing-docstring
-
+from MooseCollapsible import MooseCollapsible
 from MarkdownTable import MarkdownTable
-from MooseApplicationSyntax import MooseApplicationSyntax
+from MooseAppSyntax import MooseAppSyntax
 from MooseLinkDatabase import MooseLinkDatabase
+from MooseClassDatabase import MooseClassDatabase

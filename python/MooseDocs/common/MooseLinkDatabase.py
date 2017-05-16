@@ -30,7 +30,7 @@ class Item(object):
     List item object.
 
     Args:
-      filename[str]: The absoulte path to the file.
+      filename[str]: The absolute path to the file.
       repo[str]: The repository url to append the relative path.
     """
     def __init__(self, filename, repo):
@@ -47,13 +47,11 @@ class Item(object):
         a.text = self.filename
         return el
 
-
 class MooseLinkDatabase(object):
     """
     Creates a database for creating links to input files and source code.
 
     Args:
-      root[str]: The repository root directory.
       repo[str]: The GitHub/GitLab url to append filename for creating hyperlink.
       links[dict]: A dictionary of paths to search, with the key being the heading and the
                    value being a list of paths.
@@ -63,7 +61,7 @@ class MooseLinkDatabase(object):
     HEADER_RE = re.compile(r'\bpublic\s+(?P<key>\w+)\b')
 
     # This object is passed a general config dict() to it may have other arguments.
-    def __init__(self, repo=None, links=None, **kwargs): #pylint: disable=unused-argument
+    def __init__(self, repo=None, links=None):
         self._repo = repo
         self.inputs = collections.OrderedDict()
         self.children = collections.OrderedDict()

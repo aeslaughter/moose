@@ -171,7 +171,7 @@ class MooseMarkdownCommon(object):
         msg = etree.SubElement(el, 'p')
         msg.text = message
         if error:
-            LOG.error('%s: %s', title, message)
+            LOG.error('%s: %s', str(title), str(message))
         return el
 
     @staticmethod

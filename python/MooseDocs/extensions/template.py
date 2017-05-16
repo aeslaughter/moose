@@ -25,6 +25,8 @@ import mooseutils
 
 import MooseDocs
 from MooseMarkdownExtension import MooseMarkdownExtension
+from MooseDocs.common.MooseAppSyntax import MooseNodeBase
+from MooseDocs.common import MooseClassDatabase
 from app_syntax import AppSyntaxExtension
 
 LOG = logging.getLogger(__name__)
@@ -40,6 +42,8 @@ class TemplateExtension(MooseMarkdownExtension):
         config['template'] = ['', "The jinja2 template to apply."]
         config['template_args'] = [dict(), "Arguments passed to the MooseTemplate Postprocessor."]
         config['environment_args'] = [dict(), "Arguments passed to the jinja2.Environment."]
+        config['doxygen'] = ['', "Provide a URL to append with Doxygen link to class."]
+        config['repo'] = ['', "The remote repository to create hyperlinks."]
         return config
 
     def extendMarkdown(self, md, md_globals):
@@ -112,10 +116,7 @@ class TemplatePostprocessorBase(Postprocessor):
             text[str]: Convert markdown to be applied via the 'content' template argument.
         """
         template_args['content'] = text
-
-        if 'navigation' in template_args:
-            template_args['navigation'] = \
-                MooseDocs.yaml_load(MooseDocs.abspath(template_args['navigation']))
+        template_args.setdefault('navigation', [])
 
     def run(self, text):
         """
@@ -200,8 +201,9 @@ class TemplatePostprocessorBase(Postprocessor):
 
                 # Error if file not found or if multiple files found
                 if not found:
-                    LOG.error('Failed to locate page for markdown file %s in %s',
-                              href, node.source())
+                    if link.get('data-moose-disable-link-error', None) is None:
+                        LOG.error('Failed to locate page for markdown file %s in %s',
+                                  href, node.source())
                     link['class'] = 'moose-bad-link'
                     continue
 
@@ -225,14 +227,15 @@ class TemplatePostprocessor(TemplatePostprocessorBase):
     A template extension that works with the 'MooseDocs.extensions.app_syntax' extension.
     """
     def __init__(self, *args, **kwargs):
+        self._doxygen_url = kwargs.pop('doxygen')
+
         super(TemplatePostprocessor, self).__init__(*args, **kwargs)
 
         # The 'MooseDocs.extensions.app_syntax' are required
         self.markdown.requireExtension(AppSyntaxExtension)
-
-        # Store the MooseApplicationSyntax object for use later.
         ext = self.markdown.getExtension(AppSyntaxExtension)
-        self._syntax = ext.syntax
+        self._database = MooseClassDatabase(ext.getConfig('repo'))
+        self._syntax = ext.getMooseAppSyntax()
 
     def globals(self, env):
         """
@@ -240,7 +243,6 @@ class TemplatePostprocessor(TemplatePostprocessorBase):
         """
         super(TemplatePostprocessor, self).globals(env)
         env.globals['editMarkdown'] = self._editMarkdown
-        env.globals['mooseCode'] = self._code
 
     def arguments(self, template_args, text):
         """
@@ -249,6 +251,7 @@ class TemplatePostprocessor(TemplatePostprocessorBase):
         super(TemplatePostprocessor, self).arguments(template_args, text)
         template_args['tableofcontents'] = self._tableofcontents(text)
         template_args['doxygen'] = self._doxygen()
+        template_args['code'] = self._code()
 
     @staticmethod
     def _tableofcontents(text, level='h2'):
@@ -270,32 +273,25 @@ class TemplatePostprocessor(TemplatePostprocessorBase):
         """
         Return the doxygen link, if it exists.
         """
-        for syntax in self._syntax.itervalues():
-            for obj in syntax.objects().itervalues():
-                if obj.name == self.node.name():
-                    return syntax.doxygen(obj.name)
+        if self._doxygen_url:
+            nodes = self._syntax.findall('/' + self.node.name())
+            if nodes:
+                if isinstance(nodes[0], MooseNodeBase):
+                    return os.path.join(self._doxygen_url,
+                                        'class{}.html'.format(nodes[0].class_name))
 
-    def _code(self, repo_url):
+    def _code(self):
         """
         Return the GitHub/GitLab addresses for the associated C/h files.
 
         Args:
           repo_url[str]: Web address to use as the base for creating the edit link
         """
-        info = []
-        for syntax in self._syntax.itervalues():
-            for obj in syntax.objects().itervalues():
-                if obj.name == self.node.name():
-                    info.append(obj)
-            for obj in syntax.actions().itervalues():
-                if obj.name == self.node.name():
-                    info.append(obj)
+        out = []
+        nodes = self._syntax.findall('/' + self.node.name())
+        for node in nodes:
+            if isinstance(node, MooseNodeBase):
+                for item in self._database[node.class_name]:
+                    out.append((item.remote, item.filename, os.path.basename(item.filename)))
 
-        output = []
-        for obj in info:
-            for filename in obj.code:
-                rel_filename = MooseDocs.relpath(filename)
-                output.append((os.path.basename(rel_filename),
-                               os.path.join(repo_url, 'blob', 'master', rel_filename)))
-
-        return output
+        return out

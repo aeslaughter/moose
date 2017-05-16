@@ -41,9 +41,6 @@ def presentation_options(parser):
     parser.add_argument('--config-file', type=str, default=yaml_default,
                         help="The configuration file to use for building the documentation using "
                              "MOOSE. (Default: %(default)s)")
-    parser.add_argument('--output', '-o', default=None, type=str,
-                        help="The default html file to create, defaults to input filename with "
-                             "html extension.")
     parser.add_argument('--template', type=str, default='presentation.html',
                         help="The template html file to utilize (default: %(default)s).")
     parser.add_argument('--title', type=str, default="MOOSE Presentation",
@@ -78,15 +75,14 @@ class PresentationBuilder(MarkdownNode):
 
         self.write(soup.prettify())
 
-def presentation(config_file=None, md_file=None, serve=None, port=None, host=None,
-                 template=None, **template_args):
+def presentation(config_file=None, md_file=None, serve=None, port=None, host=None, template=None,
+                 **template_args):
     """
     MOOSE markdown presentation blaster.
     """
 
-    # Load the YAML configuration file
     config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
-    parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
+    parser = MooseDocs.MooseMarkdown(config)
 
     site_dir, _ = os.path.splitext(md_file)
     if not os.path.isdir(site_dir):

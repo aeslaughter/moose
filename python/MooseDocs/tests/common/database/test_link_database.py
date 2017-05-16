@@ -13,6 +13,7 @@
 #                                                                                                  #
 #                               See COPYRIGHT for full restrictions                                #
 ####################################################################################################
+#pylint: enable=missing-docstring
 
 import os
 import unittest
@@ -26,10 +27,12 @@ class TestMooseLinkDatabase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-
+        """
+        Create link database.
+        """
         config = MooseDocs.load_config(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'website.yml'))
         options = config['MooseDocs.extensions.app_syntax']
-        cls.database = MooseLinkDatabase(**options)
+        cls.database = MooseLinkDatabase(repo=options['repo'], links=options['links'])
 
     def testTests(self):
         """
@@ -64,6 +67,7 @@ class TestMooseLinkDatabase(unittest.TestCase):
         """
         self.assertIn('Diffusion', self.database.children['Source'],
                       'Diffusion was not found in source code.!')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

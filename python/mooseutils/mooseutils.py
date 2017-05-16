@@ -72,9 +72,7 @@ def find_moose_executable(loc, **kwargs):
 
     # Handle 'combined' and 'tests'
     if os.path.isdir(loc):
-        if name == 'combined':
-            name = 'modules'
-        elif name == 'tests':
+        if name == 'tests':
             name = 'moose_test'
 
     # Check that the location exists and that it is a directory
@@ -101,7 +99,7 @@ def runExe(app_path, args):
 
     Args:
         app_path[str]: The application to execute.
-        args[list]: The arguuments to pass to the executable.
+        args[list]: The arguments to pass to the executable.
     """
     import subprocess
 
@@ -134,6 +132,9 @@ def check_configuration(packages):
         print "The following packages are missing but required:"
         for m in missing:
             print ' '*4, '-', m
+        print 'It may be possible to install them using "pip", but you likely need to ' \
+              'the MOOSE environment package on your system.\n'
+        print 'Using pip:\n    pip install package-name-here --user'
         return 1
 
     return 0

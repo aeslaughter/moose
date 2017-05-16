@@ -14,9 +14,8 @@
 ####################################################################################################
 #pylint: enable=missing-docstring
 import logging
-
+import collections
 import markdown
-
 import mooseutils
 from MooseDocs.commands.MarkdownNode import MarkdownNode
 
@@ -30,20 +29,66 @@ class MooseMarkdown(markdown.Markdown):
     that the extension objects, namely MooseTemplate, could have access to the node object to allow
     for searching the tree for other pages. This should allow for cross page figure, equation, and
     table links to be created.
+
+    Args:
+        config[dict]: The configure dict, if not provided getDefaultExtensions is used.
+        config_file[str]: The name of the configuration file to import, this is applied to the
+                          supplied or default 'config'.
     """
     CODE_BLOCK_COUNT = 0 # counter for code block copy buttons
 
-    def __init__(self, extensions=None, extension_configs=None):
+    @staticmethod
+    def getDefaultExtensions():
+        """
+        Return an OrderedDict that defines the default configuration for extensions.
 
-        # Initialize member variables
-        self.current = None # member for holding the current MarkdownNode object
-        if extensions is None:
-            extensions = []
-        if extension_configs is None:
-            extension_configs = dict()
+        It returns an OrderedDict such that the dict() can serve to populate the list of extensions
+        (i.e., the keys) in the desired instantiate order as well as the configuration settings.
 
-        super(MooseMarkdown, self).__init__(extensions=extensions,
-                                            extension_configs=extension_configs)
+        If no settings are needed for the entry simply set the entry to contain an empty dict()
+
+        """
+        ext = collections.OrderedDict() # used to maintain insert order
+
+        # http://pythonhosted.org/Markdown/extensions/index.html
+        ext['toc'] = dict()
+        ext['smarty'] = dict()
+        ext['admonition'] = dict()
+        ext['extra'] = dict()
+        ext['meta'] = dict()
+
+        # pip install python-markdown-math
+        ext['mdx_math'] = dict(enable_dollar_delimiter=True)
+
+        # MooseDocs
+        ext['MooseDocs.extensions.global'] = dict()
+        ext['MooseDocs.extensions.include'] = dict()
+        ext['MooseDocs.extensions.bibtex'] = dict()
+        ext['MooseDocs.extensions.css'] = dict()
+        ext['MooseDocs.extensions.diagram'] = dict()
+        ext['MooseDocs.extensions.devel'] = dict()
+        ext['MooseDocs.extensions.misc'] = dict()
+        ext['MooseDocs.extensions.media'] = dict()
+        ext['MooseDocs.extensions.tables'] = dict()
+        ext['MooseDocs.extensions.listings'] = dict()
+        ext['MooseDocs.extensions.refs'] = dict()
+        ext['MooseDocs.extensions.app_syntax'] = dict()
+        ext['MooseDocs.extensions.template'] = dict()
+        return ext
+
+    def __init__(self, config=None, default=True):
+
+        # Create the default configuration
+        ext_config = self.getDefaultExtensions() if default else collections.OrderedDict()
+
+        # Apply the supplied configuration
+        if config is not None:
+            ext_config.update(config)
+
+        # Define storage for the current MarkdownNode
+        self.current = None
+        super(MooseMarkdown, self).__init__(extensions=ext_config.keys(),
+                                            extension_configs=ext_config)
 
     def requireExtension(self, required):
         """

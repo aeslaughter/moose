@@ -127,15 +127,12 @@ class LatexBuilder(MarkdownNode):
             if os.path.exists(tmp):
                 os.remove(tmp)
 
-def latex(config_file=None, output=None, md_file=None, **kwargs):
+def latex(config_file=None, output=None, md_file=None, template=None, **template_args):
     """
     Command for converting markdown file to latex.
     """
-
-    # Load the YAML configuration file
-    config = MooseDocs.load_config(config_file, **kwargs)
-    parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
-
+    config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
+    parser = MooseDocs.MooseMarkdown(config)
     site_dir, _ = os.path.splitext(md_file)
     root = LatexBuilder(output, name='', markdown=md_file, parser=parser, site_dir=site_dir)
     root.build()

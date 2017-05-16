@@ -137,7 +137,7 @@ class MarkdownNodeTest(unittest.TestCase):
                     os.remove(os.path.join(root, filename))
 
         # Markdown parser
-        self._parser = MooseDocs.MooseMarkdown()
+        self._parser = MooseDocs.MooseMarkdown(default=False)
 
     def testSingle(self):
         node = MarkdownNode(name='single', site_dir='site', parser=self._parser,

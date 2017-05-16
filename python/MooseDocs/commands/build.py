@@ -159,7 +159,7 @@ class Builder(object):
             helper(os.path.join(from_dir, 'media'), os.path.join(self._site_dir, 'media'))
 
 def build(config_file=None, site_dir=None, num_threads=None, no_livereload=False,
-          clean=False, serve=False, host=None, port=None, **kwargs):
+          clean=False, serve=False, host=None, port=None, template=None, **template_args):
     """
     The main build command.
     """
@@ -177,11 +177,9 @@ def build(config_file=None, site_dir=None, num_threads=None, no_livereload=False
     if not os.path.exists(site_dir):
         os.makedirs(site_dir)
 
-    # Load the YAML configuration file
-    config = MooseDocs.load_config(config_file, **kwargs)
-
     # Create the markdown parser
-    parser = MooseDocs.MooseMarkdown(extensions=config.keys(), extension_configs=config)
+    config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
+    parser = MooseDocs.MooseMarkdown(config)
 
     # Create object for storing pages to be generated
     def build_complete():
