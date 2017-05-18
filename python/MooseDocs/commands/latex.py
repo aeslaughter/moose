@@ -131,6 +131,11 @@ def latex(config_file=None, output=None, md_file=None, template=None, **template
     """
     Command for converting markdown file to latex.
     """
+    print "This command is under development and not operational, " \
+          "please be patient as this develops."
+    return None
+
+    #pylint: disable=unreachable
     config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
     parser = MooseDocs.MooseMarkdown(config)
     site_dir, _ = os.path.splitext(md_file)
