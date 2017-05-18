@@ -191,6 +191,12 @@ class TestMooseAppSyntax(unittest.TestCase):
         node = self._syntax.findall('DomainIntegral')[0]
         self.assertTrue(node.hidden)
 
+    def testPostprocessorAndUserObjects(self):
+        """
+        Test that Postprocessors don't show up as UserObjects.
+        """
+        nodes = self._syntax.findall('UserObjects/NumVars')
+        self.assertEqual(nodes, [])
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

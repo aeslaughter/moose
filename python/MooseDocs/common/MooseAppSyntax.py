@@ -404,7 +404,7 @@ class MooseAppSyntax(object):
 
         if ('types' in item) and item['types']:
             for key, obj in item['types'].iteritems():
-                MooseObjectNode(key, obj, parent=parent)
+                MooseAppSyntax.__addMooseObjectNodeHelper(key, obj, parent)
 
         if ('subblocks' in item) and item['subblocks']:
             for k, v in item['subblocks'].iteritems():
@@ -413,4 +413,16 @@ class MooseAppSyntax(object):
 
         if ('subblock_types' in item) and item['subblock_types']:
             for k, v in item['subblock_types'].iteritems():
-                MooseObjectNode(k, v, parent=parent)
+                MooseAppSyntax.__addMooseObjectNodeHelper(k, v, parent)
+
+    @staticmethod
+    def __addMooseObjectNodeHelper(name, item, parent):
+        """
+        Helper to handle the Postprocessor/UserObject special case.
+
+        This probably needs to be more generic, but this will do the job for now.
+        """
+        if ('moose_base' in item) and (item['moose_base'] == 'Postprocessor') and \
+           (item['parent_syntax'] == 'UserObjects/*'):
+            return
+        MooseObjectNode(name, item, parent=parent)
