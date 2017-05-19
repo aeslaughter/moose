@@ -53,9 +53,6 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         # Storage for the MooseAppSyntax and MooseLinkDatabase object
         self.__app_syntax = None
 
-        # Create the absolute path to the executable
-        self.setConfig('executable', MooseDocs.abspath(self.getConfig('executable')))
-
     def getMooseAppSyntax(self):
         """
         Return the MooseAppSyntax object.
@@ -72,9 +69,8 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         config = self.getConfigs()
 
         # Build syntax from JSON
-        exe = self.getConfig('executable')
-        self.__app_syntax = common.MooseAppSyntax(os.path.dirname(exe), hide=config['hide'])
-        config['syntax'] = self.__app_syntax
+        exe = MooseDocs.abspath(self.getConfig('executable'))
+        self.__app_syntax = common.MooseAppSyntax(exe, hide=config['hide'])
 
         # Populate the database for input file and children objects
         LOG.debug('Creating input file and source code use database.')

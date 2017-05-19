@@ -27,28 +27,48 @@ import MooseDocs
 
 LOG = logging.getLogger(__name__)
 
-class NodeBase(anytree.NodeMixin):
+class MooseDocsNodeBase(anytree.NodeMixin):
     """
     Node for MOOSE syntax that serves as the parent for actions/objects.
     """
     COLOR = 'RESET'
-    STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->\n'
-
     def __init__(self, name, parent=None):
-        super(NodeBase, self).__init__()
+        super(MooseDocsNodeBase, self).__init__()
         self.parent = parent
         self.name = name
-        self.__hidden = False
 
     @property
     def full_name(self):
         """
-        Return the MOOSE input file syntax for the node.
+        Return the full name of the node.
         """
-        if self.parent:
-            return '/'.join([self.parent.full_name, self.name])
-        else:
-            return self.name
+        if self.parent is not None:
+            return self.separator.join([self.parent.full_name, self.name])
+        return self.name
+
+    def __repr__(self):
+        """
+        Print the node name.
+        """
+        oname = self.__class__.__name__[:-4]
+        msg = '{}: {}'.format(oname, self.full_name)
+        return mooseutils.colorText(msg, self.COLOR)
+
+    def __str__(self):
+        """
+        Calling print on this object will print the tree nice and pretty.
+        """
+        return str(anytree.RenderTree(self))
+
+class NodeBase(MooseDocsNodeBase):
+    """
+    Node for MOOSE syntax that serves as the parent for actions/objects.
+    """
+    STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->\n'
+
+    def __init__(self, name, parent=None):
+        super(NodeBase, self).__init__(name, parent)
+        self.__hidden = False
 
     @property
     def groups(self):
@@ -142,12 +162,6 @@ class NodeBase(anytree.NodeMixin):
                                                   self.hidden,
                                                   self.groups.keys())
         return mooseutils.colorText(msg, self.COLOR)
-
-    def __str__(self):
-        """
-        Calling print on this object will print the tree nice and pretty.
-        """
-        return str(anytree.RenderTree(self))
 
 class SyntaxNode(NodeBase):
     """
@@ -288,7 +302,6 @@ class MooseAppSyntax(object):
     Class for building complete MooseApp syntax tree.
     """
     def __init__(self, location, hide=None):
-
         exe = mooseutils.find_moose_executable(location)
         cache = os.path.join(MooseDocs.TEMP_DIR, 'moosedocs.json')
 

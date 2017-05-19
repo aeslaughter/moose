@@ -72,7 +72,7 @@ def find_moose_executable(loc, **kwargs):
 
     # Handle 'combined' and 'tests'
     if os.path.isdir(loc):
-        if name == 'tests':
+        if name == 'test':
             name = 'moose_test'
 
     # Check that the location exists and that it is a directory
