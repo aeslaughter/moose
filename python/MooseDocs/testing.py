@@ -35,7 +35,33 @@ def text_diff(text, gold):
          .format('~'*n, '\n'.join(result).encode('utf-8'))
     return msg
 
-class MarkdownTestCase(unittest.TestCase):
+class LogTestCase(unittest.TestCase):
+    """
+    Provides asserts for checking logged warnings and errors.
+    """
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create the markdown parser using the configuration file.
+        """
+
+        # Setup logging
+        cls._stream = StringIO.StringIO()
+        cls._formatter = init_logging(stream=cls._stream)
+
+    def assertInLogError(self, msg):
+        """
+        Test that an error was logged.
+        """
+        self.assertIn(msg, self._formatter.messages('ERROR')[-1])
+
+    def assertInLogWarning(self, msg):
+        """
+        Test that an error was logged.
+        """
+        self.assertIn(msg, self._formatter.messages('WARNING')[-1])
+
+class MarkdownTestCase(LogTestCase):
     """
     Provides functions for converting markdown to html and asserting conversion against
     gold html files.
@@ -49,10 +75,7 @@ class MarkdownTestCase(unittest.TestCase):
         """
         Create the markdown parser using the configuration file.
         """
-
-        # Setup logging
-        cls._stream = StringIO.StringIO()
-        cls._formatter = init_logging(stream=cls._stream)
+        super(MarkdownTestCase, cls).setUpClass()
 
         # Define the local directory
         cls._path = os.path.abspath(os.path.dirname(inspect.getfile(cls)))
@@ -173,18 +196,6 @@ class MarkdownTestCase(unittest.TestCase):
 
         # Compare against gold
         self.assertTextFile(name)
-
-    def assertInLogError(self, msg):
-        """
-        Test that an error was logged.
-        """
-        self.assertIn(msg, self._formatter.messages('ERROR')[-1])
-
-    def assertInLogWarning(self, msg):
-        """
-        Test that an error was logged.
-        """
-        self.assertIn(msg, self._formatter.messages('WARNING')[-1])
 
 
 

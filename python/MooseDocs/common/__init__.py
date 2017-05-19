@@ -18,3 +18,4 @@ from MarkdownTable import MarkdownTable
 from MooseAppSyntax import MooseAppSyntax
 from MooseLinkDatabase import MooseLinkDatabase
 from MooseClassDatabase import MooseClassDatabase
+from moose_docs_import import moose_docs_import
