@@ -10,31 +10,47 @@ import anytree
 
 class LocationNode(MooseDocsNodeBase):
     COLOR = 'YELLOW'
+    def __init__(self, name, root=None, group=None, **kwargs):
+        super(LocationNode, self).__init__(name, **kwargs)
+        self._root = root
+        self._group = group
 
 class MarkdownNode(LocationNode):
     COLOR = 'CYAN'
 
+    @property
+    def filename(self):
+        return os.path.join(self._root, self.full_name.strip('/'))
 
-root = os.path.join(MooseDocs.ROOT_DIR, 'test', 'docs', 'content')
-framework = moose_docs_import(include=['**/Functions/*'],  extension='.md', root=root)
-out = [f[len(root):] for f in framework]
 
-root = os.path.join(MooseDocs.ROOT_DIR, 'docs', 'content')
-framework = moose_docs_import(include=['**/Functions/framework/*'], extension='.md', root=root)
-out += [f[len(root):] for f in framework]
+config = dict()
+config['framework'] = dict(base='docs/content', include=['**/Functions/framework/*'])
+config['moose_test'] = dict(base='test/docs/content', include=['**/Functions/*'])
+
 
 
 class FileTree(object):
 
 
-    def __init__(self):
-        self._root = LocationNode('')
+    def __init__(self, config):
 
+
+        self._root = MooseDocsNodeBase('')
+
+
+        for key, value in config.iteritems():
+            value.setdefault('root', MooseDocs.abspath(value.pop('base', '')))
+            value.setdefault('extension', '.md')
+
+            files = moose_docs_import(**value)
+            for filename in files:
+                print value
+                self.addNode(value['root'], filename, group=key)
 
     def __str__(self):
         return str(anytree.RenderTree(self._root))
 
-    def addNode(self, path):
+    def addNode(self, root, path, group):
 
         def finder(node, name):
             for child in node.children:
@@ -45,22 +61,26 @@ class FileTree(object):
         def insert_helper(node, name):
             n = finder(node, name)
             if (n is None) and (name.endswith('.md')):
-                n = MarkdownNode(name, parent=node)
+                n = MarkdownNode(name, root=root, group=group, parent=node)
             elif (n is None):
-                n = LocationNode(name, parent=node)
+                n = LocationNode(name, root=root, group=group, parent=node)
             return n
 
 
         node = self._root
-        folders = path.strip('/').split('/')
+        folders = path[len(root):].strip('/').split('/')
         for item in folders:
             node = insert_helper(node, item)
 
-tree = FileTree()
-for o in out:
-    tree.addNode(o)
-
+tree = FileTree(config)
 print tree
+
+for c in tree._root.descendants:
+    if isinstance(c, MarkdownNode):
+        print c.filename
+    #if hasattr(c, 'filename'):
+    #    print c#.filename
+
 
 
 
