@@ -78,27 +78,3 @@ print tree
 for c in tree._root.descendants:
     if isinstance(c, MarkdownNode):
         print c.filename
-    #if hasattr(c, 'filename'):
-    #    print c#.filename
-
-
-
-
-
-"""
-
-r = anytree.Node()
-
-
-
-data = collections.defaultdict(lambda: collections.defaultdict(str))
-def add_node(input):
-    filename = os.path.basename(input)
-    folders = os.path.dirname(input).strip('/').split('/')
-    brackets = ("['{}']"*len(folders)).format(*folders)
-    eval("data{}='{}'".format(brackets, filename))
-
-add_node(files[0])
-
-print data
-"""
