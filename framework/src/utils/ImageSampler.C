@@ -195,10 +195,11 @@ ImageSampler::setupImageSampler(MooseMesh & mesh)
   }
 
   // Set the dimensions of the image and bounding box
-  _data->SetSpacing(_voxel[0], _voxel[1], _voxel[2]);
-  _data->SetOrigin(_origin(0), _origin(1), _origin(2));
+  _image->SetDataSpacing(_voxel[0], _voxel[1], _voxel[2]);
+  _image->SetDataOrigin(_origin(0), _origin(1), _origin(2));
   _bounding_box.min() = _origin;
   _bounding_box.max() = _origin + _physical_dims;
+  _image->Update();
 
   // Indicate data read is completed
   _is_console << "          ...image read finished" << std::endl;
@@ -215,12 +216,17 @@ ImageSampler::setupImageSampler(MooseMesh & mesh)
   else
     _component = 0;
 
+  /*
   // Apply filters, the toggling on and off of each filter is handled internally
   vtkMagnitude();
   vtkShiftAndScale();
   vtkThreshold();
   vtkFlip();
   vtkResample();
+  */
+
+  std::cout << *_data << std::endl;
+
 #endif
 }
 
@@ -230,9 +236,10 @@ ImageSampler::sample(const Point & p)
 #ifdef LIBMESH_HAVE_VTK
 
   // Do nothing if the point is outside of the image domain
-  if (!_bounding_box.contains_point(p))
-    return 0.0;
+  // if (!_bounding_box.contains_point(p))
+  //  return 0.0;
 
+  /*
   // Determine pixel coordinates
   std::vector<int> x(3, 0);
   for (int i = 0; i < LIBMESH_DIM; ++i)
@@ -250,9 +257,11 @@ ImageSampler::sample(const Point & p)
         x[i]--;
     }
   }
-
+  */
   // Return the image data at the given point
-  return _data->GetScalarComponentAsDouble(x[0], x[1], x[2], _component);
+  std::cout << p << std::endl;
+  // return _image->GetOutput()->GetScalarComponentAsDouble(x[0], x[1], x[2], _component);
+  return _image->GetOutput()->GetScalarComponentAsDouble(p(0), p(1), p(2), _component);
 
 #else
   libmesh_ignore(p); // avoid un-used parameter warnings

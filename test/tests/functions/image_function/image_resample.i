@@ -3,7 +3,8 @@
   dim = 3
   nx = 20
   ny = 20
-  nz = 40
+  nz = 20
+  zmax = 0.5
 []
 
 [Variables]
@@ -16,7 +17,8 @@
     type = ImageFunction
     file_base = stack/test
     file_suffix = png
-    output_spacing = '1 1 0.5'
+    #dimensions = '1 1 0.5'
+    #output_spacing = '1 1 4'
   [../]
 []
 
