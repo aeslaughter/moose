@@ -14,3 +14,8 @@
     template_args:
         title: 'MOOSE Test'
         logo: docs/media/moose_logo_small.png
+        navigation:
+          - SQA:
+              - SRS: test/docs/content/sqa/srs.md
+- MooseDocs.extensions.sqa:
+    PROJECT: MooseTest
