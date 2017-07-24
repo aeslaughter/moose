@@ -16,12 +16,14 @@
 
 // VectorPostprocessors
 #include "SamplerData.h"
+#include "StochasticResults.h"
 
 // MultiApps
 #include "SamplerMultiApp.h"
 
 // Transfers
 #include "SamplerTransfer.h"
+#include "SamplerPostprocessorTransfer.h"
 
 // Controls
 #include "SamplerReceiver.h"
@@ -83,12 +85,14 @@ StochasticToolsApp::registerObjects(Factory & factory)
 
   // VectorPostprocessors
   registerVectorPostprocessor(SamplerData);
+  registerVectorPostprocessor(StochasticResults);
 
   // MultiApps
   registerMultiApp(SamplerMultiApp);
 
   // Transfers
   registerTransfer(SamplerTransfer);
+  registerTransfer(SamplerPostprocessorTransfer);
 
   // Controls
   registerControl(SamplerReceiver);
