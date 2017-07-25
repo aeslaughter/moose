@@ -28,7 +28,7 @@ validParams<FullSolveMultiApp>()
 }
 
 FullSolveMultiApp::FullSolveMultiApp(const InputParameters & parameters)
-  : MultiApp(parameters), _solved(false)
+  : MultiApp(parameters)
 {
 }
 
@@ -50,7 +50,7 @@ FullSolveMultiApp::initialSetup()
       Executioner * ex = app->getExecutioner();
 
       if (!ex)
-        mooseError("Executioner does not exist!");
+      mooseError("Executioner does not exist!");
 
       ex->init();
 
@@ -59,6 +59,8 @@ FullSolveMultiApp::initialSetup()
     // Swap back
     Moose::swapLibMeshComm(swapped);
   }
+
+  _fe_problem.backupMultiApps(EXEC_INITIAL);
 }
 
 bool
@@ -70,8 +72,8 @@ FullSolveMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool auto_advanc
   if (!_has_an_app)
     return true;
 
-  if (_solved)
-    return true;
+  _fe_problem.restoreMultiApps(EXEC_INITIAL);
+
 
   MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
 
@@ -84,6 +86,11 @@ FullSolveMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool auto_advanc
   for (unsigned int i = 0; i < _my_num_apps; i++)
   {
     Executioner * ex = _executioners[i];
+
+  //  ex->feProblem().time() = 0.0;
+  //  ex->feProblem().timeOld() = 0.0;
+  //  ex->feProblem().timeStep() = 0;
+
     ex->execute();
     if (!ex->lastSolveConverged())
       last_solve_converged = false;
@@ -92,7 +99,11 @@ FullSolveMultiApp::solveStep(Real /*dt*/, Real /*target_time*/, bool auto_advanc
   // Swap back
   Moose::swapLibMeshComm(swapped);
 
-  _solved = true;
-
   return last_solve_converged;
+}
+
+void
+FullSolveMultiApp::advanceStep()
+{
+  std::cout << "FullSolveMultiApp::advanceStep--------------------------------------" << std::endl;
 }

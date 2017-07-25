@@ -37,13 +37,10 @@ public:
 
   virtual bool solveStep(Real dt, Real target_time, bool auto_advance = true) override;
 
-  virtual void advanceStep() override {}
+  virtual void advanceStep() override;// {}
 
 private:
   std::vector<Executioner *> _executioners;
-
-  /// Whether or not this MultiApp has already been solved.
-  bool _solved;
 };
 
 #endif // FULLSOLVEMULTIAPP_H
