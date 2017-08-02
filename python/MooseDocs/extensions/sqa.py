@@ -42,9 +42,9 @@ class SQAExtension(MooseMarkdownExtension):
         Default configuration options for SQAExtension
         """
         config = MooseMarkdownExtension.defaultConfig()
-        config['PROJECT'] = ['UNKNOWN PROJECT', "Project name to use throughout the template."]
         config['repo'] = ['', "The remote repository to create hyperlinks."]
         config['branch'] = ['master', "The branch name to consider in repository links."]
+        config['template_args'] = [dict(), "Key value pairs passed to template engine."]
         return config
 
     def extendMarkdown(self, md, md_globals):
@@ -87,10 +87,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
     """
     Preprocessor to read the template and create the complete markdown content.
     """
-
     SQA_LOAD_RE = r'(?<!`)!SQA-load\s+(?P<filename>.*\.md)(?:$|\s+)(?P<settings>.*)'
-    SQA_TEMPLATE_RE = r'!SQA-template\s+(?P<name>\w+)(?P<settings>.*?)' \
-                      r'\n(?P<markdown>.*?)!END-template'
 
     @staticmethod
     def defaultSettings():
@@ -103,7 +100,20 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         MooseMarkdownCommon.__init__(self)
         Preprocessor.__init__(self, markdown_instance)
         self.__database = None
-        self._template_args = kwargs
+        self._template_args = kwargs.pop('template_args', dict())
+
+    def globals(self, env):
+        """
+        Global methods to make available in template.
+        """
+        env.globals['hasTemplateItem'] = self.hasTemplateItem
+        env.globals['getTemplateItem'] = self.getTemplateItem
+
+    def arguments(self, template_args):
+        """
+        Template arguments.
+        """
+        return template_args
 
     def run(self, lines):
         """
@@ -116,7 +126,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
             return lines
 
         # Populate the data base
-        self.__database = SQADatabase('\n'.join(lines))
+        self.__database = SQADatabase('\n'.join(lines[1:]))
 
         # Define the template locations
         paths = [MooseDocs.ROOT_DIR,
@@ -126,130 +136,53 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
                  os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'templates', 'sqa')]
 
         # Read the SQA template filename
-        filename = match.group('filename')
-        for root in paths:
-            fullname = os.path.join(root, filename)
-            if os.path.exists(fullname):
-                filename = fullname
-                break
-
-        if not os.path.exists(filename):
-            raise IOError("The file '{}' does not exist.".format(filename))
-
-        with open(filename, 'r') as fid:
-            content = fid.read()
-
-        # Replace the SQA template sections with content
-        content = re.sub(self.SQA_TEMPLATE_RE, self.__sub, content, flags=re.DOTALL|re.MULTILINE)
-        template = jinja2.Template(content)
-        content = template.render(**self._template_args)
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(paths))
+        self.globals(env)
+        template = env.get_template(match.group('filename'))
+        content = template.render(**self.arguments(self._template_args))
         return content.split('\n')
 
-    def __sub(self, match):
+    def hasTemplateItem(self, item):
         """
-        Substitution method for regex replacement.
+        Check if template item exists in database.
         """
+        return item in self.__database
 
-        name = match.group('name')
-        markdown = match.group('markdown')
-        settings = self.getSettings(match.group('settings'))
-
-        # Use the content in database
-        if name in self.__database:
-            div = etree.Element('div')
-            div.set('markdown', '1')
-            item = self.__database[name]
-            div.text = item.markdown
-
-        # Use the default
-        elif settings['default']:
-            div = etree.Element('div')
-            div.set('markdown', '1')
-            div.text = markdown
-
-        # Produce error
-        else:
-
-            help_div = etree.Element('div')
-            heading = etree.SubElement(help_div, 'h3')
-            heading.text = "Adding Markdown for '{}' Item.".format(name)
-
-            p = etree.SubElement(help_div, 'p')
-            p.text = "To add content for the '{}' item, simply add a block similar to what is ' \
-                     'shown below in the markdown file '{}'.".format(name,
-                                                                     self.markdown.current.filename)
-
-            pre = etree.SubElement(help_div, 'pre')
-            code = etree.SubElement(pre, 'code')
-            code.set('class', 'language-text')
-            code.text = '!SQA-template-item {}\nThe content placed here should be valid markdown ' \
-                        'that will replace the template description.\n!END-template-item' \
-                        .format(name)
-
-            title = 'Missing Template Item: {}'.format(name)
-            div = self.createErrorElement(title=title, message=markdown, markdown=True,
-                                          help_button=help_div)
-
-        return etree.tostring(div)
-
-    @staticmethod
-    def createModalElement(parent, button=None, id_=None, heading=None, color='blue'):
+    def getTemplateItem(self, item, **kwargs):
         """
-        Creates the modal help box.
+        "Return template content"
         """
-
-        a = etree.Element('a')
-        a.set('class', 'waves-effect waves-light btn-floating {}'.format(color))
-        a.set('data-target', id_)
-        i = etree.SubElement(a, 'i')
-        i.set('class', 'material-icons')
-        i.text = button
-
-        modal = etree.SubElement(parent, 'div')
-        modal.set('id', id_)
-        modal.set('class', 'modal')
-
-        content = etree.SubElement(modal, 'div')
-        content.set('class', 'modal-content')
-
-        if heading:
-            h = etree.SubElement(content, 'h3')
-            h.text = heading
-
-        div = etree.SubElement(content, 'div')
-
-        return div, a
+        div = etree.Element('div')
+        div.set('markdown', '1')
+        item = self.__database[item]
+        div.text = item.markdown
+        template = jinja2.Template(etree.tostring(div))
+        return template.render(**self.arguments(self._template_args))
 
 class SQADatabase(object):
     """
     Helper object for creating a database of items.
     """
 
-    SQA_ITEM_RE = r'!SQA-template-item\s+(?P<name>\w+)(?P<settings>.*?)' \
-                  r'\n(?P<markdown>.*?)!END-template-item'
+    SQA_ITEM_RE = r'!SQA-template-item\s+(?P<name>\w+)(?P<settings>.*?)$' \
+                  r'(?P<markdown>.*?)(!END-template-item)'
     ITEMINFO = collections.namedtuple('ItemInfo', 'name settings markdown')
 
     def __init__(self, content):
         self.__items = dict()
-        re.sub(self.SQA_ITEM_RE, self.__sub, content, flags=re.DOTALL|re.MULTILINE)
+        for match in re.finditer(self.SQA_ITEM_RE, content, flags=re.DOTALL|re.MULTILINE):
+            name = match.group('name')
+            markdown = match.group('markdown')
 
-    def __sub(self, match):
-        """
-        Regex sub method (see __init__)
-        """
+            settings = dict()
+            for entry in re.findall(MooseMarkdownCommon.SETTINGS_RE, match.group('settings')):
+                settings[entry[0].strip()] = entry[1].strip()
 
-        name = match.group('name')
-        markdown = match.group('markdown')
+            if name in self.__items:
+                msg = "The supplied SQA item name ({}) is already defined.".format(name)
+                raise mooseutils.MooseException(msg)
 
-        settings = dict()
-        for entry in re.findall(MooseMarkdownCommon.SETTINGS_RE, match.group('settings')):
-            settings[entry[0].strip()] = entry[1].strip()
-
-        if name in self.__items:
-            msg = "The supplied SQA item name ({}) is already defined.".format(name)
-            raise mooseutils.MooseException(msg)
-
-        self.__items[name] = self.ITEMINFO(name=name, markdown=markdown, settings=settings)
+            self.__items[name] = self.ITEMINFO(name=name, markdown=markdown, settings=settings)
 
     def __getitem__(self, name):
         """
@@ -404,8 +337,9 @@ class SQAInputTagMatrix(MooseMarkdownCommon, Pattern):
                                                                      legacy_style=False)
                     title = settings['title']
                     for item in match.group('items').split('\n'):
-                        tag_id, text = re.split(r'\s+', item.strip(), maxsplit=1)
-                        out[title].append((tag_id, text))
+                        if item:
+                            tag_id, text = re.split(r'\s+', item.strip(), maxsplit=1)
+                            out[title].append((tag_id, text))
         return out
 
     def buildText(self, key, filename, tag_id, text):

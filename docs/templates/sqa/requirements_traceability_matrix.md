@@ -1,16 +1,16 @@
+{% import 'macros.md' as macros %}
+
 # {{PROJECT}} Requirements Traceability Matrix
 
 ## Introduction
 ### System Purpose
-!SQA-template system_purpose default=True
-
-This should pull in content from a common file, file=system_scope.md or something like that.
-
-!END-template
+{% call macros.define("system_purpose", default=True) %}
+The purpose of this document is to specify the software requirements necessary to achieve the function and capabilities presented in the {{PROJECT}} Theory Manual. This specification is intended for use by those performing nuclear power plant (NPP) reactor systems safety analysis.
+{% endcall %}
 
 ## System Requirements
 ### Requirements Traceability Matrix
-!SQA-template requirements_matrix
-The RTM goes here.
-
-!END-template
+{% call macros.define("requirements_matrix") %}
+The RTM matrix should be place here, it can be created automatically using the
+`SQA-requirement-matrix` command.
+{% endcall %}
