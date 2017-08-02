@@ -58,7 +58,7 @@ class SQAExtension(MooseMarkdownExtension):
         database = SQAInputTagDatabase(repo)
 
         md.preprocessors.add('moose_sqa',
-                             SQAPreprocessor(markdown_instance=md, **config), '_begin')
+                             SQAPreprocessor(markdown_instance=md, **config), '<html_block')
 
         md.parser.blockprocessors.add('moose_sqa_input_tags',
                                       SQAInputTags(markdown_instance=md, **config),
