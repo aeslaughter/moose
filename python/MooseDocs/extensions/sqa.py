@@ -191,6 +191,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
 
     def getTemplateContent(self, content, default=False, optional=False):
+        print content
         return 'foo'
 
 class SQADatabase(object):
