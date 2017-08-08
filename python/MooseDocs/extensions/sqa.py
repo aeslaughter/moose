@@ -106,10 +106,11 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         """
         Global methods to make available in template.
         """
-        env.globals['hasTemplateItem'] = self.hasTemplateItem
-        env.globals['getTemplateItem'] = self.getTemplateItem
-        env.globals['createHelpElement'] = self.createHelpElement
-        env.globals['insertTemplateContent'] = self.insertTemplateContent
+        #env.globals['hasTemplateItem'] = self.hasTemplateItem
+        #env.globals['getTemplateItem'] = self.getTemplateItem
+        #env.globals['createHelpElement'] = self.createHelpElement
+        #env.globals['insertTemplateContent'] = self.insertTemplateContent
+        env.globals['getTemplateContent'] = self.getTemplateItem
 
     def arguments(self, template_args):
         """
@@ -189,6 +190,8 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         stop = self.markdown.htmlStash.store('</div>')
         return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
 
+    def getTemplateContent(self, content, default=False, optional=False):
+        return 'foo'
 
 class SQADatabase(object):
     """

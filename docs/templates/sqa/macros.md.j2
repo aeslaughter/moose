@@ -1,10 +1,3 @@
-{% macro define(item, default=False) -%}
-{% if hasTemplateItem(item) %}
-  {{getTemplateItem(item)}}
-{% elif default %}
-  {{ insertTemplateContent(caller(), 'moose-sqa-template-item-default') }}
-{% else %}
-  {{ createHelpElement(item) }}
-  {{ insertTemplateContent(caller(), 'moose-sqa-template-item-description') }}
-{% endif %}
+{% macro define(item, default=False, optional=False) -%}
+  {{ getTemplateContent(caller(), item, default, optional) }}
 {%- endmacro %}

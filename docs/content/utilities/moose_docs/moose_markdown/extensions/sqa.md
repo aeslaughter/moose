@@ -8,3 +8,6 @@
 !extension SQAExtension
 
 !extension-settings moose_sqa
+
+
+[Template Creation and Use](/sqa_example.md)

@@ -1,0 +1,8 @@
+{% import macros.md.j2 as macros %}
+
+# {{PROJECT}} Example Template
+
+## Introduction
+{% call macros.define("introduction", default=True) %}
+Explain the purpose of the templates and how they are used.
+{% endcall %}
