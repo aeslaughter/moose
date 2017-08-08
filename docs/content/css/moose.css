@@ -556,6 +556,9 @@ span.badge.new{
   float:right;
 }
 
+.moose-sqa-template-item-description{
+  background-color: #940000;
+}
 span.badge.new.info{
   background-color: #528452;
 }

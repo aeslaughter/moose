@@ -182,6 +182,9 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         return etree.tostring(div)
 
     def insertTemplateContent(self, content, class_):
+        """
+        Inserts template content and wraps in a div tag with the defined class.
+        """
         strt = self.markdown.htmlStash.store('<div class="{}"'.format(class_))
         stop = self.markdown.htmlStash.store('</div>')
         return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
