@@ -144,11 +144,13 @@ Use one of the following examples as a guide for formatting the requirements.
 These examples are for reference only and are not complete for the specified function.
 
 *Example 1: IEEE Structured Requirements*
+
 ```
 !SQA-requirement-list Group Name
     R1.0 The system shall solve an equation.
     R1.1 The system shall solve another equation.
 ```
+
 {% endcall %}
 
 ### Usability Requirements

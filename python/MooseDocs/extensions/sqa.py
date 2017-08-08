@@ -62,11 +62,11 @@ class SQAExtension(MooseMarkdownExtension):
 
         md.parser.blockprocessors.add('moose_sqa_input_tags',
                                       SQAInputTags(markdown_instance=md, **config),
-                                      '_begin')
+                                      '_end')
 
         md.inlinePatterns.add('moose_sqa_matrix',
                               SQAInputTagMatrix(markdown_instance=md, database=database, **config),
-                              '_begin')
+                              '_end')
 
         md.inlinePatterns.add('moose-sqa-page-status',
                               SQAPageStatus(markdown_instance=md, **config),
@@ -108,6 +108,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         """
         env.globals['hasTemplateItem'] = self.hasTemplateItem
         env.globals['getTemplateItem'] = self.getTemplateItem
+        env.globals['createHelpElement'] = self.createHelpElement
 
     def arguments(self, template_args):
         """
@@ -150,7 +151,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
 
     def getTemplateItem(self, item, **kwargs):
         """
-        "Return template content"
+        Return template content
         """
         div = etree.Element('div')
         div.set('markdown', '1')
@@ -158,6 +159,31 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         div.text = item.markdown
         template = jinja2.Template(etree.tostring(div))
         return template.render(**self.arguments(self._template_args))
+
+    def createHelpElement(self, item):
+        """
+        Return html for an error with help button.
+        """
+        help_div = etree.Element('div')
+        heading = etree.SubElement(help_div, 'h3')
+        heading.text = "Adding Markdown for '{}' Item.".format(item)
+
+        p = etree.SubElement(help_div, 'p')
+        msg = "To add content for the '{}' item, simply add a block similar to what is " \
+              "shown below in the markdown file '{}'."
+        p.text = msg.format(item, self.markdown.current.filename)
+
+        pre = etree.SubElement(help_div, 'pre')
+        code = etree.SubElement(pre, 'code')
+        code.set('class', 'language-text')
+        code.text = '!SQA-template-item {}\nThe content placed here should be valid markdown ' \
+                    'that will replace the template description.\n!END-template-item' \
+                    .format(item)
+
+        title = 'Missing Template Item: {}'.format(item)
+        div = self.createErrorElement(title=title, message=etree.tostring(p), markdown=False,
+                                      help_button=None)
+        return etree.tostring(div)
 
 class SQADatabase(object):
     """
@@ -255,6 +281,7 @@ class SQAInputTags(MooseMarkdownCommon, BlockProcessor):
             ul.addHeader(settings['title'])
 
         for item in match.group('items').split('\n'):
+            print item.strip()
             tag_id, text = re.split(r'\s+', item.strip(), maxsplit=1)
             desc = text
             if require_md:

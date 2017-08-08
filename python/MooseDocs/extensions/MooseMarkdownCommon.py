@@ -178,7 +178,7 @@ class MooseMarkdownCommon(object):
         el = self.createAdmonition('error', message, title=title, parent=parent,
                                    help_button=help_button, markdown=markdown)
         if error:
-            LOG.error('%s: %s', str(title), str(message))
+            LOG.error('%s: %s', title, message)
         return el
 
     def createAdmonition(self, command, message, title=None, parent=None, help_button=None,
