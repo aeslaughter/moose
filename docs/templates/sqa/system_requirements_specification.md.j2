@@ -1,4 +1,4 @@
-{% import 'macros.md' as macros %}
+{% import 'macros.md.j2' as macros %}
 
 # {{PROJECT}} System Requirement Specification
 ## Introduction
@@ -16,7 +16,8 @@ Delineate the following:
 3.	Describe the application of the product being specified, including relevant benefits, objectives, and goals.
 
 !admonition note Be consistent with similar statements in higher level specifications (e.g.,
-business requirements specification). {% endcall %}
+business requirements specification).
+{% endcall %}
 
 ### System Overview
 #### System Context

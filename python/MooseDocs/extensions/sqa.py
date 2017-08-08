@@ -87,7 +87,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
     """
     Preprocessor to read the template and create the complete markdown content.
     """
-    SQA_LOAD_RE = r'(?<!`)!SQA-load\s+(?P<filename>.*\.md)(?:$|\s+)(?P<settings>.*)'
+    SQA_LOAD_RE = r'(?<!`)!SQA-load\s+(?P<filename>.*\.md\.j2)(?:$|\s+)(?P<settings>.*)'
 
     @staticmethod
     def defaultSettings():
@@ -109,6 +109,7 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         env.globals['hasTemplateItem'] = self.hasTemplateItem
         env.globals['getTemplateItem'] = self.getTemplateItem
         env.globals['createHelpElement'] = self.createHelpElement
+        env.globals['insertTemplateContent'] = self.insertTemplateContent
 
     def arguments(self, template_args):
         """
@@ -168,22 +169,23 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         heading = etree.SubElement(help_div, 'h3')
         heading.text = "Adding Markdown for '{}' Item.".format(item)
 
-        p = etree.SubElement(help_div, 'p')
         msg = "To add content for the '{}' item, simply add a block similar to what is " \
-              "shown below in the markdown file '{}'."
-        p.text = msg.format(item, self.markdown.current.filename)
+              "shown below in the markdown file '{}'.".format(item, self.markdown.current.filename)
 
-        pre = etree.SubElement(help_div, 'pre')
-        code = etree.SubElement(pre, 'code')
-        code.set('class', 'language-text')
-        code.text = '!SQA-template-item {}\nThe content placed here should be valid markdown ' \
-                    'that will replace the template description.\n!END-template-item' \
-                    .format(item)
+        msg += '<pre><code class="language-text">!SQA-template-item {}\nThe content placed here ' \
+               'should be valid markdown\nthat will replace the template description.\n' \
+               '!END-template-item</code></pre>'.format(item)
+        stash = self.markdown.htmlStash.store(msg, safe=True)
 
         title = 'Missing Template Item: {}'.format(item)
-        div = self.createErrorElement(title=title, message=etree.tostring(p), markdown=False,
-                                      help_button=None)
+        div = self.createErrorElement(title=title, message=stash, markdown=False)
         return etree.tostring(div)
+
+    def insertTemplateContent(self, content, class_):
+        strt = self.markdown.htmlStash.store('<div class="{}"'.format(class_))
+        stop = self.markdown.htmlStash.store('</div>')
+        return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
+
 
 class SQADatabase(object):
     """

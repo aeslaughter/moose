@@ -1,4 +1,4 @@
-!SQA-load system_requirements_specification.md
+!SQA-load system_requirements_specification.md.j2
 
 !SQA-template-item project_description
 {{PROJECT}} is an open-source tool for solving partial differential equations using the finite element method.

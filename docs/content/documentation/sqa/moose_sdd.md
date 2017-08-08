@@ -1,1 +1,1 @@
-!SQA-load system_design_description.md
+!SQA-load system_design_description.md.j2

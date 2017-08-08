@@ -2,11 +2,9 @@
 {% if hasTemplateItem(item) %}
   {{getTemplateItem(item)}}
 {% elif default %}
-  {{ caller() }}
+  {{ insertTemplateContent(caller(), 'moose-sqa-template-item-default') }}
 {% else %}
   {{ createHelpElement(item) }}
-  <div class="moose-sqa-template-item-description">
-  {{ caller() }}
-  </div>
+  {{ insertTemplateContent(caller(), 'moose-sqa-template-item-description') }}
 {% endif %}
 {%- endmacro %}

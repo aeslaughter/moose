@@ -1,4 +1,4 @@
-!SQA-load requirements_traceability_matrix.md
+!SQA-load requirements_traceability_matrix.md.js
 
 !SQA-template-item requirements_matrix
 
