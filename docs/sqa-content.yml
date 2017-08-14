@@ -5,4 +5,4 @@ default:
         - 'docs/content/css/*'
         - 'docs/content/media/*'
         - 'docs/content/index.md'
-        - 'docs/content/documentation/sqa/sqa_example.md'
+        - 'docs/content/documentation/sqa/*'

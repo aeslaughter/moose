@@ -3,12 +3,12 @@
 # {{PROJECT}} System Requirement Specification
 ## Introduction
 ### System Purpose
-{% call macros.define("system_purpose", default=True) %}
+{% call(header, body) macros.define("system_purpose", default=True) %}
 Summarize the reason(s) for the system being developed or modified.
 {% endcall %}
 
 ### System Scope
-{% call macros.define("system_scope") %}
+{% call(header, body) macros.define("system_scope") %}
 Delineate the following:
 
 1.	Identify the product(s) to be produced by name (Network Infrastructure, Host DBMS, Report Generator, HPC Server, etc.)
@@ -21,14 +21,14 @@ business requirements specification).
 
 ### System Overview
 #### System Context
-{% call macros.define("system_context") %}
+{% call(header, body) macros.define("system_context") %}
 Describe at a general level the major elements of the system including user roles and how they
 interact. The system overview includes appropriate diagrams and narrative to provide the context of
 the system, defining all significant interfaces crossing the system’s boundearies.
 {% endcall %}
 
 #### System Functions
-{% call macros.define("system_functions") %}
+{% call(header, body) macros.define("system_functions") %}
 Provide a summary of the major use cases or functions, conditions, and constraints. For example, a specification for an accounting program may use this part to address customer account maintenance, customer statement, and invoice preparation without mentioning the vast amount of detail that each of those functions requires.
 
 Sometimes the function summary that is necessary for this part can be taken directly from the section of the higher-level specification (if one exists) that allocates particular functions to the product. Note that for the sake of clarity:
@@ -53,17 +53,17 @@ Before entering their timesheet, the employee must select the “ETS” or “ET
 {% endcall %}
 
 #### User Characteristics
-{% call macros.define("user_characteristics") %}
+{% call(header, body) macros.define("user_characteristics") %}
 Identify each type of user/operator/maintainer of the system (by function, location, type of device), the number in each group, and the nature of their use of the system.
 {% endcall %}
 
 #### Assumptions and Dependencies
-{% call macros.define("assumptions_and_dependencies") %}
+{% call(header, body) macros.define("assumptions_and_dependencies") %}
 List each of the factors that affect the requirements and should be taken into consideration for derivation of lower level requirements and design. These factors should include design inputs, design constraints, and installation considerations. Changes to these can affect the requirements in the specification. For example, an assumption may be that a specific operating system will be available on the hardware designated for the product. If, in fact, the operating system is not available, the specification would then have to change accordingly.
 {% endcall %}
 
 ## Reference
-{% call macros.define("user_characteristics") %}
+{% call(header, body) macros.define("user_characteristics") %}
 ASME NQA 1 2008 with the NQA-1a-2009 addenda, “Quality Assurance Requirements for Nuclear Facility Applications,” First Edition, August 31, 2009.
 
 ISO/IEC/IEEE 24765:2010(E), “Systems and software engineering — Vocabulary,” First Edition, December 15, 2010.
@@ -73,7 +73,7 @@ LWP 13620, “Managing Information Technology Assets,” Rev. 16, December 23, 2
 
 ## Definitions and Acronyms
 ### Definitions
-{% call macros.define("definitions") %}
+{% call(header, body) macros.define("definitions") %}
 *Baseline:* A specification or product (e.g., project plan, maintenance and operations [M&O] plan,
 *requirements, or design) that has been formally reviewed and agreed upon, that thereafter serves as
 *the basis for use and further development, and that can be changed only by using an approved change
@@ -90,7 +90,7 @@ LWP 13620, “Managing Information Technology Assets,” Rev. 16, December 23, 2
 {% endcall %}
 
 ### Acronyms
-{% call macros.define("definitions") %}
+{% call(header, body) macros.define("definitions") %}
 ASME American Society of Mechanical Engineers
 DOE Department of Energy
 IEC International Electrotechnical Commission
@@ -105,7 +105,7 @@ V&V Verification and Validation
 {% endcall %}
 
 ## System Requirements
-{% call macros.define("minimum_requirements") %}
+{% call(header, body) macros.define("minimum_requirements") %}
 
 For software projects, the following is required:
 
@@ -122,7 +122,7 @@ use.
 {% endcall %}
 
 ### Functional Requirements
-{% call macros.define("functional_requirements") %}
+{% call(header, body) macros.define("functional_requirements") %}
 This section of the specification should contain all of the use cases or functional requirements to
 a level of detail sufficient to enable designers to design a system to satisfy those requirements,
 and testers to test that the system satisfies those requirements.

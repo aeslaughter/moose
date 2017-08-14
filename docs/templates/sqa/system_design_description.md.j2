@@ -2,24 +2,29 @@
 
 # {{PROJECT}} System Design Description
 
+{% call(header, body) macros.define("system_purpose", default=True) %}
+{% if header %}
 ## Introduction
 ### System Purpose
-{% call macros.define("system_purpose", default=True) %}
-{% set header %}
-This is a header that will
-{% endset %}
-{% set body %}
+{% endif %}
+{% if body %}
 The purpose of the System Design Description (SDD) is:
 
 * Provide an as-built description of the system (software, servers, and network)
 * Ensure technical staff has a common understanding of how the system was designed; including both the base software and the configured software
 * Provide a tool for tracing requirements through system design, development, and verification.
-{% endset %}
+{% endif %}
 {% endcall %}
 
 ## References
 
+{% call(header, body) macros.define("acronyms"), optional=True %}
 ## Acronyms
+{% if body %}
+A list of stuff.
+{% endif %}
+{% endcall %}
+
 
 ## Design Stakeholders and Concerns
 

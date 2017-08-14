@@ -106,11 +106,11 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         """
         Global methods to make available in template.
         """
-        #env.globals['hasTemplateItem'] = self.hasTemplateItem
-        #env.globals['getTemplateItem'] = self.getTemplateItem
-        #env.globals['createHelpElement'] = self.createHelpElement
-        #env.globals['insertTemplateContent'] = self.insertTemplateContent
-        env.globals['getTemplateContent'] = self.getTemplateItem
+        env.globals['hasTemplateItem'] = self.hasTemplateItem
+        env.globals['getTemplateItem'] = self.getTemplateItem
+        env.globals['createHelpElement'] = self.createHelpElement
+        env.globals['insertTemplateContent'] = self.insertTemplateContent
+#        env.globals['getTemplateContent'] = self.getTemplateContent
 
     def arguments(self, template_args):
         """
@@ -182,17 +182,20 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         div = self.createErrorElement(title=title, message=stash, markdown=False)
         return etree.tostring(div)
 
-    def insertTemplateContent(self, content, class_):
+    def insertTemplateContent(self, content, class_=None):
         """
         Inserts template content and wraps in a div tag with the defined class.
         """
-        strt = self.markdown.htmlStash.store('<div class="{}"'.format(class_))
-        stop = self.markdown.htmlStash.store('</div>')
-        return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
+        if class_:
+            strt = self.markdown.htmlStash.store('<div class="{}"'.format(class_))
+            stop = self.markdown.htmlStash.store('</div>')
+            return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
+        else:
+            return content
 
-    def getTemplateContent(self, content, default=False, optional=False):
-        print content
-        return 'foo'
+    def getTemplateContent(self, content, item, default=False, optional=False):
+        return content
+        #return 'foo'
 
 class SQADatabase(object):
     """
