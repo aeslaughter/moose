@@ -110,7 +110,6 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         env.globals['getTemplateItem'] = self.getTemplateItem
         env.globals['createHelpElement'] = self.createHelpElement
         env.globals['insertTemplateContent'] = self.insertTemplateContent
-#        env.globals['getTemplateContent'] = self.getTemplateContent
 
     def arguments(self, template_args):
         """
@@ -187,15 +186,11 @@ class SQAPreprocessor(MooseMarkdownCommon, Preprocessor):
         Inserts template content and wraps in a div tag with the defined class.
         """
         if class_:
-            strt = self.markdown.htmlStash.store('<div class="{}"'.format(class_))
+            strt = self.markdown.htmlStash.store('<div markdown="1" class="{}">'.format(class_))
             stop = self.markdown.htmlStash.store('</div>')
             return u'{}\n\n{}\n\n{}'.format(strt, content, stop)
         else:
             return content
-
-    def getTemplateContent(self, content, item, default=False, optional=False):
-        return content
-        #return 'foo'
 
 class SQADatabase(object):
     """

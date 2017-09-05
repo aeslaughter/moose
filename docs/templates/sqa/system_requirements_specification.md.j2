@@ -2,33 +2,50 @@
 
 # {{PROJECT}} System Requirement Specification
 ## Introduction
-### System Purpose
+
 {% call(header, body) macros.define("system_purpose", default=True) %}
+{% if header %}
+### System Purpose
+{% endif %}
+{% if body %}
 Summarize the reason(s) for the system being developed or modified.
+{% endif %}
 {% endcall %}
 
-### System Scope
 {% call(header, body) macros.define("system_scope") %}
+{% if header %}
+### System Scope
+{% endif %}
+{% if body %}
 Delineate the following:
 
-1.	Identify the product(s) to be produced by name (Network Infrastructure, Host DBMS, Report Generator, HPC Server, etc.)
-2.	Explain what the product(s) will, and, if necessary, will not do
-3.	Describe the application of the product being specified, including relevant benefits, objectives, and goals.
+1. Identify the product(s) to be produced by name (Network Infrastructure, Host DBMS, Report Generator, HPC Server, etc.)
+1. Explain what the product(s) will, and, if necessary, will not do
+1. Describe the application of the product being specified, including relevant benefits, objectives, and goals.
 
-!admonition note Be consistent with similar statements in higher level specifications (e.g.,
+!admonition note
+Be consistent with similar statements in higher level specifications (e.g.,
 business requirements specification).
+{% endif %}
 {% endcall %}
 
 ### System Overview
-#### System Context
 {% call(header, body) macros.define("system_context") %}
+{% if header %}
+#### System Context
+{% endif %}
+{% if body %}
 Describe at a general level the major elements of the system including user roles and how they
 interact. The system overview includes appropriate diagrams and narrative to provide the context of
 the system, defining all significant interfaces crossing the system’s boundearies.
+{% endif %}
 {% endcall %}
 
-#### System Functions
 {% call(header, body) macros.define("system_functions") %}
+{% if header %}
+#### System Functions
+{% endif %}
+{% if body %}
 Provide a summary of the major use cases or functions, conditions, and constraints. For example, a specification for an accounting program may use this part to address customer account maintenance, customer statement, and invoice preparation without mentioning the vast amount of detail that each of those functions requires.
 
 Sometimes the function summary that is necessary for this part can be taken directly from the section of the higher-level specification (if one exists) that allocates particular functions to the product. Note that for the sake of clarity:
@@ -50,47 +67,67 @@ Before entering their timesheet, the employee must select the “ETS” or “ET
 2. The employee enters charge No., TRC, and hours for each work day.
 3. The employee may click “Save for Later,” exit, and return at a later time to complete timesheet OR the employee may click “Submit” to submit timesheet.
 4. Following submittal, the system verifies the information (e.g., 40 hours). If information is not correct or complete, the employee will receive a warning; otherwise, the employee will be provided a confirmation that the time sheet was submitted with date and time.
+{% endif %}
 {% endcall %}
 
+{% call(header, body) macros.define("user_characteristics") %}
+{% if header %}
 #### User Characteristics
-{% call(header, body) macros.define("user_characteristics") %}
+{% endif %}
+{% if body %}
 Identify each type of user/operator/maintainer of the system (by function, location, type of device), the number in each group, and the nature of their use of the system.
+{% endif %}
 {% endcall %}
 
-#### Assumptions and Dependencies
 {% call(header, body) macros.define("assumptions_and_dependencies") %}
+{% if header %}
+#### Assumptions and Dependencies
+{% endif %}
+{% if body %}
 List each of the factors that affect the requirements and should be taken into consideration for derivation of lower level requirements and design. These factors should include design inputs, design constraints, and installation considerations. Changes to these can affect the requirements in the specification. For example, an assumption may be that a specific operating system will be available on the hardware designated for the product. If, in fact, the operating system is not available, the specification would then have to change accordingly.
+{% endif %}
 {% endcall %}
 
+{% call(header, body) macros.define("reference") %}
+{% if header %}
 ## Reference
-{% call(header, body) macros.define("user_characteristics") %}
+{% endif %}
+{% if body %}
 ASME NQA 1 2008 with the NQA-1a-2009 addenda, “Quality Assurance Requirements for Nuclear Facility Applications,” First Edition, August 31, 2009.
 
 ISO/IEC/IEEE 24765:2010(E), “Systems and software engineering — Vocabulary,” First Edition, December 15, 2010.
 
 LWP 13620, “Managing Information Technology Assets,” Rev. 16, December 23, 2013.]
+{% endif %}
 {% endcall %}
 
 ## Definitions and Acronyms
-### Definitions
 {% call(header, body) macros.define("definitions") %}
+{% if header %}
+### Definitions
+{% endif %}
+{% if body %}
 *Baseline:* A specification or product (e.g., project plan, maintenance and operations [M&O] plan,
-*requirements, or design) that has been formally reviewed and agreed upon, that thereafter serves as
-*the basis for use and further development, and that can be changed only by using an approved change
-*control process. [ASME NQA-1-2008 with the NQA-1a-2009 addenda edited]
+requirements, or design) that has been formally reviewed and agreed upon, that thereafter serves as
+the basis for use and further development, and that can be changed only by using an approved change
+control process. [ASME NQA-1-2008 with the NQA-1a-2009 addenda edited]
 
 *Validation:* Confirmation, through the provision of objective evidence (e.g., acceptance test),
-*that the requirements for a specific intended use or application have been fulfilled. [ISO/IEC/IEEE
-*24765:2010(E) edited]
+that the requirements for a specific intended use or application have been fulfilled. [ISO/IEC/IEEE
+24765:2010(E) edited]
 
 *Verification:* (1) The process of: evaluating a system or component to determine whether the
-*products of a given development phase satisfy the conditions imposed at the start of that phase.
-*(2) Formal proof of program correctness (e.g., requirements, design, implementation reviews, system
-*tests). [ISO/IEC/IEEE 24765:2010(E) edited]]
+products of a given development phase satisfy the conditions imposed at the start of that phase.
+(2) Formal proof of program correctness (e.g., requirements, design, implementation reviews, system
+tests). [ISO/IEC/IEEE 24765:2010(E) edited]]
+{% endif %}
 {% endcall %}
 
+{% call(header, body) macros.define("acronyms") %}
+{% if header %}
 ### Acronyms
-{% call(header, body) macros.define("definitions") %}
+{% endif %}
+{% if body %}
 ASME American Society of Mechanical Engineers
 DOE Department of Energy
 IEC International Electrotechnical Commission
@@ -102,27 +139,33 @@ M&O Maintenance and Operations
 NQA Nuclear Quality Assurance
 QA Quality Assurance
 V&V Verification and Validation
+{% endif %}
 {% endcall %}
 
 ## System Requirements
 {% call(header, body) macros.define("minimum_requirements") %}
-
+{% if header %}
+{% endif %}
+{% if body %}
 For software projects, the following is required:
 
 1. The software requirements shall include technical requirements including operating system,
 function, interfaces, performance, and security requirements, installation considerations, design
 inputs, and any design constraints.
-2. Identify applicable reference drawings, specifications, codes, standards, regulations,
+1. Identify applicable reference drawings, specifications, codes, standards, regulations,
 procedures, or instructions that establish software requirement test, inspection, and acceptance
 criteria.
-3. Software requirements shall be traceable throughout the life cycle.
-4. Security requirements shall be specified commensurate with the risk from unauthorized access or
+1. Software requirements shall be traceable throughout the life cycle.
+1. Security requirements shall be specified commensurate with the risk from unauthorized access or
 use.
-
+{% endif %}
 {% endcall %}
 
-### Functional Requirements
 {% call(header, body) macros.define("functional_requirements") %}
+{% if header %}
+### Functional Requirements
+{% endif %}
+{% if body %}
 This section of the specification should contain all of the use cases or functional requirements to
 a level of detail sufficient to enable designers to design a system to satisfy those requirements,
 and testers to test that the system satisfies those requirements.
@@ -151,7 +194,7 @@ These examples are for reference only and are not complete for the specified fun
     R1.0 The system shall solve an equation.
     R1.1 The system shall solve another equation.
 ```
-
+{% endif %}
 {% endcall %}
 
 ### Usability Requirements
