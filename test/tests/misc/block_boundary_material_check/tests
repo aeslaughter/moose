@@ -19,4 +19,9 @@
     input = 'dgkernel_check_block.i'
     expect_err = "Material property 'foo', requested by 'dg' is not defined on block 0"
   []
+  [block_mat_boundary_object]
+    type = RunException
+    input = 'block_mat_with_bc.i
+    expect_err = "We don't have an error, so I don't know what to expect"
+  []
 []
