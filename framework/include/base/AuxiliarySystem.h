@@ -19,7 +19,6 @@
 #include "SystemBase.h"
 #include "ExecuteMooseObjectWarehouse.h"
 
-// libMesh include
 #include "libmesh/explicit_system.h"
 #include "libmesh/transient_system.h"
 
@@ -48,6 +47,7 @@ public:
   virtual ~AuxiliarySystem();
 
   virtual void init() override;
+  virtual void addExtraVectors() override;
 
   virtual void initialSetup();
   virtual void timestepSetup();
@@ -156,6 +156,7 @@ public:
   virtual TransientExplicitSystem & sys() { return _sys; }
 
   virtual System & system() override { return _sys; }
+  virtual const System & system() const override { return _sys; }
 
   virtual NumericVector<Number> * solutionPreviousNewton() override
   {

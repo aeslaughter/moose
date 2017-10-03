@@ -1,10 +1,12 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowSingleComponentFluid
-!description /Materials/PorousFlowSingleComponentFluid
+!syntax description /Materials/PorousFlowSingleComponentFluid
 
-!parameters /Materials/PorousFlowSingleComponentFluid
+!!! note:
+    The FluidProperties userobjects expect temperature in Kelvin. If the simulation uses temperature
+    in Celcius, `temperature_units = celcius` must be used.  
 
-!inputfiles /Materials/PorousFlowSingleComponentFluid
+!syntax parameters /Materials/PorousFlowSingleComponentFluid
 
-!childobjects /Materials/PorousFlowSingleComponentFluid
+!syntax inputs /Materials/PorousFlowSingleComponentFluid
+
+!syntax children /Materials/PorousFlowSingleComponentFluid

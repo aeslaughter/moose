@@ -1,10 +1,18 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # HHPFCRFF
-!description /Kernels/HHPFCRFF
+!syntax description /Kernels/HHPFCRFF
 
-!parameters /Kernels/HHPFCRFF
+Implements
 
-!inputfiles /Kernels/HHPFCRFF
+$$
+\pm P u,
+$$
 
-!childobjects /Kernels/HHPFCRFF
+where the sign is determined by the `positive` parameter, $P$ (`prop_name`) is a
+material property, and $u$ is either a coupled variable (`coupled_var`)
+or - if not explicitly specified - the non-linear variable the kernel is operating on.
+
+!syntax parameters /Kernels/HHPFCRFF
+
+!syntax inputs /Kernels/HHPFCRFF
+
+!syntax children /Kernels/HHPFCRFF

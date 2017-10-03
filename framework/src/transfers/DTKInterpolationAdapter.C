@@ -22,7 +22,6 @@
 #include "DTKInterpolationAdapter.h"
 #include "Transfer.h"
 
-// libMesh includes
 #include "libmesh/mesh.h"
 #include "libmesh/numeric_vector.h"
 #include "libmesh/elem.h"
@@ -39,7 +38,7 @@ DTKInterpolationAdapter::DTKInterpolationAdapter(Teuchos::RCP<const Teuchos::Mpi
                                                  unsigned int from_dim)
   : comm(in_comm), es(in_es), _offset(offset), mesh(in_es.get_mesh()), dim(mesh.mesh_dimension())
 {
-  MPI_Comm old_comm = Moose::swapLibMeshComm(*comm->getRawMpiComm());
+  Moose::ScopedCommSwapper swapper(*comm->getRawMpiComm());
 
   std::set<GlobalOrdinal> semi_local_nodes;
   get_semi_local_nodes(semi_local_nodes);
@@ -214,9 +213,6 @@ DTKInterpolationAdapter::DTKInterpolationAdapter(Teuchos::RCP<const Teuchos::Mpi
     elem_centroid_coords = Teuchos::rcp(new DataTransferKit::FieldManager<MeshContainerType>(
         centroid_coords_only_mesh_container, comm));
   }
-
-  // Swap back
-  Moose::swapLibMeshComm(old_comm);
 }
 
 DTKInterpolationAdapter::RCP_Evaluator
@@ -263,7 +259,7 @@ void
 DTKInterpolationAdapter::update_variable_values(std::string var_name,
                                                 Teuchos::ArrayView<GlobalOrdinal> missed_points)
 {
-  MPI_Comm old_comm = Moose::swapLibMeshComm(*comm->getRawMpiComm());
+  Moose::ScopedCommSwapper swapper(*comm->getRawMpiComm());
 
   System * sys = Transfer::find_sys(es, var_name);
   unsigned int var_num = sys->variable_number(var_name);
@@ -309,9 +305,6 @@ DTKInterpolationAdapter::update_variable_values(std::string var_name,
 
   sys->solution->close();
   sys->update();
-
-  // Swap back
-  Moose::swapLibMeshComm(old_comm);
 }
 
 DataTransferKit::DTK_ElementTopology

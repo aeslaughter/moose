@@ -17,7 +17,6 @@
 #include "MooseTypes.h"
 #include "MooseMesh.h"
 
-// libMesh includes
 #include "libmesh/mesh.h"
 #include "libmesh/remote_elem.h"
 
@@ -26,9 +25,9 @@ InputParameters
 validParams<SideSetsAroundSubdomain>()
 {
   InputParameters params = validParams<AddSideSetsBase>();
-  params += validParams<BlockRestrictable>();
   params.addRequiredParam<std::vector<BoundaryName>>(
       "new_boundary", "The list of boundary IDs to create on the supplied subdomain");
+  params.addRequiredParam<SubdomainName>("block", "The block around which to create sidesets");
   params.addParam<Point>("normal",
                          "If supplied, only faces with normal equal to this, up to "
                          "normal_tol, will be added to the sidesets specified");
@@ -40,9 +39,6 @@ validParams<SideSetsAroundSubdomain>()
                                     "1 - normal_tol, where normal_hat = "
                                     "normal/|normal|");
 
-  // We can't perform block/boundary restrictable checks on construction for MeshModifiers
-  params.set<bool>("delay_initialization") = true;
-
   params.addClassDescription(
       "Adds element faces that are on the exterior of the given block to the sidesets specified");
   return params;
@@ -50,7 +46,6 @@ validParams<SideSetsAroundSubdomain>()
 
 SideSetsAroundSubdomain::SideSetsAroundSubdomain(const InputParameters & parameters)
   : AddSideSetsBase(parameters),
-    BlockRestrictable(parameters),
     _boundary_names(getParam<std::vector<BoundaryName>>("new_boundary")),
     _using_normal(isParamValid("normal")),
     _normal_tol(getParam<Real>("normal_tol")),
@@ -65,27 +60,13 @@ SideSetsAroundSubdomain::SideSetsAroundSubdomain(const InputParameters & paramet
 }
 
 void
-SideSetsAroundSubdomain::initialize()
-{
-  // Initialize the BlockRestrictable parent
-  initializeBlockRestrictable(_pars);
-}
-
-void
 SideSetsAroundSubdomain::modify()
 {
   // Reference the the libMesh::MeshBase
   MeshBase & mesh = _mesh_ptr->getMesh();
 
-  // Extract the 'first' block ID
-  SubdomainID block_id = *blockIDs().begin();
-
-  // Extract the SubdomainID
-  if (numBlocks() > 1)
-    mooseWarning("SideSetsAroundSubdomain only acts on a single subdomain, but multiple were "
-                 "provided: only the ",
-                 block_id,
-                 "' subdomain is being used.");
+  // Extract the block ID
+  SubdomainID block_id = _mesh_ptr->getSubdomainID(getParam<SubdomainName>("block"));
 
   // Create the boundary IDs from the list of names provided (the true flag creates ids from unknown
   // names)

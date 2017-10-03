@@ -7,10 +7,10 @@ that the sub-application has a Problem type of [LevelSetReinitializationProblem]
 The [LevelSetReinitializationProblem](#) is invoked by setting the "type" parameter within the [Problem](Problem/index.md) of the
 input file.
 
-!input modules/level_set/tests/transfers/markers/single_level/sub.i block=Problem label=False
+!listing modules/level_set/test/tests/transfers/markers/single_level/sub.i block=Problem label=False
 
-!parameters /Problem/LevelSetReinitializationProblem
+!syntax parameters /Problem/LevelSetReinitializationProblem
 
-!inputfiles /Problem/LevelSetReinitializationProblem
+!syntax inputs /Problem/LevelSetReinitializationProblem
 
-!childobjects /Problem/LevelSetReinitializationProblem
+!syntax children /Problem/LevelSetReinitializationProblem

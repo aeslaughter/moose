@@ -21,7 +21,6 @@
 #include "MooseTypes.h"
 #include "MooseVariable.h"
 
-// libMesh includes
 #include "libmesh/meshfree_interpolation.h"
 #include "libmesh/system.h"
 #include "libmesh/mesh_function.h"
@@ -84,7 +83,7 @@ MultiAppMeshFunctionTransfer::execute()
    */
 
   // Get the bounding boxes for the "from" domains.
-  std::vector<MeshTools::BoundingBox> bboxes = getFromBoundingBoxes();
+  std::vector<BoundingBox> bboxes = getFromBoundingBoxes();
 
   // Figure out how many "from" domains each processor owns.
   std::vector<unsigned int> froms_per_proc = getFromsPerProc();
@@ -183,7 +182,7 @@ MultiAppMeshFunctionTransfer::execute()
    */
 
   // Get the local bounding boxes.
-  std::vector<MeshTools::BoundingBox> local_bboxes(froms_per_proc[processor_id()]);
+  std::vector<BoundingBox> local_bboxes(froms_per_proc[processor_id()]);
   {
     // Find the index to the first of this processor's local bounding boxes.
     unsigned int local_start = 0;
@@ -241,6 +240,11 @@ MultiAppMeshFunctionTransfer::execute()
   // points, and send the values back.
   std::vector<Parallel::Request> send_evals(n_processors());
   std::vector<Parallel::Request> send_ids(n_processors());
+
+  // Create these here so that they live the entire life of this function
+  // and are NOT reused per processor.
+  std::vector<std::vector<Real>> processor_outgoing_evals(n_processors());
+
   for (processor_id_type i_proc = 0; i_proc < n_processors(); i_proc++)
   {
     std::vector<Point> incoming_points;
@@ -249,7 +253,9 @@ MultiAppMeshFunctionTransfer::execute()
     else
       _communicator.receive(i_proc, incoming_points);
 
-    std::vector<Real> outgoing_evals(incoming_points.size(), OutOfMeshValue);
+    std::vector<Real> & outgoing_evals = processor_outgoing_evals[i_proc];
+    outgoing_evals.resize(incoming_points.size(), OutOfMeshValue);
+
     std::vector<unsigned int> outgoing_ids(incoming_points.size(), -1); // -1 = largest unsigned int
     for (unsigned int i_pt = 0; i_pt < incoming_points.size(); i_pt++)
     {
@@ -317,6 +323,8 @@ MultiAppMeshFunctionTransfer::execute()
       case FROM_MULTIAPP:
         solution = to_sys->solution.get();
         break;
+      default:
+        mooseError("Unknown direction");
     }
 
     MeshBase * to_mesh = &_to_meshes[i_to]->getMesh();

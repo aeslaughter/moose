@@ -110,19 +110,18 @@ NonlinearSystemBase::NonlinearSystemBase(FEProblemBase & fe_problem,
     _current_nl_its(0),
     _compute_initial_residual_before_preset_bcs(true),
     _current_solution(NULL),
-    _residual_ghosted(addVector("residual_ghosted", false, GHOSTED)),
+    _residual_ghosted(NULL),
     _serialized_solution(*NumericVector<Number>::build(_communicator).release()),
     _solution_previous_nl(NULL),
     _residual_copy(*NumericVector<Number>::build(_communicator).release()),
-    _u_dot(addVector("u_dot", true, GHOSTED)),
-    _Re_time(addVector("Re_time", false, GHOSTED)),
-    _Re_non_time(addVector("Re_non_time", false, GHOSTED)),
+    _u_dot(&addVector("u_dot", true, GHOSTED)),
+    _Re_time(NULL),
+    _Re_non_time(&addVector("Re_non_time", false, GHOSTED)),
     _scalar_kernels(/*threaded=*/false),
     _nodal_bcs(/*threaded=*/false),
     _preset_nodal_bcs(/*threaded=*/false),
     _splits(/*threaded=*/false),
     _increment_vec(NULL),
-    _sln_diff(addVector("sln_diff", false, PARALLEL)),
     _pc_side(Moose::PCS_DEFAULT),
     _ksp_norm(Moose::KSPN_UNPRECONDITIONED),
     _use_finite_differenced_preconditioner(false),
@@ -159,7 +158,8 @@ NonlinearSystemBase::init()
 {
   Moose::setup_perf_log.push("NonlinerSystem::init()", "Setup");
 
-  setupDampers();
+  if (_fe_problem.hasDampers())
+    setupDampers();
 
   _current_solution = _sys.current_local_solution.get();
 
@@ -170,6 +170,20 @@ NonlinearSystemBase::init()
     _residual_copy.init(_sys.n_dofs(), false, SERIAL);
 
   Moose::setup_perf_log.pop("NonlinerSystem::init()", "Setup");
+}
+
+void
+NonlinearSystemBase::turnOffJacobian()
+{
+  system().set_basic_system_only();
+  nonlinearSolver()->jacobian = NULL;
+}
+
+void
+NonlinearSystemBase::addExtraVectors()
+{
+  if (_fe_problem.needsPreviousNewtonIteration())
+    _solution_previous_nl = &addVector("u_previous_newton", true, GHOSTED);
 }
 
 void
@@ -184,9 +198,6 @@ NonlinearSystemBase::restoreSolutions()
 void
 NonlinearSystemBase::initialSetup()
 {
-  if (_fe_problem.needsPreviousNewtonIteration())
-    _solution_previous_nl = &addVector("u_previous_newton", true, GHOSTED);
-
   for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
   {
     _kernels.initialSetup(tid);
@@ -534,21 +545,26 @@ NonlinearSystemBase::computeResidual(NumericVector<Number> & residual, Moose::Ke
   try
   {
     residual.zero();
-    residualVector(Moose::KT_TIME).zero();
-    residualVector(Moose::KT_NONTIME).zero();
+    if (_Re_time)
+      _Re_time->zero();
+    _Re_non_time->zero();
     computeResidualInternal(type);
-    residualVector(Moose::KT_TIME).close();
-    residualVector(Moose::KT_NONTIME).close();
-    _time_integrator->postStep(residual);
+    if (_Re_time)
+      _Re_time->close();
+    _Re_non_time->close();
+    if (_time_integrator)
+      _time_integrator->postStep(residual);
+    else
+      residual += *_Re_non_time;
     residual.close();
 
-    computeNodalBCs(residual);
+    computeNodalBCs(residual, type);
 
     // If we are debugging residuals we need one more assignment to have the ghosted copy up to date
     if (_need_residual_ghosted && _debugging_residuals)
     {
-      _residual_ghosted = residual;
-      _residual_ghosted.close();
+      *_residual_ghosted = residual;
+      _residual_ghosted->close();
     }
 
     // Need to close and update the aux system in case residuals were saved to it.
@@ -572,7 +588,8 @@ NonlinearSystemBase::computeResidual(NumericVector<Number> & residual, Moose::Ke
 void
 NonlinearSystemBase::onTimestepBegin()
 {
-  _time_integrator->preSolve();
+  if (_time_integrator)
+    _time_integrator->preSolve();
   if (_predictor.get())
     _predictor->timestepSetup();
 }
@@ -636,11 +653,30 @@ NonlinearSystemBase::subdomainSetup(SubdomainID subdomain, THREAD_ID tid)
 NumericVector<Number> &
 NonlinearSystemBase::solutionUDot()
 {
-  return _u_dot;
+  return *_u_dot;
 }
 
 NumericVector<Number> &
 NonlinearSystemBase::residualVector(Moose::KernelType type)
+{
+  switch (type)
+  {
+    case Moose::KT_TIME:
+      if (!_Re_time)
+        _Re_time = &addVector("Re_time", false, GHOSTED);
+      return *_Re_time;
+    case Moose::KT_NONTIME:
+      return *_Re_non_time;
+    case Moose::KT_ALL:
+      return *_Re_non_time;
+
+    default:
+      mooseError("Trying to get residual vector that is not available");
+  }
+}
+
+bool
+NonlinearSystemBase::hasResidualVector(Moose::KernelType type) const
 {
   switch (type)
   {
@@ -659,8 +695,11 @@ NonlinearSystemBase::residualVector(Moose::KernelType type)
 void
 NonlinearSystemBase::computeTimeDerivatives()
 {
-  _time_integrator->preStep();
-  _time_integrator->computeTimeDerivatives();
+  if (_time_integrator)
+  {
+    _time_integrator->preStep();
+    _time_integrator->computeTimeDerivatives();
+  }
 }
 
 void
@@ -769,6 +808,7 @@ NonlinearSystemBase::setConstraintSlaveValues(NumericVector<Number> & solution, 
             points.push_back(info._closest_point);
 
             // reinit variables on the master element's face at the contact point
+            _fe_problem.setNeighborSubdomainID(master_elem, 0);
             _fe_problem.reinitNeighborPhys(master_elem, master_side, points, 0);
 
             for (const auto & nfc : constraints)
@@ -864,6 +904,7 @@ NonlinearSystemBase::constraintResiduals(NumericVector<Number> & residual, bool 
             points.push_back(info._closest_point);
 
             // reinit variables on the master element's face at the contact point
+            _fe_problem.setNeighborSubdomainID(master_elem, 0);
             _fe_problem.reinitNeighborPhys(master_elem, master_side, points, 0);
 
             for (const auto & nfc : constraints)
@@ -908,7 +949,7 @@ NonlinearSystemBase::constraintResiduals(NumericVector<Number> & residual, bool 
         residual.close();
 
         if (_need_residual_ghosted)
-          _residual_ghosted = residual;
+          *_residual_ghosted = residual;
       }
     }
   }
@@ -928,7 +969,7 @@ NonlinearSystemBase::constraintResiduals(NumericVector<Number> & residual, bool 
       residual.close();
 
       if (_need_residual_ghosted)
-        _residual_ghosted = residual;
+        *_residual_ghosted = residual;
     }
   }
 
@@ -946,6 +987,7 @@ NonlinearSystemBase::constraintResiduals(NumericVector<Number> & residual, bool 
       for (const auto & elem : elems)
       {
         // for each element process constraints on the
+        _fe_problem.setCurrentSubdomainID(elem, tid);
         _fe_problem.prepare(elem, tid);
         _fe_problem.reinitElem(elem, tid);
 
@@ -1012,7 +1054,9 @@ NonlinearSystemBase::constraintResiduals(NumericVector<Number> & residual, bool 
         // for each element process constraints on the
         for (const auto & ec : _element_constraints)
         {
+          _fe_problem.setCurrentSubdomainID(elem1, tid);
           _fe_problem.reinitElemPhys(elem1, info._elem1_constraint_q_point, tid);
+          _fe_problem.setNeighborSubdomainID(elem2, tid);
           _fe_problem.reinitNeighborPhys(elem2, info._elem2_constraint_q_point, tid);
 
           ec->subProblem().prepareShapes(ec->variable().number(), tid);
@@ -1102,12 +1146,26 @@ NonlinearSystemBase::computeResidualInternal(Moose::KernelType type)
           mooseError("Unrecognized KernelType in computeResidualInternal().");
       }
 
+      bool have_scalar_contributions = false;
       for (const auto & scalar_kernel : *scalars)
       {
         scalar_kernel->reinit();
-        scalar_kernel->computeResidual();
+        const std::vector<dof_id_type> & dof_indices = scalar_kernel->variable().dofIndices();
+        const DofMap & dof_map = scalar_kernel->variable().dofMap();
+        const dof_id_type first_dof = dof_map.first_dof();
+        const dof_id_type end_dof = dof_map.end_dof();
+        for (dof_id_type dof : dof_indices)
+        {
+          if (dof >= first_dof && dof < end_dof)
+          {
+            scalar_kernel->computeResidual();
+            have_scalar_contributions = true;
+            break;
+          }
+        }
       }
-      _fe_problem.addResidualScalar();
+      if (have_scalar_contributions)
+        _fe_problem.addResidualScalar();
 
       Moose::perf_log.pop("computScalarKernels()", "Execution");
     }
@@ -1125,14 +1183,17 @@ NonlinearSystemBase::computeResidualInternal(Moose::KernelType type)
 
       ConstNodeRange & range = *_mesh.getLocalNodeRange();
 
-      _fe_problem.reinitNode(*range.begin(), 0);
+      if (range.begin() != range.end())
+      {
+        _fe_problem.reinitNode(*range.begin(), 0);
 
-      Threads::parallel_reduce(range, cnk);
+        Threads::parallel_reduce(range, cnk);
 
-      unsigned int n_threads = libMesh::n_threads();
-      for (unsigned int i = 0; i < n_threads;
-           i++) // Add any cached residuals that might be hanging around
-        _fe_problem.addCachedResidual(i);
+        unsigned int n_threads = libMesh::n_threads();
+        for (unsigned int i = 0; i < n_threads;
+             i++) // Add any cached residuals that might be hanging around
+          _fe_problem.addCachedResidual(i);
+      }
 
       Moose::perf_log.pop("computNodalKernels()", "Execution");
     }
@@ -1164,15 +1225,15 @@ NonlinearSystemBase::computeResidualInternal(Moose::KernelType type)
 
   if (_need_residual_copy)
   {
-    residualVector(Moose::KT_NONTIME).close();
-    residualVector(Moose::KT_NONTIME).localize(_residual_copy);
+    _Re_non_time->close();
+    _Re_non_time->localize(_residual_copy);
   }
 
   if (_need_residual_ghosted)
   {
-    residualVector(Moose::KT_NONTIME).close();
-    _residual_ghosted = residualVector(Moose::KT_NONTIME);
-    _residual_ghosted.close();
+    _Re_non_time->close();
+    *_residual_ghosted = *_Re_non_time;
+    _residual_ghosted->close();
   }
 
   PARALLEL_TRY { computeDiracContributions(); }
@@ -1180,9 +1241,9 @@ NonlinearSystemBase::computeResidualInternal(Moose::KernelType type)
 
   if (_fe_problem._has_constraints)
   {
-    PARALLEL_TRY { enforceNodalConstraintsResidual(residualVector(Moose::KT_NONTIME)); }
+    PARALLEL_TRY { enforceNodalConstraintsResidual(*_Re_non_time); }
     PARALLEL_CATCH;
-    residualVector(Moose::KT_NONTIME).close();
+    _Re_non_time->close();
   }
 
   // Add in Residual contributions from Constraints
@@ -1191,19 +1252,20 @@ NonlinearSystemBase::computeResidualInternal(Moose::KernelType type)
     PARALLEL_TRY
     {
       // Undisplaced Constraints
-      constraintResiduals(residualVector(Moose::KT_NONTIME), false);
+      constraintResiduals(*_Re_non_time, false);
 
       // Displaced Constraints
       if (_fe_problem.getDisplacedProblem())
-        constraintResiduals(residualVector(Moose::KT_NONTIME), true);
+        constraintResiduals(*_Re_non_time, true);
     }
     PARALLEL_CATCH;
-    residualVector(Moose::KT_NONTIME).close();
+    _Re_non_time->close();
   }
 }
 
 void
-NonlinearSystemBase::computeNodalBCs(NumericVector<Number> & residual)
+NonlinearSystemBase::computeNodalBCs(NumericVector<Number> & residual,
+                                     Moose::KernelType kernel_type)
 {
   // We need to close the diag_save_in variables on the aux system before NodalBCs clear the dofs on
   // boundary nodes
@@ -1233,7 +1295,14 @@ NonlinearSystemBase::computeNodalBCs(NumericVector<Number> & residual)
             const auto & bcs = _nodal_bcs.getActiveBoundaryObjects(boundary_id);
             for (const auto & nbc : bcs)
               if (nbc->shouldApply())
+              {
+                if (kernel_type == Moose::KT_EIGEN)
+                  nbc->setBCOnEigen(true);
+                else
+                  nbc->setBCOnEigen(false);
+
                 nbc->computeResidual(residual);
+              }
           }
         }
       }
@@ -1244,8 +1313,9 @@ NonlinearSystemBase::computeNodalBCs(NumericVector<Number> & residual)
   PARALLEL_CATCH;
 
   residual.close();
-  residualVector(Moose::KT_TIME).close();
-  residualVector(Moose::KT_NONTIME).close();
+  if (_Re_time)
+    _Re_time->close();
+  _Re_non_time->close();
 }
 
 void
@@ -1398,6 +1468,9 @@ NonlinearSystemBase::constraintJacobians(SparseMatrix<Number> & jacobian, bool d
     MatSetOption(static_cast<PetscMatrix<Number> &>(jacobian).mat(),
                  MAT_NEW_NONZERO_ALLOCATION_ERR,
                  PETSC_FALSE);
+  if (_fe_problem.ignoreZerosInJacobian())
+    MatSetOption(
+        static_cast<PetscMatrix<Number> &>(jacobian).mat(), MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
 #endif
 
   std::vector<numeric_index_type> zero_rows;
@@ -1462,6 +1535,7 @@ NonlinearSystemBase::constraintJacobians(SparseMatrix<Number> & jacobian, bool d
             points.push_back(info._closest_point);
 
             // reinit variables on the master element's face at the contact point
+            _fe_problem.setNeighborSubdomainID(master_elem, 0);
             _fe_problem.reinitNeighborPhys(master_elem, master_side, points, 0);
             for (const auto & nfc : constraints)
             {
@@ -1626,6 +1700,7 @@ NonlinearSystemBase::constraintJacobians(SparseMatrix<Number> & jacobian, bool d
         // for each element process constraints on the
         for (const auto & ffc : face_constraints)
         {
+          _fe_problem.setCurrentSubdomainID(elem, tid);
           _fe_problem.prepare(elem, tid);
           _fe_problem.reinitElem(elem, tid);
           ffc->reinit();
@@ -1687,7 +1762,9 @@ NonlinearSystemBase::constraintJacobians(SparseMatrix<Number> & jacobian, bool d
         // for each element process constraints on the
         for (const auto & ec : _element_constraints)
         {
+          _fe_problem.setCurrentSubdomainID(elem1, tid);
           _fe_problem.reinitElemPhys(elem1, info._elem1_constraint_q_point, tid);
+          _fe_problem.setNeighborSubdomainID(elem2, tid);
           _fe_problem.reinitNeighborPhys(elem2, info._elem2_constraint_q_point, tid);
 
           ec->subProblem().prepareShapes(ec->variable().number(), tid);
@@ -1713,13 +1790,29 @@ NonlinearSystemBase::computeScalarKernelsJacobians(SparseMatrix<Number> & jacobi
     const auto & scalars = _scalar_kernels.getActiveObjects();
 
     _fe_problem.reinitScalars(/*tid=*/0);
+
+    bool have_scalar_contributions = false;
     for (const auto & kernel : scalars)
     {
       kernel->reinit();
-      kernel->computeJacobian();
-      _fe_problem.addJacobianOffDiagScalar(jacobian, kernel->variable().number());
+      const std::vector<dof_id_type> & dof_indices = kernel->variable().dofIndices();
+      const DofMap & dof_map = kernel->variable().dofMap();
+      const dof_id_type first_dof = dof_map.first_dof();
+      const dof_id_type end_dof = dof_map.end_dof();
+      for (dof_id_type dof : dof_indices)
+      {
+        if (dof >= first_dof && dof < end_dof)
+        {
+          kernel->computeJacobian();
+          _fe_problem.addJacobianOffDiagScalar(jacobian, kernel->variable().number());
+          have_scalar_contributions = true;
+          break;
+        }
+      }
     }
-    _fe_problem.addJacobianScalar(jacobian);
+
+    if (have_scalar_contributions)
+      _fe_problem.addJacobianScalar(jacobian);
   }
 }
 
@@ -1819,7 +1912,7 @@ NonlinearSystemBase::computeJacobianInternal(SparseMatrix<Number> & jacobian,
       default:
       case Moose::COUPLING_CUSTOM:
       {
-        ComputeFullJacobianThread cj(_fe_problem, jacobian);
+        ComputeFullJacobianThread cj(_fe_problem, jacobian, kernel_type);
         Threads::parallel_reduce(elem_range, cj);
         unsigned int n_threads = libMesh::n_threads();
 
@@ -2241,7 +2334,7 @@ NonlinearSystemBase::computeDiracContributions(SparseMatrix<Number> * jacobian)
   }
 
   if (jacobian == NULL)
-    residualVector(Moose::KT_NONTIME).close();
+    _Re_non_time->close();
 }
 
 NumericVector<Number> &
@@ -2255,7 +2348,9 @@ NumericVector<Number> &
 NonlinearSystemBase::residualGhosted()
 {
   _need_residual_ghosted = true;
-  return _residual_ghosted;
+  if (!_residual_ghosted)
+    _residual_ghosted = &addVector("residual_ghosted", false, GHOSTED);
+  return *_residual_ghosted;
 }
 
 void
@@ -2346,7 +2441,7 @@ NonlinearSystemBase::setSolution(const NumericVector<Number> & soln)
 void
 NonlinearSystemBase::setSolutionUDot(const NumericVector<Number> & udot)
 {
-  _u_dot = udot;
+  *_u_dot = udot;
 }
 
 NumericVector<Number> &
@@ -2501,18 +2596,6 @@ bool
 NonlinearSystemBase::doingDG() const
 {
   return _doing_dg;
-}
-
-Real
-NonlinearSystemBase::relativeSolutionDifferenceNorm()
-{
-  const NumericVector<Number> & current_solution = *currentSolution();
-  const NumericVector<Number> & old_solution = solutionOld();
-
-  _sln_diff = current_solution;
-  _sln_diff -= old_solution;
-
-  return (_sln_diff.l2_norm() / current_solution.l2_norm());
 }
 
 void

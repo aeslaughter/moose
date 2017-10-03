@@ -25,6 +25,9 @@ public:
   IdealGasFluidPropertiesPT(const InputParameters & parameters);
   virtual ~IdealGasFluidPropertiesPT();
 
+  /// Fluid name
+  virtual std::string fluidName() const override;
+
   /// Molar mass (kg/mol)
   virtual Real molarMass() const override;
 
@@ -41,7 +44,7 @@ public:
   virtual Real c(Real pressure, Real temperature) const override;
 
   /// Thermal conductivity (W/m/K)
-  virtual Real k(Real pressure, Real temperature) const override;
+  virtual Real k(Real density, Real temperature) const override;
 
   /// Specific entropy (J/kg/K)
   virtual Real s(Real pressure, Real temperature) const override;
@@ -74,8 +77,12 @@ public:
   virtual Real mu(Real density, Real temperature) const override;
 
   /// Dynamic viscosity and its derivatives wrt density and temperature
-  virtual void mu_drhoT(
-      Real density, Real temperature, Real & mu, Real & dmu_drho, Real & dmu_dT) const override;
+  virtual void mu_drhoT(Real density,
+                        Real temperature,
+                        Real ddensity_dT,
+                        Real & mu,
+                        Real & dmu_drho,
+                        Real & dmu_dT) const override;
 
   /// Specific enthalpy (J/kg)
   virtual Real h(Real p, Real T) const override;

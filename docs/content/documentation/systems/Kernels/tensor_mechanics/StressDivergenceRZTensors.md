@@ -1,5 +1,5 @@
 #Stress Divergence RZ Tensors
-!description /Kernels/StressDivergenceRZTensors
+!syntax description /Kernels/StressDivergenceRZTensors
 
 
 
@@ -9,7 +9,7 @@ This kernel solves the steady state stress divergence equation in cylindrical co
 !!! info
     The `COORD_TYPE` in the Problem block of the input file must be set to RZ.
 
-{!docs/content/documentation/modules/tensor_mechanics/common/supplementalStressDivergenceKernels.md!}
+!include docs/content/documentation/modules/tensor_mechanics/common/supplementalStressDivergenceKernels.md
 
 For a detailed explanation of the settings for `use_displaced_mesh` in mechanics problems, see the [Introduction/StressDivergence](auto::/introduction/StressDivergence) page.
 
@@ -30,8 +30,8 @@ $$
 The calculation of the Jacobian is similarly complex, requiring up to four terms in the calculation of the diagonal entries.
 
 
-!parameters /Kernels/StressDivergenceRZTensors
+!syntax parameters /Kernels/StressDivergenceRZTensors
 
-!inputfiles /Kernels/StressDivergenceRZTensors
+!syntax inputs /Kernels/StressDivergenceRZTensors
 
-!childobjects /Kernels/StressDivergenceRZTensors
+!syntax children /Kernels/StressDivergenceRZTensors

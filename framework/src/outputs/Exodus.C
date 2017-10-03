@@ -21,8 +21,8 @@
 #include "FileMesh.h"
 #include "MooseApp.h"
 #include "MooseVariableScalar.h"
+#include "LockFile.h"
 
-// libMesh includes
 #include "libmesh/exodusII_io.h"
 
 template <>
@@ -30,9 +30,8 @@ InputParameters
 validParams<Exodus>()
 {
   // Get the base class parameters
-  InputParameters params = validParams<AdvancedOutput<OversampleOutput>>();
-  params += AdvancedOutput<OversampleOutput>::enableOutputTypes(
-      "nodal elemental scalar postprocessor input");
+  InputParameters params = validParams<OversampleOutput>();
+  params += AdvancedOutput::enableOutputTypes("nodal elemental scalar postprocessor input");
 
   // Enable sequential file output (do not set default, the use_displace criteria relies on
   // isParamValid, see Constructor)
@@ -66,7 +65,7 @@ validParams<Exodus>()
 }
 
 Exodus::Exodus(const InputParameters & parameters)
-  : AdvancedOutput<OversampleOutput>(parameters),
+  : OversampleOutput(parameters),
     _exodus_initialized(false),
     _exodus_num(declareRestartableData<unsigned int>("exodus_num", 0)),
     _recovering(_app.isRecovering()),
@@ -81,7 +80,7 @@ void
 Exodus::initialSetup()
 {
   // Call base class setup method
-  AdvancedOutput<OversampleOutput>::initialSetup();
+  AdvancedOutput::initialSetup();
 
   // The libMesh::ExodusII_IO will fail when it is closed if the object is created but
   // nothing is written to the file. This checks that at least something will be written.
@@ -252,14 +251,30 @@ Exodus::outputScalarVariables()
   // Append the scalar to the global output lists
   for (const auto & out_name : out)
   {
-    VariableValue & variable = _problem_ptr->getScalarVariable(0, out_name).sln();
-    unsigned int n = variable.size();
+    // Make sure scalar values are in sync with the solution vector
+    // and are visible on this processor.  See TableOutput.C for
+    // TableOutput::outputScalarVariables() explanatory comments
+
+    MooseVariableScalar & scalar_var = _problem_ptr->getScalarVariable(0, out_name);
+    scalar_var.reinit();
+    VariableValue value = scalar_var.sln();
+
+    const std::vector<dof_id_type> & dof_indices = scalar_var.dofIndices();
+    const unsigned int n = dof_indices.size();
+    value.resize(n);
+
+    const DofMap & dof_map = scalar_var.sys().dofMap();
+    for (unsigned int i = 0; i != n; ++i)
+    {
+      const processor_id_type pid = dof_map.dof_owner(dof_indices[i]);
+      this->comm().broadcast(value[i], pid);
+    }
 
     // If the scalar has a single component, output the name directly
     if (n == 1)
     {
       _global_names.push_back(out_name);
-      _global_values.push_back(variable[0]);
+      _global_values.push_back(value[0]);
     }
 
     // If the scalar as many components add indices to the end of the name
@@ -270,7 +285,7 @@ Exodus::outputScalarVariables()
         std::ostringstream os;
         os << out_name << "_" << i;
         _global_names.push_back(os.str());
-        _global_values.push_back(variable[i]);
+        _global_values.push_back(value[i]);
       }
     }
   }
@@ -300,6 +315,7 @@ Exodus::output(const ExecFlagType & type)
 
   // Prepare the ExodusII_IO object
   outputSetup();
+  LockFile lf(filename(), processor_id() == 0);
 
   // Adjust the position of the output
   if (_app.hasOutputPosition())
@@ -310,7 +326,7 @@ Exodus::output(const ExecFlagType & type)
   _global_values.clear();
 
   // Call the individual output methods
-  AdvancedOutput<OversampleOutput>::output(type);
+  AdvancedOutput::output(type);
 
   // Write the global variables (populated by the output methods)
   if (!_global_values.empty())

@@ -19,7 +19,7 @@ validParams<BrineFluidProperties>()
 BrineFluidProperties::BrineFluidProperties(const InputParameters & parameters)
   : MultiComponentFluidPropertiesPT(parameters), _Mnacl(58.443e-3)
 {
-  // Water97FluidProperties UserObject for water (needed to access pSat)
+  // Water97FluidProperties UserObject for water (needed to access vapor pressure)
   std::string water97_name = name() + ":water97";
   {
     std::string class_name = "Water97FluidProperties";
@@ -67,6 +67,12 @@ BrineFluidProperties::getComponent(unsigned int component) const
     default:
       mooseError("BrineFluidProperties::getComponent has been provided an incorrect component");
   }
+}
+
+std::string
+BrineFluidProperties::fluidName() const
+{
+  return "brine";
 }
 
 Real
@@ -141,10 +147,9 @@ BrineFluidProperties::rho_dpTx(Real pressure,
   Real eps = 1.0e-8;
   Real peps = pressure * eps;
   Real Teps = temperature * eps;
-  Real xeps = xnacl * eps;
   drho_dp = (this->rho(pressure + peps, temperature, xnacl) - rho) / peps;
   drho_dT = (this->rho(pressure, temperature + Teps, xnacl) - rho) / Teps;
-  drho_dx = (this->rho(pressure, temperature, xnacl + xeps) - rho) / xeps;
+  drho_dx = (this->rho(pressure, temperature, xnacl + eps) - rho) / eps;
 }
 
 Real
@@ -168,6 +173,7 @@ void
 BrineFluidProperties::mu_drhoTx(Real water_density,
                                 Real temperature,
                                 Real xnacl,
+                                Real dwater_density_dT,
                                 Real & mu,
                                 Real & dmu_drho,
                                 Real & dmu_dT,
@@ -175,7 +181,7 @@ BrineFluidProperties::mu_drhoTx(Real water_density,
 {
   // Viscosity of water and derivatives wrt water density and temperature
   Real muw, dmuw_drhow, dmuw_dT;
-  _water_fp->mu_drhoT(water_density, temperature, muw, dmuw_drhow, dmuw_dT);
+  _water_fp->mu_drhoT(water_density, temperature, dwater_density_dT, muw, dmuw_drhow, dmuw_dT);
 
   // Correlation requires molal concentration (mol/kg)
   Real mol = massFractionToMolalConc(xnacl);
@@ -190,17 +196,12 @@ BrineFluidProperties::mu_drhoTx(Real water_density,
            0.629e-3 * Tc * (1.0 - std::exp(-0.7 * mol));
   Real da_dx =
       (0.0816 + 0.0244 * mol + 3.84e-4 * mol2 + 4.403e-4 * Tc * std::exp(-0.7 * mol)) * dmol_dx;
+  Real da_dT = 0.629e-3 * (1.0 - std::exp(-0.7 * mol));
 
   mu = a * muw;
   dmu_drho = a * dmuw_drhow;
   dmu_dx = da_dx * muw;
-
-  // Use finite difference for derivative wrt T for now, as drho_dT is required
-  // to calculate analytical derivative
-  Real eps = 1.0e-8;
-  Real Teps = temperature * eps;
-  Real mu2T = this->mu(water_density, temperature + Teps, xnacl);
-  dmu_dT = (mu2T - mu) / Teps;
+  dmu_dT = da_dT * muw + a * dmuw_dT;
 }
 
 Real
@@ -253,10 +254,9 @@ BrineFluidProperties::h_dpTx(Real pressure,
   Real eps = 1.0e-8;
   Real peps = pressure * eps;
   Real Teps = temperature * eps;
-  Real xeps = xnacl * eps;
   dh_dp = (this->h(pressure + peps, temperature, xnacl) - h) / peps;
   dh_dT = (this->h(pressure, temperature + Teps, xnacl) - h) / Teps;
-  dh_dx = (this->h(pressure, temperature, xnacl + xeps) - h) / xeps;
+  dh_dx = (this->h(pressure, temperature, xnacl + eps) - h) / eps;
 }
 
 Real
@@ -319,10 +319,9 @@ BrineFluidProperties::e_dpTx(Real pressure,
   Real eps = 1.0e-8;
   Real peps = pressure * eps;
   Real Teps = temperature * eps;
-  Real xeps = xnacl * eps;
   de_dp = (this->e(pressure + peps, temperature, xnacl) - e) / peps;
   de_dT = (this->e(pressure, temperature + Teps, xnacl) - e) / Teps;
-  de_dx = (this->e(pressure, temperature, xnacl + xeps) - e) / xeps;
+  de_dx = (this->e(pressure, temperature, xnacl + eps) - e) / eps;
 }
 
 Real
@@ -342,7 +341,7 @@ BrineFluidProperties::k(Real water_density, Real temperature, Real xnacl) const
 }
 
 Real
-BrineFluidProperties::pSat(Real temperature, Real xnacl) const
+BrineFluidProperties::vaporPressure(Real temperature, Real xnacl) const
 {
   // Correlation requires molal concentration (mol/kg)
   Real mol = massFractionToMolalConc(xnacl);
@@ -358,7 +357,7 @@ BrineFluidProperties::pSat(Real temperature, Real xnacl) const
 
   // The brine vapour pressure is then found by evaluating the saturation pressure for pure water
   // using this effective temperature. Note: requires _water97_fp UserObject
-  return _water97_fp->pSat(th20);
+  return _water97_fp->vaporPressure(th20);
 }
 
 Real

@@ -111,6 +111,7 @@ public:
    * Get the reference to the libMesh system
    */
   virtual System & system() = 0;
+  virtual const System & system() const = 0;
 
   /**
    * Initialize the system
@@ -121,6 +122,12 @@ public:
    * Called only once, just before the solve begins so objects can do some precalculations
    */
   virtual void initializeObjects(){};
+
+  /**
+   * Method called during initialSetup to add extra system vector if they are required by
+   * the simulation
+   */
+  virtual void addExtraVectors();
 
   /**
    * Update the system (doing libMesh magic)
@@ -149,6 +156,7 @@ public:
   virtual Number & duDotDu() { return _du_dot_du; }
   virtual NumericVector<Number> & solutionUDot() { return *_dummy_vec; }
   virtual NumericVector<Number> & residualVector(Moose::KernelType /*type*/) { return *_dummy_vec; }
+  virtual bool hasResidualVector(Moose::KernelType) const { return false; };
 
   virtual void saveOldSolutions();
   virtual void restoreOldSolutions();

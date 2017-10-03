@@ -19,7 +19,6 @@
 #include "MultiMooseEnum.h"
 #include "InputParameters.h"
 
-// libMesh includes
 #include "libmesh/elem.h"
 
 // External includes
@@ -34,9 +33,43 @@
 
 // System includes
 #include <sys/stat.h>
+#include <numeric>
 
 namespace MooseUtils
 {
+
+// this implementation is copied from
+// https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
+int
+levenshteinDist(const std::string & s1, const std::string & s2)
+{
+  // To change the type this function manipulates and returns, change
+  // the return type and the types of the two variables below.
+  auto s1len = s1.size();
+  auto s2len = s2.size();
+
+  auto column_start = (decltype(s1len))1;
+
+  auto column = new decltype(s1len)[s1len + 1];
+  std::iota(column + column_start, column + s1len + 1, column_start);
+
+  for (auto x = column_start; x <= s2len; x++)
+  {
+    column[0] = x;
+    auto last_diagonal = x - column_start;
+    for (auto y = column_start; y <= s1len; y++)
+    {
+      auto old_diagonal = column[y];
+      auto possibilities = {
+          column[y] + 1, column[y - 1] + 1, last_diagonal + (s1[y - 1] == s2[x - 1] ? 0 : 1)};
+      column[y] = std::min(possibilities);
+      last_diagonal = old_diagonal;
+    }
+  }
+  auto result = column[s1len];
+  delete[] column;
+  return result;
+}
 
 void
 escape(std::string & str)
@@ -57,10 +90,13 @@ escape(std::string & str)
 }
 
 std::string
-trim(std::string str, const std::string & white_space)
+trim(const std::string & str, const std::string & white_space)
 {
-  std::string r = str.erase(str.find_last_not_of(white_space) + 1);
-  return r.erase(0, r.find_first_not_of(white_space));
+  const auto begin = str.find_first_not_of(white_space);
+  if (begin == std::string::npos)
+    return ""; // no content
+  const auto end = str.find_last_not_of(white_space);
+  return str.substr(begin, end - begin + 1);
 }
 
 bool
@@ -179,7 +215,9 @@ serialEnd(const libMesh::Parallel::Communicator & comm)
     int dummy = 0;
     comm.send(comm.rank() + 1, dummy);
   }
-  else
+
+  comm.barrier();
+  if (comm.rank() == 0)
     mooseWarning("Leaving serial execution block (use only for debugging)");
 }
 
@@ -242,7 +280,7 @@ camelCaseToUnderscore(const std::string & camel_case_name)
 {
   string replaced = camel_case_name;
   // Put underscores in front of each contiguous set of capital letters
-  pcrecpp::RE("(?!^)([A-Z]+)").GlobalReplace("_\\1", &replaced);
+  pcrecpp::RE("(?!^)(?<![A-Z])([A-Z]+)").GlobalReplace("_\\1", &replaced);
 
   // Convert all capital letters to lower case
   std::transform(replaced.begin(), replaced.end(), replaced.begin(), ::tolower);
@@ -464,7 +502,7 @@ getRecoveryFileBase(const std::list<std::string> & checkpoint_files)
   for (const auto & cp_file : checkpoint_files)
   {
     // Only look at the main checkpoint file, not the mesh, or restartable data files
-    if (hasExtension(cp_file, "xdr"))
+    if (hasExtension(cp_file, "xdr") || hasExtension(cp_file, "xda"))
     {
       struct stat stats;
       stat(cp_file.c_str(), &stats);
@@ -551,6 +589,14 @@ wildCardMatch(std::string name, std::string search_string)
   }
   else
     return false;
+}
+
+std::string
+toUpper(const std::string & name)
+{
+  std::string upper(name);
+  std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+  return upper;
 }
 
 MultiMooseEnum

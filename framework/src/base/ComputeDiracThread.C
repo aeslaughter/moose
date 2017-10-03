@@ -23,7 +23,6 @@
 #include "DiracKernel.h"
 #include "Assembly.h"
 
-// libmesh includes
 #include "libmesh/threads.h"
 
 ComputeDiracThread::ComputeDiracThread(FEProblemBase & feproblem, SparseMatrix<Number> * jacobian)
@@ -56,6 +55,8 @@ ComputeDiracThread::pre()
 void
 ComputeDiracThread::subdomainChanged()
 {
+  _fe_problem.subdomainSetup(_subdomain, _tid);
+
   std::set<MooseVariable *> needed_moose_vars;
   _dirac_kernels.updateVariableDependency(needed_moose_vars, _tid);
 

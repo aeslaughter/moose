@@ -1,32 +1,40 @@
 #!/bin/bash
 
 function printusage {
-    echo "Usage:    stork.sh <type> <AppName>"
+    echo "Usage:    stork.sh <name>"
     echo ""
     echo "    Creates a new blank MOOSE app in the current working directory."
-    echo "    <type> must be either "app" or "module"."
-    echo "    <AppName> should be given in CamelCase format."
+    echo "    <name> should be given in CamelCase format."
+    echo "    When --module is supplied after the <name> a MOOSE module will be created."
 }
 
-if [[ "$1" == "-h" || $# != 2 ]]; then
+if [[ "$1" == "-h" || $# == 0 || $# > 2 ]]; then
     printusage
     exit 1
 fi
 
-if [[ "$1" != "app" && "$1" != "module" ]]; then
-    echo "error: invalid type given" >&2
+if [[ $# == 2 && "$2" != "--module" ]]; then
     printusage
     exit 1
+fi
+
+
+if [[ $# == 2 && "$2" == "--module" ]]; then
+    kind="module"
+else
+    kind="app"
 fi
 
 # set old/new app name variables
 srcname='Stork'
-dstname=$2
-kind=$1
-srcnamelow=$(echo "$srcname" | awk '{print tolower($0)}')
-srcnameup=$(echo "$srcname" | awk '{print toupper($0)}')
-dstnamelow=$(echo "$dstname" | awk '{print tolower($0)}')
-dstnameup=$(echo "$dstname" | awk '{print toupper($0)}')
+dstname=$1
+
+regex='s/([A-Z][a-z])/_\1/g; s/([a-z])([A-Z])/\1_\2/g; s/^_//;'
+
+srcnamelow=$(echo "$srcname" | perl -pe "${regex}"'tr/[A-Z]/[a-z]/')
+srcnameup=$(echo "$srcname" | perl -pe "${regex}"'tr/[a-z]/[A-Z]/')
+dstnamelow=$(echo "$dstname" | perl -pe "${regex}"'tr/[A-Z]/[a-z]/')
+dstnameup=$(echo "$dstname" | perl -pe "${regex}"'tr/[a-z]/[A-Z]/')
 dir="$dstnamelow"
 if [[ -z $MOOSE_DIR ]]; then
     MOOSE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
@@ -43,18 +51,17 @@ if [[ ! -f "$MOOSE_DIR/stork/include/base/StorkApp.h" ]]; then
     exit 1
 fi
 
-absdir=$(echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")")
-if [[ "$kind" == "app" && "$absdir" =~ "$MOOSE_DIR" ]]; then
-    echo "error: your current working directory is inside the MOOSE directory" >&2
-    exit 1
+if [[ "$kind" == "app" ]]; then
+    git status &>/dev/null && echo "error: your current working directory is inside a git repository" >&2 && exit 1
 fi
 
-# make new app dir and copy stork files
+# copy stork tree - abort if dir already exists or copy fails
 if [[ -d "$dir" ]]; then
     echo "error: directory '$dir' already exists" >&2
     exit 1
 fi
-cp -R "$MOOSE_DIR/stork" "$dir"
+cp -R "$MOOSE_DIR/stork" "$dir" || echo "error: app/module creation failed" >&2 || exit 1
+
 find $dir | grep '/[.]' | xargs rm -f # remove hidden files (e.g. vim swp files)
 
 # rename app name within files
@@ -72,7 +79,9 @@ recursiveRename "$srcnameup" "$dstnameup"
 mv "$dir/Makefile.${kind}" "$dir/Makefile"
 mv "$dir/run_tests.${kind}" "$dir/run_tests"
 mv "$dir/src/base/${srcname}App.C.${kind}" "$dir/src/base/${dstname}App.C"
+mv "$dir/test/src/base/${srcname}TestApp.C" "$dir/test/src/base/${dstname}TestApp.C"
 mv "$dir/include/base/${srcname}App.h" "$dir/include/base/${dstname}App.h"
+mv "$dir/test/include/base/${srcname}TestApp.h" "$dir/test/include/base/${dstname}TestApp.h"
 chmod a+x "$dir/run_tests"
 
 # remove unnecessary files
@@ -80,16 +89,15 @@ rm -f $dir/Makefile.*
 rm -f $dir/run_tests.*
 rm -f $dir/src/base/StorkApp.C.*
 
-if [[ "$kind" == "module" ]]; then
-    rm -f "$dir/include/base/${dstname}App.h"
-fi
-
 if [[ "$kind" == "app" ]]; then
-    (
-        cd $dir
-        git init
-        git add *
-    )
+    # copy clang-format related files
+    mkdir -p $dir/scripts
+    cp $MOOSE_DIR/.clang-format $dir/
+    cp $MOOSE_DIR/.gitignore $dir/
+
+    dir="$PWD/$dir"
+    (cd $dir && git init && git add * .clang-format .gitignore && git commit -m"Initial files")
+
     echo "MOOSE app created in '$dir'"
     echo ""
     echo "To store your changes on github:"
@@ -100,5 +108,10 @@ if [[ "$kind" == "app" ]]; then
     echo "         git remote add origin https://github.com/YourGitHubUserName/$dstname"
     echo '         git commit -m "initial commit"'
     echo "         git push -u origin master"
+    echo ""
+    echo "To automatically enforce MOOSE C++ code style in your commits, run:"
+    echo ""
+    echo "    cd $dir"
+    echo "    ./scripts/install-format-hook.sh"
+    echo ""
 fi
-

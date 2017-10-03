@@ -1,10 +1,16 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # NumNonlinearIterations
-!description /Postprocessors/NumNonlinearIterations
+!syntax description /Postprocessors/NumNonlinearIterations
 
-!parameters /Postprocessors/NumNonlinearIterations
+## Description
 
-!inputfiles /Postprocessors/NumNonlinearIterations
+`NumNonlinearIterations` reports the number of nonlinear iterations in the just-completed
+solve.
 
-!childobjects /Postprocessors/NumNonlinearIterations
+## Example Input Syntax
+!listing test/tests/postprocessors/cumulative_value_postprocessor/cumulative_value_postprocessor.i block=Postprocessors
+
+!syntax parameters /Postprocessors/NumNonlinearIterations
+
+!syntax inputs /Postprocessors/NumNonlinearIterations
+
+!syntax children /Postprocessors/NumNonlinearIterations

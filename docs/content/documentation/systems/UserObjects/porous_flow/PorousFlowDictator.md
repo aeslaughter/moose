@@ -1,10 +1,15 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowDictator
-!description /UserObjects/PorousFlowDictator
+!syntax description /UserObjects/PorousFlowDictator
 
-!parameters /UserObjects/PorousFlowDictator
+The `PorousFlowDictator` provides information about the valid PorousFlow
+variables, as well as the number of fluid components and fluid phases to other
+PorousFlow objects in a simulation.
 
-!inputfiles /UserObjects/PorousFlowDictator
+!!! note:
+    This **must** be present in all simulations!
 
-!childobjects /UserObjects/PorousFlowDictator
+!syntax parameters /UserObjects/PorousFlowDictator
+
+!syntax inputs /UserObjects/PorousFlowDictator
+
+!syntax children /UserObjects/PorousFlowDictator

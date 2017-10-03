@@ -23,9 +23,34 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         peacock.base.PeacockCollapsibleWidget.__init__(self, collapsible_layout=QtWidgets.QGridLayout)
         ExodusPlugin.__init__(self, **kwargs)
 
+        self._preferences.addBool("exodus/backgroundGradient",
+                "Use background gradient",
+                True,
+                "Turn on/off the background gradient",
+                )
+
+        self._preferences.addColor("exodus/gradientTopColor",
+                "Background top gradient color",
+                QtGui.QColor(111, 111, 111),
+                "Set the top gradient color",
+                )
+
+        self._preferences.addColor("exodus/gradientBottomColor",
+                "Background bottom gradient color",
+                QtGui.QColor(180, 180, 180),
+                "Set the top gradient color",
+                )
+
+        self._preferences.addColor("exodus/solidBackgroundColor",
+                "Solid Background color",
+                QtGui.QColor(111, 111, 111),
+                "Solid Background color",
+                )
+
         # Default colors
-        self._top = QtGui.QColor(111, 111, 111)
-        self._bottom = QtGui.QColor(180, 180, 180)
+        self._top = QtGui.QColor(self._preferences.value("exodus/gradientTopColor"))
+        self._bottom = QtGui.QColor(self._preferences.value("exodus/gradientBottomColor"))
+        self._solid = QtGui.QColor(self._preferences.value("exodus/solidBackgroundColor"))
 
         # Setup this widget
         self.MainLayout = self.collapsibleLayout()
@@ -50,20 +75,7 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         self.Extents = QtWidgets.QCheckBox('Extents')
         self.MainLayout.addWidget(self.Extents, 0, 3)
 
-        # Node/Element labels
-        self.Elements = QtWidgets.QCheckBox('Label Elements')
-        self.MainLayout.addWidget(self.Elements, 1, 3)
-        self.Nodes = QtWidgets.QCheckBox('Label Nodes')
-        self.MainLayout.addWidget(self.Nodes, 2, 3)
-
-        if values:
-            self.Values = QtWidgets.QCheckBox('Label Values')
-            self.MainLayout.addWidget(self.Values, 3, 3)
-
         # Storage for Chigger objects that are toggled by this plugin
-        self._cell_labels = None
-        self._node_labels = None
-        self._variable_labels = None
         self._volume_axes = None
         self.setup()
 
@@ -71,20 +83,21 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         Apply the supplied colors to the window.
         """
-
-        top = self._top.getRgb()
-        self.TopButton.setStyleSheet('border:none; background:rgb' + str(top))
-
-        bottom = self._bottom.getRgb()
-        self.BottomButton.setStyleSheet('border:none; background:rgb' + str(bottom))
-
         if self._window:
             if self.GradientToggle.isChecked():
+                top = self._top.getRgb()
+
+                bottom = self._bottom.getRgb()
+                self.BottomButton.setStyleSheet('border:none; background:rgb' + str(bottom))
+
                 background = [bottom[0]/255., bottom[1]/255., bottom[2]/255.]
                 background2 = [top[0]/255., top[1]/255., top[2]/255.]
             else:
+                top = self._solid.getRgb()
                 background = [top[0]/255., top[1]/255., top[2]/255.]
                 background2 = None
+
+            self.TopButton.setStyleSheet('border:none; background:rgb' + str(top))
             self.windowOptionsChanged.emit({'background':background, 'background2':background2, 'gradient_background':self.GradientToggle.isChecked()})
             self.windowRequiresUpdate.emit()
 
@@ -99,15 +112,15 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         Setup method for gradient toggle.
         """
-        qobject.setChecked(QtCore.Qt.Checked)
-        qobject.clicked.connect(self._callbackGradientToggle)
+        qobject.setChecked(self._preferences.value("exodus/backgroundGradient"))
+        qobject.stateChanged.connect(self._callbackGradientToggle)
 
     def _callbackGradientToggle(self, value):
         """
         Called when the gradient toggle is checked/Unchecked.
         """
 
-        if value:
+        if value == QtCore.Qt.Checked:
             self.TopLabel.setText('Background Top:')
             self.BottomLabel.setVisible(True)
             self.BottomButton.setVisible(True)
@@ -133,13 +146,19 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         if self.GradientToggle.isChecked():
             title = 'Select top gradient color'
+            default_color = self._top
         else:
             title = 'Select solid color'
+            default_color = self._solid
 
         dialog = QtWidgets.QColorDialog()
-        c = dialog.getColor(initial=self._top, title=title)
+        c = dialog.getColor(initial=default_color, title=title)
+
         if c.isValid():
-            self._top = c
+            if self.GradientToggle.isChecked():
+                self._top = c
+            else:
+                self._solid = c
             self.color()
 
     def _setupBottomButton(self, qobject):
@@ -166,7 +185,7 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         Setup method for the extents toggle.
         """
-        qobject.clicked.connect(self._callbackExtents)
+        qobject.stateChanged.connect(self._callbackExtents)
 
     def _callbackExtents(self, value):
         """
@@ -174,7 +193,7 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         if not self._result:
             return
-        elif value:
+        elif value == QtCore.Qt.Checked:
             self._volume_axes = chigger.misc.VolumeAxes(self._result)
             self.appendResult.emit(self._volume_axes)
         else:
@@ -182,62 +201,6 @@ class BackgroundPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
             self.removeResult.emit(self._volume_axes)
 
         self.windowRequiresUpdate.emit()
-
-    def _setupElements(self, qobject):
-        """
-        Setup method for the element labels.
-        """
-        qobject.clicked.connect(self._callbackElements)
-
-    def _callbackElements(self, value):
-        """
-        Enables/disables the element labels.
-        """
-        if value:
-            self._cell_labels = chigger.exodus.LabelExodusResult(self._result, label_type='cell', font_size=12)
-            self.appendResult.emit(self._cell_labels)
-        else:
-            self._cell_labels.reset()
-            self.removeResult.emit(self._cell_labels)
-        self.windowRequiresUpdate.emit()
-
-    def _setupNodes(self, qobject):
-        """
-        Setup method for the node labels.
-        """
-        qobject.clicked.connect(self._callbackNodes)
-
-    def _callbackNodes(self, value):
-        """
-        Enables/disables the node labels.
-        """
-        if value:
-            self._node_labels = chigger.exodus.LabelExodusResult(self._result, label_type='point', font_size=12)
-            self.appendResult.emit(self._node_labels)
-        else:
-            self._node_labels.reset()
-            self.removeResult.emit(self._node_labels)
-        self.windowRequiresUpdate.emit()
-
-    def _setupValues(self, qobject):
-        """
-        Setup method for the variable value labels.
-        """
-        qobject.clicked.connect(self._callbackValues)
-
-    def _callbackValues(self, value):
-        """
-        Enables/disables the variable value labels.
-        """
-        if value:
-            self._variable_labels = chigger.exodus.LabelExodusResult(self._result, label_type='variable', font_size=12)
-            self.appendResult.emit(self._variable_labels)
-        else:
-            self._variable_labels.reset()
-            self.removeResult.emit(self._variable_labels)
-
-        self.windowRequiresUpdate.emit()
-
 
 def main(size=None):
     """

@@ -17,7 +17,6 @@
 
 #include "Moose.h"
 
-// libMesh includes
 #include "libmesh/libmesh.h"
 #include "libmesh/id_types.h"
 #include "libmesh/stored_range.h"
@@ -82,13 +81,14 @@ typedef unsigned int THREAD_ID;
 typedef StoredRange<std::vector<dof_id_type>::iterator, dof_id_type> NodeIdRange;
 typedef StoredRange<std::vector<const Elem *>::iterator, const Elem *> ConstElemPointerRange;
 
-
 namespace Moose
 {
 const SubdomainID ANY_BLOCK_ID = libMesh::Elem::invalid_subdomain_id - 1;
 const SubdomainID INVALID_BLOCK_ID = libMesh::Elem::invalid_subdomain_id;
 const BoundaryID ANY_BOUNDARY_ID = static_cast<BoundaryID>(-1);
 const BoundaryID INVALID_BOUNDARY_ID = libMesh::BoundaryInfo::invalid_id;
+const std::set<SubdomainID> EMPTY_BLOCK_IDS = {};
+const std::set<BoundaryID> EMPTY_BOUNDARY_IDS = {};
 
 /**
  * MaterialData types
@@ -108,9 +108,10 @@ enum MaterialDataType
  */
 enum AuxGroup
 {
-  PRE_AUX = 0,
-  POST_AUX = 1,
-  ALL = 2
+  PRE_IC = 0,
+  PRE_AUX = 1,
+  POST_AUX = 2,
+  ALL = 3
 };
 
 /**
@@ -219,10 +220,14 @@ enum SolveType
  */
 enum EigenSolveType
 {
-  EST_POWER,          ///< Power / Inverse / RQI
-  EST_ARNOLDI,        ///< Arnoldi
-  EST_KRYLOVSCHUR,    ///< Krylov-Schur
-  EST_JACOBI_DAVIDSON ///< Jacobi-Davidson
+  EST_POWER,              ///< Power / Inverse / RQI
+  EST_ARNOLDI,            ///< Arnoldi
+  EST_KRYLOVSCHUR,        ///< Krylov-Schur
+  EST_JACOBI_DAVIDSON,    ///< Jacobi-Davidson
+  EST_NONLINEAR_POWER,    ///< Nonlinear inverse power
+  EST_MF_NONLINEAR_POWER, ///< Matrix-free nonlinear inverse power
+  EST_MONOLITH_NEWTON,    ///< Newton-based eigen solver
+  EST_MF_MONOLITH_NEWTON, ///< Matrix-free Newton-based eigen solver
 };
 
 /**
@@ -230,12 +235,13 @@ enum EigenSolveType
  */
 enum EigenProblemType
 {
-  EPT_HERMITIAN,            ///< Hermitian
-  EPT_NON_HERMITIAN,        ///< Non-Hermitian
-  EPT_GEN_HERMITIAN,        ///< Generalized Hermitian
-  EPT_GEN_INDEFINITE,       ///< Generalized Hermitian indefinite
-  EPT_GEN_NON_HERMITIAN,    ///< Generalized Non-Hermitian
-  EPT_POS_GEN_NON_HERMITIAN ///< Generalized Non-Hermitian with positive (semi-)definite B
+  EPT_HERMITIAN,             ///< Hermitian
+  EPT_NON_HERMITIAN,         ///< Non-Hermitian
+  EPT_GEN_HERMITIAN,         ///< Generalized Hermitian
+  EPT_GEN_INDEFINITE,        ///< Generalized Hermitian indefinite
+  EPT_GEN_NON_HERMITIAN,     ///< Generalized Non-Hermitian
+  EPT_POS_GEN_NON_HERMITIAN, ///< Generalized Non-Hermitian with positive (semi-)definite B
+  EPT_SLEPC_DEFAULT          ///< use whatever SLPEC has by default
 };
 
 /**
@@ -252,7 +258,22 @@ enum WhichEigenPairs
   WEP_TARGET_MAGNITUDE,   ///< target magnitude
   WEP_TARGET_REAL,        ///< target real
   WEP_TARGET_IMAGINARY,   ///< target imaginary
-  WEP_ALL_EIGENVALUES     ///< all eigenvalues
+  WEP_ALL_EIGENVALUES,    ///< all eigenvalues
+  WEP_SLEPC_DEFAULT       ///< use whatever we have in SLEPC
+};
+
+/**
+ * Time integrators
+ */
+enum TimeIntegratorType
+{
+  TI_IMPLICIT_EULER,
+  TI_EXPLICIT_EULER,
+  TI_CRANK_NICOLSON,
+  TI_BDF2,
+  TI_EXPLICIT_MIDPOINT,
+  TI_LSTABLE_DIRK2,
+  TI_EXPLICIT_TVD_RK_2,
 };
 
 /**
@@ -284,6 +305,16 @@ enum LineSearchType
   LS_CP
 #endif
 #endif
+};
+
+/**
+ * Type of the matrix-free finite-differencing parameter
+ */
+enum MffdType
+{
+  MFFD_INVALID, ///< means not set
+  MFFD_WP,
+  MFFD_DS
 };
 }
 
@@ -344,6 +375,9 @@ DerivativeStringClass(FunctionName);
 
 /// This type is used for objects that expect Moose Distribution objects
 DerivativeStringClass(DistributionName);
+
+/// This type is used for objects that expect Moose Sampler objects
+DerivativeStringClass(SamplerName);
 
 /// This type is used for objects that expect "UserObject" names
 DerivativeStringClass(UserObjectName);

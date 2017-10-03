@@ -170,7 +170,17 @@ public:
    */
   bool isBoundaryMaterial() const { return _bnd; }
 
+  /**
+   * Subdomain setup evaluating material properties when required
+   */
+  virtual void subdomainSetup() override;
+
 protected:
+  /**
+   * Evaluate material properties on subdomain
+   */
+  virtual void computeSubdomainProperties();
+
   /**
    * Users must override this method.
    */
@@ -218,6 +228,8 @@ protected:
 
   const Elem *& _current_elem;
 
+  const SubdomainID & _current_subdomain_id;
+
   /// current side of the current element
   unsigned int & _current_side;
 
@@ -244,10 +256,15 @@ protected:
   /// If False MOOSE does not compute this property
   const bool _compute;
 
-  /// False by default.  If true, MOOSE will only call
-  /// computeQpProperties() for the 0th qp and then copy
-  /// that value around to all the qps.
-  const bool _constant_on_elem;
+  enum ConstantTypeEnum
+  {
+    NONE,
+    ELEMENT,
+    SUBDOMAIN
+  };
+
+  /// Options of the constantness level of the material
+  const ConstantTypeEnum _constant_option;
 
   enum QP_Data_Type
   {
@@ -360,6 +377,8 @@ template <typename T>
 MaterialProperty<T> &
 Material::declarePropertyOld(const std::string & prop_name)
 {
+  mooseDoOnce(mooseDeprecated("declarePropertyOld is deprecated and not needed anymore.\nUse "
+                              "getPropertyOld (only) if a reference is required in this class."));
   registerPropName(prop_name, false, Material::OLD);
   return _material_data->declarePropertyOld<T>(prop_name);
 }
@@ -368,6 +387,8 @@ template <typename T>
 MaterialProperty<T> &
 Material::declarePropertyOlder(const std::string & prop_name)
 {
+  mooseDoOnce(mooseDeprecated("declarePropertyOlder is deprecated and not needed anymore.  Use "
+                              "getPropertyOlder (only) if a reference is required in this class."));
   registerPropName(prop_name, false, Material::OLDER);
   return _material_data->declarePropertyOlder<T>(prop_name);
 }
@@ -392,8 +413,10 @@ Material::getZeroMaterialProperty(const std::string & prop_name)
     _fe_problem.storeZeroMatProp(*it, prop_name);
 
   // set values for all qpoints to zero
+  // (in multiapp scenarios getMaxQps can return different values in each app; we need the max)
   unsigned int nqp = _mi_feproblem.getMaxQps();
-  preload_with_zero.resize(nqp);
+  if (nqp > preload_with_zero.size())
+    preload_with_zero.resize(nqp);
   for (unsigned int qp = 0; qp < nqp; ++qp)
     mooseSetToZero<T>(preload_with_zero[qp]);
 

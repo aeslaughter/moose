@@ -1,5 +1,5 @@
 from FileTester import FileTester
-import util
+from TestHarness import util
 import os
 
 class Exodiff(FileTester):
@@ -43,8 +43,8 @@ class Exodiff(FileTester):
 
         return commands
 
-    def processResults(self, moose_dir, retcode, options, output):
-        output = FileTester.processResults(self, moose_dir, retcode, options, output)
+    def processResults(self, moose_dir, options, output):
+        FileTester.processResults(self, moose_dir, options, output)
 
         if self.getStatus() == self.bucket_fail or self.specs['skip_checks']:
             return output

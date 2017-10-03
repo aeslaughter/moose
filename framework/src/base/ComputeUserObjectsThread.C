@@ -55,6 +55,8 @@ ComputeUserObjectsThread::~ComputeUserObjectsThread() {}
 void
 ComputeUserObjectsThread::subdomainChanged()
 {
+  _fe_problem.subdomainSetup(_subdomain, _tid);
+
   std::set<MooseVariable *> needed_moose_vars;
   _elemental_user_objects.updateBlockVariableDependency(_subdomain, needed_moose_vars, _tid);
   _side_user_objects.updateBoundaryVariableDependency(needed_moose_vars, _tid);
@@ -131,8 +133,6 @@ ComputeUserObjectsThread::onBoundary(const Elem * elem, unsigned int side, Bound
   _fe_problem.reinitMaterialsFace(_subdomain, _tid);
   _fe_problem.reinitMaterialsBoundary(bnd_id, _tid);
 
-  _fe_problem.setCurrentBoundaryID(bnd_id);
-
   const auto & objects = _side_user_objects.getActiveBoundaryObjects(bnd_id, _tid);
   for (const auto & uo : objects)
     uo->execute();
@@ -158,8 +158,6 @@ ComputeUserObjectsThread::onBoundary(const Elem * elem, unsigned int side, Bound
       }
     }
   }
-
-  _fe_problem.setCurrentBoundaryID(Moose::INVALID_BOUNDARY_ID);
 }
 
 void

@@ -45,7 +45,6 @@ class DisplacedProblem : public SubProblem
 {
 public:
   DisplacedProblem(const InputParameters & parameters);
-  virtual ~DisplacedProblem();
 
   virtual EquationSystems & es() override { return _eq; }
   virtual MooseMesh & mesh() override { return _mesh; }
@@ -113,6 +112,8 @@ public:
   virtual bool hasScalarVariable(const std::string & var_name) override;
   virtual MooseVariableScalar & getScalarVariable(THREAD_ID tid,
                                                   const std::string & var_name) override;
+  virtual System & getSystem(const std::string & var_name) override;
+
   virtual void addVariable(const std::string & var_name,
                            const FEType & type,
                            Real scale_factor,
@@ -142,6 +143,8 @@ public:
                        unsigned int jvar,
                        const std::vector<dof_id_type> & dof_indices,
                        THREAD_ID tid) override;
+  virtual void setCurrentSubdomainID(const Elem * elem, THREAD_ID tid) override;
+  virtual void setNeighborSubdomainID(const Elem * elem, unsigned int side, THREAD_ID tid) override;
   virtual void prepareBlockNonlocal(unsigned int ivar,
                                     unsigned int jvar,
                                     const std::vector<dof_id_type> & idof_indices,
@@ -275,7 +278,7 @@ protected:
   const NumericVector<Number> * _nl_solution;
   const NumericVector<Number> * _aux_solution;
 
-  std::vector<Assembly *> _assembly;
+  std::vector<std::unique_ptr<Assembly>> _assembly;
 
   GeometricSearchData _geometric_search_data;
 

@@ -144,7 +144,7 @@ class VTKWindowPlugin(QtWidgets.QFrame, ExodusPlugin):
                 self.reset()
 
         # Display Exodus result
-        if file_exists:
+        if file_exists and os.path.getsize(self._filename) > 0:
             # Clear any-existing VTK objects on the window
             self._window.clear()
 
@@ -187,6 +187,13 @@ class VTKWindowPlugin(QtWidgets.QFrame, ExodusPlugin):
             self._window.append(self._peacock_text)
             self._window.update()
             self.setEnabled(False)
+
+    def setLoadingMessage(self, msg):
+        """
+        Set the text shown when there isn't a file.
+        """
+        self._peacock_text.update(text=msg)
+        self._window.update()
 
     def onInputFileChanged(self, *args):
         """
@@ -318,7 +325,7 @@ class VTKWindowPlugin(QtWidgets.QFrame, ExodusPlugin):
 
         if block or boundary or nodeset:
             self._highlight.setOptions(block=block, boundary=boundary, nodeset=nodeset)
-            self._highlight.setOptions(edges=True, edge_width=3, edge_color=[1,0,0])
+            self._highlight.setOptions(edges=True, edge_width=3, edge_color=[1,0,0], point_size=5)
             self.onAppendResult(self._highlight)
         else:
             self._highlight.reset()

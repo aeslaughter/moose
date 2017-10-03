@@ -5,6 +5,7 @@
 /*             See LICENSE for full restrictions                */
 /****************************************************************/
 #include "IsotropicPowerLawHardeningStressUpdate.h"
+#include "ElasticityTensorTools.h"
 
 template <>
 InputParameters
@@ -43,13 +44,14 @@ IsotropicPowerLawHardeningStressUpdate::IsotropicPowerLawHardeningStressUpdate(
 }
 
 void
-IsotropicPowerLawHardeningStressUpdate::computeStressInitialize(Real effectiveTrialStress)
+IsotropicPowerLawHardeningStressUpdate::computeStressInitialize(
+    const Real effective_trial_stress, const RankFourTensor & elasticity_tensor)
 {
-  _shear_modulus = getIsotropicShearModulus();
-  computeYieldStress();
+  computeYieldStress(elasticity_tensor);
 
-  _effective_trial_stress = effectiveTrialStress;
-  _yield_condition = effectiveTrialStress - _hardening_variable_old[_qp] - _yield_stress;
+  _effective_trial_stress = effective_trial_stress;
+  _yield_condition = effective_trial_stress - _hardening_variable_old[_qp] - _yield_stress;
+
   _hardening_variable[_qp] = _hardening_variable_old[_qp];
   _plastic_strain[_qp] = _plastic_strain_old[_qp];
 }
@@ -57,7 +59,7 @@ IsotropicPowerLawHardeningStressUpdate::computeStressInitialize(Real effectiveTr
 Real
 IsotropicPowerLawHardeningStressUpdate::computeHardeningDerivative(Real scalar)
 {
-  const Real stress_delta = _effective_trial_stress - 3.0 * _shear_modulus * scalar;
+  const Real stress_delta = _effective_trial_stress - _three_shear_modulus * scalar;
   Real slope = std::pow(stress_delta, (1.0 / _strain_hardening_exponent - 1.0)) /
                _strain_hardening_exponent * 1.0 / std::pow(_K, 1.0 / _strain_hardening_exponent);
   slope -= 1.0 / _youngs_modulus;
@@ -66,12 +68,13 @@ IsotropicPowerLawHardeningStressUpdate::computeHardeningDerivative(Real scalar)
 }
 
 void
-IsotropicPowerLawHardeningStressUpdate::computeYieldStress()
+IsotropicPowerLawHardeningStressUpdate::computeYieldStress(const RankFourTensor & elasticity_tensor)
 {
   // Pull in the Lam\`{e} lambda, and caculate E
-  const Real lambda = getIsotropicLameLambda();
-  _youngs_modulus =
-      _shear_modulus * (3.0 * lambda + 2 * _shear_modulus) / (lambda + _shear_modulus);
+  const Real lambda = getIsotropicLameLambda(elasticity_tensor);
+  const Real shear_modulus = _three_shear_modulus / 3.0;
+
+  _youngs_modulus = shear_modulus * (3.0 * lambda + 2 * shear_modulus) / (lambda + shear_modulus);
 
   // Then solve for yield stress using equation from the header file
   _yield_stress = std::pow(_K / std::pow(_youngs_modulus, _strain_hardening_exponent),
@@ -82,11 +85,12 @@ IsotropicPowerLawHardeningStressUpdate::computeYieldStress()
 }
 
 Real
-IsotropicPowerLawHardeningStressUpdate::getIsotropicLameLambda()
+IsotropicPowerLawHardeningStressUpdate::getIsotropicLameLambda(
+    const RankFourTensor & elasticity_tensor)
 {
-  const Real lame_lambda = _elasticity_tensor[_qp](0, 0, 1, 1);
+  const Real lame_lambda = elasticity_tensor(0, 0, 1, 1);
 
-  if (_mesh.dimension() == 3 && lame_lambda != _elasticity_tensor[_qp](1, 1, 2, 2))
+  if (_mesh.dimension() == 3 && lame_lambda != elasticity_tensor(1, 1, 2, 2))
     mooseError(
         "Check to ensure that your Elasticity Tensor is truly Isotropic: different lambda values");
   return lame_lambda;

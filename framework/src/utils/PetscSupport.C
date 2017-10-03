@@ -33,9 +33,7 @@
 #include "Executioner.h"
 #include "MooseMesh.h"
 
-// libMesh includes
 #include "libmesh/equation_systems.h"
-#include "libmesh/getpot.h"
 #include "libmesh/linear_implicit_system.h"
 #include "libmesh/nonlinear_implicit_system.h"
 #include "libmesh/petsc_linear_solver.h"
@@ -110,6 +108,21 @@ stringify(const LineSearchType & t)
   return "";
 }
 
+std::string
+stringify(const MffdType & t)
+{
+  switch (t)
+  {
+    case MFFD_WP:
+      return "wp";
+    case MFFD_DS:
+      return "ds";
+    case MFFD_INVALID:
+      mooseError("Invalid MffdType");
+  }
+  return "";
+}
+
 void
 setSolverOptions(SolverParams & solver_params)
 {
@@ -118,10 +131,12 @@ setSolverOptions(SolverParams & solver_params)
   {
     case Moose::ST_PJFNK:
       setSinglePetscOption("-snes_mf_operator");
+      setSinglePetscOption("-mat_mffd_type", stringify(solver_params._mffd_type));
       break;
 
     case Moose::ST_JFNK:
       setSinglePetscOption("-snes_mf");
+      setSinglePetscOption("-mat_mffd_type", stringify(solver_params._mffd_type));
       break;
 
     case Moose::ST_NEWTON:
@@ -235,7 +250,7 @@ petscSetOptions(FEProblemBase & problem)
 
   // Add any additional options specified in the input file
   for (const auto & flag : petsc.flags)
-    setSinglePetscOption(flag.c_str());
+    setSinglePetscOption(flag.rawName().c_str());
   for (unsigned int i = 0; i < petsc.inames.size(); ++i)
     setSinglePetscOption(petsc.inames[i], petsc.values[i]);
 
@@ -250,8 +265,17 @@ PetscErrorCode
 petscSetupOutput(CommandLine * cmd_line)
 {
   char code[10] = {45, 45, 109, 111, 111, 115, 101};
-  if (cmd_line->getPot()->search(code))
-    Console::petscSetupOutput();
+  int argc = cmd_line->argc();
+  char ** argv = cmd_line->argv();
+  for (int i = 0; i < argc; i++)
+  {
+    std::string arg(argv[i]);
+    if (arg == std::string(code, 10))
+    {
+      Console::petscSetupOutput();
+      break;
+    }
+  }
   return 0;
 }
 
@@ -574,7 +598,7 @@ void
 storePetscOptions(FEProblemBase & fe_problem, const InputParameters & params)
 {
   // Note: Options set in the Preconditioner block will override those set in the Executioner block
-  if (params.isParamValid("solve_type"))
+  if (params.isParamValid("solve_type") && !params.isParamValid("_use_eigen_value"))
   {
     // Extract the solve type
     const std::string & solve_type = params.get<MooseEnum>("solve_type");
@@ -587,6 +611,12 @@ storePetscOptions(FEProblemBase & fe_problem, const InputParameters & params)
     if (fe_problem.solverParams()._line_search == Moose::LS_INVALID || line_search != "default")
       fe_problem.solverParams()._line_search =
           Moose::stringToEnum<Moose::LineSearchType>(line_search);
+  }
+
+  if (params.isParamValid("mffd_type"))
+  {
+    MooseEnum mffd_type = params.get<MooseEnum>("mffd_type");
+    fe_problem.solverParams()._mffd_type = Moose::stringToEnum<Moose::MffdType>(mffd_type);
   }
 
   // The parameters contained in the Action
@@ -624,13 +654,13 @@ storePetscOptions(FEProblemBase & fe_problem, const InputParameters & params)
 
       if (help_string != "")
         mooseWarning("The PETSc option ",
-                     option,
+                     std::string(option),
                      " should not be used directly in a MOOSE input file. ",
                      help_string);
     }
 
     // Update the stored items, but do not create duplicates
-    if (find(po.flags.begin(), po.flags.end(), option) == po.flags.end())
+    if (!po.flags.contains(option))
       po.flags.push_back(option);
   }
 
@@ -641,7 +671,7 @@ storePetscOptions(FEProblemBase & fe_problem, const InputParameters & params)
   // Setup the name value pairs
   bool boomeramg_found = false;
   bool strong_threshold_found = false;
-#if !PETSC_VERSION_LESS_THAN(3, 7, 0)
+#if !PETSC_VERSION_LESS_THAN(3, 7, 0) && PETSC_VERSION_LESS_THAN(3, 7, 6)
   bool superlu_dist_found = false;
   bool fact_pattern_found = false;
 #endif
@@ -664,7 +694,7 @@ storePetscOptions(FEProblemBase & fe_problem, const InputParameters & params)
         boomeramg_found = true;
       if (petsc_options_inames[i] == "-pc_hypre_boomeramg_strong_threshold")
         strong_threshold_found = true;
-#if !PETSC_VERSION_LESS_THAN(3, 7, 0)
+#if !PETSC_VERSION_LESS_THAN(3, 7, 0) && PETSC_VERSION_LESS_THAN(3, 7, 6)
       if (petsc_options_inames[i] == "-pc_factor_mat_solver_package" &&
           petsc_options_values[i] == "superlu_dist")
         superlu_dist_found = true;
@@ -690,9 +720,9 @@ storePetscOptions(FEProblemBase & fe_problem, const InputParameters & params)
     pc_description += "strong_threshold: 0.7 (auto)";
   }
 
-#if !PETSC_VERSION_LESS_THAN(3, 7, 0)
+#if !PETSC_VERSION_LESS_THAN(3, 7, 0) && PETSC_VERSION_LESS_THAN(3, 7, 6)
   // In PETSc-3.7.{0--4}, there is a bug when using superlu_dist, and we have to use
-  // SamePattern_SameRowPerm
+  // SamePattern_SameRowPerm, otherwise we use whatever we have in PETSc
   if (superlu_dist_found && !fact_pattern_found)
   {
     po.inames.push_back("-mat_superlu_dist_fact");
@@ -732,6 +762,13 @@ getPetscValidParams()
 #endif
   params.addParam<MooseEnum>(
       "line_search", line_search, "Specifies the line search type" + addtl_doc_str);
+
+  MooseEnum mffd_type("wp ds", "wp");
+  params.addParam<MooseEnum>("mffd_type",
+                             mffd_type,
+                             "Specifies the finite differencing type for "
+                             "Jacobian-free solve types. Note that the "
+                             "default is wp (for Walker and Pernice).");
 
   params.addParam<MultiMooseEnum>(
       "petsc_options", getCommonPetscFlags(), "Singleton PETSc options");

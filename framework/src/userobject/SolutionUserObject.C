@@ -21,7 +21,6 @@
 #include "MooseVariable.h"
 #include "RotationMatrix.h"
 
-// libMesh includes
 #include "libmesh/equation_systems.h"
 #include "libmesh/mesh_function.h"
 #include "libmesh/numeric_vector.h"
@@ -96,6 +95,7 @@ validParams<SolutionUserObject>()
       "if transformation_order = 'rotation0 scale_multiplier translation scale rotation1' then "
       "form p = R1*(R0*x*m - t)/s.  Then the values provided by the SolutionUserObject at point x "
       "in the simulation are the variable values at point p in the mesh.");
+  params.addClassDescription("Reads a variable from a mesh in one simulation to another");
   // Return the parameters
   return params;
 }
@@ -136,8 +136,8 @@ SolutionUserObject::SolutionUserObject(const InputParameters & parameters)
   Real a;
   Real b;
 
-  a = std::cos(halfPi * _rotation0_angle / 90);
-  b = std::sin(halfPi * _rotation0_angle / 90);
+  a = std::cos(halfPi * -_rotation0_angle / 90);
+  b = std::sin(halfPi * -_rotation0_angle / 90);
   // the following is an anticlockwise rotation about z
   RealTensorValue rot0_z(a, -b, 0, b, a, 0, 0, 0, 1);
   // form the rotation matrix that will take rotation0_vector to the z axis
@@ -146,8 +146,8 @@ SolutionUserObject::SolutionUserObject(const InputParameters & parameters)
   // back
   _r0 = vec0_to_z.transpose() * (rot0_z * vec0_to_z);
 
-  a = std::cos(halfPi * _rotation1_angle / 90);
-  b = std::sin(halfPi * _rotation1_angle / 90);
+  a = std::cos(halfPi * -_rotation1_angle / 90);
+  b = std::sin(halfPi * -_rotation1_angle / 90);
   // the following is an anticlockwise rotation about z
   RealTensorValue rot1_z(a, -b, 0, b, a, 0, 0, 0, 1);
   // form the rotation matrix that will take rotation1_vector to the z axis
@@ -221,7 +221,7 @@ SolutionUserObject::readExodusII()
     else
     {
       std::istringstream ss(s_timestep);
-      if (!(ss >> _exodus_time_index) || _exodus_time_index > n_steps)
+      if (!((ss >> _exodus_time_index) && ss.eof()) || _exodus_time_index > n_steps)
         mooseError("Invalid value passed as \"timestep\". Expected \"LATEST\" or a valid integer "
                    "less than ",
                    n_steps,

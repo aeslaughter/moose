@@ -14,6 +14,11 @@
 // UserObjects
 #include "PorousFlowDictator.h"
 #include "PorousFlowSumQuantity.h"
+#include "PorousFlowCapillaryPressureConst.h"
+#include "PorousFlowCapillaryPressureVG.h"
+#include "PorousFlowCapillaryPressureRSC.h"
+#include "PorousFlowCapillaryPressureBW.h"
+#include "PorousFlowCapillaryPressureBC.h"
 
 // DiracKernels
 #include "PorousFlowSquarePulsePointSource.h"
@@ -30,18 +35,15 @@
 #include "PorousFlow2PhasePP.h"
 #include "PorousFlow2PhasePS_VG.h"
 #include "PorousFlow1PhaseP.h"
+#include "PorousFlow1PhaseFullySaturated.h"
 #include "PorousFlow2PhasePP_VG.h"
 #include "PorousFlow2PhasePP_RSC.h"
 #include "PorousFlowMassFraction.h"
 #include "PorousFlow1PhaseP_VG.h"
 #include "PorousFlow1PhaseP_BW.h"
 #include "PorousFlow2PhasePS.h"
-#include "PorousFlowVariableBase.h"
 #include "PorousFlowBrine.h"
-#include "PorousFlowDensityConstBulk.h"
 #include "PorousFlowEffectiveFluidPressure.h"
-#include "PorousFlowFluidPropertiesBase.h"
-#include "PorousFlowIdealGas.h"
 #include "PorousFlowPermeabilityConst.h"
 #include "PorousFlowPermeabilityConstFromVar.h"
 #include "PorousFlowPermeabilityKozenyCarman.h"
@@ -51,19 +53,19 @@
 #include "PorousFlowPorosityHMBiotModulus.h"
 #include "PorousFlowPorosityTM.h"
 #include "PorousFlowPorosityTHM.h"
+#include "PorousFlowRelativePermeabilityBC.h"
 #include "PorousFlowRelativePermeabilityCorey.h"
 #include "PorousFlowRelativePermeabilityConst.h"
 #include "PorousFlowRelativePermeabilityVG.h"
 #include "PorousFlowRelativePermeabilityBW.h"
 #include "PorousFlowRelativePermeabilityFLAC.h"
-#include "PorousFlowViscosityConst.h"
+#include "PorousFlowTotalGravitationalDensityFullySaturatedFromPorosity.h"
 #include "PorousFlowVolumetricStrain.h"
 #include "PorousFlowJoiner.h"
 #include "PorousFlowTemperature.h"
 #include "PorousFlowThermalConductivityIdeal.h"
+#include "PorousFlowThermalConductivityFromPorosity.h"
 #include "PorousFlowMatrixInternalEnergy.h"
-#include "PorousFlowInternalEnergyIdeal.h"
-#include "PorousFlowEnthalpy.h"
 #include "PorousFlowDiffusivityConst.h"
 #include "PorousFlowDiffusivityMillingtonQuirk.h"
 #include "PorousFlowSingleComponentFluid.h"
@@ -71,6 +73,7 @@
 #include "PorousFlowConstantBiotModulus.h"
 #include "PorousFlowConstantThermalExpansionCoefficient.h"
 #include "PorousFlowFluidStateWaterNCG.h"
+#include "PorousFlowFluidStateBrineCO2.h"
 
 // Kernels
 #include "PorousFlowAdvectiveFlux.h"
@@ -115,15 +118,11 @@ validParams<PorousFlowApp>()
 PorousFlowApp::PorousFlowApp(const InputParameters & parameters) : MooseApp(parameters)
 {
   Moose::registerObjects(_factory);
-  TensorMechanicsApp::registerObjects(_factory);
-  FluidPropertiesApp::registerObjects(_factory);
-  ChemicalReactionsApp::registerObjects(_factory);
+  PorousFlowApp::registerObjectDepends(_factory);
   PorousFlowApp::registerObjects(_factory);
 
   Moose::associateSyntax(_syntax, _action_factory);
-  TensorMechanicsApp::associateSyntax(_syntax, _action_factory);
-  FluidPropertiesApp::associateSyntax(_syntax, _action_factory);
-  ChemicalReactionsApp::associateSyntax(_syntax, _action_factory);
+  PorousFlowApp::associateSyntaxDepends(_syntax, _action_factory);
   PorousFlowApp::associateSyntax(_syntax, _action_factory);
 }
 
@@ -141,6 +140,14 @@ PorousFlowApp::registerApps()
   registerApp(PorousFlowApp);
 }
 
+void
+PorousFlowApp::registerObjectDepends(Factory & factory)
+{
+  TensorMechanicsApp::registerObjects(factory);
+  FluidPropertiesApp::registerObjects(factory);
+  ChemicalReactionsApp::registerObjects(factory);
+}
+
 // External entry point for dynamic object registration
 extern "C" void
 PorousFlowApp__registerObjects(Factory & factory)
@@ -153,6 +160,11 @@ PorousFlowApp::registerObjects(Factory & factory)
   // UserObjects
   registerUserObject(PorousFlowDictator);
   registerUserObject(PorousFlowSumQuantity);
+  registerUserObject(PorousFlowCapillaryPressureConst);
+  registerUserObject(PorousFlowCapillaryPressureVG);
+  registerUserObject(PorousFlowCapillaryPressureRSC);
+  registerUserObject(PorousFlowCapillaryPressureBW);
+  registerUserObject(PorousFlowCapillaryPressureBC);
 
   // DiracKernels
   registerDiracKernel(PorousFlowSquarePulsePointSource);
@@ -169,18 +181,15 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlow2PhasePP);
   registerMaterial(PorousFlow2PhasePS_VG);
   registerMaterial(PorousFlow1PhaseP);
+  registerMaterial(PorousFlow1PhaseFullySaturated);
   registerMaterial(PorousFlow2PhasePP_VG);
   registerMaterial(PorousFlow2PhasePP_RSC);
   registerMaterial(PorousFlowMassFraction);
   registerMaterial(PorousFlow1PhaseP_VG);
   registerMaterial(PorousFlow1PhaseP_BW);
   registerMaterial(PorousFlow2PhasePS);
-  registerMaterial(PorousFlowVariableBase);
   registerMaterial(PorousFlowBrine);
-  registerMaterial(PorousFlowDensityConstBulk);
   registerMaterial(PorousFlowEffectiveFluidPressure);
-  registerMaterial(PorousFlowFluidPropertiesBase);
-  registerMaterial(PorousFlowIdealGas);
   registerMaterial(PorousFlowPermeabilityConst);
   registerMaterial(PorousFlowPermeabilityConstFromVar);
   registerMaterial(PorousFlowPermeabilityKozenyCarman);
@@ -190,19 +199,19 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowPorosityHMBiotModulus);
   registerMaterial(PorousFlowPorosityTM);
   registerMaterial(PorousFlowPorosityTHM);
+  registerMaterial(PorousFlowRelativePermeabilityBC);
   registerMaterial(PorousFlowRelativePermeabilityCorey);
   registerMaterial(PorousFlowRelativePermeabilityConst);
   registerMaterial(PorousFlowRelativePermeabilityVG);
   registerMaterial(PorousFlowRelativePermeabilityBW);
   registerMaterial(PorousFlowRelativePermeabilityFLAC);
-  registerMaterial(PorousFlowViscosityConst);
+  registerMaterial(PorousFlowTotalGravitationalDensityFullySaturatedFromPorosity);
   registerMaterial(PorousFlowVolumetricStrain);
   registerMaterial(PorousFlowJoiner);
   registerMaterial(PorousFlowTemperature);
   registerMaterial(PorousFlowThermalConductivityIdeal);
+  registerMaterial(PorousFlowThermalConductivityFromPorosity);
   registerMaterial(PorousFlowMatrixInternalEnergy);
-  registerMaterial(PorousFlowInternalEnergyIdeal);
-  registerMaterial(PorousFlowEnthalpy);
   registerMaterial(PorousFlowDiffusivityConst);
   registerMaterial(PorousFlowDiffusivityMillingtonQuirk);
   registerMaterial(PorousFlowSingleComponentFluid);
@@ -210,6 +219,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowConstantBiotModulus);
   registerMaterial(PorousFlowConstantThermalExpansionCoefficient);
   registerMaterial(PorousFlowFluidStateWaterNCG);
+  registerMaterial(PorousFlowFluidStateBrineCO2);
 
   // Kernels
   registerKernel(PorousFlowAdvectiveFlux);
@@ -242,6 +252,14 @@ PorousFlowApp::registerObjects(Factory & factory)
 
   // Functions
   registerFunction(MovingPlanarFront);
+}
+
+void
+PorousFlowApp::associateSyntaxDepends(Syntax & syntax, ActionFactory & action_factory)
+{
+  TensorMechanicsApp::associateSyntax(syntax, action_factory);
+  FluidPropertiesApp::associateSyntax(syntax, action_factory);
+  ChemicalReactionsApp::associateSyntax(syntax, action_factory);
 }
 
 // External entry point for dynamic syntax association

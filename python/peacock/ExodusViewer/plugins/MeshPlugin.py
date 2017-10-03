@@ -22,6 +22,12 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         peacock.base.PeacockCollapsibleWidget.__init__(self, collapsible_layout=QtWidgets.QVBoxLayout)
         ExodusPlugin.__init__(self, **kwargs)
 
+        self._preferences.addBool("exodus/viewMesh",
+                "View the mesh",
+                False,
+                "View the mesh by default",
+                )
+
         # Current variable (used for caching settings)
         self._variable = None
         self._transform = chigger.filters.TransformFilter()
@@ -35,7 +41,7 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
 
         # Displacements
         self.DisplacementToggle = QtWidgets.QCheckBox("Displacements")
-        self.DisplacmentMagnitude = QtWidgets.QDoubleSpinBox()
+        self.DisplacementMagnitude = QtWidgets.QDoubleSpinBox()
 
         # Mesh
         self.RepresentationLabel = QtWidgets.QLabel("Representation:")
@@ -54,7 +60,7 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         # Layouts
         self.DisplacementLayout = QtWidgets.QHBoxLayout()
         self.DisplacementLayout.addWidget(self.DisplacementToggle)
-        self.DisplacementLayout.addWidget(self.DisplacmentMagnitude)
+        self.DisplacementLayout.addWidget(self.DisplacementMagnitude)
 
         self.MeshViewLayout = QtWidgets.QHBoxLayout()
         self.MeshViewLayout.addWidget(self.RepresentationLabel)
@@ -81,10 +87,19 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         When a variable changes, load the state of the clip.
         """
+        if self.isEnabled():
+            self.store(self.stateKey(self._variable), 'Variable')
         super(MeshPlugin, self).onVariableChanged(*args)
-        self.load(self._variable, 'Variable')
+        self.load(self.stateKey(self._variable), 'Variable')
         if self._result:
             self.mesh()
+
+    def onWindowCreated(self, reader, result, window):
+        """
+        Reload the mesh options when the window gets created
+        """
+        super(MeshPlugin, self).onWindowCreated(reader, result, window)
+        self.mesh()
 
     def mesh(self):
         """
@@ -93,12 +108,14 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         # Options to pass to ExodusResult
         reader_options = dict()
         result_options = dict()
-        filters = self._result.getOption('filters')
+        filters = []
+        if self._result:
+            filters = self._result.getOption('filters')
 
         # Displacement toggle and magnitude
-        reader_options['displacements'] = bool(self.DisplacementToggle.checkState())
-        reader_options['displacement_magnitude'] = self.DisplacmentMagnitude.value()
-        self.DisplacmentMagnitude.setEnabled(reader_options['displacements'])
+        reader_options['displacements'] = bool(self.DisplacementToggle.isChecked())
+        reader_options['displacement_magnitude'] = self.DisplacementMagnitude.value()
+        self.DisplacementMagnitude.setEnabled(reader_options['displacements'])
 
         # Representation
         result_options['representation'] = str(self.Representation.currentText()).lower()
@@ -121,7 +138,6 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         # Emit the update signal with the new arguments
         self.readerOptionsChanged.emit(reader_options)
         self.resultOptionsChanged.emit(result_options)
-        self.store(self._variable, 'Variable')
         self.windowRequiresUpdate.emit()
 
     def _setupDisplacementToggle(self, qobject):
@@ -129,9 +145,9 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         Setup method for DisplacementToggle widget. (protected)
         """
         qobject.setChecked(True)
-        qobject.clicked.connect(self.mesh)
+        qobject.stateChanged.connect(lambda value: self.mesh())
 
-    def _setupDisplacmentMagnitude(self, qobject):
+    def _setupDisplacementMagnitude(self, qobject):
         """
         Setup for DisplacementMagnitude widget. (protected)
         """
@@ -154,7 +170,7 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         Callback for Representation widget. (protected)
         """
 
-        WidgetUtils.loadWidget(self.ViewMeshToggle, self.Representation.currentIndex(), 'Respresentation')
+        WidgetUtils.loadWidget(self.ViewMeshToggle, self.stateKey(self.Representation.currentIndex()), 'Respresentation')
 
         index = self.Representation.currentIndex()
         if index == 0:
@@ -169,13 +185,14 @@ class MeshPlugin(peacock.base.PeacockCollapsibleWidget, ExodusPlugin):
         """
         Setup for showing the ViewMeshToggle widget. (protected)
         """
-        qobject.clicked.connect(self._callbackViewMeshToggle)
+        qobject.stateChanged.connect(lambda value: self._callbackViewMeshToggle())
+        qobject.setChecked(self._preferences.value("exodus/viewMesh"))
 
     def _callbackViewMeshToggle(self):
         """
         Callback for ViewMeshToggle widget. (protected)
         """
-        WidgetUtils.storeWidget(self.ViewMeshToggle, self.Representation.currentIndex(), 'Respresentation')
+        WidgetUtils.storeWidget(self.ViewMeshToggle, self.stateKey(self.Representation.currentIndex()), 'Respresentation')
         self.mesh()
 
     def _setupScaleLabel(self, qobject):

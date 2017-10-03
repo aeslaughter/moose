@@ -1,6 +1,5 @@
 from FileTester import FileTester
 import os
-import util
 import sys
 from mooseutils.ImageDiffer import ImageDiffer
 
@@ -24,13 +23,13 @@ class ImageDiff(FileTester):
     def getOutputFiles(self):
         return self.specs['imagediff']
 
-    def processResults(self, moose_dir, retcode, options, output):
+    def processResults(self, moose_dir, options, output):
         """
         Perform image diff
         """
 
         # Call base class processResults
-        output = FileTester.processResults(self, moose_dir, retcode, options, output)
+        FileTester.processResults(self, moose_dir, options, output)
         if self.getStatus() == self.bucket_fail:
             return output
 

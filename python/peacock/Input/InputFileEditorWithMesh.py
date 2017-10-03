@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from peacock.ExodusViewer.plugins.MeshPlugin import MeshPlugin
 from peacock.ExodusViewer.plugins.BackgroundPlugin import BackgroundPlugin
-from peacock.ExodusViewer.plugins.BlockPlugin import BlockPlugin
+from BlockHighlighterPlugin import BlockHighlighterPlugin
 from peacock.base.PluginManager import PluginManager
 from peacock.base.TabPlugin import TabPlugin
 from PyQt5.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QHBoxLayout
@@ -11,7 +11,6 @@ from InputFileEditorPlugin import InputFileEditorPlugin
 import os
 import BCHighlighter
 import TimeStepEstimate
-from InputSettings import InputSettings
 
 class InputFileEditorWithMesh(QWidget, PluginManager, TabPlugin):
     """
@@ -35,9 +34,9 @@ class InputFileEditorWithMesh(QWidget, PluginManager, TabPlugin):
         if not plugins:
             plugins = [lambda: InputFileEditorPlugin(layout='LeftLayout'),
                        lambda: MeshViewerPlugin(size=size, layout='WindowLayout'),
-                       lambda: MeshPlugin(layout='BottomLayout'),
-                       lambda: BackgroundPlugin(values=False, layout='BottomLayout'),
-                       lambda: BlockPlugin(layout='RightLayout', collapsible_layout=QVBoxLayout)]
+                       lambda: MeshPlugin(layout='BottomLayout', settings_key="input"),
+                       lambda: BackgroundPlugin(values=False, layout='BottomLayout', settings_key="input"),
+                       lambda: BlockHighlighterPlugin(layout='RightLayout', collapsible_layout=QVBoxLayout)]
         super(InputFileEditorWithMesh, self).__init__(plugins=plugins)
         # The layouts for this widget
         self.exe_info = None
@@ -93,8 +92,8 @@ class InputFileEditorWithMesh(QWidget, PluginManager, TabPlugin):
         Input:
             path[str]: path to new input file.
         """
-        self.updateView.emit(self.InputFileEditorPlugin.tree)
         self.inputFileChanged.emit(path)
+        self.updateView.emit(self.InputFileEditorPlugin.tree)
         if not self.InputFileEditorPlugin.tree.app_info.valid() or not self.InputFileEditorPlugin.tree.input_filename:
             self.numTimeStepsChanged.emit(0)
             return
@@ -159,7 +158,7 @@ class InputFileEditorWithMesh(QWidget, PluginManager, TabPlugin):
             enabled[bool]: Whether to set them enabled or disabled
         """
         self.MeshPlugin.setEnabled(enabled)
-        self.BlockPlugin.setEnabled(enabled)
+        self.BlockHighlighterPlugin.setEnabled(enabled)
         self.BackgroundPlugin.setEnabled(enabled)
 
     def onWorkingDirChanged(self, path):
@@ -238,11 +237,11 @@ class InputFileEditorWithMesh(QWidget, PluginManager, TabPlugin):
         """
         self.InputFileEditorPlugin.clearRecentlyUsed()
 
-    def settingsWidget(self):
+    def onUseTestObjectsChanged(self, use_test_objs):
         """
-        Just returns a widget that allows editing of settings for this widget
+        Pass along whether to use test objects.
         """
-        return InputSettings()
+        self.MeshViewerPlugin.useTestObjects(use_test_objs)
 
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication, QMainWindow

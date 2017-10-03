@@ -20,6 +20,8 @@
 #include "MooseUtils.h"
 #include "MultiMooseEnum.h"
 
+#include "pcrecpp.h"
+
 #include <cmath>
 
 InputParameters
@@ -157,6 +159,7 @@ InputParameters::operator=(const InputParameters & rhs)
   _set_by_add_param = rhs._set_by_add_param;
   _allow_copy = rhs._allow_copy;
   _controllable_params = rhs._controllable_params;
+  _reserved_values = rhs._reserved_values;
 
   return *this;
 }
@@ -185,6 +188,7 @@ InputParameters::operator+=(const InputParameters & rhs)
                                       rhs._default_postprocessor_value.end());
   _set_by_add_param.insert(rhs._set_by_add_param.begin(), rhs._set_by_add_param.end());
   _controllable_params.insert(rhs._controllable_params.begin(), rhs._controllable_params.end());
+  _reserved_values.insert(rhs._reserved_values.begin(), rhs._reserved_values.end());
   return *this;
 }
 
@@ -386,8 +390,8 @@ InputParameters::mooseObjectSyntaxVisibility() const
 void
 InputParameters::checkParams(const std::string & parsing_syntax)
 {
-  std::string l_prefix = this->have_parameter<std::string>("_object_name")
-                             ? this->get<std::string>("_object_name")
+  std::string l_prefix = this->have_parameter<std::string>("parser_syntax")
+                             ? this->get<std::string>("parser_syntax")
                              : parsing_syntax;
 
   std::ostringstream oss;
@@ -966,4 +970,28 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
                                                 const MultiMooseEnum *)
 {
   return pars.get<MultiMooseEnum>(name);
+}
+
+void
+InputParameters::setReservedValues(const std::string & name, const std::set<std::string> & reserved)
+{
+  _reserved_values.insert(std::make_pair(name, reserved));
+}
+
+std::set<std::string>
+InputParameters::reservedValues(const std::string & name) const
+{
+  auto it = _reserved_values.find(name);
+  if (it == _reserved_values.end())
+    return std::set<std::string>();
+  else
+    return it->second;
+}
+
+void
+InputParameters::checkParamName(const std::string & name) const
+{
+  const static pcrecpp::RE valid("[\\w:/]+");
+  if (!valid.FullMatch(name))
+    mooseError("Invalid parameter name: '", name, "'");
 }

@@ -35,11 +35,11 @@
 #include "ConsoleUtils.h"
 #include "JsonSyntaxTree.h"
 #include "JsonInputFileFormatter.h"
+#include "SONDefinitionFormatter.h"
 
 // Regular expression includes
 #include "pcrecpp.h"
 
-// libMesh includes
 #include "libmesh/exodusII_io.h"
 #include "libmesh/mesh_refinement.h"
 #include "libmesh/string_to_enum.h"
@@ -50,6 +50,7 @@
 
 // C++ includes
 #include <numeric> // std::accumulate
+#include <fstream>
 
 #define QUOTE(macro) stringifyName(macro)
 
@@ -86,6 +87,8 @@ validParams<MooseApp>()
       false,
       "Ignore input file and build a minimal application with Transient executioner.");
 
+  params.addCommandLineParam<std::string>(
+      "definition", "--definition", "Shows a SON style input definition dump for input validation");
   params.addCommandLineParam<std::string>(
       "dump", "--dump [search_string]", "Shows a dump of available input file syntax.");
   params.addCommandLineParam<std::string>(
@@ -181,6 +184,9 @@ validParams<MooseApp>()
                                    "Disabled performance logging. Overrides -t or --timing "
                                    "if passed in conjunction with this flag");
 
+  params.addCommandLineParam<bool>(
+      "allow_test_objects", "--allow-test-objects", false, "Register test objects and syntax.");
+
   // Options ignored by MOOSE but picked up by libMesh, these are here so that they are displayed in
   // the application help
   params.addCommandLineParam<bool>(
@@ -200,6 +206,8 @@ validParams<MooseApp>()
   params.addPrivateParam<char **>("_argv");
   params.addPrivateParam<std::shared_ptr<CommandLine>>("_command_line");
   params.addPrivateParam<std::shared_ptr<Parallel::Communicator>>("_comm");
+  params.addPrivateParam<unsigned int>("_multiapp_level");
+  params.addPrivateParam<unsigned int>("_multiapp_number");
 
   return params;
 }
@@ -222,6 +230,7 @@ MooseApp::MooseApp(InputParameters parameters)
     _action_warehouse(*this, _syntax, _action_factory),
     _parser(*this, _action_warehouse),
     _use_nonlinear(true),
+    _use_eigen_value(false),
     _enable_unused_check(WARN_UNUSED),
     _factory(*this),
     _error_overridden(false),
@@ -234,7 +243,10 @@ MooseApp::MooseApp(InputParameters parameters)
     _half_transient(false),
     _check_input(getParam<bool>("check_input")),
     _restartable_data(libMesh::n_threads()),
-    _multiapp_level(0)
+    _multiapp_level(
+        isParamValid("_multiapp_level") ? parameters.get<unsigned int>("_multiapp_level") : 0),
+    _multiapp_number(
+        isParamValid("_multiapp_number") ? parameters.get<unsigned int>("_multiapp_number") : 0)
 {
   if (isParamValid("_argc") && isParamValid("_argv"))
   {
@@ -382,6 +394,15 @@ MooseApp::setupOptions()
     Moose::out << formatter.toString(tree.getRoot()) << "\n";
     _ready_to_exit = true;
   }
+  else if (isParamValid("definition"))
+  {
+    Moose::perf_log.disable_logging();
+    JsonSyntaxTree tree("");
+    _parser.buildJsonSyntaxTree(tree);
+    SONDefinitionFormatter formatter;
+    Moose::out << formatter.toString(tree.getRoot()) << "\n";
+    _ready_to_exit = true;
+  }
   else if (isParamValid("yaml"))
   {
     Moose::perf_log.disable_logging();
@@ -450,13 +471,14 @@ MooseApp::setupOptions()
       // a dash then we are going to eventually find the newest recovery file to use
       if (!(recover_following_arg.empty() || (recover_following_arg.find('-') == 0)))
         _recover_base = recover_following_arg;
+    }
 
-      // Optionally get command line argument following
-      // --recoversuffix on command line
-      if (isParamValid("recoversuffix"))
-      {
-        _recover_suffix = getParam<std::string>("recoversuffix");
-      }
+    // Optionally get command line argument following --recoversuffix
+    // on command line.  Currently this argument applies to both
+    // recovery and restart files.
+    if (isParamValid("recoversuffix"))
+    {
+      _recover_suffix = getParam<std::string>("recoversuffix");
     }
 
     _parser.parse(_input_filename);
@@ -515,29 +537,19 @@ MooseApp::runInputFile()
     _ready_to_exit = true;
     return;
   }
+}
 
-  bool error_unused = getParam<bool>("error_unused") || _enable_unused_check == ERROR_UNUSED;
-  bool warn_unused = getParam<bool>("warn_unused") || _enable_unused_check == WARN_UNUSED;
+void
+MooseApp::errorCheck()
+{
+  bool warn = _enable_unused_check == WARN_UNUSED;
+  bool err = _enable_unused_check == ERROR_UNUSED;
+  _parser.errorCheck(*_comm, warn, err);
 
-  if (error_unused || warn_unused)
-  {
-    std::shared_ptr<FEProblemBase> fe_problem = _action_warehouse.problemBase();
-    if (fe_problem.get() && name() == "main" && !getParam<bool>("minimal"))
-    {
-      // Check the CLI parameters
-      std::vector<std::string> all_vars = _command_line->getPot()->get_variable_names();
-      _parser.checkUnidentifiedParams(all_vars, error_unused, false, fe_problem);
-
-      // Check the input file parameters
-      all_vars = _parser.getPotHandle()->get_variable_names();
-      _parser.checkUnidentifiedParams(all_vars, error_unused, true, fe_problem);
-    }
-  }
-
-  if (getParam<bool>("error_override") || _error_overridden)
-    _parser.checkOverriddenParams(true);
-  else
-    _parser.checkOverriddenParams(false);
+  auto apps = _executioner->feProblem().getMultiAppWarehouse().getObjects();
+  for (auto app : apps)
+    for (unsigned int i = 0; i < app->numLocalApps(); i++)
+      app->localApp(i)->errorCheck();
 }
 
 void
@@ -553,7 +565,9 @@ MooseApp::executeExecutioner()
 #ifdef LIBMESH_HAVE_PETSC
     Moose::PetscSupport::petscSetupOutput(_command_line.get());
 #endif
+
     _executioner->init();
+    errorCheck();
     _executioner->execute();
   }
   else
@@ -668,7 +682,16 @@ MooseApp::restore(std::shared_ptr<Backup> backup, bool for_restart)
 void
 MooseApp::setCheckUnusedFlag(bool warn_is_error)
 {
-  _enable_unused_check = warn_is_error ? ERROR_UNUSED : WARN_UNUSED;
+  /**
+   * _enable_unused_check is initialized to WARN_UNUSED. If an application chooses to promote
+   * this value to ERROR_UNUSED programmatically prior to running the simulation, we certainly
+   * don't want to allow it to fall back. Therefore, we won't set it if it's already at the
+   * highest value (i.e. error). If however a developer turns it off, it can still be turned on.
+   */
+  if (_enable_unused_check != ERROR_UNUSED || warn_is_error)
+    _enable_unused_check = warn_is_error ? ERROR_UNUSED : WARN_UNUSED;
+  else
+    mooseInfo("Ignoring request to turn off or warn about unused parameters.\n");
 }
 
 void
@@ -689,16 +712,26 @@ MooseApp::run()
   Moose::perf_log.push("Full Runtime", "Application");
 
   Moose::perf_log.push("Application Setup", "Setup");
-  registerExecFlags();
-  setupOptions();
-  runInputFile();
+  try
+  {
+    registerExecFlags();
+    setupOptions();
+    runInputFile();
+  }
+  catch (std::exception & err)
+  {
+    mooseError(err.what());
+  }
   Moose::perf_log.pop("Application Setup", "Setup");
 
   if (!_check_input)
     executeExecutioner();
   else
+  {
+    errorCheck();
     // Output to stderr, so it is easier for peacock to get the result
     Moose::err << "Syntax OK" << std::endl;
+  }
 
   Moose::perf_log.pop("Full Runtime", "Application");
 }

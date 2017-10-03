@@ -1,5 +1,5 @@
 from FileTester import FileTester
-import util
+from TestHarness import util
 import os
 
 class CheckFiles(FileTester):
@@ -22,10 +22,11 @@ class CheckFiles(FileTester):
     def getOutputFiles(self):
         return self.specs['check_files'] + self.specs['check_not_exists']
 
-    def processResults(self, moose_dir, retcode, options, output):
-        output = FileTester.processResults(self, moose_dir, retcode, options, output)
+    def processResults(self, moose_dir, options, output):
+        FileTester.processResults(self, moose_dir, options, output)
 
         specs = self.specs
+
         if self.getStatus() == self.bucket_fail or specs['skip_checks']:
             return output
         else:

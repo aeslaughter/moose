@@ -44,13 +44,10 @@ BoundaryRestrictable::BoundaryRestrictable(const InputParameters & parameters, b
                        : NULL),
     _bnd_mesh(parameters.isParamValid("_mesh") ? parameters.get<MooseMesh *>("_mesh") : NULL),
     _bnd_dual_restrictable(parameters.get<bool>("_dual_restrictable")),
-    _invalid_boundary_id(Moose::INVALID_BOUNDARY_ID),
     _block_ids(_empty_block_ids),
     _bnd_tid(parameters.isParamValid("_tid") ? parameters.get<THREAD_ID>("_tid") : 0),
     _bnd_material_data(_bnd_feproblem->getMaterialData(Moose::BOUNDARY_MATERIAL_DATA, _bnd_tid)),
-    _bnd_nodal(nodal),
-    _current_boundary_id(_bnd_feproblem == NULL ? _invalid_boundary_id
-                                                : _bnd_feproblem->getCurrentBoundaryID())
+    _bnd_nodal(nodal)
 {
   initializeBoundaryRestrictable(parameters);
 }
@@ -64,13 +61,10 @@ BoundaryRestrictable::BoundaryRestrictable(const InputParameters & parameters,
                        : NULL),
     _bnd_mesh(parameters.isParamValid("_mesh") ? parameters.get<MooseMesh *>("_mesh") : NULL),
     _bnd_dual_restrictable(parameters.get<bool>("_dual_restrictable")),
-    _invalid_boundary_id(Moose::INVALID_BOUNDARY_ID),
     _block_ids(block_ids),
     _bnd_tid(parameters.isParamValid("_tid") ? parameters.get<THREAD_ID>("_tid") : 0),
     _bnd_material_data(_bnd_feproblem->getMaterialData(Moose::BOUNDARY_MATERIAL_DATA, _bnd_tid)),
-    _bnd_nodal(nodal),
-    _current_boundary_id(_bnd_feproblem == NULL ? _invalid_boundary_id
-                                                : _bnd_feproblem->getCurrentBoundaryID())
+    _bnd_nodal(nodal)
 {
   initializeBoundaryRestrictable(parameters);
 }
@@ -143,7 +137,7 @@ BoundaryRestrictable::initializeBoundaryRestrictable(const InputParameters & par
     {
       std::ostringstream msg;
       msg << "The object '" << name
-          << "' contains the following boundary ids that do no exist on the mesh:";
+          << "' contains the following boundary ids that do not exist on the mesh:";
       for (const auto & id : diff)
         msg << " " << id;
       mooseError(msg.str());
@@ -172,9 +166,15 @@ BoundaryRestrictable::numBoundaryIDs() const
 }
 
 bool
-BoundaryRestrictable::boundaryRestricted()
+BoundaryRestrictable::boundaryRestricted() const
 {
-  return _bnd_ids.find(Moose::ANY_BOUNDARY_ID) == _bnd_ids.end();
+  return BoundaryRestrictable::restricted(_bnd_ids);
+}
+
+bool
+BoundaryRestrictable::restricted(const std::set<BoundaryID> & ids)
+{
+  return ids.find(Moose::ANY_BOUNDARY_ID) == ids.end();
 }
 
 bool

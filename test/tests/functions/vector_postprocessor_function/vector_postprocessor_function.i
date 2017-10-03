@@ -47,7 +47,7 @@
     type = PiecewiseLinear
     x = '0 0.008'
     y = '1 2'
-    axis = 1
+    axis = y
   [../]
 []
 
@@ -64,6 +64,7 @@
   variable = v
   function = function_v
 [../]
+[]
 
 [BCs]
   [./top_u]
@@ -79,7 +80,7 @@
     value = 0
   [../]
 []
-[]
+
 [Executioner]
   type = Transient
   solve_type = 'PJFNK'

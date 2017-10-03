@@ -29,7 +29,7 @@ in material properties and follow a naming scheme that is defined in `KKSBaseMat
 $\mu$ from $\frac{\partial F}{\partial c}$. The non-linear variable for this Kernel
 is the concentration $c$. To calculate $\frac{\partial c}{\partial t}$ and
 $\nabla \cdot M(c) \nabla \mu$, we use the [`CoupledTimeDerivative`](framework/CoupledTimeDerivative.md) and
-[`SplitCHWRes`](phase_field/SplitCHWRes.md) kernels, respectively, as described [here](phase_field/Phase Field Equations.md).
+[`SplitCHWRes`](phase_field/SplitCHWRes.md) kernels, respectively, as described [here](phase_field/Phase_Field_Equations.md).
 
 ## Residual
 
@@ -426,4 +426,4 @@ $$
 J= \phi_j \frac{\partial R}{\partial \eta} = \phi_j \frac{dh}{d\eta}(c_b-c_a)
 $$
 
-\bibliography{docs/bib/phase_field.bib}
+\bibliography{phase_field.bib}

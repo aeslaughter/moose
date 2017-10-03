@@ -1,10 +1,15 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowHeatConduction
-!description /Kernels/PorousFlowHeatConduction
+!syntax description /Kernels/PorousFlowHeatConduction
 
-!parameters /Kernels/PorousFlowHeatConduction
+This `Kernel` implements the weak form of
+\begin{equation}
+  -\nabla\cdot \left(\lambda \nabla T\right)
+  \nonumber
+\end{equation}
+where all parameters are defined in the [nomenclature](/porous_flow/nomenclature.md).
 
-!inputfiles /Kernels/PorousFlowHeatConduction
+!syntax parameters /Kernels/PorousFlowHeatConduction
 
-!childobjects /Kernels/PorousFlowHeatConduction
+!syntax inputs /Kernels/PorousFlowHeatConduction
+
+!syntax children /Kernels/PorousFlowHeatConduction

@@ -16,7 +16,6 @@
 #include "FEProblem.h"
 #include "NonlinearSystem.h"
 
-// libMesh includes
 #include "libmesh/dof_map.h"
 #include "libmesh/mesh_tools.h"
 #include "libmesh/periodic_boundaries.h"
@@ -176,7 +175,6 @@ FeatureFloodCount::FeatureFloodCount(const InputParameters & parameters)
     _n_vars(_vars.size()),
     _maps_size(_single_map_mode ? 1 : _vars.size()),
     _n_procs(_app.n_processors()),
-    _entities_visited(_vars.size()), // This map is always sized to the number of variables
     _feature_counts_per_map(_maps_size),
     _feature_count(0),
     _partial_feature_sets(_maps_size),
@@ -200,6 +198,9 @@ FeatureFloodCount::~FeatureFloodCount() {}
 void
 FeatureFloodCount::initialSetup()
 {
+  // We need one map per coupled variable for normal runs to support overlapping features
+  _entities_visited.resize(_vars.size());
+
   // Get a pointer to the PeriodicBoundaries buried in libMesh
   _pbs = _fe_problem.getNonlinearSystemBase().dofMap().get_periodic_boundaries();
 
@@ -243,14 +244,13 @@ FeatureFloodCount::initialize()
 
   _entity_var_to_features.clear();
 
-  clearDataStructures();
+  for (auto & map_ref : _entities_visited)
+    map_ref.clear();
 }
 
 void
 FeatureFloodCount::clearDataStructures()
 {
-  for (auto & map_ref : _entities_visited)
-    map_ref.clear();
 }
 
 void
@@ -350,7 +350,7 @@ FeatureFloodCount::communicateAndMerge()
     deserialize(recv_buffers);
     recv_buffers.clear();
 
-    mergeSets(true);
+    mergeSets();
   }
 
   // Make sure that feature count is communicated to all ranks
@@ -399,7 +399,8 @@ FeatureFloodCount::sortAndLabel()
 
   // Label the features with an ID based on the sorting (processor number independent value)
   for (auto i = beginIndex(_feature_sets); i < _feature_sets.size(); ++i)
-    _feature_sets[i]._id = i;
+    if (_feature_sets[i]._id == invalid_id)
+      _feature_sets[i]._id = i;
 }
 
 void
@@ -412,9 +413,12 @@ FeatureFloodCount::buildLocalToGlobalIndices(std::vector<std::size_t> & local_to
   // Now size the individual counts vectors based on the largest index seen per processor
   for (const auto & feature : _feature_sets)
     for (const auto & local_index_pair : feature._orig_ids)
-      // local index                                             // rank
+    {
+      // local_index_pair.first = ranks, local_index_pair.second = local_index
+      mooseAssert(local_index_pair.first < _n_procs, "Processor ID is out of range");
       if (local_index_pair.second >= static_cast<std::size_t>(counts[local_index_pair.first]))
         counts[local_index_pair.first] = local_index_pair.second + 1;
+    }
 
   // Build the offsets vector
   unsigned int globalsize = 0;
@@ -821,7 +825,7 @@ FeatureFloodCount::deserialize(std::vector<std::string> & serialized_buffers)
 }
 
 void
-FeatureFloodCount::mergeSets(bool use_periodic_boundary_info)
+FeatureFloodCount::mergeSets()
 {
   Moose::perf_log.push("mergeSets()", "FeatureFloodCount");
 
@@ -840,7 +844,7 @@ FeatureFloodCount::mergeSets(bool use_periodic_boundary_info)
            it2 != _partial_feature_sets[map_num].end();
            ++it2)
       {
-        if (it1 != it2 && it1->mergeable(*it2, use_periodic_boundary_info))
+        if (it1 != it2 && areFeaturesMergeable(*it1, *it2))
         {
           it2->merge(std::move(*it1));
 
@@ -925,38 +929,18 @@ FeatureFloodCount::mergeSets(bool use_periodic_boundary_info)
   Moose::perf_log.pop("mergeSets()", "FeatureFloodCount");
 }
 
+bool
+FeatureFloodCount::areFeaturesMergeable(const FeatureData & f1, const FeatureData & f2) const
+{
+  return f1.mergeable(f2);
+}
+
 void
 FeatureFloodCount::updateFieldInfo()
 {
   for (auto i = beginIndex(_feature_sets); i < _feature_sets.size(); ++i)
   {
     auto & feature = _feature_sets[i];
-    decltype(i) global_feature_number;
-
-    if (_is_master)
-      /**
-       * If we are on processor zero, the global feature number is simply the current
-       * index since we previously merged and sorted the partial features.
-       */
-      global_feature_number = i;
-    else
-    {
-      /**
-       * For the remaining ranks, obtaining the feature number requires us to
-       * first obtain the original local index (stored inside of the feature).
-       * Once we have that index, we can use it to look up the global id
-       * in the local to global map.
-       */
-      mooseAssert(feature._orig_ids.size() == 1, "feature._orig_ids length doesn't make sense");
-
-      // Get the local ID from the orig IDs
-      auto local_id = feature._orig_ids.begin()->second;
-      mooseAssert(local_id < _local_to_global_feature_map.size(),
-                  "local_id : " << local_id << " is out of range ("
-                                << _local_to_global_feature_map.size()
-                                << ')');
-      global_feature_number = _local_to_global_feature_map[local_id];
-    }
 
     // If the developer has requested _condense_map_info we'll make sure we only update the zeroth
     // map
@@ -966,7 +950,7 @@ FeatureFloodCount::updateFieldInfo()
     // Loop over the entity ids of this feature and update our local map
     for (auto entity : feature._local_ids)
     {
-      _feature_maps[map_index][entity] = static_cast<int>(global_feature_number);
+      _feature_maps[map_index][entity] = static_cast<int>(feature._id);
 
       if (_var_index_mode)
         _var_index_maps[map_index][entity] = feature._var_index;
@@ -974,18 +958,17 @@ FeatureFloodCount::updateFieldInfo()
       // Fill in the data structure that keeps track of all features per elem
       if (_compute_var_to_feature_map)
       {
-        auto map_it = _entity_var_to_features.lower_bound(entity);
-        if (map_it == _entity_var_to_features.end() || map_it->first != entity)
-          map_it = _entity_var_to_features.emplace_hint(
-              map_it, entity, std::vector<unsigned int>(_n_vars, invalid_id));
-        map_it->second[feature._var_index] = feature._id;
+        auto insert_pair = moose_try_emplace(
+            _entity_var_to_features, entity, std::vector<unsigned int>(_n_vars, invalid_id));
+        auto & vec_ref = insert_pair.first->second;
+        vec_ref[feature._var_index] = feature._id;
       }
     }
 
     if (_compute_halo_maps)
       // Loop over the halo ids to update cells with halo information
       for (auto entity : feature._halo_ids)
-        _halo_ids[map_index][entity] = static_cast<int>(global_feature_number);
+        _halo_ids[map_index][entity] = static_cast<int>(feature._id);
 
     // Loop over the ghosted ids to update cells with ghost information
     for (auto entity : feature._ghosted_ids)
@@ -997,27 +980,30 @@ FeatureFloodCount::updateFieldInfo()
   }
 }
 
-void
+bool
 FeatureFloodCount::flood(const DofObject * dof_object,
                          std::size_t current_index,
                          FeatureData * feature)
 {
   if (dof_object == nullptr)
-    return;
+    return false;
 
   // Retrieve the id of the current entity
   auto entity_id = dof_object->id();
 
   // Has this entity already been marked? - if so move along
-  if (_entities_visited[current_index].find(entity_id) != _entities_visited[current_index].end())
-    return;
+  if (current_index != invalid_size_t &&
+      _entities_visited[current_index].find(entity_id) != _entities_visited[current_index].end())
+    return false;
 
   // See if the current entity either starts a new feature or continues an existing feature
   auto new_id = invalid_id; // Writable reference to hold an optional id;
   Status status =
       Status::INACTIVE; // Status is inactive until we find an entity above the starting threshold
   if (!isNewFeatureOrConnectedRegion(dof_object, current_index, feature, status, new_id))
-    return;
+    return false;
+
+  mooseAssert(current_index != invalid_size_t, "current_index is invalid");
 
   /**
    * If we reach this point (i.e. we haven't returned early from this routine),
@@ -1027,7 +1013,7 @@ FeatureFloodCount::flood(const DofObject * dof_object,
    * feature any time a "connecting threshold" is used since we may have
    * already visited this entity earlier but it was in-between two thresholds.
    */
-  _entities_visited[current_index][entity_id] = true;
+  _entities_visited[current_index].emplace(entity_id);
 
   auto map_num = _single_map_mode ? decltype(current_index)(0) : current_index;
 
@@ -1079,6 +1065,8 @@ FeatureFloodCount::flood(const DofObject * dof_object,
                         current_index,
                         feature,
                         /*expand_halos_only =*/false);
+
+  return true;
 }
 
 Real FeatureFloodCount::getThreshold(std::size_t /*current_index*/) const
@@ -1100,7 +1088,7 @@ FeatureFloodCount::compareValueWithThreshold(Real entity_value, Real threshold) 
 
 bool
 FeatureFloodCount::isNewFeatureOrConnectedRegion(const DofObject * dof_object,
-                                                 std::size_t current_index,
+                                                 std::size_t & current_index,
                                                  FeatureData *& feature,
                                                  Status & status,
                                                  unsigned int & /*new_id*/)
@@ -1136,6 +1124,122 @@ FeatureFloodCount::isNewFeatureOrConnectedRegion(const DofObject * dof_object,
    * possibly part of one that we'll discard if there is never any starting threshold encountered.
    */
   return compareValueWithThreshold(entity_value, getConnectingThreshold(current_index));
+}
+
+void
+FeatureFloodCount::expandPointHalos()
+{
+  const auto & node_to_elem_map = _mesh.nodeToActiveSemilocalElemMap();
+  decltype(FeatureData::_local_ids) expanded_local_ids;
+  auto my_processor_id = processor_id();
+
+  /**
+   * To expand the feature element region to the actual flooded region (nodal basis)
+   * we need to add in all point neighbors of the current local region for each feature.
+   * This is because the elemental variable influence spreads from the elemental data out
+   * exactly one element from every mesh point.
+   */
+  for (auto & list_ref : _partial_feature_sets)
+  {
+    for (auto & feature : list_ref)
+    {
+      expanded_local_ids.clear();
+
+      for (auto entity : feature._local_ids)
+      {
+        const Elem * elem = _mesh.elemPtr(entity);
+        mooseAssert(elem, "elem pointer is NULL");
+
+        // Get the nodes on a current element so that we can add in point neighbors
+        auto n_nodes = elem->n_vertices();
+        for (auto i = decltype(n_nodes)(0); i < n_nodes; ++i)
+        {
+          const Node * current_node = elem->get_node(i);
+
+          auto elem_vector_it = node_to_elem_map.find(current_node->id());
+          if (elem_vector_it == node_to_elem_map.end())
+            mooseError("Error in node to elem map");
+
+          const auto & elem_vector = elem_vector_it->second;
+
+          expanded_local_ids.insert(elem_vector.begin(), elem_vector.end());
+
+          // Now see which elements need to go into the ghosted set
+          for (auto entity : elem_vector)
+          {
+            const Elem * neighbor = _mesh.elemPtr(entity);
+            mooseAssert(neighbor, "neighbor pointer is NULL");
+
+            if (neighbor->processor_id() != my_processor_id)
+              feature._ghosted_ids.insert(elem->id());
+          }
+        }
+      }
+
+      // Replace the existing local ids with the expanded local ids
+      feature._local_ids.swap(expanded_local_ids);
+
+      // Copy the expanded local_ids into the halo_ids container
+      feature._halo_ids = feature._local_ids;
+    }
+  }
+}
+
+void
+FeatureFloodCount::expandEdgeHalos(unsigned int num_layers_to_expand)
+{
+  if (num_layers_to_expand == 0)
+    return;
+
+  for (auto & list_ref : _partial_feature_sets)
+  {
+    for (auto & feature : list_ref)
+    {
+      for (auto halo_level = decltype(num_layers_to_expand)(0); halo_level < num_layers_to_expand;
+           ++halo_level)
+      {
+        /**
+         * Create a copy of the halo set so that as we insert new ids into the
+         * set we don't continue to iterate on those new ids.
+         */
+        std::set<dof_id_type> orig_halo_ids(feature._halo_ids);
+        for (auto entity : orig_halo_ids)
+        {
+          if (_is_elemental)
+            visitElementalNeighbors(_mesh.elemPtr(entity),
+                                    feature._var_index,
+                                    &feature,
+                                    /*expand_halos_only =*/true,
+                                    /*disjoint_only =*/false);
+          else
+            visitNodalNeighbors(_mesh.nodePtr(entity),
+                                feature._var_index,
+                                &feature,
+                                /*expand_halos_only =*/true);
+        }
+
+        /**
+         * We have to handle disjoint halo IDs slightly differently. Once you are disjoint, you
+         * can't go back so make sure that we keep placing these IDs in the disjoint set.
+         */
+        std::set<dof_id_type> disjoint_orig_halo_ids(feature._disjoint_halo_ids);
+        for (auto entity : disjoint_orig_halo_ids)
+        {
+          if (_is_elemental)
+            visitElementalNeighbors(_mesh.elemPtr(entity),
+                                    feature._var_index,
+                                    &feature,
+                                    /*expand_halos_only =*/true,
+                                    /*disjoint_only =*/true);
+          else
+            visitNodalNeighbors(_mesh.nodePtr(entity),
+                                feature._var_index,
+                                &feature,
+                                /*expand_halos_only =*/true);
+        }
+      }
+    }
+  }
 }
 
 void
@@ -1430,14 +1534,13 @@ FeatureFloodCount::FeatureData::ghostedIntersect(const FeatureData & rhs) const
 }
 
 bool
-FeatureFloodCount::FeatureData::mergeable(const FeatureData & rhs, bool use_pb) const
+FeatureFloodCount::FeatureData::mergeable(const FeatureData & rhs) const
 {
-  return (_var_index == rhs._var_index &&        // the sets have matching variable indices and
-          ((boundingBoxesIntersect(rhs) &&       //  (if the feature's bboxes intersect and
-            ghostedIntersect(rhs))               //   the ghosted entities also intersect)
-           ||                                    //   or
-           (use_pb &&                            //  (if merging across periodic nodes and
-            periodicBoundariesIntersect(rhs)))); //   those node sets intersect)
+  return (_var_index == rhs._var_index &&      // the sets have matching variable indices and
+          ((boundingBoxesIntersect(rhs) &&     //  (if the feature's bboxes intersect and
+            ghostedIntersect(rhs))             //   the ghosted entities also intersect)
+           ||                                  //   or
+           periodicBoundariesIntersect(rhs))); //   periodic node sets intersect)
 }
 
 void

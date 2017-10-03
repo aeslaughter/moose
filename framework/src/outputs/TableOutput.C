@@ -22,8 +22,9 @@
 #include "MooseVariableScalar.h"
 #include "PetscSupport.h"
 #include "Postprocessor.h"
+#include "SystemBase.h"
 
-// libMesh includes
+#include "libmesh/dof_map.h"
 #include "libmesh/string_to_enum.h"
 
 template <>
@@ -34,9 +35,8 @@ validParams<TableOutput>()
   MooseEnum pps_fit_mode(FormattedTable::getWidthModes());
 
   // Base class parameters
-  InputParameters params = validParams<AdvancedOutput<FileOutput>>();
-  params +=
-      AdvancedOutput<FileOutput>::enableOutputTypes("postprocessor scalar vector_postprocessor");
+  InputParameters params = validParams<AdvancedOutput>();
+  params += AdvancedOutput::enableOutputTypes("postprocessor scalar vector_postprocessor");
 
   // Option for writing vector_postprocessor time file
   params.addParam<bool>("time_data",
@@ -57,7 +57,7 @@ validParams<TableOutput>()
 }
 
 TableOutput::TableOutput(const InputParameters & parameters)
-  : AdvancedOutput<FileOutput>(parameters),
+  : AdvancedOutput(parameters),
     _tables_restartable(getParam<bool>("append_restart")),
     _postprocessor_table(_tables_restartable
                              ? declareRestartableData<FormattedTable>("postprocessor_table")
@@ -73,6 +73,7 @@ TableOutput::TableOutput(const InputParameters & parameters)
                                         : declareRecoverableData<FormattedTable>("all_data_table")),
     _time_data(getParam<bool>("time_data")),
     _time_column(getParam<bool>("time_column"))
+
 {
 }
 
@@ -109,11 +110,10 @@ TableOutput::outputVectorPostprocessors()
     {
       const auto & vectors = _problem_ptr->getVectorPostprocessorVectors(vpp_name);
 
-      auto table_it = _vector_postprocessor_tables.lower_bound(vpp_name);
-      if (table_it == _vector_postprocessor_tables.end() || table_it->first != vpp_name)
-        table_it = _vector_postprocessor_tables.emplace_hint(table_it, vpp_name, FormattedTable());
+      auto insert_pair =
+          moose_try_emplace(_vector_postprocessor_tables, vpp_name, FormattedTable());
 
-      FormattedTable & table = table_it->second;
+      FormattedTable & table = insert_pair.first->second;
 
       table.clear();
       table.outputTimeColumn(false);
@@ -150,12 +150,44 @@ TableOutput::outputScalarVariables()
     // Make sure the value of the variable is in sync with the solution vector
     scalar_var.reinit();
 
-    VariableValue & value = scalar_var.sln();
+    // Next we need to make sure all processors agree on the value of
+    // the variable - not all processors may be able to see all
+    // scalars!
 
-    unsigned int n = value.size();
+    // Make a copy rather than taking a reference to the MooseArray,
+    // because if a processor can't see that scalar variable's values
+    // then we'll need to do our own communication of them.
+    VariableValue value = scalar_var.sln();
+    auto value_size = value.size();
+
+    // libMesh *does* currently guarantee that all processors can
+    // calculate all scalar DoF indices, so this is a const reference
+    const std::vector<dof_id_type> & dof_indices = scalar_var.dofIndices();
+    auto dof_size = dof_indices.size();
+    bool need_release = false;
+
+    // In dbg mode, if we don't see a scalar we might not even have
+    // its array allocated to full length yet.
+    if (dof_size > value_size)
+    {
+      value.resize(dof_size);
+      need_release = true;
+    }
+
+    // Finally, let's just let the owners broadcast their values.
+    // There's probably lots of room to optimize this communication
+    // via merging broadcasts and making them asynchronous, but this
+    // code path shouldn't be hit often enough for that to matter.
+
+    const DofMap & dof_map = scalar_var.sys().dofMap();
+    for (decltype(dof_size) i = 0; i < dof_size; ++i)
+    {
+      const processor_id_type pid = dof_map.dof_owner(dof_indices[i]);
+      this->comm().broadcast(value[i], pid);
+    }
 
     // If the variable has a single component, simply output the value with the name
-    if (n == 1)
+    if (dof_size == 1)
     {
       _scalar_table.addData(out_name, value[0], time());
       _all_data_table.addData(out_name, value[0], time());
@@ -163,12 +195,16 @@ TableOutput::outputScalarVariables()
 
     // Multi-component variables are appended with the component index
     else
-      for (unsigned int i = 0; i < n; ++i)
+      for (decltype(dof_size) i = 0; i < dof_size; ++i)
       {
         std::ostringstream os;
         os << out_name << "_" << i;
         _scalar_table.addData(os.str(), value[i], time());
         _all_data_table.addData(os.str(), value[i], time());
       }
+
+    // If we ended up reallocating, we'll need to release memory or leak it
+    if (need_release)
+      value.release();
   }
 }

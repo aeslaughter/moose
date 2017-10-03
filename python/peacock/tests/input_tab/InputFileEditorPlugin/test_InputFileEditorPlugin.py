@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 from peacock.Input.InputFileEditorPlugin import InputFileEditorPlugin
-from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication
 from peacock.Input.ExecutableInfo import ExecutableInfo
 from peacock.utils import Testing
 import os
 from mock import patch
+from PyQt5.QtCore import QSettings
 
 class Tests(Testing.PeacockTester):
+    qapp = QApplication([])
+
     def setUp(self):
         super(Tests, self).setUp()
         self.block_changed_count = 0
@@ -100,6 +103,22 @@ class Tests(Testing.PeacockTester):
         w._save_as_action.triggered.emit()
         self.checkMenus(w, True, save=True, recent=True, recent_count=2)
         self.assertEqual(w.tree.input_filename, os.path.abspath("delete_me2.i"))
+
+    def testPrefs(self):
+        main_win, w = self.newWidget()
+        widgets = w.preferenceWidgets()
+        self.assertEqual(len(widgets), 1)
+        pref = widgets[0]
+        pref.setValue(2)
+        settings = QSettings()
+        pref.save(settings)
+        key = "input/maxRecentlyUsed"
+        val = settings.value(key, type=int)
+        self.assertEqual(val, 2)
+        pref.setValue(15)
+        pref.save(settings)
+        val = settings.value(key, type=int)
+        self.assertEqual(val, 15)
 
 if __name__ == '__main__':
     Testing.run_tests()

@@ -25,7 +25,6 @@
 #include "RestartableData.h"
 #include "ConsoleStreamInterface.h"
 
-// libMesh includes
 #include "libmesh/parallel_object.h"
 
 // C++ includes
@@ -218,6 +217,11 @@ public:
    * Set a Boolean indicating whether this app will use a Nonlinear or Eigen System.
    */
   bool & useNonlinear() { return _use_nonlinear; }
+
+  /**
+   * Set a Boolean indicating whether this app will use an eigenvalue executioner.
+   */
+  bool & useEigenvalue() { return _use_eigen_value; }
 
   /**
    * Retrieve the Factory associated with this App.
@@ -437,10 +441,10 @@ public:
   unsigned int multiAppLevel() const { return _multiapp_level; }
 
   /**
-   * Set the MultiApp Level
-   * @param level The level to assign to this app.
+   * The MultiApp number
+   * @return The numbering in all the sub-apps on the same level
    */
-  void setMultiAppLevel(const unsigned int level) { _multiapp_level = level; }
+  unsigned int multiAppNumber() const { return _multiapp_number; }
 
   /**
    * Whether or not this app is the ultimate master app. (ie level == 0)
@@ -455,7 +459,7 @@ public:
                        InputParameters parameters);
 
   /**
-   * Get a mesh modifer with its name
+   * Get a mesh modifier with its name
    */
   const MeshModifier & getMeshModifier(const std::string & name) const;
 
@@ -531,6 +535,12 @@ protected:
    */
   virtual void registerRecoverableData(std::string name);
 
+  /**
+   * Runs post-initialization error checking that cannot be run correctly unless the simulation
+   * has been fully set up and initialized.
+   */
+  void errorCheck();
+
   /// The name of this object
   std::string _name;
 
@@ -590,6 +600,9 @@ protected:
 
   /// Boolean to indicate whether to use a Nonlinear or EigenSystem (inspected by actions)
   bool _use_nonlinear;
+
+  /// Boolean to indicate whether to use an eigenvalue executioner
+  bool _use_eigen_value;
 
   /// System Information
   std::shared_ptr<SystemInfo> _sys_info;
@@ -681,6 +694,9 @@ private:
 
   /// Level of multiapp, the master is level 0. This used by the Console to indent output
   unsigned int _multiapp_level;
+
+  /// Numbering in all the sub-apps on the same level
+  unsigned int _multiapp_number;
 
   /// Holds the mesh modifiers until they have completed, then this structure is cleared
   std::map<std::string, std::shared_ptr<MeshModifier>> _mesh_modifiers;

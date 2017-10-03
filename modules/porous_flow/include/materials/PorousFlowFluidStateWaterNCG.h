@@ -27,7 +27,7 @@ public:
   PorousFlowFluidStateWaterNCG(const InputParameters & parameters);
 
 protected:
-  virtual void thermophysicalProperties() const override;
+  virtual void thermophysicalProperties() override;
 
   /**
    * Enthalpy of dissolution of NCG in water calculated using Henry's constant
@@ -57,6 +57,10 @@ protected:
   const Real _Mh2o;
   /// Molar mass of non-condensable gas (kg/mol)
   const Real _Mncg;
+  /// Triple point temperature of water (K)
+  const Real _water_triple_temperature;
+  /// Critical temperature of water (K)
+  const Real _water_critical_temperature;
 };
 
 #endif // POROUSFLOWFLUIDSTATEWATERNCG_H

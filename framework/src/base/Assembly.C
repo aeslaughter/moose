@@ -46,6 +46,7 @@ Assembly::Assembly(SystemBase & sys, THREAD_ID tid)
     _current_qrule(NULL),
     _current_qrule_volume(NULL),
     _current_qrule_arbitrary(NULL),
+    _coord_type(Moose::COORD_XYZ),
     _current_qrule_face(NULL),
     _current_qface_arbitrary(NULL),
     _current_qrule_neighbor(NULL),
@@ -596,6 +597,8 @@ Assembly::reinitNeighbor(const Elem * neighbor, const std::vector<Point> & refer
   setNeighborQRule(neighbor_rule, neighbor_dim);
 
   _current_neighbor_elem = neighbor;
+  mooseAssert(_current_neighbor_subdomain_id == _current_neighbor_elem->subdomain_id(),
+              "current neighbor subdomain has been set incorrectly");
 
   // Calculate the volume of the neighbor
   if (_need_neighbor_elem_volume)
@@ -610,7 +613,7 @@ Assembly::reinitNeighbor(const Elem * neighbor, const std::vector<Point> & refer
     // set the coord transformation
     _coord_neighbor.resize(qrule->n_points());
     Moose::CoordinateSystemType coord_type =
-        _sys.subproblem().getCoordSystem(_current_neighbor_elem->subdomain_id());
+        _sys.subproblem().getCoordSystem(_current_neighbor_subdomain_id);
     unsigned int rz_radial_coord = _sys.subproblem().getAxisymmetricRadialCoord();
     const std::vector<Real> & JxW = fe->get_JxW();
     const std::vector<Point> & q_points = fe->get_xyz();
@@ -647,7 +650,9 @@ void
 Assembly::reinit(const Elem * elem)
 {
   _current_elem = elem;
-  _current_neighbor_elem = NULL;
+  _current_neighbor_elem = nullptr;
+  mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
+              "current subdomain has been set incorrectly");
   _current_elem_volume_computed = false;
 
   unsigned int elem_dimension = elem->dim();
@@ -729,7 +734,9 @@ void
 Assembly::reinitAtPhysical(const Elem * elem, const std::vector<Point> & physical_points)
 {
   _current_elem = elem;
-  _current_neighbor_elem = NULL;
+  _current_neighbor_elem = nullptr;
+  mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
+              "current subdomain has been set incorrectly");
   _current_elem_volume_computed = false;
 
   FEInterface::inverse_map(elem->dim(),
@@ -750,7 +757,9 @@ void
 Assembly::reinit(const Elem * elem, const std::vector<Point> & reference_points)
 {
   _current_elem = elem;
-  _current_neighbor_elem = NULL;
+  _current_neighbor_elem = nullptr;
+  mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
+              "current subdomain has been set incorrectly");
   _current_elem_volume_computed = false;
 
   unsigned int elem_dimension = _current_elem->dim();
@@ -774,8 +783,10 @@ void
 Assembly::reinit(const Elem * elem, unsigned int side)
 {
   _current_elem = elem;
+  _current_neighbor_elem = nullptr;
+  mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
+              "current subdomain has been set incorrectly");
   _current_side = side;
-  _current_neighbor_elem = NULL;
   _current_elem_volume_computed = false;
   _current_side_volume_computed = false;
 
@@ -835,7 +846,7 @@ Assembly::reinitNeighborAtPhysical(const Elem * neighbor,
                                    const std::vector<Point> & physical_points)
 {
   delete _current_neighbor_side_elem;
-  _current_neighbor_side_elem = neighbor->build_side(neighbor_side).release();
+  _current_neighbor_side_elem = neighbor->build_side_ptr(neighbor_side).release();
 
   std::vector<Point> reference_points;
 
@@ -1352,11 +1363,12 @@ Assembly::cacheResidual()
   const std::vector<MooseVariable *> & vars = _sys.getVariables(_tid);
   for (const auto & var : vars)
     for (unsigned int i = 0; i < _sub_Re.size(); i++)
-      cacheResidualBlock(_cached_residual_values[i],
-                         _cached_residual_rows[i],
-                         _sub_Re[i][var->number()],
-                         var->dofIndices(),
-                         var->scalingFactor());
+      if (_sys.hasResidualVector((Moose::KernelType)i))
+        cacheResidualBlock(_cached_residual_values[i],
+                           _cached_residual_rows[i],
+                           _sub_Re[i][var->number()],
+                           var->dofIndices(),
+                           var->scalingFactor());
 }
 
 void
@@ -1372,11 +1384,12 @@ Assembly::cacheResidualNeighbor()
   const std::vector<MooseVariable *> & vars = _sys.getVariables(_tid);
   for (const auto & var : vars)
     for (unsigned int i = 0; i < _sub_Re.size(); i++)
-      cacheResidualBlock(_cached_residual_values[i],
-                         _cached_residual_rows[i],
-                         _sub_Rn[i][var->number()],
-                         var->dofIndicesNeighbor(),
-                         var->scalingFactor());
+      if (_sys.hasResidualVector((Moose::KernelType)i))
+        cacheResidualBlock(_cached_residual_values[i],
+                           _cached_residual_rows[i],
+                           _sub_Rn[i][var->number()],
+                           var->dofIndicesNeighbor(),
+                           var->scalingFactor());
 }
 
 void
@@ -1394,8 +1407,31 @@ Assembly::cacheResidualNodes(DenseVector<Number> & res, std::vector<dof_id_type>
 }
 
 void
+Assembly::addCachedResiduals()
+{
+  for (unsigned int i = 0; i < _sub_Re.size(); i++)
+  {
+    Moose::KernelType type = (Moose::KernelType)i;
+    if (!_sys.hasResidualVector(type))
+    {
+      _cached_residual_values[i].clear();
+      _cached_residual_rows[i].clear();
+      continue;
+    }
+    addCachedResidual(_sys.residualVector(type), type);
+  }
+}
+
+void
 Assembly::addCachedResidual(NumericVector<Number> & residual, Moose::KernelType type)
 {
+  if (!_sys.hasResidualVector(type))
+  {
+    _cached_residual_values[type].clear();
+    _cached_residual_rows[type].clear();
+    return;
+  }
+
   std::vector<Real> & cached_residual_values = _cached_residual_values[type];
   std::vector<dof_id_type> & cached_residual_rows = _cached_residual_rows[type];
 

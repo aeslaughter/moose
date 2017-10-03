@@ -17,12 +17,14 @@
 // MOOSE includes
 #include "HashMap.h"
 #include "MaterialProperty.h" // MaterialProperties
+#include "InfixIterator.h"
 
 // C++ includes
 #include <string>
 #include <vector>
 #include <map>
 #include <list>
+#include <iterator>
 
 // Forward Declarations
 class InputParameters;
@@ -38,6 +40,10 @@ class MultiMooseEnum;
 
 namespace MooseUtils
 {
+
+/// Computes and returns the Levenshtein distance between strings s1 and s2.
+int levenshteinDist(const std::string & s1, const std::string & s2);
+
 /**
  * This function will escape all of the standard C++ escape characters so that they can be printed.
  * The
@@ -48,7 +54,7 @@ void escape(std::string & str);
 /**
  * Standard scripting language trim function
  */
-std::string trim(std::string str, const std::string & white_space = " \t\n\v\f\r");
+std::string trim(const std::string & str, const std::string & white_space = " \t\n\v\f\r");
 
 /**
  * This function tokenizes a path and checks to see if it contains the string to look for
@@ -337,7 +343,7 @@ bool wildCardMatch(std::string name, std::string search_string);
  * This function will split the passed in string on a set of delimiters appending the substrings
  * to the passed in vector.  The delimiters default to "/" but may be supplied as well.  In addition
  * if min_len is supplied, the minimum token length will be greater than the supplied value.
- * T should be std::string or a MOOSE derivied string class.
+ * T should be std::string or a MOOSE derived string class.
  */
 template <typename T>
 void
@@ -377,7 +383,7 @@ tokenizeAndConvert(const std::string & str,
   tokenized_vector.resize(tokens.size());
   for (unsigned int j = 0; j < tokens.size(); ++j)
   {
-    std::stringstream ss(tokens[j]);
+    std::stringstream ss(trim(tokens[j]));
     // we have to make sure that the conversion succeeded _and_ that the string
     // was fully read to avoid situations like [conversion to Real] 3.0abc to work
     if ((ss >> tokenized_vector[j]).fail() || !ss.eof())
@@ -387,6 +393,61 @@ tokenizeAndConvert(const std::string & str,
 }
 
 /**
+ * Convert supplied string to upper case.
+ * @params name The string to convert upper case.
+ */
+std::string toUpper(const std::string & name);
+
+/**
+ * Returns a container that contains the content of second passed in container
+ * inserted into the first passed in container (set or map union).
+ */
+template <typename T>
+T
+concatenate(T c1, const T & c2)
+{
+  c1.insert(c2.begin(), c2.end());
+  return c1;
+}
+
+/**
+ * Returns a vector that contains is teh concatenation of the two passed in vectors.
+ */
+template <typename T>
+std::vector<T>
+concatenate(std::vector<T> c1, const std::vector<T> & c2)
+{
+  c1.insert(c1.end(), c2.begin(), c2.end());
+  return c1;
+}
+
+/**
+ * Returns the passed in vector with the item appended to it.
+ */
+template <typename T>
+std::vector<T>
+concatenate(std::vector<T> c1, const T & item)
+{
+  c1.push_back(item);
+  return c1;
+}
+
+/**
+ * Return the number of digits for a number.
+ *
+ * This can foster quite a large discussion:
+ * https://stackoverflow.com/questions/1489830/efficient-way-to-determine-number-of-digits-in-an-integer
+ *
+ * For our purposes I like the following algorithm.
+ */
+template <typename T>
+int
+numDigits(const T & num)
+{
+  return num > 9 ? static_cast<int>(std::log10(static_cast<double>(num))) + 1 : 1;
+}
+
+/*
  * Returns the default execute_on MultiMooseEnum.
  * @param default_names Space separated list to set the default execute flags.
  */

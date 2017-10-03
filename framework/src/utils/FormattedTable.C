@@ -16,7 +16,6 @@
 #include "MooseError.h"
 #include "InfixIterator.h"
 
-// libMesh includes
 #include "libmesh/exodusII_io.h"
 
 #include <iomanip>
@@ -91,7 +90,8 @@ FormattedTable::FormattedTable(const FormattedTable & o)
     _last_key(o._last_key),
     _output_time(o._output_time),
     _csv_delimiter(","),
-    _csv_precision(14)
+    _csv_precision(14),
+    _column_names_unsorted(o._column_names_unsorted)
 {
   if (_stream_open)
     mooseError("Copying a FormattedTable with an open stream is not supported");
@@ -112,8 +112,10 @@ void
 FormattedTable::addData(const std::string & name, Real value, Real time)
 {
   _data[time][name] = value;
-  _column_names.insert(name);
+  if (std::find(_column_names.begin(), _column_names.end(), name) == _column_names.end())
+    _column_names.push_back(name);
   _last_key = time;
+  _column_names_unsorted = true;
 }
 
 Real &
@@ -131,8 +133,8 @@ FormattedTable::getLastData(const std::string & name)
 void
 FormattedTable::printOmittedRow(std::ostream & out,
                                 std::map<std::string, unsigned short> & col_widths,
-                                std::set<std::string>::iterator & col_begin,
-                                std::set<std::string>::iterator & col_end) const
+                                std::vector<std::string>::iterator & col_begin,
+                                std::vector<std::string>::iterator & col_end) const
 {
   printNoDataRow(':', ' ', out, col_widths, col_begin, col_end);
 }
@@ -140,8 +142,8 @@ FormattedTable::printOmittedRow(std::ostream & out,
 void
 FormattedTable::printRowDivider(std::ostream & out,
                                 std::map<std::string, unsigned short> & col_widths,
-                                std::set<std::string>::iterator & col_begin,
-                                std::set<std::string>::iterator & col_end) const
+                                std::vector<std::string>::iterator & col_begin,
+                                std::vector<std::string>::iterator & col_end) const
 {
   printNoDataRow('+', '-', out, col_widths, col_begin, col_end);
 }
@@ -151,12 +153,12 @@ FormattedTable::printNoDataRow(char intersect_char,
                                char fill_char,
                                std::ostream & out,
                                std::map<std::string, unsigned short> & col_widths,
-                               std::set<std::string>::iterator & col_begin,
-                               std::set<std::string>::iterator & col_end) const
+                               std::vector<std::string>::iterator & col_begin,
+                               std::vector<std::string>::iterator & col_end) const
 {
   out.fill(fill_char);
   out << std::right << intersect_char << std::setw(_column_width + 2) << intersect_char;
-  for (std::set<std::string>::iterator header = col_begin; header != col_end; ++header)
+  for (std::vector<std::string>::iterator header = col_begin; header != col_end; ++header)
     out << std::setw(col_widths[*header] + 2) << intersect_char;
   out << "\n";
 
@@ -194,11 +196,11 @@ FormattedTable::printTable(std::ostream & out,
   if (term_width < _min_pps_width)
     term_width = _min_pps_width;
 
-  std::set<std::string>::iterator col_it = _column_names.begin();
-  std::set<std::string>::iterator col_end = _column_names.end();
+  std::vector<std::string>::iterator col_it = _column_names.begin();
+  std::vector<std::string>::iterator col_end = _column_names.end();
 
-  std::set<std::string>::iterator curr_begin = col_it;
-  std::set<std::string>::iterator curr_end;
+  std::vector<std::string>::iterator curr_begin = col_it;
+  std::vector<std::string>::iterator curr_end;
   while (col_it != col_end)
   {
     std::map<std::string, unsigned short> col_widths;
@@ -231,11 +233,11 @@ void
 FormattedTable::printTablePiece(std::ostream & out,
                                 unsigned int last_n_entries,
                                 std::map<std::string, unsigned short> & col_widths,
-                                std::set<std::string>::iterator & col_begin,
-                                std::set<std::string>::iterator & col_end)
+                                std::vector<std::string>::iterator & col_begin,
+                                std::vector<std::string>::iterator & col_end)
 {
   std::map<Real, std::map<std::string, Real>>::iterator i;
-  std::set<std::string>::iterator header;
+  std::vector<std::string>::iterator header;
 
   /**
    * Print out the header row
@@ -293,6 +295,7 @@ FormattedTable::printCSV(const std::string & file_name, int interval, bool align
   {
     // Set the initial width to the names of the columns
     width["time"] = 4;
+
     for (const auto & col_name : _column_names)
       width[col_name] = col_name.size();
 
@@ -537,4 +540,14 @@ MooseEnum
 FormattedTable::getWidthModes()
 {
   return MooseEnum("ENVIRONMENT=-1 AUTO=0 80=80 120=120 160=160", "ENVIRONMENT", true);
+}
+
+void
+FormattedTable::sortColumns()
+{
+  if (_column_names_unsorted)
+  {
+    std::sort(_column_names.begin(), _column_names.end());
+    _column_names_unsorted = false;
+  }
 }

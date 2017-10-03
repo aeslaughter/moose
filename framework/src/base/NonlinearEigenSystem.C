@@ -21,8 +21,8 @@
 #include "KernelBase.h"
 #include "NodalBC.h"
 #include "TimeIntegrator.h"
+#include "SlepcSupport.h"
 
-// libmesh includes
 #include "libmesh/eigen_system.h"
 #include "libmesh/libmesh_config.h"
 #include "libmesh/petsc_matrix.h"
@@ -39,14 +39,61 @@ assemble_matrix(EquationSystems & es, const std::string & system_name)
   EigenProblem * p = es.parameters.get<EigenProblem *>("_eigen_problem");
   EigenSystem & eigen_system = es.get_system<EigenSystem>(system_name);
 
-  p->computeJacobian(
-      *eigen_system.current_local_solution.get(), *eigen_system.matrix_A, Moose::KT_NONEIGEN);
+  if (!p->isNonlinearEigenvalueSolver())
+  {
+    p->computeJacobian(
+        *eigen_system.current_local_solution.get(), *eigen_system.matrix_A, Moose::KT_NONEIGEN);
+  }
+  else
+  {
+    Mat petsc_mat_A = static_cast<PetscMatrix<Number> &>(*eigen_system.matrix_A).mat();
 
+    PetscObjectComposeFunction((PetscObject)petsc_mat_A,
+                               "formJacobian",
+                               Moose::SlepcSupport::mooseSlepcEigenFormJacobianA);
+    PetscObjectComposeFunction((PetscObject)petsc_mat_A,
+                               "formFunction",
+                               Moose::SlepcSupport::mooseSlepcEigenFormFunctionA);
+
+    PetscContainer container;
+    PetscContainerCreate(eigen_system.comm().get(), &container);
+    PetscContainerSetPointer(container, p);
+    PetscObjectCompose((PetscObject)petsc_mat_A, "formJacobianCtx", nullptr);
+    PetscObjectCompose((PetscObject)petsc_mat_A, "formJacobianCtx", (PetscObject)container);
+    PetscObjectCompose((PetscObject)petsc_mat_A, "formFunctionCtx", nullptr);
+    PetscObjectCompose((PetscObject)petsc_mat_A, "formFunctionCtx", (PetscObject)container);
+    PetscContainerDestroy(&container);
+  }
   if (eigen_system.generalized())
   {
     if (eigen_system.matrix_B)
-      p->computeJacobian(
-          *eigen_system.current_local_solution.get(), *eigen_system.matrix_B, Moose::KT_EIGEN);
+    {
+      if (!p->isNonlinearEigenvalueSolver())
+      {
+        p->computeJacobian(
+            *eigen_system.current_local_solution.get(), *eigen_system.matrix_B, Moose::KT_EIGEN);
+      }
+      else
+      {
+        Mat petsc_mat_B = static_cast<PetscMatrix<Number> &>(*eigen_system.matrix_B).mat();
+
+        PetscObjectComposeFunction((PetscObject)petsc_mat_B,
+                                   "formJacobian",
+                                   Moose::SlepcSupport::mooseSlepcEigenFormJacobianB);
+        PetscObjectComposeFunction((PetscObject)petsc_mat_B,
+                                   "formFunction",
+                                   Moose::SlepcSupport::mooseSlepcEigenFormFunctionB);
+
+        PetscContainer container;
+        PetscContainerCreate(eigen_system.comm().get(), &container);
+        PetscContainerSetPointer(container, p);
+        PetscObjectCompose((PetscObject)petsc_mat_B, "formFunctionCtx", nullptr);
+        PetscObjectCompose((PetscObject)petsc_mat_B, "formFunctionCtx", (PetscObject)container);
+        PetscObjectCompose((PetscObject)petsc_mat_B, "formJacobianCtx", nullptr);
+        PetscObjectCompose((PetscObject)petsc_mat_B, "formJacobianCtx", (PetscObject)container);
+        PetscContainerDestroy(&container);
+      }
+    }
     else
       mooseError("It is a generalized eigenvalue problem but matrix B is empty\n");
   }
@@ -57,6 +104,7 @@ NonlinearEigenSystem::NonlinearEigenSystem(EigenProblem & eigen_problem, const s
   : NonlinearSystemBase(
         eigen_problem, eigen_problem.es().add_system<TransientEigenSystem>(name), name),
     _transient_sys(eigen_problem.es().get_system<TransientEigenSystem>(name)),
+    _eigen_problem(eigen_problem),
     _n_eigen_pairs_required(eigen_problem.getNEigenPairsRequired())
 {
   sys().attach_assemble_function(Moose::assemble_matrix);
@@ -70,11 +118,21 @@ NonlinearEigenSystem::solve()
   _current_nl_its = 0;
   // Initialize the solution vector using a predictor and known values from nodal bcs
   setInitialSolution();
-  _time_integrator->solve();
-  _time_integrator->postSolve();
+
+  // Solve the transient problem if we have a time integrator; the
+  // steady problem if not.
+  if (_time_integrator)
+  {
+    _time_integrator->solve();
+    _time_integrator->postSolve();
+  }
+  else
+    system().solve();
 
   // store eigenvalues
   unsigned int n_converged_eigenvalues = getNumConvergedEigenvalues();
+
+  _n_eigen_pairs_required = _eigen_problem.getNEigenPairsRequired();
 
   if (_n_eigen_pairs_required < n_converged_eigenvalues)
     n_converged_eigenvalues = _n_eigen_pairs_required;

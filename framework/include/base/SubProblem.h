@@ -20,7 +20,6 @@
 #include "GeometricSearchData.h"
 #include "MooseTypes.h"
 
-// libMesh includes
 #include "libmesh/coupling_matrix.h"
 
 class MooseMesh;
@@ -41,6 +40,7 @@ template <typename T>
 class SparseMatrix;
 template <typename T>
 class NumericVector;
+class System;
 }
 
 template <>
@@ -78,9 +78,18 @@ public:
 
   // Variables /////
   virtual bool hasVariable(const std::string & var_name) = 0;
+
+  /// Returns the variable reference for requested variable which may be in any system
   virtual MooseVariable & getVariable(THREAD_ID tid, const std::string & var_name) = 0;
+
+  /// Returns a Boolean indicating whether any system contains a variable with the name provided
   virtual bool hasScalarVariable(const std::string & var_name) = 0;
+
+  /// Returns the scalar variable reference from whichever system contains it
   virtual MooseVariableScalar & getScalarVariable(THREAD_ID tid, const std::string & var_name) = 0;
+
+  /// Returns the equation system containing the variable provided
+  virtual System & getSystem(const std::string & var_name) = 0;
 
   /**
    * Set the MOOSE variables to be reinited on each element.
@@ -201,6 +210,8 @@ public:
                        unsigned int jvar,
                        const std::vector<dof_id_type> & dof_indices,
                        THREAD_ID tid) = 0;
+  virtual void setCurrentSubdomainID(const Elem * elem, THREAD_ID tid) = 0;
+  virtual void setNeighborSubdomainID(const Elem * elem, unsigned int side, THREAD_ID tid) = 0;
   virtual void prepareAssembly(THREAD_ID tid) = 0;
 
   virtual void reinitElem(const Elem * elem, THREAD_ID tid) = 0;
@@ -357,6 +368,11 @@ public:
   virtual std::vector<SubdomainName> getMaterialPropertyBlockNames(const std::string & prop_name);
 
   /**
+   * Check if a material property is defined on a block.
+   */
+  virtual bool hasBlockMaterialProperty(SubdomainID block_id, const std::string & prop_name);
+
+  /**
    * Get a vector containing the block ids the material property is defined on.
    */
   virtual std::set<BoundaryID> getMaterialPropertyBoundaryIDs(const std::string & prop_name);
@@ -365,6 +381,11 @@ public:
    * Get a vector of block id equivalences that the material property is defined on.
    */
   virtual std::vector<BoundaryName> getMaterialPropertyBoundaryNames(const std::string & prop_name);
+
+  /**
+   * Check if a material property is defined on a block.
+   */
+  virtual bool hasBoundaryMaterialProperty(BoundaryID boundary_id, const std::string & prop_name);
 
   /**
    * Returns true if the problem is in the process of computing it's initial residual.

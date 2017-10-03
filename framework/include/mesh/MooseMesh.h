@@ -261,12 +261,6 @@ public:
   virtual const Elem * queryElemPtr(const dof_id_type i) const;
 
   /**
-   * Setter/getter for the _is_changed flag.
-   */
-  bool changed() const;
-  void changed(bool state);
-
-  /**
    * Setter/getter for the _is_prepared flag.
    */
   bool prepared() const;
@@ -439,9 +433,8 @@ public:
   void ghostGhostedBoundaries();
 
   /**
-   * Getter/setter for the patch_size parameter.
+   * Getter for the patch_size parameter.
    */
-  void setPatchSize(const unsigned int patch_size);
   unsigned int getPatchSize() const;
 
   /**
@@ -460,7 +453,7 @@ public:
    * @param inflation_multiplier This amount will be multiplied by the length of the diagonal of the
    * bounding box to find the amount to inflate the bounding box by in all directions.
    */
-  MeshTools::BoundingBox getInflatedProcessorBoundingBox(Real inflation_multiplier = 0.01) const;
+  BoundingBox getInflatedProcessorBoundingBox(Real inflation_multiplier = 0.01) const;
 
   /**
    * Implicit conversion operator from MooseMesh -> libMesh::MeshBase.

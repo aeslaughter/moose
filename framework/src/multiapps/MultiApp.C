@@ -26,8 +26,9 @@
 #include "RestartableDataIO.h"
 #include "SetupInterface.h"
 #include "UserObject.h"
+#include "CommandLine.h"
+#include "Conversion.h"
 
-// libMesh includes
 #include "libmesh/mesh_tools.h"
 #include "libmesh/numeric_vector.h"
 
@@ -133,6 +134,7 @@ validParams<MultiApp>()
   params.addParam<std::vector<Point>>("move_positions",
                                       "The positions corresponding to each move_app.");
 
+  params.addPrivateParam<bool>("use_positions", true);
   params.declareControllable("enable");
   params.registerBase("MultiApp");
 
@@ -146,6 +148,7 @@ MultiApp::MultiApp(const InputParameters & parameters)
     _fe_problem(*parameters.getCheckedPointerParam<FEProblemBase *>("_fe_problem_base")),
     _app_type(isParamValid("app_type") ? std::string(getParam<MooseEnum>("app_type"))
                                        : _fe_problem.getMooseApp().type()),
+    _use_positions(getParam<bool>("use_positions")),
     _input_files(getParam<std::vector<FileName>>("input_files")),
     _total_num_apps(0),
     _my_num_apps(0),
@@ -166,25 +169,20 @@ MultiApp::MultiApp(const InputParameters & parameters)
     _has_an_app(true),
     _backups(declareRestartableDataWithContext<SubAppBackups>("backups", this))
 {
-  if (_move_apps.size() != _move_positions.size())
-    mooseError("The number of apps to move and the positions to move them to must be the same for "
-               "MultiApp ",
-               _name);
+  if (_use_positions)
+  {
+    // Fill in the _positions vector and initialize
+    fillPositions();
+    init(_positions.size());
+  }
+}
 
-  // Fill in the _positions vector
-  fillPositions();
-
-  _total_num_apps = _positions.size();
-
-  mooseAssert(_input_files.size() == 1 || _positions.size() == _input_files.size(),
-              "Number of positions and input files are not the same!");
-
-  /// Set up our Comm and set the number of apps we're going to be working on
+void
+MultiApp::init(unsigned int num)
+{
+  _total_num_apps = num;
   buildComm();
-
   _backups.reserve(_my_num_apps);
-
-  // Initialize the backups
   for (unsigned int i = 0; i < _my_num_apps; i++)
     _backups.emplace_back(std::make_shared<Backup>());
 }
@@ -195,7 +193,7 @@ MultiApp::initialSetup()
   if (!_has_an_app)
     return;
 
-  MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
+  Moose::ScopedCommSwapper swapper(_my_comm);
 
   _apps.resize(_my_num_apps);
 
@@ -205,14 +203,16 @@ MultiApp::initialSetup()
 
   for (unsigned int i = 0; i < _my_num_apps; i++)
     createApp(i, _app.getGlobalTimeOffset());
-
-  // Swap back
-  Moose::swapLibMeshComm(swapped);
 }
 
 void
 MultiApp::fillPositions()
 {
+  if (_move_apps.size() != _move_positions.size())
+    mooseError("The number of apps to move and the positions to move them to must be the same for "
+               "MultiApp ",
+               _name);
+
   if (isParamValid("positions") && isParamValid("positions_file"))
     mooseError(
         "Both 'positions' and 'positions_file' cannot be specified simultaneously in MultiApp ",
@@ -294,6 +294,9 @@ MultiApp::fillPositions()
       mooseError("Not enough positions for the number of input files provided in MultiApp ",
                  name());
   }
+
+  mooseAssert(_input_files.size() == 1 || _positions.size() == _input_files.size(),
+              "Number of positions and input files are not the same!");
 }
 
 void
@@ -308,7 +311,7 @@ MultiApp::preTransfer(Real /*dt*/, Real target_time)
   }
 
   // Now move any apps that should be moved
-  if (!_move_happened && target_time + 1e-14 >= _move_time)
+  if (_use_positions && !_move_happened && target_time + 1e-14 >= _move_time)
   {
     _move_happened = true;
     for (unsigned int i = 0; i < _move_apps.size(); i++)
@@ -323,6 +326,13 @@ MultiApp::getExecutioner(unsigned int app)
     mooseError("No app for ", name(), " on processor ", _orig_rank);
 
   return _apps[globalAppToLocal(app)]->getExecutioner();
+}
+
+void
+MultiApp::postExecute()
+{
+  for (const auto & app_ptr : _apps)
+    app_ptr->getExecutioner()->postExecute();
 }
 
 void
@@ -345,7 +355,7 @@ MultiApp::restore()
     _apps[i]->restore(_backups[i]);
 }
 
-MeshTools::BoundingBox
+BoundingBox
 MultiApp::getBoundingBox(unsigned int app)
 {
   if (!_has_an_app)
@@ -353,12 +363,11 @@ MultiApp::getBoundingBox(unsigned int app)
 
   FEProblemBase & problem = appProblemBase(app);
 
-  MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
-
-  MooseMesh & mesh = problem.mesh();
-  MeshTools::BoundingBox bbox = MeshTools::bounding_box(mesh);
-
-  Moose::swapLibMeshComm(swapped);
+  BoundingBox bbox = {};
+  {
+    Moose::ScopedCommSwapper swapper(_my_comm);
+    bbox = MeshTools::create_bounding_box(problem.mesh());
+  }
 
   Point min = bbox.min();
   Point max = bbox.max();
@@ -391,7 +400,7 @@ MultiApp::getBoundingBox(unsigned int app)
   shifted_min += p;
   shifted_max += p;
 
-  return MeshTools::BoundingBox(shifted_min, shifted_max);
+  return BoundingBox(shifted_min, shifted_max);
 }
 
 FEProblemBase &
@@ -403,13 +412,6 @@ MultiApp::appProblemBase(unsigned int app)
   unsigned int local_app = globalAppToLocal(app);
 
   return _apps[local_app]->getExecutioner()->feProblem();
-}
-
-FEProblem &
-MultiApp::problem()
-{
-  mooseDeprecated("MultiApp::problem() is deprecated, call MultiApp::problemBase() instead.\n");
-  return dynamic_cast<FEProblem &>(_fe_problem);
 }
 
 FEProblem &
@@ -462,13 +464,14 @@ MultiApp::hasLocalApp(unsigned int global_app)
 MooseApp *
 MultiApp::localApp(unsigned int local_app)
 {
+  mooseAssert(local_app < _apps.size(), "Index out of range: " + Moose::stringify(local_app));
   return _apps[local_app].get();
 }
 
 void
 MultiApp::resetApp(unsigned int global_app, Real time)
 {
-  MPI_Comm swapped = Moose::swapLibMeshComm(_my_comm);
+  Moose::ScopedCommSwapper swapper(_my_comm);
 
   if (hasLocalApp(global_app))
   {
@@ -482,30 +485,29 @@ MultiApp::resetApp(unsigned int global_app, Real time)
     // Reset the file numbers of the newly reset apps
     _apps[local_app]->getOutputWarehouse().setFileNumbers(m);
   }
-
-  // Swap back
-  Moose::swapLibMeshComm(swapped);
 }
 
 void
 MultiApp::moveApp(unsigned int global_app, Point p)
 {
-
-  _positions[global_app] = p;
-
-  if (hasLocalApp(global_app))
+  if (_use_positions)
   {
-    unsigned int local_app = globalAppToLocal(global_app);
+    _positions[global_app] = p;
 
-    if (_output_in_position)
-      _apps[local_app]->setOutputPosition(p);
+    if (hasLocalApp(global_app))
+    {
+      unsigned int local_app = globalAppToLocal(global_app);
+
+      if (_output_in_position)
+        _apps[local_app]->setOutputPosition(p);
+    }
   }
 }
 
 void
 MultiApp::parentOutputPositionChanged()
 {
-  if (_output_in_position)
+  if (_use_positions && _output_in_position)
     for (unsigned int i = 0; i < _apps.size(); i++)
       _apps[i]->setOutputPosition(_app.getOutputPosition() + _positions[_first_local_app + i]);
 }
@@ -529,6 +531,8 @@ MultiApp::createApp(unsigned int i, Real start_time)
   InputParameters app_params = AppFactory::instance().getValidParams(_app_type);
   app_params.set<FEProblemBase *>("_parent_fep") = &_fe_problem;
   app_params.set<std::shared_ptr<CommandLine>>("_command_line") = _app.commandLine();
+  app_params.set<unsigned int>("_multiapp_level") = _app.multiAppLevel() + 1;
+  app_params.set<unsigned int>("_multiapp_number") = _first_local_app + i;
   _apps[i].reset(AppFactory::instance().create(_app_type, full_name, app_params, _my_comm));
   auto & app = _apps[i];
 
@@ -567,11 +571,10 @@ MultiApp::createApp(unsigned int i, Real start_time)
   if (_app.isRestarting() || _app.isRecovering())
     app->restore(_backups[i]);
 
-  if (getParam<bool>("output_in_position"))
+  if (_use_positions && getParam<bool>("output_in_position"))
     app->setOutputPosition(_app.getOutputPosition() + _positions[_first_local_app + i]);
 
   // Update the MultiApp level for the app that was just created
-  app->setMultiAppLevel(_app.multiAppLevel() + 1);
   app->setupOptions();
   preRunInputFile();
   app->runInputFile();

@@ -16,6 +16,8 @@
 #include "ColumnMajorMatrix.h"
 #include "BilinearInterpolation.h"
 
+#include <fstream>
+
 template <>
 InputParameters
 validParams<PiecewiseBilinear>()
@@ -38,6 +40,7 @@ validParams<PiecewiseBilinear>()
                         "Set to true if you want to interpolate along a radius "
                         "rather that along a specific axis, and note that you "
                         "have to define xaxis and yaxis in the input file");
+  params.addClassDescription("Interpolates values from a csv file");
   return params;
 }
 

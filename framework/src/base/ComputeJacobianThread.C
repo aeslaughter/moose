@@ -26,7 +26,6 @@
 #include "SwapBackSentinel.h"
 #include "TimeDerivative.h"
 
-// libmesh includes
 #include "libmesh/threads.h"
 
 ComputeJacobianThread::ComputeJacobianThread(FEProblemBase & fe_problem,
@@ -219,13 +218,7 @@ ComputeJacobianThread::onBoundary(const Elem * elem, unsigned int side, Boundary
     _fe_problem.reinitMaterialsFace(elem->subdomain_id(), _tid);
     _fe_problem.reinitMaterialsBoundary(bnd_id, _tid);
 
-    // Set the active boundary id so that BoundaryRestrictable::_boundary_id is correct
-    _fe_problem.setCurrentBoundaryID(bnd_id);
-
     computeFaceJacobian(bnd_id);
-
-    // Set the active boundary to invalid
-    _fe_problem.setCurrentBoundaryID(Moose::INVALID_BOUNDARY_ID);
   }
 }
 

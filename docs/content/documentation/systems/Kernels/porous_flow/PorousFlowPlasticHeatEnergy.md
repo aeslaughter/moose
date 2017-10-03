@@ -1,10 +1,15 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowPlasticHeatEnergy
-!description /Kernels/PorousFlowPlasticHeatEnergy
+!syntax description /Kernels/PorousFlowPlasticHeatEnergy
 
-!parameters /Kernels/PorousFlowPlasticHeatEnergy
+This `Kernel` implements the weak form of
+\begin{equation}
+  -\nu (1-\phi)\sigma^{\mathrm{eff}}_{ij}\frac{\partial}{\partial t}\epsilon_{ij}^{\mathrm{plastic}}
+  \nonumber
+\end{equation}
+where all parameters are defined in the [nomenclature](/porous_flow/nomenclature.md).
 
-!inputfiles /Kernels/PorousFlowPlasticHeatEnergy
+!syntax parameters /Kernels/PorousFlowPlasticHeatEnergy
 
-!childobjects /Kernels/PorousFlowPlasticHeatEnergy
+!syntax inputs /Kernels/PorousFlowPlasticHeatEnergy
+
+!syntax children /Kernels/PorousFlowPlasticHeatEnergy

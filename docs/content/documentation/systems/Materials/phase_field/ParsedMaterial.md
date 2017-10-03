@@ -1,6 +1,6 @@
 
 # ParsedMaterial
-!description /Materials/ParsedMaterial
+!syntax description /Materials/ParsedMaterial
 
 Sets up a single material property that is computed using a parsed function expression.
 
@@ -11,11 +11,10 @@ In its configuration block all non-linear variables the free energy depends on (
 The following material object creates a single property for visualization purposes.
 It will be 0 for phase 1, -1 for phase 2, and 1 for phase 3
 
-!text modules/combined/examples/phase_field-mechanics/Pattern1.i start=phasemap end=matrix overflow-y=scroll max-height=500px
+!listing modules/combined/examples/phase_field-mechanics/Pattern1.i start=phasemap end=matrix
 
+!syntax parameters /Materials/ParsedMaterial
 
-!parameters /Materials/ParsedMaterial
+!syntax inputs /Materials/ParsedMaterial
 
-!inputfiles /Materials/ParsedMaterial
-
-!childobjects /Materials/ParsedMaterial
+!syntax children /Materials/ParsedMaterial

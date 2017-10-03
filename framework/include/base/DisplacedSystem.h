@@ -17,7 +17,6 @@
 
 #include "SystemBase.h"
 
-// libMesh include
 #include "libmesh/transient_system.h"
 #include "libmesh/explicit_system.h"
 
@@ -34,6 +33,16 @@ public:
   virtual ~DisplacedSystem();
 
   virtual void init() override;
+
+  virtual bool hasResidualVector(Moose::KernelType type) const override
+  {
+    return _undisplaced_system.hasResidualVector(type);
+  }
+
+  virtual NumericVector<Number> & residualVector(Moose::KernelType type) override
+  {
+    return _undisplaced_system.residualVector(type);
+  }
 
   virtual NumericVector<Number> & getVector(const std::string & name) override;
 
@@ -118,6 +127,7 @@ public:
   virtual TransientExplicitSystem & sys() { return _sys; }
 
   virtual System & system() override { return _sys; }
+  virtual const System & system() const override { return _sys; }
 
 protected:
   SystemBase & _undisplaced_system;

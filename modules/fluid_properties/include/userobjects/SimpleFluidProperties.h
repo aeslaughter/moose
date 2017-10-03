@@ -19,11 +19,11 @@ InputParameters validParams<SimpleFluidProperties>();
  * Fluid properties of a simple, idealised fluid
  * density=density0 * exp(P / bulk_modulus - thermal_expansion * T)
  * internal_energy = cv * T
- * enthalpy = cp * T
+ * enthalpy = cv * T + P / density
  * The following parameters are constant:
  * thermal expansion
- * Cv
- * Cp
+ * cv
+ * cp
  * bulk modulus
  * thermal conductivity
  * specific entropy
@@ -34,6 +34,9 @@ class SimpleFluidProperties : public SinglePhaseFluidPropertiesPT
 public:
   SimpleFluidProperties(const InputParameters & parameters);
   virtual ~SimpleFluidProperties();
+
+  /// Fluid name
+  virtual std::string fluidName() const override;
 
   /// Molar mass (kg/mol)
   virtual Real molarMass() const override;
@@ -51,7 +54,7 @@ public:
   virtual Real c(Real pressure, Real temperature) const override;
 
   /// Thermal conductivity (W/m/K)
-  virtual Real k(Real pressure, Real temperature) const override;
+  virtual Real k(Real density, Real temperature) const override;
 
   /// Specific entropy (J/kg/K)
   virtual Real s(Real pressure, Real temperature) const override;
@@ -84,8 +87,12 @@ public:
   virtual Real mu(Real density, Real temperature) const override;
 
   /// Dynamic viscosity and its derivatives wrt density and temperature
-  virtual void mu_drhoT(
-      Real density, Real temperature, Real & mu, Real & dmu_drho, Real & dmu_dT) const override;
+  virtual void mu_drhoT(Real density,
+                        Real temperature,
+                        Real ddensity_dT,
+                        Real & mu,
+                        Real & dmu_drho,
+                        Real & dmu_dT) const override;
 
   /// Specific enthalpy (J/kg)
   virtual Real h(Real p, Real T) const override;
@@ -130,6 +137,9 @@ protected:
 
   /// Henry constant
   const Real _henry_constant;
+
+  /// Porepressure coefficient: enthalpy = internal_energy + porepressure / density * _pp_coeff
+  const Real _pp_coeff;
 };
 
 #endif /* SIMPLEFLUIDPROPERTIES_H */

@@ -19,14 +19,13 @@
 #include "Material.h"
 #include "NonlinearSystemBase.h"
 
-// libMesh includes
 #include "libmesh/transient_system.h"
 
 template <>
 InputParameters
 validParams<VariableResidualNormsDebugOutput>()
 {
-  InputParameters params = validParams<BasicOutput<PetscOutput>>();
+  InputParameters params = validParams<PetscOutput>();
 
   // By default this outputs on every nonlinear iteration
   params.set<MultiMooseEnum>("execute_on") = "nonlinear";
@@ -35,7 +34,7 @@ validParams<VariableResidualNormsDebugOutput>()
 
 VariableResidualNormsDebugOutput::VariableResidualNormsDebugOutput(
     const InputParameters & parameters)
-  : BasicOutput<PetscOutput>(parameters), _sys(_problem_ptr->getNonlinearSystemBase().system())
+  : PetscOutput(parameters), _sys(_problem_ptr->getNonlinearSystemBase().system())
 {
 }
 

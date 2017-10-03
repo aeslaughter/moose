@@ -24,8 +24,8 @@ JsonInputFileFormatter::toString(const moosecontrib::Json::Value & root)
 {
   _stream.clear();
   _stream.str("");
-  for (auto && name : root.getMemberNames())
-    addBlock(name, root[name], true);
+  for (auto && name : root["blocks"].getMemberNames())
+    addBlock(name, root["blocks"][name], true);
   return _stream.str();
 }
 
@@ -160,7 +160,7 @@ JsonInputFileFormatter::addParameters(const moosecontrib::Json::Value & params)
       def = "'" + def + "'";
     std::string indent(max_name - name.size(), ' ');
     std::string required;
-    if (param["required"].asString() == "Yes")
+    if (param["required"].asBool())
       required = "(required)";
     std::string l = name + indent + " = " + def + required;
     if (l.size() > max_len)

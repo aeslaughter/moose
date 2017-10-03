@@ -1,10 +1,20 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowHeatAdvection
-!description /Kernels/PorousFlowHeatAdvection
+!syntax description /Kernels/PorousFlowHeatAdvection
 
-!parameters /Kernels/PorousFlowHeatAdvection
+This `Kernel` implements the weak form of
+\begin{equation}
+  -\nabla\cdot \sum_{\beta}h_{\beta} \rho_{\beta}\frac{k\,k_{\mathrm{r,}\beta}}{\mu_{\beta}}(\nabla P_{\beta} - \rho_{\beta} \mathbf{g})
+  \nonumber
+\end{equation}
+where all parameters are defined in the [nomenclature](/porous_flow/nomenclature.md).
 
-!inputfiles /Kernels/PorousFlowHeatAdvection
+!!! note
+    A fully-upwinded version is implemented, where the mobility of the upstream nodes is used.
 
-!childobjects /Kernels/PorousFlowHeatAdvection
+See [upwinding](/porous_flow/upwinding.md) for details.
+
+!syntax parameters /Kernels/PorousFlowHeatAdvection
+
+!syntax inputs /Kernels/PorousFlowHeatAdvection
+
+!syntax children /Kernels/PorousFlowHeatAdvection

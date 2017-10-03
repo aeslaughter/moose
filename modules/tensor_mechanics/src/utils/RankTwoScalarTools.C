@@ -17,7 +17,7 @@ namespace RankTwoScalarTools
 MooseEnum
 scalarOptions()
 {
-  return MooseEnum("VonMisesStress EquivalentPlasticStrain Hydrostatic L2norm MaxPrincipal "
+  return MooseEnum("VonMisesStress EffectiveStrain Hydrostatic L2norm MaxPrincipal "
                    "MidPrincipal MinPrincipal VolumetricStrain FirstInvariant SecondInvariant "
                    "ThirdInvariant AxialStress HoopStress RadialStress TriaxialityStress "
                    "Direction");
@@ -39,8 +39,7 @@ getQuantity(const RankTwoTensor & tensor,
       val = vonMisesStress(tensor);
       break;
     case 1:
-      ///For plastic strain tensor (ep), tr(ep) = 0 is considered
-      val = equivalentPlasticStrain(tensor);
+      val = effectiveStrain(tensor);
       break;
     case 2:
       val = hydrostatic(tensor);
@@ -49,13 +48,13 @@ getQuantity(const RankTwoTensor & tensor,
       val = L2norm(tensor);
       break;
     case 4:
-      val = maxPrinciple(tensor);
+      val = maxPrincipal(tensor, direction);
       break;
     case 5:
-      val = midPrinciple(tensor);
+      val = midPrincipal(tensor, direction);
       break;
     case 6:
-      val = minPrinciple(tensor);
+      val = minPrincipal(tensor, direction);
       break;
     case 7:
       val = volumetricStrain(tensor);
@@ -122,7 +121,7 @@ vonMisesStress(const RankTwoTensor & stress)
 }
 
 Real
-equivalentPlasticStrain(const RankTwoTensor & strain)
+effectiveStrain(const RankTwoTensor & strain)
 {
   return std::sqrt(2.0 / 3.0 * strain.doubleContraction(strain));
 }
@@ -187,30 +186,32 @@ thirdInvariant(const RankTwoTensor & r2tensor)
 }
 
 Real
-maxPrinciple(const RankTwoTensor & r2tensor)
+maxPrincipal(const RankTwoTensor & r2tensor, Point & direction)
 {
-  return calcEigenValues(r2tensor, (LIBMESH_DIM - 1));
+  return calcEigenValuesEigenVectors(r2tensor, (LIBMESH_DIM - 1), direction);
 }
 
 Real
-midPrinciple(const RankTwoTensor & r2tensor)
+midPrincipal(const RankTwoTensor & r2tensor, Point & direction)
 {
-  return calcEigenValues(r2tensor, 1);
+  return calcEigenValuesEigenVectors(r2tensor, 1, direction);
 }
 
 Real
-minPrinciple(const RankTwoTensor & r2tensor)
+minPrincipal(const RankTwoTensor & r2tensor, Point & direction)
 {
-  return calcEigenValues(r2tensor, 0);
+  return calcEigenValuesEigenVectors(r2tensor, 0, direction);
 }
 
 Real
-calcEigenValues(const RankTwoTensor & r2tensor, unsigned int index)
+calcEigenValuesEigenVectors(const RankTwoTensor & r2tensor, unsigned int index, Point & eigenvec)
 {
   std::vector<Real> eigenval(LIBMESH_DIM);
-  r2tensor.symmetricEigenvalues(eigenval);
+  RankTwoTensor eigvecs;
+  r2tensor.symmetricEigenvaluesEigenvectors(eigenval, eigvecs);
 
   Real val = eigenval[index];
+  eigenvec = eigvecs.column(index);
 
   return val;
 }

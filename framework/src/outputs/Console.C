@@ -16,6 +16,7 @@
 #include "Console.h"
 #include "ConsoleUtils.h"
 #include "FEProblem.h"
+#include "EigenProblem.h"
 #include "Postprocessor.h"
 #include "PetscSupport.h"
 #include "Executioner.h"
@@ -297,7 +298,7 @@ Console::initialSetup()
   _allow_changing_sysinfo_flag = false;
 
   // If execute_on = 'initial' perform the output
-  if (shouldOutput("system_information", EXEC_INITIAL))
+  if (wantOutput("system_information", EXEC_INITIAL))
     outputSystemInformation();
 
   // Call the base class method
@@ -346,11 +347,11 @@ Console::output(const ExecFlagType & type)
   // Output the system information first; this forces this to be the first item to write by default
   // However, 'output_system_information_on' still operates correctly, so it may be changed by the
   // user
-  if (shouldOutput("system_information", type) && !(type == EXEC_INITIAL && _initialized))
+  if (wantOutput("system_information", type) && !(type == EXEC_INITIAL && _initialized))
     outputSystemInformation();
 
   // Write the input
-  if (shouldOutput("input", type))
+  if (wantOutput("input", type))
     outputInput();
 
   // Write the timestep information ("Time Step 0 ..."), this is controlled with "execute_on"
@@ -391,10 +392,10 @@ Console::output(const ExecFlagType & type)
   }
 
   // Write Postprocessors and Scalars
-  if (shouldOutput("postprocessors", type))
+  if (wantOutput("postprocessors", type))
     outputPostprocessors();
 
-  if (shouldOutput("scalars", type))
+  if (wantOutput("scalars", type))
     outputScalarVariables();
 
   // Write the file
@@ -483,6 +484,11 @@ Console::writeVariableNorms()
   // if we are not priting anything, let's not waste time computing the norms below and just exit
   // this call
   if ((_all_variable_norms == false) && (_outlier_variable_norms == false))
+    return;
+
+  // if it is an eigenvalue prolblem, we do not know to define RHS,
+  // and then we do not know how to compute variable norms
+  if (dynamic_cast<EigenProblem *>(_problem_ptr) != nullptr)
     return;
 
   // Flag set when header prints
@@ -590,6 +596,7 @@ Console::outputPostprocessors()
   {
     std::stringstream oss;
     oss << "\nPostprocessor Values:\n";
+    _postprocessor_table.sortColumns();
     _postprocessor_table.printTable(oss, _max_rows, _fit_mode);
     _console << oss.str() << '\n';
   }
@@ -605,7 +612,10 @@ Console::outputScalarVariables()
     std::stringstream oss;
     oss << "\nScalar Variable Values:\n";
     if (processor_id() == 0)
+    {
+      _scalar_table.sortColumns();
       _scalar_table.printTable(oss, _max_rows, _fit_mode);
+    }
     _console << oss.str() << '\n';
   }
 }

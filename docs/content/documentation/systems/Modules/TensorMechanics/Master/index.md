@@ -12,7 +12,7 @@ mechanics system setup. It performs
 
 ## Example
 
-!text modules/tensor_mechanics/tests/action/two_block_new.i start=Modules/TensorMechanics/Master end=AuxVariables
+!listing modules/tensor_mechanics/test/tests/action/two_block_new.i start=Modules/TensorMechanics/Master end=AuxVariables
 
 ## Subblocks
 
@@ -49,14 +49,18 @@ defaults for the Master action subblocks.
 
 The following parameters are valid:
 
-!parameters /Modules/TensorMechanics/Master
+!syntax objects /Modules/TensorMechanics/Master
+
+!syntax subsystems /Modules/TensorMechanics/Master
+
+!syntax actions /Modules/TensorMechanics/Master
 
 <!--
 This syntax is not yet supported by the doc system:
 
-!parameters /Modules/TensorMechanics/Master*
+!syntax parameters /Modules/TensorMechanics/Master*
 
-!inputfiles /Modules/TensorMechanics/Master/*
+!syntax inputs /Modules/TensorMechanics/Master/*
 
-!childobjects /Modules/TensorMechanics/Master/*
+!syntax children /Modules/TensorMechanics/Master/*
 -->

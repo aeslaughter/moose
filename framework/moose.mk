@@ -16,7 +16,28 @@ pcre_objects   += $(patsubst %.c, %.$(obj-suffix), $(pcre_csrcfiles))
 pcre_LIB       :=  $(pcre_DIR)/libpcre-$(METHOD).la
 # dependency files
 pcre_deps      := $(patsubst %.cc, %.$(obj-suffix).d, $(pcre_srcfiles)) \
-                  $(patsubst %.c, %.$(obj-suffix).d, $(pcre_csrcfiles))
+
+#
+# hit (new getpot parser)
+#
+hit_DIR       := $(FRAMEWORK_DIR)/contrib/hit
+hit_srcfiles  := $(hit_DIR)/parse.cc $(hit_DIR)/lex.cc
+hit_objects   := $(patsubst %.cc, %.$(obj-suffix), $(hit_srcfiles))
+hit_LIB       := $(hit_DIR)/libhit-$(METHOD).la
+# dependency files
+hit_deps      := $(patsubst %.cc, %.$(obj-suffix).d, $(hit_srcfiles))
+
+#
+# hit python bindings
+#
+pyhit_srcfiles  := $(hit_DIR)/hit.cpp $(hit_DIR)/lex.cc $(hit_DIR)/parse.cc
+pyhit_LIB       := $(hit_DIR)/hit.so
+
+$(pyhit_LIB): $(pyhit_srcfiles)
+	@echo "Linking Library "$@"..."
+	@bash -c '(cd "$(hit_DIR)" && $(libmesh_CXX) -std=c++11 -w -fPIC -lstdc++ -shared -L`python-config --prefix`/lib `python-config --cflags` `python-config --ldflags` $^ -o $@)'
+	@cp $@ $(FRAMEWORK_DIR)/../python/
+
 #
 # gtest
 #
@@ -30,6 +51,7 @@ gtest_deps      := $(patsubst %.cc, %.$(obj-suffix).d, $(gtest_srcfiles))
 moose_INC_DIRS := $(shell find $(FRAMEWORK_DIR)/include -type d -not -path "*/.svn*")
 moose_INC_DIRS += $(shell find $(FRAMEWORK_DIR)/contrib/*/include -type d -not -path "*/.svn*")
 moose_INC_DIRS += "$(gtest_DIR)"
+moose_INC_DIRS += "$(hit_DIR)"
 moose_INCLUDE  := $(foreach i, $(moose_INC_DIRS), -I$(i))
 
 #libmesh_INCLUDE := $(moose_INCLUDE) $(libmesh_INCLUDE)
@@ -37,7 +59,7 @@ moose_INCLUDE  := $(foreach i, $(moose_INC_DIRS), -I$(i))
 # Making a .la object instead.  This is what you make out of .lo objects...
 moose_LIB := $(FRAMEWORK_DIR)/libmoose-$(METHOD).la
 
-moose_LIBS := $(moose_LIB) $(pcre_LIB)
+moose_LIBS := $(moose_LIB) $(pcre_LIB) $(hit_LIB)
 
 # source files
 moose_srcfiles    := $(shell find $(moose_SRC_DIRS) -name "*.C")
@@ -55,6 +77,7 @@ moose_deps := $(patsubst %.C, %.$(obj-suffix).d, $(moose_srcfiles)) \
 
 # clang static analyzer files
 moose_analyzer := $(patsubst %.C, %.plist.$(obj-suffix), $(moose_srcfiles))
+moose_analyzer += $(patsubst %.cc, %.plist.$(obj-suffix), $(hit_srcfiles))
 
 app_INCLUDES := $(moose_INCLUDE)
 app_LIBS     := $(moose_LIBS)
@@ -93,7 +116,13 @@ $(gtest_LIB): $(gtest_objects)
 	  $(libmesh_CC) $(libmesh_CFLAGS) -o $@ $(gtest_objects) $(libmesh_LIBS) $(libmesh_LDFLAGS) $(EXTERNAL_FLAGS) -rpath $(gtest_DIR)
 	@$(libmesh_LIBTOOL) --mode=install --quiet install -c $(gtest_LIB) $(gtest_DIR)
 
-$(moose_LIB): $(moose_objects) $(pcre_LIB) $(gtest_LIB)
+$(hit_LIB): $(hit_objects)
+	@echo "Linking Library "$@"..."
+	@$(libmesh_LIBTOOL) --tag=CC $(LIBTOOLFLAGS) --mode=link --quiet \
+	  $(libmesh_CXX) $(libmesh_CXXFLAGS) -o $@ $(hit_objects) $(libmesh_LIBS) $(libmesh_LDFLAGS) $(EXTERNAL_FLAGS) -rpath $(hit_DIR)
+	@$(libmesh_LIBTOOL) --mode=install --quiet install -c $(hit_LIB) $(hit_DIR)
+
+$(moose_LIB): $(moose_objects) $(pcre_LIB) $(gtest_LIB) $(hit_LIB) $(pyhit_LIB)
 	@echo "Linking Library "$@"..."
 	@$(libmesh_LIBTOOL) --tag=CXX $(LIBTOOLFLAGS) --mode=link --quiet \
 	  $(libmesh_CXX) $(libmesh_CXXFLAGS) -o $@ $(moose_objects) $(pcre_LIB) $(libmesh_LIBS) $(libmesh_LDFLAGS) $(EXTERNAL_FLAGS) -rpath $(FRAMEWORK_DIR)
@@ -109,6 +138,7 @@ sa:: $(moose_analyzer)
 -include $(wildcard $(FRAMEWORK_DIR)/contrib/jsoncpp/src/*.d)
 -include $(wildcard $(FRAMEWORK_DIR)/contrib/pcre/src/*.d)
 -include $(wildcard $(FRAMEWORK_DIR)/contrib/gtest/*.d)
+-include $(wildcard $(FRAMEWORK_DIR)/contrib/hit/*.d)
 
 #
 # exodiff
@@ -141,9 +171,9 @@ $(exodiff_APP): $(exodiff_objects)
 
 # Set up app-specific variables for MOOSE, so that it can use the same clean target as the apps
 app_EXEC := $(exodiff_APP)
-app_LIB  := $(moose_LIBS) $(pcre_LIB)
-app_objects := $(moose_objects) $(exodiff_objects)
-app_deps := $(moose_deps) $(exodiff_deps) $(pcre_deps) $(gtest_deps)
+app_LIB  := $(moose_LIBS) $(pcre_LIB) $(gtest_LIB) $(hit_LIB)
+app_objects := $(moose_objects) $(exodiff_objects) $(pcre_objects) $(gtest_objects) $(hit_objects)
+app_deps := $(moose_deps) $(exodiff_deps) $(pcre_deps) $(gtest_deps) $(hit_deps)
 
 # The clean target removes everything we can remove "easily",
 # i.e. stuff which we have Makefile variables for.  Notes:
@@ -154,8 +184,8 @@ app_deps := $(moose_deps) $(exodiff_deps) $(pcre_deps) $(gtest_deps)
 # .) Calling 'make clean' in an app should not remove MOOSE object
 #    files, libraries, etc.
 clean::
-	@$(libmesh_LIBTOOL) --mode=uninstall --quiet rm -f $(app_LIB)
-	@rm -rf $(app_EXEC) $(app_objects) $(main_object) $(app_deps) $(app_HEADER)
+	@$(libmesh_LIBTOOL) --mode=uninstall --quiet rm -f $(app_LIB) $(app_test_LIB)
+	@rm -rf $(app_EXEC) $(app_objects) $(main_object) $(app_deps) $(app_HEADER) $(app_test_objects)
 
 # The clobber target does 'make clean' and then uses 'find' to clean a
 # bunch more stuff.  We have to write this target as though it could
@@ -172,12 +202,7 @@ clean::
 #    dependency and object files when you upgrade OSX versions or as
 #    source files are deleted over time.
 clobber:: clean
-	$(shell find $(CURDIR) \( -path $(CURDIR)/moose -or -path $(CURDIR)/.git -or -path $(CURDIR)/.svn \) -prune -or \
-          \( -name "*~" -or -name "*.lo" -or -name "*.la" -or -name "*.dylib" -or -name "*.so*" -or -name "*.a" \
-          -or -name "*-opt" -or -name "*-dbg" -or -name "*-oprof" \
-          -or -name "*.d" -or -name "*.pyc" -or -name "*.plugin" -or -name "*.mod" -or -name "*.plist" \
-          -or -name "*.gcda" -or -name "*.gcno" -or -name "*.gcov" -or -name "*.gch" -or -name .libs -or -path "*/.libs/*" \) \
-          -delete)
+	@$(MOOSE_DIR)/scripts/clobber.py -v $(CURDIR)
 
 # cleanall runs 'make clean' in all dependent application directories
 cleanall:: clean
@@ -206,10 +231,17 @@ clobberall:: clobber
 
 compile_commands_all_srcfiles := $(moose_srcfiles) $(srcfiles)
 compile_commands.json::
+ifeq (4.0,$(firstword $(sort $(MAKE_VERSION) 4.0)))
+	$(file > .compile_commands.json,$(CURDIR))
+	$(file >> .compile_commands.json,$(libmesh_CXX))
+	$(file >> .compile_commands.json,$(libmesh_CPPFLAGS) $(libmesh_CXXFLAGS) $(app_INCLUDES) $(libmesh_INCLUDE) $(ADDITIONAL_INCLUDES))
+	$(file >> .compile_commands.json,$(compile_commands_all_srcfiles))
+else
 	@echo $(CURDIR) > .compile_commands.json
 	@echo $(libmesh_CXX) >> .compile_commands.json
 	@echo $(libmesh_CPPFLAGS) $(libmesh_CXXFLAGS) $(app_INCLUDES) $(libmesh_INCLUDE) $(ADDITIONAL_INCLUDES) >> .compile_commands.json
 	@echo $(compile_commands_all_srcfiles) >> .compile_commands.json
+endif
 	@ $(FRAMEWORK_DIR)/scripts/compile_commands.py < .compile_commands.json > compile_commands.json
 	@rm .compile_commands.json
 

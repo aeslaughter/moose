@@ -19,7 +19,6 @@
 #include "Problem.h"
 #include "MooseMesh.h"
 
-// libMesh includes
 #include "libmesh/quadrature.h"
 
 template <>
@@ -433,6 +432,13 @@ void
 DiracKernel::clearPoints()
 {
   _local_dirac_kernel_info.clearPoints();
+}
+
+void
+DiracKernel::meshChanged()
+{
+  _point_cache.clear();
+  _reverse_point_cache.clear();
 }
 
 MooseVariable &

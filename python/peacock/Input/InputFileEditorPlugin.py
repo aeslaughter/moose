@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-from PyQt5.QtWidgets import QFileDialog, QPlainTextEdit, QSizePolicy
+from PyQt5.QtWidgets import QFileDialog, QPlainTextEdit, QSizePolicy, QMessageBox
 from PyQt5.QtCore import Qt, pyqtSignal
 from peacock.utils import WidgetUtils
 from peacock.base.Plugin import Plugin
 from peacock.utils.RecentlyUsedMenu import RecentlyUsedMenu
-from InputSettings import InputSettings
 from CheckInputWidget import CheckInputWidget
 from InputFileEditor import InputFileEditor
 import os
@@ -41,17 +40,34 @@ class InputFileEditorPlugin(InputFileEditor, Plugin):
         self.input_file_view.resize(640, 480)
         self.has_changed = False
 
+        self._preferences.addInt("input/maxRecentlyUsed",
+                "Max number of input files",
+                20,
+                1,
+                50,
+                "Set the maximum number of recent input files that have been used.",
+                )
+
         self.setup()
 
     def _updateChanged(self, block, tree):
         self.has_changed = True
 
+    def _askToSave(self, app_info, reason):
+        if self.has_changed and app_info.valid():
+            msg = "%s\nYou have unsaved changes in your input file, do you want to save?" % reason
+            reply = QMessageBox.question(self, "Save?", msg, QMessageBox.Save, QMessageBox.Discard)
+            if reply == QMessageBox.Save:
+                self._saveInputFile()
+
     def executableInfoChanged(self, app_info):
+        self._askToSave(app_info, "Reloading syntax from executable.")
         super(InputFileEditorPlugin, self).executableInfoChanged(app_info)
         self._setMenuStatus()
         self.has_changed = False
 
     def setInputFile(self, input_file):
+        self._askToSave(self.tree.app_info, "Changing input files.")
         val = super(InputFileEditorPlugin, self).setInputFile(input_file)
         if self._menus_initialized:
             path = os.path.abspath(input_file)
@@ -148,7 +164,11 @@ class InputFileEditorPlugin(InputFileEditor, Plugin):
         """
         self._open_action = WidgetUtils.addAction(menu, "Open", self._openInputFile, "Ctrl+O")
         recentMenu = menu.addMenu("Recently opened")
-        self._recently_used_menu = RecentlyUsedMenu(recentMenu, InputSettings.RECENTLY_USED_KEY, InputSettings.MAX_RECENT_KEY, InputSettings.MAX_RECENT_DEFAULT)
+        self._recently_used_menu = RecentlyUsedMenu(recentMenu,
+                "input/recentlyUsed",
+                "input/maxRecentlyUsed",
+                20,
+                )
         self._recently_used_menu.selected.connect(self.setInputFile)
 
         self._save_action = WidgetUtils.addAction(menu, "Save", self._saveInputFile)

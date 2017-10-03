@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from PyQt5.QtCore import Qt, QMimeData
-from PyQt5.QtWidgets import QMenu
+from PyQt5.QtWidgets import QMenu, QApplication, QMessageBox
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from peacock.Input.ExecutableInfo import ExecutableInfo
 from peacock.Input.InputTree import InputTree
@@ -9,6 +9,8 @@ from peacock.Input.BlockTree import BlockTree
 from mock import patch
 
 class Tests(Testing.PeacockTester):
+    qapp = QApplication([])
+
     def setUp(self):
         super(Tests, self).setUp()
         self.test_exe = Testing.find_moose_test_exe()
@@ -122,7 +124,7 @@ class Tests(Testing.PeacockTester):
         mime.setData(w._mime_type, "some data")
         ee = QDragEnterEvent(w.mapToGlobal(point), Qt.MoveAction, mime, Qt.LeftButton, Qt.NoModifier)
         w.dragEnterEvent(ee)
-        #Testing.process_events(self.qapp, t=1)
+        #Testing.process_events(t=1)
         de = QDropEvent(w.mapToGlobal(point1), Qt.MoveAction, mime, Qt.LeftButton, Qt.NoModifier)
         w.dropEvent(de)
         # This doesn't seem to work for some reason
@@ -154,15 +156,36 @@ class Tests(Testing.PeacockTester):
         b1 = w.tree.getBlockInfo("/Variables/foo")
         self.assertEqual(b1, b)
 
-    def testRemove(self):
+    @patch.object(QMenu, "exec_")
+    @patch.object(QMessageBox, "question")
+    def testRemove(self, mock_question, mock_exec):
         w = self.newWidget()
         b = w.tree.getBlockInfo("/Variables/u")
         parent = b.parent
+        self.assertEqual(len(parent.children_list), 2)
         w.removeBlock(b)
         self.assertEqual(b.parent, None)
         self.assertNotIn(b.name, parent.children_list)
         item = w._path_item_map.get("/Variables/u")
         self.assertEqual(item, None)
+        self.assertEqual(len(parent.children_list), 1)
+
+        b = w.tree.getBlockInfo("/Variables/v")
+        mock_exec.return_value = w.remove_action
+        mock_question.return_value = QMessageBox.No
+        item = w._path_item_map.get(b.path)
+        self.assertNotEqual(item, None)
+        w.scrollToItem(item)
+        point = w.visualItemRect(item).center()
+        w._treeContextMenu(point)
+        self.assertEqual(len(parent.children_list), 1)
+
+        mock_question.return_value = QMessageBox.Yes
+        w._treeContextMenu(point)
+        self.assertEqual(len(parent.children_list), 0)
+        item = w._path_item_map.get("/Variables/v")
+        self.assertEqual(item, None)
+
 
     @patch.object(QMenu, "exec_")
     def testCopy(self, mock_exec):
@@ -181,7 +204,8 @@ class Tests(Testing.PeacockTester):
         item = w._path_item_map.get("/Variables/New_0/InitialCondition")
         self.assertNotEqual(item, None)
 
-        mock_exec.return_value = 0
+        # simulate them not choosing any of the menu options
+        mock_exec.return_value = None
         nchilds = len(v.children_list)
         item = w._path_item_map.get(b.path)
         w.scrollToItem(item)
@@ -191,9 +215,10 @@ class Tests(Testing.PeacockTester):
         self.assertEqual(nchilds, len(v.children_list))
         self.assertEqual(self.changed_count, 1)
 
-        mock_exec.return_value = 1
+        mock_exec.return_value = w.add_action
         w._treeContextMenu(point)
 
+        # simulate choosing the add menu option
         self.assertEqual(nchilds+1, len(v.children_list))
         self.assertEqual(self.changed_count, 2)
 
@@ -210,7 +235,7 @@ class Tests(Testing.PeacockTester):
         item = w._path_item_map.get("%s/InitialCondition" % p)
         self.assertNotEqual(item, None)
 
-        mock_exec.return_value = 0
+        mock_exec.return_value = None
         nchilds = len(v.children_list)
         item = w._path_item_map.get(v.path)
         w.scrollToItem(item)
@@ -220,7 +245,7 @@ class Tests(Testing.PeacockTester):
         self.assertEqual(nchilds, len(v.children_list))
         self.assertEqual(self.changed_count, 3)
 
-        mock_exec.return_value = 1
+        mock_exec.return_value = w.add_action
         w._treeContextMenu(point)
 
         self.assertEqual(nchilds+1, len(v.children_list))

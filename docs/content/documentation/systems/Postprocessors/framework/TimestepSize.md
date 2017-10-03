@@ -1,10 +1,15 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # TimestepSize
-!description /Postprocessors/TimestepSize
+!syntax description /Postprocessors/TimestepSize
 
-!parameters /Postprocessors/TimestepSize
+## Description
 
-!inputfiles /Postprocessors/TimestepSize
+`TimestepSize` reports the timestep size.
 
-!childobjects /Postprocessors/TimestepSize
+## Example Input Syntax
+!listing test/tests/time_steppers/iteration_adaptive/adapt_tstep_grow_init_dt.i block=Postprocessors
+
+!syntax parameters /Postprocessors/TimestepSize
+
+!syntax inputs /Postprocessors/TimestepSize
+
+!syntax children /Postprocessors/TimestepSize

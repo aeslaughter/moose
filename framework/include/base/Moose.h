@@ -15,7 +15,6 @@
 #ifndef MOOSE_H
 #define MOOSE_H
 
-// libMesh includes
 #include "libmesh/perf_log.h"
 #include "libmesh/libmesh_common.h"
 #include "XTermConstants.h"
@@ -55,6 +54,29 @@ class Factory;
 #else // One underscore everywhere else
 #define FORTRAN_CALL(name) name##_
 #endif
+
+/**
+ * Function to mirror the behavior of the C++17 std::map::try_emplace() method (no hint).
+ * @param m The std::map
+ * @param k The key use to insert the pair
+ * @param args The value to be inserted. This can be a moveable type but won't be moved
+ *             if the insertion is successful.
+ */
+template <class M, class... Args>
+std::pair<typename M::iterator, bool>
+moose_try_emplace(M & m, const typename M::key_type & k, Args &&... args)
+{
+  auto it = m.lower_bound(k);
+  if (it == m.end() || m.key_comp()(k, it->first))
+  {
+    return {m.emplace_hint(it,
+                           std::piecewise_construct,
+                           std::forward_as_tuple(k),
+                           std::forward_as_tuple(std::forward<Args>(args)...)),
+            true};
+  }
+  return {it, false};
+}
 
 // forward declarations
 class Syntax;
@@ -151,9 +173,26 @@ void registerActions(Syntax & syntax, ActionFactory & action_factory);
 void setSolverDefaults(FEProblemBase & problem);
 
 /**
- * Swap the libMesh MPI communicator out for ours.
+ * Swap the libMesh MPI communicator out for ours.  Note that you should usually use
+  * the Moose::ScopedCommSwapper class instead of calling this function.
  */
 MPI_Comm swapLibMeshComm(MPI_Comm new_comm);
+
+class ScopedCommSwapper
+{
+public:
+  /// Swaps the current libmesh MPI communicator for new_comm.  new_comm will be automatically
+  /// swapped back in as the current libmesh communicator when this object is destructed.
+  ScopedCommSwapper(MPI_Comm new_comm) : _orig(swapLibMeshComm(new_comm)) {}
+  virtual ~ScopedCommSwapper() { swapLibMeshComm(_orig); }
+  /// Forcibly swap the currently swapped-out communicator back in to libmesh.  Calling this
+  /// function twice in a row leaves communicators exactly as they were before this function
+  /// was called.  Usually you should not need/use this function because MPI communicators
+  /// are swapped automatically when this object is constructed/destructed.
+  void forceSwap() { _orig = swapLibMeshComm(_orig); }
+private:
+  MPI_Comm _orig;
+};
 
 void enableFPE(bool on = true);
 

@@ -23,10 +23,7 @@ validParams<MooseObjectAction>()
   InputParameters params = validParams<Action>();
   params.addRequiredParam<std::string>(
       "type", "A string representing the Moose Object that will be built by this Action");
-
-  params.addPrivateParam<std::string>(
-      "_moose_docs_type", "mooseobjectaction"); // the type of syntax for documentation system
-  params.addPrivateParam<bool>("isObjectAction", true);
+  params.addParam<bool>("isObjectAction", true, "Indicates that this is a MooseObjectAction.");
   return params;
 }
 
@@ -40,4 +37,7 @@ MooseObjectAction::MooseObjectAction(InputParameters params)
                            ? _factory.getValidParams(_type)
                            : validParams<MooseObject>())
 {
+  if (params.have_parameter<std::string>("parser_syntax"))
+    _moose_object_pars.addPrivateParam<std::string>("parser_syntax",
+                                                    params.get<std::string>("parser_syntax"));
 }

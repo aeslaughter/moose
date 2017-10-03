@@ -18,7 +18,6 @@
 #include "MooseMesh.h"
 #include "MooseVariable.h"
 
-// libMesh includes
 #include "libmesh/mesh_tools.h"
 
 template <>
@@ -73,7 +72,7 @@ PointSamplerBase::initialize()
 void
 PointSamplerBase::execute()
 {
-  MeshTools::BoundingBox bbox = _mesh.getInflatedProcessorBoundingBox();
+  BoundingBox bbox = _mesh.getInflatedProcessorBoundingBox();
 
   /// So we don't have to create and destroy this
   std::vector<Point> point_vec(1);
@@ -98,6 +97,7 @@ PointSamplerBase::execute()
         // We have to pass a vector of points into reinitElemPhys
         point_vec[0] = p;
 
+        _subproblem.setCurrentSubdomainID(elem, 0);
         _subproblem.reinitElemPhys(elem, point_vec, 0); // Zero is for tid
 
         for (auto j = beginIndex(_coupled_moose_vars); j < _coupled_moose_vars.size(); ++j)

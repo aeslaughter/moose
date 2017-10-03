@@ -17,7 +17,6 @@
 #include "FEProblem.h"
 #include "TimeIntegrator.h"
 
-// libmesh includes
 #include "libmesh/nonlinear_solver.h"
 #include "libmesh/petsc_nonlinear_solver.h"
 #include "libmesh/sparse_matrix.h"
@@ -155,8 +154,13 @@ NonlinearSystem::solve()
   if (_use_finite_differenced_preconditioner)
     setupFiniteDifferencedPreconditioner();
 
-  _time_integrator->solve();
-  _time_integrator->postSolve();
+  if (_time_integrator)
+  {
+    _time_integrator->solve();
+    _time_integrator->postSolve();
+  }
+  else
+    system().solve();
 
   // store info about the solve
   _n_iters = _transient_sys.n_nonlinear_iterations();
@@ -192,16 +196,18 @@ NonlinearSystem::stopSolve()
   // Insert a NaN into the residual vector.  As of PETSc-3.6, this
   // should make PETSc return DIVERGED_NANORINF the next time it does
   // a reduction.  We'll write to the first local dof on every
-  // processor I guess?
-  _transient_sys.rhs->set(_transient_sys.rhs->first_local_index(),
-                          std::numeric_limits<Real>::quiet_NaN());
+  // processor that has any dofs.
+  if (_transient_sys.rhs->local_size())
+    _transient_sys.rhs->set(_transient_sys.rhs->first_local_index(),
+                            std::numeric_limits<Real>::quiet_NaN());
   _transient_sys.rhs->close();
 
   // Clean up by getting other vectors into a valid state for a
   // (possible) subsequent solve.  There may be more than just
   // these...
-  residualVector(Moose::KT_TIME).close();
-  residualVector(Moose::KT_NONTIME).close();
+  if (_Re_time)
+    _Re_time->close();
+  _Re_non_time->close();
 }
 
 void

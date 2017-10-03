@@ -25,6 +25,7 @@ validParams<CombinedCreepPlasticity>()
       "relative_tolerance", 1e-5, "Relative convergence tolerance for combined submodel iteration");
   params.addParam<Real>(
       "absolute_tolerance", 1e-5, "Absolute convergence tolerance for combined submodel iteration");
+  params.addClassDescription("Models creep and instantaneous plasticity deformation");
 
   return params;
 }
@@ -35,7 +36,8 @@ CombinedCreepPlasticity::CombinedCreepPlasticity(const InputParameters & paramet
     _max_its(parameters.get<unsigned int>("max_its")),
     _output_iteration_info(getParam<bool>("output_iteration_info")),
     _relative_tolerance(parameters.get<Real>("relative_tolerance")),
-    _absolute_tolerance(parameters.get<Real>("absolute_tolerance"))
+    _absolute_tolerance(parameters.get<Real>("absolute_tolerance")),
+    _matl_timestep_limit(declareProperty<Real>("matl_timestep_limit"))
 {
 }
 
@@ -85,7 +87,6 @@ CombinedCreepPlasticity::initialSetup()
 
 void
 CombinedCreepPlasticity::computeStress(const Elem & current_elem,
-                                       unsigned qp,
                                        const SymmElasticityTensor & elasticityTensor,
                                        const SymmTensor & stress_old,
                                        SymmTensor & strain_increment,
@@ -103,7 +104,7 @@ CombinedCreepPlasticity::computeStress(const Elem & current_elem,
   {
     _console << std::endl
              << "iteration output for CombinedCreepPlasticity solve:"
-             << " time=" << _t << " temperature=" << _temperature[qp] << " int_pt=" << qp
+             << " time=" << _t << " temperature=" << _temperature[_qp] << " int_pt=" << _qp
              << std::endl;
   }
 
@@ -123,6 +124,9 @@ CombinedCreepPlasticity::computeStress(const Elem & current_elem,
   Real first_delS(delS);
   unsigned int counter(0);
 
+  for (unsigned i_rmm(0); i_rmm < num_submodels; ++i_rmm)
+    rmm[i_rmm]->setQp(_qp);
+
   while (counter < _max_its && delS > _absolute_tolerance &&
          (delS / first_delS) > _relative_tolerance && (num_submodels != 1 || counter < 1))
   {
@@ -133,7 +137,6 @@ CombinedCreepPlasticity::computeStress(const Elem & current_elem,
     for (unsigned i_rmm(0); i_rmm < num_submodels; ++i_rmm)
     {
       rmm[i_rmm]->computeStress(current_elem,
-                                qp,
                                 elasticityTensor,
                                 stress_old,
                                 elastic_strain_increment,
@@ -168,11 +171,16 @@ CombinedCreepPlasticity::computeStress(const Elem & current_elem,
   }
 
   strain_increment = elastic_strain_increment;
+
+  _matl_timestep_limit[_qp] = 0.0;
+  for (unsigned i_rmm(0); i_rmm < num_submodels; ++i_rmm)
+    _matl_timestep_limit[_qp] += 1.0 / rmm[i_rmm]->computeTimeStepLimit();
+
+  _matl_timestep_limit[_qp] = 1.0 / _matl_timestep_limit[_qp];
 }
 
 bool
 CombinedCreepPlasticity::modifyStrainIncrement(const Elem & current_elem,
-                                               unsigned qp,
                                                SymmTensor & strain_increment,
                                                SymmTensor & d_strain_dT)
 {
@@ -183,7 +191,8 @@ CombinedCreepPlasticity::modifyStrainIncrement(const Elem & current_elem,
 
   for (unsigned i_rmm(0); i_rmm < num_submodels; ++i_rmm)
   {
-    modified |= rmm[i_rmm]->modifyStrainIncrement(current_elem, qp, strain_increment, d_strain_dT);
+    rmm[i_rmm]->setQp(_qp);
+    modified |= rmm[i_rmm]->modifyStrainIncrement(current_elem, strain_increment, d_strain_dT);
   }
   return modified;
 }

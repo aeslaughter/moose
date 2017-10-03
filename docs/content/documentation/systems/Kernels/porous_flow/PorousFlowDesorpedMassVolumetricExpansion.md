@@ -1,10 +1,15 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowDesorpedMassVolumetricExpansion
-!description /Kernels/PorousFlowDesorpedMassVolumetricExpansion
+!syntax description /Kernels/PorousFlowDesorpedMassVolumetricExpansion
 
-!parameters /Kernels/PorousFlowDesorpedMassVolumetricExpansion
+This `Kernel` implements the weak form of
+\begin{equation}
+  \left((1 - \phi)C^{\kappa}\right)\nabla\cdot\mathbf{v}_{s}
+  \nonumber
+\end{equation}
+where all parameters are defined in the [nomenclature](/porous_flow/nomenclature.md).
 
-!inputfiles /Kernels/PorousFlowDesorpedMassVolumetricExpansion
+!syntax /Kernels/PorousFlowDesorpedMassVolumetricExpansion
 
-!childobjects /Kernels/PorousFlowDesorpedMassVolumetricExpansion
+!syntax inputs /Kernels/PorousFlowDesorpedMassVolumetricExpansion
+
+!syntax children /Kernels/PorousFlowDesorpedMassVolumetricExpansion

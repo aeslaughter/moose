@@ -26,7 +26,7 @@ const std::map<std::string, std::pair<std::string, std::vector<std::string>>>
         {"max_principal", {"MaxPrincipal", {"stress"}}},
         {"mid_principal", {"MidPrincipal", {"stress"}}},
         {"min_principal", {"MinPrincipal", {"stress"}}},
-        {"equivalent", {"EquivalentPlasticStrain", {"plastic_strain", "creep_strain"}}},
+        {"effective", {"EffectiveStrain", {"plastic_strain", "creep_strain"}}},
         {"firstinv", {"FirstInvariant", {"stress", "strain"}}},
         {"secondinv", {"SecondInvariant", {"stress", "strain"}}},
         {"thirdinv", {"ThirdInvariant", {"stress", "strain"}}}};
@@ -39,7 +39,6 @@ validParams<TensorMechanicsActionBase>()
 
   params.addRequiredParam<std::vector<NonlinearVariableName>>(
       "displacements", "The nonlinear displacement variables for the problem");
-  params.addParam<NonlinearVariableName>("temp", "The temperature"); // Deprecated
   params.addParam<NonlinearVariableName>("temperature", "The temperature");
 
   MooseEnum strainType("SMALL FINITE", "SMALL");

@@ -41,6 +41,12 @@ public:
   virtual ~Water97FluidProperties();
 
   /**
+   * Fluid name
+   * @return "water"
+   */
+  virtual std::string fluidName() const override;
+
+  /**
    * Water molar mass
    * @return molar mass (kg/mol)
    */
@@ -184,12 +190,17 @@ public:
    *
    * @param density fluid density (kg/m^3)
    * @param temperature fluid temperature (K)
+   * @param ddensity_dT derivative of density wrt temperature
    * @param[out] mu viscosity (Pa.s)
    * @param[out] dmu_drho derivative of viscosity wrt density
    * @param[out] dmu_dT derivative of viscosity wrt temperature
    */
-  virtual void mu_drhoT(
-      Real density, Real temperature, Real & mu, Real & dmu_drho, Real & dmu_dT) const override;
+  virtual void mu_drhoT(Real density,
+                        Real temperature,
+                        Real ddensity_dT,
+                        Real & mu,
+                        Real & dmu_drho,
+                        Real & dmu_dT) const override;
 
   /**
    * Thermal conductivity as a function of density and temperature
@@ -252,7 +263,7 @@ public:
    * @param temperature water temperature (K)
    * @return saturation pressure (Pa)
    */
-  Real pSat(Real temperature) const;
+  Real vaporPressure(Real temperature) const;
 
   /**
    * Saturation pressure as a function of temperature and derivative
@@ -268,7 +279,7 @@ public:
    * @param[out] saturation pressure (Pa)
    * @param[out] derivative of saturation pressure wrt temperature (Pa/K)
    */
-  void pSat_dT(Real temperature, Real & psat, Real & dpsat_dT) const;
+  void vaporPressure_dT(Real temperature, Real & psat, Real & dpsat_dT) const;
 
   /**
    * Saturation temperature as a function of pressure.
@@ -282,7 +293,7 @@ public:
    * @param pressure water pressure (Pa)
    * @return saturation temperature (K)
    */
-  Real TSat(Real pressure) const;
+  Real vaporTemperature(Real pressure) const;
 
   /**
    * Auxillary equation for the boundary between regions 2 and 3.

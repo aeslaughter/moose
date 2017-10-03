@@ -29,12 +29,24 @@
   [../]
 []
 
+[UserObjects]
+  [./voronoi]
+    type = PolycrystalVoronoi
+    grain_num = 100 # Number of grains
+    rand_seed = 10
+  [../]
+  [./grain_tracker]
+    type = GrainTracker
+    threshold = 0.2
+    connecting_threshold = 0.08
+    compute_halo_maps = true # Only necessary for displaying HALOS
+  [../]
+[]
+
 [ICs]
   [./PolycrystalICs]
-    [./PolycrystalVoronoiIC]
-      grain_num = 100 #Number of grains
-      coloring_algorithm = jp
-      rand_seed = 10
+    [./PolycrystalColoringIC]
+      polycrystal_ic_uo = voronoi
     [../]
   [../]
 []
@@ -130,13 +142,6 @@
 
 [Postprocessors]
   # Scalar postprocessors
-  [./grain_tracker]
-    type = GrainTracker
-    threshold = 0.2
-    connecting_threshold = 0.08
-    flood_entity_type = ELEMENTAL
-    compute_halo_maps = true # Only necessary for displaying HALOS
-  [../]
   [./dt]
     # Outputs the current time step
     type = TimestepSize

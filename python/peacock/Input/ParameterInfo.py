@@ -34,7 +34,7 @@ class ParameterInfo(object):
         self.group_name = data["group_name"]
         if not self.group_name:
             self.group_name = "Main"
-        self.required = data["required"] == "Yes"
+        self.required = data["required"]
         self.name = data["name"]
         self.options = data.get("options", "")
         if self.options:
@@ -74,6 +74,7 @@ class ParameterInfo(object):
             self.user_added or
             ("basic_string" in self.cpp_type and self.name == "value") or
             ("std::string" in self.cpp_type and self.name == "value") or
+            self.cpp_type == "FunctionExpression" or
             ' ' in self.value or
             ';' in self.value or
             '=' in self.value or

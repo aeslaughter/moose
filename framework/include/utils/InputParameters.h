@@ -20,7 +20,6 @@
 #include "MooseTypes.h"
 #include "MooseUtils.h"
 
-// libMesh includes
 #include "libmesh/parameters.h"
 #include "libmesh/parsed_function.h"
 
@@ -649,6 +648,18 @@ public:
    */
   const std::set<std::string> & getControllableParameters() const { return _controllable_params; }
 
+  /**
+   * Provide a set of reserved values for a parameter. These are values that are in addition
+   * to the normal set of values the parameter can take.
+   */
+  void setReservedValues(const std::string & name, const std::set<std::string> & reserved);
+
+  /**
+   * Get a set of reserved parameter values.
+   * Returns a set by value since we can return an empty set.
+   */
+  std::set<std::string> reservedValues(const std::string & name) const;
+
 private:
   // Private constructor so that InputParameters can only be created in certain places.
   InputParameters();
@@ -663,6 +674,9 @@ private:
    * to disable copying.
    */
   void allowCopy(bool status) { _allow_copy = status; }
+
+  /// Make sure the parameter name doesn't have any invalid characters.
+  void checkParamName(const std::string & name) const;
 
   /// This method is called when adding a Parameter with a default value, can be specialized for non-matching types
   template <typename T, typename S>
@@ -728,6 +742,9 @@ private:
   /// A list of parameters declared as controllable
   std::set<std::string> _controllable_params;
 
+  /// The reserved option names for a parameter
+  std::map<std::string, std::set<std::string>> _reserved_values;
+
   /// Flag for disabling deprecated parameters message, this is used by applyParameters to avoid dumping messages
   bool _show_deprecated_message;
 
@@ -748,6 +765,7 @@ template <typename T>
 T &
 InputParameters::set(const std::string & name, bool quiet_mode)
 {
+  checkParamName(name);
   checkConsistentType<T>(name);
 
   if (!this->have_parameter<T>(name))
@@ -830,7 +848,7 @@ InputParameters::rangeCheck(const std::string & full_name,
         iss.seekg(short_name.size() + 1);
 
         size_t index;
-        if (iss >> index)
+        if (iss >> index && iss.eof())
         {
           if (index >= value.size())
           {
@@ -933,6 +951,7 @@ template <typename T>
 void
 InputParameters::addRequiredParam(const std::string & name, const std::string & doc_string)
 {
+  checkParamName(name);
   checkConsistentType<T>(name);
 
   InputParameters::insert<T>(name);
@@ -954,6 +973,7 @@ template <typename T, typename S>
 void
 InputParameters::addParam(const std::string & name, const S & value, const std::string & doc_string)
 {
+  checkParamName(name);
   checkConsistentType<T>(name);
 
   T & l_value = InputParameters::set<T>(name);
@@ -972,6 +992,7 @@ template <typename T>
 void
 InputParameters::addParam(const std::string & name, const std::string & doc_string)
 {
+  checkParamName(name);
   checkConsistentType<T>(name);
 
   InputParameters::insert<T>(name);
@@ -1051,6 +1072,7 @@ template <typename T>
 void
 InputParameters::addPrivateParam(const std::string & name)
 {
+  checkParamName(name);
   checkConsistentType<T>(name);
 
   InputParameters::insert<T>(name);
@@ -1061,6 +1083,7 @@ template <typename T>
 void
 InputParameters::addPrivateParam(const std::string & name, const T & value)
 {
+  checkParamName(name);
   checkConsistentType<T>(name);
 
   InputParameters::set<T>(name) = value;

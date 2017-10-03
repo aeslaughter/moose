@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from peacock.Execute.ExecuteTabPlugin import ExecuteTabPlugin
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtTest import QTest
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 from peacock.utils import Testing
 from peacock.Input.InputTree import InputTree
 from peacock.Input import TimeStepEstimate
@@ -10,6 +10,8 @@ import argparse
 import re
 
 class Tests(Testing.PeacockTester):
+    qapp = QApplication([])
+
     def setUp(self):
         super(Tests, self).setUp()
         self.test_exe = Testing.find_moose_test_exe()
@@ -103,6 +105,37 @@ class Tests(Testing.PeacockTester):
         tree.setInputFile(self.test_input_file)
         num_steps = TimeStepEstimate.findTimeSteps(tree)
         w.onNumTimeStepsChanged(num_steps)
+
+    def testPrefs(self):
+        settings = QSettings()
+        settings.setValue("execute/maxRecentWorkingDirs", 2)
+        settings.setValue("execute/maxRecentExes", 3)
+        settings.setValue("execute/maxRecentArgs", 4)
+        settings.setValue("execute/mpiEnabled", True)
+        settings.setValue("execute/mpiArgs", "foo bar")
+        settings.setValue("execute/threadsEnabled", True)
+        settings.setValue("execute/threadsArgs", "threads args")
+        settings.sync()
+
+        main_win, w = self.newWidget()
+        ops = w.ExecuteOptionsPlugin
+        self.assertEqual(ops.mpi_checkbox.isChecked(), True)
+        self.assertEqual(ops.threads_checkbox.isChecked(), True)
+        self.assertEqual(ops.mpi_line.text(), "foo bar")
+        self.assertEqual(ops.threads_line.text(), "threads args")
+
+        settings.setValue("execute/mpiEnabled", False)
+        settings.setValue("execute/mpiArgs", "some args")
+        settings.setValue("execute/threadsEnabled", False)
+        settings.setValue("execute/threadsArgs", "other args")
+        settings.sync()
+
+        main_win, w = self.newWidget()
+        ops = w.ExecuteOptionsPlugin
+        self.assertEqual(ops.mpi_checkbox.isChecked(), False)
+        self.assertEqual(ops.threads_checkbox.isChecked(), False)
+        self.assertEqual(ops.mpi_line.text(), "some args")
+        self.assertEqual(ops.threads_line.text(), "other args")
 
 if __name__ == '__main__':
     Testing.run_tests()

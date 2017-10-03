@@ -1,9 +1,9 @@
 #IsotropicPowerLawHardeningStressUpdate
-!description /Materials/IsotropicPowerLawHardeningStressUpdate
+!syntax description /Materials/IsotropicPowerLawHardeningStressUpdate
 
 
 ## Description
-{!docs/content/documentation/modules/tensor_mechanics/common/supplementalRadialReturnStressUpdate.md!}
+!include docs/content/documentation/modules/tensor_mechanics/common/supplementalRadialReturnStressUpdate.md
 
 This class models power law hardening by using the relation
 $$
@@ -20,8 +20,8 @@ $$
 \sigma_y = \left( \frac{E^n}{K} \right)^{1/(n-1)}
 $$
 
-!parameters /Materials/IsotropicPowerLawHardeningStressUpdate
+!syntax parameters /Materials/IsotropicPowerLawHardeningStressUpdate
 
-!inputfiles /Materials/IsotropicPowerLawHardeningStressUpdate
+!syntax inputs /Materials/IsotropicPowerLawHardeningStressUpdate
 
-!childobjects /Materials/IsotropicPowerLawHardeningStressUpdate
+!syntax children /Materials/IsotropicPowerLawHardeningStressUpdate

@@ -43,7 +43,7 @@ JsonSyntaxTree::getJson(const std::string & path)
 {
   auto paths = splitPath(path);
   mooseAssert(paths.size() > 0, "path is empty");
-  moosecontrib::Json::Value * next = &_root[paths[0]];
+  moosecontrib::Json::Value * next = &_root["blocks"][paths[0]];
 
   for (auto pit = paths.begin() + 1; pit != paths.end(); ++pit)
   {
@@ -80,36 +80,23 @@ JsonSyntaxTree::getJson(const std::string & parent, const std::string & path, bo
   return val;
 }
 
-bool
-JsonSyntaxTree::addParameters(const std::string & parent,
-                              const std::string & path,
-                              bool is_type,
-                              const std::string & action,
-                              bool is_action,
-                              InputParameters * params,
-                              const FileLineInfo & lineinfo)
+size_t
+JsonSyntaxTree::setParams(InputParameters * params,
+                          bool search_match,
+                          moosecontrib::Json::Value & all_params)
 {
-  moosecontrib::Json::Value all_params;
-  if (action == "EmptyAction")
-    return false;
-
   size_t count = 0;
   for (auto & iter : *params)
   {
     // Make sure we want to see this parameter
-    if (params->isPrivate(iter.first) ||
-        (_search != "" && !MooseUtils::wildCardMatch(iter.first, _search) &&
-         !MooseUtils::wildCardMatch(path, _search) && !MooseUtils::wildCardMatch(action, _search) &&
-         !MooseUtils::wildCardMatch(parent, _search)))
+    bool param_match = !_search.empty() && MooseUtils::wildCardMatch(iter.first, _search);
+    if (params->isPrivate(iter.first) || (!_search.empty() && !search_match && !param_match))
       continue;
 
     ++count;
     moosecontrib::Json::Value param_json;
 
-    // Block params may be required and will have a doc string
-    std::string required = params->isParamRequired(iter.first) ? "Yes" : "No";
-
-    param_json["required"] = required;
+    param_json["required"] = params->isParamRequired(iter.first);
 
     // Only output default if it has one
     if (params->isParamValid(iter.first))
@@ -117,7 +104,14 @@ JsonSyntaxTree::addParameters(const std::string & parent,
     else if (params->hasDefaultCoupledValue(iter.first))
       param_json["default"] = params->defaultCoupledValue(iter.first);
 
-    param_json["options"] = buildOptions(iter);
+    bool out_of_range_allowed = false;
+    param_json["options"] = buildOptions(iter, out_of_range_allowed);
+    if (!param_json["options"].asString().empty())
+      param_json["out_of_range_allowed"] = out_of_range_allowed;
+    auto reserved_values = params->reservedValues(iter.first);
+    for (const auto & reserved : reserved_values)
+      param_json["reserved_values"].append(reserved);
+
     std::string t = prettyCppType(params->type(iter.first));
     param_json["cpp_type"] = t;
     param_json["basic_type"] = basicCppType(t);
@@ -129,7 +123,41 @@ JsonSyntaxTree::addParameters(const std::string & parent,
     param_json["description"] = doc;
     all_params[iter.first] = param_json;
   }
-  if (_search != "" && count == 0)
+  return count;
+}
+
+void
+JsonSyntaxTree::addGlobal()
+{
+  // If they are doing a search they probably don't want to see this
+  if (_search.empty())
+  {
+    auto params = validParams<Action>();
+    moosecontrib::Json::Value jparams;
+    setParams(&params, true, jparams);
+    _root["global"]["parameters"] = jparams;
+  }
+}
+
+bool
+JsonSyntaxTree::addParameters(const std::string & parent,
+                              const std::string & path,
+                              bool is_type,
+                              const std::string & action,
+                              bool is_action,
+                              InputParameters * params,
+                              const FileLineInfo & lineinfo,
+                              const std::string & classname)
+{
+  if (action == "EmptyAction")
+    return false;
+
+  moosecontrib::Json::Value all_params;
+  bool search_match = !_search.empty() && (MooseUtils::wildCardMatch(path, _search) ||
+                                           MooseUtils::wildCardMatch(action, _search) ||
+                                           MooseUtils::wildCardMatch(parent, _search));
+  auto count = setParams(params, search_match, all_params);
+  if (!_search.empty() && count == 0)
     // no parameters that matched the search string
     return false;
 
@@ -145,37 +173,54 @@ JsonSyntaxTree::addParameters(const std::string & parent,
   }
   else if (params)
   {
+    if (params->isParamValid("_moose_base"))
+      json["moose_base"] = params->get<std::string>("_moose_base");
+
     json["parameters"] = all_params;
     json["syntax_path"] = path;
     json["parent_syntax"] = parent;
     json["description"] = params->getClassDescription();
     if (lineinfo.isValid())
+    {
       json["file_info"][lineinfo.file()] = lineinfo.line();
+      if (!classname.empty())
+        json["class"] = classname;
+    }
   }
   return true;
 }
 
 std::string
-JsonSyntaxTree::buildOptions(const std::iterator_traits<InputParameters::iterator>::value_type & p)
+JsonSyntaxTree::buildOptions(const std::iterator_traits<InputParameters::iterator>::value_type & p,
+                             bool & out_of_range_allowed)
 {
   std::string options;
   {
     InputParameters::Parameter<MooseEnum> * enum_type =
         dynamic_cast<InputParameters::Parameter<MooseEnum> *>(p.second);
     if (enum_type)
+    {
+      out_of_range_allowed = enum_type->get().isOutOfRangeAllowed();
       options = enum_type->get().getRawNames();
+    }
   }
   {
     InputParameters::Parameter<MultiMooseEnum> * enum_type =
         dynamic_cast<InputParameters::Parameter<MultiMooseEnum> *>(p.second);
     if (enum_type)
+    {
+      out_of_range_allowed = enum_type->get().isOutOfRangeAllowed();
       options = enum_type->get().getRawNames();
+    }
   }
   {
     InputParameters::Parameter<std::vector<MooseEnum>> * enum_type =
         dynamic_cast<InputParameters::Parameter<std::vector<MooseEnum>> *>(p.second);
     if (enum_type)
+    {
+      out_of_range_allowed = (enum_type->get())[0].isOutOfRangeAllowed();
       options = (enum_type->get())[0].getRawNames();
+    }
   }
   return options;
 }
@@ -222,6 +267,11 @@ JsonSyntaxTree::addSyntaxType(const std::string & path, const std::string type)
   {
     auto & j = getJson(path);
     j["associated_types"].append(type);
+  }
+  // If they are doing a search they probably don't want to see this
+  if (_search.empty())
+  {
+    _root["global"]["associated_types"][type].append(path);
   }
 }
 

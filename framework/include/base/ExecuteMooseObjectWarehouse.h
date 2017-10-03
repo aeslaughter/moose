@@ -49,6 +49,9 @@ public:
    * @param object A shared pointer to the object being added
    */
   virtual void addObject(std::shared_ptr<T> object, THREAD_ID tid = 0);
+  void addObjectMask(std::shared_ptr<T> object,
+                     THREAD_ID tid = 0,
+                     std::uint16_t flag_mask = std::numeric_limits<std::uint16_t>::max());
 
   ///@{
   /**
@@ -197,7 +200,17 @@ ExecuteMooseObjectWarehouse<T>::setup(const ExecFlagType & exec_flag, THREAD_ID 
 
 template <typename T>
 void
-ExecuteMooseObjectWarehouse<T>::addObject(std::shared_ptr<T> object, THREAD_ID tid /*=0*/)
+ExecuteMooseObjectWarehouse<T>::addObject(std::shared_ptr<T> object, THREAD_ID tid)
+
+{
+  addObjectMask(object, tid, 0xFFFF);
+}
+
+template <typename T>
+void
+ExecuteMooseObjectWarehouse<T>::addObjectMask(std::shared_ptr<T> object,
+                                              THREAD_ID tid,
+                                              std::uint16_t flag_mask)
 {
   // Update list of all objects
   MooseObjectWarehouse<T>::addObject(object, tid);

@@ -7,24 +7,51 @@ import subprocess, os, sys, re
 
 
 def shellCommand( command, cwd=None ):
-    # The following line works with Python 2.7+
-    # return subprocess.check_output( command, shell=True, stderr=subprocess.STDOUT, cwd=cwd )
-    p = subprocess.Popen( command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd )
-    p.wait()
-    retcode = p.returncode
-    if retcode != 0:
-        raise Exception()
+    """
+    Run a command in the shell.
+    We can ignore anything on stderr as that can potentially mess up the output
+    of an otherwise successful command.
+    """
+    with open(os.devnull, 'w') as devnull:
+        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=devnull, cwd=cwd)
+        p.wait()
+        retcode = p.returncode
+        if retcode != 0:
+            raise Exception()
 
-    return p.communicate()[0]
+        return p.communicate()[0]
+
+
+def gitSHA1( cwd=None ):
+  try:
+    # The SHA1 should always be available if we have a git repo.
+    return shellCommand( 'git show -s --format=%h', cwd ).strip()
+  except: # subprocess.CalledProcessError:
+    return None
+
+
+def gitTag( cwd=None ):
+    try:
+        # The tag should always be available if we have a git repo.
+        return shellCommand( 'git describe --tags', cwd).strip()
+    except: # subprocess.CalledProcessError:
+        return None
+
+
+def gitDate( cwd=None ):
+    try:
+        # The date should always be available if we have a git repo.
+        return shellCommand( 'git show -s --format=%ci', cwd ).split()[0]
+    except: # subprocess.CalledProcessError:
+        return None
+
 
 def gitVersionString( cwd=None ):
-    SHA1 = ''
-    date = ''
-    try:
-        # The SHA1 and date should always be available if we have a git repo.
-        SHA1 = shellCommand( 'git show -s --format=%h', cwd ).strip()
-        date = shellCommand( 'git show -s --format=%ci', cwd ).split()[0]
-    except: # subprocess.CalledProcessError:
+    SHA1 = gitSHA1( cwd )
+    date = gitDate( cwd )
+
+    if not SHA1 or not date:
+        # Can happen if we aren't in a valid repo
         return None
 
     # The tag check will always succeed if the repo starts with a v0.0 tag. To find only tags that
@@ -74,9 +101,20 @@ def repoVersionString( cwd=None ):
     return version
 
 
-def writeRevision( app_name, app_revision, revision_header ):
+def writeRevision( repo_location, app_name, revision_header ):
     # Use all caps for app name (by convention).
-    app_definition = app_name.upper() + '_REVISION'
+    app_def_name = app_name.upper()
+    app_def_name = re.sub( '[^a-zA-Z0-9]', '', app_def_name )
+    app_definition = app_def_name + '_REVISION'
+
+    app_revision = repoVersionString( repo_location )
+
+    # Version is the tag. If empty, we use the sha1 hash
+    app_version = gitTag(repo_location)
+    if app_version is None:
+        app_version = gitSHA1(repo_location)
+        if app_version is None:
+            app_version = "unknown"
 
     # see if the revision is different
     revision_changed = False
@@ -86,6 +124,12 @@ def writeRevision( app_name, app_revision, revision_header ):
 
         m =  re.search( re.escape( app_definition) + r' "([^"]*)"',buffer )
         if m is not None and m.group(1) != app_revision:
+            revision_changed = True
+
+        if m is None:
+            # If the above RE doesn't match anything then we have
+            # a bad _REVISION define and we need to rewrite
+            # out a new file.
             revision_changed = True
 
         f.close()
@@ -107,6 +151,7 @@ def writeRevision( app_name, app_revision, revision_header ):
                  '#define ' + app_definition + '_H\n'
                  '\n'
                  '#define ' + app_definition + ' "' + app_revision + '"\n'
+                 '#define ' + app_def_name + '_VERSION "' + app_version + '"\n'
                  '\n'
                  '#endif // ' + app_definition + '_H\n')
         f.close()
@@ -117,5 +162,4 @@ if len(sys.argv) == 4:
     header_file = sys.argv[2]
     app_name = sys.argv[3]
 
-    revision = repoVersionString( repo_location )
-    writeRevision( app_name, revision, header_file )
+    writeRevision( repo_location, app_name, header_file )

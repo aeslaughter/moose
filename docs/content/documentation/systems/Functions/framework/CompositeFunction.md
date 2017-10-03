@@ -1,10 +1,20 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # CompositeFunction
-!description /Functions/CompositeFunction
+!syntax description /Functions/CompositeFunction
 
-!parameters /Functions/CompositeFunction
+## Description
 
-!inputfiles /Functions/CompositeFunction
+The `CompositeFunction` type takes an arbitrary set of functions, provided in
+the `functions` parameter, evaluates each of them at the appropriate time
+and position, and multiplies them together.  The function can optionally be
+multiplied by a scale factor, which is specified using the `scale_factor`
+parameter.
 
-!childobjects /Functions/CompositeFunction
+## Example Input Syntax
+
+!listing test/tests/bcs/function_dirichlet_bc/function_dirichlet_bc_test.i block=Functions
+
+!syntax parameters /Functions/CompositeFunction
+
+!syntax inputs /Functions/CompositeFunction
+
+!syntax children /Functions/CompositeFunction

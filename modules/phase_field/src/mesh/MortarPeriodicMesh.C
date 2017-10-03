@@ -7,7 +7,6 @@
 
 #include "MortarPeriodicMesh.h"
 
-// libMesh includes
 #include "libmesh/mesh_modification.h"
 
 template <>
@@ -68,10 +67,10 @@ MortarPeriodicMesh::buildMesh()
         if ((*it)->_bnd_id == current_boundary_id)
         {
           Elem * elem = (*it)->_elem;
-          unsigned short int s = (*it)->_side;
+          auto s = (*it)->_side;
 
           // build element from the side
-          std::unique_ptr<Elem> side(elem->build_side(s, false));
+          std::unique_ptr<Elem> side(elem->build_side_ptr(s, false));
           side->processor_id() = elem->processor_id();
 
           // Add the side set subdomain

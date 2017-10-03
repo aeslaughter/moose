@@ -1,26 +1,28 @@
 #!/usr/bin/env python
 from peacock.Input.InputFileEditorWithMesh import InputFileEditorWithMesh
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 from peacock.Input.ExecutableInfo import ExecutableInfo
 from peacock.utils import Testing
 import argparse, os
 from mock import patch
 
 class BaseTests(Testing.PeacockTester):
-
-
-
     def setUp(self):
         super(BaseTests, self).setUp()
         self.input_file = "../../common/transient.i"
         self.highlight_left = "meshrender_highlight_left.png"
         self.highlight_right = "meshrender_highlight_right.png"
         self.highlight_all = "meshrender_highlight_all.png"
+        self.highlight_block = "meshrender_highlight_block.png"
+        self.highlight_nodes = "meshrender_highlight_nodes.png"
         self.basic_mesh = "meshrender_basic.png"
-        #Testing.remove_file(self.highlight_all)
-        #Testing.remove_file(self.highlight_right)
-        #Testing.remove_file(self.highlight_left)
-        #Testing.remove_file(self.basic_mesh)
+        Testing.remove_file(self.highlight_all)
+        Testing.remove_file(self.highlight_right)
+        Testing.remove_file(self.highlight_left)
+        Testing.remove_file(self.highlight_block)
+        Testing.remove_file(self.highlight_nodes)
+        Testing.remove_file(self.basic_mesh)
+        Testing.clean_files()
         self.num_time_steps = None
         self.time_step_changed_count = 0
 
@@ -62,6 +64,8 @@ class BaseTests(Testing.PeacockTester):
         self.assertEqual(test_data, gold_data)
 
 class Tests(BaseTests):
+    qapp = QApplication([])
+
     def testBasic(self):
         main_win, w = self.newWidget()
         w.setInputFile(self.input_file)
@@ -69,7 +73,7 @@ class Tests(BaseTests):
         w.vtkwin.onWrite(self.basic_mesh)
         self.assertFalse(Testing.gold_diff(self.basic_mesh))
 
-    def testHighlight(self):
+    def testBCHighlight(self):
         main_win, w = self.newWidget()
         w.setInputFile(self.input_file)
         tree = w.InputFileEditorPlugin.tree
@@ -104,7 +108,7 @@ class Tests(BaseTests):
         w.vtkwin.onWrite(self.basic_mesh)
         self.assertFalse(Testing.gold_diff(self.basic_mesh))
 
-    def testHighlightDiffusion(self):
+    def testBCHighlightDiffusion(self):
         self.input_file = "../../common/simple_diffusion.i"
         main_win, w = self.newWidget()
         w.setInputFile(self.input_file)
@@ -220,6 +224,32 @@ class Tests(BaseTests):
         b.included = True
         s = tree.getInputFileString()
         self.assertEqual("[AuxVariables]\n  [./New_0]\n  [../]\n[]\n\n", s)
+
+    def testBlockHighlight(self):
+        main_win, w = self.newWidget()
+        w.setInputFile(self.input_file)
+        bh = w.BlockHighlighterPlugin
+        Testing.set_window_size(w.vtkwin)
+
+        bh.BlockSelector.Options.setCurrentText("0")
+        w.vtkwin.onWrite(self.highlight_block)
+        self.assertFalse(Testing.gold_diff(self.highlight_block))
+
+        bh.BlockSelector.Options.setCurrentText("")
+
+        bh.SidesetSelector.Options.setCurrentText("right")
+        w.vtkwin.onWrite(self.highlight_right)
+        self.assertFalse(Testing.gold_diff(self.highlight_right))
+
+        bh.SidesetSelector.Options.setCurrentText("left")
+        w.vtkwin.onWrite(self.highlight_left)
+        self.assertFalse(Testing.gold_diff(self.highlight_left))
+
+        bh.SidesetSelector.Options.setCurrentText("")
+
+        bh.NodesetSelector.Options.setCurrentText("left")
+        w.vtkwin.onWrite(self.highlight_nodes)
+        self.assertFalse(Testing.gold_diff(self.highlight_nodes))
 
 if __name__ == '__main__':
     Testing.run_tests()

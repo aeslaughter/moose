@@ -1,10 +1,14 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # ConvectiveFluxFunction
-!description /BCs/ConvectiveFluxFunction
+!syntax description /BCs/ConvectiveFluxFunction
 
-!parameters /BCs/ConvectiveFluxFunction
+## Description
 
-!inputfiles /BCs/ConvectiveFluxFunction
+The `ConvectiveFluxFunction` boundary condition determines the value on a boundary based
+upon the heat transfer coefficient of the fluid on the outside of boundary and far-field
+temperature.
 
-!childobjects /BCs/ConvectiveFluxFunction
+!syntax parameters /BCs/ConvectiveFluxFunction
+
+!syntax inputs /BCs/ConvectiveFluxFunction
+
+!syntax children /BCs/ConvectiveFluxFunction

@@ -26,6 +26,12 @@ public:
   virtual ~MethaneFluidProperties();
 
   /**
+   * Fluid name
+   * @return "methane"
+   */
+  virtual std::string fluidName() const override;
+
+  /**
    * Methane molar mass
    * @return molar mass (kg/mol)
    */
@@ -165,19 +171,23 @@ public:
    * @param[out] dmu_drho derivative of viscosity wrt density
    * @param[out] dmu_dT derivative of viscosity wrt temperature
    */
-  virtual void mu_drhoT(
-      Real density, Real temperature, Real & mu, Real & dmu_drho, Real & dmu_dT) const override;
+  virtual void mu_drhoT(Real density,
+                        Real temperature,
+                        Real ddensity_dT,
+                        Real & mu,
+                        Real & dmu_drho,
+                        Real & dmu_dT) const override;
 
   /**
-   * Thermal conductivity as a function of pressure and temperature.
+   * Thermal conductivity as a function of density and temperature.
    * From Irvine Jr, T. F. and Liley, P. E. (1984) Steam and Gas Tables with
    * Computer Equations.
    *
-   * @param pressure fluid pressure (Pa)
+   * @param density fluid density (kg/m^3)
    * @param temperature fluid temperature (K)
    * @return k (W/m/K)
    */
-  virtual Real k(Real pressure, Real temperature) const override;
+  virtual Real k(Real density, Real temperature) const override;
 
   /**
    * Specific entropy as a function of pressure and temperature.

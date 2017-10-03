@@ -21,7 +21,6 @@
 #include "NearestNodeLocator.h"
 #include "PenetrationLocator.h"
 
-// libMesh includes
 #include "libmesh/quadrature.h"
 
 template <>
@@ -95,7 +94,8 @@ FaceFaceConstraint::reinit()
 
     if (master_pinfo && slave_pinfo)
     {
-      Elem * master_side = master_pinfo->_elem->build_side(master_pinfo->_side_num, true).release();
+      const Elem * master_side =
+          master_pinfo->_elem->build_side_ptr(master_pinfo->_side_num, true).release();
 
       std::vector<std::vector<Real>> & master_side_phi = master_pinfo->_side_phi;
       std::vector<std::vector<RealGradient>> & master_side_grad_phi = master_pinfo->_side_grad_phi;
@@ -107,7 +107,8 @@ FaceFaceConstraint::reinit()
       _elem_master = master_pinfo->_elem;
       delete master_side;
 
-      Elem * slave_side = slave_pinfo->_elem->build_side(slave_pinfo->_side_num, true).release();
+      const Elem * slave_side =
+          slave_pinfo->_elem->build_side_ptr(slave_pinfo->_side_num, true).release();
       std::vector<std::vector<Real>> & slave_side_phi = slave_pinfo->_side_phi;
       std::vector<std::vector<RealGradient>> & slave_side_grad_phi = slave_pinfo->_side_grad_phi;
       mooseAssert(slave_side_phi.size() == slave_side_grad_phi.size(),
@@ -127,6 +128,7 @@ FaceFaceConstraint::reinitSide(Moose::ConstraintType res_type)
   switch (res_type)
   {
     case Moose::Master:
+      _assembly.setCurrentSubdomainID(_elem_master->subdomain_id());
       _assembly.reinit(_elem_master);
       _master_var.prepare();
       _assembly.prepare();
@@ -134,6 +136,7 @@ FaceFaceConstraint::reinitSide(Moose::ConstraintType res_type)
       break;
 
     case Moose::Slave:
+      _assembly.setCurrentSubdomainID(_elem_slave->subdomain_id());
       _assembly.reinit(_elem_slave);
       _slave_var.prepare();
       _assembly.prepare();

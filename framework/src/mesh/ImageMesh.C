@@ -12,13 +12,15 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#include <cstdlib> // std::system, mkstemp
 #include "ImageMesh.h"
 #include "pcrecpp.h"
 #include "MooseApp.h"
 
-// libMesh includes
+#include <cstdlib> // std::system, mkstemp
+#include <fstream>
+
 #include "libmesh/mesh_generation.h"
+#include "libmesh/unstructured_mesh.h"
 
 template <>
 InputParameters

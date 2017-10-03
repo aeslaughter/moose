@@ -49,7 +49,7 @@ public:
                               Real & r2,
                               Real & radius);
 
-  virtual void computeProperties() override;
+  virtual void initialSetup() override;
 
 protected:
   virtual void computeQpProperties() override;
@@ -71,8 +71,7 @@ protected:
 
   const VariableValue & _temp;
 
-  bool _gap_geometry_params_set;
-  GAP_GEOMETRY _gap_geometry_type;
+  GAP_GEOMETRY & _gap_geometry_type;
 
   bool _quadrature;
 
@@ -88,6 +87,7 @@ protected:
   const VariableValue & _gap_temp_value;
   MaterialProperty<Real> & _gap_conductance;
   MaterialProperty<Real> & _gap_conductance_dT;
+  MaterialProperty<Real> & _gap_thermal_conductivity;
 
   const Real _gap_conductivity;
   Function * const _gap_conductivity_function;
@@ -105,8 +105,8 @@ protected:
   DofMap * _dof_map;
   const bool _warnings;
 
-  Point _p1;
-  Point _p2;
+  Point & _p1;
+  Point & _p2;
 };
 
 template <>

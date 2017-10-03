@@ -29,6 +29,7 @@ class Backup;
 // libMesh forward declarations
 namespace libMesh
 {
+class BoundingBox;
 namespace MeshTools
 {
 class BoundingBox;
@@ -60,7 +61,18 @@ class MultiApp : public MooseObject, public SetupInterface, public Restartable
 public:
   MultiApp(const InputParameters & parameters);
 
+  virtual void preExecute() {}
+
+  virtual void postExecute();
+
   virtual void initialSetup() override;
+
+  /**
+   * Method that reports whether the application has been fully solved or not.
+   * Most transient multiapps are never fully solved, however this method can be
+   * overridden in derived classes.
+   */
+  virtual bool isSolved() const { return false; }
 
   /**
    * Gets called just before transfers are done _to_ the MultiApp
@@ -126,17 +138,12 @@ public:
    * the geometry around the axis to create the 3D geometry).
    * @param app The global app number you want to get the bounding box for
    */
-  virtual MeshTools::BoundingBox getBoundingBox(unsigned int app);
+  virtual BoundingBox getBoundingBox(unsigned int app);
 
   /**
    * Get the FEProblemBase this MultiApp is part of.
    */
   FEProblemBase & problemBase() { return _fe_problem; }
-
-  /**
-   * Get the FEProblem this MultiApp is part of.
-   */
-  FEProblem & problem();
 
   /**
    * Get the FEProblemBase for the global app is part of.
@@ -182,7 +189,7 @@ public:
   /**
    * @return Number of Apps on local processor.
    */
-  unsigned int numLocalApps() { return _my_num_apps; }
+  unsigned int numLocalApps() { return _apps.size(); }
 
   /**
    * @return The global number of the first app on the local processor.
@@ -287,6 +294,13 @@ protected:
   /// call back executed right before app->runInputFile()
   virtual void preRunInputFile();
 
+  /**
+   * Initialize the MultiApp by creating the provided number of apps.
+   *
+   * This is called in the constructor, by default it utilizes the 'positions' input parameters.
+   */
+  void init(unsigned int num);
+
   /// The FEProblemBase this MultiApp is part of
   FEProblemBase & _fe_problem;
 
@@ -295,6 +309,9 @@ protected:
 
   /// The positions of all of the apps
   std::vector<Point> _positions;
+
+  /// Toggle use of "positions"
+  const bool _use_positions;
 
   /// The input file for each app's simulation
   std::vector<FileName> _input_files;

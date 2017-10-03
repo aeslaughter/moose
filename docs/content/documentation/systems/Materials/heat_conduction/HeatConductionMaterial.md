@@ -1,10 +1,12 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # HeatConductionMaterial
-!description /Materials/HeatConductionMaterial
+!syntax description /Materials/HeatConductionMaterial
 
-!parameters /Materials/HeatConductionMaterial
+## Description
+`HeatConductionMaterial` is a general-purpose material model for heat conduction.  It sets
+the thermal conductivity and specific heat at integration points.
 
-!inputfiles /Materials/HeatConductionMaterial
+!syntax parameters /Materials/HeatConductionMaterial
 
-!childobjects /Materials/HeatConductionMaterial
+!syntax inputs /Materials/HeatConductionMaterial
+
+!syntax children /Materials/HeatConductionMaterial

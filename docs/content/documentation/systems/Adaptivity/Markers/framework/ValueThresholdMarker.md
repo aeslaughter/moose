@@ -1,6 +1,6 @@
 
 # ValueThresholdMarker
-!description /Adaptivity/Markers/ValueThresholdMarker
+!syntax description /Adaptivity/Markers/ValueThresholdMarker
 
 ## Description
 The `ValueThresholdMarker` requires an estimate of error
@@ -22,10 +22,10 @@ region is used to define a region of elements that are marked with
 adjacent to elements marked for refinement.
 
 ## Example Input Syntax
-!input test/tests/markers/value_threshold_marker/value_threshold_marker_test.i block=Adaptivity
+!listing test/tests/markers/value_threshold_marker/value_threshold_marker_test.i block=Adaptivity
 
-!parameters /Adaptivity/Markers/ValueThresholdMarker
+!syntax parameters /Adaptivity/Markers/ValueThresholdMarker
 
-!inputfiles /Adaptivity/Markers/ValueThresholdMarker
+!syntax inputs /Adaptivity/Markers/ValueThresholdMarker
 
-!childobjects /Adaptivity/Markers/ValueThresholdMarker
+!syntax children /Adaptivity/Markers/ValueThresholdMarker

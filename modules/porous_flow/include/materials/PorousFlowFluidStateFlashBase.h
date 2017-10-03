@@ -11,6 +11,7 @@
 #include "PorousFlowVariableBase.h"
 
 class PorousFlowFluidStateFlashBase;
+class PorousFlowCapillaryPressure;
 
 template <>
 InputParameters validParams<PorousFlowFluidStateFlashBase>();
@@ -53,6 +54,28 @@ protected:
   virtual void initQpStatefulProperties() override;
   virtual void computeQpProperties() override;
 
+  /// Data structure to pass calculated thermophysical properties
+  struct FluidStateProperties
+  {
+    Real pressure;
+    Real saturation;
+    Real fluid_density;
+    Real fluid_viscosity;
+    std::vector<Real> mass_fraction;
+    Real dsaturation_dp;
+    Real dsaturation_dT;
+    Real dsaturation_dz;
+    Real dfluid_density_dp;
+    Real dfluid_density_dT;
+    Real dfluid_density_dz;
+    Real dfluid_viscosity_dp;
+    Real dfluid_viscosity_dT;
+    Real dfluid_viscosity_dz;
+    std::vector<Real> dmass_fraction_dp;
+    std::vector<Real> dmass_fraction_dT;
+    std::vector<Real> dmass_fraction_dz;
+  };
+
   /// Size material property vectors and initialise with zeros
   void setMaterialVectorSize() const;
 
@@ -60,7 +83,7 @@ protected:
    * Calculates all required thermophysical properties and derivatives for each phase
    * and fluid component. Must override in all derived classes.
    */
-  virtual void thermophysicalProperties() const = 0;
+  virtual void thermophysicalProperties() = 0;
 
   /**
    * Rachford-Rice equation for vapor fraction. Can be solved analytically for two
@@ -107,43 +130,6 @@ protected:
    */
   Real vaporMassFraction(std::vector<Real> & Ki) const;
 
-  /**
-   * Effective saturation of liquid phase
-   * @param saturation true saturation
-   * @return effective saturation
-   */
-  virtual Real effectiveSaturation(Real saturation) const;
-
-  /**
-   * Capillary pressure as a function of saturation.
-   * Default is constant capillary pressure = 0.0.
-   * Override in derived classes to implement other capillary pressure forulations
-   *
-   * @param saturation saturation
-   * @return capillary pressure
-   */
-  virtual Real capillaryPressure(Real saturation) const;
-
-  /**
-   * Derivative of capillary pressure wrt to saturation.
-   * Default = 0 for constant capillary pressure.
-   * Override in derived classes to implement other capillary pressure forulations
-   *
-   * @param saturation saturation (-)
-   * @return derivative of capillary pressure wrt saturation
-   */
-  virtual Real dCapillaryPressure_dS(Real pressure) const;
-
-  /**
-   * Second derivative of capillary pressure wrt to saturation.
-   * Default = 0 for constant capillary pressure.
-   * Override in derived classes to implement other capillary pressure forulations
-   *
-   * @param saturation saturation (-)
-   * @return second derivative of capillary pressure wrt saturation
-   */
-  virtual Real d2CapillaryPressure_dS2(Real pressure) const;
-
   /// Porepressure
   const VariableValue & _gas_porepressure;
   /// Gradient of porepressure (only defined at the qps)
@@ -182,6 +168,8 @@ protected:
   MaterialProperty<std::vector<std::vector<RealGradient>>> * _grad_mass_frac_qp;
   /// Derivative of the mass fraction matrix with respect to the Porous Flow variables
   MaterialProperty<std::vector<std::vector<std::vector<Real>>>> & _dmass_frac_dvar;
+  /// Old value of saturation
+  const MaterialProperty<std::vector<Real>> & _saturation_old;
 
   /// Fluid density of each phase
   MaterialProperty<std::vector<Real>> & _fluid_density;
@@ -196,18 +184,16 @@ protected:
   const Real _T_c2k;
   /// Universal gas constant (J/mol/K)
   const Real _R;
-  /// Constant capillary pressure (Pa)
-  const Real _pc;
-  /// Liquid residual saturation
-  const Real _sat_lr;
-  /// Derivative of effective saturation wrt saturation
-  const Real _dseff_ds;
   /// Maximum number of iterations for the Newton-Raphson iterations
   const Real _nr_max_its;
   /// Tolerance for Newton-Raphson iterations
   const Real _nr_tol;
   /// Flag to indicate whether to calculate stateful properties
   bool _is_initqp;
+  /// FluidStateProperties data structure
+  std::vector<FluidStateProperties> _fsp;
+  /// Capillary pressure UserObject
+  const PorousFlowCapillaryPressure & _pc_uo;
 };
 
 #endif // POROUSFLOWFLUIDSTATEFLASHBASE_H

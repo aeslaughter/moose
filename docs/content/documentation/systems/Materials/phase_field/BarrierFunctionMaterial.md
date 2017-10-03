@@ -1,6 +1,6 @@
 
 # BarrierFunctionMaterial
-!description /Materials/BarrierFunctionMaterial
+!syntax description /Materials/BarrierFunctionMaterial
 
 Two phase free energy phase transformation barrier term.
 With the `g_order` parameter set to `SIMPLE` the function is defined as
@@ -15,9 +15,17 @@ $$
 g(\eta) = \eta(1-\eta)
 $$
 
+and with the  `g_order` parameter set to `HIGH` it is defined as
 
-!parameters /Materials/BarrierFunctionMaterial
+$$
+g(\eta) = \eta^2(1-\eta^2)^2
+$$
 
-!inputfiles /Materials/BarrierFunctionMaterial
 
-!childobjects /Materials/BarrierFunctionMaterial
+
+
+!syntax parameters /Materials/BarrierFunctionMaterial
+
+!syntax inputs /Materials/BarrierFunctionMaterial
+
+!syntax children /Materials/BarrierFunctionMaterial

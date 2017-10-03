@@ -1,4 +1,4 @@
-import util
+from TestHarness import util
 from RunApp import RunApp
 
 class RunException(RunApp):
@@ -18,6 +18,8 @@ class RunException(RunApp):
 
     def __init__(self, name, params):
         RunApp.__init__(self, name, params)
+        if (params.isValid("expect_err") == False and params.isValid("expect_assert") == False):
+            raise RuntimeError('Either "expect_err" or "expect_assert" must be supplied in RunException')
 
     def checkRunnable(self, options):
         if options.enable_recover:
@@ -32,9 +34,13 @@ class RunException(RunApp):
                 file_paths.append(self.name() + '.processor.{}'.format(processor_id))
             util.deleteFilesAndFolders(self.specs['test_dir'], file_paths, False)
 
-    def processResults(self, moose_dir, retcode, options, output):
+    def processResults(self, moose_dir, options, output):
         reason = ''
         specs = self.specs
+
+        if self.hasRedirectedOutput(options):
+            redirected_output = util.getOutputFromFiles(self, options)
+            output += redirected_output
 
         # Expected errors and assertions might do a lot of things including crash so we
         # will handle them seperately
@@ -47,7 +53,7 @@ class RunException(RunApp):
                     reason = 'NO EXPECTED ASSERT'
 
         if reason == '':
-            output = RunApp.processResults(self, moose_dir, retcode, options, output)
+            RunApp.testFileOutput(self, moose_dir, options, output)
 
         if reason != '':
             self.setStatus(reason, self.bucket_fail)

@@ -17,9 +17,17 @@
 #include "XFEMMarkerAux.h"
 #include "XFEMMarkerUserObject.h"
 #include "XFEMMaterialTensorMarkerUserObject.h"
+#include "XFEMRankTwoTensorMarkerUserObject.h"
 #include "XFEMAction.h"
 #include "XFEMSingleVariableConstraint.h"
 #include "XFEMPressure.h"
+
+#include "GeometricCutUserObject.h"
+#include "LineSegmentCutUserObject.h"
+#include "LineSegmentCutSetUserObject.h"
+#include "CircleCutUserObject.h"
+#include "EllipseCutUserObject.h"
+#include "RectangleCutUserObject.h"
 
 template <>
 InputParameters
@@ -33,13 +41,11 @@ XFEMApp::XFEMApp(const InputParameters & parameters) : MooseApp(parameters)
   srand(processor_id());
 
   Moose::registerObjects(_factory);
-  SolidMechanicsApp::registerObjects(_factory);
-  TensorMechanicsApp::registerObjects(_factory);
+  XFEMApp::registerObjectDepends(_factory);
   XFEMApp::registerObjects(_factory);
 
   Moose::associateSyntax(_syntax, _action_factory);
-  SolidMechanicsApp::associateSyntax(_syntax, _action_factory);
-  TensorMechanicsApp::associateSyntax(_syntax, _action_factory);
+  XFEMApp::associateSyntaxDepends(_syntax, _action_factory);
   XFEMApp::associateSyntax(_syntax, _action_factory);
 }
 
@@ -55,6 +61,13 @@ void
 XFEMApp::registerApps()
 {
   registerApp(XFEMApp);
+}
+
+void
+XFEMApp::registerObjectDepends(Factory & factory)
+{
+  SolidMechanicsApp::registerObjects(factory);
+  TensorMechanicsApp::registerObjects(factory);
 }
 
 // External entry point for dynamic object registration
@@ -77,9 +90,24 @@ XFEMApp::registerObjects(Factory & factory)
   // UserObjects
   registerUserObject(XFEMMarkerUserObject);
   registerUserObject(XFEMMaterialTensorMarkerUserObject);
+  registerUserObject(XFEMRankTwoTensorMarkerUserObject);
+
+  // Geometric Cut User Objects
+  registerUserObject(LineSegmentCutUserObject);
+  registerUserObject(LineSegmentCutSetUserObject);
+  registerUserObject(CircleCutUserObject);
+  registerUserObject(EllipseCutUserObject);
+  registerUserObject(RectangleCutUserObject);
 
   // DiracKernels
   registerDiracKernel(XFEMPressure);
+}
+
+void
+XFEMApp::associateSyntaxDepends(Syntax & syntax, ActionFactory & action_factory)
+{
+  SolidMechanicsApp::associateSyntax(syntax, action_factory);
+  TensorMechanicsApp::associateSyntax(syntax, action_factory);
 }
 
 // External entry point for dynamic syntax association

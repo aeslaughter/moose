@@ -39,4 +39,28 @@
     type = PythonUnitTest
     input = test_DisplayRequired.py
   [../]
+  [./ignore]
+    type = PythonUnitTest
+    input = test_Ignore.py
+  [../]
+  [./timeout]
+    type = PythonUnitTest
+    input = test_Timeout.py
+  [../]
+  [./unknown_prereq]
+    type = PythonUnitTest
+    input = test_UnknownPrereq.py
+  [../]
+  [./syntax]
+    type = PythonUnitTest
+    input = test_Syntax.py
+  [../]
+  [./required_objects]
+    type = PythonUnitTest
+    input = test_RequiredObjects.py
+  [../]
+   [./should_execute]
+    type = PythonUnitTest
+    input = test_ShouldExecute.py
+  [../]
 []

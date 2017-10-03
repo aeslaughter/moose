@@ -1,10 +1,12 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowPorosityConst
-!description /Materials/PorousFlowPorosityConst
+!syntax description /Materials/PorousFlowPorosityConst
 
-!parameters /Materials/PorousFlowPorosityConst
+A single value of porosity can be specified in the input file, or a spatially
+varying porosity `AuxVariable` can be coupled to define a heterogeneous
+porosity distribution.
 
-!inputfiles /Materials/PorousFlowPorosityConst
+!syntax parameters /Materials/PorousFlowPorosityConst
 
-!childobjects /Materials/PorousFlowPorosityConst
+!syntax inputs /Materials/PorousFlowPorosityConst
+
+!syntax children /Materials/PorousFlowPorosityConst

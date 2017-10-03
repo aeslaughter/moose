@@ -26,7 +26,6 @@
 #include "SubProblem.h"
 #include "UpdateDisplacedMeshThread.h"
 
-// libMesh includes
 #include "libmesh/numeric_vector.h"
 
 template <>
@@ -60,15 +59,9 @@ DisplacedProblem::DisplacedProblem(const InputParameters & parameters)
   // TODO: Move newAssemblyArray further up to SubProblem so that we can use it here
   unsigned int n_threads = libMesh::n_threads();
 
-  _assembly.resize(n_threads);
+  _assembly.reserve(n_threads);
   for (unsigned int i = 0; i < n_threads; ++i)
-    _assembly[i] = new Assembly(_displaced_nl, i);
-}
-
-DisplacedProblem::~DisplacedProblem()
-{
-  for (unsigned int i = 0; i < libMesh::n_threads(); ++i)
-    delete _assembly[i];
+    _assembly.emplace_back(libmesh_make_unique<Assembly>(_displaced_nl, i));
 }
 
 bool
@@ -183,9 +176,26 @@ DisplacedProblem::updateMesh()
   _nl_solution = _mproblem.getNonlinearSystemBase().currentSolution();
   _aux_solution = _mproblem.getAuxiliarySystem().currentSolution();
 
+  // If the displaced mesh has been serialized to one processor (as
+  // may have occurred if it was used for Exodus output), then we need
+  // the reference mesh to be also.  For that matter, did anyone
+  // somehow serialize the whole mesh?  Hopefully not but let's avoid
+  // causing errors if so.
+  if (_mesh.getMesh().is_serial() && !this->refMesh().getMesh().is_serial())
+    this->refMesh().getMesh().allgather();
+
+  if (_mesh.getMesh().is_serial_on_zero() && !this->refMesh().getMesh().is_serial_on_zero())
+    this->refMesh().getMesh().gather_to_zero();
+
   UpdateDisplacedMeshThread udmt(_mproblem, *this);
 
-  Threads::parallel_reduce(*_mesh.getActiveSemiLocalNodeRange(), udmt);
+  // We displace all nodes, not just semilocal nodes, because
+  // parallel-inconsistent mesh geometry makes libMesh cry.
+  NodeRange node_range(_mesh.getMesh().nodes_begin(),
+                       _mesh.getMesh().nodes_end(),
+                       /*grainsize=*/1);
+
+  Threads::parallel_reduce(node_range, udmt);
 
   // Update the geometric searches that depend on the displaced mesh
   _geometric_search_data.update();
@@ -214,7 +224,13 @@ DisplacedProblem::updateMesh(const NumericVector<Number> & soln,
 
   UpdateDisplacedMeshThread udmt(_mproblem, *this);
 
-  Threads::parallel_reduce(*_mesh.getActiveSemiLocalNodeRange(), udmt);
+  // We displace all nodes, not just semilocal nodes, because
+  // parallel-inconsistent mesh geometry makes libMesh cry.
+  NodeRange node_range(_mesh.getMesh().nodes_begin(),
+                       _mesh.getMesh().nodes_end(),
+                       /*grainsize=*/1);
+
+  Threads::parallel_reduce(node_range, udmt);
 
   // Update the geometric searches that depend on the displaced mesh
   _geometric_search_data.update();
@@ -267,6 +283,17 @@ DisplacedProblem::getScalarVariable(THREAD_ID tid, const std::string & var_name)
     return _displaced_aux.getScalarVariable(tid, var_name);
   else
     mooseError("No variable with name '" + var_name + "'");
+}
+
+System &
+DisplacedProblem::getSystem(const std::string & var_name)
+{
+  if (_displaced_nl.hasVariable(var_name))
+    return _displaced_nl.system();
+  else if (_displaced_aux.hasVariable(var_name))
+    return _displaced_aux.system();
+  else
+    mooseError("Unable to find a system containing the variable " + var_name);
 }
 
 void
@@ -339,6 +366,20 @@ DisplacedProblem::prepare(const Elem * elem,
   _displaced_nl.prepare(tid);
   _displaced_aux.prepare(tid);
   _assembly[tid]->prepareBlock(ivar, jvar, dof_indices);
+}
+
+void
+DisplacedProblem::setCurrentSubdomainID(const Elem * elem, THREAD_ID tid)
+{
+  SubdomainID did = elem->subdomain_id();
+  _assembly[tid]->setCurrentSubdomainID(did);
+}
+
+void
+DisplacedProblem::setNeighborSubdomainID(const Elem * elem, unsigned int side, THREAD_ID tid)
+{
+  SubdomainID did = elem->neighbor_ptr(side)->subdomain_id();
+  _assembly[tid]->setCurrentNeighborSubdomainID(did);
 }
 
 void
@@ -546,16 +587,20 @@ DisplacedProblem::clearDiracInfo()
 void
 DisplacedProblem::addResidual(THREAD_ID tid)
 {
-  _assembly[tid]->addResidual(_mproblem.residualVector(Moose::KT_TIME), Moose::KT_TIME);
-  _assembly[tid]->addResidual(_mproblem.residualVector(Moose::KT_NONTIME), Moose::KT_NONTIME);
+  if (_mproblem.getNonlinearSystem().hasResidualVector(Moose::KT_TIME))
+    _assembly[tid]->addResidual(_mproblem.residualVector(Moose::KT_TIME), Moose::KT_TIME);
+  if (_mproblem.getNonlinearSystem().hasResidualVector(Moose::KT_NONTIME))
+    _assembly[tid]->addResidual(_mproblem.residualVector(Moose::KT_NONTIME), Moose::KT_NONTIME);
 }
 
 void
 DisplacedProblem::addResidualNeighbor(THREAD_ID tid)
 {
-  _assembly[tid]->addResidualNeighbor(_mproblem.residualVector(Moose::KT_TIME), Moose::KT_TIME);
-  _assembly[tid]->addResidualNeighbor(_mproblem.residualVector(Moose::KT_NONTIME),
-                                      Moose::KT_NONTIME);
+  if (_mproblem.getNonlinearSystem().hasResidualVector(Moose::KT_TIME))
+    _assembly[tid]->addResidualNeighbor(_mproblem.residualVector(Moose::KT_TIME), Moose::KT_TIME);
+  if (_mproblem.getNonlinearSystem().hasResidualVector(Moose::KT_NONTIME))
+    _assembly[tid]->addResidualNeighbor(_mproblem.residualVector(Moose::KT_NONTIME),
+                                        Moose::KT_NONTIME);
 }
 
 void
@@ -573,8 +618,7 @@ DisplacedProblem::cacheResidualNeighbor(THREAD_ID tid)
 void
 DisplacedProblem::addCachedResidual(THREAD_ID tid)
 {
-  _assembly[tid]->addCachedResidual(_mproblem.residualVector(Moose::KT_TIME), Moose::KT_TIME);
-  _assembly[tid]->addCachedResidual(_mproblem.residualVector(Moose::KT_NONTIME), Moose::KT_NONTIME);
+  _assembly[tid]->addCachedResiduals();
 }
 
 void
@@ -713,7 +757,7 @@ DisplacedProblem::meshChanged()
 
   for (unsigned int i = 0; i < n_threads; ++i)
     _assembly[i]->invalidateCache();
-  _geometric_search_data.update();
+  _geometric_search_data.reinit();
 }
 
 void

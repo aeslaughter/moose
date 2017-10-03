@@ -1,10 +1,11 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlow2PhasePP_RSC
-!description /Materials/PorousFlow2PhasePP_RSC
+!syntax description /Materials/PorousFlow2PhasePP_RSC
 
-!parameters /Materials/PorousFlow2PhasePP_RSC
+!!! note
+    This material is deprecated. Please use [`PorousFlow2PhasePP`](/porous_flow/PorousFlow2PhasePP.md) and [`PorousFlowCapillaryPressureRSC`](/porous_flow/PorousFlowCapillaryPressureRSC.md) instead.
 
-!inputfiles /Materials/PorousFlow2PhasePP_RSC
+!syntax parameters /Materials/PorousFlow2PhasePP_RSC
 
-!childobjects /Materials/PorousFlow2PhasePP_RSC
+!syntax inputs /Materials/PorousFlow2PhasePP_RSC
+
+!syntax children /Materials/PorousFlow2PhasePP_RSC

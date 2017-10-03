@@ -13,7 +13,7 @@ InputParameters
 validParams<MaterialTensorCalculator>()
 {
   InputParameters params = emptyInputParameters();
-  MooseEnum quantities("VonMises=1 PlasticStrainMag Hydrostatic Direction Hoop Radial Axial "
+  MooseEnum quantities("VonMises=1 EffectiveStrain Hydrostatic Direction Hoop Radial Axial "
                        "MaxPrincipal MedPrincipal MinPrincipal FirstInvariant SecondInvariant "
                        "ThirdInvariant TriAxiality VolumetricStrain");
 
@@ -84,7 +84,7 @@ MaterialTensorCalculator::getTensorQuantity(const SymmTensor & tensor,
       break;
 
     case 2:
-      value = MaterialTensorCalculatorTools::equivalentPlasticStrain(tensor);
+      value = MaterialTensorCalculatorTools::effectiveStrain(tensor);
       break;
 
     case 3:
@@ -108,15 +108,15 @@ MaterialTensorCalculator::getTensorQuantity(const SymmTensor & tensor,
       break;
 
     case 8:
-      value = MaterialTensorCalculatorTools::maxPrinciple(tensor, direction);
+      value = MaterialTensorCalculatorTools::maxPrincipal(tensor, direction);
       break;
 
     case 9:
-      value = MaterialTensorCalculatorTools::midPrinciple(tensor, direction);
+      value = MaterialTensorCalculatorTools::midPrincipal(tensor, direction);
       break;
 
     case 10:
-      value = MaterialTensorCalculatorTools::minPrinciple(tensor, direction);
+      value = MaterialTensorCalculatorTools::minPrincipal(tensor, direction);
       break;
 
     case 11:

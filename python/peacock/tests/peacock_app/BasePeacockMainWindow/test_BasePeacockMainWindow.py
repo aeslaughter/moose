@@ -5,8 +5,11 @@ from peacock.Input.InputFileEditorWithMesh import InputFileEditorWithMesh
 from peacock.Execute.ExecuteTabPlugin import ExecuteTabPlugin
 import argparse
 from mooseutils import message
+from PyQt5 import QtWidgets
 
 class Tests(Testing.PeacockTester):
+    qapp = QtWidgets.QApplication([])
+
     def setUp(self):
         super(Tests, self).setUp()
         self.input_count = 0
@@ -39,8 +42,9 @@ class Tests(Testing.PeacockTester):
         w._showLog()
         self.assertEqual(w.log.isVisible(), False)
 
-        self.assertEqual(w.settings.isVisible(), False)
+        self.assertEqual(w.settings, None)
         w._showPreferences()
+        self.assertNotEqual(w.settings, None)
         self.assertEqual(w.settings.isVisible(), True)
 
     def testSizes(self):
@@ -57,6 +61,32 @@ class Tests(Testing.PeacockTester):
         self.assertEqual(w.isMaximized(), False)
         self.assertEqual(w.size().width(), 2048)
         self.assertEqual(w.size().height(), 2048)
+
+    def testPrefs(self):
+        w = self.newWidget()
+        w._showPreferences()
+        self.assertEqual(w.settings.tabs.count(), 2) # Only prefs for Execute and Input tabs
+        self.assertEqual(w.settings.isVisible(), True)
+        exe_prefs = w.settings.widget(w.tab_plugin.ExecuteTabPlugin.tabName())
+        mpiEnabled = exe_prefs.widget("execute/mpiEnabled")
+        mpiEnabled.setValue(True)
+
+        w.settings.save_button.click()
+        self.assertEqual(w.settings.isVisible(), False)
+        self.assertEqual(mpiEnabled.getValue(), True)
+
+        w._showPreferences()
+        self.assertEqual(w.settings.isVisible(), True)
+        mpiEnabled.setValue(False)
+        w.settings.cancel_button.click()
+        self.assertEqual(w.settings.isVisible(), False)
+        self.assertEqual(mpiEnabled.getValue(), True)
+
+        w._showPreferences()
+        self.assertEqual(mpiEnabled.getValue(), True)
+        mpiEnabled.setValue(False)
+        w.settings.save_button.click()
+        self.assertEqual(mpiEnabled.getValue(), False)
 
 if __name__ == '__main__':
     Testing.run_tests()

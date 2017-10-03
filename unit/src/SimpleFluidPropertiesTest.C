@@ -28,6 +28,7 @@ TEST_F(SimpleFluidPropertiesTest, properties)
   const Real visc = 1.0E-3;
   const Real density0 = 1000.0;
   const Real henry = 0.0;
+  const Real pp_coef = 0.0;
 
   Real P, T;
 
@@ -42,7 +43,8 @@ TEST_F(SimpleFluidPropertiesTest, properties)
   REL_TEST("rho", _fp->rho(P, T), density0 * std::exp(P / bulk_modulus - thermal_exp * T), 1.0E-8);
   REL_TEST("e", _fp->e(P, T), cv * T, 1.0E-8);
   REL_TEST("mu", _fp->mu(P, T), visc, 1.0E-8);
-  REL_TEST("h", _fp->h(P, T), cp * T, 1.0E-8);
+  REL_TEST("h", _fp->h(P, T), cv * T + P / _fp->rho(P, T), 1.0E-8);
+  REL_TEST("h2", _fp2->h(P, T), cv * T + P * pp_coef / _fp2->rho(P, T), 1.0E-8);
   ABS_TEST("henry", _fp->henryConstant(T), henry, 1.0E-8);
 
   P = 1E7;
@@ -56,7 +58,8 @@ TEST_F(SimpleFluidPropertiesTest, properties)
   REL_TEST("rho", _fp->rho(P, T), density0 * std::exp(P / bulk_modulus - thermal_exp * T), 1.0E-8);
   REL_TEST("e", _fp->e(P, T), cv * T, 1.0E-8);
   REL_TEST("mu", _fp->mu(P, T), visc, 1.0E-8);
-  REL_TEST("h", _fp->h(P, T), cp * T, 1.0E-8);
+  REL_TEST("h", _fp->h(P, T), cv * T + P / _fp->rho(P, T), 1.0E-8);
+  REL_TEST("h2", _fp2->h(P, T), cv * T + P * pp_coef / _fp2->rho(P, T), 1.0E-8);
   ABS_TEST("henry", _fp->henryConstant(T), henry, 1.0E-8);
 }
 
@@ -110,7 +113,7 @@ TEST_F(SimpleFluidPropertiesTest, derivatives)
   Real mu, dmu_drho, dmu_dT;
   dens = 1000;
   T = 10;
-  _fp->mu_drhoT(dens, T, mu, dmu_drho, dmu_dT);
+  _fp->mu_drhoT(dens, T, drho_dT, mu, dmu_drho, dmu_dT);
   fd = (_fp->mu(dens + ddens, T) - _fp->mu(dens - ddens, T)) / (2.0 * ddens);
   ABS_TEST("dmu_ddens", dmu_drho, fd, 1.0E-8);
   fd = (_fp->mu(dens, T + dT) - _fp->mu(dens, T - dT)) / (2.0 * dT);
@@ -118,7 +121,7 @@ TEST_F(SimpleFluidPropertiesTest, derivatives)
 
   dens = 2000;
   T = 80;
-  _fp->mu_drhoT(dens, T, mu, dmu_drho, dmu_dT);
+  _fp->mu_drhoT(dens, T, drho_dT, mu, dmu_drho, dmu_dT);
   fd = (_fp->mu(dens + ddens, T) - _fp->mu(dens - ddens, T)) / (2.0 * ddens);
   ABS_TEST("dmu_ddens", dmu_drho, fd, 1.0E-8);
   fd = (_fp->mu(dens, T + dT) - _fp->mu(dens, T - dT)) / (2.0 * dT);
@@ -129,15 +132,25 @@ TEST_F(SimpleFluidPropertiesTest, derivatives)
   T = 10;
   _fp->h_dpT(P, T, h, dh_dp, dh_dT);
   fd = (_fp->h(P + dP, T) - _fp->h(P - dP, T)) / (2.0 * dP);
-  ABS_TEST("dh_dP", dh_dp, fd, 1.0E-8);
+  REL_TEST("dh_dP", dh_dp, fd, 1.0E-8);
   fd = (_fp->h(P, T + dT) - _fp->h(P, T - dT)) / (2.0 * dT);
+  REL_TEST("dh_dT", dh_dT, fd, 1.0E-8);
+  _fp2->h_dpT(P, T, h, dh_dp, dh_dT);
+  fd = (_fp2->h(P + dP, T) - _fp2->h(P - dP, T)) / (2.0 * dP);
+  ABS_TEST("dh_dP", dh_dp, fd, 1.0E-8);
+  fd = (_fp2->h(P, T + dT) - _fp2->h(P, T - dT)) / (2.0 * dT);
   REL_TEST("dh_dT", dh_dT, fd, 1.0E-8);
 
   P = 4E6;
   T = 90;
   _fp->h_dpT(P, T, h, dh_dp, dh_dT);
   fd = (_fp->h(P + dP, T) - _fp->h(P - dP, T)) / (2.0 * dP);
-  ABS_TEST("dh_dP", dh_dp, fd, 1.0E-8);
+  REL_TEST("dh_dP", dh_dp, fd, 1.0E-8);
   fd = (_fp->h(P, T + dT) - _fp->h(P, T - dT)) / (2.0 * dT);
+  REL_TEST("dh_dT", dh_dT, fd, 1.0E-8);
+  _fp2->h_dpT(P, T, h, dh_dp, dh_dT);
+  fd = (_fp2->h(P + dP, T) - _fp2->h(P - dP, T)) / (2.0 * dP);
+  ABS_TEST("dh_dP", dh_dp, fd, 1.0E-8);
+  fd = (_fp2->h(P, T + dT) - _fp2->h(P, T - dT)) / (2.0 * dT);
   REL_TEST("dh_dT", dh_dT, fd, 1.0E-8);
 }

@@ -1,10 +1,15 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowMassVolumetricExpansion
-!description /Kernels/PorousFlowMassVolumetricExpansion
+!syntax description /Kernels/PorousFlowMassVolumetricExpansion
 
-!parameters /Kernels/PorousFlowMassVolumetricExpansion
+This `Kernel` implements the weak form of
+\begin{equation}
+  \phi\sum_{\beta}S_{\beta}\rho_{\beta}\chi_{\beta}^{\kappa}\nabla\cdot\mathbf{v}_{s}
+  \nonumber
+\end{equation}
+where all parameters are defined in the [nomenclature](/porous_flow/nomenclature.md).
 
-!inputfiles /Kernels/PorousFlowMassVolumetricExpansion
+!syntax parameters /Kernels/PorousFlowMassVolumetricExpansion
 
-!childobjects /Kernels/PorousFlowMassVolumetricExpansion
+!syntax inputs /Kernels/PorousFlowMassVolumetricExpansion
+
+!syntax children /Kernels/PorousFlowMassVolumetricExpansion

@@ -14,7 +14,6 @@
 
 #include "LineSegment.h"
 
-// libMesh includes
 #include "libmesh/plane.h"
 #include "libmesh/vector_value.h"
 
@@ -63,7 +62,7 @@ bool
 LineSegment::contains_point(const Point & p) const
 {
   Point closest_p;
-  return closest_point(p, false, closest_p) && closest_p == p;
+  return closest_point(p, false, closest_p) && closest_p.absolute_fuzzy_equals(p);
 }
 
 bool

@@ -29,6 +29,12 @@ NaClFluidProperties::NaClFluidProperties(const InputParameters & parameters)
 
 NaClFluidProperties::~NaClFluidProperties() {}
 
+std::string
+NaClFluidProperties::fluidName() const
+{
+  return "nacl";
+}
+
 Real
 NaClFluidProperties::molarMass() const
 {
@@ -164,6 +170,7 @@ Real NaClFluidProperties::mu(Real /*density*/, Real /*temperature*/) const
 void
 NaClFluidProperties::mu_drhoT(Real /*density*/,
                               Real /*temperature*/,
+                              Real /*ddensity_dT*/,
                               Real & /*mu*/,
                               Real & /*dmu_drho*/,
                               Real & /*dmu_dT*/) const
@@ -172,7 +179,7 @@ NaClFluidProperties::mu_drhoT(Real /*density*/,
 }
 
 Real
-NaClFluidProperties::k(Real /*pressure*/, Real temperature) const
+NaClFluidProperties::k(Real /*density*/, Real temperature) const
 {
   // Correlation requires temperature in Celcius
   Real Tc = temperature - _T_c2k;

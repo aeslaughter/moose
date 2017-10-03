@@ -18,9 +18,7 @@
 // MOOSE includes
 #include "MooseTypes.h"
 
-// libMesh includes
-#include "libmesh/mesh_base.h"
-#include "libmesh/mesh_tools.h"
+#include "libmesh/bounding_box.h" // For destructor
 #include "libmesh/vector_value.h"
 #include "libmesh/tensor_value.h"
 
@@ -59,7 +57,7 @@ public:
   /**
    * Class destructor
    */
-  virtual ~OrientedBoxInterface();
+  virtual ~OrientedBoxInterface() = default;
 
 protected:
   /**
@@ -74,10 +72,10 @@ private:
   Point _center;
 
   /// Rotation matrix for transforming the bounding box
-  RealTensorValue * _rot_matrix;
+  std::unique_ptr<RealTensorValue> _rot_matrix;
 
   /// The bounding box used to test if the point is contained within
-  MeshTools::BoundingBox * _bounding_box;
+  std::unique_ptr<BoundingBox> _bounding_box;
 };
 
 #endif // ORIENTEDBOXINTERFACE_H

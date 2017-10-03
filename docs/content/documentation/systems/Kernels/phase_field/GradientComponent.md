@@ -1,10 +1,17 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # GradientComponent
-!description /Kernels/GradientComponent
+!syntax description /Kernels/GradientComponent
 
-!parameters /Kernels/GradientComponent
+Implements
 
-!inputfiles /Kernels/GradientComponent
+$$
+u - \nabla_\alpha v,
+$$
 
-!childobjects /Kernels/GradientComponent
+where $u$ is the kernel variable, $\alpha$ (`component`) is a coordinate system
+direction, and $v$ is a coupled variable.
+
+!syntax parameters /Kernels/GradientComponent
+
+!syntax inputs /Kernels/GradientComponent
+
+!syntax children /Kernels/GradientComponent

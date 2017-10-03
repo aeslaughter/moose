@@ -27,6 +27,12 @@ public:
   virtual ~BrineFluidProperties();
 
   /**
+   * Fluid name
+   * @return "brine"
+   */
+  virtual std::string fluidName() const override;
+
+  /**
    * Average molar mass of brine
    * @param xnacl NaCl mass fraction (-)
    * @return average molar mass (kg/mol)
@@ -100,6 +106,7 @@ public:
    * @param water_density water density (kg/m^3)
    * @param temperature brine temperature (K)
    * @param xnacl salt mass fraction (-)
+   * @param dwater_density_dT derivative of water density wrt temperature
    * @param[out] mu viscosity (Pa.s)
    * @param[out] dmu_drho derivative of viscosity wrt water density
    * @param[out] dmu_dT derivative of viscosity wrt temperature
@@ -108,6 +115,7 @@ public:
   virtual void mu_drhoTx(Real water_density,
                          Real temperature,
                          Real xnacl,
+                         Real dwater_density_dT,
                          Real & mu,
                          Real & dmu_drho,
                          Real & dmu_dT,
@@ -218,7 +226,7 @@ public:
    * @param xnacl salt mass fraction (-)
    * @return brine vapour pressure (Pa)
    */
-  Real pSat(Real temperature, Real xnacl) const;
+  Real vaporPressure(Real temperature, Real xnacl) const;
 
   /**
    * Solubility of halite (solid NaCl) in water
@@ -236,7 +244,7 @@ public:
    */
   Real haliteSolubility(Real temperature) const;
 
-  /// Proved access to UserObject for specified component
+  /// Provides access to UserObject for specified component
   virtual const SinglePhaseFluidPropertiesPT & getComponent(unsigned int component) const override;
 
   /// Fluid component numbers for water and NaCl

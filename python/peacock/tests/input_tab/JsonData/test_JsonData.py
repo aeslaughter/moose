@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 from peacock.Input.JsonData import JsonData
 from peacock.utils import Testing
+from PyQt5 import QtWidgets
 
 class Tests(Testing.PeacockTester):
+    qapp = QtWidgets.QApplication([])
+
     def setUp(self):
         super(Tests, self).setUp()
         self.json_changed_count = 0
@@ -25,7 +28,9 @@ class Tests(Testing.PeacockTester):
         path = Testing.find_moose_test_exe()
         y.appChanged(path)
         self.assertNotEqual(y.json_data, None)
-        self.assertIn("Variables", y.json_data.keys())
+        self.assertIn("blocks", y.json_data.keys())
+        self.assertIn("global", y.json_data.keys())
+        self.assertIn("Variables", y.json_data["blocks"].keys())
 
     def testPickle(self):
         y = JsonData()

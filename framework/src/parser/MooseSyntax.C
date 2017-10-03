@@ -59,6 +59,7 @@ associateSyntax(Syntax & syntax, ActionFactory & action_factory)
   registerSyntax("GlobalParamsAction", "GlobalParams");
 
   registerSyntax("AddDistributionAction", "Distributions/*");
+  registerSyntax("AddSamplerAction", "Samplers/*");
 
   registerSyntax("SetupDebugAction", "Debug");
   registerSyntax("SetupResidualDebugAction", "Debug");
@@ -158,6 +159,10 @@ associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 
   // Transfers
   registerSyntax("AddTransferAction", "Transfers/*");
+
+  // Material derivative test
+  registerSyntaxTask("EmptyAction", "Debug/MaterialDerivativeTest", "no_action"); // placeholder
+  registerSyntax("MaterialDerivativeTestAction", "Debug/MaterialDerivativeTest/*");
 
   addActionTypes(syntax);
   registerActions(syntax, action_factory);

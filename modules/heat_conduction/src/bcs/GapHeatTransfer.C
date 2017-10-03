@@ -14,7 +14,6 @@
 #include "PenetrationLocator.h"
 #include "SystemBase.h"
 
-// libMesh includes
 #include "libmesh/string_to_enum.h"
 
 template <>
@@ -80,8 +79,8 @@ validParams<GapHeatTransfer>()
 
 GapHeatTransfer::GapHeatTransfer(const InputParameters & parameters)
   : IntegratedBC(parameters),
-    _gap_geometry_params_set(false),
-    _gap_geometry_type(GapConductance::PLATE),
+    _gap_geometry_type(declareRestartableData<GapConductance::GAP_GEOMETRY>("gap_geometry_type",
+                                                                            GapConductance::PLATE)),
     _quadrature(getParam<bool>("quadrature")),
     _slave_flux(!_quadrature ? &_sys.getVector("slave_flux") : NULL),
     _gap_conductance(getMaterialProperty<Real>("gap_conductance" +
@@ -103,7 +102,9 @@ GapHeatTransfer::GapHeatTransfer(const InputParameters & parameters)
                            parameters.get<BoundaryName>("paired_boundary"),
                            getParam<std::vector<BoundaryName>>("boundary")[0],
                            Utility::string_to_enum<Order>(parameters.get<MooseEnum>("order")))),
-    _warnings(getParam<bool>("warnings"))
+    _warnings(getParam<bool>("warnings")),
+    _p1(declareRestartableData<Point>("cylinder_axis_point_1", Point(0, 1, 0))),
+    _p2(declareRestartableData<Point>("cylinder_axis_point_2", Point(0, 0, 0)))
 {
   if (isParamValid("displacements"))
   {
@@ -140,16 +141,10 @@ GapHeatTransfer::GapHeatTransfer(const InputParameters & parameters)
 }
 
 void
-GapHeatTransfer::computeResidual()
+GapHeatTransfer::initialSetup()
 {
-  if (!_gap_geometry_params_set)
-  {
-    _gap_geometry_params_set = true;
-    GapConductance::setGapGeometryParameters(
-        _pars, _assembly.coordSystem(), _gap_geometry_type, _p1, _p2);
-  }
-
-  IntegratedBC::computeResidual();
+  GapConductance::setGapGeometryParameters(
+      _pars, _assembly.coordSystem(), _gap_geometry_type, _p1, _p2);
 }
 
 Real
@@ -296,7 +291,7 @@ GapHeatTransfer::computeGapValues()
       _gap_distance = pinfo->_distance;
       _has_info = true;
 
-      Elem * slave_side = pinfo->_side;
+      const Elem * slave_side = pinfo->_side;
       std::vector<std::vector<Real>> & slave_side_phi = pinfo->_side_phi;
       _gap_temp = _variable->getValue(slave_side, slave_side_phi);
 

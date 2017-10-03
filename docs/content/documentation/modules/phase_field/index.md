@@ -1,13 +1,13 @@
 # Phase Field Module
 
-!image docs/media/phase_field/pf_module_examples_vertical.png width=200px padding-left=20px float=right caption=Phase field results produced using the MOOSE Phase Field Module
+!media media/phase_field/pf_module_examples_vertical.png width=200px padding-left=20px float=right caption=Phase field results produced using the MOOSE Phase Field Module
 
 * [Systems](phase_field/systems.md)
 
 The MOOSE phase field module is a library for simplifying the implementation of simulation tools that employ the phase field model. Multiphysics capability that includes mechanics and heat conduction can be obtained by employing the _tensor mechanics_ and _heat conduction_ modules. More information about this module is found below:
 
 ## Basic Phase Field Model Information
-* [Basic Phase Field Equations](phase_field/Phase Field Equations.md) - Basic information about the equations underlying the phase field module
+* [Basic Phase Field Equations](phase_field/Phase_Field_Equations.md) - Basic information about the equations underlying the phase field module
 * [Expression Builder](Function Materials/ExpressionBuilder.md) - Using automatic differentiation of free energy material objects
 * [Solving Phase Field Models](phase_field/Solving.md) - Basic info about solving phase field models
 * [Function Material Kernels](phase_field/FunctionMaterialKernels.md) - Working with Function Materials that carry around their own derivatives
@@ -25,7 +25,7 @@ MOOSE provides capabilities that enable the easy development of multiphase field
 * [Multiphase Models](Multi Phase/WBM.md) - _N_ phases, _N_ phase order parameters
 * Grand Potential Model - solving a Legendre transform of teh phase field equations, where the independent variable is the chemical potential
 
-!image docs/media/phase_field/solutionrasterizer.png width=200px padding-left=20px float=right caption=Atomistic input file generated using the SolutionRasterizer.
+!media media/phase_field/solutionrasterizer.png width=200px padding-left=20px float=right caption=Atomistic input file generated using the SolutionRasterizer.
 
 ## Multiphysics Coupling
 * Mechanics Coupling - Coupling phase field equations with mechanics

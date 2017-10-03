@@ -80,6 +80,16 @@ public:
                 const TypeVector<Real> & row2,
                 const TypeVector<Real> & row3);
 
+  /// named constructor for initializing from row vectors
+  static RankTwoTensor initializeFromRows(const TypeVector<Real> & row0,
+                                          const TypeVector<Real> & row1,
+                                          const TypeVector<Real> & row2);
+
+  /// named constructor for initializing from column vectors
+  static RankTwoTensor initializeFromColumns(const TypeVector<Real> & col0,
+                                             const TypeVector<Real> & col1,
+                                             const TypeVector<Real> & col2);
+
   /// Constructor that proxies the fillFromInputVector method
   RankTwoTensor(const std::vector<Real> & input) { this->fillFromInputVector(input); };
 
@@ -97,10 +107,10 @@ public:
   static RankTwoTensor Identity() { return RankTwoTensor(initIdentity); }
 
   /// Gets the value for the index specified.  Takes index = 0,1,2
-  Real & operator()(unsigned int i, unsigned int j);
+  inline Real & operator()(unsigned int i, unsigned int j) { return _vals[i * N + j]; }
 
   /// Gets the value for the index specified.  Takes index = 0,1,2, used for const
-  Real operator()(unsigned int i, unsigned int j) const;
+  inline Real operator()(unsigned int i, unsigned int j) const { return _vals[i * N + j]; }
 
   /// zeroes all _vals components
   void zero();
@@ -109,16 +119,16 @@ public:
   static MooseEnum fillMethodEnum();
 
   /**
-  * fillFromInputVector takes 6 or 9 inputs to fill in the Rank-2 tensor.
-  * If 6 inputs, then symmetry is assumed S_ij = S_ji, and
-  *   _vals[0][0] = input[0]
-  *   _vals[1][1] = input[1]
-  *   _vals[2][2] = input[2]
-  *   _vals[1][2] = input[3]
-  *   _vals[0][2] = input[4]
-  *   _vals[0][1] = input[5]
-  * If 9 inputs then input order is [0][0], [1][0], [2][0], [0][1], [1][1], ..., [2][2]
-  */
+   * fillFromInputVector takes 6 or 9 inputs to fill in the Rank-2 tensor.
+   * If 6 inputs, then symmetry is assumed S_ij = S_ji, and
+   *   _vals[0][0] = input[0]
+   *   _vals[1][1] = input[1]
+   *   _vals[2][2] = input[2]
+   *   _vals[1][2] = input[3]
+   *   _vals[0][2] = input[4]
+   *   _vals[0][1] = input[5]
+   * If 9 inputs then input order is [0][0], [1][0], [2][0], [0][1], [1][1], ..., [2][2]
+   */
   void fillFromInputVector(const std::vector<Real> & input, FillMethod fill_method = autodetect);
 
 public:
@@ -127,6 +137,13 @@ public:
 
   /// returns _vals[i][c], ie, column c, with c = 0, 1, 2
   TypeVector<Real> column(const unsigned int c) const;
+
+  /**
+   * Returns a rotated version of the tensor data given a rank two tensor rotation tensor
+   * _vals[i][j] = R_ij * R_jl * _vals[k][l]
+   * @param R rotation matrix as a RealTensorValue
+   */
+  RankTwoTensor rotated(const RealTensorValue & R) const;
 
   /**
    * rotates the tensor data given a rank two tensor rotation tensor
@@ -198,6 +215,9 @@ public:
 
   /// Defines logical equality with another RankTwoTensor
   bool operator==(const RankTwoTensor & a) const;
+
+  /// Sets _vals to the values in a ColumnMajorMatrix (must be 3x3)
+  RankTwoTensor & operator=(const ColumnMajorMatrix & a);
 
   /// returns _vals_ij * a_ij (sum on i, j)
   Real doubleContraction(const RankTwoTensor & a) const;
@@ -406,14 +426,19 @@ public:
   RankTwoTensor initialContraction(const RankFourTensor & b) const;
 
 private:
-  static const unsigned int N = LIBMESH_DIM;
-  Real _vals[N][N];
+  static constexpr unsigned int N = LIBMESH_DIM;
+  static constexpr unsigned int N2 = N * N;
+
+  /// The values of the rank-two tensor stored by index=(i * LIBMESH_DIM + j)
+  Real _vals[N2];
 
   template <class T>
   friend void dataStore(std::ostream &, T &, void *);
 
   template <class T>
   friend void dataLoad(std::istream &, T &, void *);
+  friend class RankFourTensor;
+  friend class RankThreeTensor;
 };
 
 inline RankTwoTensor operator*(Real a, const RankTwoTensor & b) { return b * a; }

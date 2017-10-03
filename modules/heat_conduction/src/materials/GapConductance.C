@@ -15,7 +15,6 @@
 #include "SystemBase.h"
 #include "AddVariableAction.h"
 
-// libMesh includes
 #include "libmesh/string_to_enum.h"
 
 template <>
@@ -46,14 +45,6 @@ validParams<GapConductance>()
                         "ignored); however, paired_boundary and variable are "
                         "then required.");
   params.addParam<BoundaryName>("paired_boundary", "The boundary to be penetrated");
-
-  // Deprecated parameter
-  MooseEnum coord_types("default XYZ");
-  params.addDeprecatedParam<MooseEnum>(
-      "coord_type",
-      coord_types,
-      "Gap calculation type (default or XYZ).",
-      "The functionality of this parameter is replaced by 'gap_geometry_type'.");
 
   params.addParam<Real>("stefan_boltzmann", 5.669e-8, "The Stefan-Boltzmann constant");
 
@@ -111,8 +102,8 @@ GapConductance::GapConductance(const InputParameters & parameters)
   : Material(parameters),
     _appended_property_name(getParam<std::string>("appended_property_name")),
     _temp(coupledValue("variable")),
-    _gap_geometry_params_set(false),
-    _gap_geometry_type(GapConductance::PLATE),
+    _gap_geometry_type(declareRestartableData<GapConductance::GAP_GEOMETRY>("gap_geometry_type",
+                                                                            GapConductance::PLATE)),
     _quadrature(getParam<bool>("quadrature")),
     _gap_temp(0),
     _gap_distance(88888),
@@ -124,6 +115,7 @@ GapConductance::GapConductance(const InputParameters & parameters)
     _gap_temp_value(_quadrature ? _zero : coupledValue("gap_temp")),
     _gap_conductance(declareProperty<Real>("gap_conductance" + _appended_property_name)),
     _gap_conductance_dT(declareProperty<Real>("gap_conductance" + _appended_property_name + "_dT")),
+    _gap_thermal_conductivity(declareProperty<Real>("gap_conductivity")),
     _gap_conductivity(getParam<Real>("gap_conductivity")),
     _gap_conductivity_function(isParamValid("gap_conductivity_function")
                                    ? &getFunction("gap_conductivity_function")
@@ -142,7 +134,9 @@ GapConductance::GapConductance(const InputParameters & parameters)
     _penetration_locator(NULL),
     _serialized_solution(_quadrature ? &_temp_var->sys().currentSolution() : NULL),
     _dof_map(_quadrature ? &_temp_var->sys().dofMap() : NULL),
-    _warnings(getParam<bool>("warnings"))
+    _warnings(getParam<bool>("warnings")),
+    _p1(declareRestartableData<Point>("cylinder_axis_point_1", Point(0, 1, 0))),
+    _p2(declareRestartableData<Point>("cylinder_axis_point_2", Point(0, 0, 0)))
 {
   if (_quadrature)
   {
@@ -168,6 +162,12 @@ GapConductance::GapConductance(const InputParameters & parameters)
 }
 
 void
+GapConductance::initialSetup()
+{
+  setGapGeometryParameters(_pars, _coord_sys, _gap_geometry_type, _p1, _p2);
+}
+
+void
 GapConductance::setGapGeometryParameters(const InputParameters & params,
                                          const Moose::CoordinateSystemType coord_sys,
                                          GAP_GEOMETRY & gap_geometry_type,
@@ -178,23 +178,6 @@ GapConductance::setGapGeometryParameters(const InputParameters & params,
   {
     gap_geometry_type =
         GapConductance::GAP_GEOMETRY(int(params.get<MooseEnum>("gap_geometry_type")));
-    if (params.isParamSetByUser("coord_type"))
-      ::mooseError("Deprecated parameter 'coord_type' cannot be used together with "
-                   "'gap_geometry_type' in GapConductance");
-  }
-  else if (params.isParamSetByUser("coord_type"))
-  {
-    if (params.get<MooseEnum>("coord_type") == "XYZ")
-      gap_geometry_type = GapConductance::PLATE;
-    else
-    {
-      if (coord_sys == Moose::COORD_XYZ)
-        gap_geometry_type = GapConductance::PLATE;
-      else if (coord_sys == Moose::COORD_RZ)
-        gap_geometry_type = GapConductance::CYLINDER;
-      else if (coord_sys == Moose::COORD_RSPHERICAL)
-        gap_geometry_type = GapConductance::SPHERE;
-    }
   }
   else
   {
@@ -257,18 +240,6 @@ GapConductance::setGapGeometryParameters(const InputParameters & params,
 }
 
 void
-GapConductance::computeProperties()
-{
-  if (!_gap_geometry_params_set)
-  {
-    _gap_geometry_params_set = true;
-    setGapGeometryParameters(_pars, _coord_sys, _gap_geometry_type, _p1, _p2);
-  }
-
-  Material::computeProperties();
-}
-
-void
 GapConductance::computeQpProperties()
 {
   computeGapValues();
@@ -293,7 +264,9 @@ GapConductance::computeQpConductance()
 Real
 GapConductance::h_conduction()
 {
-  return gapK() / gapLength(_gap_geometry_type, _radius, _r1, _r2, _min_gap, _max_gap);
+  _gap_thermal_conductivity[_qp] = gapK();
+  return _gap_thermal_conductivity[_qp] /
+         gapLength(_gap_geometry_type, _radius, _r1, _r2, _min_gap, _max_gap);
 }
 
 Real
@@ -417,7 +390,7 @@ GapConductance::computeGapValues()
       _gap_distance = pinfo->_distance;
       _has_info = true;
 
-      Elem * slave_side = pinfo->_side;
+      const Elem * slave_side = pinfo->_side;
       std::vector<std::vector<Real>> & slave_side_phi = pinfo->_side_phi;
       std::vector<dof_id_type> slave_side_dof_indices;
 

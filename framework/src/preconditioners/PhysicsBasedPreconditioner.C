@@ -22,7 +22,6 @@
 #include "NonlinearSystem.h"
 #include "PetscSupport.h"
 
-// libMesh Includes
 #include "libmesh/libmesh_common.h"
 #include "libmesh/equation_systems.h"
 #include "libmesh/nonlinear_implicit_system.h"
@@ -138,11 +137,10 @@ PhysicsBasedPreconditioner::PhysicsBasedPreconditioner(const InputParameters & p
   for (unsigned int var = 0; var < n_vars; var++)
     addSystem(var, off_diag[var], _pre_type[var]);
 
-  // We don't want to be computing the big Jacobian!
-  _nl.nonlinearSolver()->jacobian = NULL;
   _nl.nonlinearSolver()->attach_preconditioner(this);
 
-  _fe_problem.solverParams()._type = Moose::ST_JFNK;
+  if (_fe_problem.solverParams()._type != Moose::ST_JFNK)
+    mooseError("PBP must be used with JFNK solve type");
 }
 
 PhysicsBasedPreconditioner::~PhysicsBasedPreconditioner()

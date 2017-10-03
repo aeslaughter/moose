@@ -1,149 +1,217 @@
+#pylint: disable=missing-docstring
+####################################################################################################
+#                                    DO NOT MODIFY THIS HEADER                                     #
+#                   MOOSE - Multiphysics Object Oriented Simulation Environment                    #
+#                                                                                                  #
+#                              (c) 2010 Battelle Energy Alliance, LLC                              #
+#                                       ALL RIGHTS RESERVED                                        #
+#                                                                                                  #
+#                            Prepared by Battelle Energy Alliance, LLC                             #
+#                               Under Contract No. DE-AC07-05ID14517                               #
+#                               With the U. S. Department of Energy                                #
+#                                                                                                  #
+#                               See COPYRIGHT for full restrictions                                #
+####################################################################################################
+#pylint: enable=missing-docstring
 import os
-import math
 import multiprocessing
-import markdown
-from distutils.dir_util import copy_tree
+import shutil
+import subprocess
 import logging
-log = logging.getLogger(__name__)
 
+import livereload
+
+import mooseutils
 import MooseDocs
-from MooseDocsNode import MooseDocsNode
-from MooseDocsMarkdownNode import MooseDocsMarkdownNode
+from MooseDocs.MooseMarkdown import MooseMarkdown
+from MooseDocs import common
 
+LOG = logging.getLogger(__name__)
 
-def build_options(parser, subparser):
+def build_options(parser):
     """
     Command-line options for build command.
     """
-    build_parser = subparser.add_parser('build', help='Build the documentation for serving on another system.')
-    build_parser.add_argument('--num-threads', '-j', type=int, default=multiprocessing.cpu_count(), help="Specify the number of threads to build pages with.")
-    return build_parser
+    parser.add_argument('--config-file', type=str, default='website.yml',
+                        help="The configuration file to use for building the documentation using "
+                             "MOOSE. (Default: %(default)s)")
+    parser.add_argument('--content', type=str, default='content.yml',
+                        help="The YAML file containing the locations containing the markdown "
+                             "files (Default: %(default)s). If the file doesn't exists the default "
+                             "is {'default':{'base':'docs/content', 'include':'docs/content/*'}}")
+    if MooseDocs.ROOT_DIR == MooseDocs.MOOSE_DIR:
+        parser.add_argument('--init', action='store_true', help="Initialize and/or update the "
+                                                                "large media submodule if needed.")
+    parser.add_argument('--dump', action='store_true',
+                        help="Display the website file tree that will be created without "
+                             "performing a build.")
+    parser.add_argument('--clean', action='store_true',
+                        help="Clean the 'site-dir', this happens by default when the '--serve' "
+                             "command is used.")
+    parser.add_argument('--num-threads', '-j', type=int, default=multiprocessing.cpu_count(),
+                        help="Specify the number of threads to build pages with.")
+    parser.add_argument('--template', type=str, default='website.html',
+                        help="The template html file to utilize (Default: %(default)s).")
+    parser.add_argument('--host', default='127.0.0.1', type=str,
+                        help="The local host location for live web server (default: %(default)s).")
+    parser.add_argument('--port', default='8000', type=str,
+                        help="The local host port for live web server (default: %(default)s).")
+    parser.add_argument('--site-dir', type=str, default=os.path.join(MooseDocs.ROOT_DIR, 'site'),
+                        help="The location to build the website content (Default: %(default)s).")
+    parser.add_argument('--serve', action='store_true',
+                        help="Serve the presentation with live reloading, the 'site_dir' is "
+                             "ignored for this case.")
+    parser.add_argument('--no-livereload', action='store_true',
+                        help="When --serve is used this flag disables the live reloading.")
 
-def make_tree(directory, node, **kwargs):
+class WebsiteBuilder(common.Builder):
     """
-    Create the tree structure of NavigationNode/MooseDocsMarkdownNode objects
+    Builder object for creating websites.
     """
-    for p in os.listdir(directory):
 
-        path = os.path.join(directory, p)
-        if p in ['index.md', 'index.html']:
-            continue
+    def __init__(self, content=None, **kwargs):
+        super(WebsiteBuilder, self).__init__(**kwargs)
 
-        if os.path.isfile(path) and (path.endswith('.md')):
-            name = os.path.basename(path)[:-3]
-            child = MooseDocsMarkdownNode(name=name, parent=node, md_file=path, **kwargs)
+        if (content is None) or (not os.path.isfile(content)):
+            LOG.info("Using default content directory configuration "
+                     "(i.e., --content does not include a valid filename).")
+            content = dict(default=dict(base=os.path.join(os.getcwd(), 'content'),
+                                        include=[os.path.join(os.getcwd(), 'content', '*')]))
+        else:
+            content = MooseDocs.yaml_load(content)
 
-        elif os.path.isdir(path) and (p not in ['.', '..']):
-            name = os.path.basename(path)
-            md = os.path.join(path, 'index.md')
-            if os.path.exists(md):
-                child = MooseDocsMarkdownNode(name=name, parent=node, md_file=md, **kwargs)
-            else:
-                child = MooseDocsNode(name=name, parent=node, **kwargs)
-            make_tree(path, child, **kwargs)
+        self._content = content
 
-def flat(node):
-    """
-    Create a flat list of pages for parsing and generation.
-
-    Args:
-      node[NavigationNode]: The root node to flatten from
-    """
-    for child in node:
-        if isinstance(child, MooseDocsMarkdownNode):
-            yield child
-        for c in flat(child):
-            yield c
-
-
-class Builder(object):
-    """
-    Object for building
-    """
-    def __init__(self, parser, site_dir, template, template_args, navigation):
-
-        self._site_dir = site_dir
-
-        content_dir = os.path.join(os.getcwd(), 'content')
-        kwargs = {'parser': parser,
-                  'site_dir': self._site_dir,
-                  'navigation': MooseDocs.yaml_load(navigation),
-                  'template': template,
-                  'template_args': template_args}
-        self._root = MooseDocsMarkdownNode(name='', md_file=os.path.join(content_dir, 'index.md'), **kwargs)
-        make_tree(content_dir, self._root, **kwargs)
-        self._pages = [self._root] + list(flat(self._root))
-
-    def __iter__(self):
-        """
-        Allow direct iteration over pages contained in this object.
-        """
-        return self._pages.__iter__()
-
-    def build(self, num_threads=multiprocessing.cpu_count()):
-        """
-        Build all the pages in parallel.
-        """
-
-        def make_chunks(l, n):
-            n = int(math.ceil(len(l)/float(n)))
-            for i in range(0, len(l), n):
-                yield l[i:i + n]
-
-        def build_pages(pages, lock):
-            for page in pages:
-                page.build(lock)
-
-        jobs = []
-        lock = multiprocessing.Lock()
-        for chunk in make_chunks(self._pages, num_threads):
-            p = multiprocessing.Process(target=build_pages, args=(chunk, lock))
-            p.start()
-            jobs.append(p)
-
-        for job in jobs:
-            job.join()
-
-        self.copyFiles()
+    def buildNodes(self):
+        return common.moose_docs_file_tree(self._content)
 
     def copyFiles(self):
+        super(WebsiteBuilder, self).copyFiles()
+
+        locations = set()
+        for folder in ['js', 'css', 'fonts', 'contrib']:
+            locations.add(os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', folder))
+            locations.add(os.path.join(os.getcwd(), 'content', folder))
+
+        for loc in locations:
+            if os.path.isdir(loc):
+                dest = os.path.join(self._site_dir, os.path.basename(loc))
+                if os.path.isdir(dest):
+                    shutil.rmtree(dest)
+                shutil.copytree(loc, dest)
+
+
+class MooseDocsWatcher(livereload.watcher.Watcher):
+    """
+    A livereload watcher for MooseDocs that rebuilds the entire content if markdown files are
+    added or removed.
+    """
+    def __init__(self, builder, num_threads, *args, **kwargs):
+        super(MooseDocsWatcher, self).__init__(*args, **kwargs)
+        self._builder = builder
+        self._num_threads = num_threads
+        self.init()
+
+    def init(self):
         """
-        Copy the css/js/fonts/media files for this project.
+        Define the content to watch.
+        """
+        self._count = self._builder.count()
+        for page in self._builder:
+            self.watch(page.filename, lambda p=page: self._builder.buildPage(p), delay=2)
+
+    def reset(self):
+        """
+        Perform a complete build and establish the items to watch.
         """
 
-        def helper(src, dst):
-            if not os.path.exists(dst):
-                os.makedirs(dst)
-            if os.path.exists(src):
-                copy_tree(src, dst)
+        # Clear the current tasks
+        self._tasks = dict()
+        self.filepath = None
 
-        # Copy js/css/media from MOOSE and current projects
-        for from_dir in [os.path.join(MooseDocs.MOOSE_DIR, 'docs'), os.getcwd()]:
-            helper(os.path.join(from_dir, 'js'), os.path.join(self._site_dir, 'js'))
-            helper(os.path.join(from_dir, 'css'), os.path.join(self._site_dir, 'css'))
-            helper(os.path.join(from_dir, 'media'), os.path.join(self._site_dir, 'media'))
+        # Re-build
+        LOG.info('START: Complete re-build of markdown content.')
+        self._builder.build(num_threads=self._num_threads)
+        self.init()
+        LOG.info('FINISH: Complete re-build of markdown content.')
 
-def build_site(config_file='moosedocs.yml', num_threads=multiprocessing.cpu_count(), **kwargs):
+    def examine(self):
+        """
+        Override the default function to investigate if the number of markdown files changed.
+        """
+        self._builder.init()
+        if self._count != self._builder.count():
+            self.reset()
+        else:
+            super(MooseDocsWatcher, self).examine()
+        return self.filepath, None
+
+def build(config_file=None, site_dir=None, num_threads=None, no_livereload=False, content=None,
+          dump=False, clean=False, serve=False, host=None, port=None, template=None, init=False,
+          **template_args):
     """
     The main build command.
     """
 
-    # Load the YAML configuration file
-    config = MooseDocs.load_config(config_file, **kwargs)
+    if serve:
+        clean = True
+        site_dir = os.path.abspath(os.path.join(MooseDocs.TEMP_DIR, 'site'))
+
+    # Clean/create site directory
+    if clean and os.path.exists(site_dir):
+        LOG.info('Cleaning build directory: %s', site_dir)
+        shutil.rmtree(site_dir)
+
+    # Create the "temp" directory
+    if not os.path.exists(site_dir):
+        os.makedirs(site_dir)
+
+    # Check submodule for large_media
+    if MooseDocs.ROOT_DIR == MooseDocs.MOOSE_DIR:
+        status = common.submodule_status()
+        if status['docs/content/media/large_media'] == '-':
+            if init:
+                subprocess.call(['git', 'submodule', 'update', '--init',
+                                 'docs/content/media/large_media'], cwd=MooseDocs.MOOSE_DIR)
+            else:
+                LOG.warning("The 'large_media' submodule for storing images above 1MB is not "
+                            "initialized, thus some images will not be visible within the "
+                            "generated website. Run the build command with the --init flag to "
+                            "initialize the submodule.")
+
+    # Check media files size
+    if MooseDocs.ROOT_DIR == MooseDocs.MOOSE_DIR:
+        media = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'media')
+        ignore = set()
+        for base, _, files in os.walk(os.path.join(media, 'large_media')):
+            for name in files:
+                ignore.add(os.path.join(base, name))
+        large = mooseutils.check_file_size(base=media, ignore=ignore)
+        if large:
+            msg = "Media files above the limit of 1 MB detected, these files should be stored in " \
+                  "large media repository (docs/content/media/large_media):"
+            for name, size in large:
+                msg += '\n{}{} ({:.2f} MB)'.format(' '*4, name, size)
+            LOG.error(msg)
 
     # Create the markdown parser
-    extensions, extension_configs = MooseDocs.get_markdown_extensions(config)
-    parser = markdown.Markdown(extensions=extensions, extension_configs=extension_configs)
+    config = MooseDocs.load_config(config_file, template=template, template_args=template_args)
+    parser = MooseMarkdown(config)
 
-    # Create object for storing pages to be generated
-    builder = Builder(parser, config['site_dir'], config['template'], config['template_arguments'], config['navigation'])
-
-    # Create the html
+    # Create the builder object and build the pages
+    builder = WebsiteBuilder(parser=parser, site_dir=site_dir, content=content)
+    builder.init()
+    if dump:
+        print builder
+        return None
     builder.build(num_threads=num_threads)
-    return config, parser, builder
 
-def build(*args, **kwargs):
-    """
-    The main build command.
-    """
-    build_site(*args, **kwargs)
+    # Serve
+    if serve:
+        if not no_livereload:
+            server = livereload.Server(watcher=MooseDocsWatcher(builder, num_threads))
+        else:
+            server = livereload.Server()
+        server.serve(root=site_dir, host=host, port=port, restart_delay=0)
+
+    return 0

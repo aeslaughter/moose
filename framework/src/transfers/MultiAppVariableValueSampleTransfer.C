@@ -22,7 +22,6 @@
 #include "MultiApp.h"
 #include "SystemBase.h"
 
-// libMesh includes
 #include "libmesh/meshfree_interpolation.h"
 #include "libmesh/numeric_vector.h"
 #include "libmesh/system.h"
@@ -50,6 +49,8 @@ void
 MultiAppVariableValueSampleTransfer::initialSetup()
 {
   variableIntegrityCheck(_to_var_name);
+
+  _multi_app->problemBase().mesh().errorIfDistributedMesh("MultiAppVariableValueSampleTransfer");
 }
 
 void
@@ -99,7 +100,7 @@ MultiAppVariableValueSampleTransfer::execute()
 
         if (_multi_app->hasLocalApp(i))
         {
-          MPI_Comm swapped = Moose::swapLibMeshComm(_multi_app->comm());
+          Moose::ScopedCommSwapper swapper(_multi_app->comm());
 
           // Loop over the master nodes and set the value of the variable
           System * to_sys = find_sys(_multi_app->appProblemBase(i).es(), _to_var_name);
@@ -128,9 +129,6 @@ MultiAppVariableValueSampleTransfer::execute()
           }
           solution.close();
           _multi_app->appProblemBase(i).es().update();
-
-          // Swap back
-          Moose::swapLibMeshComm(swapped);
         }
       }
 

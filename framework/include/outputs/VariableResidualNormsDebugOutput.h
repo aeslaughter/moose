@@ -16,10 +16,8 @@
 #define VARIABLERESIDUALNORMSDEBUGOUTPUT_H
 
 // MOOSE includes
-#include "BasicOutput.h"
 #include "PetscOutput.h"
 
-// libMesh includes
 #include "libmesh/system.h"
 
 // Forward declerations
@@ -33,7 +31,7 @@ InputParameters validParams<VariableResidualNormsDebugOutput>();
  *
  * This class may be used from inside the [Outputs] block or via the [Debug] block (preferred)
  */
-class VariableResidualNormsDebugOutput : public BasicOutput<PetscOutput>
+class VariableResidualNormsDebugOutput : public PetscOutput
 {
 public:
   /**

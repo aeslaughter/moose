@@ -8,13 +8,12 @@
 #include "GrainTracker.h"
 
 // MOOSE includes
-#include "EBSDReader.h"
+#include "PolycrystalUserObjectBase.h"
 #include "GeneratedMesh.h"
 #include "MooseMesh.h"
 #include "MooseVariable.h"
 #include "NonlinearSystem.h"
 
-// libMesh includes
 #include "libmesh/periodic_boundary_base.h"
 
 // C++ includes
@@ -65,13 +64,9 @@ GrainTracker::GrainTracker(const InputParameters & parameters)
     _remap(getParam<bool>("remap_grains")),
     _nl(_fe_problem.getNonlinearSystemBase()),
     _feature_sets_old(declareRestartableData<std::vector<FeatureData>>("unique_grains")),
-    _ebsd_reader(parameters.isParamValid("ebsd_reader") ? &getUserObject<EBSDReader>("ebsd_reader")
-                                                        : nullptr),
-    _ebsd_op_var(_ebsd_reader
-                     ? &_fe_problem.getVariable(0, getParam<std::string>("var_name_base") + "_op")
-                     : nullptr),
-    _phase(isParamValid("phase") ? getParam<unsigned int>("phase") : 0),
-    _consider_phase(isParamValid("phase")),
+    _poly_ic_uo(parameters.isParamValid("polycrystal_ic_uo")
+                    ? &getUserObject<PolycrystalUserObjectBase>("polycrystal_ic_uo")
+                    : nullptr),
     _first_time(true),
     _error_on_grain_creation(getParam<bool>("error_on_grain_creation")),
     _reserve_grain_first_index(0),
@@ -79,8 +74,8 @@ GrainTracker::GrainTracker(const InputParameters & parameters)
     _max_curr_grain_id(0),
     _is_transient(_subproblem.isTransient())
 {
-  if (_ebsd_reader && !_ebsd_op_var)
-    mooseError("EBSD OP variable must be supplied if the reader is supplied");
+  if (_tracking_step > 0 && _poly_ic_uo)
+    mooseError("Can't start tracking after the initial condition when using a polycrystal_ic_uo");
 }
 
 GrainTracker::~GrainTracker() {}
@@ -181,6 +176,9 @@ GrainTracker::execute()
   if (_t_step < _tracking_step)
     return;
 
+  if (_poly_ic_uo && _first_time)
+    return;
+
   Moose::perf_log.push("execute()", "GrainTracker");
   FeatureFloodCount::execute();
   Moose::perf_log.pop("execute()", "GrainTracker");
@@ -198,78 +196,36 @@ GrainTracker::getThreshold(std::size_t var_index) const
     return _step_threshold;
 }
 
-bool
-GrainTracker::isNewFeatureOrConnectedRegion(const DofObject * dof_object,
-                                            std::size_t current_index,
-                                            FeatureData *& feature,
-                                            Status & status,
-                                            unsigned int & new_id)
+void
+GrainTracker::prepopulateState(const FeatureFloodCount & ffc_object)
 {
+  mooseAssert(_first_time, "This method should only be called on the first invocation");
+
+  _feature_sets.clear();
+
   /**
-   * When working with the EBSD reader we need to make sure that we get an accurate map
-   * of the EBSD initial condition for the physics simulation to be correct. This is
-   * incredibly difficult if we can only view the nodal interpolation of the elemental
-   * EBSD data. Instead, we'll use the EBSD Reader data directly the first time this
-   * object runs. Using EBSD data is only valid if we begin tracking in the zeroeth step
+   * The minimum information needed to bootstrap the GrainTracker is as follows:
+   * _feature_sets
+   * _feature_count
    */
-  if (_ebsd_reader && _first_time)
+  if (_is_master)
   {
-    mooseAssert(_t_step == 0, "EBSD only works if we begin in the initial condition");
-    mooseAssert(_is_elemental, "EBSD only works with elemental grain tracker");
+    const auto & features = ffc_object.getFeatures();
+    for (auto & feature : features)
+      _feature_sets.emplace_back(feature.duplicate());
 
-    /**
-     * First inspect the order parameter assigned to the feature at this
-     * element and see if it matches the current_index.
-     */
-    const Elem * elem = static_cast<const Elem *>(dof_object);
-    unsigned int op = static_cast<unsigned int>(std::round(_ebsd_op_var->getElementalValue(elem)));
-    if (current_index != op)
-      return false;
-
-    // Sample the EBSD Reader and retrieve the global_id or local_id and phase for the current
-    // element
-    std::vector<Point> centroid = {elem->centroid()};
-    const EBSDAccessFunctors::EBSDPointData & d = _ebsd_reader->getData(centroid[0]);
-    const auto phase = d._phase;
-
-    // See if we are in a phase that we are actually tracking
-    if (_consider_phase && phase != _phase)
-      return false;
-
-    // Get the ids from the EBSD reader
-    const auto global_id = _ebsd_reader->getGlobalID(d._feature_id);
-    const auto local_id = _ebsd_reader->getAvgData(global_id)._local_id;
-
-    /**
-     * If we don't have an active feature we'll need to populate new_id with the actual EBSD
-     * grain number so that the flood routine will set it after creating the new feature.
-     * We'll use that information when assigning the initial grain IDs.
-     */
-    if (!feature)
-    {
-      // Set the ID (EBSD ID)
-      new_id = _consider_phase ? local_id : global_id;
-
-      // EBSD Grains are _always_ kept
-      status &= ~Status::INACTIVE;
-
-      return true;
-    }
-    else
-    {
-      mooseAssert(feature->_id != invalid_id, "Expected EBSD ID missing");
-
-      /**
-       * If we have an active feature just make sure that the current active feature ID
-       * matches the current entities EBSD local_id.
-       */
-      return feature->_id == (_consider_phase ? local_id : global_id);
-    }
+    _feature_count = _feature_sets.size();
   }
   else
-    // Just use normal variable inspection on subsequent steps
-    return FeatureFloodCount::isNewFeatureOrConnectedRegion(
-        dof_object, current_index, feature, status, new_id);
+  {
+    const auto & features = ffc_object.getFeatures();
+    _partial_feature_sets[0].clear();
+    for (auto & feature : features)
+      _partial_feature_sets[0].emplace_back(feature.duplicate());
+  }
+
+  // Make sure that feature count is communicated to all ranks
+  _communicator.broadcast(_feature_count);
 }
 
 void
@@ -291,20 +247,15 @@ GrainTracker::finalize()
                              ? _halo_level - 1
                              : 0; // The first level of halos already exists so subtract one
 
-  if (_ebsd_reader && _first_time)
+  if (_poly_ic_uo && _first_time)
+    prepopulateState(*_poly_ic_uo);
+  else
   {
-    expandEBSDGrains();
+    expandEdgeHalos(num_halo_layers);
 
-    /**
-     * By expanding the EBSD Grains we've effectively erased one level of halo.
-     * We'll just request one additional layer of halo this time around.
-     */
-    ++num_halo_layers;
+    // Build up the grain map on the root processor
+    communicateAndMerge();
   }
-  expandHalos(num_halo_layers);
-
-  // Build up the grain map on the root processor
-  communicateAndMerge();
 
   /**
    * Assign or Track Grains
@@ -403,154 +354,22 @@ GrainTracker::broadcastAndUpdateGrainData()
 }
 
 void
-GrainTracker::expandHalos(unsigned int num_layers_to_expand)
-{
-  if (num_layers_to_expand == 0)
-    return;
-
-  for (auto & list_ref : _partial_feature_sets)
-  {
-    for (auto & feature : list_ref)
-    {
-      for (auto halo_level = decltype(num_layers_to_expand)(0); halo_level < num_layers_to_expand;
-           ++halo_level)
-      {
-        /**
-         * Create a copy of the halo set so that as we insert new ids into the
-         * set we don't continue to iterate on those new ids.
-         */
-        std::set<dof_id_type> orig_halo_ids(feature._halo_ids);
-        for (auto entity : orig_halo_ids)
-        {
-          if (_is_elemental)
-            visitElementalNeighbors(_mesh.elemPtr(entity),
-                                    feature._var_index,
-                                    &feature,
-                                    /*expand_halos_only =*/true,
-                                    /*disjoint_only =*/false);
-          else
-            visitNodalNeighbors(_mesh.nodePtr(entity),
-                                feature._var_index,
-                                &feature,
-                                /*expand_halos_only =*/true);
-        }
-
-        /**
-         * We have to handle disjoint halo IDs slightly differently. Once you are disjoint, you
-         * can't go back so make sure that we keep placing these IDs in the disjoint set.
-         */
-        std::set<dof_id_type> disjoint_orig_halo_ids(feature._disjoint_halo_ids);
-        for (auto entity : disjoint_orig_halo_ids)
-        {
-          if (_is_elemental)
-            visitElementalNeighbors(_mesh.elemPtr(entity),
-                                    feature._var_index,
-                                    &feature,
-                                    /*expand_halos_only =*/true,
-                                    /*disjoint_only =*/true);
-          else
-            visitNodalNeighbors(_mesh.nodePtr(entity),
-                                feature._var_index,
-                                &feature,
-                                /*expand_halos_only =*/true);
-        }
-      }
-    }
-  }
-}
-
-void
-GrainTracker::expandEBSDGrains()
-{
-  mooseAssert(_t_step == 0, "EBSD only works if we begin in the initial condition");
-  mooseAssert(_is_elemental, "EBSD only works with elemental grain tracker");
-
-  const auto & node_to_elem_map = _mesh.nodeToActiveSemilocalElemMap();
-  decltype(FeatureData::_local_ids) expanded_local_ids;
-  auto my_processor_id = processor_id();
-
-  /**
-   * To expand the EBSD region to the actual flooded
-   * region we need to add in all point neighbors of the
-   * current local region for each feature. This is
-   * because the variable influence spreads from the
-   * EBSD data out exactly one element from every
-   * point by design (elem_to_node_weight_map)
-   */
-  for (auto & list_ref : _partial_feature_sets)
-  {
-    for (auto & feature : list_ref)
-    {
-      expanded_local_ids.clear();
-
-      for (auto entity : feature._local_ids)
-      {
-        const Elem * elem = _mesh.elemPtr(entity);
-        mooseAssert(elem, "elem pointer is NULL");
-
-        // Get the nodes on a current element so that we can add in point neighbors
-        auto n_nodes = elem->n_vertices();
-        for (auto i = decltype(n_nodes)(0); i < n_nodes; ++i)
-        {
-          const Node * current_node = elem->get_node(i);
-
-          auto elem_vector_it = node_to_elem_map.find(current_node->id());
-          if (elem_vector_it == node_to_elem_map.end())
-            mooseError("Error in node to elem map");
-
-          const auto & elem_vector = elem_vector_it->second;
-
-          expanded_local_ids.insert(elem_vector.begin(), elem_vector.end());
-
-          // Now see which elements need to go into the ghosted set
-          for (auto entity : elem_vector)
-          {
-            const Elem * neighbor = _mesh.elemPtr(entity);
-            mooseAssert(neighbor, "neighbor pointer is NULL");
-
-            if (neighbor->processor_id() != my_processor_id)
-              feature._ghosted_ids.insert(elem->id());
-          }
-        }
-      }
-
-      // Replace the existing local ids with the expanded local ids
-      feature._local_ids.swap(expanded_local_ids);
-
-      // Copy the expanded local_ids into the halo_ids container
-      feature._halo_ids = feature._local_ids;
-    }
-  }
-}
-
-void
 GrainTracker::assignGrains()
 {
   mooseAssert(_first_time, "assignGrains may only be called on the first tracking step");
 
   /**
-   * When using the EBSD reader, the grain IDs will already be assigned. We'll
-   * use that information to sort the grains. Otherwise, we'll use the default
-   * sorting that doesn't require grainIDs (relies on _min_entity_id and _var_index).
-   * These will be the unique grain numbers that we must track for
-   * the remainder of the simulation.
+   * We need to assign grainIDs to get the simulation going. We'll use the default sorting that
+   * doesn't require valid grainIDs (relies on _min_entity_id and _var_index). These will be the
+   * unique grain numbers that we must track for remainder of the simulation.
    */
   if (_is_master)
   {
     mooseAssert(!_feature_sets.empty(), "Feature sets empty!");
 
     // Find the largest grain ID, this requires sorting if the ID is not already set
-    if (_ebsd_reader)
-    {
-      auto grain_num =
-          _consider_phase ? _ebsd_reader->getGrainNum(_phase) : _ebsd_reader->getGrainNum();
-      _max_curr_grain_id = grain_num - 1;
-    }
-    else
-    {
-      sortAndLabel();
-      _max_curr_grain_id = _feature_sets[_feature_sets.size() - 1]._id;
-    }
+    sortAndLabel();
+    _max_curr_grain_id = _feature_sets[_feature_sets.size() - 1]._id;
 
     for (auto & grain : _feature_sets)
       grain._status = Status::MARKED; // Mark the grain
@@ -695,9 +514,9 @@ GrainTracker::trackGrains()
           auto & inactive_grain = (centroid_diff1 < centroid_diff2) ? other_old_grain : old_grain;
 
           inactive_grain._status = Status::INACTIVE;
-          _console << "Marking Grain " << inactive_grain._id
+          _console << COLOR_GREEN << "Marking Grain " << inactive_grain._id
                    << " as INACTIVE (variable index: " << inactive_grain._var_index << ")\n"
-                   << inactive_grain;
+                   << COLOR_DEFAULT << inactive_grain;
 
           /**
            * If the grain we just marked inactive was the one whose index was in the new grain
@@ -753,9 +572,6 @@ GrainTracker::trackGrains()
       // New Grain
       if (grain._status == Status::CLEAR)
       {
-        mooseAssert(!_ebsd_reader || !_first_time,
-                    "Can't create new grains in initial EBSD step, logic error");
-
         /**
          * Now we need to figure out what kind of "new" grain this is. Is it a nucleating grain that
          * we're just barely seeing for the first time or is it a "splitting" grain. A grain that
@@ -801,9 +617,9 @@ GrainTracker::trackGrains()
           {
             grain._id = other_grain._id;    // Set the duplicate ID
             grain._status = Status::MARKED; // Mark it
-            _console << "Split Grain Detected "
+            _console << COLOR_YELLOW << "Split Grain Detected "
                      << " (variable index: " << grain._var_index << ")\n"
-                     << grain << other_grain;
+                     << COLOR_DEFAULT << grain << other_grain;
           }
         }
 
@@ -823,9 +639,9 @@ GrainTracker::trackGrains()
       if (grain._status == Status::CLEAR)
       {
         grain._status = Status::INACTIVE;
-        _console << "Marking Grain " << grain._id
+        _console << COLOR_GREEN << "Marking Grain " << grain._id
                  << " as INACTIVE (variable index: " << grain._var_index << ")\n"
-                 << grain;
+                 << COLOR_DEFAULT << grain;
       }
     }
   } // is_master
@@ -912,8 +728,8 @@ GrainTracker::remapGrains()
    */
   std::map<unsigned int, std::size_t> grain_id_to_new_var;
 
-  // Items are added to this list when split EBSD grains are found
-  std::list<std::pair<std::size_t, std::size_t>> ebsd_pairs;
+  // Items are added to this list when split grains are found
+  std::list<std::pair<std::size_t, std::size_t>> split_pairs;
 
   /**
    * The remapping algorithm is recursive. We will use the status variable in each FeatureData
@@ -935,38 +751,35 @@ GrainTracker::remapGrains()
       grain_id_to_existing_var_index[grain._id] = grain._var_index;
     }
 
-    // Make sure that all split pieces of an EBSD grain are on the same OP
-    if (_ebsd_reader)
+    // Make sure that all split pieces of any grain are on the same OP
+    for (auto i = beginIndex(_feature_sets); i < _feature_sets.size(); ++i)
     {
-      for (auto i = beginIndex(_feature_sets); i < _feature_sets.size(); ++i)
+      auto & grain1 = _feature_sets[i];
+
+      for (auto j = beginIndex(_feature_sets); j < _feature_sets.size(); ++j)
       {
-        auto & grain1 = _feature_sets[i];
+        auto & grain2 = _feature_sets[j];
+        if (i == j)
+          continue;
 
-        for (auto j = beginIndex(_feature_sets); j < _feature_sets.size(); ++j)
+        // The first condition below is there to prevent symmetric checks (duplicate values)
+        if (i < j && grain1._id == grain2._id)
         {
-          auto & grain2 = _feature_sets[j];
-          if (i == j)
-            continue;
-
-          // The first condition below is there to prevent symmetric checks (duplicate values)
-          if (i < j && grain1._id == grain2._id)
+          split_pairs.push_front(std::make_pair(i, j));
+          if (grain1._var_index != grain2._var_index)
           {
-            ebsd_pairs.push_front(std::make_pair(i, j));
-            if (grain1._var_index != grain2._var_index)
-            {
-              _console << COLOR_YELLOW << "Split EBSD Grain (#" << grain1._id
-                       << ") detected on unmatched OPs (" << grain1._var_index << ", "
-                       << grain2._var_index << ") attempting to remap to " << grain1._var_index
-                       << ".\n"
-                       << COLOR_DEFAULT;
+            _console << COLOR_YELLOW << "Split Grain (#" << grain1._id
+                     << ") detected on unmatched OPs (" << grain1._var_index << ", "
+                     << grain2._var_index << ") attempting to remap to " << grain1._var_index
+                     << ".\n"
+                     << COLOR_DEFAULT;
 
-              /**
-               * We're not going to try very hard to look for a suitable remapping. Just set it to
-               * what we want and hope it all works out. Make the GrainTracker great again!
-               */
-              grain1._var_index = grain2._var_index;
-              grain1._status |= Status::DIRTY;
-            }
+            /**
+             * We're not going to try very hard to look for a suitable remapping. Just set it to
+             * what we want and hope it all works out. Make the GrainTracker great again!
+             */
+            grain1._var_index = grain2._var_index;
+            grain1._status |= Status::DIRTY;
           }
         }
       }
@@ -1050,11 +863,10 @@ GrainTracker::remapGrains()
       any_grains_remapped |= grains_remapped;
     } while (grains_remapped);
 
-    // Verify that EBSD split grains are still intact
-    if (_ebsd_reader)
-      for (auto & ebsd_pair : ebsd_pairs)
-        if (_feature_sets[ebsd_pair.first]._var_index != _feature_sets[ebsd_pair.first]._var_index)
-          mooseError("EBSD split grain remapped - This case is currently not handled");
+    // Verify that split grains are still intact
+    for (auto & split_pair : split_pairs)
+      if (_feature_sets[split_pair.first]._var_index != _feature_sets[split_pair.first]._var_index)
+        mooseError("Split grain remapped - This case is currently not handled");
 
     /**
      * The remapping loop is complete but only on the master process.
@@ -1507,18 +1319,9 @@ GrainTracker::updateFieldInfo()
       {
         const Elem * elem = mesh.elem(entity);
         std::vector<Point> centroid(1, elem->centroid());
-        if (_ebsd_reader && _first_time)
+        if (_poly_ic_uo && _first_time)
         {
-          const EBSDAccessFunctors::EBSDPointData & d = _ebsd_reader->getData(centroid[0]);
-          const auto phase = d._phase;
-          if (!_consider_phase || phase == _phase)
-          {
-            const auto global_id = _ebsd_reader->getGlobalID(d._feature_id);
-            const auto local_id = _ebsd_reader->getAvgData(global_id)._local_id;
-            const auto grain_id = _consider_phase ? local_id : global_id;
-            if (grain_id == grain._id)
-              entity_value = std::numeric_limits<Real>::max();
-          }
+          entity_value = _poly_ic_uo->getVariableValue(grain._var_index, centroid[0]);
         }
         else
         {
@@ -1546,18 +1349,18 @@ GrainTracker::updateFieldInfo()
 
       if (_compute_var_to_feature_map)
       {
-        auto map_it = _entity_var_to_features.lower_bound(entity);
-        if (map_it == _entity_var_to_features.end() || map_it->first != entity)
-        {
-          map_it = _entity_var_to_features.emplace_hint(
-              map_it, entity, std::vector<unsigned int>(_n_vars, invalid_id));
+        auto insert_pair = moose_try_emplace(
+            _entity_var_to_features, entity, std::vector<unsigned int>(_n_vars, invalid_id));
+        auto & vec_ref = insert_pair.first->second;
 
+        if (insert_pair.second)
+        {
           // insert the reserve op numbers (if appropriate)
           for (auto reserve_index = decltype(_n_reserve_ops)(0); reserve_index < _n_reserve_ops;
                ++reserve_index)
-            map_it->second[reserve_index] = _reserve_grain_first_index + reserve_index;
+            vec_ref[reserve_index] = _reserve_grain_first_index + reserve_index;
         }
-        map_it->second[grain._var_index] = grain._id;
+        vec_ref[grain._var_index] = grain._id;
       }
     }
 

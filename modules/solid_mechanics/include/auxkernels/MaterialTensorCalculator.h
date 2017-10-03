@@ -13,7 +13,6 @@
 #include "MooseEnum.h"
 #include "SymmTensor.h"
 
-// libMesh includes
 #include "libmesh/vector_value.h"
 
 class MaterialTensorCalculator;
@@ -28,7 +27,7 @@ public:
   {
     COMPONENT,
     VONMISES,
-    PLASTICSTRAINMAG,
+    EFFECTIVESTRAIN,
     HYDROSTATIC,
     DIRECTION,
     HOOP,

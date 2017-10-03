@@ -2,13 +2,14 @@
 from peacock.utils import ExeLauncher
 import json
 import mooseutils
+from PyQt5.QtWidgets import QApplication
 
 class JsonData(object):
     """
     Class that holds the json produced by an executable.
     """
 
-    def __init__(self, app_path="", **kwds):
+    def __init__(self, app_path="", extra_args=[], **kwds):
         """
         Constructor.
         Input:
@@ -18,8 +19,18 @@ class JsonData(object):
 
         self.json_data = None
         self.app_path = None
+        self.extra_args = extra_args
         if app_path:
             self.appChanged(app_path)
+
+    def _processEvents(self):
+        """
+        If we are in a QApplication, process events so
+        the GUI stays responsive.
+        """
+        qapp = QApplication.instance()
+        if qapp:
+            qapp.processEvents()
 
     def appChanged(self, app_path):
         """
@@ -28,8 +39,11 @@ class JsonData(object):
             app_path: New executable path
         """
         try:
+            self._processEvents()
             raw_data = self._getRawDump(app_path)
+            self._processEvents()
             self.json_data = json.loads(raw_data)
+            self._processEvents()
             self.app_path = app_path
         except Exception as e:
             mooseutils.mooseWarning("Failed to load json from '%s': %s" % (app_path, e))
@@ -40,7 +54,9 @@ class JsonData(object):
         Return:
             the data
         """
-        data = ExeLauncher.runExe(app_path, "--json")
+        #  "-options_left 0" is used to stop the debug version of PETSc from printing
+        # out WARNING messages that sometime confuse the json parser
+        data = ExeLauncher.runExe(app_path, ["-options_left", "0", "--json"] + self.extra_args)
         data = data.split('**START JSON DATA**\n')[1]
         data = data.split('**END JSON DATA**')[0]
         return data

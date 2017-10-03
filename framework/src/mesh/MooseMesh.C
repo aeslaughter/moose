@@ -138,13 +138,15 @@ validParams<MooseMesh>()
                         false,
                         "Boolean to specify whether or not all point neighbors are ghosted"
                         " when DistributedMesh is used. Value is ignored in ReplicatedMesh mode");
+  params.addParam<unsigned int>(
+      "patch_size", 40, "The number of nodes to consider in the NearestNode neighborhood.");
 
   params.registerBase("MooseMesh");
 
   // groups
   params.addParamNamesToGroup(
       "dim nemesis patch_update_strategy construct_node_list_from_side_list num_ghosted_layers"
-      " ghost_point_neighbors",
+      " ghost_point_neighbors patch_size",
       "Advanced");
   params.addParamNamesToGroup("partitioner centroid_partitioner_direction", "Partitioning");
 
@@ -163,13 +165,12 @@ MooseMesh::MooseMesh(const InputParameters & parameters)
     _partitioner_overridden(false),
     _custom_partitioner_requested(false),
     _uniform_refine_level(0),
-    _is_changed(false),
     _is_nemesis(getParam<bool>("nemesis")),
     _is_prepared(false),
     _needs_prepare_for_use(false),
     _node_to_elem_map_built(false),
     _node_to_active_semilocal_elem_map_built(false),
-    _patch_size(40),
+    _patch_size(getParam<unsigned int>("patch_size")),
     _patch_update_strategy(getParam<MooseEnum>("patch_update_strategy")),
     _regular_orthogonal_mesh(false),
     _allow_recovery(true),
@@ -270,12 +271,11 @@ MooseMesh::MooseMesh(const MooseMesh & other_mesh)
     _partitioner_name(other_mesh._partitioner_name),
     _partitioner_overridden(other_mesh._partitioner_overridden),
     _uniform_refine_level(other_mesh.uniformRefineLevel()),
-    _is_changed(false),
     _is_nemesis(false),
     _is_prepared(false),
     _needs_prepare_for_use(false),
     _node_to_elem_map_built(false),
-    _patch_size(40),
+    _patch_size(other_mesh._patch_size),
     _patch_update_strategy(other_mesh._patch_update_strategy),
     _regular_orthogonal_mesh(false),
     _construct_node_list_from_side_list(other_mesh._construct_node_list_from_side_list)
@@ -509,9 +509,6 @@ MooseMesh::meshChanged()
   getBoundaryNodeRange();
   getBoundaryElementRange();
 
-  // Lets the output system know that the mesh has changed recently.
-  _is_changed = true;
-
   // Call the callback function onMeshChanged
   onMeshChanged();
 }
@@ -690,8 +687,8 @@ MooseMesh::nodeToElemMap()
     Threads::spin_mutex::scoped_lock lock(Threads::spin_mtx);
     if (!_node_to_elem_map_built)
     {
-      MeshBase::const_element_iterator el = getMesh().elements_begin();
-      const MeshBase::const_element_iterator end = getMesh().elements_end();
+      MeshBase::const_element_iterator el = getMesh().active_elements_begin();
+      const MeshBase::const_element_iterator end = getMesh().active_elements_end();
 
       for (; el != end; ++el)
         for (unsigned int n = 0; n < (*el)->n_nodes(); n++)
@@ -928,9 +925,11 @@ MooseMesh::addQuadratureNode(const Elem * elem,
     _quadrature_nodes[new_id] = qnode;
     _elem_to_side_to_qp_to_quadrature_nodes[elem->id()][side][qp] = qnode;
 
-    _node_to_elem_map[new_id].push_back(elem->id());
     if (elem->active())
+    {
+      _node_to_elem_map[new_id].push_back(elem->id());
       _node_to_active_semilocal_elem_map[new_id].push_back(elem->id());
+    }
   }
   else
     qnode = _elem_to_side_to_qp_to_quadrature_nodes[elem->id()][side][qp];
@@ -1004,7 +1003,8 @@ MooseMesh::getBoundaryIDs(const std::vector<BoundaryName> & boundary_name,
 
   // On a distributed mesh we may have boundary ids that only exist on
   // other processors.
-  _communicator.set_union(boundary_ids);
+  if (!this->getMesh().is_replicated())
+    _communicator.set_union(boundary_ids);
 
   BoundaryID max_boundary_id = boundary_ids.empty() ? 0 : *(boundary_ids.rbegin());
 
@@ -1023,7 +1023,7 @@ MooseMesh::getBoundaryIDs(const std::vector<BoundaryName> & boundary_name,
     BoundaryID id;
     std::istringstream ss(boundary_name[i]);
 
-    if (!(ss >> id))
+    if (!(ss >> id) || !ss.eof())
     {
       /**
        * If the conversion from a name to a number fails, that means that this must be a named
@@ -1053,7 +1053,7 @@ MooseMesh::getSubdomainID(const SubdomainName & subdomain_name) const
   SubdomainID id = Moose::INVALID_BLOCK_ID;
   std::istringstream ss(subdomain_name);
 
-  if (!(ss >> id))
+  if (!(ss >> id) || !ss.eof())
     id = getMesh().get_id_by_name(subdomain_name);
 
   return id;
@@ -1078,7 +1078,7 @@ MooseMesh::getSubdomainIDs(const std::vector<SubdomainName> & subdomain_name) co
     SubdomainID id = Moose::INVALID_BLOCK_ID;
     std::istringstream ss(subdomain_name[i]);
 
-    if (!(ss >> id))
+    if (!(ss >> id) || !ss.eof())
       id = getMesh().get_id_by_name(subdomain_name[i]);
 
     ids[i] = id;
@@ -1151,8 +1151,8 @@ MooseMesh::buildPeriodicNodeMap(std::multimap<dof_id_type, dof_id_type> & period
           unsigned int s_neigh =
               boundary_info.side_with_boundary_id(neigh, periodic->pairedboundary);
 
-          std::unique_ptr<Elem> elem_side = elem->build_side(s);
-          std::unique_ptr<Elem> neigh_side = neigh->build_side(s_neigh);
+          std::unique_ptr<const Elem> elem_side = elem->build_side_ptr(s);
+          std::unique_ptr<const Elem> neigh_side = neigh->build_side_ptr(s_neigh);
 
           // At this point we have matching sides - lets find matching nodes
           for (unsigned int i = 0; i < elem_side->n_nodes(); ++i)
@@ -1161,7 +1161,7 @@ MooseMesh::buildPeriodicNodeMap(std::multimap<dof_id_type, dof_id_type> & period
             Point master_point = periodic->get_corresponding_pos(*master_node);
             for (unsigned int j = 0; j < neigh_side->n_nodes(); ++j)
             {
-              Node * slave_node = neigh_side->node_ptr(j);
+              const Node * slave_node = neigh_side->node_ptr(j);
               if (master_point.absolute_fuzzy_equals(*slave_node))
               {
                 // Avoid inserting any duplicates
@@ -1236,9 +1236,12 @@ MooseMesh::detectOrthogonalDimRanges(Real tol)
     }
   }
 
+  this->comm().max(max);
+  this->comm().min(min);
+
   _extreme_nodes.resize(8); // 2^LIBMESH_DIM
   // Now make sure that there are actual nodes at all of the extremes
-  unsigned int extreme_matches = 0;
+  std::vector<bool> extreme_matches(8, false);
   std::vector<unsigned int> comp_map(3);
   for (MeshBase::node_iterator nd = getMesh().nodes_begin(); nd != nd_end; ++nd)
   {
@@ -1263,12 +1266,13 @@ MooseMesh::detectOrthogonalDimRanges(Real tol)
     if (coord_match == dim) // Found a coordinate at one of the extremes
     {
       _extreme_nodes[comp_map[X] * 4 + comp_map[Y] * 2 + comp_map[Z]] = &node;
-      ++extreme_matches;
+      extreme_matches[comp_map[X] * 4 + comp_map[Y] * 2 + comp_map[Z]] = true;
     }
   }
 
   // See if we matched all of the extremes for the mesh dimension
-  if (extreme_matches != std::pow(2.0, (int)dim))
+  this->comm().max(extreme_matches);
+  if (std::count(extreme_matches.begin(), extreme_matches.end(), true) != std::pow(2.0, (int)dim))
     return false; // This is not a regular orthogonal mesh
 
   // This is a regular orthogonal mesh, so set the bounds
@@ -1346,7 +1350,7 @@ MooseMesh::detectPairedSidesets()
       // If side is on the boundary
       if (elem->neighbor_ptr(s) == nullptr)
       {
-        std::unique_ptr<Elem> side = elem->build_side(s);
+        std::unique_ptr<Elem> side = elem->build_side_ptr(s);
 
         fe_faces[side_dim]->reinit(elem, s);
 
@@ -1533,6 +1537,7 @@ MooseMesh::buildRefinementAndCoarseningMaps(Assembly * assembly)
     Elem * elem = can_it.second;
 
     // Need to do this just once to get the right qrules put in place
+    assembly->setCurrentSubdomainID(elem->subdomain_id());
     assembly->reinit(elem);
     assembly->reinit(elem, 0);
     QBase * qrule = assembly->qRule();
@@ -1963,13 +1968,16 @@ MooseMesh::init()
     // Some partitioners are not idempotent.  Some recovery data
     // files require partitioning to match mesh partitioning.  This
     // means that, when recovering, we can't safely repartition.
-    bool skip_partitioning_later = getMesh().skip_partitioning();
+    const bool skip_partitioning_later = getMesh().skip_partitioning();
     getMesh().skip_partitioning(true);
+    const bool allow_renumbering_later = getMesh().allow_renumbering();
+    getMesh().allow_renumbering(false);
 
     // For now, only read the recovery mesh on the Ultimate Master..
     // sub-apps need to just build their mesh like normal
     getMesh().read(_app.getRecoverFileBase() + "_mesh." + _app.getRecoverFileSuffix());
 
+    getMesh().allow_renumbering(allow_renumbering_later);
     getMesh().skip_partitioning(skip_partitioning_later);
   }
   else // Normally just build the mesh
@@ -2129,18 +2137,6 @@ const Elem *
 MooseMesh::queryElemPtr(const dof_id_type i) const
 {
   return getMesh().query_elem_ptr(i);
-}
-
-bool
-MooseMesh::changed() const
-{
-  return _is_changed;
-}
-
-void
-MooseMesh::changed(bool state)
-{
-  _is_changed = state;
 }
 
 bool
@@ -2370,12 +2366,6 @@ MooseMesh::ghostGhostedBoundaries()
                                      extra_ghost_elem_inserter<Elem>(mesh));
 }
 
-void
-MooseMesh::setPatchSize(const unsigned int patch_size)
-{
-  _patch_size = patch_size;
-}
-
 unsigned int
 MooseMesh::getPatchSize() const
 {
@@ -2394,7 +2384,7 @@ MooseMesh::getPatchUpdateStrategy() const
   return _patch_update_strategy;
 }
 
-MeshTools::BoundingBox
+BoundingBox
 MooseMesh::getInflatedProcessorBoundingBox(Real inflation_multiplier) const
 {
   // Grab a bounding box to speed things up.  Note that

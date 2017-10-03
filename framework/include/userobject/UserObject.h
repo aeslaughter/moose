@@ -25,7 +25,6 @@
 #include "ScalarCoupleable.h"
 #include "SetupInterface.h"
 
-// libMesh includes
 #include "libmesh/parallel.h"
 
 // Forward declarations
@@ -85,6 +84,12 @@ public:
    * this postprocessor is tied to
    */
   SubProblem & getSubProblem() const { return _subproblem; }
+
+  /**
+   * Returns whether or not this user object should be executed twice during the initial condition
+   * when depended upon by an IC.
+   */
+  bool shouldDuplicateInitialExecution() const { return _duplicate_initial_execution; }
 
   /**
    * Optional interface function for "evaluating" a UserObject at a spatial position.
@@ -149,6 +154,8 @@ protected:
 
   /// Coordinate system
   const Moose::CoordinateSystemType & _coord_sys;
+
+  const bool _duplicate_initial_execution;
 };
 
 #endif /* USEROBJECT_H */

@@ -14,19 +14,24 @@ validParams<PFFracBulkRate>()
   InputParameters params = validParams<KernelValue>();
   params.addClassDescription(
       "Kernel to compute bulk energy contribution to damage order parameter residual equation");
-  params.addRequiredParam<Real>("l", "Interface width");
-  params.addRequiredParam<Real>("visco", "Viscosity parameter");
-  params.addRequiredParam<MaterialPropertyName>("gc_prop_var",
-                                                "Material property name with gc value");
+  params.addRequiredParam<Real>("l", "Width of the smooth crack representation");
+  params.addRequiredParam<Real>(
+      "visco", "Viscosity parameter, which reflects the transition right at crack stress");
+  params.addRequiredParam<MaterialPropertyName>(
+      "gc_prop_var", "Material property which provides the maximum stress/crack stress");
   params.addRequiredParam<MaterialPropertyName>(
       "G0_var", "Material property name with undamaged strain energy driving damage (G0_pos)");
   params.addParam<MaterialPropertyName>(
       "dG0_dstrain_var", "Material property name with derivative of G0_pos with strain");
-  params.addRequiredCoupledVar("beta", "Auxiliary variable");
+  params.addRequiredCoupledVar("beta", "Laplacian of the kernel variable");
 
-  params.addCoupledVar("displacements",
-                       "The string of displacements suitable for the problem statement");
-  params.addParam<std::string>("base_name", "Material property base name");
+  params.addCoupledVar(
+      "displacements",
+      "The displacements appropriate for the simulation geometry and coordinate system");
+  params.addParam<std::string>("base_name",
+                               "Optional parameter that allows the user to define "
+                               "multiple mechanics material systems on the same "
+                               "block, i.e. for multiple phases");
 
   return params;
 }
@@ -46,6 +51,8 @@ PFFracBulkRate::PFFracBulkRate(const InputParameters & parameters)
     _l(getParam<Real>("l")),
     _visco(getParam<Real>("visco"))
 {
+  mooseDeprecated("Use 'SplitPFFractureBulkRate'. Parameter name changes: l->width, "
+                  "visco->viscosity, gc_prop_var->gc, G0_var->G0, dG0_dstrain_var->dG0_dstrain");
   for (unsigned int i = 0; i < _ndisp; ++i)
     _disp_var[i] = coupled("displacements", i);
 }

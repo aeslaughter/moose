@@ -11,6 +11,8 @@
 #include "Conversion.h"
 #include "NonlinearSystem.h"
 
+#include <fstream>
+
 template <>
 InputParameters
 validParams<EBSDReader>()
@@ -277,7 +279,8 @@ EBSDReader::indexFromPoint(const Point & p) const
   global_index = (global_index + y_index) * _nx + x_index;
 
   // Don't access out of range!
-  mooseAssert(global_index < _data.size(), "global_index points out of _data range");
+  mooseAssert(global_index < _data.size(),
+              "global_index " << global_index << " points out of _data range: " << _data.size());
 
   return global_index;
 }

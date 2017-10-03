@@ -31,7 +31,7 @@ ComputeInstantaneousThermalExpansionFunctionEigenstrain::
     _thermal_expansion_function(getFunction("thermal_expansion_function")),
     _thermal_strain(declareProperty<Real>("InstantaneousThermalExpansionFunction_thermal_strain")),
     _thermal_strain_old(
-        declarePropertyOld<Real>("InstantaneousThermalExpansionFunction_thermal_strain")),
+        getMaterialPropertyOld<Real>("InstantaneousThermalExpansionFunction_thermal_strain")),
     _step_one(declareRestartableData<bool>("step_one", true))
 {
 }
@@ -53,7 +53,7 @@ ComputeInstantaneousThermalExpansionFunctionEigenstrain::computeThermalStrain(
 
   const Real & old_thermal_strain = _thermal_strain_old[_qp];
 
-  const Real & old_temp = (_step_one ? _stress_free_temperature : _temperature_old[_qp]);
+  const Real & old_temp = (_step_one ? _stress_free_temperature[_qp] : _temperature_old[_qp]);
   const Real delta_T = current_temp - old_temp;
 
   const Point p;

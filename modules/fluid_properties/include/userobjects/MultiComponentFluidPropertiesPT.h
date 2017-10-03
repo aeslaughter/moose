@@ -26,6 +26,8 @@ public:
   MultiComponentFluidPropertiesPT(const InputParameters & parameters);
   virtual ~MultiComponentFluidPropertiesPT();
 
+  /// Fluid name
+  virtual std::string fluidName() const = 0;
   /// Density (kg/m^3)
   virtual Real rho(Real pressure, Real temperature, Real xmass) const = 0;
   /// Density and its derivatives wrt pressure, temperature and mass fraction
@@ -42,6 +44,7 @@ public:
   virtual void mu_drhoTx(Real density,
                          Real temperature,
                          Real xmass,
+                         Real ddensity_dT,
                          Real & mu,
                          Real & dmu_dp,
                          Real & dmu_dT,
@@ -69,7 +72,7 @@ public:
                       Real & de_dT,
                       Real & de_dx) const = 0;
   /// Thermal conductivity (W/m/K)
-  virtual Real k(Real pressure, Real temperature, Real xmass) const = 0;
+  virtual Real k(Real density, Real temperature, Real xmass) const = 0;
   /// Get UserObject for specified component
   virtual const SinglePhaseFluidPropertiesPT & getComponent(unsigned int component) const = 0;
 

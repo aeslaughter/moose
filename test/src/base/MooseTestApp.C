@@ -72,6 +72,7 @@
 #include "MaterialEigenKernel.h"
 #include "PHarmonic.h"
 #include "PMassEigenKernel.h"
+#include "PMassKernel.h"
 #include "CoupledEigenKernel.h"
 #include "ConsoleMessageKernel.h"
 #include "WrongJacobianDiffusion.h"
@@ -104,7 +105,9 @@
 #include "FunctionGradAux.h"
 #include "CheckCurrentExecAux.h"
 #include "FunctionDerivativeAux.h"
+#include "MaterialPropertyBlockAux.h"
 
+#include "ChannelGradientBC.h"
 #include "RobinBC.h"
 #include "InflowBC.h"
 #include "OutflowBC.h"
@@ -124,11 +127,15 @@
 #include "TestLapBC.h"
 #include "ExampleShapeSideIntegratedBC.h"
 
+// dg kernels
+#include "DGCoupledDiffusion.h"
+
 // ICs
 #include "TEIC.h"
 #include "MTICSum.h"
 #include "MTICMult.h"
 #include "DataStructIC.h"
+#include "GhostUserObjectIC.h"
 
 // Materials
 #include "IncrementMaterial.h"
@@ -158,6 +165,8 @@
 #include "ImplicitStateful.h"
 #include "MaterialDerivativeTestMaterial.h"
 #include "QpMaterial.h"
+#include "SubdomainConstantMaterial.h"
+#include "MatDGKernel.h"
 
 #include "DGMDDBC.h"
 #include "DGFunctionConvectionDirichletBC.h"
@@ -189,8 +198,6 @@
 #include "VerifyNodalUniqueID.h"
 #include "RandomElementalUserObject.h"
 #include "TrackDiracFront.h"
-#include "BoundaryUserObject.h"
-#include "TestBoundaryRestrictableAssert.h"
 #include "GetMaterialPropertyBoundaryBlockNamesTest.h"
 #include "SetupInterfaceCount.h"
 #include "ReadDoubleIndex.h"
@@ -201,12 +208,14 @@
 #include "DenomShapeSideUserObject.h"
 #include "GhostUserObject.h"
 #include "GetTransferUserObject.h"
+#include "TestCSVReader.h"
+#include "ToggleMeshAdaptivity.h"
+#include "MatSideUserObject.h"
 
 // Postprocessors
 #include "TestCopyInitialSolution.h"
 #include "TestSerializedSolution.h"
 #include "InsideValuePPS.h"
-#include "BoundaryValuePPS.h"
 #include "NumInternalSides.h"
 #include "NumElemQPs.h"
 #include "NumSideQPs.h"
@@ -218,6 +227,9 @@
 #include "NumAdaptivityCycles.h"
 #include "TestDiscontinuousValuePP.h"
 #include "RandomPostprocessor.h"
+#include "ElementMomentSum.h"
+#include "ChannelGradientVectorPostprocessor.h"
+#include "InternalSideJump.h"
 
 // Functions
 #include "TimestepSetupFunction.h"
@@ -240,6 +252,7 @@
 #include "RandomHitMarker.h"
 #include "QPointMarker.h"
 #include "CircleMarker.h"
+#include "TwoCircleMarker.h"
 
 // meshes
 #include "StripeMesh.h"
@@ -281,16 +294,27 @@ InputParameters
 validParams<MooseTestApp>()
 {
   InputParameters params = validParams<MooseApp>();
+  /* MooseTestApp is special because it will have its own
+   * binary and we want the default to allow test objects.
+   */
+  params.suppressParameter<bool>("allow_test_objects");
+  params.addCommandLineParam<bool>("disallow_test_objects",
+                                   "--disallow-test-objects",
+                                   false,
+                                   "Don't register test objects and syntax");
   return params;
 }
 
 MooseTestApp::MooseTestApp(const InputParameters & parameters) : MooseApp(parameters)
 {
+  bool use_test_objs = !getParam<bool>("disallow_test_objects");
   Moose::registerObjects(_factory);
-  MooseTestApp::registerObjects(_factory);
+  if (use_test_objs)
+    MooseTestApp::registerObjects(_factory);
 
   Moose::associateSyntax(_syntax, _action_factory);
-  MooseTestApp::associateSyntax(_syntax, _action_factory);
+  if (use_test_objs)
+    MooseTestApp::associateSyntax(_syntax, _action_factory);
 }
 
 MooseTestApp::~MooseTestApp() {}
@@ -368,6 +392,7 @@ MooseTestApp::registerObjects(Factory & factory)
   registerKernel(MaterialEigenKernel);
   registerKernel(PHarmonic);
   registerKernel(PMassEigenKernel);
+  registerKernel(PMassKernel);
   registerKernel(CoupledEigenKernel);
   registerKernel(ConsoleMessageKernel);
   registerKernel(WrongJacobianDiffusion);
@@ -400,11 +425,13 @@ MooseTestApp::registerObjects(Factory & factory)
   registerAux(FunctionGradAux);
   registerAux(CheckCurrentExecAux);
   registerAux(FunctionDerivativeAux);
+  registerAux(MaterialPropertyBlockAux);
 
   // Interface kernels
   registerInterfaceKernel(InterfaceDiffusion);
 
   // Boundary Conditions
+  registerBoundaryCondition(ChannelGradientBC);
   registerBoundaryCondition(ExampleShapeSideIntegratedBC);
   registerBoundaryCondition(RobinBC);
   registerBoundaryCondition(InflowBC);
@@ -430,11 +457,15 @@ MooseTestApp::registerObjects(Factory & factory)
   registerBoundaryCondition(CoupledDirichletBC);
   registerBoundaryCondition(TestLapBC);
 
+  // dg kernels
+  registerDGKernel(DGCoupledDiffusion);
+
   // Initial conditions
   registerInitialCondition(TEIC);
   registerInitialCondition(MTICSum);
   registerInitialCondition(MTICMult);
   registerInitialCondition(DataStructIC);
+  registerInitialCondition(GhostUserObjectIC);
 
   // Materials
   registerMaterial(MTMaterial);
@@ -464,6 +495,8 @@ MooseTestApp::registerObjects(Factory & factory)
   registerMaterial(ThrowMaterial);
   registerMaterial(MaterialDerivativeTestMaterial);
   registerMaterial(QpMaterial);
+  registerMaterial(SubdomainConstantMaterial);
+  registerMaterial(MatDGKernel);
 
   registerScalarKernel(ExplicitODE);
   registerScalarKernel(ImplicitODEx);
@@ -509,8 +542,6 @@ MooseTestApp::registerObjects(Factory & factory)
   registerUserObject(VerifyNodalUniqueID);
   registerUserObject(RandomElementalUserObject);
   registerUserObject(TrackDiracFront);
-  registerUserObject(BoundaryUserObject);
-  registerUserObject(TestBoundaryRestrictableAssert);
   registerUserObject(GetMaterialPropertyBoundaryBlockNamesTest);
   registerUserObject(GeneralSetupInterfaceCount);
   registerUserObject(ElementSetupInterfaceCount);
@@ -525,11 +556,13 @@ MooseTestApp::registerObjects(Factory & factory)
   registerUserObject(DenomShapeSideUserObject);
   registerUserObject(GhostUserObject);
   registerUserObject(GetTransferUserObject);
+  registerUserObject(TestCSVReader);
+  registerUserObject(ToggleMeshAdaptivity);
+  registerUserObject(MatSideUserObject);
 
   registerPostprocessor(InsideValuePPS);
   registerPostprocessor(TestCopyInitialSolution);
   registerPostprocessor(TestSerializedSolution);
-  registerPostprocessor(BoundaryValuePPS);
   registerPostprocessor(NumInternalSides);
   registerPostprocessor(NumElemQPs);
   registerPostprocessor(NumSideQPs);
@@ -541,12 +574,16 @@ MooseTestApp::registerObjects(Factory & factory)
   registerPostprocessor(NumAdaptivityCycles);
   registerPostprocessor(TestDiscontinuousValuePP);
   registerPostprocessor(RandomPostprocessor);
+  registerPostprocessor(ElementMomentSum);
+  registerPostprocessor(InternalSideJump);
 
   registerVectorPostprocessor(LateDeclarationVectorPostprocessor);
+  registerVectorPostprocessor(ChannelGradientVectorPostprocessor);
 
   registerMarker(RandomHitMarker);
   registerMarker(QPointMarker);
   registerMarker(CircleMarker);
+  registerMarker(TwoCircleMarker);
 
   registerExecutioner(TestSteady);
   registerExecutioner(AdaptAndModify);

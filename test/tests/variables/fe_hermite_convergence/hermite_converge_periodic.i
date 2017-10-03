@@ -64,7 +64,7 @@
   [../]
 
   [./forcing]
-    type = UserForcingFunction
+    type = BodyForce
     variable = u
     function = forcing_fn
   [../]
@@ -142,11 +142,10 @@
   solve_type = 'NEWTON'
 
   [./Adaptivity]
-   steps = 2
+    steps = 2
     refine_fraction = 1
     coarsen_fraction = 0
     max_h_level = 10
-    print_changed_info = 1
   [../]
   [./Quadrature]
     order=FIFTEENTH
@@ -157,4 +156,5 @@
   execute_on = 'timestep_end'
   exodus = true
   csv = true
+  print_mesh_changed_info = true
 []

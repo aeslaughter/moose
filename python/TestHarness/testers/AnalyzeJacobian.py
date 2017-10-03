@@ -1,7 +1,6 @@
-import re, os, sys
-import util
+import os, sys
+from TestHarness import util
 from Tester import Tester
-from RunParallel import RunParallel # For TIMEOUT value
 
 class AnalyzeJacobian(Tester):
 
@@ -26,8 +25,9 @@ class AnalyzeJacobian(Tester):
     def checkRunnable(self, options):
         try:
             import numpy
+            assert numpy # silence pyflakes warning
             return (True, '')
-        except Exception as e:
+        except Exception:
             return (False, 'skipped (no numpy)')
 
 
@@ -55,19 +55,17 @@ class AnalyzeJacobian(Tester):
         return command
 
 
-    def processResults(self, moose_dir, retcode, options, output):
+    def processResults(self, moose_dir, options, output):
         reason = ''
         specs = self.specs
         if specs.isValid('expect_out'):
             out_ok = util.checkOutputForPattern(output, specs['expect_out'])
-            if (out_ok and retcode != 0):
+            if (out_ok and self.exit_code != 0):
                 reason = 'OUT FOUND BUT CRASH'
             elif (not out_ok):
                 reason = 'NO EXPECTED OUT'
         if reason == '':
-            if retcode == RunParallel.TIMEOUT:
-                reason = 'TIMEOUT'
-            elif retcode != 0 :
+            if self.exit_code != 0 :
                 reason = 'CRASH'
 
         # populate status bucket

@@ -1,10 +1,9 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowSquarePulsePointSource
-!description /DiracKernels/PorousFlowSquarePulsePointSource
 
-!parameters /DiracKernels/PorousFlowSquarePulsePointSource
+!syntax description /DiracKernels/PorousFlowSquarePulsePointSource
 
-!inputfiles /DiracKernels/PorousFlowSquarePulsePointSource
+!syntax parameters /DiracKernels/PorousFlowSquarePulsePointSource
 
-!childobjects /DiracKernels/PorousFlowSquarePulsePointSource
+!syntax inputs /DiracKernels/PorousFlowSquarePulsePointSource
+
+!syntax children /DiracKernels/PorousFlowSquarePulsePointSource

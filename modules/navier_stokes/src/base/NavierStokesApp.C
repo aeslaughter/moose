@@ -72,12 +72,14 @@
 
 // Kernels
 #include "INSMass.h"
+#include "INSMassBodyForceMMS.h"
 #include "INSMassRZ.h"
 #include "INSMomentumTimeDerivative.h"
 #include "INSMomentumTractionForm.h"
 #include "INSMomentumTractionFormRZ.h"
 #include "INSMomentumLaplaceForm.h"
 #include "INSMomentumLaplaceFormRZ.h"
+#include "INSMomentumBodyForceMMS.h"
 #include "INSTemperatureTimeDerivative.h"
 #include "INSTemperature.h"
 #include "INSSplitMomentum.h"
@@ -146,6 +148,14 @@
 #include "CNSFVIdealGasTotalEnthalpyL2Error.h"
 #include "CNSFVTimeStepLimit.h"
 
+//
+// Scalar Advection-diffusion-reaction
+//
+
+#include "AdvectionSUPG.h"
+#include "BodyForceSUPG.h"
+#include "Advection.h"
+
 template <>
 InputParameters
 validParams<NavierStokesApp>()
@@ -157,11 +167,11 @@ validParams<NavierStokesApp>()
 NavierStokesApp::NavierStokesApp(InputParameters parameters) : MooseApp(parameters)
 {
   Moose::registerObjects(_factory);
-  FluidPropertiesApp::registerObjects(_factory);
+  NavierStokesApp::registerObjectDepends(_factory);
   NavierStokesApp::registerObjects(_factory);
 
   Moose::associateSyntax(_syntax, _action_factory);
-  FluidPropertiesApp::associateSyntax(_syntax, _action_factory);
+  NavierStokesApp::associateSyntaxDepends(_syntax, _action_factory);
   NavierStokesApp::associateSyntax(_syntax, _action_factory);
 }
 
@@ -177,6 +187,12 @@ void
 NavierStokesApp::registerApps()
 {
   registerApp(NavierStokesApp);
+}
+
+void
+NavierStokesApp::registerObjectDepends(Factory & factory)
+{
+  FluidPropertiesApp::registerObjects(factory);
 }
 
 // External entry point for dynamic object registration
@@ -245,18 +261,14 @@ NavierStokesApp::registerObjects(Factory & factory)
 
   // Kernels
   registerKernel(INSMass);
+  registerKernel(INSMassBodyForceMMS);
   registerKernel(INSMassRZ);
   registerKernel(INSMomentumTimeDerivative);
-  // INSMomentum is now deprecated, convert input files to use
-  // INSMomentumLaplaceForm or INSMomentumTractionForm instead.
-  registerDeprecatedObjectName(INSMomentumTractionForm, "INSMomentum", "10/07/2017 12:00");
-  // INSMomentumRZ has been renamed, convert input files to use
-  // INSMomentumTractionFormRZ.
-  registerDeprecatedObjectName(INSMomentumTractionFormRZ, "INSMomentumRZ", "10/07/2017 12:00");
   registerKernel(INSMomentumTractionForm);
   registerKernel(INSMomentumTractionFormRZ);
   registerKernel(INSMomentumLaplaceForm);
   registerKernel(INSMomentumLaplaceFormRZ);
+  registerKernel(INSMomentumBodyForceMMS);
   registerKernel(INSTemperatureTimeDerivative);
   registerKernel(INSTemperature);
   registerKernel(INSSplitMomentum);
@@ -268,10 +280,6 @@ NavierStokesApp::registerObjects(Factory & factory)
   registerKernel(INSCompressibilityPenalty);
 
   // BCs
-  // Register the newly-named class with the old name for a while in
-  // case anyone is using this in their app.
-  registerDeprecatedObjectName(
-      INSMomentumNoBCBCTractionForm, "INSMomentumNoBCBC", "10/07/2017 12:00");
   registerBoundaryCondition(INSMomentumNoBCBCTractionForm);
   registerBoundaryCondition(INSMomentumNoBCBCLaplaceForm);
   registerBoundaryCondition(INSTemperatureNoBCBC);
@@ -328,6 +336,17 @@ NavierStokesApp::registerObjects(Factory & factory)
   registerPostprocessor(CNSFVIdealGasEntropyL2Error);
   registerPostprocessor(CNSFVIdealGasTotalEnthalpyL2Error);
   registerPostprocessor(CNSFVTimeStepLimit);
+
+  // Scalar advection-diffusion-reaction
+  registerKernel(AdvectionSUPG);
+  registerKernel(BodyForceSUPG);
+  registerKernel(Advection);
+}
+
+void
+NavierStokesApp::associateSyntaxDepends(Syntax & syntax, ActionFactory & action_factory)
+{
+  FluidPropertiesApp::associateSyntax(syntax, action_factory);
 }
 
 // External entry point for dynamic syntax association
@@ -336,7 +355,6 @@ NavierStokesApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory
 {
   NavierStokesApp::associateSyntax(syntax, action_factory);
 }
-
 void
 NavierStokesApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 {

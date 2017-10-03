@@ -1,6 +1,5 @@
 from FileTester import FileTester
-from CSVDiffer import CSVDiffer
-import util
+from TestHarness.CSVDiffer import CSVDiffer
 
 class CSVDiff(FileTester):
 
@@ -16,10 +15,11 @@ class CSVDiff(FileTester):
     def getOutputFiles(self):
         return self.specs['csvdiff']
 
-    def processResults(self, moose_dir, retcode, options, output):
-        output = FileTester.processResults(self, moose_dir, retcode, options, output)
+    def processResults(self, moose_dir, options, output):
+        FileTester.processResults(self, moose_dir, options, output)
 
         specs = self.specs
+
         if self.getStatus() == self.bucket_fail or specs['skip_checks']:
             return output
 

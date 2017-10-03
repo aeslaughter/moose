@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 from peacock.base.PluginManager import PluginManager
 from peacock.base.TabPlugin import TabPlugin
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import pyqtSignal
 from peacock.utils import ExeFinder
 from ExecuteOptionsPlugin import ExecuteOptionsPlugin
 from ExecuteRunnerPlugin import ExecuteRunnerPlugin
 from ConsoleOutputViewerPlugin import ConsoleOutputViewerPlugin
 from peacock.Input.ExecutableInfo import ExecutableInfo
-from ExecuteSettings import ExecuteSettings
 import os
 
 class ExecuteTabPlugin(QWidget, PluginManager, TabPlugin):
@@ -44,14 +43,8 @@ class ExecuteTabPlugin(QWidget, PluginManager, TabPlugin):
     def __init__(self, plugins=[ExecuteOptionsPlugin, ExecuteRunnerPlugin, ConsoleOutputViewerPlugin]):
         super(ExecuteTabPlugin, self).__init__(plugins=plugins)
         self.MainLayout = QVBoxLayout()
-        self.LeftLayout = QHBoxLayout()
-        self.RightLayout = QVBoxLayout()
-        self.WindowLayout = QHBoxLayout()
 
         self.setLayout(self.MainLayout)
-        self.MainLayout.addLayout(self.WindowLayout)
-        self.MainLayout.addLayout(self.LeftLayout)
-        self.MainLayout.addLayout(self.RightLayout)
 
         self.setup()
         self.ExecuteOptionsPlugin.executableInfoChanged.connect(self.onExecutableInfoChanged)
@@ -77,6 +70,8 @@ class ExecuteTabPlugin(QWidget, PluginManager, TabPlugin):
     def onNeedCommand(self):
         cmd, args = self.ExecuteOptionsPlugin.buildCommandWithNoInputFile()
         csv = self.ExecuteOptionsPlugin.csv_checkbox.isChecked()
+        if self.ExecuteOptionsPlugin.test_checkbox.isChecked():
+            args.append("--allow-test-objects")
         self.ExecuteRunnerPlugin.setCommand(cmd, args, csv)
 
     def onNumTimeStepsChanged(self, num_steps):
@@ -124,9 +119,6 @@ class ExecuteTabPlugin(QWidget, PluginManager, TabPlugin):
         executeMenu = menubar.addMenu("E&xecute")
         self.ExecuteOptionsPlugin.addToMenu(executeMenu)
 
-    def settingsWidget(self):
-        return ExecuteSettings()
-
     def closing(self):
         """
         Gets called when the user tries to quit.
@@ -148,8 +140,7 @@ if __name__ == "__main__":
     def needInputFile(input_file):
         this_dir = os.path.dirname(os.path.abspath(__file__))
         peacock_dir = os.path.dirname(this_dir)
-        chigger_dir = os.path.dirname(peacock_dir)
-        test_file = os.path.join(chigger_dir, "tests", "peacock", "common", "transient.i")
+        test_file = os.path.join(peacock_dir, "tests", "common", "transient.i")
         with open(test_file, "r") as fin:
             data = fin.read()
             with open(input_file, "w") as fout:
@@ -164,5 +155,5 @@ if __name__ == "__main__":
     menubar.setNativeMenuBar(False)
     w.addToMainMenu(menubar)
     main_win.show()
-    w.initialize(cmd_line_options=parsed)
+    w.initialize(parsed)
     sys.exit(qapp.exec_())

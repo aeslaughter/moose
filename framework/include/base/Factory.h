@@ -32,11 +32,18 @@ class InputParameters;
  */
 #define stringifyName(name) #name
 #define registerObject(name) factory.reg<name>(stringifyName(name), __FILE__, __LINE__)
-#define registerNamedObject(obj, name) factory.reg<obj>(name, __FILE__, __LINE__)
-#define registerDeprecatedObject(name, time)                                                       \
-  factory.regDeprecated<name>(stringifyName(name), time, __FILE__, __LINE__)
-#define registerDeprecatedObjectName(obj, name, time)                                              \
-  factory.regReplaced<obj>(stringifyName(obj), name, time, __FILE__, __LINE__)
+#define registerNamedObject(obj, name)                                                             \
+  do                                                                                               \
+  {                                                                                                \
+    factory.reg<obj>(name, __FILE__, __LINE__);                                                    \
+    factory.associateNameToClass(name, stringifyName(obj));                                        \
+  } while (0)
+
+#define registerDeprecatedObject(name)                                                             \
+  factory.regDeprecated<name>(stringifyName(name), __FILE__, __LINE__)
+
+#define registerDeprecatedObjectWithReplacement(dep_obj, replacement_name)                         \
+  factory.regReplaced<dep_obj>(stringifyName(dep_obj), replacement_name, __FILE__, __LINE__)
 
 // for backward compatibility
 #define registerKernel(name) registerObject(name)
@@ -55,6 +62,7 @@ class InputParameters;
 #define registerExecutioner(name) registerObject(name)
 #define registerFunction(name) registerObject(name)
 #define registerDistribution(name) registerObject(name)
+#define registerSampler(name) registerObject(name)
 #define registerMesh(name) registerObject(name)
 #define registerMeshModifier(name) registerObject(name)
 #define registerConstraint(name) registerObject(name)
@@ -89,6 +97,7 @@ class InputParameters;
 #define registerNamedExecutioner(obj, name) registerNamedObject(obj, name)
 #define registerNamedFunction(obj, name) registerNamedObject(obj, name)
 #define registerNamedDistribution(obj, name) registerNamedObject(obj, name)
+#define registerNamedSampler(obj, name) registerNamedObject(obj, name)
 #define registerNamedMesh(obj, name) registerNamedObject(obj, name)
 #define registerNamedMeshModifier(name) registerNamedObject(obj, name)
 #define registerNamedConstraint(obj, name) registerNamedObject(obj, name)
@@ -185,41 +194,55 @@ public:
   FileLineInfo getLineInfo(const std::string & name) const;
 
   /**
+   * Associates an object name with a class name.
+   * Primarily used with the registerNamed* macros to store the
+   * mapping between the object name and the class that implements the object.
+   */
+  void associateNameToClass(const std::string & name, const std::string & class_name);
+
+  /**
+   * Get the associated class name for an object name.
+   * This will return an empty string if the name was not previously
+   * associated with a class name via associateNameToClass()
+   */
+  std::string associatedClassName(const std::string & name) const;
+
+  /**
    * Register a deprecated object that expires
    * @param obj_name The name of the object to register
    * @param t_str String containing the expiration date for the object
+   *
+   * Note: Params file and line are supplied by the macro
    */
   template <typename T>
   void regDeprecated(const std::string & obj_name,
-                     const std::string t_str,
                      const std::string & file,
                      int line)
   {
     // Register the name
     reg<T>(obj_name, file, line);
-
-    // Store the time
-    _deprecated_time[obj_name] = parseTime(t_str);
+    deprecateObject(obj_name);
   }
 
   /**
-   * Register a deprecated object that expires and has a replacement object
-   * @param obj_name The name of the object to register (the new object you want people to use)
-   * @param name The name of the object that is deprecated
-   * @param t_str String containing the expiration date for the object
+   * Registers an object as deprecated and associates it with the replacement name.
+   * @param dep_obj - The name (type) of the object being registered (the deprecated type)
+   * @param replacement_name - The name of the object replacing the deprecated object (new name)
+   * @param time_str - Time at which the deprecated message prints as  an error "MM/DD/YYYY HH:MM"
+   *
+   * Note: Params file and line are supplied by the macro
    */
   template <typename T>
-  void regReplaced(const std::string & obj_name,
-                   const std::string & name,
-                   const std::string t_str,
+  void regReplaced(const std::string & dep_obj,
+                   const std::string & replacement_name,
                    const std::string & file,
                    int line)
   {
     // Register the name
-    regDeprecated<T>(name, t_str, file, line);
+    regDeprecated<T>(dep_obj, file, line);
 
     // Store the new name
-    _deprecated_name[name] = obj_name;
+    deprecateObject(dep_obj, replacement_name);
   }
 
   /**
@@ -291,14 +314,15 @@ public:
    */
   std::vector<std::string> getConstructedObjects() const;
 
-protected:
+  ///@{
   /**
-   * Parse time string (mm/dd/yyyy HH:MM)
-   * @param t_str String with the object expiration date, this must be in the form mm/dd/yyyy HH:MM
-   * @return A time_t object with the expiration date
+   * Allow objects to be deprecated via function call.
    */
-  time_t parseTime(std::string);
+  void deprecateObject(const std::string & name);
+  void deprecateObject(const std::string & name, const std::string & replacement);
+  ///@}
 
+protected:
   /**
    * Show the appropriate message for deprecated objects
    * @param obj_name Name of the deprecated object
@@ -321,11 +345,14 @@ protected:
 
   FileLineInfoMap _name_to_line;
 
-  /// Storage for deprecated object experiation dates
-  std::map<std::string, time_t> _deprecated_time;
+  /// Object name to class name association
+  std::map<std::string, std::string> _name_to_class;
+
+  /// Storage for deprecated objects
+  std::set<std::string> _deprecated;
 
   /// Storage for the deprecated objects that have replacements
-  std::map<std::string, std::string> _deprecated_name;
+  std::map<std::string, std::string> _deprecated_with_replace;
 
   /// The list of objects that may be registered
   std::set<std::string> _registerable_objects;

@@ -23,6 +23,7 @@ class PeacockMainWindow(BasePeacockMainWindow):
     def __init__(self, **kwds):
         super(PeacockMainWindow, self).__init__(plugins=self.PLUGINS, **kwds)
         self.setObjectName("PeacockMainWindow")
+        self.setWindowTitle("Peacock")
         self.console = PythonConsoleWidget()
         self.exe_path = ""
         self.input_file_path = ""
@@ -31,6 +32,7 @@ class PeacockMainWindow(BasePeacockMainWindow):
         self.tab_plugin.ExecuteTabPlugin.needInputFile.connect(self.tab_plugin.InputFileEditorWithMesh.InputFileEditorPlugin.writeInputFile)
         self.tab_plugin.InputFileEditorWithMesh.inputFileChanged.connect(self._inputFileChanged)
         self.tab_plugin.ExecuteTabPlugin.ExecuteOptionsPlugin.workingDirChanged.connect(self.tab_plugin.InputFileEditorWithMesh.onWorkingDirChanged)
+        self.tab_plugin.ExecuteTabPlugin.ExecuteOptionsPlugin.useTestObjectsChanged.connect(self.tab_plugin.InputFileEditorWithMesh.onUseTestObjectsChanged)
         self.setPythonVariable('main_window', self)
         self.setPythonVariable('tabs', self.tab_plugin)
         self.setup()
@@ -49,6 +51,7 @@ class PeacockMainWindow(BasePeacockMainWindow):
             # if the input file is set then it will change directory to where
             # it exists. We need to honor the command line switch for the working dir.
             self.tab_plugin.ExecuteTabPlugin.ExecuteOptionsPlugin.setWorkingDir(curr_dir)
+        self._setTitle()
 
     def _showConsole(self):
         """

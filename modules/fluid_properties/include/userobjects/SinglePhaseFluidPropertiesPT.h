@@ -25,6 +25,8 @@ public:
   SinglePhaseFluidPropertiesPT(const InputParameters & parameters);
   virtual ~SinglePhaseFluidPropertiesPT();
 
+  /// Fluid name
+  virtual std::string fluidName() const = 0;
   /// Molar mass (kg/mol)
   virtual Real molarMass() const = 0;
   /// Density from pressure and temperature (kg/m^3)
@@ -57,10 +59,14 @@ public:
   /// Dynamic viscosity (Pa s)
   virtual Real mu(Real density, Real temperature) const = 0;
   /// Dynamic viscosity and its derivatives wrt density and temperature
-  virtual void
-  mu_drhoT(Real density, Real temperature, Real & mu, Real & dmu_drho, Real & dmu_dT) const = 0;
+  virtual void mu_drhoT(Real density,
+                        Real temperature,
+                        Real ddensity_dT,
+                        Real & mu,
+                        Real & dmu_drho,
+                        Real & dmu_dT) const = 0;
   /// Thermal conductivity (W/m/K)
-  virtual Real k(Real pressure, Real temperature) const = 0;
+  virtual Real k(Real density, Real temperature) const = 0;
   /// Specific entropy (J/kg/K)
   virtual Real s(Real pressure, Real temperature) const = 0;
   /// Specific enthalpy (J/kg)

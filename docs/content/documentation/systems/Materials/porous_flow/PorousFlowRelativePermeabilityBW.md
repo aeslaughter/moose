@@ -1,10 +1,19 @@
-<!-- MOOSE Documentation Stub: Remove this when content is added. -->
-
 # PorousFlowRelativePermeabilityBW
-!description /Materials/PorousFlowRelativePermeabilityBW
+!syntax description /Materials/PorousFlowRelativePermeabilityBW
 
-!parameters /Materials/PorousFlowRelativePermeabilityBW
+The relative permeability of the phase is
+\begin{equation}
+k_{\mathrm{r}} = K_{n} + \frac{K_{s} - K_{n}}{(c - 1)(c -
+  S_{\mathrm{eff}})}S_{\mathrm{eff}}^{2}, \nonumber
+\end{equation}
+where the effective saturation is
+\begin{equation}
+S_{\mathrm{eff}}(S) = \frac{S - S_{\mathrm{res}}^{\beta}}{1 -
+  \sum_{\beta'}S_{\mathrm{res}}^{\beta'}}. \nonumber
+\end{equation}
 
-!inputfiles /Materials/PorousFlowRelativePermeabilityBW
+!syntax parameters /Materials/PorousFlowRelativePermeabilityBW
 
-!childobjects /Materials/PorousFlowRelativePermeabilityBW
+!syntax inputs /Materials/PorousFlowRelativePermeabilityBW
+
+!syntax children /Materials/PorousFlowRelativePermeabilityBW

@@ -1,9 +1,9 @@
 #IsotropicPlasticityStressUpdate
-!description /Materials/IsotropicPlasticityStressUpdate
+!syntax description /Materials/IsotropicPlasticityStressUpdate
 
 
 ## Description
-{!docs/content/documentation/modules/tensor_mechanics/common/supplementalRadialReturnStressUpdate.md!}
+!include docs/content/documentation/modules/tensor_mechanics/common/supplementalRadialReturnStressUpdate.md
 
 In isotropic linear hardening plasticity, with the hardening function $ r = hp$, the effective plastic strain increment has the form:
 $$
@@ -15,12 +15,12 @@ This class calculates an effective trial stress, an effective scalar plastic str
 
 This class is based on the implicit integration algorithm in \cite{dunne2005introduction} pg. 146 - 149.
 
-!parameters /Materials/IsotropicPlasticityStressUpdate
+!syntax parameters /Materials/IsotropicPlasticityStressUpdate
 
-!inputfiles /Materials/IsotropicPlasticityStressUpdate
+!syntax inputs /Materials/IsotropicPlasticityStressUpdate
 
-!childobjects /Materials/IsotropicPlasticityStressUpdate
+!syntax children /Materials/IsotropicPlasticityStressUpdate
 
 ## References
 \bibliographystyle{unsrt}
-\bibliography{docs/bib/tensor_mechanics.bib}
+\bibliography{tensor_mechanics.bib}

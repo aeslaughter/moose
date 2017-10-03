@@ -34,6 +34,7 @@
     type = ParsedGradFunction
     value = x*x*x
     grad_x = 3*x*x
+  [../]
 []
 
 # Hermite Variable type
@@ -57,7 +58,7 @@
   [../]
 
   [./forcing]
-    type = UserForcingFunction
+    type = BodyForce
     variable = u
     function = forcing_fn
   [../]

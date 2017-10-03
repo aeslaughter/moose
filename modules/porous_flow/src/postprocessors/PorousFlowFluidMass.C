@@ -10,7 +10,6 @@
 // MOOSE includes
 #include "MooseVariable.h"
 
-// libMesh includes for qrule
 #include "libmesh/quadrature.h"
 
 template <>
@@ -36,7 +35,7 @@ validParams<PorousFlowFluidMass>()
                                     "phase_index can be entered");
   params.addParam<unsigned int>("kernel_variable_number",
                                 0,
-                                "The PorousFlow variable number (according to the dictatory) of "
+                                "The PorousFlow variable number (according to the dictator) of "
                                 "the fluid-mass kernel.  This is required only in the unusual "
                                 "situation where a variety of different finite-element "
                                 "interpolation schemes are employed in the simulation");

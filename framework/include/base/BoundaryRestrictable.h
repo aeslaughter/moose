@@ -65,6 +65,12 @@ public:
                        bool nodal);
 
   /**
+   * Helper for determining if the object is boundary restricted. This is needed for the
+   * MaterialPropertyInterface.
+   */
+  static bool restricted(const std::set<BoundaryID> & ids);
+
+  /**
    * Empty class destructor
    */
   virtual ~BoundaryRestrictable();
@@ -165,7 +171,7 @@ public:
    * Returns true if this object has been restricted to a boundary
    * @see MooseObject
    */
-  virtual bool boundaryRestricted();
+  virtual bool boundaryRestricted() const;
 
   /**
    * Returns the set of all boundary ids for the entire mesh
@@ -188,9 +194,6 @@ private:
 
   /// Flag for allowing dual restriction with BlockRestrictable
   const bool _bnd_dual_restrictable;
-
-  /// Invalid BoundaryID for case when FEProblemBase
-  const BoundaryID _invalid_boundary_id;
 
   /// An empty set for referencing when block_ids is not included
   const std::set<SubdomainID> _empty_block_ids;
@@ -218,9 +221,6 @@ protected:
    * @see hasBoundaryMaterialProperty
    */
   bool hasBoundaryMaterialPropertyHelper(const std::string & prop_name) const;
-
-  /// Reference to active boundary id
-  const BoundaryID & _current_boundary_id;
 };
 
 template <typename T>

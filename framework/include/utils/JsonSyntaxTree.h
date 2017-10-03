@@ -47,7 +47,8 @@ public:
                      const std::string & action,
                      bool is_action,
                      InputParameters * params,
-                     const FileLineInfo & lineinfo);
+                     const FileLineInfo & lineinfo,
+                     const std::string & classname);
 
   /**
    * Add a task to the tree
@@ -73,11 +74,19 @@ public:
    */
   void addSyntaxType(const std::string & path, const std::string type);
 
+  /**
+   * Add the global section to the output
+   */
+  void addGlobal();
+
 protected:
-  std::string buildOptions(const std::iterator_traits<InputParameters::iterator>::value_type & p);
+  std::string buildOptions(const std::iterator_traits<InputParameters::iterator>::value_type & p,
+                           bool & out_of_range_allowed);
 
   std::string prettyCppType(const std::string & cpp_type);
   std::string basicCppType(const std::string & cpp_type);
+  size_t
+  setParams(InputParameters * params, bool search_match, moosecontrib::Json::Value & all_params);
 
   std::string
   buildOutputString(const std::iterator_traits<InputParameters::iterator>::value_type & p);

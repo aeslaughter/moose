@@ -20,7 +20,6 @@
 #include "ConstraintWarehouse.h"
 #include "MooseObjectWarehouse.h"
 
-// libMesh includes
 #include "libmesh/transient_system.h"
 #include "libmesh/nonlinear_implicit_system.h"
 
@@ -65,6 +64,13 @@ public:
   virtual ~NonlinearSystemBase();
 
   virtual void init() override;
+
+  /**
+   * Turn off the Jacobian (must be called before equation system initialization)
+   */
+  void turnOffJacobian();
+
+  virtual void addExtraVectors() override;
   virtual void solve() override = 0;
   virtual void restoreSolutions() override;
 
@@ -322,6 +328,7 @@ public:
 
   virtual NumericVector<Number> & solutionUDot() override;
   virtual NumericVector<Number> & residualVector(Moose::KernelType type) override;
+  virtual bool hasResidualVector(Moose::KernelType type) const override;
 
   virtual const NumericVector<Number> *& currentSolution() override { return _current_solution; }
 
@@ -483,13 +490,10 @@ public:
    * Access functions to Warehouses from outside NonlinearSystemBase
    */
   const KernelWarehouse & getKernelWarehouse() { return _kernels; }
-  const MooseObjectWarehouse<KernelBase> & getTimeKernelWarehouse() { return _time_kernels; }
-  const MooseObjectWarehouse<KernelBase> & getNonTimeKernelWarehouse() { return _non_time_kernels; }
-  const MooseObjectWarehouse<KernelBase> & getEigenKernelWarehouse() { return _eigen_kernels; }
-  const MooseObjectWarehouse<KernelBase> & getNonEigenKernelWarehouse()
-  {
-    return _non_eigen_kernels;
-  }
+  const KernelWarehouse & getTimeKernelWarehouse() { return _time_kernels; }
+  const KernelWarehouse & getNonTimeKernelWarehouse() { return _non_time_kernels; }
+  const KernelWarehouse & getEigenKernelWarehouse() { return _eigen_kernels; }
+  const KernelWarehouse & getNonEigenKernelWarehouse() { return _non_eigen_kernels; }
   const MooseObjectWarehouse<DGKernel> & getDGKernelWarehouse() { return _dg_kernels; }
   const MooseObjectWarehouse<InterfaceKernel> & getInterfaceKernelWarehouse()
   {
@@ -515,14 +519,10 @@ public:
    */
   bool hasDiagSaveIn() const { return _has_diag_save_in || _has_nodalbc_diag_save_in; }
 
-  /**
-   * The relative L2 norm of the difference between solution and old solution vector.
-   */
-  virtual Real relativeSolutionDifferenceNorm();
-
   virtual NumericVector<Number> & solution() override { return *_sys.solution; }
 
   virtual System & system() override { return _sys; }
+  virtual const System & system() const override { return _sys; }
 
   virtual NumericVector<Number> * solutionPreviousNewton() override
   {
@@ -555,7 +555,7 @@ protected:
    * Enforces nodal boundary conditions
    * @param residual Residual where nodal BCs are enforced (input/output)
    */
-  void computeNodalBCs(NumericVector<Number> & residual);
+  void computeNodalBCs(NumericVector<Number> & residual, Moose::KernelType type = Moose::KT_ALL);
 
   void computeJacobianInternal(SparseMatrix<Number> & jacobian, Moose::KernelType kernel_type);
 
@@ -572,7 +572,7 @@ protected:
   /// solution vector from nonlinear solver
   const NumericVector<Number> * _current_solution;
   /// ghosted form of the residual
-  NumericVector<Number> & _residual_ghosted;
+  NumericVector<Number> * _residual_ghosted;
 
   /// Serialized version of the solution vector
   NumericVector<Number> & _serialized_solution;
@@ -586,13 +586,13 @@ protected:
   /// Time integrator
   std::shared_ptr<TimeIntegrator> _time_integrator;
   /// solution vector for u^dot
-  NumericVector<Number> & _u_dot;
+  NumericVector<Number> * _u_dot;
   /// \f$ {du^dot}\over{du} \f$
   Number _du_dot_du;
   /// residual vector for time contributions
-  NumericVector<Number> & _Re_time;
+  NumericVector<Number> * _Re_time;
   /// residual vector for non-time contributions
-  NumericVector<Number> & _Re_non_time;
+  NumericVector<Number> * _Re_non_time;
 
   ///@{
   /// Kernel Storage
@@ -602,10 +602,10 @@ protected:
   MooseObjectWarehouse<ScalarKernel> _non_time_scalar_kernels;
   MooseObjectWarehouse<DGKernel> _dg_kernels;
   MooseObjectWarehouse<InterfaceKernel> _interface_kernels;
-  MooseObjectWarehouse<KernelBase> _time_kernels;
-  MooseObjectWarehouse<KernelBase> _non_time_kernels;
-  MooseObjectWarehouse<KernelBase> _eigen_kernels;
-  MooseObjectWarehouse<KernelBase> _non_eigen_kernels;
+  KernelWarehouse _time_kernels;
+  KernelWarehouse _non_time_kernels;
+  KernelWarehouse _eigen_kernels;
+  KernelWarehouse _non_eigen_kernels;
 
   ///@}
 
@@ -640,8 +640,6 @@ protected:
 protected:
   /// increment vector
   NumericVector<Number> * _increment_vec;
-  /// The difference of current and old solutions
-  NumericVector<Number> & _sln_diff;
   /// Preconditioner
   std::shared_ptr<MoosePreconditioner> _preconditioner;
   /// Preconditioning side

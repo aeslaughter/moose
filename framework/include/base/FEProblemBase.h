@@ -33,7 +33,6 @@
 #include "MultiAppTransfer.h"
 #include "Postprocessor.h"
 
-// libMesh includes
 #include "libmesh/enum_quadrature_type.h"
 #include "libmesh/equation_systems.h"
 
@@ -73,6 +72,7 @@ class InternalSideUserObject;
 class GeneralUserObject;
 class Function;
 class Distribution;
+class Sampler;
 class KernelBase;
 class IntegratedBC;
 
@@ -226,6 +226,7 @@ public:
   virtual bool hasScalarVariable(const std::string & var_name) override;
   virtual MooseVariableScalar & getScalarVariable(THREAD_ID tid,
                                                   const std::string & var_name) override;
+  virtual System & getSystem(const std::string & var_name) override;
 
   /**
    * Set the MOOSE variables to be reinited on each element.
@@ -332,6 +333,10 @@ public:
    */
   virtual std::vector<VariableName> getVariableNames();
 
+  /**
+   * A place to add extra vectors to the simulation. It is called early during initialSetup.
+   */
+  virtual void addExtraVectors();
   virtual void initialSetup();
   virtual void timestepSetup();
 
@@ -343,6 +348,9 @@ public:
                        const std::vector<dof_id_type> & dof_indices,
                        THREAD_ID tid) override;
 
+  virtual void setCurrentSubdomainID(const Elem * elem, THREAD_ID tid) override;
+  virtual void setNeighborSubdomainID(const Elem * elem, unsigned int side, THREAD_ID tid) override;
+  virtual void setNeighborSubdomainID(const Elem * elem, THREAD_ID tid);
   virtual void prepareAssembly(THREAD_ID tid) override;
 
   virtual void addGhostedElem(dof_id_type elem_id) override;
@@ -377,6 +385,7 @@ public:
   virtual void clearDiracInfo() override;
 
   virtual void subdomainSetup(SubdomainID subdomain, THREAD_ID tid);
+  virtual void neighborSubdomainSetup(SubdomainID subdomain, THREAD_ID tid);
 
   virtual void newAssemblyArray(NonlinearSystemBase & nl);
   virtual void deleteAssemblyArray();
@@ -433,11 +442,6 @@ public:
    */
   virtual bool startedInitialSetup() { return _started_initial_setup; }
 
-  /**
-   * The relative L2 norm of the difference between solution and old solution vector.
-   */
-  virtual Real relativeSolutionDifferenceNorm();
-
   virtual void onTimestepBegin() override;
   virtual void onTimestepEnd() override;
 
@@ -483,6 +487,11 @@ public:
    */
   virtual void outputStep(ExecFlagType type);
 
+  /**
+   * Method called at the end of the simulation.
+   */
+  virtual void postExecute();
+
   ///@{
   /**
    * Ability to enable/disable all output calls
@@ -527,11 +536,20 @@ public:
    */
   virtual void
   addDistribution(std::string type, const std::string & name, InputParameters parameters);
-  virtual Distribution & getDistribution(const std::string & name, THREAD_ID tid = 0);
+  virtual Distribution & getDistribution(const std::string & name);
+
+  /**
+   * The following functions will enable MOOSE to have the capability to import Samplers
+   */
+  virtual void addSampler(std::string type, const std::string & name, InputParameters parameters);
+  virtual Sampler & getSampler(const std::string & name, THREAD_ID tid = 0);
 
   // NL /////
   NonlinearSystemBase & getNonlinearSystemBase() { return *_nl; }
+  const NonlinearSystemBase & getNonlinearSystemBase() const { return *_nl; }
+
   virtual NonlinearSystem & getNonlinearSystem();
+
   void addVariable(const std::string & var_name,
                    const FEType & type,
                    Real scale_factor,
@@ -657,8 +675,12 @@ public:
   const T & getUserObject(const std::string & name, unsigned int tid = 0)
   {
     if (_all_user_objects.hasActiveObject(name, tid))
-      return *(std::dynamic_pointer_cast<T>(_all_user_objects.getActiveObject(name, tid)));
-
+    {
+      auto uo_ptr = std::dynamic_pointer_cast<T>(_all_user_objects.getActiveObject(name, tid));
+      if (uo_ptr == nullptr)
+        mooseError("User object with name '" + name + "' is of wrong type");
+      return *uo_ptr;
+    }
     mooseError("Unable to find user object with name '" + name + "'");
   }
   /**
@@ -753,7 +775,7 @@ public:
    * Get the vectors for a specific VectorPostprocessor.
    * @param vpp_name The name of the VectorPostprocessor
    */
-  const std::map<std::string, VectorPostprocessorData::VectorPostprocessorState> &
+  const std::vector<std::pair<std::string, VectorPostprocessorData::VectorPostprocessorState>> &
   getVectorPostprocessorVectors(const std::string & vpp_name);
 
   // Dampers /////
@@ -1053,6 +1075,16 @@ public:
    * @return The number of adaptivity cycles completed.
    */
   unsigned int getNumCyclesCompleted() { return _cycles_completed; }
+
+  /**
+   * Return a Boolean indicating whether initial AMR is turned on.
+   */
+  bool hasInitialAdaptivity() const { return _adaptivity.getInitialSteps() > 0; }
+#else
+  /**
+   * Return a Boolean indicating whether initial AMR is turned on.
+   */
+  bool hasInitialAdaptivity() const { return false; }
 #endif // LIBMESH_ENABLE_AMR
 
   /// Create XFEM controller object
@@ -1094,26 +1126,6 @@ public:
   void setKernelCoverageCheck(bool flag) { _kernel_coverage_check = flag; }
 
   void setMaterialCoverageCheck(bool flag) { _material_coverage_check = flag; }
-
-  /**
-   * Updates the active boundary id
-   * @param id The BoundaryID to set as active
-   *
-   * The BoundaryRestrictable class has a member, _boundary_id, that is set
-   * to the boundary id that is being operated on, this method is used to set the value
-   * to which the BoundaryRestrictable class references.
-   *
-   * @see BoundaryRestrictable ComputeUserObjectThread::onBoundary
-   */
-  void setCurrentBoundaryID(BoundaryID id) { _current_boundary_id = id; }
-
-  /**
-   * Return a reference to the active BoundaryID
-   * @return constant reference to the active BoundaryID
-   *
-   * @see setActiveBoundaryID
-   */
-  const BoundaryID & getCurrentBoundaryID() { return _current_boundary_id; }
 
   /**
    * Calls parentOutputPositionChanged() on all sub apps.
@@ -1193,6 +1205,10 @@ public:
     _error_on_jacobian_nonzero_reallocation = state;
   }
 
+  bool ignoreZerosInJacobian() { return _ignore_zeros_in_jacobian; }
+
+  void setIgnoreZerosInJacobian(bool state) { _ignore_zeros_in_jacobian = state; }
+
   /// Returns whether or not this Problem has a TimeIntegrator
   bool hasTimeIntegrator() const { return _has_time_integrator; }
 
@@ -1234,6 +1250,11 @@ public:
    */
   bool needsPreviousNewtonIteration();
 
+  /**
+   * Whether or not to skip loading the additional data when restarting
+   */
+  bool skipAdditionalRestartData() const { return _skip_additional_restart_data; }
+
 public:
   ///@{
   /**
@@ -1258,6 +1279,11 @@ public:
   void executeControls(const ExecFlagType & exec_type);
 
   /**
+   * Performs setup and execute calls for Sampler objects.
+   */
+  void executeSamplers(const ExecFlagType & exec_type);
+
+  /**
    * Update the active objects in the warehouses
    */
   void updateActiveObjects();
@@ -1268,6 +1294,8 @@ public:
    * a -> b (a depends on b)
    */
   void reportMooseObjectDependency(MooseObject * a, MooseObject * b);
+
+  ExecuteMooseObjectWarehouse<MultiApp> & getMultiAppWarehouse() { return _multi_apps; }
 
 protected:
   ///@{
@@ -1282,12 +1310,6 @@ protected:
   bool _initialized;
   Moose::KernelType _kernel_type;
 
-  /** Storage for current boundary id
-   * getActiveBoundaryID returns a reference to this
-   * @see setActiveBoundaryID BoundaryRestrictable
-   */
-  BoundaryID _current_boundary_id;
-
   /// Whether or not to actually solve the nonlinear system
   bool _solve;
 
@@ -1298,8 +1320,8 @@ protected:
   Real & _dt;
   Real & _dt_old;
 
-  NonlinearSystemBase * _nl;
-  AuxiliarySystem * _aux;
+  std::shared_ptr<NonlinearSystemBase> _nl;
+  std::shared_ptr<AuxiliarySystem> _aux;
 
   Moose::CouplingType _coupling;       ///< Type of variable coupling
   std::unique_ptr<CouplingMatrix> _cm; ///< Coupling matrix for variables.
@@ -1314,6 +1336,9 @@ protected:
 
   /// distributions
   MooseObjectWarehouseBase<Distribution> _distributions;
+
+  /// Samplers
+  ExecuteMooseObjectWarehouse<Sampler> _samplers;
 
   /// nonlocal kernels
   MooseObjectWarehouse<KernelBase> _nonlocal_kernels;
@@ -1383,7 +1408,7 @@ protected:
   ExecuteMooseObjectWarehouse<Transfer> _from_multi_app_transfers;
 
   /// A map of objects that consume random numbers
-  std::map<std::string, RandomData *> _random_data_objects;
+  std::map<std::string, std::unique_ptr<RandomData>> _random_data_objects;
 
   /// Cache for calculating materials on side
   std::vector<std::unordered_map<SubdomainID, bool>> _block_mat_side_cache;
@@ -1393,6 +1418,9 @@ protected:
 
   /// Objects to be notified when the mesh changes
   std::vector<MeshChangedInterface *> _notify_when_mesh_changes;
+
+  /// Helper to check for duplicate variable names across systems or within a single system
+  bool duplicateVariableCheck(const std::string & var_name, const FEType & type, bool is_aux);
 
   /// Verify that SECOND order mesh uses SECOND order displacements.
   void checkDisplacementOrders();
@@ -1444,7 +1472,7 @@ protected:
   bool _has_initialized_stateful;
 
   /// Object responsible for restart (read/write)
-  Resurrector * _resurrector;
+  std::unique_ptr<Resurrector> _resurrector;
 
   /// true if the Jacobian is constant
   bool _const_jacobian;
@@ -1500,7 +1528,9 @@ protected:
 
 private:
   bool _error_on_jacobian_nonzero_reallocation;
+  bool _ignore_zeros_in_jacobian;
   bool _force_restart;
+  bool _skip_additional_restart_data;
   bool _fail_next_linear_convergence_check;
 
   /// Whether or not the system is currently computing the Jacobian matrix
