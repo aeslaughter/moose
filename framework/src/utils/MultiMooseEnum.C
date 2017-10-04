@@ -52,8 +52,9 @@ MultiMooseEnum::operator==(const MultiMooseEnum & value) const
   if (value.size() != size())
     return false;
 
-  // Return false if this enum does not contain an item from the other
-  return (_current == value._current) && (_items == value._items);
+  // Return false if this enum does not contain an item from the other, since they are the same
+  // size at this point if this is true then they are equal.
+  return contains(value);
 }
 
 bool
@@ -192,21 +193,18 @@ MultiMooseEnum::assign(InputIterator first, InputIterator last, bool append)
 
   for (InputIterator it = first; it != last; ++it)
   {
-    std::string upper(MooseUtils::toUpper(*it));
-    checkDeprecatedBase(upper);
-    const auto iter = find(upper);
-
+    const auto iter = find(*it);
     if (iter == _items.end())
     {
       if (_out_of_range_index == 0) // Are out of range values allowed?
         mooseError("Invalid option \"",
-                   upper,
+                   *it,
                    "\" in MultiMooseEnum.  Valid options (not case-sensitive) are \"",
                    getRawNames(),
                    "\".");
       else
       {
-        MooseEnumItem created(upper, _out_of_range_index++);
+        MooseEnumItem created(*it, _out_of_range_index++);
         _current.push_back(created);
         _items.insert(created);
       }
@@ -214,6 +212,7 @@ MultiMooseEnum::assign(InputIterator first, InputIterator last, bool append)
     else
       _current.push_back(*iter);
   }
+  checkDeprecated();
   return *this;
 }
 
@@ -251,7 +250,7 @@ void
 MultiMooseEnum::checkDeprecated() const
 {
   for (const auto & item : _current)
-    checkDeprecatedBase(item.name());
+    MooseEnumBase::checkDeprecated(item);
 }
 
 std::ostream &
@@ -264,8 +263,7 @@ operator<<(std::ostream & out, const MultiMooseEnum & obj)
 void
 MultiMooseEnum::removeEnumerationName(std::string name)
 {
-  std::transform(name.begin(), name.end(), name.begin(), ::toupper);
-  if (_current_names.find(name) != _current_names.end())
-    mooseError("A current enumeration value of ", name, " cannot be removed.");
+  if (contains(name))
+    mooseError("The enum name ", name, " is a currently selected item, thus cannot be removed.");
   MooseEnumBase::removeEnumerationName(name);
 }

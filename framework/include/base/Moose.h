@@ -84,7 +84,7 @@ class FEProblemBase;
 
 // Define MOOSE execution flags, this cannot be done in MooseTypes because the registration calls
 // must be in Moose.C to remain consistent with other registration calls.
-typedef int ExecFlagType;
+using ExecFlagType = int;
 extern const ExecFlagType EXEC_NONE;
 extern const ExecFlagType EXEC_INITIAL;
 extern const ExecFlagType EXEC_LINEAR;

@@ -743,7 +743,7 @@ Transient::setupTimeIntegrator()
         ti_str = "ExplicitTVDRK2";
         break;
       default:
-        mooseError("Unknown scheme");
+        mooseError("Unknown scheme: ", _time_scheme);
         break;
     }
 

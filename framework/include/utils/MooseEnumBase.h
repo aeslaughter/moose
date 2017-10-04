@@ -35,8 +35,7 @@ public:
    * separate string to set a default for this instance.
    * @param names - a list of names for this enumeration
    * @param allow_out_of_range - determines whether this enumeration will accept values outside of
-   * it's range of
-   *                       defined values.
+   *                             it's range of defined values.
    */
   MooseEnumBase(std::string names, bool allow_out_of_range = false);
 
@@ -53,10 +52,10 @@ public:
 
   /**
    * Deprecates various options in the MOOSE enum. For each deprecated option,
-   * you may supply an option new option that will be used in a message telling
+   * you may supply an optional new option that will be used in a message telling
    * the user which new option replaces the old one.
    */
-  void deprecate(const std::string & name, const std::string & new_name = "");
+  virtual void deprecate(const std::string & name, const std::string & raw_name = "");
 
   /**
    * Method for returning a vector of all valid enumeration names for this instance
@@ -82,23 +81,35 @@ public:
    */
   bool isOutOfRangeAllowed() const { return _out_of_range_index; }
 
+  ///@{
+  /**
+   * Add/remove possible enumeration name(s).
+   */
+  void addEnumerationNames(const std::string & names);
+  void addEnumerationName(const std::string & name, const int & value);
+  void removeEnumerationNames(const std::string & names);
+  virtual void removeEnumerationName(std::string name);
+  ///@}
+
 protected:
   MooseEnumBase();
 
   /**
-   * Populates the _names vector
-   * @param names - a space separated list of names used to populate the internal names vector
+   * Adds a possible enumeration value to the enum.
+   * @param raw_name The enumeration name, which may include an id (e.g., foo=42).
    */
-  void fillNames(std::string names, std::string option_delim = " ");
+  void addEnumerationName(const std::string & raw_name);
 
-  // The method that must be implemented to check derived class values against the _deprecated_names
-  // list
+
+  /**
+   * Method that must be implemented to check derived class values against the _deprecated_names
+   */
   virtual void checkDeprecated() const = 0;
 
   /**
    * Check and warn deprecated values
    */
-  void checkDeprecatedBase(const std::string & name_upper) const;
+  void checkDeprecated(const MooseEnumItem & item) const;
 
   ///@{
   /**
@@ -113,7 +124,7 @@ protected:
   std::set<MooseEnumItem> _items;
 
   /// The map of deprecated names and optional replacements
-  std::map<std::string, std::string> _deprecated_names;
+  std::map<MooseEnumItem, MooseEnumItem> _deprecated_items;
 
   /**
    * The index of values assigned that are NOT values in this enum.  If this index is 0 (false) then

@@ -48,14 +48,11 @@ MooseEnum::operator=(const std::string & name)
     return *this;
   }
 
-  std::string upper(MooseUtils::toUpper(name));
-  checkDeprecatedBase(upper);
-
-  std::set<MooseEnumItem>::const_iterator iter = find(upper);
+  std::set<MooseEnumItem>::const_iterator iter = find(name);
   if (iter == _items.end())
   {
     if (_out_of_range_index == 0) // Are out of range values allowed?
-      mooseError(std::string("Invalid option \"") + upper +
+      mooseError(std::string("Invalid option \"") + name +
                  "\" in MooseEnum.  Valid options (not case-sensitive) are \"" + getRawNames() +
                  "\".");
     else
@@ -66,6 +63,8 @@ MooseEnum::operator=(const std::string & name)
   }
   else
     _current = *iter;
+
+  checkDeprecated();
 
   return *this;
 }
@@ -145,16 +144,15 @@ MooseEnum::operator!=(const MooseEnum & value) const
 }
 
 void
-MooseEnum::checkDeprecated() const
+MooseEnum::removeEnumerationName(std::string name)
 {
-  checkDeprecatedBase(_current.name());
+  if (_current == name)
+    mooseError("The enum name ", name, " is the currently selected item, thus cannot be removed.");
+  MooseEnumBase::removeEnumerationName(name);
 }
 
 void
-MooseEnum::removeEnumerationName(std::string name)
+MooseEnum::checkDeprecated() const
 {
-  std::transform(name.begin(), name.end(), name.begin(), ::toupper);
-  if (name == _current_name)
-    mooseError("The current enumeration value of ", name, " cannot be removed.");
-  MooseEnumBase::removeEnumerationName(name);
+  MooseEnumBase::checkDeprecated(_current);
 }

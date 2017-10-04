@@ -74,10 +74,13 @@ stringify(const T & t)
 std::string stringify(const SolveType & t);
 
 /// Convert execute flags type into human readable string
-std::string stringify(const ExecFlagType & t);
+std::string stringifyExecFlagType(const ExecFlagType & t);
 
 /// Add no-op stringify if the argument already is a string (must use overloading)
 std::string stringify(const std::string & s);
+
+/// Convert vector of flags into a comma separated string
+std::string stringify(const std::vector<ExecFlagType> & flags);
 
 /// Add pair stringify to support maps
 template <typename T, typename U>

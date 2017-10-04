@@ -29,11 +29,21 @@ validParams<SetupInterface>()
   return params;
 }
 
+// This can go away with _exec_flags goes away
+std::vector<ExecFlagType>
+getCurrentIDs(const MultiMooseEnum & mme)
+{
+  std::vector<ExecFlagType> out;
+  for (MooseEnumIterator iter = mme.begin(); iter != mme.end(); ++iter)
+    out.push_back(iter->id());
+  return out;
+}
+
 SetupInterface::SetupInterface(const MooseObject * moose_object)
   : _execute_enum(moose_object->parameters().isParamValid("execute_on")
                       ? moose_object->parameters().get<MultiMooseEnum>("execute_on")
                       : _empty_execute_enum),
-    _exec_flags(_execute_enum.getCurrentIDs()),
+    _exec_flags(getCurrentIDs(_execute_enum)), // deprecated
     _current_execute_flag(
         (moose_object->parameters().getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
             ->getCurrentExecuteOnFlag())

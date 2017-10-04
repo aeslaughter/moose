@@ -99,6 +99,14 @@ trim(const std::string & str, const std::string & white_space)
   return str.substr(begin, end - begin + 1);
 }
 
+std::string
+join(const std::vector<std::string> & values, const std::string & sep)
+{
+  std::ostringstream oss;
+  std::copy(values.begin(), values.end(), infix_ostream_iterator<std::string>(oss, sep.c_str()));
+  return oss.str();
+}
+
 bool
 pathContains(const std::string & expression,
              const std::string & string_to_find,
@@ -625,7 +633,7 @@ std::string
 getExecuteOnEnumDocString(const MultiMooseEnum & exec_enum)
 {
   std::string doc("The list of flag(s) indicating when this object should be executed, the "
-                  "available optoins include \'");
+                  "available options include \'");
   for (const std::string & name : exec_enum.getNames())
     doc += name + "', '";
   doc.erase(doc.end() - 4, doc.end());
@@ -665,7 +673,7 @@ removeExecuteOnFlags(MultiMooseEnum & exec_enum, const std::set<ExecFlagType> & 
   for (const auto & flag : flags)
   {
     const auto iter = getExecuteOnFlag(flag);
-    exec_enum.removeEnumerationName(iter->second);
+    exec_enum.removeEnumerationNames(iter->second);
   }
 }
 

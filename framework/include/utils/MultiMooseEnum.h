@@ -16,6 +16,7 @@
 #define MULTIMOOSEENUM_H
 
 // MOOSE includes
+#include "Moose.h"
 #include "MooseEnumBase.h"
 
 // C++ includes
@@ -27,6 +28,7 @@ namespace libMesh
 {
 class Parameters;
 }
+
 namespace MooseUtils
 {
 MultiMooseEnum createExecuteOnEnum(const std::set<ExecFlagType> &,
@@ -50,12 +52,13 @@ class MultiMooseEnum : public MooseEnumBase
 {
 public:
   /**
-   * Constructor that takes a list or vector of enumeration values, and a separate string to set a
-   * default for this instance
+   * Constructor that takes a list of enumeration values, and a separate string to set a default for
+   * this instance
    * @param names - a list of names for this enumeration
    * @param default_names - the default value for this enumeration instance
    * @param allow_out_of_range - determines whether this enumeration will accept values outside of
-   * it's range of defined values.
+   * it's range of
+   *                       defined values.
    */
   MultiMooseEnum(std::string names,
                  std::string default_names = "",
@@ -134,10 +137,9 @@ public:
 
   /**
    * Indexing operator
-   * Operator to retrieve an item from the MultiMooseEnum. The reference may not be used to change
-   * the item.
+   * Operator to retrieve an item from the MultiMooseEnum.
    * @param i index
-   * @returns a read/read-write reference to the item as an unsigned int.
+   * @returns the id of the MooseEnumItem at the supplied index
    */
   unsigned int get(unsigned int i) const;
 
@@ -151,21 +153,16 @@ public:
   ///@}
 
   /**
-   * Get a list of the current valid enumeration.s
+   * Provide error message when removing.
    */
-  const std::set<std::string> & getCurrentNames() const { return _current_names; }
-
-  /**
-   * Get a list of the current valid enumeration.s
-   */
-  const std::vector<int> & getCurrentIDs() const { return _current_ids; }
+  virtual void removeEnumerationName(std::string name) override;
 
   /**
    * Clear the MultiMooseEnum
    */
   void clear();
 
-  /**
+  /**t
    * Return the number of items in the MultiMooseEnum
    */
   unsigned int size() const;
@@ -176,20 +173,20 @@ public:
    */
   virtual bool isValid() const override { return !_current.empty(); }
 
-  void removeEnumerationName(std::string name) final override;
-
   // InputParameters and Output is allowed to create an empty enum but is responsible for
   // filling it in after the fact
   friend class libMesh::Parameters;
 
-  // The create function can build an empty MultiMooseEnums for the execution flags.
-  friend MultiMooseEnum MooseUtils::createExecuteOnEnum(const std::set<ExecFlagType> &,
-                                                        const std::set<ExecFlagType> &,
-                                                        const std::set<ExecFlagType> &);
-  friend class SetupInterface;
-
   /// Operator for printing to iostreams
   friend std::ostream & operator<<(std::ostream & out, const MultiMooseEnum & obj);
+
+  /// Friends for "execute_on"
+  friend MultiMooseEnum
+  MooseUtils::createExecuteOnEnum(const std::set<ExecFlagType> & set_flags,
+                                  const std::set<ExecFlagType> & add_flags,
+                                  const std::set<ExecFlagType> & remove_flags);
+
+  friend class SetupInterface;
 
 protected:
   /// Check whether any of the current values are deprecated when called

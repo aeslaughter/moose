@@ -201,7 +201,6 @@ ExecuteMooseObjectWarehouse<T>::setup(const ExecFlagType & exec_flag, THREAD_ID 
 template <typename T>
 void
 ExecuteMooseObjectWarehouse<T>::addObject(std::shared_ptr<T> object, THREAD_ID tid)
-
 {
   addObjectMask(object, tid, 0xFFFF);
 }
@@ -219,8 +218,13 @@ ExecuteMooseObjectWarehouse<T>::addObjectMask(std::shared_ptr<T> object,
   std::shared_ptr<SetupInterface> ptr = std::dynamic_pointer_cast<SetupInterface>(object);
   if (ptr)
   {
-    for (const ExecFlagType & flag : ptr->getExecuteOnEnum().getCurrentIDs())
-      _execute_objects[flag].addObject(object, tid);
+    MooseEnumIterator iter = ptr->getExecuteOnEnum().begin();
+    for (; iter != ptr->getExecuteOnEnum().end(); ++iter)
+    {
+      auto masked_flag = static_cast<std::uint16_t>(iter->id()) & flag_mask;
+      if (masked_flag != 0)
+        _execute_objects[iter->id()].addObject(object, tid);
+    }
   }
   else
     mooseError("The object being added (",

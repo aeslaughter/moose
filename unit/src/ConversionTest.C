@@ -44,24 +44,55 @@ TEST(Conversion, stringify)
                              "--STOP--"),
             "Streets,full,of,water--STOP--Please,advise");
 
-  EXPECT_EQ(Moose::stringify(std::vector<ExecFlagType>({EXEC_INITIAL,
-                                                        EXEC_LINEAR,
-                                                        EXEC_NONLINEAR,
-                                                        EXEC_TIMESTEP_END,
-                                                        EXEC_TIMESTEP_BEGIN,
-                                                        EXEC_CUSTOM,
-                                                        EXEC_FINAL,
-                                                        EXEC_FORCED,
-                                                        EXEC_FAILED,
-                                                        EXEC_SUBDOMAIN,
-                                                        EXEC_NONE})),
-            "INITIAL,LINEAR,NONLINEAR,TIMESTEP_END,TIMESTEP_BEGIN,CUSTOM,FINAL,FORCED,FAILED,"
-            "SUBDOMAIN,NONE");
-
   EXPECT_EQ(
       Moose::stringify(std::vector<Moose::SolveType>(
           {Moose::ST_NEWTON, Moose::ST_JFNK, Moose::ST_PJFNK, Moose::ST_FD, Moose::ST_LINEAR})),
       "NEWTON,JFNK,Preconditioned JFNK,FD,Linear");
+}
+
+TEST(Conversion, ExecFlagType)
+{
+  // Populate the registered flags (this usually happens in MooseApp::registerExecFlags)
+  Moose::execute_flags[EXEC_NONE] = "NONE";
+  Moose::execute_flags[EXEC_INITIAL] = "INITIAL";
+  Moose::execute_flags[EXEC_LINEAR] = "LINEAR";
+  Moose::execute_flags[EXEC_NONLINEAR] = "NONLINEAR";
+  Moose::execute_flags[EXEC_TIMESTEP_END] = "TIMESTEP_END";
+  Moose::execute_flags[EXEC_TIMESTEP_BEGIN] = "TIMESTEP_BEGIN";
+  Moose::execute_flags[EXEC_FINAL] = "FINAL";
+  Moose::execute_flags[EXEC_FORCED] = "FORCED";
+  Moose::execute_flags[EXEC_FAILED] = "FAILED";
+  Moose::execute_flags[EXEC_CUSTOM] = "CUSTOM";
+  Moose::execute_flags[EXEC_SUBDOMAIN] = "SUBDOMAIN";
+  Moose::execute_flags[EXEC_SAME_AS_MULTIAPP] = "SAME_AS_MULTIAPP";
+
+  std::vector<ExecFlagType> flags = {EXEC_INITIAL,
+                                     EXEC_LINEAR,
+                                     EXEC_NONLINEAR,
+                                     EXEC_TIMESTEP_END,
+                                     EXEC_TIMESTEP_BEGIN,
+                                     EXEC_CUSTOM,
+                                     EXEC_FINAL,
+                                     EXEC_FORCED,
+                                     EXEC_FAILED,
+                                     EXEC_SUBDOMAIN,
+                                     EXEC_NONE};
+
+  EXPECT_EQ(Moose::stringify(flags),
+            "INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, CUSTOM, FINAL, FORCED, "
+            "FAILED, SUBDOMAIN, NONE");
+
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_INITIAL), "INITIAL");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_LINEAR), "LINEAR");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_NONLINEAR), "NONLINEAR");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_TIMESTEP_END), "TIMESTEP_END");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_TIMESTEP_BEGIN), "TIMESTEP_BEGIN");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_CUSTOM), "CUSTOM");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_FINAL), "FINAL");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_FINAL), "FINAL");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_FORCED), "FORCED");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_SUBDOMAIN), "SUBDOMAIN");
+  EXPECT_EQ(Moose::stringifyExecFlagType(EXEC_NONE), "NONE");
 }
 
 TEST(Conversion, stringifyExact)
