@@ -16,7 +16,7 @@
 #define SETUPINTERFACE_H
 
 #include "MooseTypes.h"
-#include "MultiMooseEnum.h"
+#include "ExecFlagEnum.h"
 #include "MooseEnum.h"
 #include "InputParameters.h"
 
@@ -82,7 +82,7 @@ public:
    * (DEPRECATED) Returns the available options for the 'execute_on' input parameters
    * @return A MooseEnum with the available 'execute_on' options, the default is 'residual'
    */
-  static MultiMooseEnum getExecuteOptions();
+  static ExecFlagEnum getExecuteOptions();
 
 private:
   MultiMooseEnum _empty_execute_enum;

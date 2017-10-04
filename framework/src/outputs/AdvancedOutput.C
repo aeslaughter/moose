@@ -540,7 +540,8 @@ AdvancedOutput::initOutputList(OutputData & data)
 void
 AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & types)
 {
-  MultiMooseEnum empty_execute_on(MooseUtils::createExecuteOnEnum({}, {EXEC_FINAL, EXEC_FAILED}));
+  ExecFlagEnum empty_execute_on;
+  empty_execute_on.addAvailableFlags({EXEC_FINAL, EXEC_FAILED});
 
   // Nodal output
   if (types.contains("nodal"))

@@ -45,7 +45,8 @@ validParams<GrainTrackerInterface>()
   params.set<bool>("enable_var_coloring") =
       true; // Generally we need to see the variable (OP) indices
 
-  MooseUtils::setExecuteOnFlags(params, {EXEC_INITIAL, EXEC_TIMESTEP_END});
+  params.set<MultiMooseEnum>("execute_on") =
+      std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_END});
   return params;
 }
 

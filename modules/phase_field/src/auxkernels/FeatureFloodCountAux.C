@@ -34,7 +34,8 @@ validParams<FeatureFloodCountAux>()
                              "(UNIQUE_REGION and VARIABLE_COLORING are nodal, CENTROID is "
                              "elemental, default: UNIQUE_REGION)");
 
-  MooseUtils::setExecuteOnFlags(params, {EXEC_INITIAL, EXEC_TIMESTEP_END});
+  params.set<MultiMooseEnum>("execute_on") =
+      std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_END});
 
   return params;
 }

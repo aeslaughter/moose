@@ -91,11 +91,6 @@ public:
   bool operator!=(const MooseEnum & value) const;
 
   /**
-   * Add error check to removal of enumeration value.
-   */
-  virtual void removeEnumerationName(std::string name) override;
-
-  /**
    * Method for comparing currently set values between MooseEnum.
    */
   bool compareCurrent(const MooseEnum & other, CompareMode mode = CompareMode::COMPARE_NAME) const;

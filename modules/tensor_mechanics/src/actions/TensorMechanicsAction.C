@@ -364,7 +364,7 @@ TensorMechanicsAction::actOutputGeneration()
       {
         params.applyParameters(parameters());
         params.set<AuxVariableName>("variable") = out;
-        MooseUtils::setExecuteOnFlags(params, {EXEC_TIMESTEP_END});
+        params.set<MultiMooseEnum>("execute_on") = EXEC_TIMESTEP_END;
         _problem->addAuxKernel(type, out + '_' + name(), params);
       }
       else

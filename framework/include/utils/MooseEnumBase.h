@@ -81,25 +81,36 @@ public:
    */
   bool isOutOfRangeAllowed() const { return _out_of_range_index; }
 
+  /**
+   * Return the complete set of available flags.
+   */
+  const std::set<MooseEnumItem> & items() { return _items; }
+
   ///@{
   /**
-   * Add/remove possible enumeration name(s).
+   * Locate an item.
    */
-  void addEnumerationNames(const std::string & names);
-  void addEnumerationName(const std::string & name, const int & value);
-  void removeEnumerationNames(const std::string & names);
-  virtual void removeEnumerationName(std::string name);
+  std::set<MooseEnumItem>::const_iterator find(const MooseEnumItem & other) const;
+  std::set<MooseEnumItem>::const_iterator find(const std::string & name) const;
+  std::set<MooseEnumItem>::const_iterator find(int id) const;
   ///@}
 
 protected:
   MooseEnumBase();
 
+  ///@{
   /**
-   * Adds a possible enumeration value to the enum.
-   * @param raw_name The enumeration name, which may include an id (e.g., foo=42).
+   * Methods to add possible enumeration value to the enum.
+   *
+   * The MooseEnum/MultiMooseEnum are not designed to be modified, with respect to the list
+   * of possible values. However, this is not the case for the ExecFlagEnum which is a special
+   * type of MultiMooseEnum for managing the "execute_on" flags. These methods are used by
+   * ExecFlagEnum to allow users to modify the available execute flags for their object.
    */
-  void addEnumerationName(const std::string & raw_name);
-
+   void addEnumerationNames(const std::string & names);
+   void addEnumerationName(const std::string & name, const int & value);
+   void addEnumerationName(const std::string & raw_name);
+  ///@}
 
   /**
    * Method that must be implemented to check derived class values against the _deprecated_names
@@ -110,15 +121,6 @@ protected:
    * Check and warn deprecated values
    */
   void checkDeprecated(const MooseEnumItem & item) const;
-
-  ///@{
-  /**
-   * Locate an item.
-   */
-  std::set<MooseEnumItem>::const_iterator find(const MooseEnumItem & other) const;
-  std::set<MooseEnumItem>::const_iterator find(const std::string & name) const;
-  std::set<MooseEnumItem>::const_iterator find(int id) const;
-  ///@}
 
   /// Storage for the assigned items
   std::set<MooseEnumItem> _items;

@@ -672,6 +672,7 @@ InputParameters::applySpecificParameters(const InputParameters & common,
   // Loop through the common parameters
   for (const auto & it : common)
   {
+
     // Common parameter name
     const std::string & common_name = it.first;
 
@@ -736,6 +737,7 @@ InputParameters::applyParameter(const InputParameters & common, const std::strin
   const bool common_exist = common._values.find(common_name) != common._values.end();
   const bool common_priv = common.isPrivate(common_name);
   const bool common_valid = common.isParamValid(common_name);
+
 
   /* In order to apply common parameter 4 statements must be satisfied
    * (1) A local parameter must exist with the same name as common parameter

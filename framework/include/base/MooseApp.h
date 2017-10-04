@@ -494,7 +494,7 @@ protected:
   /**
    * Register individual flag.
    */
-  static void registerExecFlag(const ExecFlagType & flag, const std::string & str);
+  static void registerExecFlag(const ExecFlagType & flag);
 
   /**
    * Whether or not this MooseApp has cached a Backup to use for restart / recovery

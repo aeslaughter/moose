@@ -130,7 +130,7 @@ MooseEnum::compareCurrent(const MooseEnum & other, CompareMode mode) const
 bool
 MooseEnum::operator==(const MooseEnum & value) const
 {
-  mooseDeprecated("This method will be removed becuase the meaning is not well defined, please use "
+  mooseDeprecated("This method will be removed because the meaning is not well defined, please use "
                   "the 'compareCurrent' method instead.");
   return value._current.name() == _current.name();
 }
@@ -138,17 +138,9 @@ MooseEnum::operator==(const MooseEnum & value) const
 bool
 MooseEnum::operator!=(const MooseEnum & value) const
 {
-  mooseDeprecated("This method will be removed becuase the meaning is not well defined, please use "
+  mooseDeprecated("This method will be removed because the meaning is not well defined, please use "
                   "the 'compareCurrent' method instead.");
   return value._current.name() != _current.name();
-}
-
-void
-MooseEnum::removeEnumerationName(std::string name)
-{
-  if (_current == name)
-    mooseError("The enum name ", name, " is the currently selected item, thus cannot be removed.");
-  MooseEnumBase::removeEnumerationName(name);
 }
 
 void

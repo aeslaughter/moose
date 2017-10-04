@@ -14,7 +14,7 @@ InputParameters
 validParams<ConservedMaskedNoiseBase>()
 {
   InputParameters params = validParams<ElementUserObject>();
-  MooseUtils::setExecuteOnFlags(params, {EXEC_TIMESTEP_BEGIN});
+  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_BEGIN});
   params.addParam<MaterialPropertyName>("mask",
                                         "Material property to multiply the random numbers with");
   return params;

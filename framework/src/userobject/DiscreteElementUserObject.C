@@ -21,7 +21,7 @@ validParams<DiscreteElementUserObject>()
   InputParameters params = validParams<ElementUserObject>();
 
   // UOs of this type should not be executed by MOOSE, but only called directly by the user
-  params.set<MultiMooseEnum>("execute_on") = "custom";
+  params.set<MultiMooseEnum>("execute_on") = EXEC_CUSTOM;
   params.suppressParameter<MultiMooseEnum>("execute_on");
 
   return params;

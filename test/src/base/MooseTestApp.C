@@ -645,5 +645,5 @@ void
 MooseTestApp::registerExecFlags()
 {
   MooseApp::registerExecFlags();
-  registerExecFlag(EXEC_JUST_GO, "just_go");
+  registerExecFlag(EXEC_JUST_GO);
 }

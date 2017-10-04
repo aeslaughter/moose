@@ -53,13 +53,14 @@ validParams<Output>()
       "time_tolerance", 1e-14, "Time tolerance utilized checking start and end times");
 
   // Update the 'execute_on' input parameter for output
-  MooseUtils::addExecuteOnFlags(params, {EXEC_FINAL, EXEC_FAILED});
-  MooseUtils::setExecuteOnFlags(params, {EXEC_INITIAL, EXEC_TIMESTEP_END});
+  ExecFlagEnum exec_enum({EXEC_INITIAL, EXEC_TIMESTEP_END});
+  exec_enum.addAvailableFlags({EXEC_FINAL, EXEC_FAILED});
+  params.set<MultiMooseEnum>("execute_on", true) = exec_enum;
+  params.setDocString("execute_on", exec_enum.getExecuteOnDocString());
 
   // Add ability to append to the 'execute_on' list
-  MultiMooseEnum exec_enum(params.get<MultiMooseEnum>("execute_on"));
   params.addParam<MultiMooseEnum>(
-      "additional_execute_on", exec_enum, MooseUtils::getExecuteOnEnumDocString(exec_enum));
+      "additional_execute_on", exec_enum, exec_enum.getExecuteOnDocString());
   params.set<MultiMooseEnum>("additional_execute_on").clear();
 
   // 'Timing' group
@@ -79,8 +80,11 @@ validParams<Output>()
 MultiMooseEnum
 Output::getExecuteOptions(std::string default_type)
 {
-  ::mooseDeprecated("The 'getExecuteOptions' was replaced by Output::createExecuteOnEnum.");
-  MultiMooseEnum exec_enum = MooseUtils::createExecuteOnEnum();
+  ::mooseDeprecated("The 'getExecuteOptions' was replaced by the ExecFlagEnum class because MOOSE "
+                    "was updated to use this for the execute flags and the new function provides "
+                    "additional arguments for modification of the enum.");
+  ExecFlagEnum exec_enum;
+  exec_enum.addAvailableFlags({EXEC_FINAL, EXEC_FAILED});
   exec_enum = default_type;
   return exec_enum;
 }
@@ -118,7 +122,7 @@ Output::Output(const InputParameters & parameters)
   // Apply the additional output flags
   if (isParamValid("additional_execute_on"))
   {
-    MultiMooseEnum add = getParam<MultiMooseEnum>("additional_execute_on");
+    const MultiMooseEnum & add = getParam<MultiMooseEnum>("additional_execute_on");
     for (auto & me : add)
       _execute_on.push_back(me);
   }

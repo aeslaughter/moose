@@ -25,7 +25,7 @@ validParams<DiscreteNucleationMap>()
                        "Use the periodicity settings of this variable to populate the grain map");
   // the mapping needs to run at timestep begin, which is after the adaptivity
   // run of the previous timestep.
-  MooseUtils::setExecuteOnFlags(params, {EXEC_TIMESTEP_BEGIN});
+  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_BEGIN});
   return params;
 }
 

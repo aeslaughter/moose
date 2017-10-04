@@ -18,7 +18,7 @@ template <>
 InputParameters validParams<NSInitialCondition>();
 
 /**
- * NSInitialCondition sets intial constant values for all variables
+ * NSInitialCondition sets initial constant values for all variables
  * given the:
  * .) Initial pressure
  * .) Initial temperature

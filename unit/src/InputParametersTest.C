@@ -14,6 +14,7 @@
 
 // MOOSE includes
 #include "InputParameters.h"
+#include "MultiMooseEnum.h"
 #include "gtest/gtest.h"
 
 TEST(InputParameters, checkControlParamPrivateError)
@@ -156,4 +157,34 @@ TEST(InputParameters, checkParamName)
   testBadParamName("p 0");
   testBadParamName("p-0");
   testBadParamName("p!0");
+}
+
+TEST(InputParameters, applyParameter)
+{
+  InputParameters p1 = emptyInputParameters();
+  p1.addParam<MultiMooseEnum>("enum", MultiMooseEnum("foo=0 bar=1", "foo"), "testing");
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+
+  InputParameters p2 = emptyInputParameters();
+  p2.addParam<MultiMooseEnum>("enum", MultiMooseEnum("foo=42 bar=43", "foo"), "testing");
+  EXPECT_TRUE(p2.get<MultiMooseEnum>("enum").contains("foo"));
+
+  p2.set<MultiMooseEnum>("enum") = "bar";
+  p1.applyParameter(p2, "enum");
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("bar"));
+}
+
+TEST(InputParameters, applyParameters)
+{
+  InputParameters p1 = emptyInputParameters();
+  p1.addParam<MultiMooseEnum>("enum", MultiMooseEnum("foo=0 bar=1", "foo"), "testing");
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+
+  InputParameters p2 = emptyInputParameters();
+  p2.addParam<MultiMooseEnum>("enum", MultiMooseEnum("foo=42 bar=43", "foo"), "testing");
+  EXPECT_TRUE(p2.get<MultiMooseEnum>("enum").contains("foo"));
+
+  p2.set<MultiMooseEnum>("enum") = "bar";
+  p1.applyParameters(p2);
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("bar"));
 }

@@ -27,7 +27,7 @@ validParams<GeneralizedPlaneStrainUserObject>()
       "Function used to prescribe pressure in the out-of-plane direction");
   params.addParam<Real>("factor", 1.0, "Scale factor applied to prescribed pressure");
   params.addParam<std::string>("base_name", "Material properties base name");
-  MooseUtils::setExecuteOnFlags(params, {EXEC_LINEAR});
+  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_LINEAR});
 
   return params;
 }

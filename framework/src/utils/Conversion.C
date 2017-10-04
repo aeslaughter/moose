@@ -15,7 +15,7 @@
 // MOOSE includes
 #include "Conversion.h"
 #include "MooseError.h"
-#include "MultiMooseEnum.h"
+#include "ExecFlagEnum.h"
 #include "MooseUtils.h"
 
 #include "libmesh/string_to_enum.h"
@@ -25,7 +25,6 @@
 
 namespace Moose
 {
-std::map<std::string, ExecFlagType> execstore_type_to_enum;
 std::map<std::string, QuadratureType> quadrature_type_to_enum;
 std::map<std::string, CoordinateSystemType> coordinate_system_type_to_enum;
 std::map<std::string, SolveType> solve_type_to_enum;
@@ -35,20 +34,6 @@ std::map<std::string, WhichEigenPairs> which_eigen_pairs_to_enum;
 std::map<std::string, LineSearchType> line_search_type_to_enum;
 std::map<std::string, TimeIntegratorType> time_integrator_to_enum;
 std::map<std::string, MffdType> mffd_type_to_enum;
-
-void
-initExecStoreType()
-{
-  if (execstore_type_to_enum.empty())
-  {
-    execstore_type_to_enum["INITIAL"] = EXEC_INITIAL;
-    execstore_type_to_enum["LINEAR"] = EXEC_LINEAR;
-    execstore_type_to_enum["NONLINEAR"] = EXEC_NONLINEAR;
-    execstore_type_to_enum["TIMESTEP_END"] = EXEC_TIMESTEP_END;
-    execstore_type_to_enum["TIMESTEP_BEGIN"] = EXEC_TIMESTEP_BEGIN;
-    execstore_type_to_enum["CUSTOM"] = EXEC_CUSTOM;
-  }
-}
 
 void
 initQuadratureType()
@@ -186,21 +171,6 @@ initMffdType()
     mffd_type_to_enum["DS"] = MFFD_DS;
     mffd_type_to_enum["WP"] = MFFD_WP;
   }
-}
-
-template <>
-ExecFlagType
-stringToEnum(const std::string & s)
-{
-  initExecStoreType();
-
-  std::string upper(s);
-  std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
-
-  if (!execstore_type_to_enum.count(upper))
-    mooseError("Unknown execution flag: ", upper);
-
-  return execstore_type_to_enum[upper];
 }
 
 template <>
@@ -351,17 +321,6 @@ stringToEnum<MffdType>(const std::string & s)
   return mffd_type_to_enum[upper];
 }
 
-template <>
-std::vector<ExecFlagType>
-vectorStringsToEnum<ExecFlagType>(const MultiMooseEnum & v)
-{
-  std::vector<ExecFlagType> exec_flags(v.size());
-  for (unsigned int i = 0; i < v.size(); ++i)
-    exec_flags[i] = stringToEnum<ExecFlagType>(v[i]);
-
-  return exec_flags;
-}
-
 std::string
 stringify(const SolveType & t)
 {
@@ -379,28 +338,6 @@ stringify(const SolveType & t)
       return "Linear";
   }
   return "";
-}
-
-std::string
-stringifyExecFlagType(const ExecFlagType & t)
-{
-  std::map<ExecFlagType, std::string>::const_iterator iter = Moose::execute_flags.find(t);
-  if (iter != Moose::execute_flags.end())
-    return iter->second;
-  return "";
-}
-
-std::string
-stringify(const std::vector<ExecFlagType> & flags)
-{
-  std::vector<std::string> out;
-  for (const auto & t : flags)
-  {
-    std::map<ExecFlagType, std::string>::const_iterator iter = Moose::execute_flags.find(t);
-    if (iter != Moose::execute_flags.end())
-      out.push_back(iter->second);
-  }
-  return MooseUtils::join(out);
 }
 
 std::string

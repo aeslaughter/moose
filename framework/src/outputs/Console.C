@@ -146,19 +146,19 @@ validParams<Console>()
    * of user-modified parameters
    */
   // By default set System Information to output on initial
-  params.set<MultiMooseEnum>("execute_system_information_on", /*quiet_mode=*/true) = "initial";
+  params.set<MultiMooseEnum>("execute_system_information_on", /*quite_mode=*/true) = EXEC_INITIAL;
 
   // Change the default behavior of 'execute_on' to included nonlinear iterations and failed
   // timesteps
-  params.set<MultiMooseEnum>("execute_on", /*quiet_mode=*/true)
-      .push_back("initial timestep_begin linear nonlinear failed");
+  params.set<MultiMooseEnum>("execute_on", /*quiet_mode=*/true) = std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_BEGIN, EXEC_LINEAR, EXEC_NONLINEAR, EXEC_FAILED});
 
   // By default postprocessors and scalar are only output at the end of a timestep
   params.set<MultiMooseEnum>("execute_postprocessors_on", /*quiet_mode=*/true) =
       "initial timestep_end";
   params.set<MultiMooseEnum>("execute_vector_postprocessors_on", /*quiet_mode=*/true) =
       "initial timestep_end";
-  params.set<MultiMooseEnum>("execute_scalars_on", /*quiet_mode=*/true) = "initial timestep_end";
+  params.set<MultiMooseEnum>("execute_scalars_on", /*quiet_mode=*/true) =
+      std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_END});
 
   return params;
 }

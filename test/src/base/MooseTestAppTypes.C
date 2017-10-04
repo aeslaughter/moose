@@ -13,4 +13,6 @@
 /****************************************************************/
 
 #include "MooseTestAppTypes.h"
-const ExecFlagType EXEC_JUST_GO = 12345;
+#include "MooseEnumItem.h"
+
+const ExecFlagType EXEC_JUST_GO("JUST_GO", 12345);

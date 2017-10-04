@@ -12,5 +12,5 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#include "MooseTypes.h"
+#include "Moose.h"
 extern const ExecFlagType EXEC_JUST_GO;

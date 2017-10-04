@@ -66,9 +66,8 @@ MultiMooseEnum::operator!=(const MultiMooseEnum & value) const
 bool
 MultiMooseEnum::contains(const std::string & value) const
 {
-  std::string upper(MooseUtils::toUpper(value));
-  return std::find_if(_current.begin(), _current.end(), [&upper](const MooseEnumItem & item) {
-           return item.name() == upper;
+  return std::find_if(_current.begin(), _current.end(), [&value](const MooseEnumItem & item) {
+           return item == value;
          }) != _current.end();
 }
 
@@ -76,7 +75,7 @@ bool
 MultiMooseEnum::contains(int value) const
 {
   return std::find_if(_current.begin(), _current.end(), [&value](const MooseEnumItem & item) {
-           return item.id() == value;
+           return item == value;
          }) != _current.end();
 }
 
@@ -84,7 +83,7 @@ bool
 MultiMooseEnum::contains(unsigned short value) const
 {
   return std::find_if(_current.begin(), _current.end(), [&value](const MooseEnumItem & item) {
-           return item.id() == value;
+           return item == value;
          }) != _current.end();
 }
 
@@ -101,7 +100,7 @@ bool
 MultiMooseEnum::contains(const MooseEnumItem & value) const
 {
   return std::find_if(_current.begin(), _current.end(), [&value](const MooseEnumItem & item) {
-           return item.id() == value.id();
+           return item == value;
          }) != _current.end();
 }
 
@@ -123,6 +122,31 @@ MultiMooseEnum &
 MultiMooseEnum::operator=(const std::set<std::string> & names)
 {
   return assign(names.begin(), names.end(), false);
+}
+
+MultiMooseEnum &
+MultiMooseEnum::operator=(const std::vector<MooseEnumItem> & items)
+{
+  setCurrentItems(items);
+  return *this;
+}
+
+MultiMooseEnum &
+MultiMooseEnum::operator=(const MooseEnumItem & item)
+{
+  setCurrentItems({item});
+  return *this;
+}
+
+void
+MultiMooseEnum::setCurrentItems(const std::vector<MooseEnumItem> & current)
+{
+  for (const auto & item : current)
+    if (find(item) == _items.end())
+      mooseError("The supplied item '",
+                 item,
+                 "' is not an available enum item for the MultiMooseEnum object.");
+  _current.assign(current.begin(), current.end());
 }
 
 void
@@ -223,12 +247,8 @@ MultiMooseEnum::remove(InputIterator first, InputIterator last)
   // Create a new list of enumerations by striping out the supplied values
   for (InputIterator it = first; it != last; ++it)
   {
-    // Values stored as upper case
-    std::string upper(MooseUtils::toUpper(*it));
-    std::vector<MooseEnumItem>::iterator iter =
-        std::find_if(_current.begin(), _current.end(), [&upper](const MooseEnumItem & item) {
-          return item.name() == upper;
-        });
+    std::vector<MooseEnumItem>::iterator iter = std::find_if(
+        _current.begin(), _current.end(), [it](const MooseEnumItem & item) { return item == *it; });
     if (iter != _current.end())
       _current.erase(iter);
   }
@@ -258,12 +278,4 @@ operator<<(std::ostream & out, const MultiMooseEnum & obj)
 {
   out << Moose::stringify(obj._current, " ");
   return out;
-}
-
-void
-MultiMooseEnum::removeEnumerationName(std::string name)
-{
-  if (contains(name))
-    mooseError("The enum name ", name, " is a currently selected item, thus cannot be removed.");
-  MooseEnumBase::removeEnumerationName(name);
 }

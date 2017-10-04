@@ -52,7 +52,8 @@ MooseEnumBase::deprecate(const std::string & name, const std::string & raw_name)
 {
   std::set<MooseEnumItem>::const_iterator deprecated = find(name);
   if (deprecated == _items.end())
-    mooseError("Cannot deprecate the enum item ", name, ", it is not an available value.");
+    mooseError("Cannot deprecate the enum item ", name, ", is not an available value.");
+
   std::set<MooseEnumItem>::const_iterator replaced = find(raw_name);
   if (replaced == _items.end())
     mooseError("Cannot deprecate the enum item ",
@@ -60,6 +61,7 @@ MooseEnumBase::deprecate(const std::string & name, const std::string & raw_name)
                ", since the replaced item ",
                raw_name,
                " it is not an available value.");
+
   _deprecated_items.emplace(std::make_pair(*deprecated, *replaced));
   checkDeprecated();
 }
@@ -71,15 +73,6 @@ MooseEnumBase::addEnumerationNames(const std::string & names)
   MooseUtils::tokenize(names, elements, 1, " ");
   for (const std::string & raw_name : elements)
     addEnumerationName(raw_name);
-}
-
-void
-MooseEnumBase::removeEnumerationNames(const std::string & names)
-{
-  std::vector<std::string> elements;
-  MooseUtils::tokenize(names, elements, 1, " ");
-  for (const std::string & raw_name : elements)
-    removeEnumerationName(raw_name);
 }
 
 void
@@ -132,10 +125,10 @@ MooseEnumBase::checkDeprecated(const MooseEnumItem & item) const
   std::map<MooseEnumItem, MooseEnumItem>::const_iterator it = _deprecated_items.find(item);
   if (it != _deprecated_items.end())
   {
-    if (it->second.name() != "")
-      mooseWarning(item.name() + " is deprecated, consider using " + it->second.name());
-    else
+    if (it->second.name().empty())
       mooseWarning(item.name() + " is deprecated");
+    else
+      mooseWarning(item.name() + " is deprecated, consider using " + it->second.name());
   }
 }
 
@@ -175,15 +168,5 @@ std::set<MooseEnumItem>::const_iterator
 MooseEnumBase::find(const MooseEnumItem & other) const
 {
   return std::find_if(
-      _items.begin(), _items.end(), [&other](MooseEnumItem const & item) { return item == other; });
-}
-
-void
-MooseEnumBase::removeEnumerationName(std::string name)
-{
-  std::set<MooseEnumItem>::const_iterator iter = find(name);
-  if (iter == _items.end())
-    mooseError("The name ", name, " is not a possible enumeration value, thus can not be removed.");
-  else
-    _items.erase(iter);
+      _items.begin(), _items.end(), [&other](MooseEnumItem const & item) { return item.id() == other.id(); });
 }

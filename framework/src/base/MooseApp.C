@@ -1291,22 +1291,22 @@ MooseApp::createMinimalApp()
 void
 MooseApp::registerExecFlags()
 {
-  registerExecFlag(EXEC_NONE, "NONE");
-  registerExecFlag(EXEC_INITIAL, "INITIAL");
-  registerExecFlag(EXEC_LINEAR, "LINEAR");
-  registerExecFlag(EXEC_NONLINEAR, "NONLINEAR");
-  registerExecFlag(EXEC_TIMESTEP_END, "TIMESTEP_END");
-  registerExecFlag(EXEC_TIMESTEP_BEGIN, "TIMESTEP_BEGIN");
-  registerExecFlag(EXEC_FINAL, "FINAL");
-  registerExecFlag(EXEC_FORCED, "FORCED");
-  registerExecFlag(EXEC_FAILED, "FAILED");
-  registerExecFlag(EXEC_CUSTOM, "CUSTOM");
-  registerExecFlag(EXEC_SUBDOMAIN, "SUBDOMAIN");
-  registerExecFlag(EXEC_SAME_AS_MULTIAPP, "SAME_AS_MULTIAPP");
+  registerExecFlag(EXEC_NONE);
+  registerExecFlag(EXEC_INITIAL);
+  registerExecFlag(EXEC_LINEAR);
+  registerExecFlag(EXEC_NONLINEAR);
+  registerExecFlag(EXEC_TIMESTEP_END);
+  registerExecFlag(EXEC_TIMESTEP_BEGIN);
+  registerExecFlag(EXEC_FINAL);
+  registerExecFlag(EXEC_FORCED);
+  registerExecFlag(EXEC_FAILED);
+  registerExecFlag(EXEC_CUSTOM);
+  registerExecFlag(EXEC_SUBDOMAIN);
+  registerExecFlag(EXEC_SAME_AS_MULTIAPP);
 }
 
 void
-MooseApp::registerExecFlag(const ExecFlagType & flag, const std::string & str)
+MooseApp::registerExecFlag(const ExecFlagType & flag)
 {
-  Moose::execute_flags[flag] = str;
+  Moose::execute_flags.addAvailableFlags({flag});
 }

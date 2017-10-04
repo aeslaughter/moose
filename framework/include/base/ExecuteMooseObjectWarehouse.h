@@ -113,8 +113,8 @@ ExecuteMooseObjectWarehouse<T>::ExecuteMooseObjectWarehouse(bool threaded)
   : MooseObjectWarehouse<T>(threaded)
 {
   // Initialize the active/all data structures with the correct map entries and empty vectors
-  for (const auto & flag : Moose::execute_flags)
-    _execute_objects.insert(std::make_pair(flag.first, MooseObjectWarehouse<T>(threaded)));
+  for (const auto & flag : Moose::execute_flags.items())
+    _execute_objects.insert(std::make_pair(flag, MooseObjectWarehouse<T>(threaded)));
 }
 
 template <typename T>
@@ -221,9 +221,10 @@ ExecuteMooseObjectWarehouse<T>::addObjectMask(std::shared_ptr<T> object,
     MooseEnumIterator iter = ptr->getExecuteOnEnum().begin();
     for (; iter != ptr->getExecuteOnEnum().end(); ++iter)
     {
+
       auto masked_flag = static_cast<std::uint16_t>(iter->id()) & flag_mask;
       if (masked_flag != 0)
-        _execute_objects[iter->id()].addObject(object, tid);
+        _execute_objects[*iter].addObject(object, tid);
     }
   }
   else

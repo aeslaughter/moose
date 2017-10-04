@@ -28,8 +28,9 @@ validParams<CavityPressureUOAction>()
       0,
       "The amount of time during which the pressure will ramp from zero to its true value");
   params.addParam<std::string>("output", "The name to use for the cavity pressure value");
-  params += validParams<SetupInterface>();
-  MooseUtils::setExecuteOnFlags(params, {EXEC_LINEAR});
+
+  ExecFlagEnum exec_enum({EXEC_LINEAR});
+  params.addParam<MultiMooseEnum>("execute_on", exec_enum, exec_enum.getExecuteOnDocString());
   return params;
 }
 

@@ -19,6 +19,7 @@
 #include "libmesh/libmesh_common.h"
 #include "XTermConstants.h"
 
+#include <set>
 #include <string>
 #include <utility>
 
@@ -26,6 +27,8 @@ using namespace libMesh;
 
 class ActionFactory;
 class Factory;
+class MooseEnumItem;
+class ExecFlagEnum;
 
 /**
  * MOOSE now contains C++11 code, so give a reasonable error message
@@ -84,7 +87,7 @@ class FEProblemBase;
 
 // Define MOOSE execution flags, this cannot be done in MooseTypes because the registration calls
 // must be in Moose.C to remain consistent with other registration calls.
-using ExecFlagType = int;
+using ExecFlagType = MooseEnumItem;
 extern const ExecFlagType EXEC_NONE;
 extern const ExecFlagType EXEC_INITIAL;
 extern const ExecFlagType EXEC_LINEAR;
@@ -135,7 +138,7 @@ extern bool _throw_on_error;
 /**
  * Storage for execute flags.
  */
-extern std::map<ExecFlagType, std::string> execute_flags;
+extern ExecFlagEnum execute_flags;
 
 /**
  * Macros for coloring any output stream (_console, std::ostringstream, etc.)

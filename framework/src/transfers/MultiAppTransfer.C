@@ -37,8 +37,11 @@ validParams<MultiAppTransfer>()
 
   // MultiAppTransfers by default will execute with their associated MultiApp. These flags will be
   // added by FEProblemBase when the transfer is added.
-  MooseUtils::addExecuteOnFlags(params, {EXEC_SAME_AS_MULTIAPP});
-  MooseUtils::setExecuteOnFlags(params, {EXEC_SAME_AS_MULTIAPP});
+  ExecFlagEnum exec_enum;
+  exec_enum.addAvailableFlags({EXEC_SAME_AS_MULTIAPP});
+  exec_enum = EXEC_SAME_AS_MULTIAPP;
+  params.set<MultiMooseEnum>("execute_on", true) = exec_enum;
+  params.setDocString("execute_on", exec_enum.getExecuteOnDocString());
 
   params.addParam<bool>(
       "check_multiapp_execute_on",
@@ -78,10 +81,10 @@ MultiAppTransfer::variableIntegrityCheck(const AuxVariableName & var_name) const
 const std::vector<ExecFlagType> &
 MultiAppTransfer::execFlags() const
 {
-  mooseDeprecated("MOOSE has been updated to use a MultiMooseEnum for execute flags. The current "
-                  "flags should be retrieved from the \"exeucte_on\" parameters of your object, "
-                  "or by using the \"_execute_enum\" reference to the parameter or the "
-                  "getExecuteOnEnum() method.");
+  mooseDeprecated("The execFlags() methos is being removed because MOOSE has been updated to use a "
+                  "ExecFlagEnum for execute flags. The current flags should be retrieved from "
+                  "the \"exeucte_on\" parameters of your object or by using the \"_execute_enum\" "
+                  "reference to the parameter or the getExecuteOnEnum() method.");
   return _exec_flags;
 }
 
