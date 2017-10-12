@@ -25,7 +25,7 @@ validParams<MaterialCopyUserObject>()
                                         "The id of the element from which data is copied");
   params.addRequiredParam<unsigned int>("copy_to_element",
                                         "The id of the element to which data is copied");
-  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_END});
+  params.set<ExecFlagEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_END});
   return params;
 }
 

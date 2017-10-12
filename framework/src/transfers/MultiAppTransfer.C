@@ -40,8 +40,8 @@ validParams<MultiAppTransfer>()
   ExecFlagEnum exec_enum;
   exec_enum.addAvailableFlags({EXEC_SAME_AS_MULTIAPP});
   exec_enum = EXEC_SAME_AS_MULTIAPP;
-  params.set<MultiMooseEnum>("execute_on", true) = exec_enum;
-  params.setDocString("execute_on", exec_enum.getExecuteOnDocString());
+  params.set<ExecFlagEnum>("execute_on", true) = exec_enum;
+  params.setDocString("execute_on", exec_enum.getDocString());
 
   params.addParam<bool>(
       "check_multiapp_execute_on",

@@ -58,7 +58,7 @@ public:
   /**
    * Generate a documentation string for the "execute_on" parameter.
    */
-  std::string getExecuteOnDocString();
+  std::string getDocString();
 
   /**
    * Reference the all the available items.

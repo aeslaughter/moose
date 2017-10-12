@@ -21,7 +21,7 @@ validParams<DiscreteNucleationInserter>()
       "probability", "Probability density for inserting a discrete nucleus");
   params.addRequiredParam<Real>("hold_time", "Time to keep each nucleus active");
   params.addParam<Point>("test", "Insert a fixed nucleus at a point in the simulation cell");
-  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_END});
+  params.set<ExecFlagEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_END});
   return params;
 }
 

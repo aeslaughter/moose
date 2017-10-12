@@ -85,10 +85,12 @@ public:
   static ExecFlagEnum getExecuteOptions();
 
 private:
-  MultiMooseEnum _empty_execute_enum;
+  /// Empty ExecFlagEnum for the case when the "execute_on" parameter is not included. This
+  /// is private because others should not be messing with it.
+  ExecFlagEnum _empty_execute_enum;
 
 protected:
-  const MultiMooseEnum & _execute_enum;
+  const ExecFlagEnum & _execute_enum;
 
   /// execution flag (when is the object executed/evaluated) (deprecated)
   const std::vector<ExecFlagType> _exec_flags;

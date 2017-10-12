@@ -24,9 +24,9 @@ validParams<LevelSetMeshRefinementTransfer>()
   params.set<MooseEnum>("direction") = "TO_MULTIAPP";
   params.suppressParameter<MooseEnum>("direction");
 
-  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_CUSTOM});
+  params.set<ExecFlagEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_CUSTOM});
   params.set<bool>("check_multiapp_execute_on") = false;
-  params.suppressParameter<MultiMooseEnum>("execute_on");
+  params.suppressParameter<ExecFlagEnum>("execute_on");
 
   return params;
 }

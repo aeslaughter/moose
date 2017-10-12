@@ -5,7 +5,7 @@ features to objects. Foremost, it provides the the "execute_on" parameter, which
 
 ## Execute On
 
-Any object inheriting from the SetupInterface will have an "execute_on" parameter that can be set
+Any object inheriting from the SetupInterface, that adds the `validParams<SetupInterface>` within its own parameters, will have an "execute_on" parameter that can be set
 to various flags, the most common flags are listed below.
 
 | Execute Flag | Description |
@@ -30,7 +30,7 @@ and prior to each timestep to guarantee that the damper is enabled when desired.
 !input test/tests/controls/time_periods/dampers/control.i block=Controls
 
 Depending on the system these options or others will be available, since as discussed in [Creating Custom Execute Flags](#creating-custom-execute-flags) custom flags may be added. The complete list
-of execution flags is provided by MOOSE are listed in the "resisterExecFlags" function.
+of execution flags is provided by MOOSE are listed in the "registerExecFlags" function.
 
 !text framework/src/base/MooseApp.C re_start=void\nMooseApp::registerExecFlags\(\) re_end=void\nMooseApp::registerExecFlag\(
 

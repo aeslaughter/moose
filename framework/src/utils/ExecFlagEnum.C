@@ -54,7 +54,7 @@ ExecFlagEnum::removeAvailableFlags(const std::set<ExecFlagType> & flags)
 }
 
 std::string
-ExecFlagEnum::getExecuteOnDocString()
+ExecFlagEnum::getDocString()
 {
   std::string doc("The list of flag(s) indicating when this object should be executed, the "
                   "available options include \'");

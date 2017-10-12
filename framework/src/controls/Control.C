@@ -24,7 +24,7 @@ validParams<Control>()
   params += validParams<SetupInterface>();
   params += validParams<FunctionInterface>();
 
-  params.set<MultiMooseEnum>("execute_on", true) =
+  params.set<ExecFlagEnum>("execute_on", true) =
       std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_END});
   params.registerBase("Control");
 

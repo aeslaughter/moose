@@ -3388,11 +3388,11 @@ FEProblemBase::addTransfer(const std::string & transfer_name,
   }
 
   // Handle the "SAME_AS_MULTIAPP" execute option
-  MultiMooseEnum & exec_enum = parameters.set<MultiMooseEnum>("execute_on", true);
+  ExecFlagEnum & exec_enum = parameters.set<ExecFlagEnum>("execute_on", true);
   if (exec_enum.contains(EXEC_SAME_AS_MULTIAPP))
   {
     std::shared_ptr<MultiApp> multiapp = getMultiApp(parameters.get<MultiAppName>("multi_app"));
-    exec_enum = multiapp->getParam<MultiMooseEnum>("execute_on");
+    exec_enum = multiapp->getParam<ExecFlagEnum>("execute_on");
   }
 
   // Create the Transfer objects

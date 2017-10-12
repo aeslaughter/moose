@@ -39,6 +39,7 @@ class MooseApp;
 class MooseEnum;
 class MooseObject;
 class MultiMooseEnum;
+class ExecFlagEnum;
 class Problem;
 
 /**
@@ -1199,7 +1200,12 @@ template <>
 void InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
                                                        const MultiMooseEnum & moose_enum,
                                                        const std::string & doc_string);
-
+/*
+template <>
+void InputParameters::addRequiredParam<ExecFlagEnum>(const std::string & name,
+                                                     const ExecFlagEnum & moose_enum,
+                                                     const std::string & doc_string);
+*/
 template <>
 void InputParameters::addRequiredParam<std::vector<MooseEnum>>(
     const std::string & name,
@@ -1214,6 +1220,10 @@ template <>
 void InputParameters::addParam<MultiMooseEnum>(const std::string & /*name*/,
                                                const std::string & /*doc_string*/);
 
+// template <>
+// void InputParameters::addParam<ExecFlagEnum>(const std::string & /*name*/,
+//                                             const std::string & /*doc_string*/);
+
 template <>
 void InputParameters::addParam<std::vector<MooseEnum>>(const std::string & /*name*/,
                                                        const std::string & /*doc_string*/);
@@ -1227,6 +1237,11 @@ template <>
 void InputParameters::addDeprecatedParam<MultiMooseEnum>(const std::string & name,
                                                          const std::string & doc_string,
                                                          const std::string & deprecation_message);
+
+// template <>
+// void InputParameters::addDeprecatedParam<ExecFlagEnum>(const std::string & name,
+//                                                       const std::string & doc_string,
+//                                                       const std::string & deprecation_message);
 
 template <>
 void InputParameters::addDeprecatedParam<std::vector<MooseEnum>>(
@@ -1286,6 +1301,11 @@ template <>
 const MultiMooseEnum & InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
                                                                        const InputParameters & pars,
                                                                        const MultiMooseEnum *);
+
+// template <>
+// const ExecFlagEnum & InputParameters::getParamHelper<ExecFlagEnum>(const std::string & name,
+//                                                                   const InputParameters & pars,
+//                                                                   const ExecFlagEnum *);
 
 template <typename T>
 const std::vector<T> &

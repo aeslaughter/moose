@@ -19,7 +19,7 @@ InputParameters
 validParams<RandomElementalUserObject>()
 {
   InputParameters params = validParams<ElementUserObject>();
-  params.set<MultiMooseEnum>("execute_on") = EXEC_TIMESTEP_BEGIN;
+  params.set<ExecFlagEnum>("execute_on") = EXEC_TIMESTEP_BEGIN;
   return params;
 }
 

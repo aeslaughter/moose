@@ -24,20 +24,20 @@ validParams<SetupInterface>()
 
   // Add the 'execute_on' input parameter for users to set
   ExecFlagEnum execute_options({EXEC_LINEAR});
-  params.addParam<MultiMooseEnum>(
-      "execute_on", execute_options, execute_options.getExecuteOnDocString());
+  params.addParam<ExecFlagEnum>("execute_on", execute_options, execute_options.getDocString());
   return params;
 }
 
 SetupInterface::SetupInterface(const MooseObject * moose_object)
   : _execute_enum(moose_object->parameters().isParamValid("execute_on")
-                      ? moose_object->parameters().get<MultiMooseEnum>("execute_on")
+                      ? moose_object->parameters().get<ExecFlagEnum>("execute_on")
                       : _empty_execute_enum),
     _exec_flags(_execute_enum.begin(), _execute_enum.end()), // deprecated
     _current_execute_flag(
         (moose_object->parameters().getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
             ->getCurrentExecuteOnFlag())
 {
+  _empty_execute_enum.clear(); // remove any flags for the case when "execute_on" is not used
 }
 
 SetupInterface::~SetupInterface() {}

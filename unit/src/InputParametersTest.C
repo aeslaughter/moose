@@ -176,15 +176,37 @@ TEST(InputParameters, applyParameter)
 
 TEST(InputParameters, applyParameters)
 {
+  // First enum
   InputParameters p1 = emptyInputParameters();
   p1.addParam<MultiMooseEnum>("enum", MultiMooseEnum("foo=0 bar=1", "foo"), "testing");
   EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+  EXPECT_FALSE(p1.get<MultiMooseEnum>("enum").contains("bar"));
 
+  // Second enum
   InputParameters p2 = emptyInputParameters();
   p2.addParam<MultiMooseEnum>("enum", MultiMooseEnum("foo=42 bar=43", "foo"), "testing");
   EXPECT_TRUE(p2.get<MultiMooseEnum>("enum").contains("foo"));
+  EXPECT_FALSE(p2.get<MultiMooseEnum>("enum").contains("bar"));
 
+  // Change second and apply to first
   p2.set<MultiMooseEnum>("enum") = "bar";
   p1.applyParameters(p2);
   EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("bar"));
+  EXPECT_FALSE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+
+  // Change back first (in "quiet_mode") then reapply second, first should change again
+  p1.set<MultiMooseEnum>("enum", true) = "foo";
+  EXPECT_FALSE(p1.get<MultiMooseEnum>("enum").contains("bar"));
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+  p1.applyParameters(p2);
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("bar"));
+  EXPECT_FALSE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+
+  // Change back first then reapply second, first should not change
+  p1.set<MultiMooseEnum>("enum") = "foo";
+  EXPECT_FALSE(p1.get<MultiMooseEnum>("enum").contains("bar"));
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("foo"));
+  p1.applyParameters(p2);
+  EXPECT_FALSE(p1.get<MultiMooseEnum>("enum").contains("bar"));
+  EXPECT_TRUE(p1.get<MultiMooseEnum>("enum").contains("foo"));
 }

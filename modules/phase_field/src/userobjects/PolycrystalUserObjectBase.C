@@ -41,7 +41,7 @@ validParams<PolycrystalUserObjectBase>()
 
   // This object should only be executed _before_ the initial condition
   ExecFlagEnum execute_options({EXEC_INITIAL});
-  params.set<MultiMooseEnum>("execute_on") = execute_options;
+  params.set<ExecFlagEnum>("execute_on") = execute_options;
 
   return params;
 }

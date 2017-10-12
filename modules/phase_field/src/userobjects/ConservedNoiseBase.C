@@ -14,7 +14,7 @@ InputParameters
 validParams<ConservedNoiseBase>()
 {
   InputParameters params = validParams<ElementUserObject>();
-  params.set<MultiMooseEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_BEGIN});
+  params.set<ExecFlagEnum>("execute_on") = std::vector<ExecFlagType>({EXEC_TIMESTEP_BEGIN});
   return params;
 }
 

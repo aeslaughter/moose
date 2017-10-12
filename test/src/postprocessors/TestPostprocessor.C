@@ -25,9 +25,8 @@ validParams<TestPostprocessor>()
   params.addRequiredParam<MooseEnum>("test_type", test_type, "The type of test to perform");
   params.addParam<PostprocessorName>("report_name",
                                      "The name of the postprocessor value to report");
-  ExecFlagEnum exec;
+  ExecFlagEnum & exec = params.set<ExecFlagEnum>("execute_on");
   exec.addAvailableFlags({EXEC_JUST_GO});
-  params.set<MultiMooseEnum>("execute_on") = exec;
   return params;
 }
 

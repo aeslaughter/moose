@@ -53,15 +53,14 @@ validParams<Output>()
       "time_tolerance", 1e-14, "Time tolerance utilized checking start and end times");
 
   // Update the 'execute_on' input parameter for output
-  ExecFlagEnum exec_enum({EXEC_INITIAL, EXEC_TIMESTEP_END});
+  ExecFlagEnum & exec_enum = params.set<ExecFlagEnum>("execute_on", true);
   exec_enum.addAvailableFlags({EXEC_FINAL, EXEC_FAILED});
-  params.set<MultiMooseEnum>("execute_on", true) = exec_enum;
-  params.setDocString("execute_on", exec_enum.getExecuteOnDocString());
+  exec_enum = std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_END});
+  params.setDocString("execute_on", exec_enum.getDocString());
 
   // Add ability to append to the 'execute_on' list
-  params.addParam<MultiMooseEnum>(
-      "additional_execute_on", exec_enum, exec_enum.getExecuteOnDocString());
-  params.set<MultiMooseEnum>("additional_execute_on").clear();
+  params.addParam<ExecFlagEnum>("additional_execute_on", exec_enum, exec_enum.getDocString());
+  params.set<ExecFlagEnum>("additional_execute_on").clear();
 
   // 'Timing' group
   params.addParamNamesToGroup("time_tolerance interval sync_times sync_only start_time end_time ",
@@ -98,7 +97,7 @@ Output::Output(const InputParameters & parameters)
     _transient(_problem_ptr->isTransient()),
     _use_displaced(getParam<bool>("use_displaced")),
     _es_ptr(_use_displaced ? &_problem_ptr->getDisplacedProblem()->es() : &_problem_ptr->es()),
-    _execute_on(getParam<MultiMooseEnum>("execute_on")),
+    _execute_on(getParam<ExecFlagEnum>("execute_on")),
     _time(_problem_ptr->time()),
     _time_old(_problem_ptr->timeOld()),
     _t_step(_problem_ptr->timeStep()),
@@ -122,7 +121,7 @@ Output::Output(const InputParameters & parameters)
   // Apply the additional output flags
   if (isParamValid("additional_execute_on"))
   {
-    const MultiMooseEnum & add = getParam<MultiMooseEnum>("additional_execute_on");
+    const ExecFlagEnum & add = getParam<ExecFlagEnum>("additional_execute_on");
     for (auto & me : add)
       _execute_on.push_back(me);
   }

@@ -280,7 +280,7 @@ TEST(MultiMooseEnum, testExecuteOn)
   }
 
   // MultiMooseEnum doc string generation
-  std::string doc = exec_enum.getExecuteOnDocString();
+  std::string doc = exec_enum.getDocString();
   EXPECT_EQ(doc,
             "The list of flag(s) indicating when this object should be executed, the "
             "available options include 'NONE', 'INITIAL', 'LINEAR', 'NONLINEAR', 'TIMESTEP_END', "

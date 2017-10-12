@@ -66,7 +66,7 @@ AddOutputAction::act()
 
     // --show-input should enable the display of the input file on the screen
     if (_app.getParam<bool>("show_input") && _moose_object_pars.get<bool>("output_screen"))
-      _moose_object_pars.set<MultiMooseEnum>("execute_input_on") = EXEC_INITIAL;
+      _moose_object_pars.set<ExecFlagEnum>("execute_input_on") = EXEC_INITIAL;
   }
 
   // Apply the common parameters

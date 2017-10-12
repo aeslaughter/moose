@@ -150,7 +150,8 @@ validParams<Console>()
 
   // Change the default behavior of 'execute_on' to included nonlinear iterations and failed
   // timesteps
-  params.set<MultiMooseEnum>("execute_on", /*quiet_mode=*/true) = std::vector<ExecFlagType>({EXEC_INITIAL, EXEC_TIMESTEP_BEGIN, EXEC_LINEAR, EXEC_NONLINEAR, EXEC_FAILED});
+  params.set<ExecFlagEnum>("execute_on", /*quiet_mode=*/true) = std::vector<ExecFlagType>(
+      {EXEC_INITIAL, EXEC_TIMESTEP_BEGIN, EXEC_LINEAR, EXEC_NONLINEAR, EXEC_FAILED});
 
   // By default postprocessors and scalar are only output at the end of a timestep
   params.set<MultiMooseEnum>("execute_postprocessors_on", /*quiet_mode=*/true) =
@@ -225,7 +226,7 @@ Console::Console(const InputParameters & parameters)
 
   // Append the common 'execute_on' to the setting for this object
   // This is unique to the Console object, all other objects inherit from the common options
-  const MultiMooseEnum & common_execute_on = common_action->getParam<MultiMooseEnum>("execute_on");
+  const ExecFlagEnum & common_execute_on = common_action->getParam<ExecFlagEnum>("execute_on");
   for (auto & mme : common_execute_on)
     _execute_on.push_back(mme);
 

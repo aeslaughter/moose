@@ -19,6 +19,7 @@
 #include "MooseTypes.h"
 #include "MooseUtils.h"
 #include "MultiMooseEnum.h"
+#include "ExecFlagEnum.h"
 
 #include "pcrecpp.h"
 
@@ -97,7 +98,8 @@ InputParameters::set_attributes(const std::string & name, bool inserted_only)
     _set_by_add_param.erase(name);
 
     // valid_params don't make sense for MooseEnums
-    if (!have_parameter<MooseEnum>(name) && !have_parameter<MultiMooseEnum>(name))
+    if (!have_parameter<MooseEnum>(name) &&
+        !have_parameter<MultiMooseEnum>(name)) // && !have_parameter<ExecFlagEnum>(name))
       _valid_params.insert(name);
 
     if (_show_deprecated_message)
@@ -283,6 +285,8 @@ InputParameters::isParamValid(const std::string & name) const
     return get<MooseEnum>(name).isValid();
   else if (have_parameter<MultiMooseEnum>(name))
     return get<MultiMooseEnum>(name).isValid();
+  //  else if (have_parameter<ExecFlagEnum>(name))
+  //    return get<ExecFlagEnum>(name).isValid();
   else
     return _valid_params.find(name) != _valid_params.end();
 }
@@ -807,6 +811,19 @@ InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
   _doc_string[name] = doc_string;
 }
 
+/*
+template <>
+void
+InputParameters::addRequiredParam<ExecFlagEnum>(const std::string & name,
+                                                const ExecFlagEnum & moose_enum,
+                                                const std::string & doc_string)
+{
+  InputParameters::set<ExecFlagEnum>(name) =
+      moose_enum; // valid parameter is set by set_attributes
+  _required_params.insert(name);
+  _doc_string[name] = doc_string;
+}
+*/
 template <>
 void
 InputParameters::addRequiredParam<std::vector<MooseEnum>>(
@@ -838,6 +855,15 @@ InputParameters::addParam<MultiMooseEnum>(const std::string & /*name*/,
              "is not required!");
 }
 
+// template <>
+// void
+// InputParameters::addParam<ExecFlagEnum>(const std::string & /*name*/,
+//                                        const std::string & /*doc_string*/)
+//{
+//  mooseError("You must supply a ExecFlagEnum object when using addParam, even if the parameter "
+//             "is not required!");
+//}
+
 template <>
 void
 InputParameters::addParam<std::vector<MooseEnum>>(const std::string & /*name*/,
@@ -866,6 +892,16 @@ InputParameters::addDeprecatedParam<MultiMooseEnum>(const std::string & /*name*/
   mooseError("You must supply a MultiMooseEnum object and the deprecation string when using "
              "addDeprecatedParam, even if the parameter is not required!");
 }
+
+// template <>
+// void
+// InputParameters::addDeprecatedParam<ExecFlagEnum>(const std::string & /*name*/,
+//                                                  const std::string & /*doc_string*/,
+//                                                  const std::string & /*deprecation_message*/)
+//{
+//  mooseError("You must supply a ExecFlagEnum object and the deprecation string when using "
+//             "addDeprecatedParam, even if the parameter is not required!");
+//}
 
 template <>
 void
@@ -973,6 +1009,15 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
 {
   return pars.get<MultiMooseEnum>(name);
 }
+
+// template <>
+// const ExecFlagEnum &
+// InputParameters::getParamHelper<ExecFlagEnum>(const std::string & name,
+//                                              const InputParameters & pars,
+//                                              const ExecFlagEnum *)
+//{
+//  return pars.get<ExecFlagEnum>(name);
+//}
 
 void
 InputParameters::setReservedValues(const std::string & name, const std::set<std::string> & reserved)
