@@ -1,0 +1,29 @@
+[Tests]
+  [./tauOpt]
+    type = 'Exodiff'
+    input = 'tauOpt.i'
+    exodiff = 'tauOpt_out.e'
+  [../]
+  [./tauMod]
+    type = 'Exodiff'
+    input = 'tauOpt.i'
+    exodiff = 'tauMod_out.e'
+    cli_args = 'GlobalParams/tau_type=mod Outputs/file_base=tauMod_out'
+  [../]
+  [./inconsistent]
+    type = 'Exodiff'
+    input = 'tauOpt.i'
+    exodiff = 'inconsistent.e'
+    cli_args = "Kernels/active='adv frc adv_supg' Outputs/file_base=inconsistent"
+  [../]
+  [./1d_error_test_supg]
+    type = 'Exodiff'
+    input = 'advection_error_testing.i'
+    exodiff = 'advection_error_testing_exodus.e'
+  [../]
+  [./2d_error_test_supg]
+    type = 'Exodiff'
+    exodiff = '2d_advection_error_testing_exodus.e'
+    input = '2d_advection_error_testing.i'
+  [../]
+[]

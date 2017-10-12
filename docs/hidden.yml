@@ -695,16 +695,10 @@ phase_field:
     - /Modules/PhaseField/Nonconserved/NonconservedAction
     - /Postprocessors/AverageGrainVolume
     - /Postprocessors/FauxGrainTracker
-    - /Postprocessors/FeatureFloodCount
     - /Postprocessors/FeatureVolumeFraction
     - /Postprocessors/GrainBoundaryArea
-    - /Postprocessors/GrainTracker
     - /Postprocessors/GrainTrackerElasticity
     - /Postprocessors/PFCElementEnergyIntegral
-    - /Postprocessors/PolycrystalCircles
-    - /Postprocessors/PolycrystalEBSD
-    - /Postprocessors/PolycrystalHex
-    - /Postprocessors/PolycrystalVoronoi
     - /UserObjects/ComputeExternalGrainForceAndTorque
     - /UserObjects/ComputeGrainForceAndTorque
     - /UserObjects/ConstantGrainForceAndTorque
@@ -990,6 +984,7 @@ tensor_mechanics:
     - /Materials/HyperElasticPhaseFieldIsoDamage
     - /Materials/InclusionProperties
     - /Materials/LinearElasticTruss
+    - /Materials/LinearViscoelasticStressUpdate
     - /Materials/MultiPhaseStressMaterial
     - /Materials/PowerLawCreepStressUpdate
     - /Materials/StressBasedChemicalPotential
@@ -1021,6 +1016,7 @@ tensor_mechanics:
     - /UserObjects/HEVPEqvPlasticStrainRate
     - /UserObjects/HEVPFlowRatePowerLawJ2
     - /UserObjects/HEVPLinearHardening
+    - /UserObjects/LinearViscoelasticityManager
     - /UserObjects/HEVPRambergOsgoodHardening
     - /UserObjects/TensorMechanicsHardeningConstant
     - /UserObjects/TensorMechanicsHardeningCubic
