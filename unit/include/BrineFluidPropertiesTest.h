@@ -40,7 +40,6 @@ protected:
 
     _app.reset(AppFactory::createApp("MooseUnitApp", 1, (char **)argv));
     _factory = &_app->getFactory();
-
     registerObjects(*_factory);
     buildObjects();
   }
