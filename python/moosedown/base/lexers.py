@@ -1,7 +1,8 @@
 import collections
+
 import MooseDocs
-from MooseDocs.tree import tokens
-from MooseDocs import grammer
+from MooseDocs import tree
+from Grammer import Grammer
 
 class Lexer(object):
 
@@ -38,9 +39,9 @@ class RecursiveLexer(Lexer):
     def __init__(self, base, *args):
         super(RecursiveLexer, self).__init__()
         self._grammers = collections.OrderedDict()
-        self._grammers[base] = grammer.Grammer()
+        self._grammers[base] = Grammer()
         for name in args:
-            self._grammers[name] = grammer.Grammer()
+            self._grammers[name] = Grammer()
 
     def tokenize(self, text, parent, grammer=None, line=1):
         if grammer is None:
@@ -63,7 +64,3 @@ class RecursiveLexer(Lexer):
                 if text is not None:
                     self.tokenize(text, obj, value, line)
         return obj
-
-class MarkdownLexer(RecursiveLexer):
-    def __init__(self):
-        super(MarkdownLexer, self).__init__(MooseDocs.BLOCK, MooseDocs.INLINE)

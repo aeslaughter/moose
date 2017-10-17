@@ -1,0 +1,6 @@
+[Tests]
+  [./storage]
+    type = PythonUnitTest
+    input = test_storage.py
+  [../]
+[]

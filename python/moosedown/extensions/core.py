@@ -271,7 +271,7 @@ class RenderTag(CoreRenderComponentBase):
         self.__tag = tag
 
     def createHTML(self, token, parent):
-        return tree.html.Tag(self.__tag, parent, **token.settings)
+        return tree.html.Tag(self.__tag, parent, **token.attributes)
 
 class RenderString(CoreRenderComponentBase):
     def createHTML(self, token, parent):
@@ -279,18 +279,18 @@ class RenderString(CoreRenderComponentBase):
 
 class RenderHeading(CoreRenderComponentBase):
     def createHTML(self, token, parent):
-        return tree.html.Tag('h{}'.format(token.level), parent, **token.settings)
+        return tree.html.Tag('h{}'.format(token.level), parent, **token.attributes)
 
 class RenderCode(CoreRenderComponentBase):
     def createHTML(self, token, parent):
-        pre = tree.html.Tag('pre', parent, **token.settings)
+        pre = tree.html.Tag('pre', parent, **token.attributes)
         code = tree.html.Tag('code', pre)
         string = tree.html.String(token.code, code)
         return pre
 
 class RenderShortcutLink(CoreRenderComponentBase):
     def createHTML(self, token, parent):
-        a = tree.html.Tag('a', parent, **token.settings)
+        a = tree.html.Tag('a', parent, **token.attributes)
         s = tree.html.String(token.key, a)
 
         if token.key not in SHORTCUT_DATABASE:

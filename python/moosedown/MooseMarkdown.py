@@ -1,13 +1,12 @@
-import translators
-import readers
-import renderers
+import base
+import common
 import importlib
 
-class MooseMarkdown(translators.Translator):
+class MooseMarkdown(base.Translator):
 
     @staticmethod
     def getConfig():
-        config = translators.Translator.getConfig()
+        config = base.Translator.getConfig()
         config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
         return config
 
@@ -42,11 +41,11 @@ class MooseMarkdown(translators.Translator):
             reader_ext.update(config)
             render_ext.update(config)
 
-        reader = readers.MarkdownReader(reader_extensions)
+        reader = base.MarkdownReader(reader_extensions)
 
         if config['materialize']:
-            render = renderers.MaterializeRenderer(render_extensions)
+            render = base.MaterializeRenderer(render_extensions)
         else:
-            render = renderers.HTMLRenderer(render_extensions)
+            render = base.HTMLRenderer(render_extensions)
 
         super(MooseMarkdown, self).__init__(reader, render)

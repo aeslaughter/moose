@@ -1,4 +1,7 @@
+import MooseDocs
 from MooseDocs.tree import tokens
+from lexers import RecursiveLexer
+
 class Reader(object):
 
     def __init__(self, lexer, extensions=None):
@@ -32,3 +35,7 @@ class Reader(object):
 
     def add(self, *args):#name, regex, func, location=-1):
         self.__lexer.add(*args)
+
+class MarkdownReader(Reader):
+    def __init__(self, ext=None):
+        super(MarkdownReader, self).__init__(lexer=RecursiveLexer(MooseDocs.BLOCK, MooseDocs.INLINE), extensions=ext)
