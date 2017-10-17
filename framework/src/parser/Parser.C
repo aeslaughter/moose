@@ -1011,7 +1011,7 @@ Parser::extractParams(const std::string & prefix, InputParameters & p)
     // Mark parameters appearing in the input file or command line
     if (_root->find(full_name) && _root->find(full_name)->type() == hit::NodeType::Field)
     {
-g      p.set_attributes(it.first, false);
+      p.set_attributes(it.first, false);
       _extracted_vars.insert(
           full_name); // Keep track of all variables extracted from the input file
       found = true;
