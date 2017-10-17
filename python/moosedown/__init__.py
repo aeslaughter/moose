@@ -1,0 +1,2 @@
+BLOCK = 'block'
+INLINE = 'inline'

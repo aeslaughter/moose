@@ -1,0 +1,110 @@
+import MooseDocs
+from MooseDocs import common
+
+class Extension(object):
+    @staticmethod
+    def getConfig():
+        config = dict()
+        return config
+
+    def __init__(self):
+        self.__config = dict()
+        self.__items = list()
+
+    @property
+    def config(self):
+        return self.__config
+
+    def update(self, config):
+        self.__config.update(config)
+
+    def setup(self, *args, **kwargs):
+        pass
+
+    def extend(self):
+        pass
+
+    def add(self, *args):
+        self.__items.append(tuple(args))
+
+    def __iter__(self):
+        for item in self.__items:
+            yield item
+
+
+class RenderExtension(Extension): #TODO: inherit from Extension to get config stuff
+    def __init__(self):
+        Extension.__init__(self)
+        self.__renderer = None
+        self.__components = list()
+
+
+    def setup(self, renderer):
+        #TODO: type and error check
+        self.__renderer = renderer
+
+    def add(self, token_class, component):
+        # TODO: test token_class is type
+        component.renderer = self.__renderer
+        self.__components.append(component)
+        func = getattr(component, component.renderer.METHOD)
+        Extension.add(self, token_class, func)
+
+class TokenExtension(Extension):
+
+    def __init__(self):
+        Extension.__init__(self)
+        self.__reader = None
+        self.__components = list()
+
+    def setup(self, reader):
+        #TODO: type check
+        self.__reader = reader
+
+    def add(self, group, name, component, location='_end'):
+        self.__components.append(component)
+        component.reader = self.__reader
+
+        func = lambda m, p, l: self.__function(m, p, l, component)
+        Extension.add(self, group, name, component.RE, func, location)
+
+    def __function(self, match, parent, line, component):
+        local = None
+        if 'settings' in match.groupdict():
+            local = match.group('settings')
+        settings, unknown = self.__parseSettings(component, local)
+        component.line = line
+        component.settings = settings
+        token = component.createToken(match, parent)
+        #token.settings = settings
+        return token
+
+    @staticmethod
+    def __parseSettings(component, local):
+        """
+
+        """
+        settings, unknown = common.parse_settings(component.defaultSettings(), local)
+        if unknown:
+            msg = "The following key, value settings are unknown on line %d of ...".format(component.line)
+            for key, value in unknown.iteritems():
+                msg += '\n{}{}={}'.format(' '*4, key, repr(value))
+            LOG.error(msg)
+
+        return settings, unknown
+
+
+class MarkdownExtension(TokenExtension):
+    #: Internal global for storing commands
+    __COMMANDS__ = dict()
+
+    def addCommand(self, command):
+        MarkdownExtension.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
+
+    def addBlock(self, component, location='_end'):
+        name = component.__class__.__name__
+        super(MarkdownExtension, self).add(MooseDocs.BLOCK, name, component, location)
+
+    def addInline(self, component, location='_end'):
+        name = component.__class__.__name__
+        super(MarkdownExtension, self).add(MooseDocs.INLINE, name, component, location)
