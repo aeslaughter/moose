@@ -22,11 +22,8 @@ if __name__ == '__main__':
 
 
 """
-- Move to Moose repo
 - Setup config file
 - Create text/file node
-- Components should be loadable from extensions
-- Re-orgainze Translator, Renderer, Lexer these should just be in common
 - Create an !alert command (alert extension)
 - Create errors by creating an alert token
 - Build unittests for tokens, lexer, grammer, etc.

@@ -22,7 +22,7 @@ def parse_settings(defaults, raw):
         elif value.lower() == 'none':
             value = None
         elif all([v.isdigit() for v in value]):
-                value = float(value) #pylint: disable=redefined-variable-type
+            value = float(value) #pylint: disable=redefined-variable-type
 
         if key in known:
             known[key] = value
