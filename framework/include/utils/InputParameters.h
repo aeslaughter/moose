@@ -39,6 +39,7 @@ class MooseApp;
 class MooseEnum;
 class MooseObject;
 class MultiMooseEnum;
+// class ExecFlagEnum;
 class Problem;
 
 /**
@@ -987,9 +988,8 @@ InputParameters::addParam(const std::string & name, const S & value, const std::
   // Set the parameter now
   setParamHelper(name, l_value, value);
 
-  /* Indicate the default value, as set via addParam, is being used. The parameter is removed from
-     the list whenever
-     it changes, see set_attributes */
+  // Indicate the default value, as set via addParam, is being used. The parameter is removed from
+  // the list whenever it changes, see set_attributes
   _set_by_add_param.insert(name);
 }
 
