@@ -882,6 +882,14 @@ void Parser::setScalarParameter<MultiMooseEnum, MultiMooseEnum>(
     GlobalParamsAction * global_block);
 
 template <>
+void Parser::setScalarParameter<ExecFlagEnum, ExecFlagEnum>(
+  const std::string & full_name,
+  const std::string & short_name,
+  InputParameters::Parameter<ExecFlagEnum> * param,
+  bool in_global,
+  GlobalParamsAction * global_block);
+
+template <>
 void Parser::setScalarParameter<RealTensorValue, RealTensorValue>(
     const std::string & full_name,
     const std::string & short_name,
@@ -1003,7 +1011,7 @@ Parser::extractParams(const std::string & prefix, InputParameters & p)
     // Mark parameters appearing in the input file or command line
     if (_root->find(full_name) && _root->find(full_name)->type() == hit::NodeType::Field)
     {
-      p.set_attributes(it.first, false);
+g      p.set_attributes(it.first, false);
       _extracted_vars.insert(
           full_name); // Keep track of all variables extracted from the input file
       found = true;
@@ -1094,6 +1102,13 @@ Parser::extractParams(const std::string & prefix, InputParameters & p)
                                   it.first,
                                   in_global,
                                   global_params_block);
+      dynamicCastAndExtractScalar(ExecFlagEnum,
+        ExecFlagEnum,
+        it.second,
+        full_name,
+        it.first,
+        in_global,
+        global_params_block);
       dynamicCastAndExtractScalar(RealTensorValue,
                                   RealTensorValue,
                                   it.second,
@@ -1648,7 +1663,6 @@ Parser::setScalarParameter<MultiMooseEnum, MultiMooseEnum>(
     GlobalParamsAction * global_block)
 {
   MultiMooseEnum current_param = param->get();
-
   auto vec = _root->param<std::vector<std::string>>(full_name);
 
   std::string raw_values;
@@ -1661,6 +1675,31 @@ Parser::setScalarParameter<MultiMooseEnum, MultiMooseEnum>(
   {
     global_block->remove(short_name);
     global_block->setScalarParam<MultiMooseEnum>(short_name) = current_param;
+  }
+}
+
+template <>
+void
+Parser::setScalarParameter<ExecFlagEnum, ExecFlagEnum>(
+    const std::string & full_name,
+    const std::string & short_name,
+    InputParameters::Parameter<ExecFlagEnum> * param,
+    bool in_global,
+    GlobalParamsAction * global_block)
+{
+  ExecFlagEnum current_param = param->get();
+  auto vec = _root->param<std::vector<std::string>>(full_name);
+
+  std::string raw_values;
+  for (unsigned int i = 0; i < vec.size(); ++i)
+    raw_values += ' ' + vec[i];
+
+  param->set() = raw_values;
+
+  if (in_global)
+  {
+    global_block->remove(short_name);
+    global_block->setScalarParam<ExecFlagEnum>(short_name) = current_param;
   }
 }
 

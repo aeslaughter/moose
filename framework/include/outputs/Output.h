@@ -183,7 +183,7 @@ protected:
   bool _sequence;
 
   /// The common Execution types; this is used as the default execution type for everything except system information and input
-  MultiMooseEnum _execute_on;
+  ExecFlagEnum _execute_on;
 
   /// The current time for output purposes
   Real & _time;

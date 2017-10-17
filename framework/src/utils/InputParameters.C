@@ -285,8 +285,8 @@ InputParameters::isParamValid(const std::string & name) const
     return get<MooseEnum>(name).isValid();
   else if (have_parameter<MultiMooseEnum>(name))
     return get<MultiMooseEnum>(name).isValid();
-  //  else if (have_parameter<ExecFlagEnum>(name))
-  //    return get<ExecFlagEnum>(name).isValid();
+  else if (have_parameter<ExecFlagEnum>(name))
+    return get<ExecFlagEnum>(name).isValid();
   else
     return _valid_params.find(name) != _valid_params.end();
 }
@@ -811,6 +811,7 @@ InputParameters::addRequiredParam<MultiMooseEnum>(const std::string & name,
   _doc_string[name] = doc_string;
 }
 
+
 /*
 template <>
 void
@@ -824,6 +825,7 @@ InputParameters::addRequiredParam<ExecFlagEnum>(const std::string & name,
   _doc_string[name] = doc_string;
 }
 */
+
 template <>
 void
 InputParameters::addRequiredParam<std::vector<MooseEnum>>(
@@ -1010,9 +1012,9 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
   return pars.get<MultiMooseEnum>(name);
 }
 
-// template <>
-// const ExecFlagEnum &
-// InputParameters::getParamHelper<ExecFlagEnum>(const std::string & name,
+//template <>
+//const ExecFlagEnum &
+//InputParameters::getParamHelper<ExecFlagEnum>(const std::string & name,
 //                                              const InputParameters & pars,
 //                                              const ExecFlagEnum *)
 //{

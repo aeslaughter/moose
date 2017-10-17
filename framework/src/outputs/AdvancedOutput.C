@@ -400,19 +400,19 @@ AdvancedOutput::initAvailableLists()
 }
 
 void
-AdvancedOutput::initExecutionTypes(const std::string & name, MultiMooseEnum & input)
+AdvancedOutput::initExecutionTypes(const std::string & name, ExecFlagEnum & input)
 {
   // Build the input paramemter name
   std::string param_name = "execute_";
   param_name += name + "_on";
 
   // The parameters exists and has been set by the user
-  if (_pars.have_parameter<MultiMooseEnum>(param_name) && isParamValid(param_name))
-    input = getParam<MultiMooseEnum>(param_name);
+  if (_pars.have_parameter<ExecFlagEnum>(param_name) && isParamValid(param_name))
+    input = getParam<ExecFlagEnum>(param_name);
 
   // If the parameter does not exists; set it to a state where no valid entries exists so nothing
   // gets executed
-  else if (!_pars.template have_parameter<MultiMooseEnum>(param_name))
+  else if (!_pars.template have_parameter<ExecFlagEnum>(param_name))
   {
     input = _execute_on;
     input.clear();
@@ -546,7 +546,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // Nodal output
   if (types.contains("nodal"))
   {
-    params.addParam<MultiMooseEnum>(
+    params.addParam<ExecFlagEnum>(
         "execute_nodal_on", empty_execute_on, "Control the output of nodal variables");
     params.addParamNamesToGroup("execute_nodal_on", "Variables");
   }
@@ -554,7 +554,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // Elemental output
   if (types.contains("elemental"))
   {
-    params.addParam<MultiMooseEnum>(
+    params.addParam<ExecFlagEnum>(
         "execute_elemental_on", empty_execute_on, "Control the output of elemental variables");
     params.addParamNamesToGroup("execute_elemental_on", "Variables");
 
@@ -571,7 +571,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // Scalar variable output
   if (types.contains("scalar"))
   {
-    params.addParam<MultiMooseEnum>(
+    params.addParam<ExecFlagEnum>(
         "execute_scalars_on", empty_execute_on, "Control the output of scalar variables");
     params.addParamNamesToGroup("execute_scalars_on", "Variables");
   }
@@ -594,7 +594,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // Postprocessors
   if (types.contains("postprocessor"))
   {
-    params.addParam<MultiMooseEnum>(
+    params.addParam<ExecFlagEnum>(
         "execute_postprocessors_on", empty_execute_on, "Control of when postprocessors are output");
     params.addParamNamesToGroup("execute_postprocessors_on", "Variables");
   }
@@ -602,7 +602,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // Vector Postprocessors
   if (types.contains("vector_postprocessor"))
   {
-    params.addParam<MultiMooseEnum>("execute_vector_postprocessors_on",
+    params.addParam<ExecFlagEnum>("execute_vector_postprocessors_on",
                                     empty_execute_on,
                                     "Enable/disable the output of VectorPostprocessors");
     params.addParamNamesToGroup("execute_vector_postprocessors_on", "Variables");
@@ -611,7 +611,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // Input file
   if (types.contains("input"))
   {
-    params.addParam<MultiMooseEnum>(
+    params.addParam<ExecFlagEnum>(
         "execute_input_on", empty_execute_on, "Enable/disable the output of the input file");
     params.addParamNamesToGroup("execute_input_on", "Variables");
   }
@@ -619,7 +619,7 @@ AdvancedOutput::addValidParams(InputParameters & params, const MultiMooseEnum & 
   // System Information
   if (types.contains("system_information"))
   {
-    params.addParam<MultiMooseEnum>("execute_system_information_on",
+    params.addParam<ExecFlagEnum>("execute_system_information_on",
                                     empty_execute_on,
                                     "Control when the output of the simulation information occurs");
     params.addParamNamesToGroup("execute_system_information_on", "Variables");
