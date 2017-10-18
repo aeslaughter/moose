@@ -1,0 +1,6 @@
+[Tests]
+  [./heading]
+    type = PythonUnitTest
+    input = test_headings.py
+  [../]
+[]
