@@ -1,6 +1,8 @@
+import importlib
+
 import base
 import common
-import importlib
+import extensions
 
 class MooseMarkdown(base.Translator):
 
@@ -10,13 +12,14 @@ class MooseMarkdown(base.Translator):
         config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
         return config
 
-    def __init__(self, ext=None):
+    def __init__(self, ext=None, **kwargs):
 
-        extensions = ['extensions.core', 'extensions.devel']
+        extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
         if ext is not None:
             extensions += ext
 
         config = self.getConfig()
+        config.update(kwargs)
         reader_extensions = []
         render_extensions = []
         for ext in extensions:

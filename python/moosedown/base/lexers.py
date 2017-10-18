@@ -1,13 +1,12 @@
 import collections
 
-import MooseDocs
-from MooseDocs import tree
+import moosedown
+from moosedown import tree
 from Grammer import Grammer
 
 class Lexer(object):
 
     def tokenize(self, text, parent, grammer, line=1):
-        #gimport pdb; pdb.set_trace()
         n = len(text)
         pos = 0
         mo, pattern = self._search(text, grammer, pos)
