@@ -27,4 +27,9 @@ if __name__ == '__main__':
 - Create an !alert command (alert extension)
 - Create errors by creating an alert token
 - Build unittests for tokens, lexer, grammer, etc.
+- Get list into single regex (unordered vs. ordered)
+- Switch to _italic_ and *bold*
+- Define other format __underline__, -strike through-,
+- Define punctuation -- ---
+- _{foo} and ^{foo} sub and superscript
 """

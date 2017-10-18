@@ -200,33 +200,19 @@ class OrderedList(List):
     TOKEN = tree.tokens.OrderedList
 
 class Format(MarkdownComponent):
-    RE = re.compile(r'(?P<star>\*{1,3})(?P<content>.*)', flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile(r'\=(?P<underline>\S.*?\S)\=|'
+                    r'_(?P<emphasis>\S.*?\S)_|'
+                    r'\*(?P<strong>\S.*?\S)\*|'
+                    r'~(?P<strikethrough>\S.*?\S)~',
+                    flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
-        content = match.group('content')
-        n = len(match.group('star'))
-        token = None
-
-        # Start
-        if len(content) > 0 and content[0] != ' ':
-            if n == 3:
-                token = tree.tokens.Emphasis(tree.tokens.Strong(parent))
-            elif n == 2:
-                token = tree.tokens.Strong(parent)
-            else: # n == 1
-                token = tree.tokens.Emphasis(parent)
-
-        else:
-            if n == 3:
-                token = parent.parent.parent
-            else:
-                token = parent.parent
-
-        grammer = self.reader.lexer.grammer('inline')
-        self.reader.lexer.tokenize(content, token, grammer, line=self.line)
-
-        return token
-
+        for key, content in match.groupdict().iteritems():
+            if content is not None:
+                token = eval('tree.tokens.{}(parent, **self.attributes)'.format(key.title()))
+                grammer = self.reader.lexer.grammer('inline')
+                self.reader.lexer.tokenize(content, token, grammer, line=self.line)
+                return token
 
 class Quote(MarkdownComponent):
     RE = re.compile(r'> (?P<block>.*?)(?=>|\n{3}|\Z)', flags=re.MULTILINE|re.DOTALL)
