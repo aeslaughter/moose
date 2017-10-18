@@ -200,12 +200,12 @@ class OrderedList(List):
     TOKEN = tree.tokens.OrderedList
 
 class Format(MarkdownComponent):
-    RE = re.compile(r'\=(?P<underline>\S.*?\S)\=|'
-                    r'_(?P<emphasis>\S.*?\S)_|'
-                    r'\*(?P<strong>\S.*?\S)\*|'
-                    r'~(?P<strikethrough>\S.*?\S)~|'
-                    r'_{(?P<subscript>.*?)}|'
-                    r'\^{(?P<superscript>.*?)}',
+    RE = re.compile(r'_{(?P<subscript>.*)}|'
+                    r'\^{(?P<superscript>.*)}|'
+                    r'\=(?P<underline>\S.*?\S)\=|'
+                    r'\*(?P<emphasis>\S.*?\S)\*|'
+                    r'\+(?P<strong>\S.*?\S)\+|'
+                    r'~(?P<strikethrough>\S.*?\S)~',
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
