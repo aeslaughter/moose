@@ -20,13 +20,13 @@ class TestFormat(unittest.TestCase):
         return markdown.convert(md)
 
     def testStrong(self):
-        ast = self.ast('*strong*')
+        ast = self.ast('+strong+')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Strong)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "strong")
 
-        ast = self.ast('*strong with space\nand a new line*')
+        ast = self.ast('+strong with space\nand a new line+')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Strong)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
@@ -48,13 +48,13 @@ class TestFormat(unittest.TestCase):
         self.assertEqual(ast(0)(0)(-1).content, "line")
 
     def testEmphasis(self):
-        ast = self.ast('_emphasis_')
+        ast = self.ast('*emphasis*')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Emphasis)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "emphasis")
 
-        ast = self.ast('_emphasis with space\nand a new line_')
+        ast = self.ast('*emphasis with space\nand a new line*')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Emphasis)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
@@ -91,8 +91,36 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
         self.assertEqual(ast(0)(1)(0).content, "x")
 
+    def testSuperscriptAndSubscript(self):
+        ast = self.ast('s_{y^{x}}')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1), tree.tokens.Subscript)
+        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1)(1), tree.tokens.Superscript)
+        self.assertIsInstance(ast(0)(1)(1)(0), tree.tokens.Word)
+        self.assertEqual(ast(0)(1)(1)(0).content, "x")
+
+        ast = self.ast('s^{y^{x}}')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1), tree.tokens.Superscript)
+        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1)(1), tree.tokens.Superscript)
+        self.assertIsInstance(ast(0)(1)(1)(0), tree.tokens.Word)
+        self.assertEqual(ast(0)(1)(1)(0).content, "x")
+
+        ast = self.ast('s^{y_{x}}')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1), tree.tokens.Superscript)
+        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1)(1), tree.tokens.Subscript)
+        self.assertIsInstance(ast(0)(1)(1)(0), tree.tokens.Word)
+        self.assertEqual(ast(0)(1)(1)(0).content, "x")
+
     def testNesting(self):
-        ast = self.ast('=_emphasis_ underline=')
+        ast = self.ast('=*emphasis* underline=')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Underline)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.Emphasis)
@@ -100,7 +128,7 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(0)(2), tree.tokens.Word)
         self.assertEqual(ast(0)(0)(2).content, "underline")
 
-        ast = self.ast('_=underline= emphasis_')
+        ast = self.ast('*=underline= emphasis*')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Emphasis)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.Underline)
@@ -108,12 +136,26 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(0)(2), tree.tokens.Word)
         self.assertEqual(ast(0)(0)(2).content, "emphasis")
 
-        ast = self.ast('_=*~strike~ bold* under= emphasis_')
+        ast = self.ast('*=+~strike~ bold+ under= emphasis*')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Emphasis)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.Underline)
         self.assertIsInstance(ast(0)(0)(0)(0), tree.tokens.Strong)
         self.assertIsInstance(ast(0)(0)(0)(0)(0), tree.tokens.Strikethrough)
+
+        ast = self.ast('s_{*emphasis*}')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1), tree.tokens.Subscript)
+        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Emphasis)
+        self.assertEqual(ast(0)(1)(0)(0).content, "emphasis")
+
+        ast = self.ast('*s_{x}*')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Emphasis)
+        self.assertIsInstance(ast(0)(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(0)(1), tree.tokens.Subscript)
+        self.assertEqual(ast(0)(0)(1)(0).content, "x")
 
 
 
