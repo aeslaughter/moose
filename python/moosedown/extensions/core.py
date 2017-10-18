@@ -4,22 +4,21 @@ with the CommonMark standard (http://spec.commonmark.org/).
 """
 import re
 
-import MooseDocs
-from MooseDocs import common
-from MooseDocs import tree
-from Extension import MarkdownExtension, RenderExtension
-from Component import TokenComponent, RenderComponent, TokenComponent
+import moosedown
+from moosedown import base
+from moosedown import common
+from moosedown import tree
 
 SHORTCUT_DATABASE = dict()
 
 def make_extension():
     return CoreMarkdownExtension(), CoreRenderExtension()
 
-class CoreMarkdownExtension(MarkdownExtension):
+class CoreMarkdownExtension(base.MarkdownExtension):
 
     @staticmethod
     def getConfig():
-        config = MarkdownExtension.getConfig()
+        config = base.MarkdownExtension.getConfig()
         return config
 
     def extend(self):
@@ -46,10 +45,10 @@ class CoreMarkdownExtension(MarkdownExtension):
         self.addInline(Break())
         self.addInline(Space())
 
-class MarkdownComponent(TokenComponent):
+class MarkdownComponent(base.TokenComponent):
     @staticmethod
     def defaultSettings():
-        settings = TokenComponent.defaultSettings()
+        settings = base.TokenComponent.defaultSettings()
         settings['style'] = ('', "The style settings that are passed to the HTML flags.")
         settings['class'] = ('', "The class settings to be passed to the HTML flags.")
         settings['id'] = ('', "The class settings to be passed to the HTML flags.")
@@ -67,10 +66,10 @@ class Command(MarkdownComponent):
         cmd = (match.group('command'), match.group('subcommand'))
 
         #TODO: Error check
-        if cmd not in MarkdownExtension.__COMMANDS__:
+        if cmd not in base.MarkdownExtension.__COMMANDS__:
             return tree.tokens.String(parent, match.group())
 
-        obj = MarkdownExtension.__COMMANDS__[cmd]
+        obj = base.MarkdownExtension.__COMMANDS__[cmd]
         obj.settings = self.settings
         obj.line = self.line
         token = obj.createToken(match, parent)
@@ -235,7 +234,7 @@ class Quote(MarkdownComponent):
         return tree.tokens.Quote(parent)
 
 
-class CoreRenderExtension(RenderExtension):
+class CoreRenderExtension(base.RenderExtension):
     def extend(self):
         self.add(tree.tokens.Heading, RenderHeading())
         self.add(tree.tokens.Code, RenderCode())
@@ -256,7 +255,7 @@ class CoreRenderExtension(RenderExtension):
                   tree.tokens.Number]:
             self.add(t, RenderString())
 
-class CoreRenderComponentBase(RenderComponent):
+class CoreRenderComponentBase(base.RenderComponent):
 
     def createHTML(self, token, parent):
         raise NotImplementedError("Not implement, you probably should.")
@@ -267,7 +266,7 @@ class CoreRenderComponentBase(RenderComponent):
 
 class RenderTag(CoreRenderComponentBase):
     def __init__(self, tag, *args, **kwargs):
-        RenderComponent.__init__(self, *args, **kwargs)
+        CoreRenderComponentBase.__init__(self, *args, **kwargs)
         self.__tag = tag
 
     def createHTML(self, token, parent):
