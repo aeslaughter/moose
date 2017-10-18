@@ -75,6 +75,22 @@ class TestFormat(unittest.TestCase):
         self.assertEqual(ast(0)(0)(0).content, "strikethrough")
         self.assertEqual(ast(0)(0)(-1).content, "line")
 
+    def testSubscript(self):
+        ast = self.ast('S_{x}')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1), tree.tokens.Subscript)
+        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
+        self.assertEqual(ast(0)(1)(0).content, "x")
+
+    def testSuperscript(self):
+        ast = self.ast('S^{x}')
+        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
+        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
+        self.assertIsInstance(ast(0)(1), tree.tokens.Superscript)
+        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
+        self.assertEqual(ast(0)(1)(0).content, "x")
+
     def testNesting(self):
         ast = self.ast('=_emphasis_ underline=')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
@@ -98,6 +114,9 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.Underline)
         self.assertIsInstance(ast(0)(0)(0)(0), tree.tokens.Strong)
         self.assertIsInstance(ast(0)(0)(0)(0)(0), tree.tokens.Strikethrough)
+
+
+
 
 
 if __name__ == '__main__':

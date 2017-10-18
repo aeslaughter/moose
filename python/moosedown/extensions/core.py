@@ -203,7 +203,9 @@ class Format(MarkdownComponent):
     RE = re.compile(r'\=(?P<underline>\S.*?\S)\=|'
                     r'_(?P<emphasis>\S.*?\S)_|'
                     r'\*(?P<strong>\S.*?\S)\*|'
-                    r'~(?P<strikethrough>\S.*?\S)~',
+                    r'~(?P<strikethrough>\S.*?\S)~|'
+                    r'_{(?P<subscript>.*?)}|'
+                    r'\^{(?P<superscript>.*?)}',
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
