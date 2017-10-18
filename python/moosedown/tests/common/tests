@@ -3,4 +3,8 @@
     type = PythonUnitTest
     input = test_storage.py
   [../]
+  [./parse_settings]
+    type = PythonUnitTest
+    input = test_parse_settings.py
+  [../]
 []

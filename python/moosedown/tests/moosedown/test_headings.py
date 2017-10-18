@@ -5,17 +5,15 @@ import mock
 
 from MooseDocs import MooseMarkdown
 from MooseDocs import tree
-#logging.basicConfig()
-
 
 class TestHeadings(unittest.TestCase):
 
     def ast(self, md):
-        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
+        markdown = MooseMarkdown.MooseMarkdown()
         return markdown.ast(md)
 
     def html(self, md):
-        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
+        markdown = MooseMarkdown.MooseMarkdown()
         return markdown.convert(md)
 
     def testBasic(self):

@@ -1,0 +1,10 @@
+[Tests]
+  [./base]
+    type = PythonUnitTest
+    input = test_base.py
+  [../]
+  [./tokens]
+    type = PythonUnitTest
+    input = test_tokens.py
+  [../]
+[]
