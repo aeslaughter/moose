@@ -7,6 +7,9 @@ from moosedown import MooseMarkdown
 from moosedown import tree
 
 class TestHeadings(unittest.TestCase):
+    """
+    Tests that hash style headings (#) are converted.
+    """
 
     def ast(self, md):
         markdown = MooseMarkdown.MooseMarkdown(materialize=False)

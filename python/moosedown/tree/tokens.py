@@ -164,5 +164,11 @@ class Strong(Token):
 class Emphasis(Token):
     pass
 
+class Underline(Token):
+    pass
+
+class Strikethrough(Token):
+    pass
+
 class Quote(Token):
     pass

@@ -3,4 +3,8 @@
     type = PythonUnitTest
     input = test_headings.py
   [../]
+  [./format]
+    type = PythonUnitTest
+    input = test_format.py
+  [../]
 []
