@@ -4,9 +4,8 @@ Tools primarily for developers of the MooseDown system.
 import re
 import uuid
 
-from MooseDocs import tree
-from MooseDocs.extensions.Component import RenderComponent, CommandComponent
-from Extension import MarkdownExtension, RenderExtension
+from moosedown import base
+from moosedown import tree
 
 def make_extension():
     return DevelMarkdownExtension(), DevelRenderExtension()
@@ -22,11 +21,11 @@ class Compare(tree.tokens.Token):
         return '{}: md={} html={}'.format(self.name, self.markdown, self.html)
 
 
-class DevelMarkdownExtension(MarkdownExtension):
+class DevelMarkdownExtension(base.MarkdownExtension):
     def extend(self):
         self.addCommand(CodeCompare())
 
-class CodeCompare(CommandComponent):
+class CodeCompare(base.CommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'moosedown'
 
@@ -36,11 +35,11 @@ class CodeCompare(CommandComponent):
         return Compare(parent, markdown=md, html=html)
 
 
-class DevelRenderExtension(RenderExtension):
+class DevelRenderExtension(base.RenderExtension):
     def extend(self):
         self.add(Compare, RenderCompare())
 
-class RenderCompare(RenderComponent):
+class RenderCompare(base.RenderComponent):
 
     def createHTML(self, token, parent):
         master = tree.html.Tag('div', parent, class_='moose-code-compare')
