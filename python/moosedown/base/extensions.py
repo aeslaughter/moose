@@ -1,5 +1,9 @@
-import MooseDocs
-from MooseDocs import common
+import logging
+
+import moosedown
+from moosedown import common
+
+LOG = logging.getLogger(__name__)
 
 class Extension(object):
     @staticmethod
@@ -103,8 +107,8 @@ class MarkdownExtension(TokenExtension):
 
     def addBlock(self, component, location='_end'):
         name = component.__class__.__name__
-        super(MarkdownExtension, self).add(MooseDocs.BLOCK, name, component, location)
+        super(MarkdownExtension, self).add(moosedown.BLOCK, name, component, location)
 
     def addInline(self, component, location='_end'):
         name = component.__class__.__name__
-        super(MarkdownExtension, self).add(MooseDocs.INLINE, name, component, location)
+        super(MarkdownExtension, self).add(moosedown.INLINE, name, component, location)

@@ -3,17 +3,17 @@ import unittest
 import logging
 import mock
 
-from MooseDocs import MooseMarkdown
-from MooseDocs import tree
+from moosedown import MooseMarkdown
+from moosedown import tree
 
 class TestHeadings(unittest.TestCase):
 
     def ast(self, md):
-        markdown = MooseMarkdown.MooseMarkdown()
+        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
         return markdown.ast(md)
 
     def html(self, md):
-        markdown = MooseMarkdown.MooseMarkdown()
+        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
         return markdown.convert(md)
 
     def testBasic(self):
