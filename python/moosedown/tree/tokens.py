@@ -172,3 +172,9 @@ class Strikethrough(Token):
 
 class Quote(Token):
     pass
+
+class Superscript(Token):
+    pass
+
+class Subscript(Token):
+    pass
