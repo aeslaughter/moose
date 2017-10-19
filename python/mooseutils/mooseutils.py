@@ -4,6 +4,7 @@ import re
 import collections
 import math
 import errno
+import difflib
 import multiprocessing
 
 def colorText(string, color, **kwargs):
@@ -232,3 +233,25 @@ def camel_to_space(text):
         index = match.start(0)
     out.append(text[index:])
     return ' '.join(out)
+
+def text_diff(text, gold):
+    """
+    Helper for creating nicely formatted text diff message.
+
+    Inputs:
+        text[list|str]: A list of strings or single string to compare.
+        gold[list|str]: The "gold" standard to which the first arguments is to be compared against.
+    """
+
+    # Convert to line
+    if isinstance(text, str):
+        text = text.splitlines(True)
+    if isinstance(gold, str):
+        gold = gold.splitlines(True)
+
+    # Perform diff
+    result = list(difflib.ndiff(gold, text))
+    n = len(max(result, key=len))
+    msg = "\nThe supplied text differs from the gold as follows:\n{0}\n{1}\n{0}" \
+         .format('~'*n, '\n'.join(result).encode('utf-8'))
+    return msg

@@ -18,8 +18,8 @@ class Tag(NodeBase):
 
     def write(self):
         out = ''
-        if self.attributes:
-            attr = ' '.join(['{}={}'.format(key, str(value)) for key, value in self.attributes.iteritems() if value])
+        attr = ' '.join(['{}={}'.format(key, str(value)) for key, value in self.attributes.iteritems() if value])
+        if attr:
             out += '<{} {}>'.format(self.name, attr)
         else:
             out += '<{}>'.format(self.name)

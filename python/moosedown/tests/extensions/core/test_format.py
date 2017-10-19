@@ -3,6 +3,8 @@ import unittest
 import logging
 import mock
 
+from mooseutils import text_diff
+
 from moosedown import MooseMarkdown
 from moosedown import tree
 
@@ -10,14 +12,18 @@ class TestFormat(unittest.TestCase):
     """
     Test inline formatting (e.g., *bold*, _italic_, etc.)
     """
+    def setUp(self):
+        self._markdown = MooseMarkdown.MooseMarkdown(materialize=False)
 
     def ast(self, md):
-        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
-        return markdown.ast(md)
+        return self._markdown.ast(md)
 
-    def html(self, md):
-        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
-        return markdown.convert(md)
+    def html(self, ast):
+        return self._markdown.renderer.render(ast)
+
+    def assertHTML(self, ast, gold):
+        html = self.html(ast).write()
+        self.assertEqual(html, gold, text_diff(html, gold))
 
     def testStrong(self):
         ast = self.ast('+strong+')
@@ -26,12 +32,16 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "strong")
 
+        self.assertHTML(ast, '<body><p><strong>strong</strong></p></body>')
+
         ast = self.ast('+strong with space\nand a new line+')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Strong)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "strong")
         self.assertEqual(ast(0)(0)(-1).content, "line")
+
+
 
     def testUnderline(self):
         ast = self.ast('=underline=')

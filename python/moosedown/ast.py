@@ -22,6 +22,10 @@ if __name__ == '__main__':
 
 
 """
+- Add required attributes (e.g., href)
+  class Link(...):
+      REQUIRED_ATTRIBUTES = ['href']
+
 - Setup config file
 - Create text/file node
 - Create an !alert command (alert extension)
@@ -29,4 +33,12 @@ if __name__ == '__main__':
 - Build unittests for tokens, lexer, grammer, etc.
 - Get list into single regex (unordered vs. ordered)
 - Define punctuation -- ---
+- Make tabs an extension (include up until \n\n\n)
+  !tabs
+  ~~~Title~~~
+  ```markdown
+  foo
+  ```
+  ~~~Another~~~
+  Some text ... these each get processed as markdown
 """
