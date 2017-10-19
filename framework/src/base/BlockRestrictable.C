@@ -21,6 +21,7 @@
 #include "MooseVariable.h"
 #include "SystemBase.h"
 #include "Conversion.h"
+#include "MooseVariableInterface.h"
 
 template <>
 InputParameters
@@ -104,29 +105,8 @@ BlockRestrictable::initializeBlockRestrictable(const MooseObject * moose_object)
       _blk_ids.insert(Moose::ANY_BLOCK_ID);
     else
       _blk_ids.insert(vec_ids.begin(), vec_ids.end());
-
-    // Check that supplied blocks are within the variable domain
-    if (parameters.isParamValid("variable") &&
-        (parameters.have_parameter<NonlinearVariableName>("variable") ||
-         parameters.have_parameter<AuxVariableName>("variable")))
-    {
-      // A pointer to the variable class
-      std::set<SubdomainID> var_ids = variableSubdomainIDs(parameters);
-
-      // Test if the variable blockIDs are valid for this object
-      if (!isBlockSubset(var_ids))
-        mooseError("In object ",
-                   _blk_name,
-                   " the defined blocks are outside of the domain of the variable");
-    }
   }
 
-  // The 'block' input parameter is undefined, if the object contains a variable, set the subdomain
-  // ids to those of the variable
-  else if (parameters.isParamValid("variable") &&
-           (parameters.have_parameter<NonlinearVariableName>("variable") ||
-            parameters.have_parameter<AuxVariableName>("variable")))
-    _blk_ids = variableSubdomainIDs(parameters);
 
   // Produce error if the object is not allowed to be both block and boundary restricted
   if (!_blk_dual_restrictable && !_boundary_ids.empty() && !_boundary_ids.empty())

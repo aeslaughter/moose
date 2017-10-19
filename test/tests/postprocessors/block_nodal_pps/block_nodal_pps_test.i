@@ -18,6 +18,7 @@
   [./diff_u]
     type = Diffusion
     variable = u
+    block = 1
   [../]
   [./diff_v]
     type = Diffusion
@@ -63,9 +64,6 @@
 
 [Executioner]
   type = Steady
-
-  # Preconditioned JFNK (default)
-  solve_type = 'PJFNK'
 []
 
 [Outputs]

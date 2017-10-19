@@ -23,6 +23,7 @@
   [./diff_u]
     type = Diffusion
     variable = u
+    block = 1
   [../]
 
   [./diff_v]

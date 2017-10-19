@@ -48,10 +48,12 @@
   [./diff]
     type = Diffusion
     variable = u
+    block = '1 2'
   [../]
   [./dt]
     type = TimeDerivative
     variable = u
+    block = '1 2'
   [../]
 []
 

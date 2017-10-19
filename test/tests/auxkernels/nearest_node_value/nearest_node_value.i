@@ -43,6 +43,7 @@
     boundary = leftright
     paired_variable = u
     paired_boundary = rightleft
+    block = left
   [../]
 []
 

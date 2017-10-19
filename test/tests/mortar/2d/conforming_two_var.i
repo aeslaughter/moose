@@ -52,20 +52,24 @@
   [./diff_u]
     type = Diffusion
     variable = u
+    block = '1 2'
   [../]
   [./ffn]
     type = BodyForce
     variable = u
     function = ffn
+    block = '1 2'
   [../]
   [./diff_v]
     type = Diffusion
     variable = v
+    block = '1 2'
   [../]
   [./coupled_u]
     type = CoupledForce
     variable = v
     v = u
+    block = '1 2'
   [../]
 []
 

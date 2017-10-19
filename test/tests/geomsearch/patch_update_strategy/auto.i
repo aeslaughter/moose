@@ -33,10 +33,12 @@
     type = CoefDiffusion
     variable = u
     coef = 1
+    block = right
   [../]
   [./time]
     type = TimeDerivative
     variable = u
+    block = right
   [../]
 []
 
@@ -104,4 +106,3 @@
 [Outputs]
   exodus = true
 []
-

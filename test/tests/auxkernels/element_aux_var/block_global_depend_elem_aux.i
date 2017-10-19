@@ -50,6 +50,7 @@
     value = 8
     operator = /
     coupled = two
+    block = 1
   [../]
 
   [./coupled_right]
@@ -58,6 +59,7 @@
     value = 8
     operator = /
     coupled = two
+    block = 2
   [../]
 
   [./two]

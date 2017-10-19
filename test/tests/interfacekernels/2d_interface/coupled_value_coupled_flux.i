@@ -58,6 +58,7 @@
     type = BodyForce
     variable = u
     value = 1
+    block = 0
   [../]
 []
 

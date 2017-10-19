@@ -30,15 +30,18 @@
   [./diff_u]
     type = Diffusion
     variable = u
+    block = 1
   [../]
   [./conv_v]
     type = CoupledForce
     variable = v
     v = u
+    block = 1
   [../]
   [./diff_v]
     type = Diffusion
     variable = v
+    block = 1
   [../]
 []
 

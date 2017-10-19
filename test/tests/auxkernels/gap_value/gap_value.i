@@ -45,6 +45,7 @@
     type = GapValueAux
     variable = gap_value
     boundary = leftright
+    block = left
     paired_variable = u
     paired_boundary = rightleft
   [../]

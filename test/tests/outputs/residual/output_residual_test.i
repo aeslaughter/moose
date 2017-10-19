@@ -62,11 +62,13 @@
   [./ie_v]
     type = TimeDerivative
     variable = v
+    block = 1
   [../]
 
   [./diff_v]
     type = Diffusion
     variable = v
+    block = 1
   [../]
 
 []

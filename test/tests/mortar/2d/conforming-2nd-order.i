@@ -39,11 +39,13 @@
   [./diff]
     type = Diffusion
     variable = u
+    block = '1 2'
   [../]
   [./ffn]
     type = BodyForce
     variable = u
     function = ffn
+    block = '1 2'
   [../]
 []
 
