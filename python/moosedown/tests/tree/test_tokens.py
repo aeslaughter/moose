@@ -28,6 +28,36 @@ class TestTokens(unittest.TestCase):
         token = tokens.Unknown(None, content="content")
         self.assertEqual(token.content, "content")
 
+    def testWord(self):
+        token = tokens.Word(None, content="content")
+        self.assertEqual(token.content, "content")
+
+    def testSpace(self):
+        token = tokens.Space(None)
+        self.assertEqual(token.content, ' ')
+        self.assertEqual(token.count, 1)
+
+        token = tokens.Space(None, count=42)
+        self.assertEqual(token.content, ' ')
+        self.assertEqual(token.count, 42)
+
+        with self.assertRaises(TypeError) as e:
+            token = tokens.Space(None, count='not int')
+        self.assertIn('The count must be an int', e.exception.message)
+
+    def testBreak(self):
+        token = tokens.Break(None)
+        self.assertEqual(token.content, '\n')
+        self.assertEqual(token.count, 1)
+
+        token = tokens.Break(None, count=42)
+        self.assertEqual(token.content, '\n')
+        self.assertEqual(token.count, 42)
+
+        with self.assertRaises(TypeError) as e:
+            token = tokens.Space(None, count='not int')
+        self.assertIn('The count must be an int', e.exception.message)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
