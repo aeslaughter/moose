@@ -22,10 +22,6 @@ if __name__ == '__main__':
 
 
 """
-- Add required attributes (e.g., href)
-  class Link(...):
-      REQUIRED_ATTRIBUTES = ['href']
-
 - Setup config file
 - Create text/file node
 - Create an !alert command (alert extension)

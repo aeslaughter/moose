@@ -13,12 +13,20 @@ class NodeBase(anytree.NodeMixin):
         kwargs: (Optional) Any key, value pairs supplied are stored in the settings property
                 and may be retrieved via the various access methods.
     """
-    def __init__(self, parent=None, **kwargs):
+    REQUIRED_ATTRIBUTES = []
+
+    def __init__(self, parent=None, name=None, **kwargs):
         anytree.NodeMixin.__init__(self)
         self.parent = parent
+        self.name = name if name is not None else self.__class__.__name__
         self.__attributes = dict()
         for key, value in kwargs.iteritems():
             self[key] = value
+
+        for key in self.REQUIRED_ATTRIBUTES:
+            if key not in self:
+                msg = "The key '{}' must be provided to the node {}".format(key, self.name)
+                raise ValueError(msg)
 
     @property
     def attributes(self):
@@ -27,15 +35,28 @@ class NodeBase(anytree.NodeMixin):
         """
         return self.__attributes
 
+    def __contains__(self, key):
+        """
+        Allow "in" to be used for testing for attributes, this all tests that the attribute is
+        not None.
+        """
+        return (key in self.__attributes) and (self.__attributes[key] is not None)
+
     def __setitem__(self, key, value):
+        """
+        Operator[] method for setting attribute.
+        """
         key = key.rstrip('_')
         self.__attributes[key] = value
 
     def __getitem__(self, key):
+        """
+        Operator[] method for getting attribute.
+        """
         try:
             return self.__attributes[key]
         except KeyError:
-            LOG.error('Unknown attribute "%s" in node.', key)
+            LOG.error('Unknown attribute "%s" in node %s', key, self.name)
 
     def __repr__(self):
         """
