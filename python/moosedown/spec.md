@@ -2,7 +2,7 @@
 The following document details the MOOSE flavored [markdown] used for documenting MOOSE and
 MOOSE-based applications with the MooseDocs system.
 
-## Motivation class
+## Motivation
 [markdown] is ubiquitous as a short-hand [HTML] format, especially among software developers.
 However, no standard exists and the original implementation was incomplete. Currently, there are
 myriad implementations---often deemed "flavors"---of Markdown. [CommonMark](http://commonmark.org/)

@@ -47,22 +47,6 @@ class Token(base.NodeBase):
             LOG.error('The supplied line number must be of type "int", but "%s" provided.',
                       type(value).__name__)
 
-class Unknown(Token):
-    """
-    When the Grammer object fails to match a portion of the supplied text then this
-    token will be assigned. This should indicate that your Grammer definition is incomplete.
-    Additionally, this should be used in renderers to produce proper error messages.
-    """
-    def __init__(self, parent, content=None, **kwargs):
-        super(Unknown, self).__init__(parent, **kwargs)
-        self.content = content
-
-    def __repr__(self):
-        """
-        Adds the content to the output for this node.
-        """
-        return '{}: {}'.format(self.name, self.content)
-
 class String(Token):
     def __init__(self, parent, content=None, **kwargs):
         super(String, self).__init__(parent, **kwargs)
@@ -70,6 +54,14 @@ class String(Token):
 
     def __repr__(self):
         return '{}: {}'.format(self.name, repr(self.content))
+
+class Unknown(String):
+    """
+    When the Grammer object fails to match a portion of the supplied text then this
+    token will be assigned. This should indicate that your Grammer definition is incomplete.
+    Additionally, this should be used in renderers to produce proper error messages.
+    """
+    pass
 
 class Word(String):
     pass

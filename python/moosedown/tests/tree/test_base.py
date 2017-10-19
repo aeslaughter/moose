@@ -3,7 +3,7 @@ import unittest
 import logging
 import mock
 
-from MooseDocs.tree import base
+from moosedown.tree import base
 
 class TestNodeBase(unittest.TestCase):
 
@@ -58,6 +58,24 @@ class TestNodeBase(unittest.TestCase):
         child0 = base.NodeBase(root)
         child1 = base.NodeBase(root)
         self.assertEqual(list(root), [child0, child1])
+
+    def testContains(self):
+        node = base.NodeBase(None, name='test', key='value', foo=None)
+        self.assertIn('key', node)
+        self.assertNotIn('foo', node)
+
+        class TestNode(base.NodeBase):
+            REQUIRED_ATTRIBUTES = ['foo']
+        with self.assertRaises(ValueError) as e:
+            node = TestNode(None, name='test', key='value')
+        self.assertIn("The key 'foo'", e.exception.message)
+
+    def testName(self):
+        node = base.NodeBase(None, name='test')
+        self.assertEqual(node.name, 'test')
+
+        node = base.NodeBase(None)
+        self.assertEqual(node.name, 'NodeBase')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
