@@ -48,9 +48,18 @@ class Token(base.NodeBase):
                       type(value).__name__)
 
 class String(Token):
+    """
+    Base class for all tokens meant to contain characters.
+
+    The content must be supplied upon construction and isn't designed to be modified.
+    """
     def __init__(self, parent, content=None, **kwargs):
         super(String, self).__init__(parent, **kwargs)
-        self.content = content
+        self._content = content
+
+    @property
+    def content(self):
+        return self._content
 
     def __repr__(self):
         return '{}: {}'.format(self.name, repr(self.content))
@@ -64,27 +73,41 @@ class Unknown(String):
     pass
 
 class Word(String):
+    """
+    Letters without any spaces.
+    """
     pass
 
 class Space(String):
-    def __init__(self, parent, count=None, **kwargs):
-        super(Space, self).__init__(parent, **kwargs)
-        self.content = ' '
-        self.count = count
+    """
+    Space token that can define the number of space via count property.
+    """
+    def __init__(self, parent, count=1, **kwargs):
+        super(Space, self).__init__(parent,  **kwargs)
+        self._content = ' '
+        self.__count = None
+        self.count = count # Use setter so type checking is applied
+
+    @property
+    def count(self):
+        return self.__count
+
+    @count.setter
+    def count(self, value):
+        if not isinstance(value, int):
+            raise TypeError("The count must be an integer, but provided {}".format(type(value)))
+        self.__count = value
 
     def __repr__(self):
         return '{}: count={}'.format(self.name, self.count)
 
 class Break(Space):
-    def __init__(self, parent, count=None, **kwargs):
+    """
+    Line breaks that can define the number of breaks via count property.
+    """
+    def __init__(self, parent, count=1, **kwargs):
         super(Break, self).__init__(parent, count=count, **kwargs)
-        self.content = '\n'
-
-
-class Indent(String):
-    pass
-    #def __init__(self, **kwargs):
-    #    super(Indent, self).__init__()
+        self._content = '\n'
 
 class Punctuation(String):
     pass
