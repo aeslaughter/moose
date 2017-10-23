@@ -314,6 +314,11 @@ public:
    */
   std::vector<std::string> getConstructedObjects() const;
 
+  /**
+   * Return complete set of MooseObjects.
+   */
+  const std::set<MooseObject *> & getMooseObjects() const { return _moose_objects; }
+
   ///@{
   /**
    * Allow objects to be deprecated via function call.
@@ -362,6 +367,9 @@ protected:
 
   /// Constructed Moose Object types
   std::set<std::string> _constructed_types;
+
+  /// Storage for all MooseObjects (used for error checking)
+  std::set<MooseObject *> _moose_objects;
 };
 
 #endif /* FACTORY_H */

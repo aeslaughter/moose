@@ -28,6 +28,9 @@ public:
   CheckIntegrityAction(InputParameters params);
 
   virtual void act() override;
+
+protected:
+  void checkBlocks(MooseObject * moose_object);
 };
 
 #endif // CHECKINTEGRITYACTION_H

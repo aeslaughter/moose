@@ -75,7 +75,10 @@ Factory::create(const std::string & obj_name,
   // Actually call the function pointer.  You can do this in one line,
   // but it's a bit more obvious what's happening if you do it in two...
   buildPtr & func = it->second;
-  return (*func)(params);
+  MooseObjectPtr ptr = (*func)(params);
+  _moose_objects.insert(
+      ptr.get()); // store the object for error checking (see CheckIntegrityAction)
+  return ptr;
 }
 
 void
