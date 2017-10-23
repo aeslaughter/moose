@@ -5,6 +5,31 @@ import mock
 
 from moosedown.tree import base
 
+class TestProperty(unittest.TestCase):
+
+    def testBasic(self):
+        prop = base.Property('foo')
+        self.assertEqual(prop.key, 'foo')
+        self.assertEqual(prop.default, None)
+        self.assertEqual(prop.type, None)
+
+    def testDefault(self):
+        prop = base.Property('foo', 42)
+        self.assertEqual(prop.key, 'foo')
+        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.type, None)
+
+    def testType(self):
+        prop = base.Property('foo', 42, int)
+        self.assertEqual(prop.key, 'foo')
+        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.type, int)
+
+    def testConstructTypeError(self):
+        with self.assertRaises(TypeError) as e:
+            base.Property('foo', 42, str)
+        self.assertIn("must be of type 'str'", e.exception.message)
+
 class TestNodeBase(unittest.TestCase):
 
     def testRoot(self):
@@ -76,6 +101,16 @@ class TestNodeBase(unittest.TestCase):
 
         node = base.NodeBase(None)
         self.assertEqual(node.name, 'NodeBase')
+
+    def testProperties(self):
+
+        class Foo(base.NodeBase):
+            PROPERTIES = [base.Property('bar'), base.Property('bar2', 1980)]
+
+        foo = Foo()
+        self.assertTrue(hasattr(foo, 'bar'))
+        foo.bar = 42
+        self.assertEqual(foo.bar, 42)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

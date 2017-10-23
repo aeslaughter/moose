@@ -3,6 +3,43 @@ import anytree
 
 LOG = logging.getLogger(__name__)
 
+class Property(object):
+    """
+    Descriptor for creating dynamic, type-checked properties for node classes to avoid
+    creating endless setters and getters.
+    """
+    def __init__(self, key, default=None, ptype=None):
+        self.__key = key
+
+        if (default is not None) and (ptype is not None) and (not isinstance(default, ptype)):
+            raise TypeError("The supplied property value must be of type '{}', but '{}' was"
+                            "provided.".format(ptype.__name__, type(default).__name__))
+
+        self.__default = default
+        self.__type = ptype
+
+    def __set__(self, ins, key, value):
+        if (self.__type is not None) and (not isinstance(value, self.__type)):
+            raise TypeError("The supplied property value must be of type '{}', but '{}' was"
+                            "provided.".format(self.__type.__name__, type(value).__name__))
+        ins[key] = value
+
+    def __get__(self, ins, key):
+        return ins.get(key, self.__default)
+
+    @property
+    def key(self):
+        return self.__key
+
+    @property
+    def default(self):
+        return self.__default
+
+    @property
+    def type(self):
+        return self.__type
+
+
 class NodeBase(anytree.NodeMixin):
     """
     Base class for tree nodes that accepts arbitrary attributes.
@@ -13,6 +50,7 @@ class NodeBase(anytree.NodeMixin):
         kwargs: (Optional) Any key, value pairs supplied are stored in the settings property
                 and may be retrieved via the various access methods.
     """
+    PROPERTIES = []
     REQUIRED_ATTRIBUTES = []
 
     def __init__(self, parent=None, name=None, **kwargs):
@@ -20,9 +58,20 @@ class NodeBase(anytree.NodeMixin):
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
         self.__attributes = dict()
+
+        # Add properties
+        if not isinstance(self.PROPERTIES, list):
+            raise TypeError("The PROPERTIES class attribute must be a list.")
+        for prop in self.PROPERTIES:
+            if not isinstance(prop, Property):
+                raise TypeError("The supplied property must of type Property.")
+            setattr(self, prop.key, prop)
+
+        # Insert key, value pairs from constructor
         for key, value in kwargs.iteritems():
             self[key] = value
 
+        # Check for required attributesg
         for key in self.REQUIRED_ATTRIBUTES:
             if key not in self:
                 msg = "The key '{}' must be provided to the node {}".format(key, self.name)
@@ -49,6 +98,12 @@ class NodeBase(anytree.NodeMixin):
         key = key.rstrip('_')
         self.__attributes[key] = value
 
+    def get(self, key, default):
+        """
+        Method for getting attribute given a default.
+        """
+        return self.__attributes.get(key, default)
+
     def __getitem__(self, key):
         """
         Operator[] method for getting attribute.
@@ -63,7 +118,7 @@ class NodeBase(anytree.NodeMixin):
         Prints the name of the token, this works in union with __str__ to print
         the tree structure of any given node.
         """
-        return self.name
+        return '{}: {}'.format(self.name, repr(self.attributes))
 
     def __str__(self):
         """
