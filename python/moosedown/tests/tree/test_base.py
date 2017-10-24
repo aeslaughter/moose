@@ -53,13 +53,18 @@ class TestNodeBase(unittest.TestCase):
         self.assertIn('A child node with index', args[0])
 
     def testAttributes(self):
+        class Date(base.NodeBase):
+            month = base.Property('month')
+            day = base.Property('day')
+            year = base.Property('year')
+
         items = dict(month='june', day=24, year=1980)
-        node = base.NodeBase(None, **items)
+        node = Date(**items)
         self.assertEqual(node.attributes, items)
 
-        node['month'] = 'august'
+        node.month = 'august'
         self.assertNotEqual(node.attributes, items)
-        self.assertEqual(node['month'], 'august')
+        self.assertEqual(node.month, 'august')
 
         items['month'] = 'august'
         self.assertEqual(node.attributes, items)
@@ -105,12 +110,31 @@ class TestNodeBase(unittest.TestCase):
     def testProperties(self):
 
         class Foo(base.NodeBase):
-            PROPERTIES = [base.Property('bar'), base.Property('bar2', 1980)]
+            PROPERTIES = [base.Property('bar'),
+                          base.Property('bar2', 1980),
+                          base.Property('one', 1, int)]
 
         foo = Foo()
         self.assertTrue(hasattr(foo, 'bar'))
         foo.bar = 42
         self.assertEqual(foo.bar, 42)
+
+        self.assertEqual(foo.bar2, 1980)
+        foo.bar2 = 1981
+        x = foo.bar2
+        self.assertEqual(foo.bar2, 1981)
+
+        self.assertEqual(foo.one, 1)
+        with self.assertRaises(TypeError) as e:
+            foo.one = 1.1
+        self.assertIn("'one' must be of type 'int'", e.exception.message)
+
+        with self.assertRaises(TypeError) as e:
+            class Foo2(base.NodeBase):
+                PROPERTIES = [base.Property('bar', 1, str)]
+        self.assertIn("'bar' must be of type 'str'", e.exception.message)
+
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
