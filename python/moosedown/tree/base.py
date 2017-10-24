@@ -1,3 +1,4 @@
+import copy
 import logging
 import anytree
 
@@ -5,44 +6,54 @@ LOG = logging.getLogger(__name__)
 
 class Property(object):
     """
-    Descriptor for creating dynamic, type-checked properties for node classes to avoid
-    creating endless setters and getters.
+    A helper object for creating attributes for the NodeBase class defined below.
+
+    A system using this object and the NodeBase class was created to allow for dynamic attribute
+    access to properties on nodes that allows defaults, types, and a required status to be
+    defined for the properties.
+
+    When developing the tokens it was desirable to create properties (via @property) etc. to
+    access token data, but it became a bit tedious so an automatic method was created, see
+    the documentation on the NodeBase class for information on using the automatic system.
     """
-    def __init__(self, key, default=None, ptype=None):
-        self.__key = key
-
-        if (default is not None) and (ptype is not None) and (not isinstance(default, ptype)):
-            raise TypeError("The supplied property value must be of type '{}', but '{}' was"
-                            "provided.".format(ptype.__name__, type(default).__name__))
-
-        self.__default = default
+    def __init__(self, name, default=None, ptype=None, required=False):
+        self.__name = name
         self.__type = ptype
+        self.__required = required
+        self.__value = None
+        self.value = default # use the setter to type checking occurs
 
-    def __set__(self, ins, key, value):
+    @property
+    def name(self):
+        """The property name."""
+        return self.__name
+
+    @property
+    def value(self):
+        """The property value."""
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        """Type checking setter for the property value."""
         if (self.__type is not None) and (not isinstance(value, self.__type)):
-            raise TypeError("The supplied property value must be of type '{}', but '{}' was"
-                            "provided.".format(self.__type.__name__, type(value).__name__))
-        ins[key] = value
-
-    def __get__(self, ins, key):
-        return ins.get(key, self.__default)
-
-    @property
-    def key(self):
-        return self.__key
-
-    @property
-    def default(self):
-        return self.__default
+            msg = "The supplied property '{}' must be of type '{}', but '{}' was provided."
+            raise TypeError(msg.format(self.name, self.type.__name__, type(value).__name__))
+        self.__value = value
 
     @property
     def type(self):
+        """The required property type."""
         return self.__type
 
+    @property
+    def required(self):
+        """Return the required status for the property."""
+        return self.__required
 
 class NodeBase(anytree.NodeMixin):
     """
-    Base class for tree nodes that accepts arbitrary attributes.
+    Base class for tree nodes that accepts defined properties.
 
     Inputs:
         parent[NodeBase]: (Optional) Set the parent node of the node being created, if not
@@ -51,67 +62,77 @@ class NodeBase(anytree.NodeMixin):
                 and may be retrieved via the various access methods.
     """
     PROPERTIES = []
-    REQUIRED_ATTRIBUTES = []
 
     def __init__(self, parent=None, name=None, **kwargs):
         anytree.NodeMixin.__init__(self)
+        self.__properties = dict()
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
-        self.__attributes = dict()
 
-        # Add properties
+        # Check the type of the class variable PROPERTIES
         if not isinstance(self.PROPERTIES, list):
             raise TypeError("The PROPERTIES class attribute must be a list.")
+
         for prop in self.PROPERTIES:
             if not isinstance(prop, Property):
-                raise TypeError("The supplied property must of type Property.")
-            setattr(self, prop.key, prop)
+                msg = "The supplied property '{}' must of type Property."
+                raise TypeError(msg.format(prop.name))
+            if prop.required and prop.value is None:
+                msg = "The supplied property '{}' must be supplied a value."
+                raise TypeError(msg.format(prop.name))
+            self.__properties[prop.name] = copy.copy(prop) # create a new Property instance
 
-        # Insert key, value pairs from constructor
-        for key, value in kwargs.iteritems():
-            self[key] = value
+    def __getattr__(self, key):
+        if key in self.__properties:
+            return self.__properties[key].value
 
-        # Check for required attributesg
-        for key in self.REQUIRED_ATTRIBUTES:
-            if key not in self:
-                msg = "The key '{}' must be provided to the node {}".format(key, self.name)
-                raise ValueError(msg)
+    def __setattr__(self, key, value):
+        if hasattr(self, '__properties') and (key in self.__properties):
+            prop = self.__properties[key]
+            prop.value = value
+        else:
+            super(NodeBase, self).__setattr__(key, value)
 
-    @property
-    def attributes(self):
-        """
-        Return the attributes dict.
-        """
-        return self.__attributes
+
+    #@property
+    #def attributes(self):
+    #    """
+    #    Return the attributes dict.
+    #    """
+    #    return self.__attributes
 
     def __contains__(self, key):
         """
         Allow "in" to be used for testing for attributes, this all tests that the attribute is
         not None.
         """
-        return (key in self.__attributes) and (self.__attributes[key] is not None)
+        return (key in self.attributes) and (self.attributes[key] is not None)
 
-    def __setitem__(self, key, value):
-        """
-        Operator[] method for setting attribute.
-        """
-        key = key.rstrip('_')
-        self.__attributes[key] = value
+    #def __setitem__(self, key, value):
+    #    """
+    #    Operator[] method for setting attribute.
+    #    """
+    #    try:
+    #        key = key.rstrip('_')
+    #        attr = getattr(self, key)
+    #        attr = value
+    #    except:
+    #        raise KeyError('Unknown attribute "{}" in node {}'.format(key, self.name))
 
-    def get(self, key, default):
-        """
-        Method for getting attribute given a default.
-        """
-        return self.__attributes.get(key, default)
+    #def get(self, key, default):
+    #    """
+    #    Method for getting attribute given a default.
+    #    """
+    #    return self.__attributes.get(key, default)
 
-    def __getitem__(self, key):
-        """
-        Operator[] method for getting attribute.
-        """
-        try:
-            return self.__attributes[key]
-        except KeyError:
-            LOG.error('Unknown attribute "%s" in node %s', key, self.name)
+    #def __getitem__(self, key):
+    #    """
+    #    Operator[] method for getting attribute.
+    #    """
+    #    try:
+    #        return self.__attributes[key]
+    #    except KeyError:
+    #        LOG.error('Unknown attribute "%s" in node %s', key, self.name)
 
     def __repr__(self):
         """
