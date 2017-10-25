@@ -229,6 +229,9 @@ class OrderedList(List):
     TOKEN = tree.tokens.OrderedList
 
 class Format(MarkdownComponent):
+    """
+    Inline text settings (e.g., underline, emphasis).
+    """
     RE = re.compile(r'_{(?P<subscript>.*)}|'
                     r'\^{(?P<superscript>.*)}|'
                     r'\=(?P<underline>\S.*?\S)\=|'
@@ -253,21 +256,26 @@ class Quote(MarkdownComponent):
 
 class CoreRenderExtension(base.RenderExtension):
     def extend(self):
+
         self.add(tree.tokens.Heading, RenderHeading())
         self.add(tree.tokens.Code, RenderCode())
-
         self.add(tree.tokens.ShortcutLink, RenderShortcutLink())
         self.add(tree.tokens.InlineCode, RenderBacktick())
+        self.add(tree.tokens.Break, RenderBreak())
 
         self.add(tree.tokens.Link, RenderTag('a'))
         self.add(tree.tokens.Paragraph, RenderTag('p'))
         self.add(tree.tokens.UnorderedList, RenderTag('ul'))
         self.add(tree.tokens.OrderedList, RenderTag('ol'))
         self.add(tree.tokens.ListItem, RenderTag('li'))
-        self.add(tree.tokens.Strong, RenderTag('strong'))
-        self.add(tree.tokens.Emphasis, RenderTag('em'))
         self.add(tree.tokens.Quote, RenderTag('blockquote'))
-        self.add(tree.tokens.Break, RenderBreak())
+        self.add(tree.tokens.Strong, RenderTag('strong'))
+        self.add(tree.tokens.Underline, RenderTag('u'))
+        self.add(tree.tokens.Emphasis, RenderTag('em'))
+        self.add(tree.tokens.Strikethrough, RenderTag('strike'))
+        self.add(tree.tokens.Superscript, RenderTag('sup'))
+        self.add(tree.tokens.Subscript, RenderTag('sub'))
+
 
         for t in [tree.tokens.Word, tree.tokens.Space, tree.tokens.Punctuation, tree.tokens.Number]:
             self.add(t, RenderString())

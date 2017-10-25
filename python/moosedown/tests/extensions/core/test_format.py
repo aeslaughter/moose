@@ -29,7 +29,6 @@ class TestFormat(testing.MarkdownTestCase):
         self.assertEqual(ast(0)(0)(-1).content, "line")
 
         h = self.html(ast)(0)(0)
-        print h
         self.assertString(h.write(), '<strong>strong with space and a new line</strong>')
 
     def testUnderline(self):
@@ -39,12 +38,18 @@ class TestFormat(testing.MarkdownTestCase):
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "underline")
 
+        h = self.html(ast)(0)(0)
+        self.assertString(h.write(), '<u>underline</u>')
+
         ast = self.ast('=underline with space\nand a new line=')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Underline)
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "underline")
         self.assertEqual(ast(0)(0)(-1).content, "line")
+
+        h = self.html(ast)(0)(0)
+        self.assertString(h.write(), '<u>underline with space and a new line</u>')
 
     def testEmphasis(self):
         ast = self.ast('*emphasis*')
