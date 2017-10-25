@@ -26,7 +26,8 @@ class TestTokens(unittest.TestCase):
 
         with self.assertRaises(TypeError) as e:
             token = tokens.String(content=1980)
-        self.assertIn('The content must be a str', e.exception.message)
+        gold = "The supplied property 'content' must be of type 'str', but 'int' was provided."
+        self.assertEqual(e.exception.message, gold)
 
     def testUnknown(self):
         token = tokens.Unknown(content="content")
@@ -47,7 +48,8 @@ class TestTokens(unittest.TestCase):
 
         with self.assertRaises(TypeError) as e:
             token = tokens.Space(count='not int')
-        self.assertIn('The count must be an int', e.exception.message)
+        gold = "The supplied property 'count' must be of type 'int', but 'str' was provided."
+        self.assertEqual(e.exception.message, gold)
 
     def testBreak(self):
         token = tokens.Break()
@@ -60,7 +62,8 @@ class TestTokens(unittest.TestCase):
 
         with self.assertRaises(TypeError) as e:
             token = tokens.Space(count='not int')
-        self.assertIn('The count must be an int', e.exception.message)
+        gold = "The supplied property 'count' must be of type 'int', but 'str' was provided."
+        self.assertEqual(e.exception.message, gold)
 
     def testPunctuation(self):
         token = tokens.Punctuation(content='---')
@@ -80,7 +83,8 @@ class TestTokens(unittest.TestCase):
 
         with self.assertRaises(TypeError) as e:
             token = tokens.Heading(level='not int')
-        self.assertIn('The level must be an int', e.exception.message)
+        gold = "The supplied property 'level' must be of type 'int', but 'str' was provided."
+        self.assertEqual(e.exception.message, gold)
 
     def testParagraph(self):
         token = tokens.Paragraph()
@@ -96,7 +100,8 @@ class TestTokens(unittest.TestCase):
 
         with self.assertRaises(TypeError) as e:
             token = tokens.OrderedList(start='not int')
-        self.assertIn('The start must be an int', e.exception.message)
+        gold = "The supplied property 'start' must be of type 'int', but 'str' was provided."
+        self.assertEqual(e.exception.message, gold)
 
     def testListItem(self):
         with self.assertRaises(IOError) as e:
