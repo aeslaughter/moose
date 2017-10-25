@@ -6,25 +6,6 @@ import anytree
 
 LOG = logging.getLogger(__name__)
 
-class properties(object):
-    """
-    Decorator class for dynamic definition of descriptors.
-    """
-    def __init__(self, *props):
-        self._props = props
-
-    def __call__(self, cls):
-        decorator_self = self
-        def wrapper(*args, **kwargs):
-            setattr(cls, 'PROPERTIES', self._props)
-            for prop in self._props:
-                setattr(cls, prop.name, prop)
-            obj = cls(*args, **kwargs)
-            #for prop in self._props:
-            #    obj._NodeBase__properties[prop.name] = prop.default
-            return obj
-        return wrapper
-
 class Property(object):
     """
     A descriptor object for creating attributes for the NodeBase class defined below.
@@ -74,12 +55,13 @@ class Property(object):
 
 class NodeBase(anytree.NodeMixin):
     """
-    Base class for tree nodes that accepts defined properties via a class attribute.
+    Base class for tree nodes that accepts defined properties via a class decorator.
 
     Example:
 
+        @properties(Property(required=True))
         class ExampleNode(NodeBase):
-            foo = Property(required=True)
+            pass
 
         node = ExampleNode(foo=42)
         node.foo = 43
@@ -99,10 +81,13 @@ class NodeBase(anytree.NodeMixin):
 
         # Apply the default values
         for prop in self.PROPERTIES:
+            setattr(self.__class__, prop.name, prop)
             self.__properties[prop.name] = prop.default
 
         # Update the properties from the key value pairs
         for key, value in kwargs.iteritems():
+            if key not in self.__properties:
+                raise KeyError("The supplied key '{}' is not a property.".format(key))
             setattr(self, key, value)
 
         # Check required

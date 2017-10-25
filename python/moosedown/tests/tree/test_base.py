@@ -100,10 +100,8 @@ class TestNodeBaseWithProperties(unittest.TestCase):
 
     def testProperties(self):
 
-        @base.properties(base.Property('month'), base.Property('year', 1980),
-                         base.Property('day', 24, int))
         class Date(base.NodeBase):
-            pass
+            PROPERTIES = [base.Property('month'), base.Property('year', 1980), base.Property('day', 24, int)]
 
         # Construction and defaults
         node = Date()
@@ -128,9 +126,8 @@ class TestNodeBaseWithProperties(unittest.TestCase):
         self.assertIn("must be of type 'int'", e.exception.message)
 
     def testPropertiesWithKwargs(self):
-        @base.properties(base.Property('hour', ptype=int), base.Property('minute'))
         class Time(base.NodeBase):
-            pass
+            PROPERTIES = [base.Property('hour', ptype=int), base.Property('minute')]
 
         t = Time(hour=6)
         self.assertEqual(t.hour, 6)
@@ -140,13 +137,21 @@ class TestNodeBaseWithProperties(unittest.TestCase):
         self.assertIn("must be of type 'int'", e.exception.message)
 
     def testPropertiesRequired(self):
-        @base.properties(base.Property('hour', required=True))
         class Time(base.NodeBase):
-            pass
+            PROPERTIES = [base.Property('hour', required=True)]
 
         with self.assertRaises(TypeError) as e:
             Time()
         self.assertIn("The property 'hour' must be defined.", e.exception.message)
+
+    def testInvalidKwargs(self):
+        class Time(base.NodeBase):
+            PROPERTIES = [base.Property('hour', required=True)]
+
+        with self.assertRaises(KeyError) as e:
+            Time(minute=24)
+        self.assertIn("The supplied key 'minute' is not a property.", e.exception.message)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
