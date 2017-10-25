@@ -6,24 +6,28 @@ import anytree
 
 LOG = logging.getLogger(__name__)
 
-
-
 class properties(object):
+    """
+    Decorator class for dynamic definition of descriptors.
+    """
     def __init__(self, *props):
         self._props = props
 
     def __call__(self, cls):
         decorator_self = self
         def wrapper(*args, **kwargs):
+            setattr(cls, 'PROPERTIES', self._props)
             for prop in self._props:
                 setattr(cls, prop.name, prop)
-            return cls(*args, **kwargs)
+            obj = cls(*args, **kwargs)
+            #for prop in self._props:
+            #    obj._NodeBase__properties[prop.name] = prop.default
+            return obj
         return wrapper
 
 class Property(object):
     """
     A descriptor object for creating attributes for the NodeBase class defined below.
-    (http://nbviewer.jupyter.org/urls/gist.github.com/ChrisBeaumont/5758381/raw/descriptor_writeup.ipynb)
 
     A system using this object and the NodeBase class was created to allow for dynamic attribute
     access to properties on nodes that allows defaults, types, and a required status to be
@@ -62,11 +66,11 @@ class Property(object):
         if (self.__type is not None) and (not isinstance(value, self.__type)):
             msg = "The supplied property must be of type '{}', but '{}' was provided."
             raise TypeError(msg.format(self.type.__name__, type(value).__name__))
-        instance.attributes[self.name] = value
+        instance._NodeBase__properties[self.name] = value
 
     def __get__(self, instance, key):
         """Get the property value."""
-        return instance.attributes.get(self.name, self.default)
+        return instance._NodeBase__properties.get(self.name, self.default)
 
 class NodeBase(anytree.NodeMixin):
     """
@@ -85,26 +89,33 @@ class NodeBase(anytree.NodeMixin):
                           supplied the resulting node will be the root node.
         kwargs: (Optional) Any key, value pairs supplied are stored as attributes.
     """
+    PROPERTIES = [] # this gets set by the @properties decorator
 
     def __init__(self, parent=None, name=None, **kwargs):
         anytree.NodeMixin.__init__(self)
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
-        self.attributes = dict()
+        self.__properties = dict() # storage for property values
 
-    def __contains__(self, key):
-        """
-        Allow "in" to be used for testing for attributes, this all tests that the attribute is
-        not None.
-        """
-        return (key in self.__propertyies) and (self.__properties[key].value is not None)
+        # Apply the default values
+        for prop in self.PROPERTIES:
+            self.__properties[prop.name] = prop.default
+
+        # Update the properties from the key value pairs
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
+
+        # Check required
+        for prop in self.PROPERTIES:
+            if prop.required and self.__properties[prop.name] is None:
+                raise TypeError("The property '{}' must be defined.".format(prop.name))
 
     def __repr__(self):
         """
         Prints the name of the token, this works in union with __str__ to print
         the tree structure of any given node.
         """
-        return '{}: {}'.format(self.name, repr(self.attributes))
+        return '{}: {}'.format(self.name, repr(self.__properties))
 
     def __str__(self):
         """
