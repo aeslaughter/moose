@@ -7,4 +7,8 @@
     type = PythonUnitTest
     input = test_tokens.py
   [../]
+  [./html]
+    type = PythonUnitTest
+    input = test_html.py
+  [../]
 []

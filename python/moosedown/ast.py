@@ -24,6 +24,10 @@ if __name__ == '__main__':
 """
 - Setup config file
 - Create text/file node
+    - MarkdownNode
+    - DependencyNode (css, js) #stuff that needs to be copied
+    - IncludeMarkdownNode (!include, this can be added by extension)
+- MooseMarkdown should just be a script and a regular Translator object should be used
 - Create an !alert command (alert extension)
 - Create errors by creating an alert token
 - Build unittests for tokens, lexer, grammer, etc.

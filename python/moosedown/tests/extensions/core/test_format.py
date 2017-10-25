@@ -3,28 +3,14 @@ import unittest
 import logging
 import mock
 
-from mooseutils import text_diff
-
 from moosedown import MooseMarkdown
 from moosedown import tree
+from moosedown.base import testing
 
-class TestFormat(unittest.TestCase):
+class TestFormat(testing.MarkdownTestCase):
     """
     Test inline formatting (e.g., *bold*, _italic_, etc.)
     """
-    def setUp(self):
-        self._markdown = MooseMarkdown.MooseMarkdown(materialize=False)
-
-    def ast(self, md):
-        return self._markdown.ast(md)
-
-    def html(self, ast):
-        return self._markdown.renderer.render(ast)
-
-    def assertHTML(self, ast, gold):
-        html = self.html(ast).write()
-        self.assertEqual(html, gold, text_diff(html, gold))
-
     def testStrong(self):
         ast = self.ast('+strong+')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
@@ -32,7 +18,8 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.String)
         self.assertEqual(ast(0)(0)(0).content, "strong")
 
-        self.assertHTML(ast, '<body><p><strong>strong</strong></p></body>')
+        h = self.html(ast)(0)(0)
+        self.assertString(h.write(), '<strong>strong</strong>')
 
         ast = self.ast('+strong with space\nand a new line+')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
@@ -41,7 +28,9 @@ class TestFormat(unittest.TestCase):
         self.assertEqual(ast(0)(0)(0).content, "strong")
         self.assertEqual(ast(0)(0)(-1).content, "line")
 
-
+        h = self.html(ast)(0)(0)
+        print h
+        self.assertString(h.write(), '<strong>strong with space and a new line</strong>')
 
     def testUnderline(self):
         ast = self.ast('=underline=')
@@ -166,10 +155,6 @@ class TestFormat(unittest.TestCase):
         self.assertIsInstance(ast(0)(0)(0), tree.tokens.Word)
         self.assertIsInstance(ast(0)(0)(1), tree.tokens.Subscript)
         self.assertEqual(ast(0)(0)(1)(0).content, "x")
-
-
-
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

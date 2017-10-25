@@ -5,20 +5,12 @@ import mock
 
 from moosedown import MooseMarkdown
 from moosedown import tree
+from moosedown.base import testing
 
-class TestHeadings(unittest.TestCase):
+class TestHeadings(testing.MarkdownTestCase):
     """
     Tests that hash style headings (#) are converted.
     """
-
-    def ast(self, md):
-        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
-        return markdown.ast(md)
-
-    def html(self, md):
-        markdown = MooseMarkdown.MooseMarkdown(materialize=False)
-        return markdown.convert(md)
-
     def testBasic(self):
         ast = self.ast('# Heading with Spaces')
         h = ast(0)
@@ -50,6 +42,8 @@ class TestHeadings(unittest.TestCase):
         self.assertEqual(h(2).content, 'with')
         self.assertEqual(h(3).content, ' ')
         self.assertEqual(h(4).content, 'Spaces')
+
+        self.assertString(h.write(), "<h1>Heading with Spaces</h1>")
 
     def testHTMLSettings(self):
         html = self.html('# Heading with Spaces style=font-size:42pt;')

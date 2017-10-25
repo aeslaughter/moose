@@ -267,9 +267,9 @@ class CoreRenderExtension(base.RenderExtension):
         self.add(tree.tokens.Strong, RenderTag('strong'))
         self.add(tree.tokens.Emphasis, RenderTag('em'))
         self.add(tree.tokens.Quote, RenderTag('blockquote'))
+        self.add(tree.tokens.Break, RenderBreak())
 
-        for t in [tree.tokens.Word, tree.tokens.Space, tree.tokens.Punctuation, tree.tokens.Break,
-                  tree.tokens.Number]:
+        for t in [tree.tokens.Word, tree.tokens.Space, tree.tokens.Punctuation, tree.tokens.Number]:
             self.add(t, RenderString())
 
 class CoreRenderComponentBase(base.RenderComponent):
@@ -292,6 +292,10 @@ class RenderTag(CoreRenderComponentBase):
 class RenderString(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         return tree.html.String(token.content, parent)
+
+class RenderBreak(CoreRenderComponentBase):
+    def createHTML(self, token, parent):
+        return tree.html.String(' ', parent)
 
 class RenderHeading(CoreRenderComponentBase):
     def createHTML(self, token, parent):

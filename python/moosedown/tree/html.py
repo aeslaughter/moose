@@ -1,20 +1,12 @@
+"""
+Nodes for building an HTML tree structure.
+"""
 import cgi
-from base import NodeBase
+from base import NodeBase, Property
 
 class Tag(NodeBase):
     def __init__(self, name, parent=None, **kwargs):
-        super(Tag, self).__init__(parent, **kwargs)
-        self.name = name
-
-    def __setitem__(self, key, value):
-        key = key.rstrip('_')
-        self.attributes[key] = value
-
-    def __getitem__(self, key):
-        return self.attributes[key]
-
-    def __repr__(self):
-        return '{}: {}'.format(self.name, repr(self.attributes))
+        super(Tag, self).__init__(name=name, parent=parent, **kwargs)
 
     def write(self):
         out = ''
@@ -30,16 +22,11 @@ class Tag(NodeBase):
         return out
 
 class String(NodeBase):
-    def __init__(self, content, parent=None, escape=False):
-        super(String, self).__init__()
-        self.name = self.__class__.__name__
-        self.content = content
-        self.parent = parent
-        if escape:
-            self.content = cgi.escape(self.content, quote=True)
+    PROPERTIES = [Property('content', default='', ptype=str),
+                  Property('escape', default=False, ptype=bool)]
 
     def write(self):
-        return self.content
-
-    def __repr__(self):
-        return '{}: {}'.format(self.name, self.content)
+        if self.escape:
+            return cgi.escape(self.content, quote=True)
+        else:
+            return self.content

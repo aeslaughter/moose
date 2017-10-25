@@ -69,16 +69,16 @@ class Space(String):
     Space token that can define the number of space via count property.
     """
     PROPERTIES = String.PROPERTIES + [base.Property('count', ptype=int, default=1)]
-    def __init__(self, **kwargs):
-        super(Space, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Space, self).__init__(*args, **kwargs)
         self.content = ' '
 
 class Break(Space):
     """
     Line breaks that can define the number of breaks via count property.
     """
-    def __init__(self, count=1, **kwargs):
-        super(Break, self).__init__(count=count, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Break, self).__init__(*args, **kwargs)
         self.content = '\n'
 
 class Punctuation(String):
