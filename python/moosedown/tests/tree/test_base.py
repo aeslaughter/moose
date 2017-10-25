@@ -6,24 +6,52 @@ import mock
 from moosedown.tree import base
 
 class TestProperty(unittest.TestCase):
-
+    """
+    Tests for base.Property() class.
+    """
     def testBasic(self):
         prop = base.Property('foo')
-        self.assertEqual(prop.key, 'foo')
-        self.assertEqual(prop.default, None)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.value, None)
         self.assertEqual(prop.type, None)
+        self.assertEqual(prop.required, False)
 
     def testDefault(self):
         prop = base.Property('foo', 42)
-        self.assertEqual(prop.key, 'foo')
-        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.value, 42)
         self.assertEqual(prop.type, None)
+        self.assertEqual(prop.required, False)
 
     def testType(self):
         prop = base.Property('foo', 42, int)
-        self.assertEqual(prop.key, 'foo')
-        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.value, 42)
         self.assertEqual(prop.type, int)
+        self.assertEqual(prop.required, False)
+
+    def testRequired(self):
+        prop = base.Property('foo', 42, int, True)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.value, 42)
+        self.assertEqual(prop.type, int)
+        self.assertEqual(prop.required, True)
+
+    def testKeyword(self):
+        prop = base.Property('foo', required=True, default=42, ptype=int)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.value, 42)
+        self.assertEqual(prop.type, int)
+        self.assertEqual(prop.required, True)
+
+    def testValueSetter(self):
+        prop = base.Property('foo', required=True, default=42, ptype=int)
+        prop.value = 43
+        self.assertEqual(prop.value, 43)
+
+        with self.assertRaises(TypeError) as e:
+            prop.value = 'string'
+        self.assertIn("must be of type 'int'", e.exception.message)
 
     def testConstructTypeError(self):
         with self.assertRaises(TypeError) as e:
@@ -31,11 +59,13 @@ class TestProperty(unittest.TestCase):
         self.assertIn("must be of type 'str'", e.exception.message)
 
 class TestNodeBase(unittest.TestCase):
+    """
+    Tests for NodeBase class.
+    """
 
     def testRoot(self):
         node = base.NodeBase(None)
         self.assertEqual(node.parent, None)
-        self.assertEqual(node.attributes, dict())
 
     def testTree(self):
         root = base.NodeBase(None)
@@ -54,25 +84,19 @@ class TestNodeBase(unittest.TestCase):
 
     def testAttributes(self):
         class Date(base.NodeBase):
-            month = base.Property('month')
-            day = base.Property('day')
-            year = base.Property('year')
+            PROPERTIES = [base.Property('month'), base.Property('day'), base.Property('year')]
 
         items = dict(month='june', day=24, year=1980)
         node = Date(**items)
         self.assertEqual(node.attributes, items)
 
         node.month = 'august'
-        self.assertNotEqual(node.attributes, items)
         self.assertEqual(node.month, 'august')
-
-        items['month'] = 'august'
-        self.assertEqual(node.attributes, items)
 
     @mock.patch('logging.Logger.error')
     def testAttributeError(self, mock):
         node = base.NodeBase(None)
-        node['year']
+        #node.year
         mock.assert_called_once()
         args, _ = mock.call_args
         self.assertIn('Unknown attribute', args[0])
@@ -110,9 +134,9 @@ class TestNodeBase(unittest.TestCase):
     def testProperties(self):
 
         class Foo(base.NodeBase):
-            PROPERTIES = [base.Property('bar'),
-                          base.Property('bar2', 1980),
-                          base.Property('one', 1, int)]
+            bar = base.Property()
+            bar2 = base.Property(1980)
+            one = base.Property(1, int)
 
         foo = Foo()
         self.assertTrue(hasattr(foo, 'bar'))
@@ -121,18 +145,17 @@ class TestNodeBase(unittest.TestCase):
 
         self.assertEqual(foo.bar2, 1980)
         foo.bar2 = 1981
-        x = foo.bar2
         self.assertEqual(foo.bar2, 1981)
 
         self.assertEqual(foo.one, 1)
         with self.assertRaises(TypeError) as e:
             foo.one = 1.1
-        self.assertIn("'one' must be of type 'int'", e.exception.message)
+        self.assertIn("must be of type 'int'", e.exception.message)
 
         with self.assertRaises(TypeError) as e:
             class Foo2(base.NodeBase):
-                PROPERTIES = [base.Property('bar', 1, str)]
-        self.assertIn("'bar' must be of type 'str'", e.exception.message)
+                bar = base.Property(1, str)
+        self.assertIn("must be of type 'str'", e.exception.message)
 
 
 
