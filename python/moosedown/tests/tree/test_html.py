@@ -26,5 +26,12 @@ class TestHTML(unittest.TestCase):
         html.String(content='foo', parent=tag)
         self.assertEqual(tag.write(), '<h1>foo</h1>')
 
+        with self.assertRaises(TypeError) as e:
+            html.String(parent=html.String())
+        gold = "If set, the parent of he html.String 'String' must be a html.Tag object, a " \
+               "'String'  was provided."
+        self.assertEqual(e.exception.message, gold)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
