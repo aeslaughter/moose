@@ -138,14 +138,15 @@ class Link(Token):
     """
     PROPERTIES = [base.Property('url', required=True, ptype=str)]
 
-class Shortcut(String):
-    PROPERTIES = String.PROPERTIES + [base.Property('key', ptype=str)]
+class Shortcut(Token):
+    PROPERTIES = [base.Property('content', required=True, ptype=str),
+                  base.Property('key', required=True, ptype=str)]
 
-class ShortcutLink(String):
-    PROPERTIES = String.PROPERTIES + [base.Property('key', ptype=str)]
+class ShortcutLink(Token):
+    PROPERTIES = [base.Property('key', ptype=str, required=True)]
 
-class InlineCode(String):
-    pass
+class InlineCode(Token):
+    PROPERTIES = [base.Property('code', ptype=str, required=True)]
 
 class Strong(Token):
     pass
