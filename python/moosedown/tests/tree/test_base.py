@@ -149,13 +149,18 @@ class TestNodeBaseWithProperties(unittest.TestCase):
             Time()
         self.assertIn("The property 'hour' is required.", e.exception.message)
 
-    def testInvalidKwargs(self):
+    def testAttributes(self):
         class Time(base.NodeBase):
             PROPERTIES = [base.Property('hour', required=True)]
 
-        with self.assertRaises(KeyError) as e:
-            Time(minute=24)
-        self.assertIn("The supplied key 'minute' is not a property.", e.exception.message)
+        t = Time(hour=12, minute_=24)
+        self.assertIn('minute', t)
+        self.assertNotIn('hour', t)
+        self.assertEqual(t.attributes, dict(minute=24))
+        t['minute'] = 36
+        self.assertEqual(t.attributes, dict(minute=36))
+        t['second'] = 92
+        self.assertEqual(t.attributes, dict(minute=36, second=92))
 
     def testUnderscore(self):
         class Node(base.NodeBase):
