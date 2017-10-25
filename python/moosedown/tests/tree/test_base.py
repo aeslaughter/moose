@@ -133,10 +133,12 @@ class TestNodeBase(unittest.TestCase):
 
     def testProperties(self):
 
+        @base.properties(base.Property('bar'), base.Property('bar2', 1980), base.Property('one', 1, int))
         class Foo(base.NodeBase):
-            bar = base.Property()
-            bar2 = base.Property(1980)
-            one = base.Property(1, int)
+            pass
+            #bar = base.Property()
+            #bar2 = base.Property(1980)
+            #one = base.Property(1, int)
 
         foo = Foo()
         self.assertTrue(hasattr(foo, 'bar'))
@@ -153,11 +155,10 @@ class TestNodeBase(unittest.TestCase):
         self.assertIn("must be of type 'int'", e.exception.message)
 
         with self.assertRaises(TypeError) as e:
+            @base.properties(base.Property('bar', 1, str))
             class Foo2(base.NodeBase):
-                bar = base.Property(1, str)
+                pass
         self.assertIn("must be of type 'str'", e.exception.message)
-
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
