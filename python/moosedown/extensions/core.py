@@ -1,6 +1,5 @@
 """
-This defines the core Markdown translation to HTML and LaTeX. The HTML conversion is compliant
-with the CommonMark standard (http://spec.commonmark.org/).
+This defines the core Markdown translation to HTML and LaTeX.
 """
 import re
 
@@ -12,16 +11,29 @@ from moosedown import tree
 SHORTCUT_DATABASE = dict()
 
 def make_extension():
+    """
+    Create and return the MarkdownExtension and RenderExtension objects for the core extension.
+    """
     return CoreMarkdownExtension(), CoreRenderExtension()
 
 class CoreMarkdownExtension(base.MarkdownExtension):
+    """
+    The core markdown parser extension.
 
+    This extension provides to core conversion from markdown syntax to an AST.
+    """
     @staticmethod
     def getConfig():
+        """
+        The default configuration options.
+        """
         config = base.MarkdownExtension.getConfig()
         return config
 
     def extend(self):
+        """
+        Add the extension components.
+        """
 
         # Block
         self.addBlock(Code())
@@ -46,6 +58,9 @@ class CoreMarkdownExtension(base.MarkdownExtension):
         self.addInline(Space())
 
 class MarkdownComponent(base.TokenComponent):
+    """
+    Base Markdown component which defines the typically html tag settings and a means to apply them.
+    """
     @staticmethod
     def defaultSettings():
         settings = base.TokenComponent.defaultSettings()
@@ -56,9 +71,23 @@ class MarkdownComponent(base.TokenComponent):
 
     @property
     def attributes(self):
+        """
+        Return a dictionary with the common html settings.
+        """
         return dict(style=self.settings['style'], id_=self.settings['id'], class_=self.settings['class'])
 
 class Command(MarkdownComponent):
+    """
+    Provides a component for creating commands.
+
+    A command is defined by an exclamation mark followed by a keyword and optionally a sub-command.
+
+    This allows all similar patterns to be handled by a single regex, which should aid in parsing
+    speed as well as reduce the burden of adding new commands.
+
+    New commands are added by creating a CommandComponent object and adding this component to the
+    MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
+    """
     RE = re.compile('!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?$)?(?P<content>.*?)\n{2,}|\Z',
                     flags=re.MULTILINE|re.DOTALL)
 

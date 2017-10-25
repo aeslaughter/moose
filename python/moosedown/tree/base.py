@@ -8,15 +8,18 @@ LOG = logging.getLogger(__name__)
 
 class Property(object):
     """
-    A descriptor object for creating attributes for the NodeBase class defined below.
+    A descriptor object for creating properties for the NodeBase class defined below.
 
-    A system using this object and the NodeBase class was created to allow for dynamic attribute
-    access to properties on nodes that allows defaults, types, and a required status to be
-    defined for the properties.
+    A system using this object and the NodeBase class was created to allow for dynamic property
+    creation on nodes that allows defaults, types, and a required status to be defined for the
+    properties.
 
     When developing the tokens it was desirable to create properties (via @property) etc. to
     access token data, but it became a bit tedious so an automatic method was created, see
     the documentation on the NodeBase class for information on using the automatic system.
+
+    This property class can also be inherited from to allow for arbitrary checks to be performed,
+    for example that a number is positive or a list is the correct length.
     """
     def __init__(self, name, default=None, ptype=None, required=False):
         self.name = name
@@ -59,21 +62,28 @@ class Property(object):
 
 class NodeBase(anytree.NodeMixin):
     """
-    Base class for tree nodes that accepts defined properties via a class decorator.
+    Base class for tree nodes that accepts defined properties and arbitrary attributes.
 
-    Example:
+    Well defined properties may be created using the class PROPERTIES variable. For example,
 
-        @properties(Property(required=True))
         class ExampleNode(NodeBase):
-            pass
+            PROPERTIES = Property('foo', required=True)
 
         node = ExampleNode(foo=42)
         node.foo = 43
 
+    Additionally, arbitrary attributes can be stored on creation or by using the dict() style
+    set/get methods. By convention any leading or trailing underscores used in defining the
+    attribute in the constructor are removed for storage.
+
+        node = ExampleNode(foo=42, class_='fancy')
+        node['class'] = 'not fancy'
+
+
     Inputs:
         parent[NodeBase]: (Optional) Set the parent node of the node being created, if not
                           supplied the resulting node will be the root node.
-        kwargs: (Optional) Any key, value pairs supplied are stored as attributes.
+        kwargs: (Optional) Any key, value pairs supplied are stored as properties or attributes.
     """
     PROPERTIES = [] # this gets set by the @properties decorator
 
@@ -82,6 +92,7 @@ class NodeBase(anytree.NodeMixin):
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
         self.__properties = dict() # storage for property values
+        self.__attributes = dict() # storage for attributes (i.e., unknown key, values)
 
         # Check PROPERTIES type
         if not isinstance(self.PROPERTIES, list):
@@ -97,7 +108,7 @@ class NodeBase(anytree.NodeMixin):
         # Update the properties from the key value pairs
         for key, value in kwargs.iteritems():
             if key not in self.__properties:
-                raise KeyError("The supplied key '{}' is not a property.".format(key))
+                self.__attributes[key.strip('_')] = value
             setattr(self, key, value)
 
         # Check required
@@ -138,6 +149,37 @@ class NodeBase(anytree.NodeMixin):
         """
         for child in self.children:
             yield child
+
+    def __getitem__(self, key):
+        """
+        Return an attribute.
+        """
+        return self.__attributes[key]
+
+    def __setitem__(self, key, value):
+        """
+        Create/set an attribute.
+        """
+        self.__attributes[key] = value
+
+    def get(self, key, default):
+        """
+        Get an attribute with a possible default.
+        """
+        self.__attributes.get(key, default)
+
+    @property
+    def attributes(self):
+        """
+        Return the attributes for the object.
+        """
+        return self.__attributes
+
+    def __contains__(self, key):
+        """
+        Test if attribute exists within "in" keyword.
+        """
+        return key in self.__attributes
 
     def write(self):
         """
