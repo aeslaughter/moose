@@ -1,9 +1,24 @@
 import copy
 import logging
 import weakref
+import inspect
 import anytree
 
 LOG = logging.getLogger(__name__)
+
+
+
+class properties(object):
+    def __init__(self, *props):
+        self._props = props
+
+    def __call__(self, cls):
+        decorator_self = self
+        def wrapper(*args, **kwargs):
+            for prop in self._props:
+                setattr(cls, prop.name, prop)
+            return cls(*args, **kwargs)
+        return wrapper
 
 class Property(object):
     """
@@ -18,11 +33,11 @@ class Property(object):
     access token data, but it became a bit tedious so an automatic method was created, see
     the documentation on the NodeBase class for information on using the automatic system.
     """
-    def __init__(self, default=None, ptype=None, required=False):
+    def __init__(self, name, default=None, ptype=None, required=False):
+        self.name = name
         self.__type = ptype
         self.__required = required
         self.__default = default
-        self.__value = weakref.WeakKeyDictionary()
 
         if (ptype is not None) and (default is not None) and (not isinstance(default, ptype)):
             msg = "The default for property must be of type '{}', but '{}' was provided."
@@ -47,11 +62,11 @@ class Property(object):
         if (self.__type is not None) and (not isinstance(value, self.__type)):
             msg = "The supplied property must be of type '{}', but '{}' was provided."
             raise TypeError(msg.format(self.type.__name__, type(value).__name__))
-        self.__value[instance] = value
+        instance.attributes[self.name] = value
 
     def __get__(self, instance, key):
         """Get the property value."""
-        return self.__value.get(instance, self.default)
+        return instance.attributes.get(self.name, self.default)
 
 class NodeBase(anytree.NodeMixin):
     """
@@ -75,33 +90,7 @@ class NodeBase(anytree.NodeMixin):
         anytree.NodeMixin.__init__(self)
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
-
-        """
-        for prop in self.PROPERTIES:
-            if not isinstance(prop, Property):
-                raise TypeError("The supplied property must of type Property.")
-            if prop.required and prop.value is None:
-                msg = "The supplied property '{}' must be supplied a value."
-                raise TypeError(msg.format(prop.name))
-            setattr(self, prop.name, prop)
-            self.__properties[prop.name] = copy.copy(prop) # create a new Property instance
-        """
-
-    """
-    def __getattr__(self, key):
-        print 'KEY:', key
-        if key in self.__properties:
-            return self.__properties[key].value
-        return getattr(self, key)
-
-    #def __setattr__(self, key, value):
-    def __setter(self, key, value):
-        if hasattr(self, '__properties') and (key in self.__properties):
-            prop = self.__properties[key]
-            prop.value = value
-        else:
-            super(NodeBase, self).__setattr__(key, value)
-    """
+        self.attributes = dict()
 
     def __contains__(self, key):
         """
@@ -115,8 +104,7 @@ class NodeBase(anytree.NodeMixin):
         Prints the name of the token, this works in union with __str__ to print
         the tree structure of any given node.
         """
-        return 'foo'
-    #    return '{}: {}'.format(self.name, repr(self.attributes))
+        return '{}: {}'.format(self.name, repr(self.attributes))
 
     def __str__(self):
         """
