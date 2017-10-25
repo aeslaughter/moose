@@ -5,58 +5,6 @@ import mock
 
 from moosedown.tree import base
 
-class TestProperty(unittest.TestCase):
-    """
-    Tests for base.Property() class.
-    """
-    def testBasic(self):
-        prop = base.Property('foo')
-        self.assertEqual(prop.name, 'foo')
-        self.assertEqual(prop.value, None)
-        self.assertEqual(prop.type, None)
-        self.assertEqual(prop.required, False)
-
-    def testDefault(self):
-        prop = base.Property('foo', 42)
-        self.assertEqual(prop.name, 'foo')
-        self.assertEqual(prop.value, 42)
-        self.assertEqual(prop.type, None)
-        self.assertEqual(prop.required, False)
-
-    def testType(self):
-        prop = base.Property('foo', 42, int)
-        self.assertEqual(prop.name, 'foo')
-        self.assertEqual(prop.value, 42)
-        self.assertEqual(prop.type, int)
-        self.assertEqual(prop.required, False)
-
-    def testRequired(self):
-        prop = base.Property('foo', 42, int, True)
-        self.assertEqual(prop.name, 'foo')
-        self.assertEqual(prop.value, 42)
-        self.assertEqual(prop.type, int)
-        self.assertEqual(prop.required, True)
-
-    def testKeyword(self):
-        prop = base.Property('foo', required=True, default=42, ptype=int)
-        self.assertEqual(prop.name, 'foo')
-        self.assertEqual(prop.value, 42)
-        self.assertEqual(prop.type, int)
-        self.assertEqual(prop.required, True)
-
-    def testValueSetter(self):
-        prop = base.Property('foo', required=True, default=42, ptype=int)
-        prop.value = 43
-        self.assertEqual(prop.value, 43)
-
-        with self.assertRaises(TypeError) as e:
-            prop.value = 'string'
-        self.assertIn("must be of type 'int'", e.exception.message)
-
-    def testConstructTypeError(self):
-        with self.assertRaises(TypeError) as e:
-            base.Property('foo', 42, str)
-        self.assertIn("must be of type 'str'", e.exception.message)
 
 class TestNodeBase(unittest.TestCase):
     """
@@ -82,25 +30,6 @@ class TestNodeBase(unittest.TestCase):
         args, _ = mock.call_args
         self.assertIn('A child node with index', args[0])
 
-    def testAttributes(self):
-        class Date(base.NodeBase):
-            PROPERTIES = [base.Property('month'), base.Property('day'), base.Property('year')]
-
-        items = dict(month='june', day=24, year=1980)
-        node = Date(**items)
-        self.assertEqual(node.attributes, items)
-
-        node.month = 'august'
-        self.assertEqual(node.month, 'august')
-
-    @mock.patch('logging.Logger.error')
-    def testAttributeError(self, mock):
-        node = base.NodeBase(None)
-        #node.year
-        mock.assert_called_once()
-        args, _ = mock.call_args
-        self.assertIn('Unknown attribute', args[0])
-
     def testWrite(self):
         node = base.NodeBase(None)
         with self.assertRaises(NotImplementedError) as e:
@@ -113,17 +42,6 @@ class TestNodeBase(unittest.TestCase):
         child1 = base.NodeBase(root)
         self.assertEqual(list(root), [child0, child1])
 
-    def testContains(self):
-        node = base.NodeBase(None, name='test', key='value', foo=None)
-        self.assertIn('key', node)
-        self.assertNotIn('foo', node)
-
-        class TestNode(base.NodeBase):
-            REQUIRED_ATTRIBUTES = ['foo']
-        with self.assertRaises(ValueError) as e:
-            node = TestNode(None, name='test', key='value')
-        self.assertIn("The key 'foo'", e.exception.message)
-
     def testName(self):
         node = base.NodeBase(None, name='test')
         self.assertEqual(node.name, 'test')
@@ -131,34 +49,104 @@ class TestNodeBase(unittest.TestCase):
         node = base.NodeBase(None)
         self.assertEqual(node.name, 'NodeBase')
 
+class TestProperty(unittest.TestCase):
+    """
+    Tests for base.Property() class.
+    """
+    def testBasic(self):
+        prop = base.Property('foo')
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.default, None)
+        self.assertEqual(prop.type, None)
+        self.assertEqual(prop.required, False)
+
+    def testDefault(self):
+        prop = base.Property('foo', 42)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.type, None)
+        self.assertEqual(prop.required, False)
+
+    def testType(self):
+        prop = base.Property('foo', 42, int)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.type, int)
+        self.assertEqual(prop.required, False)
+
+    def testRequired(self):
+        prop = base.Property('foo', 42, int, True)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.type, int)
+        self.assertEqual(prop.required, True)
+
+    def testKeyword(self):
+        prop = base.Property('foo', required=True, default=42, ptype=int)
+        self.assertEqual(prop.name, 'foo')
+        self.assertEqual(prop.default, 42)
+        self.assertEqual(prop.type, int)
+        self.assertEqual(prop.required, True)
+
+    def testConstructTypeError(self):
+        with self.assertRaises(TypeError) as e:
+            base.Property('foo', 42, str)
+        self.assertIn("must be of type 'str'", e.exception.message)
+
+class TestNodeBaseWithProperties(unittest.TestCase):
+    """
+    Tests for NodeBase class with @properties decorator.
+    """
+
     def testProperties(self):
 
-        @base.properties(base.Property('bar'), base.Property('bar2', 1980), base.Property('one', 1, int))
-        class Foo(base.NodeBase):
+        @base.properties(base.Property('month'), base.Property('year', 1980),
+                         base.Property('day', 24, int))
+        class Date(base.NodeBase):
             pass
-            #bar = base.Property()
-            #bar2 = base.Property(1980)
-            #one = base.Property(1, int)
 
-        foo = Foo()
-        self.assertTrue(hasattr(foo, 'bar'))
-        foo.bar = 42
-        self.assertEqual(foo.bar, 42)
+        # Construction and defaults
+        node = Date()
+        self.assertTrue(hasattr(node, 'year'))
+        self.assertEqual(node.year, 1980)
+        self.assertTrue(hasattr(node, 'month'))
+        self.assertEqual(node.month, None)
+        self.assertTrue(hasattr(node, 'day'))
+        self.assertEqual(node.day, 24)
 
-        self.assertEqual(foo.bar2, 1980)
-        foo.bar2 = 1981
-        self.assertEqual(foo.bar2, 1981)
+        # Change properties
+        node.day = 27
+        self.assertEqual(node.day, 27)
+        node.year = 1949
+        self.assertEqual(node.year, 1949)
+        node.month = 'august' # change type allowed because it was not set on construction
+        self.assertEqual(node.month, 'august')
 
-        self.assertEqual(foo.one, 1)
+        # Set error
         with self.assertRaises(TypeError) as e:
-            foo.one = 1.1
+            node.day = 1.1
         self.assertIn("must be of type 'int'", e.exception.message)
 
+    def testPropertiesWithKwargs(self):
+        @base.properties(base.Property('hour', ptype=int), base.Property('minute'))
+        class Time(base.NodeBase):
+            pass
+
+        t = Time(hour=6)
+        self.assertEqual(t.hour, 6)
+
         with self.assertRaises(TypeError) as e:
-            @base.properties(base.Property('bar', 1, str))
-            class Foo2(base.NodeBase):
-                pass
-        self.assertIn("must be of type 'str'", e.exception.message)
+            Time(hour='str')
+        self.assertIn("must be of type 'int'", e.exception.message)
+
+    def testPropertiesRequired(self):
+        @base.properties(base.Property('hour', required=True))
+        class Time(base.NodeBase):
+            pass
+
+        with self.assertRaises(TypeError) as e:
+            Time()
+        self.assertIn("The property 'hour' must be defined.", e.exception.message)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
