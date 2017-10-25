@@ -45,8 +45,8 @@ class Property(object):
     def __set__(self, instance, value):
         """Set the property value."""
         if (self.__type is not None) and (not isinstance(value, self.__type)):
-            msg = "The supplied property must be of type '{}', but '{}' was provided."
-            raise TypeError(msg.format(self.type.__name__, type(value).__name__))
+            msg = "The supplied property '{}' must be of type '{}', but '{}' was provided."
+            raise TypeError(msg.format(self.name, self.type.__name__, type(value).__name__))
         instance._NodeBase__properties[self.name] = value
 
     def __get__(self, instance, key):
