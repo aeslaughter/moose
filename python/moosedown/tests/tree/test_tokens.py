@@ -1,11 +1,22 @@
 #!/usr/bin/env python
 import unittest
 import logging
+import inspect
 import mock
 
 from moosedown.tree import tokens
 
 class TestTokens(unittest.TestCase):
+
+    def testCoverage(self):
+        status = []
+        msg = "The following classes in tokens module do not have a required test.\n"
+        for name, obj in inspect.getmembers(tokens):
+            if inspect.isclass(obj):
+                status.append(hasattr(self, 'test' + obj.__name__))
+                if not status[-1]:
+                    msg += '    {}\n'.format(obj.__name__)
+        self.assertTrue(all(status), msg)
 
     @mock.patch('logging.Logger.error')
     def testToken(self, mock):
@@ -114,8 +125,67 @@ class TestTokens(unittest.TestCase):
         self.assertIs(token.parent, root)
 
     def testLink(self):
-        pass
+        with self.assertRaises(IOError) as e:
+            token = tokens.Link()
+        self.assertIn("The property 'url' is required.", e.exception.message)
 
+        token = tokens.Link(url='foo')
+        self.assertEqual(token.url, 'foo')
+        token.url = 'bar'
+        self.assertEqual(token.url, 'bar')
+
+        with self.assertRaises(TypeError) as e:
+            token.url = 42
+        gold = "The supplied property 'url' must be of type 'str', but 'int' was provided."
+        self.assertEqual(e.exception.message, gold)
+
+    def testShortcut(self):
+        with self.assertRaises(IOError) as e:
+            token = tokens.Shortcut(key='foo')
+        self.assertEqual("The property 'content' is required.", e.exception.message)
+        with self.assertRaises(IOError) as e:
+            token = tokens.Shortcut(content='foo')
+        self.assertEqual("The property 'key' is required.", e.exception.message)
+
+        token = tokens.Shortcut(key='key', content='content')
+        self.assertEqual(token.key, 'key')
+        self.assertEqual(token.content, 'content')
+
+    def testShortcutLink(self):
+        with self.assertRaises(IOError) as e:
+            token = tokens.ShortcutLink()
+        self.assertEqual("The property 'key' is required.", e.exception.message)
+
+        token = tokens.ShortcutLink(key='key')
+        self.assertEqual(token.key, 'key')
+
+    def testInlineCode(self):
+        with self.assertRaises(IOError) as e:
+            token = tokens.InlineCode()
+        self.assertIn("The property 'code' is required.", e.exception.message)
+        token = tokens.InlineCode(code='int x;')
+        self.assertEqual(token.code, 'int x;')
+
+    def testStrong(self):
+        token = tokens.Strong()
+
+    def testEmphasis(self):
+        token = tokens.Emphasis()
+
+    def testUnderline(self):
+        token = tokens.Underline()
+
+    def testStrikethrough(self):
+        token = tokens.Strikethrough()
+
+    def testQuote(self):
+        token = tokens.Quote()
+
+    def testSuperscript(self):
+        token = tokens.Superscript()
+
+    def testSubscript(self):
+        token = tokens.Subscript()
 
 
 if __name__ == '__main__':

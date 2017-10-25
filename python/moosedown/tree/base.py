@@ -24,6 +24,10 @@ class Property(object):
         self.__required = required
         self.__default = default
 
+        if (ptype is not None) and (not isinstance(ptype, type)):
+            msg = "The supplied property type (ptype) must be of type 'type', but '{}' provided."
+            raise TypeError(msg.format(type(ptype).__name__))
+
         if (ptype is not None) and (default is not None) and (not isinstance(default, ptype)):
             msg = "The default for property must be of type '{}', but '{}' was provided."
             raise TypeError(msg.format(ptype.__name__, type(default).__name__))
@@ -79,8 +83,14 @@ class NodeBase(anytree.NodeMixin):
         self.name = name if name is not None else self.__class__.__name__
         self.__properties = dict() # storage for property values
 
+        # Check PROPERTIES type
+        if not isinstance(self.PROPERTIES, list):
+            raise TypeError("The class attribute 'PROPERTIES' must be a list.")
+
         # Apply the default values
         for prop in self.PROPERTIES:
+            if not isinstance(prop, Property):
+                raise TypeError("The supplied property must be a Property object.")
             setattr(self.__class__, prop.name, prop)
             self.__properties[prop.name] = prop.default
 
@@ -93,7 +103,7 @@ class NodeBase(anytree.NodeMixin):
         # Check required
         for prop in self.PROPERTIES:
             if prop.required and self.__properties[prop.name] is None:
-                raise TypeError("The property '{}' must be defined.".format(prop.name))
+                raise IOError("The property '{}' is required.".format(prop.name))
 
     def __repr__(self):
         """

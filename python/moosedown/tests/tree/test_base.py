@@ -74,6 +74,11 @@ class TestProperty(unittest.TestCase):
         self.assertEqual(prop.type, int)
         self.assertEqual(prop.required, False)
 
+        with self.assertRaises(TypeError) as e:
+            base.Property('foo', ptype='int')
+        gold = "The supplied property type (ptype) must be of type 'type', but 'str' provided."
+        self.assertEqual(e.exception.message, gold)
+
     def testRequired(self):
         prop = base.Property('foo', 42, int, True)
         self.assertEqual(prop.name, 'foo')
@@ -140,9 +145,9 @@ class TestNodeBaseWithProperties(unittest.TestCase):
         class Time(base.NodeBase):
             PROPERTIES = [base.Property('hour', required=True)]
 
-        with self.assertRaises(TypeError) as e:
+        with self.assertRaises(IOError) as e:
             Time()
-        self.assertIn("The property 'hour' must be defined.", e.exception.message)
+        self.assertIn("The property 'hour' is required.", e.exception.message)
 
     def testInvalidKwargs(self):
         class Time(base.NodeBase):
@@ -151,6 +156,25 @@ class TestNodeBaseWithProperties(unittest.TestCase):
         with self.assertRaises(KeyError) as e:
             Time(minute=24)
         self.assertIn("The supplied key 'minute' is not a property.", e.exception.message)
+
+    def testUnderscore(self):
+        class Node(base.NodeBase):
+            PROPERTIES = [base.Property('class_')]
+        n = Node(class_="foo")
+        self.assertEqual(n.class_, "foo")
+
+    def testPropertiesError(self):
+        class NotList(base.NodeBase):
+            PROPERTIES = 'not list'
+        with self.assertRaises(TypeError) as e:
+            node = NotList()
+        self.assertEqual("The class attribute 'PROPERTIES' must be a list.", e.exception.message)
+
+        class NotProperty(base.NodeBase):
+            PROPERTIES = ['not prop']
+        with self.assertRaises(TypeError) as e:
+            node = NotProperty()
+        self.assertEqual("The supplied property must be a Property object.", e.exception.message)
 
 
 if __name__ == '__main__':
