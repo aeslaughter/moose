@@ -30,8 +30,8 @@ class String(NodeBase):
     """
     PROPERTIES = [Property('content', default='', ptype=str),
                   Property('escape', default=False, ptype=bool)]
-    def __init__(self, *args, **kwargs):
-        super(String, self).__init__(*args, **kwargs)
+    def __init__(self, parent=None, **kwargs):
+        super(String, self).__init__(parent=parent, **kwargs)
 
         if (self.parent is not None) and (not isinstance(self.parent, Tag)):
             msg = "If set, the parent of he html.String '{}' must be a html.Tag object, a '{}' " \

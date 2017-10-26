@@ -59,6 +59,8 @@ class TestHeadings(testing.MarkdownTestCase):
         self.assertEqual(h(4).content, 'Spaces')
         self.assertEqual(h['style'], 'font-size:42pt;')
 
+        self.assertString(h.write(), "<h1 style=font-size:42pt;>Heading with Spaces</h1>")
+
     @mock.patch('logging.Logger.error')
     def testUnknownSettings(self, mock):
         html = self.html('# Heading with Spaces foo=bar')
@@ -79,6 +81,7 @@ class TestHeadings(testing.MarkdownTestCase):
         self.assertIn('The following key, value settings are unknown', args[0])
         self.assertIn("foo='bar'", args[0])
 
+        self.assertString(h.write(), "<h1>Heading with Spaces</h1>")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

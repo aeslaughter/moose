@@ -117,7 +117,7 @@ class HeadingHash(MarkdownComponent):
     TOKEN = tree.tokens.Heading
     RE = re.compile(r'\s*(?P<level>#{1,6})\s' # match 1 to 6 #'s at the beginning of line
                     r'(?P<inline>.*?)'        # heading text that will be inline parsed
-                    r'(?P<settings>\w+=.*?)?' # optional match key, value settings
+                    r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
                     r'(?:\Z|\n+)',            # match up to end of string or newline(s)
                     flags=re.MULTILINE|re.DOTALL)
 
@@ -298,11 +298,11 @@ class RenderTag(CoreRenderComponentBase):
 
 class RenderString(CoreRenderComponentBase):
     def createHTML(self, token, parent):
-        return tree.html.String(token.content, parent)
+        return tree.html.String(parent, content=token.content)
 
 class RenderBreak(CoreRenderComponentBase):
     def createHTML(self, token, parent):
-        return tree.html.String(' ', parent)
+        return tree.html.String(parent, content=' ')
 
 class RenderHeading(CoreRenderComponentBase):
     def createHTML(self, token, parent):
@@ -312,13 +312,13 @@ class RenderCode(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         pre = tree.html.Tag('pre', parent, **token.attributes)
         code = tree.html.Tag('code', pre)
-        string = tree.html.String(token.code, code)
+        string = tree.html.String(code, content=token.code)
         return pre
 
 class RenderShortcutLink(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         a = tree.html.Tag('a', parent, **token.attributes)
-        s = tree.html.String(token.key, a)
+        s = tree.html.String(a, content=token.key)
 
         if token.key not in SHORTCUT_DATABASE:
             token.error("The shortcut link key '{}' was not located in the list of shortcuts.".format(token.key))
@@ -330,5 +330,5 @@ class RenderShortcutLink(CoreRenderComponentBase):
 class RenderBacktick(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         code = tree.html.Tag('code', parent)
-        tree.html.String(token.content, parent=code, escape=True)
+        tree.html.String(code, content=token.content, escape=True)
         return code
