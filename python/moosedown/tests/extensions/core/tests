@@ -7,4 +7,8 @@
     type = PythonUnitTest
     input = test_format.py
   [../]
+  [./code]
+    type = PythonUnitTest
+    input = test_code.py
+  [../]
 []

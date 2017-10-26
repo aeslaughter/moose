@@ -105,20 +105,24 @@ class Command(MarkdownComponent):
         return token
 
 class Code(MarkdownComponent):
+    """
+    Fenced code blocks.
+    """
     RE = re.compile(r'\s*`{3}(?P<language>\w+)?(?P<settings>.*?)$(?P<code>.*?)`{3}',
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
-        return tree.tokens.Code(parent, code=match.group('code'), **self.attributes)
+        return tree.tokens.Code(parent, code=match.group('code'), language=match.group('language'),
+                                **self.attributes)
 
 
 class HeadingHash(MarkdownComponent):
 
     TOKEN = tree.tokens.Heading
-    RE = re.compile(r'\s*(?P<level>#{1,6})\s' # match 1 to 6 #'s at the beginning of line
-                    r'(?P<inline>.*?)'        # heading text that will be inline parsed
+    RE = re.compile(r'\s*(?P<level>#{1,6})\s'    # match 1 to 6 #'s at the beginning of line
+                    r'(?P<inline>.*?)'           # heading text that will be inline parsed
                     r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
-                    r'(?:\Z|\n+)',            # match up to end of string or newline(s)
+                    r'(?:\Z|\n+)',               # match up to end of string or newline(s)
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
@@ -131,7 +135,7 @@ class Link(MarkdownComponent):
                     )
 
     def createToken(self, match, parent):
-        return tree.tokens.Link(parent, href=match.group('url'), **self.attributes)
+        return tree.tokens.Link(parent, url=match.group('url'), **self.attributes)
 
 
 class Shortcut(MarkdownComponent):
@@ -189,7 +193,7 @@ class Paragraph(MarkdownComponent):
 class Backtick(MarkdownComponent):
     RE = re.compile(r"`(?P<code>[^`].+?)`", flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
-        return tree.tokens.InlineCode(parent, content=match.group('code'))
+        return tree.tokens.InlineCode(parent, code=match.group('code'))
 
 
 class List(MarkdownComponent):
@@ -245,7 +249,7 @@ class Format(MarkdownComponent):
             if content is not None:
                 token = eval('tree.tokens.{}(parent, **self.attributes)'.format(key.title()))
                 grammer = self.reader.lexer.grammer('inline')
-                self.reader.lexer.tokenize(content, token, grammer, line=self.line)
+                self.reader.lexer.tokenize(content, token, grammer)#, line=self.line)
                 return token
 
 class Quote(MarkdownComponent):
