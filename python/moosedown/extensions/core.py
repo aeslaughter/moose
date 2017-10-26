@@ -276,7 +276,6 @@ class CoreRenderExtension(base.RenderExtension):
         self.add(tree.tokens.Superscript, RenderTag('sup'))
         self.add(tree.tokens.Subscript, RenderTag('sub'))
 
-
         for t in [tree.tokens.Word, tree.tokens.Space, tree.tokens.Punctuation, tree.tokens.Number]:
             self.add(t, RenderString())
 

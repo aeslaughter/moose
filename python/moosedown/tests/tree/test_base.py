@@ -49,6 +49,12 @@ class TestNodeBase(unittest.TestCase):
         node = base.NodeBase(None)
         self.assertEqual(node.name, 'NodeBase')
 
+    def testParent(self):
+        with self.assertRaises(TypeError) as e:
+            node = base.NodeBase(parent=42)
+        gold = "The supplied parent must be a NodeBase object, but 'int' was provided."
+        self.assertEqual(e.exception.message, gold)
+
 class TestProperty(unittest.TestCase):
     """
     Tests for base.Property() class.
