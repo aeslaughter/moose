@@ -21,28 +21,6 @@ class Token(base.NodeBase):
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self.name = self.__class__.__name__
-        self.__line = None # this gets set by Lexer object for error reporting
-
-    @property
-    def line(self):
-        """
-        Return the line number property.
-        """
-        return self.__line
-
-    @line.setter
-    def line(self, value):
-        """
-        Set the line property with type checking.
-
-        This setter is called by the Lexer when parsing string so that useful error messages
-        can be reported.
-        """
-        if isinstance(value, int):
-            self.__line = value
-        else:
-            LOG.error('The supplied line number must be of type "int", but "%s" provided.',
-                      type(value).__name__)
 
 class String(Token):
     """
@@ -93,11 +71,12 @@ class Number(String):
     """
     pass
 
-class Code(String):
+class Code(Token):
     """
     Code content (i.e., Monospace content)
     """
-    pass
+    PROPERTIES = [base.Property('code', ptype=str, required=True),
+                  base.Property('language', ptype=str, default='text')]
 
 class Heading(Token):
     """

@@ -114,6 +114,8 @@ class NodeBase(anytree.NodeMixin):
 
         # Update the properties from the key value pairs
         for key, value in kwargs.iteritems():
+            if value is None:
+                continue
             if key not in self.__properties:
                 self.__attributes[key.strip('_')] = value
             setattr(self, key, value)

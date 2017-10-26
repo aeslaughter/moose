@@ -82,7 +82,7 @@ in the table below.
 ### Lists
 #### Unordered List
 
-- List items in MooseDown must begin with a dash (`-`), the asterisk is **not** supported.
+- List items in MooseDown must begin with a dash (`-`), the asterisk is +not+ supported.
 - List items may contain lists, code, or any other markdown item and the item content may
   span many lines.
 

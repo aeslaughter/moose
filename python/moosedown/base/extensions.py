@@ -69,15 +69,14 @@ class TokenExtension(Extension):
         self.__components.append(component)
         component.reader = self.__reader
 
-        func = lambda m, p, l: self.__function(m, p, l, component)
+        func = lambda m, p: self.__function(m, p, component)
         Extension.add(self, group, name, component.RE, func, location)
 
-    def __function(self, match, parent, line, component):
+    def __function(self, match, parent, component):
         local = None
         if 'settings' in match.groupdict():
             local = match.group('settings')
         settings, unknown = self.__parseSettings(component, local)
-        component.line = line
         component.settings = settings
         token = component.createToken(match, parent)
         #token.settings = settings
@@ -106,9 +105,9 @@ class MarkdownExtension(TokenExtension):
         MarkdownExtension.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
 
     def addBlock(self, component, location='_end'):
-        name = component.__class__.__name__
+        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
         super(MarkdownExtension, self).add(moosedown.BLOCK, name, component, location)
 
     def addInline(self, component, location='_end'):
-        name = component.__class__.__name__
+        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
         super(MarkdownExtension, self).add(moosedown.INLINE, name, component, location)

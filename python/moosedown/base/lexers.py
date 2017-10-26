@@ -1,9 +1,11 @@
 import collections
+import logging
 
 import moosedown
 from moosedown import tree
 from Grammer import Grammer
 
+LOG = logging.getLogger(__name__)
 class Lexer(object):
 
     def tokenize(self, text, parent, grammer, line=1):
@@ -11,13 +13,13 @@ class Lexer(object):
         pos = 0
         mo, pattern = self._search(text, grammer, pos)
         while (mo is not None) and (pos < n): # pos < n is needed to avoid empty string
-            line += mo.group(0).count('\n')
             obj = self.buildObject(pattern, mo, parent, line)
+            line += mo.group(0).count('\n')
             pos = mo.end()
             mo, pattern = self._search(text, grammer, pos)
 
         if pos < n:
-            obj = tokens.Unknown(content=text[pos:])
+            obj = tree.tokens.Unknown(content=text[pos:])
             obj.parent = parent
             obj.line = line
 
@@ -29,8 +31,13 @@ class Lexer(object):
         return None, None
 
     def buildObject(self, pattern, match, parent, line):
-        obj = pattern.function(match, parent, line)
-        obj.line = line
+        try:
+            obj = pattern.function(match, parent)
+        except Exception as e:
+            msg = "An exception occurred on line %d while parsing the following:\n    %s\n" \
+                  "The exception occurred when executing the '%s' object.\n"
+            LOG.error(msg, line, match.group(0), pattern.name)
+            raise e
         return obj
 
 
