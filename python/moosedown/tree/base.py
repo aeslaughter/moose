@@ -88,13 +88,14 @@ class NodeBase(anytree.NodeMixin):
     PROPERTIES = [] # this gets set by the @properties decorator
 
     def __init__(self, parent=None, name=None, **kwargs):
-
-        # Check parent type
-        if (parent is not None) and (not isinstance(parent, NodeBase)):
-            msg = "The supplied parent must be a NodeBase object, but '{}' was provided."
-            raise TypeError(msg.format(type(parent).__name__))
-
         anytree.NodeMixin.__init__(self)
+
+        # TODO: This fails for some reason
+        # Check parent type
+        #if (parent is not None) and (not isinstance(parent, NodeBase)):
+        #    msg = "The supplied parent must be a NodeBase object, but '{}' was provided."
+        #    raise TypeError(msg.format(type(parent).__name__))
+
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
         self.__properties = dict() # storage for property values
