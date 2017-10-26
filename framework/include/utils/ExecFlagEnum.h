@@ -36,6 +36,9 @@ public:
   /**
    * Add additional execute_on flags to the list of possible flags.
    *
+   * If the supplied flag does not contain an ID it will be assigned by
+   * the MooseEnumBase::addEnumerationItem method.
+   *
    * Use a recursive variadic template function to allow for an arbitrary
    * number arguments:
    *     addAvaiableFlags(EXEC_INITIAL);

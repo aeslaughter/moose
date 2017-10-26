@@ -479,9 +479,9 @@
 // Define the available execute flags for MOOSE. The flags using a hex value are setup to retain
 // the same numbers that were utilized with the ExecFlagType was a proper enum. This was done for
 // keeping existing applications working using the deprecated flags. In the future, as in the
-// EXEC_SAME_AS_MULTIAPP flag, there is no reason to keep these flags bitwise comparable because
-// the MultiMooseEnum that is used to store these (see SetupInterface) has convenience methods for
-// determining the what flags are active.
+// EXEC_SAME_AS_MULTIAPP flag, there is no reason to include an id or keep these flags bitwise comparable
+// because the MultiMooseEnum that is used to store these has convenience methods for
+// determining what flags are active and will assign a number automatically.
 const ExecFlagType EXEC_NONE("NONE", 0x00);                     // 0
 const ExecFlagType EXEC_INITIAL("INITIAL", 0x01);               // 1
 const ExecFlagType EXEC_LINEAR("LINEAR", 0x02);                 // 2
@@ -493,7 +493,7 @@ const ExecFlagType EXEC_FORCED("FORCED", 0x40);                 // 64
 const ExecFlagType EXEC_FAILED("FAILED", 0x80);                 // 128
 const ExecFlagType EXEC_CUSTOM("CUSTOM", 0x100);                // 256
 const ExecFlagType EXEC_SUBDOMAIN("SUBDOMAIN", 0x200);          // 512
-const ExecFlagType EXEC_SAME_AS_MULTIAPP("SAME_AS_MULTIAPP", 1000);
+const ExecFlagType EXEC_SAME_AS_MULTIAPP("SAME_AS_MULTIAPP");
 
 namespace Moose
 {

@@ -18,18 +18,27 @@
 // STL includes
 #include <string>
 
+class MooseApp;
+
 /**
  * Class for containing MooseEnum item information.
+ *
+ * When using this class (or more likely the ExecFlagType alias) it is possible
+ * to create an ExecFlagType without an ID. When this object is added to the
+ * ExecFlagEnum object an ID will be assigned.
  */
 class MooseEnumItem
 {
 public:
+  static const int INVALID_ID;
+
+  MooseEnumItem(const std::string & name);
   MooseEnumItem(const std::string & name, const int & id);
-  ~MooseEnumItem() = default;
   MooseEnumItem(const MooseEnumItem & other);
   MooseEnumItem(MooseEnumItem && other) = default;
   MooseEnumItem & operator=(const MooseEnumItem & other);
   MooseEnumItem & operator=(MooseEnumItem && other) = default;
+  ~MooseEnumItem() = default;
 
   ///@{
   /**
@@ -80,6 +89,10 @@ public:
    */
   friend std::ostream & operator<<(std::ostream & out, const MooseEnumItem & item);
 
+  // Allows the ID for ExecFlagType to be set automatically when it is registered, thus
+  // allowing users to create flags without worrying about ID.
+  friend MooseApp;
+
 private:
   /// The name as provided in constructor
   std::string _raw_name;
@@ -87,8 +100,8 @@ private:
   /// Upper case name
   std::string _name;
 
-  /// The numeric value for item
-  int _id;
+  /// The numeric value for item.
+  mutable int _id; // mutable to allow MooseApp::registerExecFlag to set ID
 };
 
 #endif

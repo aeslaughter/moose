@@ -16,6 +16,7 @@
 
 #include "MooseEnumItem.h"
 #include "MooseException.h"
+#include "ExecFlagEnum.h"
 
 TEST(MooseEnumItem, construction)
 {
@@ -39,9 +40,11 @@ TEST(MooseEnumItem, comparison)
   MooseEnumItem item("Edward", 1949);
   EXPECT_EQ(item, "EDWARD");
   EXPECT_EQ(item, "Edward");
+  EXPECT_NE(item, "Andrew");
 
   EXPECT_EQ(item, std::string("EDWARD"));
   EXPECT_EQ(item, std::string("Edward"));
+  EXPECT_NE(item, std::string("Andrew"));
 
   EXPECT_EQ(item, 1949);
   EXPECT_NE(item, 1989);

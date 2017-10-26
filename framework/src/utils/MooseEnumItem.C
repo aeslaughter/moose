@@ -16,6 +16,8 @@
 #include "MooseEnumItem.h"
 #include "MooseUtils.h"
 
+MooseEnumItem::MooseEnumItem(const std::string & name) : MooseEnumItem(name, INVALID_ID) {}
+
 MooseEnumItem::MooseEnumItem(const std::string & name, const int & id)
   : _raw_name(MooseUtils::trim(name)), _name(MooseUtils::toUpper(_raw_name)), _id(id)
 {
@@ -81,3 +83,5 @@ operator<<(std::ostream & out, const MooseEnumItem & item)
   out << item.rawName();
   return out;
 }
+
+const int MooseEnumItem::INVALID_ID = std::numeric_limits<int>::min();

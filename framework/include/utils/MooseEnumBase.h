@@ -79,7 +79,7 @@ public:
    * isOutOfRangeAllowed
    * @return - a Boolean indicating whether enum names out of range are allowed
    */
-  bool isOutOfRangeAllowed() const { return _out_of_range_index; }
+  bool isOutOfRangeAllowed() const { return _allow_out_of_range; }
 
   /**
    * Return the complete set of available flags.
@@ -94,6 +94,11 @@ public:
   std::set<MooseEnumItem>::const_iterator find(const std::string & name) const;
   std::set<MooseEnumItem>::const_iterator find(int id) const;
   ///@}
+
+  /**
+   * Compute the next valid enumeration id.
+   */
+  int getNextValidID() const;
 
 protected:
   MooseEnumBase();
@@ -123,20 +128,15 @@ protected:
    */
   void checkDeprecated(const MooseEnumItem & item) const;
 
+
   /// Storage for the assigned items
   std::set<MooseEnumItem> _items;
 
   /// The map of deprecated names and optional replacements
   std::map<MooseEnumItem, MooseEnumItem> _deprecated_items;
 
-  /**
-   * The index of values assigned that are NOT values in this enum.  If this index is 0 (false) then
-   * out of range values are not allowed.
-   */
-  int _out_of_range_index;
-
-  /// Constants
-  const static int INVALID_ID;
+  /// Flag for allowing out-of-range items
+  bool _allow_out_of_range;
 };
 
 #endif // MOOSEENUMBASE_H
