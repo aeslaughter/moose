@@ -1317,5 +1317,5 @@ MooseApp::registerExecFlags()
 void
 MooseApp::registerExecFlag(const ExecFlagType & flag)
 {
-  Moose::execute_flags.addAvailableFlags({flag});
+  Moose::execute_flags.addAvailableFlags(flag);
 }
