@@ -108,12 +108,18 @@ class Code(MarkdownComponent):
     """
     Fenced code blocks.
     """
-    RE = re.compile(r'\s*`{3}(?P<language>\w+)?(?P<settings>.*?)$(?P<code>.*?)`{3}',
+    RE = re.compile(r'\s*`{3}(?P<settings>.*?)$(?P<code>.*?)`{3}',
                     flags=re.MULTILINE|re.DOTALL)
 
+    @staticmethod
+    def defaultSettings():
+        settings = base.MarkdownComponent.defaultSettings()
+        settings['language'] = ('text', "The code language to use for highlighting.")
+        return settings
+
     def createToken(self, match, parent):
-        return tree.tokens.Code(parent, code=match.group('code'), language=match.group('language'),
-                                **self.attributes)
+        return tree.tokens.Code(parent, code=match.group('code'),
+                                language=self.settings['language'], **self.attributes)
 
 
 class HeadingHash(MarkdownComponent):
@@ -334,5 +340,5 @@ class RenderShortcutLink(CoreRenderComponentBase):
 class RenderBacktick(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         code = tree.html.Tag('code', parent)
-        tree.html.String(code, content=token.content, escape=True)
+        tree.html.String(code, content=token.code, escape=True)
         return code
