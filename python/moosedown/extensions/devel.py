@@ -48,13 +48,13 @@ class RenderCompare(base.RenderComponent):
         md = tree.html.Tag('div', master, class_='moose-code-compare-markdown')
         pre = tree.html.Tag('pre', md)
         code = tree.html.Tag('code', pre)
-        tree.html.String(token.markdown, code, escape=True)
+        tree.html.String(code, content=token.markdown, escape=True)
 
         # HTML
         md = tree.html.Tag('div', master, class_='moose-code-compare-html')
         pre = tree.html.Tag('pre', md)
         code = tree.html.Tag('code', pre)
-        tree.html.String(token.html, code, escape=True)
+        tree.html.String(code, content=token.html, escape=True)
 
 
     def createMaterialize(self, token, parent):
@@ -64,11 +64,11 @@ class RenderCompare(base.RenderComponent):
             id_ = uuid.uuid4()
             li = tree.html.Tag('li', ul, class_="tab")
             a = tree.html.Tag('a', li, href='#' + str(id_))
-            tree.html.String(name, a, escape=True)
+            tree.html.String(a, content=name, escape=True)
 
             div = tree.html.Tag('div', master, id_=id_)
             pre = tree.html.Tag('pre', div)
             code = tree.html.Tag('code', pre)
-            tree.html.String(text, code, escape=True)
+            tree.html.String(code, content=text, escape=True)
 
         return master

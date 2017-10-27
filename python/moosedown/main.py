@@ -1,47 +1,25 @@
+import argparse
 import logging
-import base
+
+from commands import build
 #import common
 #import extensions
+
+
 logging.basicConfig()
-def build():
-    config = dict()
-    config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
-    extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
-    #if ext is not None:
-    #    extensions += ext
 
-    #local = dict(commands=['extensions.command.CodeCompare'])
-    #for key, value
-    #for reader_ext, render_ext in zip(reader_extensions, render_extensions):
-    #    reader_ext.update(config)
-    #    render_ext.update(config)
+def command_line_options():
+    parser = argparse.ArgumentParser(description="Utility for build MOOSE documentation.")
+    subparser = parser.add_subparsers(help='Available commands.')
+    build.command_line_options(subparser)
 
-    reader = base.MarkdownReader#(reader_extensions)
-
-    #if config['materialize']:
-    #    render = base.MaterializeRenderer#(render_extensions)
-    #else:
-
-    render = base.HTMLRenderer#(render_extensions)
-
-    translator = base.Translator(reader, render, extensions, **config)
-
-    with open('spec.md', 'r') as fid:
-        md = fid.read()
-
-    ast = translator.ast(md)
-    print ast
-
-    html = translator.convert()#'heading.md')
-    #print html
-
-    with open('index.html', 'w') as fid:
-        fid.write(html.write())
-
-
+    return parser.parse_args()
 
 def main():
+
+    options = command_line_options()
+    print options
     pass
 
 if __name__ == '__main__':
-    build()
+    main()
