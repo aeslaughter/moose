@@ -563,7 +563,7 @@ toUpper(const std::string & name)
 }
 
 ExecFlagEnum
-getDefaultExecFlagEnum(const std::initializer_list<ExecFlagType> & current)
+getDefaultExecFlagEnum()
 {
   ExecFlagEnum exec_enum = ExecFlagEnum();
   exec_enum.addAvailableFlags(EXEC_NONE,
@@ -573,7 +573,6 @@ getDefaultExecFlagEnum(const std::initializer_list<ExecFlagType> & current)
                               EXEC_TIMESTEP_END,
                               EXEC_TIMESTEP_BEGIN,
                               EXEC_CUSTOM);
-  exec_enum = current;
   return exec_enum;
 }
 
