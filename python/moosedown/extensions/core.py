@@ -2,12 +2,14 @@
 This defines the core Markdown translation to HTML and LaTeX.
 """
 import re
+import logging
 
 import moosedown
 from moosedown import base
 from moosedown import common
 from moosedown import tree
 
+LOG = logging.getLogger(__name__)
 SHORTCUT_DATABASE = dict()
 
 def make_extension():
@@ -74,7 +76,7 @@ class MarkdownComponent(base.TokenComponent):
         """
         Return a dictionary with the common html settings.
         """
-        return dict(style=self.settings['style'], id_=self.settings['id'], class_=self.settings['class'])
+        return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
 
 class Command(MarkdownComponent):
     """
@@ -113,7 +115,7 @@ class Code(MarkdownComponent):
 
     @staticmethod
     def defaultSettings():
-        settings = base.MarkdownComponent.defaultSettings()
+        settings = MarkdownComponent.defaultSettings()
         settings['language'] = ('text', "The code language to use for highlighting.")
         return settings
 
@@ -121,9 +123,12 @@ class Code(MarkdownComponent):
         return tree.tokens.Code(parent, code=match.group('code'),
                                 language=self.settings['language'], **self.attributes)
 
-
 class HeadingHash(MarkdownComponent):
+    """
+    Hash style markdown headings with settings.
 
+    # Heading Level One with=settings
+    """
     TOKEN = tree.tokens.Heading
     RE = re.compile(r'\s*(?P<level>#{1,6})\s'    # match 1 to 6 #'s at the beginning of line
                     r'(?P<inline>.*?)'           # heading text that will be inline parsed
@@ -135,6 +140,9 @@ class HeadingHash(MarkdownComponent):
         return tree.tokens.Heading(parent, level=match.group('level').count('#'), **self.attributes)
 
 class Link(MarkdownComponent):
+    """
+    Markdown links [foo](bar with=settings)
+    """
     RE = re.compile(r'\[(?P<inline>.*?)\]'         # link text
                     r'\((?P<url>.*?)'              # link url
                     r'(?:\s+(?P<settings>.*?))?\)' # settings
@@ -145,10 +153,14 @@ class Link(MarkdownComponent):
 
 
 class Shortcut(MarkdownComponent):
-    RE = re.compile(r'\s*\[(?P<key>.*?)\]:\s'     # shortcut key
+    """
+    Markdown shortcuts.
+
+    [foo]: something or another
+    """
+    RE = re.compile(r'\s*\[(?P<key>.*?)\]:\s'  # shortcut key
                     r'(?P<content>.*?)'        # shortcut value
-                    #r'(?P<settings>\w+=.*?)?'  # optional settings
-                    r'\n+',                    # stop at non-whitespace at beginning of new line
+                    r'(?:\n+|\Z)',             # stop new line or end of file
                     flags=re.MULTILINE)
 
     def createToken(self, match, parent):
@@ -157,52 +169,82 @@ class Shortcut(MarkdownComponent):
         return token
 
 class ShortcutLink(MarkdownComponent):
+    """
+    Markdown shortcut use.
+    """
     RE = re.compile(r'\[(?P<key>.*?)\]')
     def createToken(self, match, parent):
         return tree.tokens.ShortcutLink(parent, key=match.group('key'))
 
 class String(MarkdownComponent):
+    """
+    Base token for strings (i.e., words, numbers, etc.), this is
+    """
     def createToken(self, match, parent):
         return token.String(parent, content=match.group())
 
 class Break(String):
+    """
+    Line breaks.
+    """
     RE = re.compile(r'(?P<break>\n+)')
     def createToken(self, match, parent):
         return tree.tokens.Break(parent, count=len(match.group('break')))
 
 class Space(String):
+    """
+    Spaces.
+    """
     RE = re.compile(r'(?P<space> +)')
     def createToken(self, match, parent):
         return tree.tokens.Space(parent, count=len(match.group('space')))
 
 class Punctuation(String):
+    """
+    Not letters, numbers, or spaces.
+    """
     RE = re.compile(r'([^A-Z|^a-z|^0-9|^\s]+)')
     def createToken(self, match, parent):
         return tree.tokens.Punctuation(parent, content=match.group())
 
 class Number(String):
+    """
+    Numbers.
+    """
     RE = re.compile(r'([0-9]+)')
     def createToken(self, match, parent):
         return tree.tokens.Number(parent, content=match.group())
 
 class Word(String):
+    """
+    Letters.
+    """
     RE = re.compile(r'([A-Za-z]+)')
     def createToken(self, match, parent):
         return tree.tokens.Word(parent, content=match.group())
 
 class Paragraph(MarkdownComponent):
+    """
+    Paragraphs (defined by regions with more than one new line)
+    """
     RE = re.compile(r'\s*(?P<inline>.*?)(?:\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
         return tree.tokens.Paragraph(parent)
 
 class Backtick(MarkdownComponent):
+    """
+    Inline code
+    """
     RE = re.compile(r"`(?P<code>[^`].+?)`", flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
         return tree.tokens.InlineCode(parent, code=match.group('code'))
 
 
 class List(MarkdownComponent):
+    """
+    Base for lists components.
+    """
     RE = None
     SPLIT_RE = None
     TOKEN = None
@@ -217,7 +259,6 @@ class List(MarkdownComponent):
         items = self.SPLIT_RE.split(match.group('items'))
 
         regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
-
         for item in items:
             root = tree.tokens.ListItem(token)
             item = regex.sub(r'\1', item)
@@ -231,12 +272,16 @@ class UnorderedList(List):
     SPLIT_RE = re.compile(r'^- ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tree.tokens.UnorderedList
 
-
 class OrderedList(List):
     RE = re.compile(r'\s*(?P<marker>[0-9]+\. )(?P<items>.*?)(?=\n{3,}|^[^0-9 \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
     SPLIT_RE = re.compile(r'^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tree.tokens.OrderedList
+
+    def createToken(self, match, parent):
+        token = List.createToken(self, match, parent)
+        token.start = int(match.group('marker').strip('. '))
+        return token
 
 class Format(MarkdownComponent):
     """
@@ -273,7 +318,7 @@ class CoreRenderExtension(base.RenderExtension):
         self.add(tree.tokens.InlineCode, RenderBacktick())
         self.add(tree.tokens.Break, RenderBreak())
 
-        self.add(tree.tokens.Link, RenderTag('a'))
+        self.add(tree.tokens.Link, RenderLink())
         self.add(tree.tokens.Paragraph, RenderTag('p'))
         self.add(tree.tokens.UnorderedList, RenderTag('ul'))
         self.add(tree.tokens.OrderedList, RenderTag('ol'))
@@ -297,7 +342,6 @@ class CoreRenderComponentBase(base.RenderComponent):
     def createMaterialize(self, token, parent):
         return self.createHTML(token, parent)
 
-
 class RenderTag(CoreRenderComponentBase):
     def __init__(self, tag, *args, **kwargs):
         CoreRenderComponentBase.__init__(self, *args, **kwargs)
@@ -310,6 +354,10 @@ class RenderString(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         return tree.html.String(parent, content=token.content)
 
+class RenderLink(CoreRenderComponentBase):
+    def createHTML(self, token, parent):
+        return tree.html.Tag('a', parent, href=token.url, **token.attributes)
+
 class RenderBreak(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         return tree.html.String(parent, content=' ')
@@ -320,8 +368,9 @@ class RenderHeading(CoreRenderComponentBase):
 
 class RenderCode(CoreRenderComponentBase):
     def createHTML(self, token, parent):
+        language = 'language-{}'.format(token.language)
         pre = tree.html.Tag('pre', parent, **token.attributes)
-        code = tree.html.Tag('code', pre)
+        code = tree.html.Tag('code', pre, class_=language)
         string = tree.html.String(code, content=token.code)
         return pre
 
@@ -331,7 +380,8 @@ class RenderShortcutLink(CoreRenderComponentBase):
         s = tree.html.String(a, content=token.key)
 
         if token.key not in SHORTCUT_DATABASE:
-            token.error("The shortcut link key '{}' was not located in the list of shortcuts.".format(token.key))
+            msg = "The shortcut link key '%s' was not located in the list of shortcuts on line %d"
+            LOG.error(msg, token.key, token.line)
         else:
             a['href'] = SHORTCUT_DATABASE[token.key]
 

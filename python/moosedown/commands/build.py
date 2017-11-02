@@ -14,8 +14,10 @@ def main():
 
     translator = base.Translator(reader, render, extensions, **config)
 
-    with open('spec.md', 'r') as fid:
-        md = fid.read()
+    #with open('spec.md', 'r') as fid:
+    #    md = fid.read()
+
+    md = "```\nx+1;\n```"
 
     ast = translator.ast(md)
     print ast

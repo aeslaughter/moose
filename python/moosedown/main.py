@@ -18,8 +18,9 @@ def command_line_options():
 def main():
 
     options = command_line_options()
-    print options
-    pass
+
+    build.main()
+
 
 if __name__ == '__main__':
     main()

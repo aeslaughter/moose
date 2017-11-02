@@ -21,6 +21,7 @@ class Token(base.NodeBase):
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self.name = self.__class__.__name__
+        self.line = None
 
 class String(Token):
     """
@@ -30,9 +31,8 @@ class String(Token):
 
 class Unknown(String):
     """
-    When the Grammer object fails to match a portion of the supplied text then this
-    token will be assigned. This should indicate that your Grammer definition is incomplete.
-    Additionally, this should be used in renderers to produce proper error messages.
+    When the lexer object fails to match a portion of the supplied text then this
+    token will be assigned. This should indicate that your grammer definition is incomplete.
     """
     pass
 

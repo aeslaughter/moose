@@ -116,9 +116,10 @@ class NodeBase(anytree.NodeMixin):
         for key, value in kwargs.iteritems():
             if value is None:
                 continue
-            if key not in self.__properties:
+            if key in self.__properties:
+                setattr(self, key, value)
+            else:
                 self.__attributes[key.strip('_')] = value
-            setattr(self, key, value)
 
         # Check required
         for prop in self.PROPERTIES:
