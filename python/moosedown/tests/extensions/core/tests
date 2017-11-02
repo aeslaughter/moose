@@ -11,4 +11,29 @@
     type = PythonUnitTest
     input = test_code.py
   [../]
+  [./link]
+    type = PythonUnitTest
+    input = test_link.py
+  [../]
+  [./shortcut]
+    type = PythonUnitTest
+    input = test_shortcut.py
+  [../]
+  [./string]
+    # All string tokens
+    type = PythonUnitTest
+    input = test_string.py
+  [../]
+  [./paragraph]
+    type = PythonUnitTest
+    input = test_paragraph.py
+  [../]
+  [./backtick]
+    type = PythonUnitTest
+    input = test_backtick.py
+  [../]
+  [./unordered]
+    type = PythonUnitTest
+    input = test_unordered_list.py
+  [../]
 []

@@ -36,8 +36,9 @@ class Lexer(object):
         except Exception as e:
             msg = "An exception occurred on line %d while parsing the following:\n    %s\n" \
                   "The exception occurred when executing the '%s' object.\n"
-            LOG.error(msg, line, match.group(0), pattern.name)
+            LOG.exception(msg, line, match.group(0), pattern.name)
             raise e
+        obj.line = line
         return obj
 
 

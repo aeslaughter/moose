@@ -1,17 +1,25 @@
 import unittest
-from moosedown import MooseMarkdown
+import logging
 
+from moosedown import base
 from mooseutils import text_diff
+
+logging.basicConfig()
 
 class MarkdownTestCase(unittest.TestCase):
     """
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
+    EXTENSIONS = ['moosedown.extensions.core']
+    CONFIG = dict()
+
     def setUp(self):
         """
         Create the Translator instance.
         """
-        self._translator = MooseMarkdown.MooseMarkdown(materialize=False)
+        reader = base.MarkdownReader
+        renderer = base.HTMLRenderer
+        self._translator = base.Translator(reader, renderer, self.EXTENSIONS, **self.CONFIG)
 
     def ast(self, md):
         """
