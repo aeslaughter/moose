@@ -2,21 +2,23 @@
 Module for text and filename nodes for use by MarkdownReader
 """
 import logging
+import codecs
+
 import base
 
 LOG = logging.getLogger(__name__)
 
-class TextNode(base.NodeBase):
-    def __init__(self, content, parent):
-        super(TextNode, self).__init__()
-        self.name = self.__class__.__name__
-        self.parent = parent
-        self.content = content
+class FileNode(base.NodeBase):
+    PROPERTIES = [base.Property('source', ptype=str), base.Property('content', ptype=str)]
 
-    def source(self):
-        return 'the current text'
+    def __init__(self, *args, **kwargs):
+        base.NodeBase.__init__(self, *args, **kwargs)
 
+        if os.path.exists(self.source):
+            with codes.open(self.source, encoding='utf-8') as fid:
+                self.content = fid.read()
 
+"""
 class FileNode(TextNode):
     def __init__(self, filename, parent):
 
@@ -27,3 +29,4 @@ class FileNode(TextNode):
             content = fid.read()
 
         super(FileNode, self).__init__(content, parent)
+"""
