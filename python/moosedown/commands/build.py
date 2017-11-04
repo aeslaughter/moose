@@ -1,4 +1,6 @@
 from moosedown import base
+from moosedown import tree
+
 def command_line_options(subparser):
     build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
     #build_parser.add_argument('--extensions', nargs=?, help="The extensions")
@@ -14,10 +16,12 @@ def main():
 
     translator = base.Translator(reader, render, extensions, **config)
 
-    #with open('spec.md', 'r') as fid:
-    #    md = fid.read()
+    #node = tree.file.FileNode(source='spec.md')
 
-    md = "```\nx+1;\n```"
+
+    with open('spec.md', 'r') as fid:
+        md = fid.read()
+
 
     ast = translator.ast(md)
     print ast

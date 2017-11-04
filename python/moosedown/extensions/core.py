@@ -308,7 +308,6 @@ class Quote(MarkdownComponent):
     def createToken(self, match, parent):
         return tree.tokens.Quote(parent)
 
-
 class CoreRenderExtension(base.RenderExtension):
     def extend(self):
 
@@ -320,8 +319,8 @@ class CoreRenderExtension(base.RenderExtension):
 
         self.add(tree.tokens.Link, RenderLink())
         self.add(tree.tokens.Paragraph, RenderTag('p'))
-        self.add(tree.tokens.UnorderedList, RenderTag('ul'))
-        self.add(tree.tokens.OrderedList, RenderTag('ol'))
+        self.add(tree.tokens.UnorderedList, RenderList('ul'))
+        self.add(tree.tokens.OrderedList, RenderList('ol'))
         self.add(tree.tokens.ListItem, RenderTag('li'))
         self.add(tree.tokens.Quote, RenderTag('blockquote'))
         self.add(tree.tokens.Strong, RenderTag('strong'))
@@ -349,6 +348,12 @@ class RenderTag(CoreRenderComponentBase):
 
     def createHTML(self, token, parent):
         return tree.html.Tag(self.__tag, parent, **token.attributes)
+
+class RenderList(RenderTag):
+    def createMaterialize(self, token, parent):
+        tag = RenderTag.createMaterialize(self, token, parent)
+        tag['class'] = 'browser-default'
+        return tag
 
 class RenderString(CoreRenderComponentBase):
     def createHTML(self, token, parent):

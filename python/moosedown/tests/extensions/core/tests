@@ -36,4 +36,8 @@
     type = PythonUnitTest
     input = test_unordered_list.py
   [../]
+  [./ordered]
+    type = PythonUnitTest
+    input = test_ordered_list.py
+  [../]
 []
