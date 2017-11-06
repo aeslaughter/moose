@@ -973,6 +973,9 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
                                                 const InputParameters & pars,
                                                 const MultiMooseEnum *)
 {
+  if (name == "execute_on" && pars.have_parameter<ExecFlagEnum>(name))
+    return pars.get<ExecFlagEnum>(name);
+
   return pars.get<MultiMooseEnum>(name);
 }
 
@@ -998,4 +1001,30 @@ InputParameters::checkParamName(const std::string & name) const
   const static pcrecpp::RE valid("[\\w:/]+");
   if (!valid.FullMatch(name))
     mooseError("Invalid parameter name: '", name, "'");
+}
+
+// This is temporary specialization to allow applications to utilize MultiMooseEnum for
+// "execute_on" parameter, after our tested applications are updated this method will be
+// deprecated and then removed.
+template <>
+MultiMooseEnum &
+InputParameters::set(const std::string & name, bool quiet_mode)
+{
+  if (name == "execute_on" && have_parameter<ExecFlagEnum>("execute_on"))
+    return InputParameters::set<ExecFlagEnum>(name, quiet_mode);
+  else
+  {
+    checkParamName(name);
+    checkConsistentType<MultiMooseEnum>(name);
+
+    if (!this->have_parameter<MultiMooseEnum>(name))
+      _values[name] = new Parameter<MultiMooseEnum>;
+
+    set_attributes(name, false);
+
+    if (quiet_mode)
+      _set_by_add_param.insert(name);
+
+    return cast_ptr<Parameter<MultiMooseEnum> *>(_values[name])->set();
+  }
 }

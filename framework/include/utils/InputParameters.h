@@ -19,6 +19,8 @@
 #include "MooseError.h"
 #include "MooseTypes.h"
 #include "MooseUtils.h"
+#include "MultiMooseEnum.h"
+#include "ExecFlagEnum.h"
 
 #include "libmesh/parameters.h"
 #include "libmesh/parsed_function.h"
@@ -1126,6 +1128,12 @@ template <typename T>
 void
 InputParameters::checkConsistentType(const std::string & name) const
 {
+  // Special case to allow MultiMooseEnum to work with "execute_on", this
+  // will be removed when applications are updated to use ExecFlagEnum
+  if (name == "execute_on" && typeid(T) == typeid(MultiMooseEnum) &&
+      have_parameter<ExecFlagEnum>(name))
+    return;
+
   // Do we have a paremeter with the same name but a different type?
   InputParameters::const_iterator it = _values.find(name);
   if (it != _values.end() && dynamic_cast<const Parameter<T> *>(it->second) == NULL)
@@ -1142,7 +1150,9 @@ template <typename T>
 void
 InputParameters::suppressParameter(const std::string & name)
 {
-  if (!this->have_parameter<T>(name))
+  // The second term is temporary to allow MultiMooseEnum work with ExecFlagEnum
+  if (!this->have_parameter<T>(name) &&
+      !(name == "execute_on" && this->have_parameter<ExecFlagEnum>(name)))
     mooseError("Unable to suppress nonexistent parameter: ", name);
 
   _required_params.erase(name);
@@ -1297,5 +1307,11 @@ InputParameters::getParamHelper(const std::string & name,
 }
 
 InputParameters emptyInputParameters();
+
+// This is temporary specialization to allow applications to utilize MultiMooseEnum for
+// "execute_on" parameter, after our tested applications are updated this method will be
+// deprecated and then removed.
+template <>
+MultiMooseEnum & InputParameters::set(const std::string & name, bool quiet_mode);
 
 #endif /* INPUTPARAMETERS_H */
