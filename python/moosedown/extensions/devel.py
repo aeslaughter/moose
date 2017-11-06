@@ -3,22 +3,24 @@ Tools primarily for developers of the MooseDown system.
 """
 import re
 import uuid
+import collections
 
 from moosedown import base
-from moosedown import tree
+from moosedown.tree import html, tokens
+from moosedown.tree.base import Property
 
 def make_extension():
     return DevelMarkdownExtension(), DevelRenderExtension()
 
 
-class Compare(tree.tokens.Token):
-    def __init__(self, parent, markdown=None, html=None):
-        super(Compare, self).__init__(parent)
-        self.markdown = markdown
-        self.html = html
+class Compare(tokens.Token):
+    """
+    Tool for comparing code, i.e. html, latex, etc.
 
-    def __repr__(self):
-        return '{}: md={} html={}'.format(self.name, self.markdown, self.html)
+    Inputs:
+        tabs: Dict of code tabs to dislpay.
+    """
+    PROPERTIES = [Property("tabs", ptype=dict, required=True)]
 
 
 class DevelMarkdownExtension(base.MarkdownExtension):
@@ -27,12 +29,15 @@ class DevelMarkdownExtension(base.MarkdownExtension):
 
 class CodeCompare(base.CommandComponent):
     COMMAND = 'devel'
-    SUBCOMMAND = 'moosedown'
+    SUBCOMMAND = 'compare'
 
     def createToken(self, match, parent):
+
+        tabs = collections.OrderedDict()
         content = match.group('content')
-        md, html = re.split(r'~{3}', content)
-        return Compare(parent, markdown=md, html=html)
+        for match in re.finditer(r'~{3}(?P<title>.*?)$(?P<content>.*?)(?=^~|\Z)', content, flags=re.MULTILINE|re.DOTALL):
+            tabs[match.group('title')] = match.group('content')
+        return Compare(parent, tabs=tabs)
 
 
 class DevelRenderExtension(base.RenderExtension):
@@ -44,31 +49,25 @@ class RenderCompare(base.RenderComponent):
     def createHTML(self, token, parent):
         master = tree.html.Tag('div', parent, class_='moose-code-compare')
 
-        # MooseDown
-        md = tree.html.Tag('div', master, class_='moose-code-compare-markdown')
-        pre = tree.html.Tag('pre', md)
-        code = tree.html.Tag('code', pre)
-        tree.html.String(code, content=token.markdown, escape=True)
-
-        # HTML
-        md = tree.html.Tag('div', master, class_='moose-code-compare-html')
-        pre = tree.html.Tag('pre', md)
-        code = tree.html.Tag('code', pre)
-        tree.html.String(code, content=token.html, escape=True)
-
+        for title, code in token.tabs.iteritems():
+            div = html.Tag('div', master, class_='moose-code-compare-{}'.format(title))
+            pre = html.Tag('pre', div)
+            code = html.Tag('code', pre)
+            html.String(code, content=code, escape=True)
 
     def createMaterialize(self, token, parent):
-        master = tree.html.Tag('div', parent, class_='moose-code-compare')
-        ul = tree.html.Tag('ul', master, class_="tabs")
-        for name, text in [('MooseDown', token.markdown), ('HTML', token.html)]:
-            id_ = uuid.uuid4()
-            li = tree.html.Tag('li', ul, class_="tab")
-            a = tree.html.Tag('a', li, href='#' + str(id_))
-            tree.html.String(a, content=name, escape=True)
+        master = html.Tag('div', parent, class_='moose-code-compare')
+        ul = html.Tag('ul', master, class_="tabs")
 
-            div = tree.html.Tag('div', master, id_=id_)
-            pre = tree.html.Tag('pre', div)
-            code = tree.html.Tag('code', pre)
-            tree.html.String(code, content=text, escape=True)
+        for title, content in token.tabs.iteritems():
+            id_ = uuid.uuid4()
+            li = html.Tag('li', ul, class_="tab")
+            a = html.Tag('a', li, href='#' + str(id_))
+            html.String(a, content=title, escape=True)
+
+            div = html.Tag('div', master, id_=id_)
+            pre = html.Tag('pre', div)
+            code = html.Tag('code', pre)
+            html.String(code, content=content, escape=True)
 
         return master
