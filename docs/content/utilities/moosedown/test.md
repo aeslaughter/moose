@@ -1,0 +1,2 @@
+!config
+Renderer/breadcrumbs=True
