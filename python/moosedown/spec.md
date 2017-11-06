@@ -64,20 +64,28 @@ in the table below.
 
 !devel settings moosedown-headings
 
-!devel moosedown
+!devel compare
+~~~MooseDown
 # Level One
 ## Level Two
 ### Level Three style=font-size;14pt; id=level-three
 #### Level Four
 ##### Level Five
 ###### Level Six
-~~~
+~~~HTML
 <h1>Level One</h1>
 <h2>Level Two</h2>
 <h3 style="font-size:14pt" id="level-three">Level Three</h3>
 <h4>Level Four</h4>
 <h5>Level Five</h5>
 <h6>Level Six</h6>
+~~~LaTeX
+\part{Level One}
+\chapter{Level Two}
+\section{Level Three}
+\subsection{Level Four}
+\subsubsection{Level Five}
+\paragraph{Level Six}
 
 ### Lists
 #### Unordered List

@@ -1,8 +1,7 @@
 """
 
 """
-from MooseDocs import tree
-
+from moosedown.tree import html
 
 class Renderer(object):
     METHOD = None
@@ -58,19 +57,19 @@ class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
 
     def render(self, ast):
-        root = tree.html.Tag('html')
+        root = html.Tag('html')
 
         # <head>
-        head = tree.html.Tag('head', root)
-        icons = tree.html.Tag('link', head, href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
-        materialize = tree.html.Tag('link', head, type="text/css", rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css",  media="screen,projection")
+        head = html.Tag('head', root)
+        icons = html.Tag('link', head, href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+        materialize =  html.Tag('link', head, type="text/css", rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css",  media="screen,projection")
 
-        body = tree.html.Tag('body', root)
-        div = tree.html.Tag('div', body, class_="container")
+        body = html.Tag('body', root)
+        div = html.Tag('div', body, class_="container")
 
         HTMLRenderer.render(self, ast, div)
 
-        tree.html.Tag('script', body, type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
-        tree.html.Tag('script', body, type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
+        html.Tag('script', body, type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
+        html.Tag('script', body, type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
 
         return root

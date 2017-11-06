@@ -1,5 +1,6 @@
-import MooseDocs
-from MooseDocs.tree import tokens
+
+import moosedown
+from moosedown.tree import tokens
 from lexers import RecursiveLexer
 
 class Reader(object):
@@ -38,4 +39,5 @@ class Reader(object):
 
 class MarkdownReader(Reader):
     def __init__(self, ext=None):
-        super(MarkdownReader, self).__init__(lexer=RecursiveLexer(MooseDocs.BLOCK, MooseDocs.INLINE), extensions=ext)
+        super(MarkdownReader, self).__init__(lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),
+                                             extensions=ext)

@@ -1,5 +1,5 @@
 import collections
-from MooseDocs import common
+from moosedown import common
 
 class Grammer(object):
     """
