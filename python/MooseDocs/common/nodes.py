@@ -16,7 +16,7 @@ import logging
 import anytree
 import mooseutils
 import MooseDocs
-
+MooseDocs.ROOT_DIR = "/Users/slauae/projects/moose"
 LOG = logging.getLogger(__name__)
 
 class NodeCore(anytree.NodeMixin):
