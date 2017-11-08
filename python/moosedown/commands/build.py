@@ -1,3 +1,5 @@
+import re
+
 from moosedown import base
 from moosedown import tree
 
@@ -10,9 +12,11 @@ def main():
     config = dict()
     config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
     extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
-    reader = base.MarkdownReader#(reader_extensions)
-    render = base.MaterializeRenderer#(render_extensions)
-    #render = base.HTMLRenderer#(render_extensions)
+    reader = base.MarkdownReader
+    render = base.LatexRenderer
+
+    #render = base.MaterializeRenderer
+    #render = base.HTMLRenderer
 
     translator = base.Translator(reader, render, extensions, **config)
 
@@ -24,10 +28,15 @@ def main():
 
 
     ast = translator.ast(md)
-    print ast
+   # print ast
 
     html = translator.convert()
-    #print html
+    print html
 
-    with open('index.html', 'w') as fid:
-        fid.write(html.write())
+
+    with open('index.tex', 'w') as fid:
+
+        fid.write(re.sub(r'\n+', r'\n', html.write()))
+
+   # with open('index.html', 'w') as fid:
+    #    fid.write(html.write())

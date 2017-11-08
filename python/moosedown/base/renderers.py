@@ -1,7 +1,7 @@
 """
 
 """
-from moosedown.tree import html
+from moosedown.tree import html, latex
 
 class Renderer(object):
     METHOD = None
@@ -44,12 +44,9 @@ class Renderer(object):
 class HTMLRenderer(Renderer):
     METHOD = 'createHTML'
 
-    def __init__(self, extensions=None):
-        super(HTMLRenderer, self).__init__(extensions)
-
     def render(self, ast, root=None):
         if root is None:
-            root = tree.html.Tag('body')
+            root = html.Tag('body')
         self.process(ast, root)
         return root
 
@@ -72,4 +69,14 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag('script', body, type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
         html.Tag('script', body, type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
 
+        return root
+
+
+class LatexRenderer(Renderer):
+    METHOD = 'createLatex'
+
+    def render(self, ast, root=None):
+        if root is None:
+            root = latex.Environment(command='document')
+        self.process(ast, root)
         return root

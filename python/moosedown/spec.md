@@ -82,7 +82,7 @@ in the table below.
 ~~~LaTeX
 \part{Level One}
 \chapter{Level Two}
-\section{Level Three}
+\section{Level Three\label{level-three}}
 \subsection{Level Four}
 \subsubsection{Level Five}
 \paragraph{Level Six}
