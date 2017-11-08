@@ -6,7 +6,7 @@ import uuid
 import collections
 
 from moosedown import base
-from moosedown.tree import html, tokens
+from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
 def make_extension():
@@ -71,3 +71,6 @@ class RenderCompare(base.RenderComponent):
             html.String(code, content=content, escape=True)
 
         return master
+
+    def createLatex(self, token, parent):
+        return latex.Environment(command='UNKNOWN')
