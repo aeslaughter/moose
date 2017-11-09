@@ -11,15 +11,15 @@ class MarkdownTestCase(unittest.TestCase):
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
     EXTENSIONS = ['moosedown.extensions.core']
+    READER = base.MarkdownReader
+    RENDERER = base.HTMLRenderer
     CONFIG = dict()
 
     def setUp(self):
         """
         Create the Translator instance.
         """
-        reader = base.MarkdownReader
-        renderer = base.HTMLRenderer
-        self._translator = base.Translator(reader, renderer, self.EXTENSIONS, **self.CONFIG)
+        self._translator = base.Translator(self.READER, self.RENDERER, self.EXTENSIONS, **self.CONFIG)
 
     def ast(self, md):
         """

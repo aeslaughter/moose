@@ -44,8 +44,9 @@ class Renderer(object):
 class HTMLRenderer(Renderer):
     METHOD = 'createHTML'
 
-    def render(self, ast):
-        root = html.Tag(None, 'body')
+    def render(self, ast, root=None):
+        if root is None:
+            root = html.Tag(None, 'body')
         self.process(ast, root)
         return root
 
@@ -65,8 +66,8 @@ class MaterializeRenderer(HTMLRenderer):
 
         HTMLRenderer.render(self, ast, div)
 
-        html.Tag(body, 'script', type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
-        html.Tag(body, 'script', type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
+        html.Tag(head, 'script', type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
+        html.Tag(head, 'script', type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
 
         return root
 
