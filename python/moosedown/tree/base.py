@@ -202,3 +202,11 @@ class NodeBase(anytree.NodeMixin):
         for child in self.children:
             out += child.write()
         return out
+
+    def find(self, name):
+        """
+        Search for a node, by name.
+        """
+        for node in anytree.PreOrderIter(self):
+            if node.name == name:
+                return node

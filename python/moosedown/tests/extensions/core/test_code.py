@@ -4,9 +4,9 @@ import logging
 import mock
 
 from moosedown import tree
-from moosedown.base import testing
+from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestCode(testing.MarkdownTestCase):
+class TestCodeTokenize(testing.MarkdownTestCase):
     """
     Test fenced code blocks
     """
@@ -29,6 +29,20 @@ class TestCode(testing.MarkdownTestCase):
         html = self.html(code)
         self.assertString(html.write(),
                          '<body><pre><code class="language-cpp">\nint x;\n</code></pre></body>')
+
+class TestCodeHTML(testing.MarkdownTestCase):
+    def testBasic(self):
+        html = self.html('```\nint x;\n```').find('pre')
+        self.assertString(html.write(),
+                          '<pre><code class="language-text">\nint x;\n</code></pre>')
+
+    def testLanguage(self):
+        html = self.html('```language=cpp\nint x;\n```').find('pre')
+        self.assertString(html.write(),
+                          '<pre><code class="language-cpp">\nint x;\n</code></pre>')
+
+class TestCodeMaterialize(TestCodeHTML):
+    RENDERER = MaterializeRenderer
 
 
 if __name__ == '__main__':
