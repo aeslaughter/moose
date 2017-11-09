@@ -73,4 +73,5 @@ class RenderCompare(base.RenderComponent):
         return master
 
     def createLatex(self, token, parent):
-        return latex.Environment(command='UNKNOWN')
+        pass
+        #return latex.Environment(parent, 'UNKNOWN')

@@ -32,9 +32,12 @@ class TestNodeBase(unittest.TestCase):
 
     def testWrite(self):
         node = base.NodeBase(None)
-        with self.assertRaises(NotImplementedError) as e:
-            node.write()
-        self.assertIn("The write() method is not", e.exception.message)
+        class TestNode(base.NodeBase):
+            def write(self):
+                return 'foo'
+        TestNode(node)
+        TestNode(node)
+        self.assertEqual(node.write(), 'foofoo')
 
     def testIter(self):
         root = base.NodeBase(None)

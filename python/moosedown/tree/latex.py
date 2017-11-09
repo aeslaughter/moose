@@ -4,61 +4,124 @@ Nodes for builing latex.
 import re
 from base import NodeBase, Property
 
+def escape(text):
+    """
+    Escape LaTeX commands.
 
-class Argument(object):
-    def __init__(self, prop=None, enclose=('', '')):
-        self.prop = prop
-        self.enclose = enclose
+    Inputs:
+        text: a plain text message
+    """
+    conv = {
+        '&': '\\&',
+        '%': '\\%',
+        '$': '\\$',
+        '#': '\\#',
+        '_': '\\_',
+        '{': '\\{',
+        '}': '\\}',
+        '^': '\\^',
+        '~': '\\textasciitilde\\',
+        '\\': '\\textbackslash\\',
+        '<': '\\textless\\',
+        '>': '\\textgreater\\',
+    }
 
-    def write(self, content):
+    regex = re.compile('|'.join(re.escape(unicode(key)) for key in sorted(conv.keys(), key = lambda item: - len(item))))
+    return regex.sub(lambda match: conv[match.group()], text)
 
-        out = ''
-        if isinstance(content, str):
-            out += '{%s}' % content
+class Enclosure(NodeBase):
+    """
+    Class for enclosing other nodes in characters, e.g. [], {}.
+    """
+    PROPERTIES = [Property('enclose', ptype=tuple, required=True), Property('string', ptype=str)]
 
-        elif isinstance(content, NodeBase):
-            out += self.enclose[0]
-            for child in content.children:
-                out += child.write()
-            out += self.enclose[1]
+    def __init__(self, *args, **kwargs):
+        NodeBase.__init__(self, *args, **kwargs)
+        if self.string is not None:
+            String(self, content=self.string)
+
+    def write(self):
+        out = self.enclose[0]
+        for child in self.children:
+            out += child.write()
+        out += self.enclose[1]
         return out
 
+class Bracket(Enclosure):
+    """
+    Square bracket enclosure ([]).
+    """
+    def __init__(self, *args, **kwargs):
+        Enclosure.__init__(self, *args, enclose=('[', ']'), **kwargs)
 
-class Mandatory(Argument):
-    def __init__(self, *args,  **kwargs):
-        Argument.__init__(self, *args, enclose=('{', '}'), **kwargs)
+class Brace(Enclosure):
+    """
+    Curly brace enclosure ({}).
+    """
+    def __init__(self, *args, **kwargs):
+        Enclosure.__init__(self, *args, enclose=('{', '}'), **kwargs)
 
-class Optional(object):
-    def __init__(self, *args,  **kwargs):
-        Argument.__init__(self, *args, enclose=('[', ']'), **kwargs)
-
+class InlineMath(Enclosure):
+    """
+    Math enclosure ($$).
+    """
+    def __init__(self, *args, **kwargs):
+        Enclosure.__init__(self, *args, enclose=('$', '$'), **kwargs)
 
 class Command(NodeBase):
-    PROPERTIES = [Property('arguments', ptype=list, default=[Mandatory]),
-                  Property('command', ptype=str, required=True),
+    """
+    Typical one argument command: \foo{bar}.
+    """
+    PROPERTIES = [Property('string', ptype=str),
                   Property('start', ptype=str, default=''),
+                  Property('end', ptype=str, default='')]
+
+    def __init__(self, parent, command, *args, **kwargs):
+        NodeBase.__init__(self, parent, *args, **kwargs)
+        self._command = command
+        if not isinstance(self._command, str):
+            msg = "The command must be a 'str', but a '{}' was given."
+            raise TypeError(msg.format(type(self._command).__name__))
+
+        if self.string is not None:
+            String(self, content=self.string)
+
+    def write(self):
+        out = self.start
+        out += '\\%s{' % self._command
+        for child in self.children:
+            out += child.write()
+        out += '}' + self.end
+        return out
+
+    def __repr__(self):
+        return '{}: {}'.format(self.name, self._command)
+
+class CustomCommand(Command):
+    """
+    Class for building up arbitrary commands, with both optional and mandatory arguments.
+    """
+    PROPERTIES = [Property('start', ptype=str, default=''),
                   Property('end', ptype=str, default='')]
 
     def write(self):
         out = self.start
-        out += '\\%s' % self.command
-        for arg in self.arguments:
-            if arg.prop is None:
-                out += arg.write(self)
-            else:
-                out += arg.write(getattr(self, arg.prop))
-
+        out += '\\%s' % self._command
+        for child in self.children:
+            out += child.write()
         out += self.end
         return out
 
 class Environment(NodeBase):
-    PROPERTIES = [Property('command', ptype=str, required=True)]
+    def __init__(self, parent, command, *args, **kwargs):
+        NodeBase.__init__(self, parent, *args, **kwargs)
+        self._command = command
 
     def write(self):
-        out = '\n\\begin{%s}\n' % self.command
+        out = '\n\\begin{%s}\n' % self._command
         for child in self.children:
             out += child.write()
-        out += '\n\\end{%s}\n' % self.command
+        out += '\n\\end{%s}\n' % self._command
         return out
 
 class String(NodeBase):
@@ -68,39 +131,7 @@ class String(NodeBase):
     PROPERTIES = [Property('content', default='', ptype=str)]
 
     def write(self):
-        out = self.content
+        out = escape(self.content)
         for child in self.children:
             out += child.write()
         return out
-
-class Section(Command):
-    ARGUMENTS = [Mandatory()]
-    def __init__(self, *args, **kwargs):
-        Command.__init__(self, *args, start='\n', end='\n', **kwargs)
-
-class Paragraph(Command):
-    ARGUMENTS = [Argument()]
-    def __init__(self, *args, **kwargs):
-        Command.__init__(self, *args, command='par', start='\n', end='\n', **kwargs)
-
-
-class ListItem(Command):
-    ARGUMENTS = [Argument()]
-    def __init__(self, *args, **kwargs):
-        Command.__init__(self, *args, command='item', start='\n', end=' ', **kwargs)
-
-
-
-class Href(Command):
-    PROPERTIES = Command.PROPERTIES + [Property('url', ptype=str, required=True)]
-    ARGUMENTS = [Mandatory(prop='url'), Mandatory()]
-
-    """
-    def write(self):
-
-        out = '\\%s{%s}{' % (self.command, self.url)
-        for child in self.children:
-            out += child.write()
-        out += '}'
-        return out
-    """

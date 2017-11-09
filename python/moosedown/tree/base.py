@@ -87,7 +87,7 @@ class NodeBase(anytree.NodeMixin):
     """
     PROPERTIES = [] # this gets set by the @properties decorator
 
-    def __init__(self, parent=None, name=None, **kwargs):
+    def __init__(self, parent=None, name=None, **kwargs) :
         anytree.NodeMixin.__init__(self)
 
         # TODO: This fails for some reason
@@ -176,7 +176,10 @@ class NodeBase(anytree.NodeMixin):
         """
         Get an attribute with a possible default.
         """
-        self.__attributes.get(key, default)
+        value = self.__attributes.get(key, default)
+        if value is None:
+            value = default
+        return default
 
     @property
     def attributes(self):
@@ -195,4 +198,7 @@ class NodeBase(anytree.NodeMixin):
         """
         Abstract method for outputting content of node to a string.
         """
-        raise NotImplementedError("The write() method is not implemented.")
+        out = ''
+        for child in self.children:
+            out += child.write()
+        return out
