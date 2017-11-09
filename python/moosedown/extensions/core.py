@@ -7,7 +7,7 @@ import logging
 import moosedown
 from moosedown import base
 from moosedown import common
-from moosedown import tree
+from moosedown.tree import tokens, html, latex
 
 LOG = logging.getLogger(__name__)
 SHORTCUT_DATABASE = dict()
@@ -98,7 +98,7 @@ class Command(MarkdownComponent):
 
         #TODO: Error check
         if cmd not in base.MarkdownExtension.__COMMANDS__:
-            return tree.tokens.String(parent, match.group())
+            return tokens.String(parent, match.group())
 
         obj = base.MarkdownExtension.__COMMANDS__[cmd]
         obj.settings = self.settings
@@ -120,7 +120,7 @@ class Code(MarkdownComponent):
         return settings
 
     def createToken(self, match, parent):
-        return tree.tokens.Code(parent, code=match.group('code'),
+        return tokens.Code(parent, code=match.group('code'),
                                 language=self.settings['language'], **self.attributes)
 
 class HeadingHash(MarkdownComponent):
@@ -129,7 +129,7 @@ class HeadingHash(MarkdownComponent):
 
     # Heading Level One with=settings
     """
-    TOKEN = tree.tokens.Heading
+    TOKEN = tokens.Heading
     RE = re.compile(r'\s*(?P<level>#{1,6})\s'    # match 1 to 6 #'s at the beginning of line
                     r'(?P<inline>.*?)'           # heading text that will be inline parsed
                     r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
@@ -137,7 +137,9 @@ class HeadingHash(MarkdownComponent):
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
-        return tree.tokens.Heading(parent, level=match.group('level').count('#'), **self.attributes)
+        heading = tokens.Heading(parent, level=match.group('level').count('#'), **self.attributes)
+        label = tokens.Label(heading, text=match.group('inline'))
+        return heading
 
 class Link(MarkdownComponent):
     """
@@ -149,7 +151,7 @@ class Link(MarkdownComponent):
                     )
 
     def createToken(self, match, parent):
-        return tree.tokens.Link(parent, url=match.group('url'), **self.attributes)
+        return tokens.Link(parent, url=match.group('url'), **self.attributes)
 
 
 class Shortcut(MarkdownComponent):
@@ -164,7 +166,7 @@ class Shortcut(MarkdownComponent):
                     flags=re.MULTILINE)
 
     def createToken(self, match, parent):
-        token = tree.tokens.Shortcut(parent, key=match.group('key'), content=match.group('content'))
+        token = tokens.Shortcut(parent, key=match.group('key'), content=match.group('content'))
         SHORTCUT_DATABASE[token.key] = token.content
         return token
 
@@ -174,7 +176,7 @@ class ShortcutLink(MarkdownComponent):
     """
     RE = re.compile(r'\[(?P<key>.*?)\]')
     def createToken(self, match, parent):
-        return tree.tokens.ShortcutLink(parent, key=match.group('key'))
+        return tokens.ShortcutLink(parent, key=match.group('key'))
 
 class String(MarkdownComponent):
     """
@@ -189,7 +191,7 @@ class Break(String):
     """
     RE = re.compile(r'(?P<break>\n+)')
     def createToken(self, match, parent):
-        return tree.tokens.Break(parent, count=len(match.group('break')))
+        return tokens.Break(parent, count=len(match.group('break')))
 
 class Space(String):
     """
@@ -197,7 +199,7 @@ class Space(String):
     """
     RE = re.compile(r'(?P<space> +)')
     def createToken(self, match, parent):
-        return tree.tokens.Space(parent, count=len(match.group('space')))
+        return tokens.Space(parent, count=len(match.group('space')))
 
 class Punctuation(String):
     """
@@ -205,7 +207,7 @@ class Punctuation(String):
     """
     RE = re.compile(r'([^A-Z|^a-z|^0-9|^\s]+)')
     def createToken(self, match, parent):
-        return tree.tokens.Punctuation(parent, content=match.group())
+        return tokens.Punctuation(parent, content=match.group())
 
 class Number(String):
     """
@@ -213,7 +215,7 @@ class Number(String):
     """
     RE = re.compile(r'([0-9]+)')
     def createToken(self, match, parent):
-        return tree.tokens.Number(parent, content=match.group())
+        return tokens.Number(parent, content=match.group())
 
 class Word(String):
     """
@@ -221,7 +223,7 @@ class Word(String):
     """
     RE = re.compile(r'([A-Za-z]+)')
     def createToken(self, match, parent):
-        return tree.tokens.Word(parent, content=match.group())
+        return tokens.Word(parent, content=match.group())
 
 class Paragraph(MarkdownComponent):
     """
@@ -230,7 +232,7 @@ class Paragraph(MarkdownComponent):
     RE = re.compile(r'\s*(?P<inline>.*?)(?:\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
-        return tree.tokens.Paragraph(parent)
+        return tokens.Paragraph(parent)
 
 class Backtick(MarkdownComponent):
     """
@@ -238,7 +240,7 @@ class Backtick(MarkdownComponent):
     """
     RE = re.compile(r"`(?P<code>[^`].+?)`", flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
-        return tree.tokens.InlineCode(parent, code=match.group('code'))
+        return tokens.InlineCode(parent, code=match.group('code'))
 
 
 class List(MarkdownComponent):
@@ -260,7 +262,7 @@ class List(MarkdownComponent):
 
         regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
         for item in items:
-            root = tree.tokens.ListItem(token)
+            root = tokens.ListItem(token)
             item = regex.sub(r'\1', item)
             self.reader.parse(item, root=root)
 
@@ -273,7 +275,7 @@ class UnorderedList(List):
     RE = re.compile(r'\s*(?P<marker>- )(?P<items>.*?)(?=\n{3,}|^[^- \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
     SPLIT_RE = re.compile(r'^- ', flags=re.MULTILINE|re.DOTALL)
-    TOKEN = tree.tokens.UnorderedList
+    TOKEN = tokens.UnorderedList
 
 class OrderedList(List):
     """
@@ -282,7 +284,7 @@ class OrderedList(List):
     RE = re.compile(r'\s*(?P<marker>[0-9]+\. )(?P<items>.*?)(?=\n{3,}|^[^0-9 \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
     SPLIT_RE = re.compile(r'^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
-    TOKEN = tree.tokens.OrderedList
+    TOKEN = tokens.OrderedList
 
     def createToken(self, match, parent):
         token = List.createToken(self, match, parent)
@@ -304,7 +306,7 @@ class Format(MarkdownComponent):
     def createToken(self, match, parent):
         for key, content in match.groupdict().iteritems():
             if content is not None:
-                token = eval('tree.tokens.{}(parent, **self.attributes)'.format(key.title()))
+                token = eval('tokens.{}(parent, **self.attributes)'.format(key.title()))
                 grammer = self.reader.lexer.grammer('inline')
                 self.reader.lexer.tokenize(content, token, grammer)#, line=self.line)
                 return token
@@ -315,7 +317,7 @@ class Quote(MarkdownComponent):
     """
     RE = re.compile(r'> (?P<block>.*?)(?=>|\n{3}|\Z)', flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
-        return tree.tokens.Quote(parent)
+        return tokens.Quote(parent)
 
 #####################################################################################################
 # Rendering.
@@ -327,27 +329,34 @@ class CoreRenderExtension(base.RenderExtension):
     """
     def extend(self):
 
-        self.add(tree.tokens.Heading, RenderHeading())
-        self.add(tree.tokens.Code, RenderCode())
-        self.add(tree.tokens.ShortcutLink, RenderShortcutLink())
-        self.add(tree.tokens.InlineCode, RenderBacktick())
-        self.add(tree.tokens.Break, RenderBreak())
+        self.add(tokens.Heading, RenderHeading())
+        self.add(tokens.Code, RenderCode())
+        self.add(tokens.ShortcutLink, RenderShortcutLink())
+        self.add(tokens.InlineCode, RenderBacktick())
+        self.add(tokens.Break, RenderBreak())
 
-        self.add(tree.tokens.Link, RenderLink())
-        self.add(tree.tokens.Paragraph, RenderParagraph())
-        self.add(tree.tokens.UnorderedList, RenderList('ul'))
-        self.add(tree.tokens.OrderedList, RenderList('ol'))
-        self.add(tree.tokens.ListItem, RenderListItem())
-        self.add(tree.tokens.Quote, RenderTag(tag='blockquote', env='quote')
-        self.add(tree.tokens.Strong, RenderTag(tag='strong', cmd='textbf')
-        self.add(tree.tokens.Underline, RenderTag(tag='u', cmd='underline')
-        self.add(tree.tokens.Emphasis, RenderTag(tag='em', cmd='em')
-        self.add(tree.tokens.Strikethrough, RenderTag(tag='strike', cmd='sout')
-        self.add(tree.tokens.Superscript, RenderSuperscript('sup'))
-        self.add(tree.tokens.Subscript, RenderSubscipt('sub'))
+        self.add(tokens.Link, RenderLink())
+        self.add(tokens.Paragraph, RenderParagraph())
+        self.add(tokens.UnorderedList, RenderUnorderedList())
+        self.add(tokens.OrderedList, RenderOrderedList())
+        self.add(tokens.ListItem, RenderListItem())
+        self.add(tokens.Quote, RenderQuote())
+        self.add(tokens.Strong, RenderStrong())
+        self.add(tokens.Underline, RenderUnderline())
+        self.add(tokens.Emphasis, RenderEmphasis())
+        self.add(tokens.Strikethrough, RenderStrikethrough())
+        self.add(tokens.Superscript, RenderSuperscript())
+        self.add(tokens.Subscript, RenderSubscript())
+        self.add(tokens.Label, RenderLabel())
 
-        for t in [tree.tokens.Word, tree.tokens.Space, tree.tokens.Punctuation, tree.tokens.Number]:
+        for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number]:
             self.add(t, RenderString())
+
+
+        print self.renderer
+        self.renderer.addPackage('hyperref')
+        self.renderer.addPackage('ulem')
+
 
 class CoreRenderComponentBase(base.RenderComponent):
     """
@@ -365,145 +374,223 @@ class CoreRenderComponentBase(base.RenderComponent):
         #TODO: Better error message with markdown line number.
         raise NotImplementedError("Not implement, you probably should.")
 
-
-class RenderTag(CoreRenderComponentBase):
-    """
-    Basic class for creating html Tag.
-    """
-    TAG = None
-    ENVIRONMENT = None
-    COMMAND = None
-
-
-    def __init__(self, tag=None, env=None, cmd=None):
-        CoreRenderComponentBase.__init__(self)
-        self.__tag = tag if tag is not None else self.TAG
-        self.__environment = env if env is not None else self.ENVIRONMENT
-        self.__command = cmd if cmd is not None else self.COMMAND
-
-    def createHTML(self, token, parent):
-        if self.__tag is None:
-            raise IOError("You must have a tag.")
-
-        return tree.html.Tag(self.__tag, parent, **token.attributes)
-
-    def createLatex(self, token, parent):
-        if self.__command is None and self.__environment is None:
-            raise IOError("You must set environment or command.")
-
-        if self.__command and self.__environment:
-            raise IOError("You can't set both.")
-
-        if self.__command:
-            return tree.latex.Command(parent, command=self.__command)
-        elif self.__environment:
-            return tree.latex.Environment(parent, command=self.__command)
-
-class RenderParagraph(RenderTag):
-    TAG = 'p'
-
-    def createLatex(self, token, parent):
-        tree.latex.Paragraph(parent, arguments=[])
-        return parent
-
-class RenderList(RenderTag):
-    def createMaterialize(self, token, parent):
-        tag = RenderTag.createMaterialize(self, token, parent)
-        tag['class'] = 'browser-default'
-        return tag
-
-    def createLatex(self, token, parent):
-        if isinstance(token, tree.tokens.OrderedList):
-            command = 'enumerate'
-        else:
-            command = 'itemize'
-        return tree.latex.Environment(parent, command=command)
-
-class RenderListItem(RenderTag):
-    TAG = 'li'
-
-    def createLatex(self, token, parent):
-        item = tree.latex.ListItem(parent)
-        return parent
-
-class RenderSuperscript(RenderTag):
-
-
-
-class RenderString(CoreRenderComponentBase):
-    def createHTML(self, token, parent):
-        return tree.html.String(parent, content=token.content)
-
-    def createLatex(self, token, parent):
-        return tree.latex.String(parent, content=token.content)
-
-class RenderLink(CoreRenderComponentBase):
-    def createHTML(self, token, parent):
-        return tree.html.Tag('a', parent, href=token.url, **token.attributes)
-
-    def createLatex(self, token, parent):
-        return tree.latex.Href(parent, command='href', url=token.url)
-
-
-class RenderBreak(CoreRenderComponentBase):
-    def createHTML(self, token, parent):
-        return tree.html.String(parent, content=' ')
-
-    def createLatex(self, token, parent):
-        return tree.latex.String(parent, content=' ')
-
 class RenderHeading(CoreRenderComponentBase):
+    """
+    Render heading.
+    """
+    LATEX_SECTIONS = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph']
 
-    LATEX_COMMANDS = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph']
     def createHTML(self, token, parent):
-        return tree.html.Tag('h{}'.format(token.level), parent, **token.attributes)
+        return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
 
     def createLatex(self, token, parent):
-        return tree.latex.Section(parent, command=self.LATEX_COMMANDS[token.level])
+        return latex.Command(parent, self.LATEX_SECTIONS[token.level], start='\n', end='\n')
+
+class RenderLabel(CoreRenderComponentBase):
+    """Label"""
+    def createHTML(self, token, parent):
+        pass
+
+    def createLatex(self, token, parent):
+        label = token.get('id', re.sub(r' +', r'-', token.text.lower()))
+        return latex.Command(parent, 'label', string=label)
 
 class RenderCode(CoreRenderComponentBase):
+    """Code"""
+
     def createHTML(self, token, parent):
         language = 'language-{}'.format(token.language)
-        pre = tree.html.Tag('pre', parent, **token.attributes)
-        code = tree.html.Tag('code', pre, class_=language)
-        string = tree.html.String(code, content=token.code)
+        pre = html.Tag(parent, 'pre', **token.attributes)
+        code = html.Tag(pre, 'code', class_=language)
+        string = html.String(code, content=token.code)
         return pre
 
     def createLatex(self, token, parent):
-        return tree.latex.Environment(parent, command='verbatim')
+        return latex.Environment(parent, 'verbatim')
 
 class RenderShortcutLink(CoreRenderComponentBase):
+    """InlineCode"""
+
     def createHTML(self, token, parent):
-        a = tree.html.Tag('a', parent, **token.attributes)
-        s = tree.html.String(a, content=token.key)
+        a = html.Tag(parent, 'a', **token.attributes)
+        s = html.String(a, content=token.key)
 
         if token.key not in SHORTCUT_DATABASE:
             msg = "The shortcut link key '%s' was not located in the list of shortcuts on line %d"
             LOG.error(msg, token.key, token.line)
         else:
             a['href'] = SHORTCUT_DATABASE[token.key]
-
         return a
 
     def createLatex(self, token, parent):
-
         if token.key not in SHORTCUT_DATABASE:
             msg = "The shortcut link key '%s' was not located in the list of shortcuts on line %d"
             LOG.error(msg, token.key, token.line)
         else:
-            href = tree.latex.Href(parent, command='href', url=SHORTCUT_DATABASE[token.key])
-            tree.latex.String(href, content=token.key)
-            return href
-
-        #return tree.latex.Command
+            cmd = latex.CustomCommand(parent, 'href')
+            arg0 = latex.Brace(cmd, string=SHORTCUT_DATABASE[token.key])
+            arg1 = latex.Brace(cmd, string=token.key)
+            return arg1
 
 class RenderBacktick(CoreRenderComponentBase):
+    """InlineCode"""
+
     def createHTML(self, token, parent):
-        code = tree.html.Tag('code', parent)
-        tree.html.String(code, content=token.code, escape=True)
+        code = html.Tag(parent, 'code')
+        html.String(code, content=token.code, escape=True)
         return code
 
     def createLatex(self, token, parent):
-        code = tree.latex.Command(parent, command='texttt')
-        tree.latex.String(code, content=token.code)
+        code = latex.Command(parent, 'texttt')
+        latex.String(code, content=token.code)
         return
+
+class RenderBreak(CoreRenderComponentBase):
+    """Break"""
+
+    def createHTML(self, token, parent):
+        return html.String(parent, content=' ')
+
+    def createLatex(self, token, parent):
+        return latex.String(parent, content=' ')
+
+class RenderLink(CoreRenderComponentBase):
+    """Link"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'a', href=token.url, **token.attributes)
+
+    def createLatex(self, token, parent):
+        url = token.url.lstrip('#')
+        cmd = latex.CustomCommand(parent, 'href')
+        arg0 = latex.Brace(cmd, string=url)
+        arg1 = latex.Brace(cmd)
+        return arg1
+
+class RenderParagraph(CoreRenderComponentBase):
+    """Paragraph"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'p', **token.attributes)
+
+    def createLatex(self, token, parent):
+        latex.CustomCommand(parent, 'par', start='\n', end='\n')
+        return parent
+
+class RenderOrderedList(CoreRenderComponentBase):
+    """OrderedList"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'ol', **token.attributes)
+
+    def createMaterialize(self, token, parent):
+        tag = CoreRenderComponentBase.createMaterialize(self, token, parent)
+        tag['class'] = 'browser-default'
+        return tag
+
+    def createLatex(self, token, parent):
+        return latex.Environment(parent, 'enumerate')
+
+class RenderUnorderedList(CoreRenderComponentBase):
+    """UnorderedList"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'ul', **token.attributes)
+
+    def createMaterialize(self, token, parent):
+        tag = CoreRenderComponentBase.createMaterialize(self, token, parent)
+        tag['class'] = 'browser-default'
+        return tag
+
+    def createLatex(self, token, parent):
+        return latex.Environment(parent, 'itemize')
+
+class RenderListItem(CoreRenderComponentBase):
+    """ListItem"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'li', **token.attributes)
+
+    def createLatex(self, token, parent):
+        item = latex.CustomCommand(parent, command='item', arguments=[], start='\n')
+        return parent
+
+class RenderString(CoreRenderComponentBase):
+    """String"""
+
+    def createHTML(self, token, parent):
+        return html.String(parent, content=token.content)
+
+    def createLatex(self, token, parent):
+        return latex.String(parent, content=token.content)
+
+class RenderQuote(CoreRenderComponentBase):
+    """Blockquote"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'quote', **token.attributes)
+
+    def createLatex(self, token, parent):
+        return latex.Environment(parent, 'quote')
+
+class RenderStrong(CoreRenderComponentBase):
+    """Strong"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'strong', **token.attributes)
+
+    def createLatex(self, token, parent):
+        return latex.Command(parent, 'textbf')
+
+class RenderUnderline(CoreRenderComponentBase):
+    """Underline"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'u', **token.attributes)
+
+    def createLatex(self, token, parent):
+        return latex.Command(parent, 'underline')
+
+class RenderEmphasis(CoreRenderComponentBase):
+    """Emphasis"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'em', **token.attributes)
+
+    def createLatex(self, token, parent):
+        return latex.Command(parent, 'emph')
+
+class RenderStrikethrough(CoreRenderComponentBase):
+    """Strikethrough"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'strike', **token.attributes)
+
+    def createLatex(self, token, parent):
+        return latex.Command(parent, 'sout')
+
+class RenderSuperscript(CoreRenderComponentBase):
+    """Superscript"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'sup', **token.attributes)
+
+    def createLatex(self, token, parent):
+        math = latex.InlineMath(parent)
+        latex.String(math, content='^{')
+        cmd = latex.Command(math, 'text')
+        latex.String(math, content='}')
+        return cmd
+
+class RenderSubscript(CoreRenderComponentBase):
+    """Subscript"""
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'sub', **token.attributes)
+
+    def createLatex(self, token, parent):
+        math = latex.InlineMath(parent)
+        latex.String(math, content='_{')
+        cmd = latex.Command(math, 'text')
+        latex.String(math, content='}')
+        return cmd

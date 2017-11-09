@@ -11,7 +11,7 @@ class TestHTML(unittest.TestCase):
     Tests for html tree structure.
     """
     def testTag(self):
-        tag = html.Tag('section')
+        tag = html.Tag(None, 'section')
         self.assertEqual(tag.write(), '<section></section>')
 
     def testString(self):
@@ -22,7 +22,7 @@ class TestHTML(unittest.TestCase):
         self.assertEqual(tag.write(), '&lt;section&gt;')
 
     def testTagString(self):
-        tag = html.Tag('h1')
+        tag = html.Tag(None, 'h1')
         html.String(content='foo', parent=tag)
         self.assertEqual(tag.write(), '<h1>foo</h1>')
 

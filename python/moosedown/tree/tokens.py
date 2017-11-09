@@ -18,10 +18,10 @@ class Token(base.NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
+    PROPERTIES = [base.Property('line', ptype=int)]
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self.name = self.__class__.__name__
-        self.line = None
 
 class String(Token):
     """
@@ -82,7 +82,8 @@ class Heading(Token):
     """
     Section headings.
     """
-    PROPERTIES = [base.Property('level', ptype=int)]
+    PROPERTIES = [base.Property('level', ptype=int),
+                  base.Property('text', ptype=str)]
 
 class Paragraph(Token):
     """
@@ -147,3 +148,6 @@ class Superscript(Token):
 
 class Subscript(Token):
     pass
+
+class Label(Token):
+    PROPERTIES = [base.Property('text', required=True, ptype=str)]

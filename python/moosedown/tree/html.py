@@ -8,7 +8,7 @@ class Tag(NodeBase):
     """
     A node representing an HTML tag (e.g., h1, strong).
     """
-    def __init__(self, name, parent=None, **kwargs):
+    def __init__(self, parent, name, **kwargs):
         super(Tag, self).__init__(name=name, parent=parent, **kwargs)
 
     def write(self):

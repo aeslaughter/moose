@@ -26,10 +26,10 @@ class TestTokens(unittest.TestCase):
         token.line = 42
         self.assertEqual(token.line, 42)
 
-        token.line = "42"
-        mock.assert_called_once()
-        args, _ = mock.call_args
-        self.assertIn('must be of type "int"', args[0])
+        with self.assertRaises(TypeError) as e:
+            token.line = "42"
+        gold = "The supplied property 'line' must be of type 'int', but 'str' was provided."
+        self.assertEqual(e.exception.message, gold)
 
     def testString(self):
         token = tokens.String(content="content")
@@ -85,8 +85,8 @@ class TestTokens(unittest.TestCase):
         self.assertEqual(token.content, '1980')
 
     def testCode(self):
-        token = tokens.Code(content="x+y=2;")
-        self.assertEqual(token.content, "x+y=2;")
+        token = tokens.Code(code="x+y=2;")
+        self.assertEqual(token.code, "x+y=2;")
 
     def testHeading(self):
         token = tokens.Heading(level=4)
@@ -186,6 +186,10 @@ class TestTokens(unittest.TestCase):
 
     def testSubscript(self):
         token = tokens.Subscript()
+
+    def testLabel(self):
+        token = tokens.Label(text='foo')
+        self.assertEqual(token.text, 'foo')
 
 
 if __name__ == '__main__':

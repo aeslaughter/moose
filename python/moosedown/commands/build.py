@@ -28,10 +28,10 @@ def main():
 
 
     ast = translator.ast(md)
-   # print ast
+    #print ast
 
     html = translator.convert()
-    print html
+#    print html
 
 
     with open('index.tex', 'w') as fid:

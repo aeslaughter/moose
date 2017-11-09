@@ -1,7 +1,7 @@
 """
 
 """
-from moosedown.tree import html, latex
+from moosedown.tree import html, latex, base
 
 class Renderer(object):
     METHOD = None
@@ -54,20 +54,20 @@ class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
 
     def render(self, ast):
-        root = html.Tag('html')
+        root = html.Tag(None, 'html')
 
         # <head>
-        head = html.Tag('head', root)
-        icons = html.Tag('link', head, href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
-        materialize =  html.Tag('link', head, type="text/css", rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css",  media="screen,projection")
+        head = html.Tag(root, 'head')
+        icons = html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+        materialize =  html.Tag(head, 'link', type="text/css", rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css",  media="screen,projection")
 
-        body = html.Tag('body', root)
-        div = html.Tag('div', body, class_="container")
+        body = html.Tag(root, 'body')
+        div = html.Tag(body, 'div', class_="container")
 
         HTMLRenderer.render(self, ast, div)
 
-        html.Tag('script', body, type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
-        html.Tag('script', body, type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
+        html.Tag(body, 'script', type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
+        html.Tag(body, 'script', type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
 
         return root
 
@@ -75,8 +75,21 @@ class MaterializeRenderer(HTMLRenderer):
 class LatexRenderer(Renderer):
     METHOD = 'createLatex'
 
-    def render(self, ast, root=None):
-        if root is None:
-            root = latex.Environment(command='document')
-        self.process(ast, root)
+    def __init__(self, *args, **kwargs):
+        self._packages = set()
+        Renderer.__init__(self, *args, **kwargs)
+
+    def render(self, ast):
+        root = base.NodeBase()
+        latex.Command(root, 'documentclass', string='book', end='\n')
+
+        for package in self._packages:
+            latex.Command(root, 'usepackage', string=package, end='\n')
+
+
+        doc = latex.Environment(root, command='document')
+        self.process(ast, doc)
         return root
+
+    def addPackage(self, *args):
+        self._packages.update(args)

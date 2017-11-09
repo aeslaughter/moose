@@ -11,4 +11,12 @@
     type = PythonUnitTest
     input = test_html.py
   [../]
+  [./latex]
+    type = PythonUnitTest
+    input = test_latex.py
+  [../]
+  [./file_tree]
+    type = PythonUnitTest
+    input = test_build_file_tree.py
+  [../]
 []

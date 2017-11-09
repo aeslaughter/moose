@@ -42,8 +42,17 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
         self.__renderer = None
         self.__components = list()
 
+    @property
+    def renderer(self):
+        return self.__renderer
+
+    @renderer.setter
+    def renderer(self, value):
+        #TODO: type check
+        self.__renderer = value
 
     def setup(self, renderer):
+        print 'SETUP:', renderer
         #TODO: type and error check
         self.__renderer = renderer
 
