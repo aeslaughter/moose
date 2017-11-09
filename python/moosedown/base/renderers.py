@@ -44,9 +44,8 @@ class Renderer(object):
 class HTMLRenderer(Renderer):
     METHOD = 'createHTML'
 
-    def render(self, ast, root=None):
-        if root is None:
-            root = html.Tag('body')
+    def render(self, ast):
+        root = html.Tag(None, 'body')
         self.process(ast, root)
         return root
 

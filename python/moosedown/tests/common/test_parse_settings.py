@@ -15,7 +15,7 @@
 ####################################################################################################
 
 import unittest
-from MooseDocs import common
+from moosedown import common
 
 class TestParseSettings(unittest.TestCase):
     """

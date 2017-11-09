@@ -52,7 +52,6 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
         self.__renderer = value
 
     def setup(self, renderer):
-        print 'SETUP:', renderer
         #TODO: type and error check
         self.__renderer = renderer
 
@@ -88,7 +87,6 @@ class TokenExtension(Extension):
         settings, unknown = self.__parseSettings(component, local)
         component.settings = settings
         token = component.createToken(match, parent)
-        #token.settings = settings
         return token
 
     @staticmethod

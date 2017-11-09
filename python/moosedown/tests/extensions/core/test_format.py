@@ -3,7 +3,6 @@ import unittest
 import logging
 import mock
 
-from moosedown import MooseMarkdown
 from moosedown import tree
 from moosedown.base import testing
 
