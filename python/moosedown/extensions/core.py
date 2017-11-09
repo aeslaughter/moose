@@ -353,9 +353,10 @@ class CoreRenderExtension(base.RenderExtension):
             self.add(t, RenderString())
 
 
-        print self.renderer
-        self.renderer.addPackage('hyperref')
-        self.renderer.addPackage('ulem')
+        #TODO: Make a generic preamble method?
+        if isinstance(self.renderer, base.LatexRenderer):
+            self.renderer.addPackage('hyperref')
+            self.renderer.addPackage('ulem')
 
 
 class CoreRenderComponentBase(base.RenderComponent):

@@ -3,7 +3,6 @@ import unittest
 import logging
 import mock
 
-from moosedown import MooseMarkdown
 from moosedown import tree
 from moosedown.base import testing
 
@@ -16,14 +15,15 @@ class TestHeadings(testing.MarkdownTestCase):
         h = ast(0)
         self.assertIsInstance(h, tree.tokens.Heading)
         self.assertEqual(h.level, 1)
-        self.assertIsInstance(h(0), tree.tokens.Word)
-        self.assertIsInstance(h(1), tree.tokens.Space)
-        self.assertIsInstance(h(2), tree.tokens.Word)
-        self.assertIsInstance(h(3), tree.tokens.Space)
-        self.assertIsInstance(h(4), tree.tokens.Word)
-        self.assertEqual(h(0).content, 'Heading')
-        self.assertEqual(h(2).content, 'with')
-        self.assertEqual(h(4).content, 'Spaces')
+        self.assertIsInstance(h(0), tree.tokens.Label)
+        self.assertIsInstance(h(1), tree.tokens.Word)
+        self.assertIsInstance(h(2), tree.tokens.Space)
+        self.assertIsInstance(h(3), tree.tokens.Word)
+        self.assertIsInstance(h(4), tree.tokens.Space)
+        self.assertIsInstance(h(5), tree.tokens.Word)
+        self.assertEqual(h(1).content, 'Heading')
+        self.assertEqual(h(3).content, 'with')
+        self.assertEqual(h(5).content, 'Spaces')
 
     def testLevels(self):
         for i in range(1,7):
@@ -59,7 +59,7 @@ class TestHeadings(testing.MarkdownTestCase):
         self.assertEqual(h(4).content, 'Spaces')
         self.assertEqual(h['style'], 'font-size:42pt;')
 
-        self.assertString(h.write(), "<h1 style=font-size:42pt;>Heading with Spaces</h1>")
+        self.assertString(h.write(), '<h1 style="font-size:42pt;">Heading with Spaces</h1>')
 
     @mock.patch('logging.Logger.error')
     def testUnknownSettings(self, mock):
