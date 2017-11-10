@@ -79,21 +79,25 @@ class TestExtensions(unittest.TestCase):
     sure the 'make_extensions' method is working as well as that there is a test for every
     TokenComponent and RenderComponent is defined.
     """
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.devel]
+    EXTENSIONS = None
     READER_REQUIRED = ['Test{}Tokenize']
     RENDER_REQUIRED = ['Test{}HTML', 'Test{}Materialize', 'Test{}Latex']
 
     @classmethod
     def setUpClass(cls):
         """
-        Create a list of extensions.
+        Create a list of extensions, if it is not defined.
         """
-        cls._extensions = []
-        for item in dir(extensions):
-            if item.startswith('__'):
-                continue
-            cls._extensions.append(__import__('extensions.{}'.format(item)))
-        print cls._extensions
+        if cls.EXTENSIONS is None:
+            cls.EXTENSIONS = []
+            loc = os.path.dirname(moosedown.extensions.__file__)
+            sys.path.append(loc)
+            for item in dir(moosedown.extensions):
+                if item.startswith('__'):
+                    continue
+                cls.EXTENSIONS.append(__import__(item))
+            sys.path.remove(loc)
+        print cls.EXTENSIONS
 
     def testReaderComponents(self):
         """
