@@ -7,18 +7,13 @@ from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestCodeTokenize(testing.MarkdownTestCase):
-    """
-    Test fenced code blocks
-    """
+    """Code tokenize"""
+
     def testBasic(self):
         code = self.ast('```\nint x;\n```')(0)
         self.assertIsInstance(code, tree.tokens.Code)
         self.assertString(code.code, '\nint x;\n')
         self.assertString(code.language, 'text')
-
-        html = self.html(code)
-        self.assertString(html.write(),
-                          '<body><pre><code class="language-text">\nint x;\n</code></pre></body>')
 
     def testLanguage(self):
         code = self.ast('```language=cpp\nint x;\n```')(0)
@@ -26,11 +21,9 @@ class TestCodeTokenize(testing.MarkdownTestCase):
         self.assertString(code.code, '\nint x;\n')
         self.assertString(code.language, 'cpp')
 
-        html = self.html(code)
-        self.assertString(html.write(),
-                         '<body><pre><code class="language-cpp">\nint x;\n</code></pre></body>')
-
 class TestCodeHTML(testing.MarkdownTestCase):
+    """Code HTML"""
+
     def testBasic(self):
         html = self.html('```\nint x;\n```').find('pre')
         self.assertString(html.write(),
@@ -42,6 +35,8 @@ class TestCodeHTML(testing.MarkdownTestCase):
                           '<pre><code class="language-cpp">\nint x;\n</code></pre>')
 
 class TestCodeMaterialize(TestCodeHTML):
+    """Code Materialize"""
+
     RENDERER = MaterializeRenderer
 
 
