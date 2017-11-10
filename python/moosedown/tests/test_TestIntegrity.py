@@ -74,6 +74,11 @@ class TestIntegrity(unittest.TestCase):
         self.assertFalse(messages, '\n'.join(messages))
 
 class TestExtensions(unittest.TestCase):
+    """
+    Tests that extension classes have the required parts and tests. This includes making
+    sure the 'make_extensions' method is working as well as that there is a test for every
+    TokenComponent and RenderComponent is defined.
+    """
     EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.devel]
     READER_REQUIRED = ['Test{}Tokenize']
     RENDER_REQUIRED = ['Test{}HTML', 'Test{}Materialize', 'Test{}Latex']
@@ -83,16 +88,12 @@ class TestExtensions(unittest.TestCase):
         """
         Create a list of extensions.
         """
-        #os.environ['MOOSEDOWN_DIR'] = os.path.join(os.getcwd(), '..'))
-
-        """
         cls._extensions = []
         for item in dir(extensions):
             if item.startswith('__'):
                 continue
             cls._extensions.append(__import__('extensions.{}'.format(item)))
-        """
-
+        print cls._extensions
 
     def testReaderComponents(self):
         """
