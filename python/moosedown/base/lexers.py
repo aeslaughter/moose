@@ -60,6 +60,9 @@ class RecursiveLexer(Lexer):
             group = self._grammers.keys()[0]
         return self._grammers[group]
 
+    def grammers(self):
+        return self._grammers
+
     def add(self, group, *args):
         self.grammer(group).add(*args)
 

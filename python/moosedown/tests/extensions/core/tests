@@ -1,43 +1,43 @@
 [Tests]
   [./heading]
     type = PythonUnitTest
-    input = test_headings.py
+    input = test_HeadingHash.py
   [../]
   [./format]
     type = PythonUnitTest
-    input = test_format.py
+    input = test_Format.py
   [../]
   [./code]
     type = PythonUnitTest
-    input = test_code.py
+    input = test_Code.py
   [../]
   [./link]
     type = PythonUnitTest
-    input = test_link.py
+    input = test_Link.py
   [../]
   [./shortcut]
     type = PythonUnitTest
-    input = test_shortcut.py
+    input = test_Shortcut.py
   [../]
   [./string]
     # All string tokens
     type = PythonUnitTest
-    input = test_string.py
+    input = test_String.py
   [../]
   [./paragraph]
     type = PythonUnitTest
-    input = test_paragraph.py
+    input = test_Paragraph.py
   [../]
   [./backtick]
     type = PythonUnitTest
-    input = test_backtick.py
+    input = test_Backtick.py
   [../]
   [./unordered]
     type = PythonUnitTest
-    input = test_unordered_list.py
+    input = test_UnorderedList.py
   [../]
   [./ordered]
     type = PythonUnitTest
-    input = test_ordered_list.py
+    input = test_OrderedList.py
   [../]
 []

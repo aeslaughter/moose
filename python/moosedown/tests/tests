@@ -1,0 +1,6 @@
+[Tests]
+  [./integrity]
+    type = PythonUnitTest
+    input = test_TestIntegrity.py
+  [../]
+[]
