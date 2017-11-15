@@ -79,7 +79,7 @@ class TestExtensions(unittest.TestCase):
     sure the 'make_extensions' method is working as well as that there is a test for every
     TokenComponent and RenderComponent is defined.
     """
-    EXTENSIONS = None
+    EXTENSIONS = [moosedown.extensions.core]
     READER_REQUIRED = ['Test{}Tokenize']
     RENDER_REQUIRED = ['Test{}HTML', 'Test{}Materialize', 'Test{}Latex']
 
@@ -87,6 +87,9 @@ class TestExtensions(unittest.TestCase):
     def setUpClass(cls):
         """
         Create a list of extensions, if it is not defined.
+        """
+
+        # TODO: Fix detetection of modules
         """
         if cls.EXTENSIONS is None:
             cls.EXTENSIONS = []
@@ -98,7 +101,7 @@ class TestExtensions(unittest.TestCase):
                 cls.EXTENSIONS.append(__import__(item))
             sys.path.remove(loc)
         print cls.EXTENSIONS
-
+        """
     def testReaderComponents(self):
         """
         Test TokenComponent testing
