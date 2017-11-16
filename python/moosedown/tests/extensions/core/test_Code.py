@@ -36,7 +36,6 @@ class TestCodeHTML(testing.MarkdownTestCase):
 
 class TestCodeMaterialize(TestCodeHTML):
     """Code Materialize"""
-
     RENDERER = MaterializeRenderer
 
 
