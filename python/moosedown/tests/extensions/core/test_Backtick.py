@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestBacktick(testing.MarkdownTestCase):
+class TestBacktickTokenize(testing.MarkdownTestCase):
     """
     Tests inline code.
     """

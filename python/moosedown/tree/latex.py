@@ -1,3 +1,4 @@
+
 """
 Nodes for builing latex.
 """
@@ -76,26 +77,18 @@ class Command(NodeBase):
                   Property('start', ptype=str, default=''),
                   Property('end', ptype=str, default='')]
 
-    def __init__(self, parent, command, *args, **kwargs):
-        NodeBase.__init__(self, parent, *args, **kwargs)
-        self._command = command
-        if not isinstance(self._command, str):
-            msg = "The command must be a 'str', but a '{}' was given."
-            raise TypeError(msg.format(type(self._command).__name__))
-
+    def __init__(self, parent, name, *args, **kwargs):
+        NodeBase.__init__(self, name=name, parent=parent, *args, **kwargs)
         if self.string is not None:
             String(self, content=self.string)
 
     def write(self):
         out = self.start
-        out += '\\%s{' % self._command
+        out += '\\%s{' % self.name
         for child in self.children:
             out += child.write()
         out += '}' + self.end
         return out
-
-    def __repr__(self):
-        return '{}: {}'.format(self.name, self._command)
 
 class CustomCommand(Command):
     """
@@ -106,22 +99,21 @@ class CustomCommand(Command):
 
     def write(self):
         out = self.start
-        out += '\\%s' % self._command
+        out += '\\%s' % self.name
         for child in self.children:
             out += child.write()
         out += self.end
         return out
 
 class Environment(NodeBase):
-    def __init__(self, parent, command, *args, **kwargs):
-        NodeBase.__init__(self, parent, *args, **kwargs)
-        self._command = command
+    def __init__(self, parent, name, *args, **kwargs):
+        NodeBase.__init__(self, name=name, parent=parent, *args, **kwargs)
 
     def write(self):
-        out = '\n\\begin{%s}\n' % self._command
+        out = '\n\\begin{%s}\n' % self.name
         for child in self.children:
             out += child.write()
-        out += '\n\\end{%s}\n' % self._command
+        out += '\n\\end{%s}\n' % self.name
         return out
 
 class String(NodeBase):

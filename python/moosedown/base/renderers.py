@@ -1,6 +1,7 @@
 """
 
 """
+import re
 from moosedown.tree import html, latex, base
 
 class Renderer(object):
@@ -32,6 +33,10 @@ class Renderer(object):
         if type(token) in self.__functions:
             func = self.__functions[type(token)]
             return func(token, parent)
+
+    def write(self, ast):
+        text = ast.write()
+        return re.sub(r'(\n{2,})', '\n', text, flags=re.MULTILINE)
 
     def process(self, token, parent):
         el = self.function(token, parent)
@@ -87,7 +92,7 @@ class LatexRenderer(Renderer):
             latex.Command(root, 'usepackage', string=package, end='\n')
 
 
-        doc = latex.Environment(root, command='document')
+        doc = latex.Environment(root, 'document')
         self.process(ast, doc)
         return root
 

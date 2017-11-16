@@ -1,0 +1,117 @@
+\documentclass{book}
+\usepackage{hyperref}
+\usepackage{ulem}
+\begin{document}
+\chapter{\label{moose-markdown-specification-(moosedown)}MOOSE Markdown Specification (MooseDown)}
+\par
+The following document details the MOOSE flavored \href{https://en.wikipedia.org/wiki/Markdown}{markdown} used for documenting MOOSE and MOOSE-based applications with the MooseDocs system.
+\section{\label{motivation}Motivation}
+\par
+\href{https://en.wikipedia.org/wiki/Markdown}{markdown} is ubiquitous as a short-hand \href{https://en.wikipedia.org/wiki/HTML}{HTML} format, especially among software developers. However, no standard exists and the original implementation was incomplete. Currently, there are myriad implementations---often deemed "flavors"---of Markdown. \href{http://commonmark.org/}{CommonMark} is a proposed standard. However, this specification is syntactically loose. For example, when defining lists the spacing is can be misleading, see \href{http://spec.commonmark.org/0.28/\#example-273}{Example 273} and \href{http://spec.commonmark.org/0.28/\#example-268}{Example 268} shows that some poorly defined behavior still exists and it is stated that the associated rule "should prevent most spurious list captures."
+\par
+Additionally, most parsers of this specification do not support custom extensions or adding them is difficulty, from a user perspective, because the parsing strategy used is complex and context dependent.
+\par
+Originally, MooseDocs used the \href{http://pythonhosted.org/Markdown/}{markdown} python package, which worked well in the general sense. However, as the MooseDocs system matured a few short-comings were found. The main problems, with respect to MooseDocs, was the parsing speed, the lack of an \href{https://en.wikipedia.org/wiki/Abstract\_syntax\_tree}{AST}, and the complexity of adding extensions (i.e., there are too many extension formats). The lack of an \href{https://en.wikipedia.org/wiki/Abstract\_syntax\_tree}{AST} limited the ability to convert the supplied markdown to other formats (e.g., LaTeX).
+\par
+For these reasons, among others not mentioned here, yet another \href{https://en.wikipedia.org/wiki/Markdown}{markdown} flavor was born. MOOSE flavored Markdown ("MooseDown"). The so called MooseDown language is designed to be strict with respect to format as well as easily extendable so that MOOSE-based applications can customize the system to meet their documentation needs. The strictness allows for a simple parsing strategy to be used and promotes uniformity among the MooseDown files.
+\section{\label{design}Design}
+\par
+The MooseDocs system, in particular, the MooseDown parsing is designed to be extendable. Thus, all components, including the core language, is created as an extension.
+\section{\label{settings}Settings}
+\par
+The MooseDown language adds key, value pairs to control the resulting rendered content. The use of these pairs is uniform through out the specification and is integral to the flexibility of the MooseDocs system. For example, the "style" keyword is used when rendering to \href{https://en.wikipedia.org/wiki/HTML}{HTML} and allows the \texttt{\textless h2\textgreater } style attribute to be set from the MooseDown file.
+\begin{verbatim}
+\end{verbatim}
+\par
+!alert note The key, value pairs must be separated by an equal sign and cannot contain spaces on either side of the equal. However, spaces within the value are allowed.
+\section{\label{core-extension}Core Extension}
+\par
+The core extension is the portion of the MooseDown language that is designed to mimic \href{https://en.wikipedia.org/wiki/Markdown}{markdown} syntax. As mentioned above MooseDown is far more strict than traditional \href{https://en.wikipedia.org/wiki/Markdown}{markdown} implementations. For that reason there are many aspects of \href{https://en.wikipedia.org/wiki/Markdown}{markdown} that are not supported by MooseDown, the following list illustrates some the "missing" \href{https://en.wikipedia.org/wiki/Markdown}{markdown} features. And, the following sections detail the supported syntax.
+\begin{itemize}
+\item
+\par
+Underline style headings are not supported (i.e., \texttt{=====} and \texttt{-----}), see \href{headings}{Headings}. 
+\item
+\par
+Four space code indenting is not supported, see \href{code}{Code}.
+\end{itemize}
+\subsection{\label{headings}Headings}
+\par
+All headings from level 1 to 6 must be specified using the hash (`\#`) character, where the number of hashes indicate the heading level. The hash(es) must be followed by a single space.
+\par
+Following the heading \href{settings}{settings} may be applied. The available settings are detailed in the table below.
+\subsection{\label{lists}Lists}
+\subsubsection{\label{unordered-list}Unordered List}
+\begin{itemize}
+\item
+\par
+List items in MooseDown must begin with a dash (`-`), the asterisk is \textbf{not} supported. 
+\item
+\par
+List items may contain lists, code, or any other markdown item and the item content may span many lines.
+\par
+List items are continued by indenting the content to be included within the item by two spaces, which is how this paragraph was created.
+\item
+\par
+As mentioned above, lists can contain lists, which can contain lists, etc.
+\begin{itemize}
+\item
+\par
+This sub-list is created by indenting the start of the list, again using a dash (`-`), by two spaces.
+\par
+Lists can be arbitrarily nested.
+\begin{itemize}
+\item
+\par
+This is yet another nested list. 
+\item
+\par
+This list contains two items.
+\end{itemize}
+\end{itemize}
+\item
+\par
+A list will continue to add items until a line (at the current indent level for nested items) starts with any character except the dash (`-`).
+\end{itemize}
+\par
+For example, this paragraph halted the list. Therefore, any additional list items placed after this paragraph will create a new list.
+\begin{itemize}
+\item
+\par
+This will begin a new list item.
+\item
+\par
+To create a new list immediately following another list, the two lists must be separated by two empty lines.
+\end{itemize}
+\begin{itemize}
+\item
+\par
+This is a second list that was created as a separate list from what is above by placing two blank lines between list items.
+\end{itemize}
+\subsection{\label{numbered-list}Numbered List}
+\begin{enumerate}
+\item
+\par
+A numbered list that starts with the number provided.
+\par
+This list is also nested because it doesn't start with two empty lines.
+\end{enumerate}
+\subsection{\label{text-formatting}Text Formatting}
+\par
+em, strong, need to add strikethrough, underline, subscript, superscript, mark, inserted
+\par
+This is \emph{**something} with various levels\emph{* of html formatting *that spans} many lines. It all \emph{should} work fine.
+\subsection{\label{quotes}Quotes}
+\begin{quote}
+\par
+This should be a block of text that goes in a blockquote tag.
+\par
+It can contain multiple paragraphs but, stops with two empty lines.
+\par
+This is more. 
+\end{quote}
+\begin{quote}
+\par
+This should be another.
+\end{quote}
+\end{document}
