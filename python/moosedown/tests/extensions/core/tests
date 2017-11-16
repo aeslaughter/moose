@@ -40,4 +40,13 @@
     type = PythonUnitTest
     input = test_OrderedList.py
   [../]
+  [./Break]
+    type = PythonUnitTest
+    input = test_Break.py
+  [../]
+  [./RenderBreak]
+    type = PythonUnitTest
+    input = test_RenderBreak.py
+  [../]
+
 []

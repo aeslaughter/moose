@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import unittest
 import inspect
 import logging
@@ -36,14 +37,26 @@ class MarkdownTestCase(unittest.TestCase):
         return self._translator.ast(md)
 
     def html(self, md):
+        #TODO: die
+        return self.render(md)
+
+    def render(self, md):
         """
-        Convert the supplied markdown to HTML (tree).
+        Convert the supplied markdown to Rendered tree
 
         Inputs:
             ast: Markdown token tree.
         """
         ast = self.ast(md) if isinstance(md, str) else md
         return self._translator.renderer.render(ast)
+
+    def write(self, md):
+        """
+        Convert supplied markdown to text
+        """
+        ast = self.ast(md) if isinstance(md, str) else md
+        text = self.render(md)
+        return re.sub(r'\n+', '\n', text)
 
     def assertString(self, content, gold):
         """
