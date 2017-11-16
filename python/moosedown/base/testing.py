@@ -36,10 +36,6 @@ class MarkdownTestCase(unittest.TestCase):
         """
         return self._translator.ast(md)
 
-    def html(self, md):
-        #TODO: die
-        return self.render(md)
-
     def render(self, md):
         """
         Convert the supplied markdown to Rendered tree
@@ -50,13 +46,11 @@ class MarkdownTestCase(unittest.TestCase):
         ast = self.ast(md) if isinstance(md, str) else md
         return self._translator.renderer.render(ast)
 
-    def write(self, md):
+    def write(self, node):
         """
         Convert supplied markdown to text
         """
-        ast = self.ast(md) if isinstance(md, str) else md
-        text = self.render(md)
-        return re.sub(r'\n+', '\n', text)
+        return self._translator.renderer.write(node)
 
     def assertString(self, content, gold):
         """

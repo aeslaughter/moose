@@ -38,7 +38,7 @@ class TestIntegrity(unittest.TestCase):
                 node = hit.parse(spec, data)
                 for block in node.children():
                     for child in block.children():
-                        if child.find('type').param() == 'PythonUnitTest':
+                        if child.type() != hit.NodeType.Blank and child.find('type').param() == 'PythonUnitTest':
                             tested.add(child.find('input').param())
 
         # Loop through python files in this directory

@@ -7,8 +7,11 @@ from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderBreakHTML(testing.MarkdownTestCase):
-    def testBasic(self):
-        node = self.html('foo\nbar')(0)
+    def node(self):
+        return self.render('foo\nbar')(0)
+
+    def testTree(self):
+        node = self.node()
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.String)
         self.assertIsInstance(node(1), tree.html.String)
@@ -19,24 +22,26 @@ class TestRenderBreakHTML(testing.MarkdownTestCase):
         self.assertString(node(2).content, 'bar')
 
     def testWrite(self):
-        node = self.render('foo\nbar')(0)
+        node = self.node()
         html = node.write()
         self.assertString(html, '<p>foo bar</p>')
 
 class TestRenderBreakMaterialize(TestRenderBreakHTML):
     RENDERER = MaterializeRenderer
+    def node(self):
+        return self.render('foo\nbar').find('body')(0)(0)
 
-class TestRenderBreakMaterialize(TestRenderBreakHTML):
+class TestRenderBreakLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
-    def testBasic(self):
-        node = self.html('foo\nbar')(-1)
+    def testTree(self):
+        node = self.render('foo\nbar')(-1)
         self.assertIsInstance(node, tree.latex.Environment)
         self.assertIsInstance(node(0), tree.latex.CustomCommand)
         self.assertIsInstance(node(1), tree.latex.String)
         self.assertIsInstance(node(2), tree.latex.String)
         self.assertIsInstance(node(3), tree.latex.String)
 
-        self.assertString(node(0)._command, 'par')
+        self.assertString(node(0).name, 'par')
         self.assertString(node(1).content, 'foo')
         self.assertString(node(2).content, ' ')
         self.assertString(node(3).content, 'bar')
@@ -44,7 +49,7 @@ class TestRenderBreakMaterialize(TestRenderBreakHTML):
     def testWrite(self):
         node = self.render('foo\nbar')(-1)
         tex = self.write(node)
-        self.assertString(tex, '\begin{document}\parfoo bar\n\end{document}')
+        self.assertString(tex, '\n\\begin{document}\n\\par\nfoo bar\n\\end{document}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
