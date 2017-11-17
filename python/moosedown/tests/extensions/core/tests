@@ -59,18 +59,22 @@
     type = PythonUnitTest
     input = test_RenderParagraph.py
   [../]
-
-  [./shortcut]
+  [./Shortcut]
     type = PythonUnitTest
     input = test_Shortcut.py
   [../]
+  [./ShortcutLink]
+    type = PythonUnitTest
+    input = test_ShortcutLink.py
+  [../]
+  [./RenderShortcutLink]
+    type = PythonUnitTest
+    input = test_RenderShortcutLink.py
+  [../]
+
   [./string]
     type = PythonUnitTest
     input = test_String.py
-  [../]
-  [./paragraph]
-    type = PythonUnitTest
-    input = test_Paragraph.py
   [../]
   [./unordered]
     type = PythonUnitTest

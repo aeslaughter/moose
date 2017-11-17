@@ -61,9 +61,9 @@ class TestRenderLinkLatex(testing.MarkdownTestCase):
         self.assertString(node(1)(0).content, 'link')
 
     def testWrite(self):
-        node = self.render('+content+')(-1)(1)
+        node = self.render('[link](url.html)')(-1)(1)
         tex = self.write(node)
-        self.assertString(tex, '\\textbf{content}')
+        self.assertString(tex, '\\href{url.html}{link}')
 
 
 if __name__ == '__main__':
