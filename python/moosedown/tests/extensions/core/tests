@@ -11,9 +11,29 @@
     type = PythonUnitTest
     input = test_Format.py
   [../]
-  [./RenderFormat]
+  [./RenderStrong]
     type = PythonUnitTest
-    input = test_RenderFormat.py
+    input = test_RenderStrong.py
+  [../]
+  [./RenderUnderline]
+    type = PythonUnitTest
+    input = test_RenderUnderline.py
+  [../]
+  [./RenderEmphasis]
+    type = PythonUnitTest
+    input = test_RenderEmphasis.py
+  [../]
+  [./RenderStrike]
+    type = PythonUnitTest
+    input = test_RenderStrike.py
+  [../]
+  [./RenderSuperscript]
+    type = PythonUnitTest
+    input = test_RenderSuperscript.py
+  [../]
+  [./RenderSubscript]
+    type = PythonUnitTest
+    input = test_RenderSubscript.py
   [../]
   [./code]
     type = PythonUnitTest

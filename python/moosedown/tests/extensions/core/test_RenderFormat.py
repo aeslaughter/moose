@@ -23,17 +23,6 @@ class TestRenderFormatHTML(testing.MarkdownTestCase):
         html = node.write()
         self.assertString(html, '<{0}>content</{0}>'.format(tag))
 
-    def testStrong(self):
-        self.checkItem('+', 'strong')
-
-    def testUnderline(self):
-        self.checkItem('=', 'u')
-
-    def testEmphasis(self):
-        self.checkItem('*', 'em')
-
-    def testStrike(self):
-        self.checkItem('~', 'strike')
 
     def testSuperscript(self):
         self.checkItem(('^{', '}'), 'sup')
