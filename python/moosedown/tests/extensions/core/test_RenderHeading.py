@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestHeadingHashHTML(testing.MarkdownTestCase):
+class TestRenderHeadingHTML(testing.MarkdownTestCase):
     def node(self, text):
         return self.render(text)(0)
 
@@ -39,12 +39,12 @@ class TestHeadingHashHTML(testing.MarkdownTestCase):
 
         self.assertString(h.write(), '<h1 style="font-size:42pt;">Heading with Spaces</h1>')
 
-class TestHeadingHashMaterialize(TestHeadingHashHTML):
+class TestRenderHeadingMaterialize(TestRenderHeadingHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
         return self.render(text).find('body')(0)(0)
 
-class TestHeadingHashLatex(testing.MarkdownTestCase):
+class TestRenderHeadingLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
 

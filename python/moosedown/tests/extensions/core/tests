@@ -3,9 +3,9 @@
     type = PythonUnitTest
     input = test_HeadingHash.py
   [../]
-  [./RenderHeadingHash]
+  [./RenderHeading]
     type = PythonUnitTest
-    input = test_RenderHeadingHash.py
+    input = test_RenderHeading.py
   [../]
   [./Format]
     type = PythonUnitTest
