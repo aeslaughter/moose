@@ -1,11 +1,19 @@
 [Tests]
-  [./heading]
+  [./HeadingHash]
     type = PythonUnitTest
     input = test_HeadingHash.py
   [../]
-  [./format]
+  [./RenderHeadingHash]
+    type = PythonUnitTest
+    input = test_RenderHeadingHash.py
+  [../]
+  [./Format]
     type = PythonUnitTest
     input = test_Format.py
+  [../]
+  [./RenderFormat]
+    type = PythonUnitTest
+    input = test_RenderFormat.py
   [../]
   [./code]
     type = PythonUnitTest
@@ -20,17 +28,12 @@
     input = test_Shortcut.py
   [../]
   [./string]
-    # All string tokens
     type = PythonUnitTest
     input = test_String.py
   [../]
   [./paragraph]
     type = PythonUnitTest
     input = test_Paragraph.py
-  [../]
-  [./backtick]
-    type = PythonUnitTest
-    input = test_Backtick.py
   [../]
   [./unordered]
     type = PythonUnitTest
@@ -40,6 +43,14 @@
     type = PythonUnitTest
     input = test_OrderedList.py
   [../]
+  [./Backtick]
+    type = PythonUnitTest
+    input = test_Backtick.py
+  [../]
+  [./RenderBacktick]
+    type = PythonUnitTest
+    input = test_RenderBacktick.py
+  [../]
   [./Break]
     type = PythonUnitTest
     input = test_Break.py
@@ -47,5 +58,9 @@
   [./RenderBreak]
     type = PythonUnitTest
     input = test_RenderBreak.py
+  [../]
+  [./errors]
+    type = PythonUnitTest
+    input = test_errors.py
   [../]
 []
