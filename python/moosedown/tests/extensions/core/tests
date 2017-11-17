@@ -35,13 +35,17 @@
     type = PythonUnitTest
     input = test_RenderSubscript.py
   [../]
+  [./Link]
+    type = PythonUnitTest
+    input = test_Link.py
+  [../]
+  [./RenderLink]
+    type = PythonUnitTest
+    input = test_RenderLink.py
+  [../]
   [./code]
     type = PythonUnitTest
     input = test_Code.py
-  [../]
-  [./link]
-    type = PythonUnitTest
-    input = test_Link.py
   [../]
   [./shortcut]
     type = PythonUnitTest
