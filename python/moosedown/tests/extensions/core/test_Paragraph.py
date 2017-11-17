@@ -6,11 +6,8 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestParagraph(testing.MarkdownTestCase):
-    """
-    Test components that are children of String component
-    """
-    def testParagraph(self):
+class TestParagraphTokenize(testing.MarkdownTestCase):
+    def testBasic(self):
         for i in range(2, 5):
             token = self.ast('foo{}bar'.format('\n'*i))
             self.assertIsInstance(token(0), tree.tokens.Paragraph)
