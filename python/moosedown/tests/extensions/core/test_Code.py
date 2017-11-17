@@ -21,22 +21,6 @@ class TestCodeTokenize(testing.MarkdownTestCase):
         self.assertString(code.code, '\nint x;\n')
         self.assertString(code.language, 'cpp')
 
-class TestCodeHTML(testing.MarkdownTestCase):
-    """Code HTML"""
-
-    def testBasic(self):
-        html = self.html('```\nint x;\n```').find('pre')
-        self.assertString(html.write(),
-                          '<pre><code class="language-text">\nint x;\n</code></pre>')
-
-    def testLanguage(self):
-        html = self.html('```language=cpp\nint x;\n```').find('pre')
-        self.assertString(html.write(),
-                          '<pre><code class="language-cpp">\nint x;\n</code></pre>')
-
-class TestCodeMaterialize(TestCodeHTML):
-    """Code Materialize"""
-    RENDERER = MaterializeRenderer
 
 
 if __name__ == '__main__':

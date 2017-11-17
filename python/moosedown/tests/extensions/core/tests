@@ -43,10 +43,23 @@
     type = PythonUnitTest
     input = test_RenderLink.py
   [../]
-  [./code]
+  [./Code]
     type = PythonUnitTest
     input = test_Code.py
   [../]
+  [./RenderCode]
+    type = PythonUnitTest
+    input = test_RenderCode.py
+  [../]
+  [./Paragraph]
+    type = PythonUnitTest
+    input = test_Paragraph.py
+  [../]
+  [./RenderParagraph]
+    type = PythonUnitTest
+    input = test_RenderParagraph.py
+  [../]
+
   [./shortcut]
     type = PythonUnitTest
     input = test_Shortcut.py
