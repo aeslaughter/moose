@@ -71,12 +71,25 @@
     type = PythonUnitTest
     input = test_RenderShortcutLink.py
   [../]
-
-  [./string]
+  [./Number]
+    type = PythonUnitTest
+    input = test_Number.py
+  [../]
+  [./Word]
+    type = PythonUnitTest
+    input = test_Word.py
+  [../]
+  [./String]
     type = PythonUnitTest
     input = test_String.py
   [../]
-  [./unordered]
+  [./RenderString]
+    type = PythonUnitTest
+    input = test_RenderString.py
+  [../]
+
+
+[./unordered]
     type = PythonUnitTest
     input = test_UnorderedList.py
   [../]

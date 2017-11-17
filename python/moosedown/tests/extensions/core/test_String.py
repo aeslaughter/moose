@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestString(testing.MarkdownTestCase):
+class TestStringTokenize(testing.MarkdownTestCase):
     """
     Test components that are children of String component
     """
