@@ -180,7 +180,7 @@ class ShortcutLink(MarkdownComponent):
 
 class String(MarkdownComponent):
     """
-    Base token for strings (i.e., words, numbers, etc.), this is
+    Base token for strings (i.e., words, numbers, etc.)
     """
     def createToken(self, match, parent):
         return token.String(parent, content=match.group())
@@ -205,7 +205,7 @@ class Punctuation(String):
     """
     Not letters, numbers, or spaces.
     """
-    RE = re.compile(r'([^A-Z|^a-z|^0-9|^\s]+)')
+    RE = re.compile(r'([^A-Za-z0-9\s]+)')
     def createToken(self, match, parent):
         return tokens.Punctuation(parent, content=match.group())
 
@@ -241,7 +241,6 @@ class Backtick(MarkdownComponent):
     RE = re.compile(r"`(?P<code>[^`].+?)`", flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
         return tokens.InlineCode(parent, code=match.group('code'))
-
 
 class List(MarkdownComponent):
     """
