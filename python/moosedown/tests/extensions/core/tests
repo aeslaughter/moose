@@ -23,9 +23,9 @@
     type = PythonUnitTest
     input = test_RenderEmphasis.py
   [../]
-  [./RenderStrike]
+  [./RenderStrikethrough]
     type = PythonUnitTest
-    input = test_RenderStrike.py
+    input = test_RenderStrikethrough.py
   [../]
   [./RenderSuperscript]
     type = PythonUnitTest
@@ -79,6 +79,10 @@
     type = PythonUnitTest
     input = test_Word.py
   [../]
+  [./Punctuation]
+    type = PythonUnitTest
+    input = test_Punctuation.py
+  [../]
   [./String]
     type = PythonUnitTest
     input = test_String.py
@@ -87,9 +91,12 @@
     type = PythonUnitTest
     input = test_RenderString.py
   [../]
+  [./Space]
+    type = PythonUnitTest
+    input = test_Space.py
+  [../]
 
-
-[./unordered]
+  [./unordered]
     type = PythonUnitTest
     input = test_UnorderedList.py
   [../]
