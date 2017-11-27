@@ -350,7 +350,6 @@ class CoreRenderExtension(base.RenderExtension):
         for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number]:
             self.add(t, RenderString())
 
-
         #TODO: Make a generic preamble method?
         if isinstance(self.renderer, base.LatexRenderer):
             self.renderer.addPackage('hyperref')
