@@ -153,7 +153,6 @@ class Link(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.Link(parent, url=match.group('url'), **self.attributes)
 
-
 class Shortcut(MarkdownComponent):
     """
     Markdown shortcuts.
@@ -273,7 +272,7 @@ class UnorderedList(List):
     """
     RE = re.compile(r'\s*(?P<marker>- )(?P<items>.*?)(?=\n{3,}|^[^- \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
-    SPLIT_RE = re.compile(r'^- ', flags=re.MULTILINE|re.DOTALL)
+    SPLIT_RE = re.compile(r'\n{1,}^- ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tokens.UnorderedList
 
 class OrderedList(List):
@@ -282,7 +281,7 @@ class OrderedList(List):
     """
     RE = re.compile(r'\s*(?P<marker>[0-9]+\. )(?P<items>.*?)(?=\n{3,}|^[^0-9 \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
-    SPLIT_RE = re.compile(r'^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
+    SPLIT_RE = re.compile(r'\n{1,}^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tokens.OrderedList
 
     def createToken(self, match, parent):
@@ -512,7 +511,7 @@ class RenderListItem(CoreRenderComponentBase):
         return html.Tag(parent, 'li', **token.attributes)
 
     def createLatex(self, token, parent):
-        item = latex.CustomCommand(parent, command='item', arguments=[], start='\n')
+        item = latex.CustomCommand(parent, 'item', start='\n')
         return parent
 
 class RenderString(CoreRenderComponentBase):

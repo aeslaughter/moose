@@ -95,14 +95,21 @@
     type = PythonUnitTest
     input = test_Space.py
   [../]
-
-  [./unordered]
+  [./UnorderedList]
     type = PythonUnitTest
     input = test_UnorderedList.py
   [../]
-  [./ordered]
+  [./RenderUnorderedList]
+    type = PythonUnitTest
+    input = test_RenderUnorderedList.py
+  [../]
+  [./OrderedList]
     type = PythonUnitTest
     input = test_OrderedList.py
+  [../]
+  [./RenderOrderedList]
+    type = PythonUnitTest
+    input = test_RenderOrderedList.py
   [../]
   [./Backtick]
     type = PythonUnitTest
