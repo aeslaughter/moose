@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestOrderedList(testing.MarkdownTestCase):
+class TestOrderedListTokenize(testing.MarkdownTestCase):
     """
     Tests inline code.
     """
@@ -16,7 +16,6 @@ class TestOrderedList(testing.MarkdownTestCase):
         self.assertIsInstance(token(0)(0), tree.tokens.ListItem)
         self.assertIsInstance(token(0)(0)(0), tree.tokens.Paragraph)
         self.assertIsInstance(token(0)(0)(0)(0), tree.tokens.Word)
-        self.assertIsInstance(token(0)(0)(0)(1), tree.tokens.Break)
 
         self.assertIsInstance(token(0)(1), tree.tokens.ListItem)
         self.assertIsInstance(token(0)(1)(0), tree.tokens.Paragraph)
