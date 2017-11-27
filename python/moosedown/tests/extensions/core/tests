@@ -127,6 +127,14 @@
     type = PythonUnitTest
     input = test_RenderBreak.py
   [../]
+  [./Quote]
+    type = PythonUnitTest
+    input = test_Quote.py
+  [../]
+  [./RenderQuote]
+    type = PythonUnitTest
+    input = test_RenderQuote.py
+  [../]
   [./errors]
     type = PythonUnitTest
     input = test_errors.py
