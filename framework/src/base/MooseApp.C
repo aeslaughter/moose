@@ -1347,7 +1347,5 @@ MooseApp::registerExecFlags()
 void
 MooseApp::registerExecFlag(const ExecFlagType & flag)
 {
-  if (flag.id() == MooseEnumItem::INVALID_ID)
-    flag._id = Moose::execute_flags.getNextValidID();
   Moose::execute_flags.addAvailableFlags(flag);
 }
