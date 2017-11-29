@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 import logging
 
 import MooseDocs
@@ -24,8 +25,15 @@ for node in syntax.findall():
         destination_root = '/Users/slauae/projects/moosedown/modules/{}/doc/content/documentation/systems'
 
     src = node.markdown(source_root)
-    dst = node.markdown('', absolute=False).replace('/{}/'.format(group), '/')
-    dst = os.path.join(destination_root.format(group), dst)
-    cmd = ['git', 'mv', src, dst]
-    print ' '.join(cmd)
-    #subprocess.call(cmd)
+    if os.path.isfile(src):
+        dst = node.markdown('', absolute=False).replace('/{}/'.format(group), '/')
+        dst = os.path.join(destination_root.format(group), dst)
+        cmd = ['git', 'mv', src, dst]
+
+        if os.path.isfile(dst):
+            os.remove(dst)
+        elif os.path.isdir(dst):
+            shutil.rmtree(dst)
+
+        #print ' '.join(cmd)
+        #subprocess.call(cmd)
