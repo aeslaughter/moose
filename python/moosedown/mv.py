@@ -18,6 +18,9 @@ syntax = ext.getMooseAppSyntax()
 
 
 for node in syntax.findall():
+    print node.name
+
+    """
     group = node.groups.keys()[0]
     if group == 'framework':
         destination_root = '/Users/slauae/projects/moosedown/{}/doc/content/documentation/systems'
@@ -41,3 +44,4 @@ for node in syntax.findall():
 
         #print ' '.join(cmd)
         subprocess.call(cmd)
+    """
