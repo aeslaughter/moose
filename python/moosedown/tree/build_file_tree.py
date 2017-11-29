@@ -102,7 +102,7 @@ if __name__ == '__main__':
     print '\n'.join(files0)
 
 
-    root1 = '/Users/slauae/projects/moosedown/framework/doc/content'
+    root1 = '/Users/slauae/projects/moosedown/docs/content'
     files1 = doc_import(root1, content=['documentation/systems/Adaptivity/**'])
 
     print '\n'.join(files1)
