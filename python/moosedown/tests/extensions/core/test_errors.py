@@ -10,7 +10,7 @@ class TestErrors(testing.MarkdownTestCase):
 
     @mock.patch('logging.Logger.error')
     def testUnknownSettings(self, mock):
-        html = self.html('# Heading with Spaces foo=bar')
+        html = self.render('# Heading with Spaces foo=bar')
         h = html(0)
         self.assertIsInstance(h, tree.html.Tag)
         self.assertEqual(h.name, 'h1')

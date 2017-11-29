@@ -46,7 +46,7 @@ def find_files(filenames, pattern):
         out.add(match.group(0))
     return out
 
-def doc_import(root_dir, content=None, extensions=None):
+def doc_import(root_dir, content=None):
     """
     Cretes a list of files to "include" from patterns.
 
@@ -70,8 +70,8 @@ def doc_import(root_dir, content=None, extensions=None):
     filenames = set()
     for root, _, files in os.walk(root_dir):
         for fname in files:
-            if fname.endswith(extensions) and not fname.startswith('.'):
-                full_name = os.path.join(root, fname)
+            full_name = os.path.join(root, fname)
+            if os.path.isfile(full_name):
                 filenames.add(full_name)
 
     # Build include/exclude lists
@@ -92,3 +92,17 @@ def doc_import(root_dir, content=None, extensions=None):
         output -= find_files(output, os.path.join(root_dir, pattern))
 
     return sorted(output)
+
+if __name__ == '__main__':
+
+
+    root0 = '/Users/slauae/projects/moosedown/docs/content'
+    files0 = doc_import(root0, content=['getting_started/**'])
+
+    print '\n'.join(files0)
+
+
+    root1 = '/Users/slauae/projects/moosedown/framework/doc/content'
+    files1 = doc_import(root1, content=['documentation/systems/Adaptivity/**'])
+
+    print '\n'.join(files1)

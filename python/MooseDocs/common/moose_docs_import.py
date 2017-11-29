@@ -111,3 +111,16 @@ def moose_docs_import(root_dir=None, include=None, exclude=None, base=None, exte
         output -= find_files(output, os.path.join(root_dir, pattern))
 
     return sorted(output)
+
+def moose_docs_tree(root_dir=None, include=None, exclude=None, base=None, extensions=None):
+
+    filenames = moose_docs_import(root_dir, include, exclude, base, extensions)
+
+
+if __name__ == '__main__':
+
+
+    files0 =
+
+
+    root_dir
