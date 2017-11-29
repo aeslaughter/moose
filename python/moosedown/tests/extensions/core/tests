@@ -139,6 +139,10 @@
     type = PythonUnitTest
     input = test_RenderLabel.py
   [../]
+  [./RenderListItem]
+    type = PythonUnitTest
+    input = test_RenderListItem.py
+  [../]
   [./errors]
     type = PythonUnitTest
     input = test_errors.py
