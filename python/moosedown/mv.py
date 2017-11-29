@@ -35,5 +35,9 @@ for node in syntax.findall():
         elif os.path.isdir(dst):
             shutil.rmtree(dst)
 
+        dst_dir = os.path.dirname(dst)
+        if not os.path.isdir(dst_dir):
+            os.makedirs(dst_dir)
+
         #print ' '.join(cmd)
-        #subprocess.call(cmd)
+        subprocess.call(cmd)
