@@ -135,6 +135,10 @@
     type = PythonUnitTest
     input = test_RenderQuote.py
   [../]
+  [./RenderLabel]
+    type = PythonUnitTest
+    input = test_RenderLabel.py
+  [../]
   [./errors]
     type = PythonUnitTest
     input = test_errors.py
