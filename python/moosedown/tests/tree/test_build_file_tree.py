@@ -191,5 +191,7 @@ class TestMooseDocsImport(unittest.TestCase):
         self.assertNotIn(gold, items)
 """
 
+#TODO: error check that doc_import with invalid root_dir errors
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
