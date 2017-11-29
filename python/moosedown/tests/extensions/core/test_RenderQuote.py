@@ -29,7 +29,6 @@ class TestRenderQuoteHTML(testing.MarkdownTestCase):
         self.assertIsInstance(node(0)(2), tree.html.String)
         self.assertString(node(0)(2).content, 'bar')
 
-
     def testWrite(self):
         node = self.node('> foo bar')
         html = self.write(node)

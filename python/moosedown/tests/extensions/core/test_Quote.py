@@ -7,7 +7,7 @@ from moosedown.base import testing
 class TestQuoteTokenize(testing.MarkdownTestCase):
     def testBasic(self):
         node = self.ast('> foo bar')(0)
-        Self.assertIsInstance(node, tree.tokens.Quote)
+        self.assertIsInstance(node, tree.tokens.Quote)
         self.assertIsInstance(node(0), tree.tokens.Paragraph)
         self.assertIsInstance(node(0)(0), tree.tokens.Word)
         self.assertIsInstance(node(0)(1), tree.tokens.Space)
