@@ -19,7 +19,6 @@ class TestIntegrity(unittest.TestCase):
     that all extensions have there components tested and that all unittest.TestCase objects
     have an entry in a tests spec file.
     """
-
     def check(self, location):
         """
         Check the test directory.
@@ -83,6 +82,12 @@ class TestExtensions(unittest.TestCase):
     READER_REQUIRED = ['Test{}Tokenize']
     RENDER_REQUIRED = ['Test{}HTML', 'Test{}Materialize', 'Test{}Latex']
 
+    BASE = [extensions.core.Command,
+            extensions.core.List,
+            extensions.core.MarkdownComponent,
+            extensions.core.CoreRenderComponentBase]
+
+
     @classmethod
     def setUpClass(cls):
         """
@@ -108,7 +113,7 @@ class TestExtensions(unittest.TestCase):
         """
         messages = []
         for ext in self.EXTENSIONS:
-            messages += check_component(ext, TokenComponent, self.READER_REQUIRED)
+            messages += check_component(ext, TokenComponent, self.READER_REQUIRED, self.BASE)
         self.assertFalse(messages, '\n'.join(messages))
 
     def testRenderComponents(self):
@@ -117,7 +122,7 @@ class TestExtensions(unittest.TestCase):
         """
         messages = []
         for ext in self.EXTENSIONS:
-            messages += check_component(ext, RenderComponent, self.RENDER_REQUIRED)
+            messages += check_component(ext, RenderComponent, self.RENDER_REQUIRED, self.BASE)
         self.assertFalse(messages, '\n'.join(messages))
 
     def testMakeExtension(self):
@@ -140,7 +145,7 @@ def get_parent_objects(module, cls):
     return inspect.getmembers(module, predicate=func)
 
 
-def check_component(ext, cls, required):
+def check_component(ext, cls, required, skip):
     """
     Tool for inspecting the existence of the necessary test objects.
 
@@ -155,6 +160,8 @@ def check_component(ext, cls, required):
 
     messages = []
     for name, cls in get_parent_objects(ext, cls):
+        if cls in skip:
+            continue
         filename = 'test_{}.py'.format(name)
         full_name = os.path.join(local, filename)
         if not os.path.exists(full_name):
