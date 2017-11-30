@@ -32,4 +32,9 @@
     type = PythonUnitTest
     input = test_camel_to_space.py
   [../]
+
+  [./yaml]
+    type = PythonUnitTest
+    input = test_yaml_load.py
+  [../]
 []
