@@ -15,11 +15,14 @@
 ####################################################################################################
 import os
 import unittest
+import mock
 
 from moosedown import ROOT_DIR
-from moosedown.tree.build_file_tree import build_regex
-from moosedown.tree.build_file_tree import find_files
-from moosedown.tree.build_file_tree import doc_import
+from moosedown.tree.build_page_tree import build_regex
+from moosedown.tree.build_page_tree import find_files
+from moosedown.tree.build_page_tree import doc_import
+from moosedown.tree.build_page_tree import doc_tree
+from moosedown.tree import page
 
 class TestBuildRegex(unittest.TestCase):
     """
@@ -112,86 +115,88 @@ class TestFindFiles(unittest.TestCase):
         self.assertEqual(len(files), 4)
         self.assertEqual(files, set(filenames[6:]))
 
-class TestMooseDocsImport(unittest.TestCase):
+class TestDocImport(unittest.TestCase):
     """
     Tests for docs_import function.
     """
     def testBasic(self):
         items = doc_import(content=['framework/doc/content/**',
                                     '!framework/doc/content/documentation/**'],
-                           root_dir=ROOT_DIR,
-                           extensions=('.md'))
+                           root_dir=ROOT_DIR)
         self.assertIsInstance(items, list)
-        gold = '{}/framework/doc/content/utilities/moose_docs/moose_markdown/index.md'
-        self.assertIn(gold.format(ROOT_DIR), items)
 
         gold = '{}/framework/doc/content/documentation/systems/Kernels/framework/Diffusion.md'
         self.assertNotIn(gold.format(ROOT_DIR), items)
 
-        self.assertTrue(all(x.endswith('.md') for x in items))
 
     def testFilename(self):
-        items = doc_import(content=['framework/doc/content/utilities/moose_docs/*',
-                                    'framework/doc/content/getting_started/*',
-                                    '!framework/doc/content/utilities/memory_logger/*',
-                                    '!framework/doc/**/moose_markdown/*'],
-                            root_dir=ROOT_DIR,
-                            extensions=('.md'))
+        items = doc_import(content=['docs/content/utilities/moose_docs/*',
+                                    'docs/content/getting_started/*',
+                                    '!docs/content/utilities/memory_logger/*',
+                                    '!docs/**/moose_markdown/*'],
+                            root_dir=ROOT_DIR)
 
         self.assertIsInstance(items, list)
-        gold = '{}/framework/doc/content/utilities/moose_docs/moose_markdown/index.md'
+        gold = '{}/docs/content/utilities/moose_docs/moose_markdown/index.md'
         self.assertNotIn(gold.format(ROOT_DIR), items)
 
-        gold = '{}/framework/doc/content/documentation/systems/Kernels/framework/Diffusion.md'
+        gold = '{}/docs/content/documentation/systems/Kernels/framework/Diffusion.md'
         self.assertNotIn(gold.format(ROOT_DIR), items)
 
-        gold = '{}/framework/doc/content/utilities/memory_logger/memory_logger.md'
+        gold = '{}/docs/content/utilities/memory_logger/memory_logger.md'
         self.assertNotIn(gold.format(ROOT_DIR), items)
 
-        gold = '{}/framework/doc/content/getting_started/create_an_app.md'
+        gold = '{}/docs/content/getting_started/petsc_default.md'
         self.assertIn(gold.format(ROOT_DIR), items)
 
-        gold = '{}/framework/doc/content/utilities/moose_docs/moose_markdown/index.md'
+        gold = '{}/docs/content/utilities/moose_docs/moose_markdown/index.md'
         self.assertNotIn(gold.format(ROOT_DIR), items)
 
-"""
-    def testErrors(self):
-        moose_docs_import(include=42)
-        self.assertInLogError('The "include" must be a list of str items.')
+    @mock.patch('logging.Logger.error')
+    def testErrors(self, mock):
 
-        moose_docs_import(include=[42])
-        self.assertInLogError('The "include" must be a list of str items.')
+        doc_import('', content=dict())
+        args, _ = mock.call_args
+        self.assertIn('The "content" must be a list of str items.', args[-1])
 
-        moose_docs_import(exclude=42)
-        self.assertInLogError('The "exclude" must be a list of str items.')
+        doc_import('', content=[1])
+        args, _ = mock.call_args
+        self.assertIn('The "content" must be a list of str items.', args[-1])
 
-        moose_docs_import(exclude=[42])
-        self.assertInLogError('The "exclude" must be a list of str items.')
+        doc_import('not/valid', content=['foo'])
+        args, _ = mock.call_args
+        self.assertIn('The "root_dir" must be a valid directory', args[-1])
 
-    def testIndex(self):
-        items = moose_docs_import(include=['docs/content/index.md'],
-                                  base='docs/content',
-                                  extensions=('.md'))
-        self.assertEqual(len(items), 1)
-        self.assertEqual(items[0], os.path.join(MooseDocs.ROOT_DIR, 'docs', 'content', 'index.md'))
+class TestDocTree(unittest.TestCase):
+    """
+    Test creation of file tree nodes.
+    """
+    def testBasic(self):
 
-    def testExclude(self):
-        items = moose_docs_import(include=['docs/content/**'],
-                                  exclude=['docs/content/documentation/**/level_set/**'],
-                                  base='docs/content',
-                                  extensions=('.md'))
+        items = [dict(root_dir=os.path.join(ROOT_DIR, 'docs/content'),
+                      content=['getting_started/**']),
+                 dict(root_dir=os.path.join(ROOT_DIR, 'framework/doc/content'),
+                      content=['documentation/systems/Adaptivity/**'])]
 
-        gold = os.path.join(MooseDocs.ROOT_DIR,
-                            'docs/content/documentation/systems/Kernels/framework/Diffusion.md')
-        self.assertIn(gold, items)
+        root = doc_tree(items)
 
-        gold = os.path.join(MooseDocs.ROOT_DIR,
-                            'docs/content/documentation/systems/Kernels/level_set/' \
-                            'LevelSetAdvection.md')
-        self.assertNotIn(gold, items)
-"""
+        self.assertIsInstance(root(0), page.DirectoryNode)
+        self.assertEqual(root(0).name, 'getting_started')
+        self.assertEqual(root(0).source,
+                         os.path.join(ROOT_DIR, 'docs/content/getting_started'))
 
-#TODO: error check that doc_import with invalid root_dir errors
+        self.assertIsInstance(root(0)(0), page.DirectoryNode)
+        self.assertEqual(root(0)(0).name, 'installation')
+        self.assertEqual(root(0)(0).source,
+                         os.path.join(ROOT_DIR, 'docs/content/getting_started/installation'))
+
+        self.assertIsInstance(root(0)(0)(0), page.MarkdownNode)
+        self.assertEqual(root(0)(0)(0).name, 'build_libmesh.md')
+        self.assertEqual(root(0)(0)(0).source,
+                         os.path.join(ROOT_DIR,
+                                      'docs/content/getting_started/installation/build_libmesh.md'))
+
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
