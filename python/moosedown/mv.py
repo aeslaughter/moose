@@ -18,16 +18,14 @@ syntax = ext.getMooseAppSyntax()
 
 
 for node in syntax.findall():
-    print node.name
+    src = os.path.join(source_root, node.markdown('', absolute=False))
 
-    """
     group = node.groups.keys()[0]
     if group == 'framework':
         destination_root = '/Users/slauae/projects/moosedown/{}/doc/content/documentation/systems'
     else:
         destination_root = '/Users/slauae/projects/moosedown/modules/{}/doc/content/documentation/systems'
 
-    src = node.markdown(source_root)
     if os.path.isfile(src):
         dst = node.markdown('', absolute=False).replace('/{}/'.format(group), '/')
         dst = os.path.join(destination_root.format(group), dst)
@@ -44,4 +42,3 @@ for node in syntax.findall():
 
         #print ' '.join(cmd)
         subprocess.call(cmd)
-    """
