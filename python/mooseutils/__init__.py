@@ -4,7 +4,7 @@ from mooseutils import text_diff
 from message import mooseDebug, mooseWarning, mooseMessage, mooseError
 from MooseException import MooseException
 try:
-    from MooseYaml import MooseYaml
+    from yaml_load import yaml_load
 except:
     pass
 

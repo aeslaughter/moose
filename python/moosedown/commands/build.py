@@ -12,9 +12,12 @@ def main():
     config = dict()
     config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
     extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
+
+
+
+
     reader = base.MarkdownReader
     render = base.LatexRenderer
-
     #render = base.MaterializeRenderer
     #render = base.HTMLRenderer
 
