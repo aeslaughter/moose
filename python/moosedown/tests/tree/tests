@@ -15,8 +15,8 @@
     type = PythonUnitTest
     input = test_latex.py
   [../]
-  [./file_tree]
+  [./page_tree]
     type = PythonUnitTest
-    input = test_build_file_tree.py
+    input = test_build_page_tree.py
   [../]
 []

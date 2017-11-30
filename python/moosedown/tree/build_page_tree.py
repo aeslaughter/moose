@@ -1,10 +1,10 @@
 import os
 import re
 import logging
+import collections
 
-extensions = ('md', 'css', 'js', 'png', 'svg', 'jpg')
-root = '/Users/slauae/projects/moose/framework/doc/content'
-content = ['**']
+from moosedown.tree import page
+
 
 LOG = logging.getLogger(__name__)
 
@@ -54,7 +54,6 @@ def doc_import(root_dir, content=None):
         root_dir[str]: The directory which all other paths should be relative to.
         content[list]: List of file/path globs to include, relative to the 'base' directory, paths
                        beginning with '!' are excluded.
-        extensions[str]: Limit the search to an extension (e.g., '.md')
     """
 
     # Define the include/exclude/extensions lists
@@ -64,6 +63,11 @@ def doc_import(root_dir, content=None):
     # Check types
     if not isinstance(content, list) or any(not isinstance(x, str) for x in content):
         LOG.error('The "content" must be a list of str items.')
+        return None
+
+    # Check root_dir
+    if not os.path.isdir(root_dir):
+        LOG.error('The "root_dir" must be a valid directory.')
         return None
 
     # Loop through the base directory and create a set of matching filenames
@@ -93,16 +97,62 @@ def doc_import(root_dir, content=None):
 
     return sorted(output)
 
-if __name__ == '__main__':
+
+def create_file_node(parent, name, filename):
+    """
+    Create the correct node object for the given extension.
+    """
+    _, ext = os.path.splitext(filename)
+    if ext == '.md':
+        return page.MarkdownNode(parent, name=name, source=filename)
+    else:
+        return page.FileNode(parent, name=name, source=filename)
 
 
-    root0 = '/Users/slauae/projects/moosedown/docs/content'
-    files0 = doc_import(root0, content=['getting_started/**'])
+def doc_tree(items):
+    """
+    Create a tree of files for processing.
 
-    print '\n'.join(files0)
+    Inputs:
+        inputs: [list[dict(),...] A list of dict items, each dict entry must contain the 'root_dir'
+                and 'content' fields that are passed to the doc_import function.
+    """
+    # Error checking
+    if not isinstance(items, list) or any(not isinstance(x, dict) for x in items):
+        LOG.error('The suplied items must be a list of dict items, each with a "root_dir" and '
+                  '"content" entry.')
+        return None
 
 
-    root1 = '/Users/slauae/projects/moosedown/docs/content'
-    files1 = doc_import(root1, content=['documentation/systems/Adaptivity/**'])
+    # Define a dict for storing nodes by path
+    nodes = dict()
 
-    print '\n'.join(files1)
+    # Create the root node
+    nodes[()] = page.DirectoryNode()
+
+    # Create the file tree
+    for value in items:
+
+        if ('root_dir' not in value) or ('content' not in value):
+            LOG.error('The suplied items must be a list of dict items, each with a "root_dir" and '
+                      '"content" entry.')
+
+        root = value['root_dir']
+        files = doc_import(root, content=value['content'])
+
+        for filename in files:
+            key = tuple(filename.replace(root, '').strip('/').split('/'))
+
+            # Create directory nodes if they don't exist
+            for i in range(1, len(key)):
+                dir_key = key[:i]
+                if dir_key not in nodes:
+                    nodes[dir_key] = page.DirectoryNode(nodes[key[:i-1]],
+                                                        name=key[i-1],
+                                                        source=os.path.join(root, *dir_key))
+
+            # Create the file node
+            nodes[key] = create_file_node(nodes[key[:-1]], key[-1], filename)
+
+
+    return nodes[()]
