@@ -12,10 +12,8 @@ from mooseutils import touch, unique_list, gold, make_chunks, check_file_size, c
 from mooseutils import text_diff
 from message import mooseDebug, mooseWarning, mooseMessage, mooseError
 from MooseException import MooseException
-try:
-    from yaml_load import yaml_load
-except:
-    pass
+
+from yaml_load import yaml_load
 
 try:
     from MooseDataFrame import MooseDataFrame

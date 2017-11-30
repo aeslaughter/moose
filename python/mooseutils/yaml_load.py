@@ -20,9 +20,12 @@ class IncludeLoader(yaml.Loader):
     """
     A custom loader that handles nested includes. The nested includes should use absolute paths
     from the origin yaml file.
+
+    http://stackoverflow.com/questions/528281/how-can-i-include-an-yaml-file-inside-another
     """
     def __init__(self, stream):
-        self._root = os.path.split(stream.name)[0]
+        self._filename = stream.name
+        self._root = os.path.dirname(self._filename)
         self.add_constructor('!include', IncludeLoader.include)
         super(IncludeLoader, self).__init__(stream)
 
@@ -35,21 +38,27 @@ class IncludeLoader(yaml.Loader):
             with open(filename, 'r') as f:
                 return yaml.load(f, IncludeLoader)
         else:
-            raise IOError("Unknown included file: {}".format(filename))
+            print node.line
+            msg = "Unknown include file '{}' on line {} of {}"
+            raise IOError(msg.format(filename, node.line, self._filename))
 
-def yaml_load(filename):
+    def compose_node(self, parent, index):
+         """
+         Add the line number to the node.
+         https://stackoverflow.com/questions/13319067/parsing-yaml-return-with-line-number
+         """
+         line = self.line
+         node = yaml.Loader.compose_node(self, parent, index)
+         node.line = line + 1
+         return node
+
+def yaml_load(filename, loader=IncludeLoader):
     """
     Load a YAML file capable of including other YAML files.
 
     Args:
       filename[str]: The name to the file to load, relative to the git root directory
-
-    http://stackoverflow.com/questions/528281/how-can-i-include-an-yaml-file-inside-another
     """
-
-    # Attach the include constructor to our custom loader.
-
     with open(filename, 'r') as fid:
-        yml = yaml.load(fid, IncludeLoader)
-
+        yml = yaml.load(fid, loader)
     return yml

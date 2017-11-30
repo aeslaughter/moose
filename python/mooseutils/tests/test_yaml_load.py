@@ -23,6 +23,16 @@ class TestYamlLoad(unittest.TestCase):
         self.assertEqual(data['c'][2], 'item')
         self.assertEqual(data['c'][3], 'other')
 
+    def testError(self):
+        with self.assertRaises(IOError) as e:
+            data = mooseutils.yaml_load('unkown.yml')
+        self.assertIn("No such file or directory: 'unkown.yml'", str(e.exception))
+
+        with self.assertRaises(IOError) as e:
+            data = mooseutils.yaml_load('foo_error.yml')
+        self.assertIn("Unknown include file 'unknown.yml' on line 5 of foo_error.yml",
+                      str(e.exception))
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True, exit=False)
