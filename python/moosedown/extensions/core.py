@@ -94,6 +94,10 @@ class Command(MarkdownComponent):
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
+
+
+        #TODO: Handle extensions in subcommand (SUBCOMAND='*.md' or SUBDOMAND='*.jpg|*.png')
+
         cmd = (match.group('command'), match.group('subcommand'))
 
         #TODO: Error check
@@ -102,7 +106,7 @@ class Command(MarkdownComponent):
 
         obj = base.MarkdownExtension.__COMMANDS__[cmd]
         obj.settings = self.settings
-        obj.line = self.line
+        obj.line = self.line #TODO: Can I make this match.line and then set it in the base that is calling this along with settings
         token = obj.createToken(match, parent)
         return token
 
