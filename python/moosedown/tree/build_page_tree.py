@@ -3,6 +3,7 @@ import re
 import logging
 import collections
 
+import moosedown
 from moosedown.tree import page
 
 
@@ -66,6 +67,7 @@ def doc_import(root_dir, content=None):
         return None
 
     # Check root_dir
+    root_dir = os.path.join(moosedown.ROOT_DIR, root_dir)
     if not os.path.isdir(root_dir):
         LOG.error('The "root_dir" must be a valid directory.')
         return None

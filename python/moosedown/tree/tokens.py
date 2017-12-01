@@ -27,7 +27,7 @@ class String(Token):
     """
     Base class for all tokens meant to contain characters.
     """
-    PROPERTIES = [base.Property('content', ptype=str)]
+    PROPERTIES = [base.Property('content', ptype=unicode)]
 
 class Unknown(String):
     """
@@ -49,7 +49,7 @@ class Space(String):
     PROPERTIES = String.PROPERTIES + [base.Property('count', ptype=int, default=1)]
     def __init__(self, *args, **kwargs):
         super(Space, self).__init__(*args, **kwargs)
-        self.content = ' '
+        self.content = u' '
 
 class Break(Space):
     """
@@ -57,7 +57,7 @@ class Break(Space):
     """
     def __init__(self, *args, **kwargs):
         super(Break, self).__init__(*args, **kwargs)
-        self.content = '\n'
+        self.content = u'\n'
 
 class Punctuation(String):
     """
@@ -75,8 +75,8 @@ class Code(Token):
     """
     Code content (i.e., Monospace content)
     """
-    PROPERTIES = [base.Property('code', ptype=str, required=True),
-                  base.Property('language', ptype=str, default='text')]
+    PROPERTIES = [base.Property('code', ptype=unicode, required=True),
+                  base.Property('language', ptype=unicode, default=u'text')]
 
 class Heading(Token):
     """
@@ -116,17 +116,17 @@ class Link(Token):
     """
     Token for urls.
     """
-    PROPERTIES = [base.Property('url', required=True, ptype=str)]
+    PROPERTIES = [base.Property('url', required=True, ptype=unicode)]
 
 class Shortcut(Token):
-    PROPERTIES = [base.Property('content', required=True, ptype=str),
+    PROPERTIES = [base.Property('content', required=True, ptype=unicode),
                   base.Property('key', required=True, ptype=str)]
 
 class ShortcutLink(Token):
-    PROPERTIES = [base.Property('key', ptype=str, required=True)]
+    PROPERTIES = [base.Property('key', ptype=unicode, required=True)]
 
 class InlineCode(Token):
-    PROPERTIES = [base.Property('code', ptype=str, required=True)]
+    PROPERTIES = [base.Property('code', ptype=unicode, required=True)]
 
 class Strong(Token):
     pass
@@ -150,4 +150,4 @@ class Subscript(Token):
     pass
 
 class Label(Token):
-    PROPERTIES = [base.Property('text', required=True, ptype=str)]
+    PROPERTIES = [base.Property('text', required=True, ptype=unicode)]

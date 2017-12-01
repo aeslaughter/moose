@@ -34,9 +34,14 @@ class Lexer(object):
         try:
             obj = pattern.function(match, parent)
         except Exception as e:
-            msg = "An exception occurred on line %d while parsing the following:\n    %s\n" \
-                  "The exception occurred when executing the '%s' object.\n"
-            LOG.exception(msg, line, match.group(0), pattern.name)
+            msg = "An exception occurred on line %d while parsing, the exception occured when\n" \
+                  "executing the '%s' object was processing the following content.\n%s\n"
+            lines = match.group(0).split('\n')
+            s = u'{}{}{}\n'.format(u'\u250C', u'\u2500'*100, u'\u2510')
+            s += '\n'.join([u'{0}{1: <100}{0}'.format(u'\u2502', x) for x in lines])
+            s += u'\n{}{}{}'.format(u'\u2514', u'\u2500'*100, u'\u2518')
+            LOG.exception(msg, line, pattern.name, s)
+
             raise e
         obj.line = line
         return obj

@@ -120,7 +120,7 @@ class Code(MarkdownComponent):
     @staticmethod
     def defaultSettings():
         settings = MarkdownComponent.defaultSettings()
-        settings['language'] = ('text', "The code language to use for highlighting.")
+        settings['language'] = (u'text', "The code language to use for highlighting.")
         return settings
 
     def createToken(self, match, parent):
