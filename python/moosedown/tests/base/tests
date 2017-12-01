@@ -1,0 +1,6 @@
+[Tests]
+  [./translator]
+    type = PythonUnitTest
+    input = test_Translator.py
+  [../]
+[]

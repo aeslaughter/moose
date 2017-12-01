@@ -1,0 +1,5 @@
+reader: moosedown.base.readers.MarkdownReader
+renderer: moosedown.base.MaterializeRenderer
+translator: moosedown.base.Translator
+extensions:
+    - moosedown.extensions

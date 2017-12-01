@@ -35,7 +35,6 @@ class Extension(object):
         for item in self.__items:
             yield item
 
-
 class RenderExtension(Extension): #TODO: inherit from Extension to get config stuff
     def __init__(self):
         Extension.__init__(self)

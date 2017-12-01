@@ -1,45 +1,73 @@
-import re
+import importlib
+import mooseutils
 
-from moosedown import base
-from moosedown import tree
+import moosedown
 
 def command_line_options(subparser):
     build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
     #build_parser.add_argument('--extensions', nargs=?, help="The extensions")
 
+def load_config(filename):
+    """
+    Load and error check config file.
+    """
+
+    # Define defaults
+
+
+
+
+    config = mooseutils.yaml_load(filename)
+
+    #mod = importlib.import_module('moosedown.base.MarkdownReader')
+    #print mod
+
+    for opt in ['reader', 'renderer', 'translator']:
+        if isinstance(config[opt], str):
+            config[opt] = eval(config[opt])
+
+
+
+
+    return config
 
 def main():
-    config = dict()
-    config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
-    extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
+    #config = dict()
+    #config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
+    #extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
+
+    config_file = 'config.yml'
+
+
+    print load_config(config_file)
 
 
 
 
-    reader = base.MarkdownReader
-    render = base.LatexRenderer
+    #reader = base.MarkdownReader
+    #render = base.LatexRenderer
     #render = base.MaterializeRenderer
     #render = base.HTMLRenderer
 
-    translator = base.Translator(reader, render, extensions, **config)
+    #translator = base.Translator(reader, render, extensions, **config)
 
     #node = tree.file.FileNode(source='spec.md')
 
 
-    with open('spec.md', 'r') as fid:
-        md = fid.read()
+    #with open('spec.md', 'r') as fid:
+    #    md = fid.read()
 
 
-    ast = translator.ast(md)
+    #ast = translator.ast(md)
     #print ast
 
-    html = translator.convert()
+   # html = translator.convert()
 #    print html
 
 
-    with open('index.tex', 'w') as fid:
+    #with open('index.tex', 'w') as fid:
 
-        fid.write(re.sub(r'\n+', r'\n', html.write()))
+     #   fid.write(re.sub(r'\n+', r'\n', html.write()))
 
    # with open('index.html', 'w') as fid:
     #    fid.write(html.write())
