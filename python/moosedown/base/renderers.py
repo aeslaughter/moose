@@ -2,7 +2,11 @@
 
 """
 import re
+import logging
+import moosedown
 from moosedown.tree import html, latex, base
+
+LOG = logging.getLogger(__name__)
 
 class Renderer(object):
     METHOD = None
@@ -28,11 +32,10 @@ class Renderer(object):
     def render(self, ast):
         pass
 
-    def function(self, token, parent):
+    def function(self, token):
         #TODO: error if not found
         if type(token) in self.__functions:
-            func = self.__functions[type(token)]
-            return func(token, parent)
+            return self.__functions[type(token)]
 
     def write(self, ast):
         text = ast.write()
@@ -40,22 +43,19 @@ class Renderer(object):
 
     def process(self, token, parent):
         try:
-            el = self.function(token, parent)
+            func = self.function(token)
+            el = func(token, parent) if func else None
         except Exception as e:
-            if token.source:
+            if token.source and token.match:
                 msg = "\nAn exception occured while rendering, the exception was raised when\n" \
-                      "executing the {} object while processing the following content.\n" \
-                      "{}:{}".format(pattern.name, token.source, token.line)
+                      "executing the {} function while processing the following content.\n" \
+                      "{}:{}".format(func, token.source, token.line)
+                LOG.exception(moosedown.common.box(token.match.group(0), title=msg, line=token.line))
             else:
-                msg = "\nAn exception occured on line {} while tokenizing, the exception was\n" \
+                msg = "\nAn exception occured on line {} while rendering, the exception was\n" \
                       "raised when executing the {} object while processing the following content.\n"
-                msg = msg.format(token.line, pattern.name)
-
-
-
-            msg = "An exception occurred on line %d while rendering the following:\n    %s\n" \
-                  "The exception occurred when executing the '%s' object.\n"
-            LOG.exception(msg, token.line, match.group(0), pattern.name)
+                msg = msg.format(token.line, token.__class__.__name__)
+                LOG.exception(msg)
             raise e
 
         if el is None:
@@ -77,22 +77,30 @@ class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
 
     def render(self, ast):
-        root = html.Tag(None, 'html')
+        root = html.Tag(None, '!DOCTYPE html', close=False)
+        html.Tag(root, 'html')
+
 
         # <head>
         head = html.Tag(root, 'head')
-        icons = html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
-        materialize =  html.Tag(head, 'link', type="text/css", rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css",  media="screen,projection")
+        html.Tag(head, 'meta', close=False, charset="UTF-8")
+        html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+        html.Tag(head, 'link', href="/contrib/materialize/materialize.min.css",  type="text/css", rel="stylesheet", media="screen,projection")
+        html.Tag(head, 'link', href="/contrib/clipboard/clipboard.min.css",  type="text/css", rel="stylesheet")
+        html.Tag(head, 'link', href="/contrib/prism/prism.min.css",  type="text/css", rel="stylesheet")
+        html.Tag(head, 'link', href="/css/moose.css",  type="text/css", rel="stylesheet")
+        html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js") #TODO: Why here, should they all be here
+        html.Tag(head, 'script', type="text/javascript", src="/contrib/materialize/materialize.min.js")
+        html.Tag(head, 'script', type="text/javascript", src="/contrib/clipboard/clipboard.min.js")
+        html.Tag(head, 'script', type="text/javascript", src="/contrib/prism/prism.min.js")
+        html.Tag(head, 'script', type="text/javascript", src="/js/init.js")
 
         body = html.Tag(root, 'body')
         div = html.Tag(body, 'div', class_="container")
 
         HTMLRenderer.render(self, ast, div)
 
-        html.Tag(head, 'script', type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
-        html.Tag(head, 'script', type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
-
-        return rootl
+        return root
 
 
 class LatexRenderer(Renderer):

@@ -9,3 +9,5 @@ pages:
        content:
            - utilities/moosedown/*
            - contrib/**
+           - css/*
+           - js/*

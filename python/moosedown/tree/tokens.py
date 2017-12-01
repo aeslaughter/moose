@@ -85,7 +85,7 @@ class Heading(Token):
     Section headings.
     """
     PROPERTIES = [base.Property('level', ptype=int),
-                  base.Property('text', ptype=str)]
+                  base.Property('text', ptype=unicode)]
 
 class Paragraph(Token):
     """
@@ -122,7 +122,7 @@ class Link(Token):
 
 class Shortcut(Token):
     PROPERTIES = [base.Property('content', required=True, ptype=unicode),
-                  base.Property('key', required=True, ptype=str)]
+                  base.Property('key', required=True, ptype=unicode)]
 
 class ShortcutLink(Token):
     PROPERTIES = [base.Property('key', ptype=unicode, required=True)]

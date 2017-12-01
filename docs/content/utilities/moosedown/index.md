@@ -36,7 +36,7 @@ these pairs is uniform through out the specification and is integral to the flex
 MooseDocs system. For example, the "style" keyword is used when rendering to [HTML] and allows the
 `<h2>` style attribute to be set from the MooseDown file.
 
-```
+```language=markdown
 ## Heading Level Two style=font-size:2em
 ```
 
