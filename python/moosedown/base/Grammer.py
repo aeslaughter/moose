@@ -45,6 +45,10 @@ class Grammer(object):
                             Grammer.Pattern(name=name, regex=regex, function=function),
                             location)
 
+    @property
+    def patterns(self):
+        return self.__patterns
+
     def __getitem__(self, key):
         """
         Return the pattern for a given key.
@@ -56,6 +60,3 @@ class Grammer(object):
         """
         for obj in self.__patterns:
             yield obj
-
-    #def __createToken(self, obj, *args):
-    #    return obj()

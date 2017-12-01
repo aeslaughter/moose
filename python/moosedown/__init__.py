@@ -1,6 +1,9 @@
 import os
 import subprocess
 
+import base
+import extensions
+
 BLOCK = 'block'
 INLINE = 'inline'
 
