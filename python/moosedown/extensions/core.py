@@ -451,10 +451,10 @@ class RenderBreak(CoreRenderComponentBase):
     """Break"""
 
     def createHTML(self, token, parent):
-        return html.String(parent, content=' ')
+        return html.String(parent, content=u' ')
 
     def createLatex(self, token, parent):
-        return latex.String(parent, content=' ')
+        return latex.String(parent, content=u' ')
 
 class RenderLink(CoreRenderComponentBase):
     """Link"""

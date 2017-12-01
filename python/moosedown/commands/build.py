@@ -1,4 +1,5 @@
-import importlib
+import os
+import shutil
 import mooseutils
 import anytree
 
@@ -37,6 +38,12 @@ def main():
     #config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
     #extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
 
+    destination = '/Users/slauae/.local/share/moose/site'
+    if os.path.isdir(destination):
+        shutil.rmtree(destination)
+    else:
+        os.makedirs(destination)
+
     config_file = 'config.yml'
 
 
@@ -44,12 +51,20 @@ def main():
     root = moosedown.tree.build_page_tree.doc_tree(data['pages'].values())
     translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
 
+
+    root.name = '' #TODO: This should not be needed
+
     for node in anytree.PreOrderIter(root):
         if isinstance(node, moosedown.tree.page.MarkdownNode):
-            ast = translator.ast(node)
-            html = translator.convert()
+            node.function = translator.convert
+        node.write(destination)
 
-            print html
+
+        #if isinstance(node, moosedown
+
+        #print node.local
+
+            #print html
 
 
 

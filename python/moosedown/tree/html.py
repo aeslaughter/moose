@@ -8,7 +8,9 @@ class Tag(NodeBase):
     """
     A node representing an HTML tag (e.g., h1, strong).
     """
-    def __init__(self, parent, name, **kwargs):
+    PROPERTIES = [Property('close', default=True, ptype=bool)]
+
+    def __init__(self, parent, name,  **kwargs):
         super(Tag, self).__init__(name=name, parent=parent, **kwargs)
 
     def write(self):
@@ -21,14 +23,15 @@ class Tag(NodeBase):
 
         for child in self.children:
             out += child.write()
-        out += '</{}>'.format(self.name)
+        if self.close:
+            out += '</{}>'.format(self.name)
         return out
 
 class String(NodeBase):
     """
     A node for containing string content, the parent must always be a Tag.
     """
-    PROPERTIES = [Property('content', default='', ptype=str),
+    PROPERTIES = [Property('content', default=u'', ptype=unicode),
                   Property('escape', default=False, ptype=bool)]
     def __init__(self, parent=None, **kwargs):
         super(String, self).__init__(parent=parent, **kwargs)
