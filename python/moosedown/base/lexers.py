@@ -9,6 +9,11 @@ LOG = logging.getLogger(__name__)
 class Lexer(object):
 
     def tokenize(self, text, parent, grammer, line=1):
+
+        if isinstance(text, moosedown.tree.page.PageNodeBase):
+            self._node = text
+            text = self._node.content
+
         n = len(text)
         pos = 0
         mo, pattern = self._search(text, grammer, pos)
@@ -34,16 +39,22 @@ class Lexer(object):
         try:
             obj = pattern.function(match, parent)
         except Exception as e:
-            msg = "An exception occurred on line %d while parsing, the exception occured when\n" \
-                  "executing the '%s' object was processing the following content.\n%s\n"
-            lines = match.group(0).split('\n')
-            s = u'{}{}{}\n'.format(u'\u250C', u'\u2500'*100, u'\u2510')
-            s += '\n'.join([u'{0}{1: <100}{0}'.format(u'\u2502', x) for x in lines])
-            s += u'\n{}{}{}'.format(u'\u2514', u'\u2500'*100, u'\u2518')
-            LOG.exception(msg, line, pattern.name, s)
+            if self._node and self._node.source:
+                msg = "\nAn exception occured while tokenizing, the exception was raised when\n" \
+                      "executing the {} object while processing the following content.\n" \
+                      "{}:{}".format(pattern.name, self._node.source, line)
+            else:
+                msg = "\nAn exception occured on line {} while tokenizing, the exception was\n" \
+                      "raised when executing the {} object while processing the following content.\n"
+                msg = msg.format(line, pattern.name)
 
+            LOG.exception(moosedown.common.box(match.group(0), title=msg, line=line))
             raise e
+
         obj.line = line
+        obj.match = match
+        if self._node and self._node.source:
+            obj.source = self._node.source
         return obj
 
 

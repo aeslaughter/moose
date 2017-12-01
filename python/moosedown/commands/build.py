@@ -46,7 +46,7 @@ def main():
 
     for node in anytree.PreOrderIter(root):
         if isinstance(node, moosedown.tree.page.MarkdownNode):
-            ast = translator.ast(node.content)
+            ast = translator.ast(node)
             html = translator.convert()
 
             print html
