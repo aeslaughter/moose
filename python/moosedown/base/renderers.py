@@ -42,6 +42,17 @@ class Renderer(object):
         try:
             el = self.function(token, parent)
         except Exception as e:
+            if token.source:
+                msg = "\nAn exception occured while rendering, the exception was raised when\n" \
+                      "executing the {} object while processing the following content.\n" \
+                      "{}:{}".format(pattern.name, token.source, token.line)
+            else:
+                msg = "\nAn exception occured on line {} while tokenizing, the exception was\n" \
+                      "raised when executing the {} object while processing the following content.\n"
+                msg = msg.format(token.line, pattern.name)
+
+
+
             msg = "An exception occurred on line %d while rendering the following:\n    %s\n" \
                   "The exception occurred when executing the '%s' object.\n"
             LOG.exception(msg, token.line, match.group(0), pattern.name)
@@ -81,7 +92,7 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src="https://code.jquery.com/jquery-3.2.1.min.js")
         html.Tag(head, 'script', type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js")
 
-        return root
+        return rootl
 
 
 class LatexRenderer(Renderer):

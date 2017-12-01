@@ -158,7 +158,6 @@ This is more.
 > This should be another.
 
 
-
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 [HTML]: https://en.wikipedia.org/wiki/HTML
 [CommonMark]: http://commonmark.org/

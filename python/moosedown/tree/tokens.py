@@ -18,7 +18,9 @@ class Token(base.NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
-    PROPERTIES = [base.Property('line', ptype=int)]
+    PROPERTIES = [base.Property('line', ptype=int),
+                  base.Property('source', ptype=str),
+                  base.Property('match')]
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self.name = self.__class__.__name__
