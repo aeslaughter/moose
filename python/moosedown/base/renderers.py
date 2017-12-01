@@ -39,7 +39,14 @@ class Renderer(object):
         return re.sub(r'(\n{2,})', '\n', text, flags=re.MULTILINE)
 
     def process(self, token, parent):
-        el = self.function(token, parent)
+        try:
+            el = self.function(token, parent)
+        except Exception as e:
+            msg = "An exception occurred on line %d while rendering the following:\n    %s\n" \
+                  "The exception occurred when executing the '%s' object.\n"
+            LOG.exception(msg, token.line, match.group(0), pattern.name)
+            raise e
+
         if el is None:
             el = parent
         #TODO: check return type

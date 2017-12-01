@@ -1,5 +1,6 @@
 import importlib
 import mooseutils
+import anytree
 
 import moosedown
 
@@ -39,8 +40,16 @@ def main():
     config_file = 'config.yml'
 
 
-    print load_config(config_file)
+    data = load_config(config_file)
+    root = moosedown.tree.build_page_tree.doc_tree(data['pages'].values())
+    translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
 
+    for node in anytree.PreOrderIter(root):
+        if isinstance(node, moosedown.tree.page.MarkdownNode):
+            ast = translator.ast(node.content)
+            html = translator.convert()
+
+            print html
 
 
 

@@ -2,4 +2,10 @@ reader: moosedown.base.readers.MarkdownReader
 renderer: moosedown.base.MaterializeRenderer
 translator: moosedown.base.Translator
 extensions:
-    - moosedown.extensions
+    - moosedown.extensions.core
+pages:
+    framework:
+       root_dir: docs/content
+       content:
+           - utilities/moosedown/*
+           - contrib/**

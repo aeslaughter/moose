@@ -30,12 +30,13 @@ class FileNode(PageNodeBase):
     PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('content', ptype=unicode)]
     COLOR = 'MAGENTA'
 
+
+class MarkdownNode(FileNode):
+    COLOR = 'YELLOW'
+
     def __init__(self, *args, **kwargs):
-        PageNodeBase.__init__(self, *args, **kwargs)
+        FileNode.__init__(self, *args, **kwargs)
 
         if os.path.exists(self.source):
             with codecs.open(self.source, encoding='utf-8') as fid:
                 self.content = fid.read()
-
-class MarkdownNode(FileNode):
-    COLOR = 'YELLOW'
