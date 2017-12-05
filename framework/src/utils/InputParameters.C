@@ -973,6 +973,7 @@ InputParameters::getParamHelper<MultiMooseEnum>(const std::string & name,
                                                 const InputParameters & pars,
                                                 const MultiMooseEnum *)
 {
+  // TODO: ExecFlagType
   if (name == "execute_on" && pars.have_parameter<ExecFlagEnum>(name))
     return pars.get<ExecFlagEnum>(name);
 
@@ -1005,7 +1006,7 @@ InputParameters::checkParamName(const std::string & name) const
 
 // This is temporary specialization to allow applications to utilize MultiMooseEnum for
 // "execute_on" parameter, after our tested applications are updated this method will be
-// deprecated and then removed.
+// deprecated and then removed. TODO: ExecFlagType
 template <>
 MultiMooseEnum &
 InputParameters::set(const std::string & name, bool quiet_mode)
@@ -1031,7 +1032,7 @@ InputParameters::set(const std::string & name, bool quiet_mode)
 
 // This is temporary specialization to allow applications to utilize MultiMooseEnum for
 // "execute_on" parameter, after our tested applications are updated this method will be
-// deprecated and then removed.
+// deprecated and then removed. TODO: ExecFlagType
 template <>
 void
 InputParameters::addParam<MultiMooseEnum, MultiMooseEnum>(const std::string & name,
