@@ -30,6 +30,7 @@ class CoreMarkdownExtension(base.MarkdownExtension):
         The default configuration options.
         """
         config = base.MarkdownExtension.getConfig()
+        config['section-level'] = (2, "The section level for creating collapiblse sections and scrolspy.")
         return config
 
     def extend(self):
@@ -399,6 +400,9 @@ class RenderHeading(CoreRenderComponentBase):
     LATEX_SECTIONS = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph']
 
     def createHTML(self, token, parent):
+        return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
+
+    def createMaterialize(self, token, parent):
         return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
 
     def createLatex(self, token, parent):
