@@ -34,8 +34,11 @@ class Renderer(object):
 
     def function(self, token):
         #TODO: error if not found
-        if type(token) in self.__functions:
-            return self.__functions[type(token)]
+        for token_type, func in self.__functions.iteritems():
+            if isinstance(token, token_type):
+                return func
+        #if type(token) in self.__functions:
+        #    return self.__functions[type(token)]
 
     def write(self, ast):
         text = ast.write()
@@ -89,7 +92,8 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'link', href="/contrib/clipboard/clipboard.min.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'link', href="/contrib/prism/prism.min.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'link', href="/css/moose.css",  type="text/css", rel="stylesheet")
-        html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js") #TODO: Why here, should they all be here
+        html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js")
+        html.Tag(head, 'script', type="text/javascript", src="/contrib/jquery/jquery.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/materialize/materialize.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/clipboard/clipboard.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/prism/prism.min.js")

@@ -6,13 +6,13 @@ import copy
 
 SETTINGS_RE = re.compile(r'(?P<key>[^\s=]+)=(?P<value>.*?)(?=(?:\s[^\s=]+=|$))')
 
-def parse_settings(defaults, raw):
+def match_settings(defaults, raw):
     """
     Parses a raw string for key, value pairs separated by an equal sign.
 
     Inputs:
         default[dict]: The default values for the known keys.
-        raw[str]: The raw string to parse and inject into a dict(). 
+        raw[str]: The raw string to parse and inject into a dict().
     """
     known = dict((k,v[0]) for k,v in copy.deepcopy(defaults).iteritems())
     unknown = dict()
@@ -40,3 +40,17 @@ def parse_settings(defaults, raw):
             unknown[key] = value
 
     return known, unknown
+
+
+def parse_settings(defaults, local):
+    """
+
+    """
+    settings, unknown = match_settings(defaults, local)
+    if unknown:
+        msg = "The following key, value settings are unknown on line %d of ...".format(component.line)
+        for key, value in unknown.iteritems():
+            msg += '\n{}{}={}'.format(' '*4, key, repr(value))
+        LOG.error(msg)
+
+    return settings, unknown
