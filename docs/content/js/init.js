@@ -1,3 +1,6 @@
+$(document).ready(function(){
+});
+
 //$(document).ready(function(){
 
    // var elem = document.querySelector('.scrollspy');

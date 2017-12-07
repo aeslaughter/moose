@@ -3,6 +3,7 @@ renderer: moosedown.base.MaterializeRenderer
 translator: moosedown.base.Translator
 extensions:
     - moosedown.extensions.core
+    - moosedown.extensions.devel
 pages:
     framework:
        root_dir: docs/content

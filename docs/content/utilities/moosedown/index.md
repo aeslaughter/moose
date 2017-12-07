@@ -65,21 +65,21 @@ in the table below.
 !devel settings moosedown-headings
 
 !devel compare
-~~~MooseDown
+~~~MooseDown language=markdown
 # Level One
 ## Level Two
 ### Level Three style=font-size;14pt; id=level-three
 #### Level Four
 ##### Level Five
 ###### Level Six
-~~~HTML
+~~~HTML language=html
 <h1>Level One</h1>
 <h2>Level Two</h2>
 <h3 style="font-size:14pt" id="level-three">Level Three</h3>
 <h4>Level Four</h4>
 <h5>Level Five</h5>
 <h6>Level Six</h6>
-~~~LaTeX
+~~~LaTeX language=tex
 \part{Level One}
 \chapter{Level Two}
 \section{Level Three\label{level-three}}

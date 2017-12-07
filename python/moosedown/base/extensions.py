@@ -83,24 +83,10 @@ class TokenExtension(Extension):
         local = None
         if 'settings' in match.groupdict():
             local = match.group('settings')
-        settings, unknown = self.__parseSettings(component, local)
+        settings, unknown = common.parse_settings(component.defaultSettings(), local)
         component.settings = settings
         token = component.createToken(match, parent)
         return token
-
-    @staticmethod
-    def __parseSettings(component, local):
-        """
-
-        """
-        settings, unknown = common.parse_settings(component.defaultSettings(), local)
-        if unknown:
-            msg = "The following key, value settings are unknown on line %d of ...".format(component.line)
-            for key, value in unknown.iteritems():
-                msg += '\n{}{}={}'.format(' '*4, key, repr(value))
-            LOG.error(msg)
-
-        return settings, unknown
 
 
 class MarkdownExtension(TokenExtension):
