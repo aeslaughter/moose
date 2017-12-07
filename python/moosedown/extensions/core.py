@@ -78,6 +78,22 @@ class MarkdownComponent(base.TokenComponent):
         """
         return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
 
+
+class MarkdownCommandComponent(base.CommandComponent):
+    """
+    Base Markdown component for creating commands.
+    """
+    @staticmethod
+    def defaultSettings():
+        return MarkdownComponent.defaultSettings()
+
+    @property
+    def attributes(self):
+        """
+        Return a dictionary with the common html settings.
+        """
+        return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
+
 class Command(MarkdownComponent):
     """
     Provides a component for creating commands.
@@ -404,7 +420,7 @@ class RenderCode(CoreRenderComponentBase):
         language = 'language-{}'.format(token.language)
         pre = html.Tag(parent, 'pre', **token.attributes)
         code = html.Tag(pre, 'code', class_=language)
-        string = html.String(code, content=token.code)
+        string = html.String(code, content=token.code, escape=token.escape)
         return pre
 
     def createLatex(self, token, parent):
