@@ -56,15 +56,7 @@ detail the supported syntax.
 
 
 ### Headings
-All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
-number of hashes indicate the heading level. The hash(es) must be followed by a single space.
-
-Following the heading [settings](#settings) may be applied. The available settings are detailed
-in the table below.
-
-!devel settings moosedown-headings
-
-!devel compare
+!devel compare style=font-size:75%;padding-left:10pt;float:right;width:50%
 ~~~MooseDown language=markdown
 # Level One
 ## Level Two
@@ -79,13 +71,21 @@ in the table below.
 <h4>Level Four</h4>
 <h5>Level Five</h5>
 <h6>Level Six</h6>
-~~~LaTeX language=tex
+~~~LaTeX language=latex
 \part{Level One}
 \chapter{Level Two}
 \section{Level Three\label{level-three}}
 \subsection{Level Four}
 \subsubsection{Level Five}
 \paragraph{Level Six}
+
+All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
+number of hashes indicate the heading level. The hash(es) must be followed by a single space.
+
+Following the heading [settings](#settings) may be applied. The available settings are detailed
+in the table below.
+
+!devel settings moosedown-headings
 
 ### Lists
 #### Unordered List

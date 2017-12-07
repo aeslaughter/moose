@@ -31,12 +31,12 @@ class DevelMarkdownExtension(base.MarkdownExtension):
     def extend(self):
         self.addCommand(CodeCompare())
 
-class CodeCompare(base.CommandComponent):
+class CodeCompare(core.MarkdownCommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'compare'
 
     def createToken(self, match, parent):
-        compare = Compare(parent)
+        compare = Compare(parent, **self.attributes)
 
         #tabs = collections.OrderedDict()
         content = match.group('content')
@@ -60,19 +60,11 @@ class DevelRenderExtension(base.RenderExtension):
 class RenderCompare(base.RenderComponent):
 
     def createHTML(self, token, parent):
-        master = tree.html.Tag('div', parent, class_='moose-code-compare')
-
-        """
-        for title, code in token.tabs.iteritems():
-            div = html.Tag(master, 'div', class_='moose-code-compare-{}'.format(title))
-            pre = html.Tag(div, 'pre')
-            code = html.Tag(pre, 'code')
-            html.String(code, content=code, escape=True)
-        """
+        master = tree.html.Tag('div', parent, class_='moose-code-compare', **token.attributes)
         return master
 
     def createMaterialize(self, token, parent):
-        master = html.Tag(parent, 'div', class_='moose-code-compare')
+        master = html.Tag(parent, 'div', class_='moose-code-compare', **token.attributes)
         ul = html.Tag(master, 'ul', class_="tabs")
 
         for child in token:

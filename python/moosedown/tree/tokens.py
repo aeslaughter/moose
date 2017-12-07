@@ -78,7 +78,8 @@ class Code(Token):
     Code content (i.e., Monospace content)
     """
     PROPERTIES = [base.Property('code', ptype=unicode, required=True),
-                  base.Property('language', ptype=unicode, default=u'text')]
+                  base.Property('language', ptype=unicode, default=u'text'),
+                  base.Property('escape', ptype=bool, default=True)]
 
 class Heading(Token):
     """
