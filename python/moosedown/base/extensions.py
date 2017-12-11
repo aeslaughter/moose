@@ -15,10 +15,6 @@ class Extension(object):
         self.__config = dict()
         self.__items = list()
 
-    @property
-    def config(self):
-        return self.__config
-
     def update(self, config):
         self.__config.update(config)
 
@@ -75,7 +71,6 @@ class TokenExtension(Extension):
     def add(self, group, name, component, location='_end'):
         self.__components.append(component)
         component.reader = self.__reader
-
         func = lambda m, p: self.__function(m, p, component)
         Extension.add(self, group, name, component.RE, func, location)
 

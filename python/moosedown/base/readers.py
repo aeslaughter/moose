@@ -1,24 +1,16 @@
-
+import copy
 import moosedown
 from moosedown.tree import tokens
 from lexers import RecursiveLexer
 
-class Reader(object):
+from ReaderRenderBase import ReaderRenderBase
+
+class Reader(ReaderRenderBase):
 
     def __init__(self, lexer, extensions=None):
         self.__lexer = lexer
 
-        # TODO: make this work, this is the same for Renderer, so there needs to be a base class
-        #self.__config = self.getConfig()
-        #for ext in extensions:
-        #    self.__config.update(ext.getConfig())
-
-        if extensions:
-            for ext in extensions:
-                ext.setup(self)
-                ext.extend()
-                for items in ext:
-                    self.add(*items)
+        ReaderRenderBase.__init__(self, extensions)
 
     @property
     def lexer(self):

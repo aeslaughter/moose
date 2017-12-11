@@ -30,7 +30,7 @@ class CoreMarkdownExtension(base.MarkdownExtension):
         The default configuration options.
         """
         config = base.MarkdownExtension.getConfig()
-        config['section-level'] = (2, "The section level for creating collapiblse sections and scrolspy.")
+        config['section-level'] = (2, "The section level for creating collapsible sections and scrollspy.")
         return config
 
     def extend(self):
@@ -402,8 +402,16 @@ class RenderHeading(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
 
+    """
     def createMaterialize(self, token, parent):
+        #TODO: Make this install sections, based on config level
+
+        config = self.renderer.getConfig()
+        if token.level == config['section-level']:
+            parent = html.Tag(parent, 'div', class_='scrollspy section')
+
         return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
+    """
 
     def createLatex(self, token, parent):
         return latex.Command(parent, self.LATEX_SECTIONS[token.level], start='\n', end='\n')

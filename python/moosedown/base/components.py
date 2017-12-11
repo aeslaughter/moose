@@ -11,6 +11,15 @@ class Component(object):
     def __init__(self):
         self.__settings = dict()
         self.__line = None
+        self.__config = dict()
+
+    @property
+    def config(self):
+        return self.__config
+
+    @config.setter
+    def config(self, config):
+        self.__config = config
 
     @property
     def line(self):
