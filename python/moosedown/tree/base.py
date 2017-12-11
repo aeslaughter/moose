@@ -108,7 +108,8 @@ class NodeBase(anytree.NodeMixin):
         # Apply the default values
         for prop in self.PROPERTIES:
             if not isinstance(prop, Property):
-                raise TypeError("The supplied property must be a Property object.")
+                msg = "The supplied property must be a Property object, but {} provided."
+                raise TypeError(msg.format(type(prop).__name__))
             setattr(self.__class__, prop.name, prop)
             self.__properties[prop.name] = prop.default
 

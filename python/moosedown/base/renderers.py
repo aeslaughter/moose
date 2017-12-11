@@ -86,7 +86,7 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'meta', close=False, charset="UTF-8")
         html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
         html.Tag(head, 'link', href="/contrib/materialize/materialize.min.css",  type="text/css", rel="stylesheet", media="screen,projection")
-        html.Tag(head, 'link', href="/contrib/clipboard/clipboard.min.css",  type="text/css", rel="stylesheet")
+        #html.Tag(head, 'link', href="/contrib/clipboard/clipboard.min.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'link', href="/contrib/prism/prism.min.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'link', href="/css/moose.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js")
@@ -116,13 +116,12 @@ class MaterializeRenderer(HTMLRenderer):
                 html.Tag(child, 'span', class_='moose-section-icon')
                 child.parent = summary
 
-                print dir(child)
-                child.children = reversed(child.children)
+                children = list(child.children[:-1])
+                children.insert(0, child.children[-1])
+                child.children = children
                 #child.children = child.children
 
             else:
-
-
                 child.parent = parent
 
         return root
