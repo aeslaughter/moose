@@ -4,22 +4,17 @@
 import re
 import logging
 import moosedown
-from moosedown.tree import html, latex, base
+from moosedown.tree import html, latex, base, tokens
+from ReaderRenderBase import ReaderRenderBase
 
 LOG = logging.getLogger(__name__)
 
-class Renderer(object):
+class Renderer(ReaderRenderBase):
     METHOD = None
 
     def __init__(self, extensions=None):
         self.__functions = dict()
-
-        if extensions:
-            for ext in extensions:
-                ext.setup(self)
-                ext.extend()
-                for items in ext:
-                    self.add(*items)
+        ReaderRenderBase.__init__(self, extensions)
 
     def add(self, token, function):
 
@@ -79,6 +74,8 @@ class HTMLRenderer(Renderer):
 class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
 
+    #TODO: Add config
+
     def render(self, ast):
         root = html.Tag(None, '!DOCTYPE html', close=False)
         html.Tag(root, 'html')
@@ -104,10 +101,29 @@ class MaterializeRenderer(HTMLRenderer):
 
         HTMLRenderer.render(self, ast, div)
 
+        # Add sections
+        level = 'h{}'.format(self['section-level'])
+        parent = div
+        for child in div:
+            if child.name == level:
+                if parent == div:
+                    parent = html.Tag(parent, 'details', class_='scrollspy section')
+                else:
+                    parent = html.Tag(parent.parent, 'details', class_='scrollspy section')
+
+                #details = html.Tag(parent, 'details')
+                summary = html.Tag(parent, 'summary')
+                html.Tag(child, 'span', class_='moose-section-icon')
+                child.parent = summary
+
+                print dir(child)
+                child.children = reversed(child.children)
+                #child.children = child.children
+
+            else:
 
 
-
-
+                child.parent = parent
 
         return root
 

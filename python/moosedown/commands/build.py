@@ -2,7 +2,7 @@ import os
 import shutil
 import mooseutils
 import anytree
-
+import livereload
 import moosedown
 
 def command_line_options(subparser):
@@ -60,6 +60,8 @@ def main():
         node.write(destination)
 
 
+    #server = livereload.Server()
+    #server.serve(root=os.path.join(destination, 'utilities', 'moosedown'))
         #if isinstance(node, moosedown
 
         #print node.local

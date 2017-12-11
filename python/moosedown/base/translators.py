@@ -50,7 +50,9 @@ class Translator(object):
         #self.__config.update(kwargs)
 
         self.__reader = reader(reader_extensions)
+        self.__reader.setup(config)
         self.__renderer = renderer(render_extensions)
+        self.__renderer.setup(config)
         self.__ast = None
 
     def load(self, extensions):

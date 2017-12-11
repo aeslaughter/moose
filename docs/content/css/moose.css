@@ -783,3 +783,35 @@ span.badge.new.pass{
     bottom: 0;
     left: 0;
 }
+
+
+/* COLLAPSIBLE SECTIONS */
+summary {
+  display: block;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.moose-section-icon::before {
+  font-family: Material Icons;
+  content: 'keyboard_arrow_right';
+  vertical-align: middle;
+}
+
+details[open] .moose-section-icon::before{
+  content: 'keyboard_arrow_down';
+}
+
+details[open] hr{
+  display: none;
+}
+
+details[open] .moose-section-content {
+   animation: sweep 0.2s ease-in-out;
+}
+  @keyframes sweep {
+      0% {opacity: 0; margin-top: 0px}
+      100% {opacity: 1; margin-left: 0px}
+}
