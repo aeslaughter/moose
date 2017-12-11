@@ -1,4 +1,5 @@
 import os
+import copy
 import shutil
 import mooseutils
 import anytree
@@ -52,48 +53,23 @@ def main():
     translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
 
 
-    root.name = '' #TODO: This should not be needed
+    server = livereload.Server()
 
+    def alert():
+        print 'alert'
+
+
+    root.name = '' #TODO: This should not be needed
     for node in anytree.PreOrderIter(root):
         if isinstance(node, moosedown.tree.page.MarkdownNode):
             node.function = translator.convert
-        node.write(destination)
+
+        node.root = destination
+        node.write()
+
+        if node.source and os.path.isfile(node.source):
+            print 'WATCH:', node.source
+            server.watch(node.source, node.write)
 
 
-    #server = livereload.Server()
-    #server.serve(root=os.path.join(destination, 'utilities', 'moosedown'))
-        #if isinstance(node, moosedown
-
-        #print node.local
-
-            #print html
-
-
-
-    #reader = base.MarkdownReader
-    #render = base.LatexRenderer
-    #render = base.MaterializeRenderer
-    #render = base.HTMLRenderer
-
-    #translator = base.Translator(reader, render, extensions, **config)
-
-    #node = tree.file.FileNode(source='spec.md')
-
-
-    #with open('spec.md', 'r') as fid:
-    #    md = fid.read()
-
-
-    #ast = translator.ast(md)
-    #print ast
-
-   # html = translator.convert()
-#    print html
-
-
-    #with open('index.tex', 'w') as fid:
-
-     #   fid.write(re.sub(r'\n+', r'\n', html.write()))
-
-   # with open('index.html', 'w') as fid:
-    #    fid.write(html.write())
+    server.serve(root=destination)
