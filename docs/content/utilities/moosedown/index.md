@@ -1,9 +1,9 @@
 # MOOSE Markdown Specification (MooseDown)
-The following document details the MOOSE flavored [markdown] used for documenting MOOSE and
+The following details the MOOSE flavored [markdown] used for documenting MOOSE and
 MOOSE-based applications with the MooseDocs system.
 
 ## Motivation
-[markdown] is ubiquitous as a short-hand [HTML] format, especially among software developers.
+As a short-hand [html] format, [markdown] is ubiquitous, especially among software developers.
 However, no standard exists and the original implementation was incomplete. Currently, there are
 myriad implementations---often deemed "flavors"---of Markdown. [CommonMark](http://commonmark.org/)
 is a proposed standard. However, this specification is syntactically loose. For example, when

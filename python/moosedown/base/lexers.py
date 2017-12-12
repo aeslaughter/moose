@@ -7,6 +7,8 @@ from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
 class Lexer(object):
+    def __init__(self):
+        self._node = None
 
     def tokenize(self, text, parent, grammer, line=1):
 
@@ -40,11 +42,11 @@ class Lexer(object):
             obj = pattern.function(match, parent)
         except Exception as e:
             if self._node and self._node.source:
-                msg = "\nAn exception occured while tokenizing, the exception was raised when\n" \
+                msg = "\nAn exception occurred while tokenizing, the exception was raised when\n" \
                       "executing the {} object while processing the following content.\n" \
                       "{}:{}".format(pattern.name, self._node.source, line)
             else:
-                msg = "\nAn exception occured on line {} while tokenizing, the exception was\n" \
+                msg = "\nAn exception occurred on line {} while tokenizing, the exception was\n" \
                       "raised when executing the {} object while processing the following content.\n"
                 msg = msg.format(line, pattern.name)
 

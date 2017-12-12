@@ -55,10 +55,6 @@ def main():
 
     server = livereload.Server()
 
-    def alert():
-        print 'alert'
-
-
     root.name = '' #TODO: This should not be needed
     for node in anytree.PreOrderIter(root):
         if isinstance(node, moosedown.tree.page.MarkdownNode):
@@ -72,4 +68,4 @@ def main():
             server.watch(node.source, node.write)
 
 
-    server.serve(root=destination)
+    server.serve(root=destination, port=8000)
