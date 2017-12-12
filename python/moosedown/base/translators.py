@@ -112,8 +112,10 @@ class Translator(object):
         return self.__ast
 
     def convert(self, filename=None):
+        """
         if self.__ast is None:
             self.ast(filename)
         if self.__ast is None and filename is None:
             raise Exception('don not do this') #TODO: make more better
-        return self.__renderer.render(self.__ast)
+        """
+        return self.__renderer.render(self.ast(filename))

@@ -44,6 +44,9 @@ class FileNode(PageNodeBase):
         dst = os.path.join(self.root, self.local)
         shutil.copyfile(self.source, dst)
 
+class MarkdownStringNode(base.NodeBase):
+    PROPERTIES = [base.Property('content', ptype=unicode)]
+
 class MarkdownNode(FileNode): #TODO: Change name to and base creation on file extension being in agreement with Reader
     PROPERTIES = FileNode.PROPERTIES + [base.Property('function')]
     COLOR = 'YELLOW'
@@ -56,7 +59,11 @@ class MarkdownNode(FileNode): #TODO: Change name to and base creation on file ex
                 self.content = fid.read()
 
     def write(self):
-        print 'HERE-------------------'
+        if os.path.exists(self.source):
+            with codecs.open(self.source, encoding='utf-8') as fid:
+                self.content = fid.read()
+
+        print self.content[0:40]
 
         if self.function:
             html = self.function(self)

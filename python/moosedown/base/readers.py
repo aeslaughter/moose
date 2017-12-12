@@ -16,13 +16,15 @@ class Reader(ReaderRenderBase):
     def lexer(self):
         return self.__lexer
 
-    def read(self, filename):
+    """
+    def read(self, input):
         with open(filename, 'r') as fid:
             text = fid.read()
         return self.parse(text)
+    """
 
     def parse(self, text, root=None):
-        ast = root if root else tokens.Token(root)
+        ast = root if root else tokens.Token(None)
         self.__lexer.tokenize(text, ast)
         return ast
 

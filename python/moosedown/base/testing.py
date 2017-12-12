@@ -34,6 +34,9 @@ class MarkdownTestCase(unittest.TestCase):
         Inputs:
             md[str]: Raw markdown content.
         """
+        if not isinstance(md, unicode):
+            md = unicode(md)
+            #raise TypeError("The supplied content must be unicode.")
         return self._translator.ast(md)
 
     def render(self, md):

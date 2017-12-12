@@ -155,11 +155,12 @@ class HeadingHash(MarkdownComponent):
                     r'(?P<inline>.*?)'           # heading text that will be inline parsed
                     r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
                     r'(?:\Z|\n+)',               # match up to end of string or newline(s)
-                    flags=re.MULTILINE|re.DOTALL)
+                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, match, parent):
+        content = unicode(match.group('inline')) #TODO: is there a better way?
         heading = tokens.Heading(parent, level=match.group('level').count('#'), **self.attributes)
-        label = tokens.Label(heading, text=match.group('inline'))
+        label = tokens.Label(heading, text=content)
         return heading
 
 class Link(MarkdownComponent):
@@ -187,6 +188,8 @@ class Shortcut(MarkdownComponent):
 
     def createToken(self, match, parent):
         token = tokens.Shortcut(parent, key=match.group('key'), content=match.group('content'))
+
+        #TODO: remove this database, just look at the tree when rendering
         SHORTCUT_DATABASE[token.key] = token.content
         return token
 
