@@ -57,15 +57,11 @@ def main():
 
     root.name = '' #TODO: This should not be needed
     for node in anytree.PreOrderIter(root):
-        if isinstance(node, moosedown.tree.page.MarkdownNode):
-            node.function = translator.convert
-
         node.root = destination
-        node.write()
+        node.build(translator)
 
         if node.source and os.path.isfile(node.source):
-            print 'WATCH:', node.source
-            server.watch(node.source, node.write)
+            server.watch(node.source, lambda: node.build(translator))
 
 
     server.serve(root=destination, port=8000)

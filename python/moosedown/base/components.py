@@ -3,6 +3,7 @@ from MooseDocs import common
 class Component(object):
     RE = None
     TOKEN = None
+    PARSE_SETTINGS = True
 
     @staticmethod
     def defaultSettings():
@@ -10,7 +11,7 @@ class Component(object):
 
     def __init__(self):
         self.__settings = dict()
-        self.__line = None
+    #    self.__line = None
         self.__config = dict()
 
     @property
@@ -21,6 +22,7 @@ class Component(object):
     def config(self, config):
         self.__config = config
 
+    """
     @property
     def line(self):
         return self.__line
@@ -28,6 +30,7 @@ class Component(object):
     @line.setter
     def line(self, value):
         self.__line = value
+    """
 
     @property
     def settings(self):
@@ -36,10 +39,6 @@ class Component(object):
     @settings.setter
     def settings(self, values):
         self.__settings = values
-
-    def error(self, *args):
-        #TODO: This should report the line number of the error
-        print 'ERROR: ' + ' '.join(args)
 
 class TokenComponent(Component):
 
@@ -75,5 +74,5 @@ class RenderComponent(Component):
         self.__renderer = value
 
 class CommandComponent(TokenComponent):
-    COMMAND = None#'devel'
-    SUBCOMMAND = None#'moosedown'
+    COMMAND = None
+    SUBCOMMAND = None

@@ -48,9 +48,9 @@ def parse_settings(defaults, local):
     """
     settings, unknown = match_settings(defaults, local)
     if unknown:
-        msg = "The following key, value settings are unknown on line %d of ...".format(component.line)
+        msg = "The following key, value settings are unknown:"
         for key, value in unknown.iteritems():
             msg += '\n{}{}={}'.format(' '*4, key, repr(value))
-        LOG.error(msg)
+        raise Exception(msg) #TODO: TokenException
 
     return settings, unknown

@@ -53,7 +53,7 @@ class Translator(object):
         self.__reader.setup(config)
         self.__renderer = renderer(render_extensions)
         self.__renderer.setup(config)
-        self.__ast = None
+        #self.__ast = None
 
     def load(self, extensions):
         """
@@ -107,15 +107,8 @@ class Translator(object):
         """
         return self.__renderer
 
-    def ast(self, filename):
-        self.__ast = self.__reader.parse(filename)
-        return self.__ast
+    def ast(self, content):
+        return self.__reader.parse(content)
 
-    def convert(self, filename=None):
-        """
-        if self.__ast is None:
-            self.ast(filename)
-        if self.__ast is None and filename is None:
-            raise Exception('don not do this') #TODO: make more better
-        """
-        return self.__renderer.render(self.ast(filename))
+    def convert(self, content):
+        return self.__renderer.render(self.ast(content))

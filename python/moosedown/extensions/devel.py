@@ -3,6 +3,7 @@ Tools primarily for developers of the MooseDown system.
 """
 import re
 import uuid
+import importlib
 import collections
 
 from moosedown import base, common
@@ -19,17 +20,20 @@ class Compare(tokens.Token):
     Tool for comparing code, i.e. html, latex, etc.
 
     Inputs:
-        tabs: Dict of code tabs to dislpay.
+        tabs: Dict of code tabs to display.
     """
     pass #PROPERTIES = [Property("tabs", ptype=dict, required=True)]
 
 class CompareCode(tokens.Code):
     PROPERTIES = tokens.Code.PROPERTIES + [Property("title", ptype=unicode, required=True)]
 
+class TokenSettings(tokens.Token):
+    PROPERTIES = [Property('settings', ptype=dict, required=True)]
 
 class DevelMarkdownExtension(base.MarkdownExtension):
     def extend(self):
         self.addCommand(CodeCompare())
+        self.addCommand(ComponentSettings())
 
 class CodeCompare(core.MarkdownCommandComponent):
     COMMAND = 'devel'
@@ -51,6 +55,27 @@ class CodeCompare(core.MarkdownCommandComponent):
             CompareCode(compare, title=match.group('title'), code=match.group('content'),
                         id_=uuid.uuid4(), language=settings['language'])
         return compare
+
+class ComponentSettings(core.MarkdownCommandComponent):
+    COMMAND = 'devel'
+    SUBCOMMAND = 'settings'
+
+    @staticmethod
+    def defaultSettings():
+        settings = core.MarkdownCommandComponent.defaultSettings()
+        settings['module'] = (None, "The name of the module containing the object.")
+        settings['object'] = (None, "The name of the object to import from the 'module'.")
+        return settings
+
+    def createToken(self, match, parent):
+        print match.groups()
+
+        #TODO: error if 'module' and 'object' not provided
+        #TODO: this should raise, but result in an error token
+
+        mod = importlib.import_module(self.settings['module'])
+        obj = getattr(mod, self.settings['object'])
+        return TokenSettings(settings=obj.defaultSettings()) #TODO: error if defaultSettings not there or  it returns something that is not a dict()
 
 
 class DevelRenderExtension(base.RenderExtension):
