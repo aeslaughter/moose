@@ -2,7 +2,7 @@ import collections
 import logging
 
 import moosedown
-from moosedown import tree
+from moosedown import tree, common
 from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
@@ -21,15 +21,22 @@ class Lexer(object):
         pos = 0
         mo, pattern = self._search(text, grammer, pos)
         while (mo is not None) and (pos < n): # pos < n is needed to avoid empty string
-            obj = self.buildObject(pattern, mo, parent, line)
+
+            #TODO: move exception handling to here (except common.TokenizeException)
+            try:
+                obj = self.buildObject(pattern, mo, parent, line)
+            except common.TokenizeException as e:
+                self._errorHandler(e, mo, pattern, self._node, line)
+                obj = tree.tokens.Error(match=mo)
+
             line += mo.group(0).count('\n')
             pos = mo.end()
             mo, pattern = self._search(text, grammer, pos)
 
-        if pos < n:
-            obj = tree.tokens.Unknown(content=text[pos:])
-            obj.parent = parent
-            obj.line = line
+        #if pos < n:
+        #    obj = tree.tokens.Unknown(content=text[pos:])
+        #    obj.parent = parent
+        #    obj.line = line
 
     def _search(self, text, grammer, position=0):
         for pattern in grammer:
@@ -39,34 +46,33 @@ class Lexer(object):
         return None, None
 
     def buildObject(self, pattern, match, parent, line):
-        try:
-            obj = pattern.function(match, parent)
-        except Exception as e:
-            if self._node and self._node.source:
-                msg = "\nAn exception occurred while tokenizing, the exception was raised when\n" \
-                      "executing the {} object while processing the following content.\n" \
-                      "{}:{}".format(pattern.name, self._node.source, line)
-            else:
-                msg = "\nAn exception occurred on line {} while tokenizing, the exception was\n" \
-                      "raised when executing the {} object while processing the following content.\n"
-                msg = msg.format(line, pattern.name)
+        obj = pattern.function(match, parent)
 
-            LOG.exception(moosedown.common.box(match.group(0), title=msg, line=line))
-            raise e
 
         #TODO: test obj is correct type
 
         #TODO: line and match should not be needed, all components should raise a TokenExceptions
-        obj.line = line #
-        obj.match = match
+        #obj.line = line #
+        #obj.match = match
 
-        # This should be handled at RecursiveLexer level
+        # TODO: This should be handled at RecursiveLexer level
         if self._node and self._node.source:
             obj.source = self._node.source
 
-
         return obj
 
+    @staticmethod
+    def _errorHandler(exception, match, pattern, node, line):
+        if isinstance(node, tree.page.LocationNodeBase):
+            msg = "\nAn exception occurred while tokenizing, the exception was raised when\n" \
+                  "executing the {} object while processing the following content.\n" \
+                  "{}:{}".format(pattern.name, node.source, line)
+        else:
+            msg = "\nAn exception occurred on line {} while tokenizing, the exception was\n" \
+                  "raised when executing the {} object while processing the following content.\n"
+            msg = msg.format(line, pattern.name)
+
+        LOG.exception(moosedown.common.box(match.group(0), title=msg, line=line))
 
 class RecursiveLexer(Lexer):
     def __init__(self, base, *args):

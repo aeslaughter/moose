@@ -54,7 +54,7 @@ detail the supported syntax.
 <h5>Level Five</h5>
 <h6>Level Six</h6>
 ~~~LaTeX language=latex
-\part{Level One}
+\part{Level One}l
 \chapter{Level Two}
 \section{Level Three\label{level-three}}
 \subsection{Level Four}
@@ -67,7 +67,7 @@ number of hashes indicate the heading level. The hash(es) must be followed by a 
 Following the heading [settings](#settings) may be applied. The available settings are detailed
 in the table below.
 
-!devel settings module=moosedown.extensions.core object=HeadingHash
+!devel settings modue=moosedown.extensions.core object=HeadingHash
 
 ### Lists
 #### Unordered List

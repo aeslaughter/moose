@@ -124,7 +124,6 @@ class Command(MarkdownComponent):
             return tokens.String(parent, match.group())
 
         obj = base.MarkdownExtension.__COMMANDS__[cmd]
-        print obj
         obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
         #obj.line = self.line #TODO: Can I make this match.line and then set it in the base that is calling this along with settings
         token = obj.createToken(match, parent)
