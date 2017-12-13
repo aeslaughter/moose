@@ -86,6 +86,7 @@ class MarkdownCommandComponent(base.CommandComponent):
     """
     @staticmethod
     def defaultSettings():
+        #print 'DEFAULTS: MarkdownCommandComponent.defaultSettings()'
         return MarkdownComponent.defaultSettings()
 
     @property
@@ -109,9 +110,10 @@ class Command(MarkdownComponent):
     """
     RE = re.compile('!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?$)?(?P<content>.*?)\n{2,}|\Z',
                     flags=re.MULTILINE|re.DOTALL)
+    PARSE_SETTINGS = False
 
     def createToken(self, match, parent):
-
+        #gprint 'COMMAND:', match.groups()
 
         #TODO: Handle extensions in subcommand (SUBCOMAND='*.md' or SUBDOMAND='*.jpg|*.png')
 
@@ -122,8 +124,9 @@ class Command(MarkdownComponent):
             return tokens.String(parent, match.group())
 
         obj = base.MarkdownExtension.__COMMANDS__[cmd]
-        obj.settings = self.settings
-        obj.line = self.line #TODO: Can I make this match.line and then set it in the base that is calling this along with settings
+        print obj
+        obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
+        #obj.line = self.line #TODO: Can I make this match.line and then set it in the base that is calling this along with settings
         token = obj.createToken(match, parent)
         return token
 

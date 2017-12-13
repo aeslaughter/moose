@@ -12,6 +12,7 @@ class Lexer(object):
 
     def tokenize(self, text, parent, grammer, line=1):
 
+        #TODO: "text" should be required to be a node and self._node should be removed
         if isinstance(text, moosedown.tree.page.PageNodeBase):
             self._node = text
             text = self._node.content
@@ -53,10 +54,17 @@ class Lexer(object):
             LOG.exception(moosedown.common.box(match.group(0), title=msg, line=line))
             raise e
 
-        obj.line = line
+        #TODO: test obj is correct type
+
+        #TODO: line and match should not be needed, all components should raise a TokenExceptions
+        obj.line = line #
         obj.match = match
+
+        # This should be handled at RecursiveLexer level
         if self._node and self._node.source:
             obj.source = self._node.source
+
+
         return obj
 
 

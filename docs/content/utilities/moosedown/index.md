@@ -2,8 +2,8 @@
 The following details the MOOSE flavored [markdown] used for documenting MOOSE and
 MOOSE-based applications with the MooseDocs system.
 
-## Motivation
-As a short-hand [html] format, [markdown] is ubiquitous, especially among software developers.
+## Motivation id=motivation
+As a short-hand [HTML] format, [markdown] is ubiquitous, especially among software developers.
 However, no standard exists and the original implementation was incomplete. Currently, there are
 myriad implementations---often deemed "flavors"---of Markdown. [CommonMark](http://commonmark.org/)
 is a proposed standard. However, this specification is syntactically loose. For example, when
@@ -26,24 +26,6 @@ respect to format as well as easily extendable so that MOOSE-based applications 
 system to meet their documentation needs. The strictness allows for a simple parsing strategy to be
 used and promotes uniformity among the MooseDown files.
 
-## Design
-The MooseDocs system, in particular, the MooseDown parsing is designed to be extendable. Thus,
-all components, including the core language, is created as an extension.
-
-## Settings
-The MooseDown language adds key, value pairs to control the resulting rendered content. The use of
-these pairs is uniform through out the specification and is integral to the flexibility of the
-MooseDocs system. For example, the "style" keyword is used when rendering to [HTML] and allows the
-`<h2>` style attribute to be set from the MooseDown file.
-
-```language=markdown
-## Heading Level Two style=font-size:2em
-```
-
-!alert note
-The key, value pairs must be separated by an equal sign and cannot contain spaces on either side
-of the equal. However, spaces within the value are allowed.
-
 ## Core Extension
 The core extension is the portion of the MooseDown language that is designed to mimic [markdown]
 syntax. As mentioned above MooseDown is far more strict than traditional [markdown] implementations.
@@ -56,7 +38,7 @@ detail the supported syntax.
 
 
 ### Headings
-!devel compare style=font-size:75%;padding-left:10pt;float:right;width:50%
+!devel compare style=font-size:75%;padding-left:10pt;float:right;width:60%
 ~~~MooseDown language=markdown
 # Level One
 ## Level Two
@@ -85,7 +67,7 @@ number of hashes indicate the heading level. The hash(es) must be followed by a 
 Following the heading [settings](#settings) may be applied. The available settings are detailed
 in the table below.
 
-!devel settings moosedown-headings
+!devel settings module=moosedown.extensions.core object=HeadingHash
 
 ### Lists
 #### Unordered List
