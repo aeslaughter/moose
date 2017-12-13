@@ -68,7 +68,7 @@ class ComponentSettings(core.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
-        print match.groups()
+        #print match.groups()
 
         #TODO: error if 'module' and 'object' not provided
         #TODO: this should raise, but result in an error token

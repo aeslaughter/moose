@@ -31,12 +31,11 @@ class String(Token):
     """
     PROPERTIES = [base.Property('content', ptype=unicode)]
 
-class Unknown(String):
+class Error(String):
     """
-    When the lexer object fails to match a portion of the supplied text then this
-    token will be assigned. This should indicate that your grammer definition is incomplete.
+    When the lexer object fails create a token, an error token will be created.
     """
-    pass
+    PROPERTIES = [base.Property('match', required=True)]
 
 class Word(String):
     """

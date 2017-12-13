@@ -4,6 +4,8 @@ Tools for parsing key value pairs from a raw string.
 import re
 import copy
 
+from exceptions import TokenizeException
+
 SETTINGS_RE = re.compile(r'(?P<key>[^\s=]+)=(?P<value>.*?)(?=(?:\s[^\s=]+=|$))')
 
 def match_settings(defaults, raw):
@@ -51,6 +53,6 @@ def parse_settings(defaults, local):
         msg = "The following key, value settings are unknown:"
         for key, value in unknown.iteritems():
             msg += '\n{}{}={}'.format(' '*4, key, repr(value))
-        raise Exception(msg) #TODO: TokenException
+        raise TokenizeException(msg) #TODO: TokenException
 
     return settings, unknown
