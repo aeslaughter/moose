@@ -40,12 +40,13 @@ class CoreMarkdownExtension(base.MarkdownExtension):
 
         # Block
         self.addBlock(Code())
+        self.addBlock(Command())
+        self.addBlock(BlockCommand())
         self.addBlock(Quote())
         self.addBlock(HeadingHash())
         self.addBlock(OrderedList())
         self.addBlock(UnorderedList())
         self.addBlock(Shortcut())
-        self.addBlock(Command())
         self.addBlock(Paragraph())
         self.addBlock(Break())
 
@@ -107,9 +108,10 @@ class Command(MarkdownComponent):
     New commands are added by creating a CommandComponent object and adding this component to the
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
-    RE = re.compile('!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?$)?(?P<content>.*?)\n{2,}|\Z',
+    RE = re.compile('\s*!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?$)?(?P<content>.*?)(?:\n{2,}|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
     PARSE_SETTINGS = False
+    COMMANDS = base.MarkdownExtension.__COMMANDS__
 
     def createToken(self, match, parent):
 
@@ -118,13 +120,26 @@ class Command(MarkdownComponent):
         cmd = (match.group('command'), match.group('subcommand'))
 
         #TODO: Error check
-        if cmd not in base.MarkdownExtension.__COMMANDS__:
+        if cmd not in self.COMMANDS:
             return tokens.String(parent, match.group())
 
-        obj = base.MarkdownExtension.__COMMANDS__[cmd]
+        obj = self.COMMANDS[cmd]
         obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
         token = obj.createToken(match, parent)
         return token
+
+    """
+    def setup(self, value):
+        MarkdownComponent.setup(self, value)
+        for obj in self.COMMANDS.itervalues():
+            obj.setup(value)
+    """
+
+class BlockCommand(Command):
+    RE = re.compile('\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)$(?P<content>.*?)(^!end!)',
+                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    COMMANDS = base.MarkdownExtension.__BLOCKCOMMANDS__
+
 
 class Code(MarkdownComponent):
     """
@@ -137,11 +152,17 @@ class Code(MarkdownComponent):
     def defaultSettings():
         settings = MarkdownComponent.defaultSettings()
         settings['language'] = (u'text', "The code language to use for highlighting.")
+        settings['caption'] = (None, "The caption text for the code listing.")
+        settings['label'] = ('Listing', "The numbered caption prefix.")
         return settings
 
     def createToken(self, match, parent):
-        return tokens.Code(parent, code=match.group('code'),
-                                language=self.settings['language'], **self.attributes)
+        if self.settings['caption']:
+            flt = tokens.Float(parent, label=settings['label'], caption=settings['caption'], **self.attributes)
+            return tokens.Code(flt, code=match.group('code'), language=self.settings['language'])
+        else:
+            return tokens.Code(parent, code=match.group('code'),
+                               language=self.settings['language'], **self.attributes)
 
 class HeadingHash(MarkdownComponent):
     """
@@ -155,6 +176,12 @@ class HeadingHash(MarkdownComponent):
                     r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
                     r'(?:\Z|\n+)',               # match up to end of string or newline(s)
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+
+    @staticmethod
+    def defaultSettings():
+        settings = MarkdownComponent.defaultSettings()
+        #settings['collapsible'] = (True, "Enable/disable the collapsible feature when using MaterializeRenderer.")
+        return settings
 
     def createToken(self, match, parent):
         content = unicode(match.group('inline')) #TODO: is there a better way?
@@ -251,7 +278,7 @@ class Paragraph(MarkdownComponent):
     """
     Paragraphs (defined by regions with more than one new line)
     """
-    RE = re.compile(r'\s*(?P<inline>.*?)(?:\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile(r'\s*(?P<inline>.*?)(?:\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, match, parent):
         return tokens.Paragraph(parent)
@@ -336,9 +363,13 @@ class Quote(MarkdownComponent):
     """
     Block quote.
     """
-    RE = re.compile(r'> (?P<block>.*?)(?=>|\n{3}|\Z)', flags=re.MULTILINE|re.DOTALL)
+    SUB_RE = re.compile(r'^> {0,1}', flags=re.MULTILINE)
+    RE = re.compile(r'\s*(?P<quote>^>[ $].*?)(?=^[^>]|\Z)', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     def createToken(self, match, parent):
-        return tokens.Quote(parent)
+        quote = tokens.Quote(parent)
+        content = self.SUB_RE.sub(r'', match.group('quote'))
+        self.reader.parse(content, root=quote)
+        return quote
 
 #####################################################################################################
 # Rendering.
@@ -549,7 +580,7 @@ class RenderQuote(CoreRenderComponentBase):
     """Blockquote"""
 
     def createHTML(self, token, parent):
-        return html.Tag(parent, 'quote', **token.attributes)
+        return html.Tag(parent, 'blockquote', **token.attributes)
 
     def createLatex(self, token, parent):
         return latex.Environment(parent, 'quote')

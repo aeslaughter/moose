@@ -14,10 +14,6 @@ from moosedown.tree.base import Property
 def make_extension():
     return DevelMarkdownExtension(), DevelRenderExtension()
 
-class Float(tokens.Token):
-    PROPERTIES = [Property('id', ptype=str), Property('caption', ptype=unicode),
-                  Property('label', ptype=str, required=True)]
-
 
 """TABS extension"""
 class Tabs(tokens.Token):
@@ -42,7 +38,7 @@ class Table(tokens.Token):
 
 class DevelMarkdownExtension(base.MarkdownExtension):
     def extend(self):
-        self.addCommand(Spec())
+        self.addBlockCommand(Spec())
         self.addCommand(ComponentSettings())
 
 class Spec(core.MarkdownCommandComponent):
@@ -52,22 +48,27 @@ class Spec(core.MarkdownCommandComponent):
     @staticmethod
     def defaultSettings():
         settings = core.MarkdownCommandComponent.defaultSettings()
-        settings['caption'] = (None, "The example caption.")
+        settings['caption'] = (None, "The caption to use for the code specification example.")
         #settings['class'] = ('moose-devel-code-compare', settings['class'][1])
         return settings
 
     def createToken(self, match, parent):
-        example = Float(parent, label="example", caption=self.settings['caption'], **self.attributes )
+        example = tokens.Float(parent, label="example", caption=self.settings['caption'], **self.attributes )
         tabs = Tabs(example)
 
-
+        #print match.group('content')
         content = match.group('content').split('~~~')
+        #print repr(content)
 
         md = Tab(tabs, title=u'MooseDown')
         tokens.Code(TabContent(md), code=content[0], language=u'markdown')
 
         html = Tab(tabs, title=u'HTML')
         tokens.Code(TabContent(html), code=content[1], language=u'html')
+
+        rendered = Tab(tabs, title=u'HTML (Rendered)')
+        root = TabContent(rendered, class_="moose-html-rendered-tab")
+        root = self.reader.parse(content[0], root)
 
         tex = Tab(tabs, title=u'Latex')
         tokens.Code(TabContent(tex), code=content[2], language=u'latex')
@@ -103,7 +104,6 @@ class ComponentSettings(core.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
-        #print match.groups()
         if self.settings['module'] is None:
             raise base.TokenizeException()
         #TODO: error if 'module' and 'object' not provided
@@ -128,7 +128,7 @@ class DevelRenderExtension(base.RenderExtension):
         self.add(Tab, RenderTab())
         self.add(TabContent, RenderTabContent())
 
-        self.add(Float, RenderFloat())
+        self.add(tokens.Float, RenderFloat())
 
         self.add(Table, RenderTable())
 
@@ -158,13 +158,11 @@ class RenderFloat(base.RenderComponent):
 
 class RenderRow(base.RenderComponent):
     def createHTML(self, token, parent):
-        return html.Tag(parent, 'div', class_="row", **token.attributes)
+        return html.Tag(parent, 'div', class_="row")#, **token.attributes)
 
 class RenderColumn(base.RenderComponent):
     def createHTML(self, token, parent):
-        return html.Tag(parent, 'div', class_="col s12 m12 l4", **token.attributes)
-
-
+        return html.Tag(parent, 'div', class_="col s12 m12 l4")#, **token.attributes)
 
 class RenderTabs(base.RenderComponent):
 
@@ -198,7 +196,7 @@ class RenderTab(base.RenderComponent):
 class RenderTabContent(base.RenderComponent):
     def createHTML(self, token, parent):
         a = parent.find('a')
-        return html.Tag(parent.parent.parent, 'div', id_=a['href'].strip('#'))
+        return html.Tag(parent.parent.parent, 'div', id_=a['href'].strip('#'), **token.attributes)
 
     #def createMaterialize(self, token, parent):
     #    return self.createHTML(token, parent)

@@ -2,11 +2,6 @@
 The following details the MOOSE flavored [markdown] used for documenting MOOSE and
 MOOSE-based applications with the MooseDocs system.
 
-- foo
-  ```language=text
-  code
-  ```
-
 ## Motivation id=motivation
 As a short-hand [HTML] format, [markdown] is ubiquitous, especially among software developers.
 However, no standard exists and the original implementation was incomplete. Currently, there are
@@ -37,6 +32,53 @@ syntax. As mentioned above MooseDown is far more strict than traditional [markdo
 There for the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
 
+### Code Blocks
+Code blocks are created by enclosing the code for display in triple backticks. Settings for
+the code block are defined by key-value pairings that follow the backticks.
+
+!devel settings module=moosedown.extensions.core object=Code
+
+!devel! spec caption=Basic fenced code block.
+```language=bash
+export METHOD=opt
+```
+~~~
+<pre><code class="language-bash">
+export METHOD=opt
+</code></pre>
+~~~
+\begin{listing}3
+export METHOD=opt
+\end{listing}
+!end!
+
+### Quotations
+Quote blocks are created by starting a line with the `>` character.g
+
+!devel! spec caption=Basic block quote.
+> This is a quotation.
+~~~
+<blockquote>
+<p>This is a quotation.</p>
+</blockquote>
+~~~
+\begin{quote}
+This is a quotation.
+\end{quote}
+!end!
+
+Quote blocks can contain any valid markdown, including other quotations.
+
+> Foo
+>
+> > Another item, that also includes code.
+> >
+> > ```language=python
+> > for i in range(10):
+> >   print i
+> > ```
+> See, I told you.
+
 
 ### Headings
 All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
@@ -47,7 +89,7 @@ following.
 
 !devel settings module=moosedown.extensions.core object=HeadingHash
 
-!devel spec caption=Basic use of all six heading levels.
+!devel! spec caption=Basic use of all six heading levels.
 # Level One
 ## Level Two
 ### Level Three
@@ -68,18 +110,21 @@ following.
 \subsection{Level Four}
 \subsubsection{Level Five}
 \paragraph{Level Six}
+!end!
 
-!devel spec caption=Use of settings within heading.
+
+!devel! spec caption=Use of settings within heading.
 ## Level Two style=font-size:15pt id=level-two
 ~~~
 <h2 style="font-size:14pt" id="level-two">Level Two</h2>
 ~~~
 \section{Level Two\label{level-two}}
+!end!
 
 ### Unordered List
 Unordered list items in MooseDown +must+ begin with a dash (`-`).
 
-!devel spec caption=Unordered list basic syntax.
+!devel! spec caption=Unordered list basic syntax.
 - Item 1
 - Item 2
 ~~~
@@ -92,22 +137,32 @@ Unordered list items in MooseDown +must+ begin with a dash (`-`).
 \item Item 1
 \item Item 2
 \end{itemize}
+!end!
 
 List items may contain lists, code, or any other markdown content and the item content may
 span many lines. The continuation is specified by indenting the content to be included within the
 item by two spaces.
 
-!devel spec caption=Lists can contain other markdown content.
+!devel! spec caption=Lists can contain other markdown content.
 - Item with code
   Content can be contained within a list, all valid MooseDown syntax can be used.
-  ```language=bash
-  export METHOD=opt
+
+  ```
+  foo
   ```
 - Another item
 ~~~
-foo
+<ul>
+<li>
+<p>Item with code Content can be contained within a list, all valid MooseDown syntax can be used.</p>
+<pre><code class="language-bash">METHOD=opt</code></pre>
+</li>
+<li><p>Another item</p>
+</li>
+</ul>
 ~~~
-bar
+LaTeX
+!end!
 
 
 - As mentioned above, lists can contain lists, which can contain lists, etc.
@@ -136,7 +191,7 @@ after this paragraph will create a new list.
   blank lines between list items.
 
 
-!devel spec
+!devel! spec
 - Item One
 - Item Two
   - Nested One
@@ -165,17 +220,10 @@ after this paragraph will create a new list.
     \end{itemize}
   \item Item Three
 \end{itemize}
+!end!
 
 
 
-!devel moosedown
-- Item 1
-- Item 2
-~~~
-<ul>
-<li>Item 1</li>
-<li>Item 2</li>
-</ul>
 
 ### Numbered List
 1. A numbered list that starts with the number provided.
@@ -190,24 +238,6 @@ This is ***something* with various
 levels** of html formatting *that
 spans* many lines. It all *should* work
 fine.
-
-### Quotes
-
-> This should be a block
-of text that goes in a blockquote
-tag.
-
-It can contain multiple paragraphs but,
-stops with two empty lines.
-
-This is more.
-> This should be another.
-
-### Code Blocks
-
-```language=bash
-foo
-```
 
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
