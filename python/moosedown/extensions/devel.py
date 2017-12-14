@@ -29,6 +29,11 @@ class Row(tokens.Token):
 class Column(tokens.Token):
     pass
 
+class Example(tokens.Token):
+    PROPERTIES = [Property("caption", ptype=unicode, required=True),
+                  Property("prefix", ptype=unicode, default=u'Example'),
+                  Property("data")]
+
 
 class Table(tokens.Token):
     PROPERTIES = [Property('headings', ptype=list), Property('rows', ptype=list)]
@@ -38,10 +43,10 @@ class Table(tokens.Token):
 
 class DevelMarkdownExtension(base.MarkdownExtension):
     def extend(self):
-        self.addBlockCommand(Spec())
+        self.addBlockCommand(ExampleComponent())
         self.addCommand(ComponentSettings())
 
-class Spec(core.MarkdownCommandComponent):
+class ExampleComponent(core.MarkdownCommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'spec'
 
@@ -49,10 +54,18 @@ class Spec(core.MarkdownCommandComponent):
     def defaultSettings():
         settings = core.MarkdownCommandComponent.defaultSettings()
         settings['caption'] = (None, "The caption to use for the code specification example.")
+        settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
         #settings['class'] = ('moose-devel-code-compare', settings['class'][1])
         return settings
 
     def createToken(self, match, parent):
+        print self.settings
+        content = match.group('content').split('~~~')
+        return Example(parent, caption=self.settings['caption'], prefix=self.settings['prefix'], **self.attributes)
+
+
+
+        """
         example = tokens.Float(parent, label="example", caption=self.settings['caption'], **self.attributes )
         tabs = Tabs(example)
 
@@ -72,7 +85,7 @@ class Spec(core.MarkdownCommandComponent):
 
         tex = Tab(tabs, title=u'Latex')
         tokens.Code(TabContent(tex), code=content[2], language=u'latex')
-
+        """
 
         """
         # TODO: this is for tabs
@@ -121,14 +134,16 @@ class ComponentSettings(core.MarkdownCommandComponent):
 class DevelRenderExtension(base.RenderExtension):
     def extend(self):
 
-        self.add(Row, RenderRow())
-        self.add(Column, RenderColumn())
+        #self.add(Row, RenderRow())
+        #self.add(Column, RenderColumn())
 
-        self.add(Tabs, RenderTabs())
-        self.add(Tab, RenderTab())
-        self.add(TabContent, RenderTabContent())
+        #self.add(Tabs, RenderTabs())
+        #self.add(Tab, RenderTab())
+        #self.add(TabContent, RenderTabContent())
 
-        self.add(tokens.Float, RenderFloat())
+        #self.add(tokens.Float, RenderFloat())
+
+        self.add(Example, RenderExample())
 
         self.add(Table, RenderTable())
 
@@ -155,6 +170,21 @@ class RenderFloat(base.RenderComponent):
             html.String(text, content=token.caption)
 
         return div
+
+class RenderExample(base.RenderComponent):
+    def createHTML(self, token, parent):
+        raise NotImplementedError("Not done...")
+
+    def createMaterialize(self, token, parent):
+        row = html.Tag(parent, 'div', class_="row")
+        col = html.Tag(row, 'div', class_="col s12")
+        cap_div = html.Tag(col, 'div', class_="card-content")
+        caption = html.Tag(cap_div, 'p', class_="moose-float-caption")
+        heading = html.Tag(caption, 'span', class_="moose-float-caption-heading")
+        html.String(heading, content=u'{} {}: '.format(token.prefix, '1'));#self._count[token.prefix.lower()]))
+        text = html.Tag(caption, 'span', class_="moose-float-caption-text")
+        html.String(text, content=token.caption)
+
 
 class RenderRow(base.RenderComponent):
     def createHTML(self, token, parent):
