@@ -191,7 +191,7 @@ after this paragraph will create a new list.
   blank lines between list items.
 
 
-!devel! spec
+!devel! spec caption=foo
 - Item One
 - Item Two
   - Nested One
