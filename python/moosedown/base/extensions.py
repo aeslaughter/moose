@@ -21,6 +21,9 @@ class Extension(object):
     def setup(self, *args, **kwargs):
         pass
 
+    def reinit(self):
+        pass
+
     def extend(self):
         pass
 
@@ -36,6 +39,10 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
         Extension.__init__(self)
         self.__renderer = None
         self.__components = list()
+
+    def reinit(self):
+        for comp in self.__components:
+            comp.reinit()
 
     @property
     def renderer(self):
@@ -54,7 +61,7 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
         # TODO: test token_class is type
         component.renderer = self.__renderer
         self.__components.append(component)
-        func = getattr(component, component.renderer.METHOD)
+        func = component.renderer.method(component)
         Extension.add(self, token_class, func)
 
 class TokenExtension(Extension):
@@ -63,6 +70,11 @@ class TokenExtension(Extension):
         Extension.__init__(self)
         self.__reader = None
         self.__components = list()
+
+    def reinit(self):
+        for comp in self.__components:
+            comp.reinit()
+
 
     def setup(self, reader):
         #TODO: type check

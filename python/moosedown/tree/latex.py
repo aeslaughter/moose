@@ -34,7 +34,7 @@ class Enclosure(NodeBase):
     """
     Class for enclosing other nodes in characters, e.g. [], {}.
     """
-    PROPERTIES = [Property('enclose', ptype=tuple, required=True), Property('string', ptype=str)]
+    PROPERTIES = [Property('enclose', ptype=tuple, required=True), Property('string', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         NodeBase.__init__(self, *args, **kwargs)
@@ -73,7 +73,7 @@ class Command(NodeBase):
     """
     Typical one argument command: \foo{bar}.
     """
-    PROPERTIES = [Property('string', ptype=str),
+    PROPERTIES = [Property('string', ptype=unicode),
                   Property('start', ptype=str, default=''),
                   Property('end', ptype=str, default='')]
 
@@ -120,7 +120,7 @@ class String(NodeBase):
     """
     A node for containing string content, the parent must always be a Tag.
     """
-    PROPERTIES = [Property('content', default='', ptype=str)]
+    PROPERTIES = [Property('content', default=u'', ptype=unicode)]
 
     def write(self):
         out = escape(self.content)

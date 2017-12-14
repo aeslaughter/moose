@@ -86,7 +86,6 @@ class MarkdownCommandComponent(base.CommandComponent):
     """
     @staticmethod
     def defaultSettings():
-        #print 'DEFAULTS: MarkdownCommandComponent.defaultSettings()'
         return MarkdownComponent.defaultSettings()
 
     @property
@@ -113,7 +112,6 @@ class Command(MarkdownComponent):
     PARSE_SETTINGS = False
 
     def createToken(self, match, parent):
-        #gprint 'COMMAND:', match.groups()
 
         #TODO: Handle extensions in subcommand (SUBCOMAND='*.md' or SUBDOMAND='*.jpg|*.png')
 
@@ -125,7 +123,6 @@ class Command(MarkdownComponent):
 
         obj = base.MarkdownExtension.__COMMANDS__[cmd]
         obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
-        #obj.line = self.line #TODO: Can I make this match.line and then set it in the base that is calling this along with settings
         token = obj.createToken(match, parent)
         return token
 
@@ -281,11 +278,11 @@ class List(MarkdownComponent):
         marker = marker.strip()
 
         token = self.TOKEN(parent)
-
         items = self.SPLIT_RE.split(match.group('items'))
-
         regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
         for item in items:
+            if not item:
+                continue
             root = tokens.ListItem(token)
             item = regex.sub(r'\1', item)
             self.reader.parse(item, root=root)
@@ -296,9 +293,9 @@ class UnorderedList(List):
     """
     Unordered lists.
     """
-    RE = re.compile(r'\s*(?P<marker>- )(?P<items>.*?)(?=\n{3,}|^[^- \n]|\Z)',
+    RE = re.compile(r'\s*^(?P<items>(?P<marker>-\s).*?)(?=\n{3,}|^[^- \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
-    SPLIT_RE = re.compile(r'\n{1,}^- ', flags=re.MULTILINE|re.DOTALL)
+    SPLIT_RE = re.compile(r'\n*^- ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tokens.UnorderedList
 
 class OrderedList(List):
@@ -307,7 +304,7 @@ class OrderedList(List):
     """
     RE = re.compile(r'\s*(?P<marker>[0-9]+\. )(?P<items>.*?)(?=\n{3,}|^[^0-9 \n]|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
-    SPLIT_RE = re.compile(r'\n{1,}^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
+    SPLIT_RE = re.compile(r'\n*^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tokens.OrderedList
 
     def createToken(self, match, parent):
@@ -378,8 +375,8 @@ class CoreRenderExtension(base.RenderExtension):
 
         #TODO: Make a generic preamble method?
         if isinstance(self.renderer, base.LatexRenderer):
-            self.renderer.addPackage('hyperref')
-            self.renderer.addPackage('ulem')
+            self.renderer.addPackage(u'hyperref')
+            self.renderer.addPackage(u'ulem')
 
 
 class CoreRenderComponentBase(base.RenderComponent):
@@ -406,17 +403,6 @@ class RenderHeading(CoreRenderComponentBase):
 
     def createHTML(self, token, parent):
         return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
-
-    """
-    def createMaterialize(self, token, parent):
-        #TODO: Make this install sections, based on config level
-
-        config = self.renderer.getConfig()
-        if token.level == config['section-level']:
-            parent = html.Tag(parent, 'div', class_='scrollspy section')
-
-        return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
-    """
 
     def createLatex(self, token, parent):
         return latex.Command(parent, self.LATEX_SECTIONS[token.level], start='\n', end='\n')

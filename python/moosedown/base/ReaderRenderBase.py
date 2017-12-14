@@ -1,12 +1,16 @@
 class ReaderRenderBase(object):
-    def __init__(self, extensions=None):
+    def __init__(self, extensions=[]):
         self.__config = dict()
-        if extensions:
-            for ext in extensions:
-                ext.setup(self)
-                ext.extend()
-                for items in ext:
-                    self.add(*items)
+        self.__extensions = extensions
+        for ext in self.__extensions:
+            ext.setup(self)
+            ext.extend()
+            for items in ext:
+                self.add(*items)
+
+    def reinit(self):
+        for ext in self.__extensions:
+            ext.reinit()
 
     def setup(self, config):
         self.__config.update(config)

@@ -37,6 +37,13 @@ class TestRenderUnorderedListHTML(testing.MarkdownTestCase):
         html = node.write()
         self.assertString(html, '<ul><li><p>foo</p></li><li><p>bar</p></li></ul>')
 
+    def testNestedCode(self):
+        node = self.node('- foo\n\n  ```language=text\n  code\n  ```')
+        html = node.write()
+        self.assertString(html, '<ul><li><p>foo</p><pre><code ' \
+                                'class="language-text">\ncode\n</code></pre></li></ul>')
+
+
 class TestRenderUnorderedListMaterialize(TestRenderUnorderedListHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
@@ -47,6 +54,12 @@ class TestRenderUnorderedListMaterialize(TestRenderUnorderedListHTML):
         html = self.write(node)
         self.assertString(html,
                           '<ul class="browser-default"><li><p>foo</p></li><li><p>bar</p></li></ul>')
+
+    def testNestedCode(self):
+        node = self.node('- foo\n\n  ```language=text\n  code\n  ```')
+        html = self.write(node)
+        self.assertString(html, '<ul class="browser-default"><li><p>foo</p><pre><code ' \
+                                'class="language-text">\ncode\n</code></pre></li></ul>')
 
 class TestRenderUnorderedListLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
