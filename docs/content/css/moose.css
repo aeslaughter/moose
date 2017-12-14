@@ -39,6 +39,10 @@ html {
   color: var(--inl-blue);
 }
 
+.moose-html-rendered-tab{
+  background-color:#F5F6CE;
+}
+
 .tabs .tab a
 {
   background-color: transparent;
@@ -88,7 +92,7 @@ html, body {
 
 h1, h2, h3, h4, h5, h6 {
   text-align: left;
-  margin-top: 10px;
+/*  margin-top: 10px; */
 }
 
 h1 {
@@ -135,6 +139,9 @@ ul {
      margin-left:1.5rem;
 }
 
+blockquote {
+	border-left: 5px solid var(--inl-blue);
+}
 
 .moose-listing-div p.moose-float-caption
 {

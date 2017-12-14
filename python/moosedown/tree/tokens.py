@@ -153,3 +153,7 @@ class Subscript(Token):
 
 class Label(Token):
     PROPERTIES = [base.Property('text', required=True, ptype=unicode)]
+
+class Float(Token):
+    PROPERTIES = [base.Property('id', ptype=str), base.Property('caption', ptype=unicode),
+                  base.Property('label', ptype=str, required=True)]

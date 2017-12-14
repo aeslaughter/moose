@@ -53,8 +53,7 @@ class TokenComponent(Component):
     def reader(self):
         return self.__reader
 
-    @reader.setter
-    def reader(self, value):
+    def setup(self, value):
         #TODO: type check
         self.__reader = value
 
@@ -71,8 +70,7 @@ class RenderComponent(Component):
     def renderer(self):
         return self.__renderer
 
-    @renderer.setter
-    def renderer(self, value):
+    def setup(self, value):
         #TODO: type check
         self.__renderer = value
 

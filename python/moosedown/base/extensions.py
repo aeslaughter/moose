@@ -48,10 +48,12 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
     def renderer(self):
         return self.__renderer
 
+    """
     @renderer.setter
     def renderer(self, value):
         #TODO: type check
         self.__renderer = value
+    """
 
     def setup(self, renderer):
         #TODO: type and error check
@@ -59,7 +61,7 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
 
     def add(self, token_class, component):
         # TODO: test token_class is type
-        component.renderer = self.__renderer
+        component.setup(self.__renderer)
         self.__components.append(component)
         func = component.renderer.method(component)
         Extension.add(self, token_class, func)
@@ -75,14 +77,17 @@ class TokenExtension(Extension):
         for comp in self.__components:
             comp.reinit()
 
-
     def setup(self, reader):
         #TODO: type check
         self.__reader = reader
 
+    @property
+    def reader(self):
+        return self.__reader
+
     def add(self, group, name, component, location='_end'):
         self.__components.append(component)
-        component.reader = self.__reader
+        component.setup(self.__reader)
         func = lambda m, p: self.__function(m, p, component)
         Extension.add(self, group, name, component.RE, func, location)
 
@@ -97,9 +102,15 @@ class TokenExtension(Extension):
 class MarkdownExtension(TokenExtension):
     #: Internal global for storing commands
     __COMMANDS__ = dict()
+    __BLOCKCOMMANDS__ = dict()
 
     def addCommand(self, command):
+        command.setup(self.reader)
         MarkdownExtension.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
+
+    def addBlockCommand(self, command):
+        command.setup(self.reader)
+        MarkdownExtension.__BLOCKCOMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
 
     def addBlock(self, component, location='_end'):
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)
