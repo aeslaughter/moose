@@ -25,7 +25,7 @@ class Lexer(object):
             #TODO: move exception handling to here (except common.TokenizeException)
             try:
                 obj = self.buildObject(pattern, mo, parent, line)
-            except common.TokenizeException as e:
+            except Exception as e:
                 self._errorHandler(e, mo, pattern, self._node, line)
                 obj = tree.tokens.Error(match=mo)
 
@@ -33,10 +33,10 @@ class Lexer(object):
             pos = mo.end()
             mo, pattern = self._search(text, grammer, pos)
 
-        #if pos < n:
-        #    obj = tree.tokens.Unknown(content=text[pos:])
-        #    obj.parent = parent
-        #    obj.line = line
+        if pos < n:
+            obj = tree.tokens.Unknown(content=text[pos:])
+            obj.parent = parent
+            obj.line = line
 
     def _search(self, text, grammer, position=0):
         for pattern in grammer:

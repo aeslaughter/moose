@@ -1,3 +1,7 @@
+:root {
+  --inl-blue: rgba(0, 88, 151, 1.0);
+}
+
 html {
     line-height: 2rem;
     color: rgba(0,0,0,1.0);
@@ -30,9 +34,25 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-/* make inline code snippets have a non-white background */
-code {
-  background: #f5f2f0;
+.tabs .tab a:hover, .tabs .tab a.active {
+	background-color: transparent;
+  color: var(--inl-blue);
+}
+
+.tabs .tab a
+{
+  background-color: transparent;
+  color: var(--inl-blue);
+  font-size: 110%;
+}
+
+.tabs .indicator {
+	background-color: var(--inl-blue);
+}
+
+div.moose-code-compare pre
+{
+  font-size: 85%;
 }
 
 .admonition-message pre{

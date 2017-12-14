@@ -2,6 +2,11 @@
 The following details the MOOSE flavored [markdown] used for documenting MOOSE and
 MOOSE-based applications with the MooseDocs system.
 
+- foo
+  ```language=text
+  code
+  ```
+
 ## Motivation id=motivation
 As a short-hand [HTML] format, [markdown] is ubiquitous, especially among software developers.
 However, no standard exists and the original implementation was incomplete. Currently, there are
@@ -29,55 +34,81 @@ used and promotes uniformity among the MooseDown files.
 ## Core Extension
 The core extension is the portion of the MooseDown language that is designed to mimic [markdown]
 syntax. As mentioned above MooseDown is far more strict than traditional [markdown] implementations.
-For that reason there are many aspects of [markdown] that are not supported by MooseDown, the
-following list illustrates some the "missing" [markdown] features. And, the following sections
-detail the supported syntax.
-
-- Underline style headings are not supported (i.e., `=====` and `-----`), see [Headings](#headings).
-- Four space code indenting is not supported, see [Code](#code).
+There for the following sections should be read in detail to understand the supported syntax,
+especially if you are familiar with more general markdown formats.
 
 
 ### Headings
-!devel compare style=font-size:75%;padding-left:10pt;float:right;width:60%
-~~~MooseDown language=markdown
+All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
+number of hashes indicate the heading level. The hash(es) must be followed by a single space.
+
+Settings may be applied after the heading title text, the available settings include the
+following.
+
+!devel settings module=moosedown.extensions.core object=HeadingHash
+
+!devel spec caption=Basic use of all six heading levels.
 # Level One
 ## Level Two
-### Level Three style=font-size;14pt; id=level-three
+### Level Three
 #### Level Four
 ##### Level Five
 ###### Level Six
-~~~HTML language=html
+~~~
 <h1>Level One</h1>
 <h2>Level Two</h2>
-<h3 style="font-size:14pt" id="level-three">Level Three</h3>
+<h3>Level Three</h3>
 <h4>Level Four</h4>
 <h5>Level Five</h5>
 <h6>Level Six</h6>
-~~~LaTeX language=latex
-\part{Level One}l
+~~~
+\part{Level One}
 \chapter{Level Two}
 \section{Level Three\label{level-three}}
 \subsection{Level Four}
 \subsubsection{Level Five}
 \paragraph{Level Six}
 
-All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
-number of hashes indicate the heading level. The hash(es) must be followed by a single space.
+!devel spec caption=Use of settings within heading.
+## Level Two style=font-size:15pt id=level-two
+~~~
+<h2 style="font-size:14pt" id="level-two">Level Two</h2>
+~~~
+\section{Level Two\label{level-two}}
 
-Following the heading [settings](#settings) may be applied. The available settings are detailed
-in the table below.
+### Unordered List
+Unordered list items in MooseDown +must+ begin with a dash (`-`).
 
-!devel settings modue=moosedown.extensions.core object=HeadingHash
+!devel spec caption=Unordered list basic syntax.
+- Item 1
+- Item 2
+~~~
+<ul>
+<li>Item 1</li>
+<li>Item 2</li>
+</ul>
+~~~
+\begin{itemize}
+\item Item 1
+\item Item 2
+\end{itemize}
 
-### Lists
-#### Unordered List
+List items may contain lists, code, or any other markdown content and the item content may
+span many lines. The continuation is specified by indenting the content to be included within the
+item by two spaces.
 
-- List items in MooseDown must begin with a dash (`-`), the asterisk is +not+ supported.
-- List items may contain lists, code, or any other markdown item and the item content may
-  span many lines.
+!devel spec caption=Lists can contain other markdown content.
+- Item with code
+  Content can be contained within a list, all valid MooseDown syntax can be used.
+  ```language=bash
+  export METHOD=opt
+  ```
+- Another item
+~~~
+foo
+~~~
+bar
 
-  List items are continued by indenting the content to be included within the item by two spaces,
-  which is how this paragraph was created.
 
 - As mentioned above, lists can contain lists, which can contain lists, etc.
 
@@ -103,6 +134,39 @@ after this paragraph will create a new list.
 
 - This is a second list that was created as a separate list from what is above by placing two
   blank lines between list items.
+
+
+!devel spec
+- Item One
+- Item Two
+  - Nested One
+  - Nested Two
+- Item Three
+~~~
+<ul>
+  <li>Item One</li>
+  <li>Item Two</li>
+  <li>
+    <ul>
+      <li>Nested One</li>
+      <li>Nested Two</li>
+    </ul>
+  </li>
+  <li>Item Three</li>
+</ul>
+~~~
+\begin{itemize}
+  \item Item One
+  \item Item Two
+  \item
+    \begin{itemize}
+      \item Nested One  
+      \item Nested Two
+    \end{itemize}
+  \item Item Three
+\end{itemize}
+
+
 
 !devel moosedown
 - Item 1
@@ -138,6 +202,12 @@ stops with two empty lines.
 
 This is more.
 > This should be another.
+
+### Code Blocks
+
+```language=bash
+foo
+```
 
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree

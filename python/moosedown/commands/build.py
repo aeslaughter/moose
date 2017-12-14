@@ -63,5 +63,4 @@ def main():
         if node.source and os.path.isfile(node.source):
             server.watch(node.source, lambda: node.build(translator))
 
-
     server.serve(root=destination, port=8000)

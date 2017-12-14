@@ -25,7 +25,14 @@ class Renderer(ReaderRenderBase):
         self.__functions[token] = function
 
     def render(self, ast):
-        pass
+        self.reinit()
+
+    def method(self, component):
+        if hasattr(component, self.METHOD):
+            return getattr(component, self.METHOD)
+        else:
+            #TODO: raise RenderException
+            pass
 
     def function(self, token):
         #TODO: error if not found
@@ -66,6 +73,7 @@ class HTMLRenderer(Renderer):
     METHOD = 'createHTML'
 
     def render(self, ast, root=None):
+        Renderer.render(self, ast)
         if root is None:
             root = html.Tag(None, 'body')
         self.process(ast, root)
@@ -76,7 +84,18 @@ class MaterializeRenderer(HTMLRenderer):
 
     #TODO: Add config
 
+    def method(self, component):
+        if hasattr(component, self.METHOD):
+            return getattr(component, self.METHOD)
+        elif hasattr(component, HTMLRenderer.METHOD):
+            return getattr(component, HTMLRenderer.METHOD)
+        else:
+            #TODO: raise RenderException
+            pass
+
     def render(self, ast):
+        Renderer.render(self, ast)
+
         root = html.Tag(None, '!DOCTYPE html', close=False)
         html.Tag(root, 'html')
 
@@ -86,9 +105,8 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'meta', close=False, charset="UTF-8")
         html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
         html.Tag(head, 'link', href="/contrib/materialize/materialize.min.css",  type="text/css", rel="stylesheet", media="screen,projection")
-        #html.Tag(head, 'link', href="/contrib/clipboard/clipboard.min.css",  type="text/css", rel="stylesheet")
-        html.Tag(head, 'link', href="/contrib/prism/prism.min.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'link', href="/css/moose.css",  type="text/css", rel="stylesheet")
+        html.Tag(head, 'link', href="/contrib/prism/prism.min.css",  type="text/css", rel="stylesheet")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/jquery/jquery.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/materialize/materialize.min.js")
@@ -136,7 +154,7 @@ class LatexRenderer(Renderer):
 
     def render(self, ast):
         root = base.NodeBase()
-        latex.Command(root, 'documentclass', string='book', end='\n')
+        latex.Command(root, 'documentclass', string=u'book', end='\n')
 
         for package in self._packages:
             latex.Command(root, 'usepackage', string=package, end='\n')

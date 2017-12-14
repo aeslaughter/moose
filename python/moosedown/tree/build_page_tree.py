@@ -106,7 +106,6 @@ def create_file_node(parent, name, filename):
     """
     _, ext = os.path.splitext(filename)
     if ext == '.md':
-        print name, filename
         return page.MarkdownNode(parent, name=name, source=filename)
     else:
         return page.FileNode(parent, name=name, source=filename)

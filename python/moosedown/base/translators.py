@@ -108,6 +108,8 @@ class Translator(object):
         return self.__renderer
 
     def ast(self, content):
+        #ast = self.__reader.parse(content)
+        #print ast
         return self.__reader.parse(content)
 
     def convert(self, content):
