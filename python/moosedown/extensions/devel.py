@@ -16,11 +16,28 @@ def make_extension():
 
 
 """TABS extension"""
+# Card, CardContent, CardTabs, Modal
+class Card(tokens.Token):
+    pass
+
+class CardTabs(tokens.Token):
+    pass
+
+class CardContent(tokens.Token):
+    pass
+
+class Caption(tokens.Token):
+    pass
+
+
 class Tabs(tokens.Token):
     pass
 class Tab(tokens.Token):
     PROPERTIES = [Property("title", ptype=unicode, required=True)]
 class TabContent(tokens.Token):
+    pass
+
+class Modal(tokens.Token):
     pass
 
 """Materialize extension"""
@@ -32,7 +49,8 @@ class Column(tokens.Token):
 class Example(tokens.Token):
     PROPERTIES = [Property("caption", ptype=unicode, required=True),
                   Property("prefix", ptype=unicode, default=u'Example'),
-                  Property("data")]
+                  Property("data", ptype=collections.OrderedDict, required=True),
+                  Property("preview")]
 
 
 class Table(tokens.Token):
@@ -55,13 +73,29 @@ class ExampleComponent(core.MarkdownCommandComponent):
         settings = core.MarkdownCommandComponent.defaultSettings()
         settings['caption'] = (None, "The caption to use for the code specification example.")
         settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
+        settings['preview'] = (True, "Display a preview of the rendered result.")
         #settings['class'] = ('moose-devel-code-compare', settings['class'][1])
         return settings
 
     def createToken(self, match, parent):
-        print self.settings
         content = match.group('content').split('~~~')
-        return Example(parent, caption=self.settings['caption'], prefix=self.settings['prefix'], **self.attributes)
+        data = collections.OrderedDict()
+        data[u'Markdown'] = content[0]
+        data[u'HTML'] = content[1]
+        data[u'Latex'] = content[2]
+
+        preview = None
+        if self.settings['preview']:
+            preview = self.reader.parse(content[0], tokens.Token(None))
+
+
+
+        return Example(parent,
+                       caption=self.settings['caption'],
+                       prefix=self.settings['prefix'],
+                       preview=preview,
+                       data=data,
+                       **self.attributes)
 
 
 
@@ -141,6 +175,12 @@ class DevelRenderExtension(base.RenderExtension):
         #self.add(Tab, RenderTab())
         #self.add(TabContent, RenderTabContent())
 
+        #self.add(Card, RenderCard())
+        #self.add(CardTabs, RenderCardTabs())
+        #self.add(CardContent, RenderCardContent())
+
+        #self.add(Caption, RenderCaption())
+
         #self.add(tokens.Float, RenderFloat())
 
         self.add(Example, RenderExample())
@@ -163,10 +203,10 @@ class RenderFloat(base.RenderComponent):
 
         if token.caption:
             self._count[token.label] += 1
-            caption = html.Tag(div, 'p', class_="moose-float-caption")
-            heading = html.Tag(caption, 'span', class_="moose-float-caption-heading")
+            caption = html.Tag(div, 'p', class_="moose-caption")
+            heading = html.Tag(caption, 'span', class_="moose-caption-heading")
             html.String(heading, content=u'{} {}: '.format(token.label.title(), self._count[token.label]))
-            text = html.Tag(caption, 'span', class_="moose-float-caption-text")
+            text = html.Tag(caption, 'span', class_="moose-caption-text")
             html.String(text, content=token.caption)
 
         return div
@@ -178,12 +218,48 @@ class RenderExample(base.RenderComponent):
     def createMaterialize(self, token, parent):
         row = html.Tag(parent, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12")
-        cap_div = html.Tag(col, 'div', class_="card-content")
-        caption = html.Tag(cap_div, 'p', class_="moose-float-caption")
-        heading = html.Tag(caption, 'span', class_="moose-float-caption-heading")
+        card = html.Tag(col, 'div', class_="card")
+        cap_div = html.Tag(card, 'div', class_="card-content")
+        caption = html.Tag(cap_div, 'p', class_="moose-caption")
+        heading = html.Tag(caption, 'span', class_="moose-caption-heading")
         html.String(heading, content=u'{} {}: '.format(token.prefix, '1'));#self._count[token.prefix.lower()]))
-        text = html.Tag(caption, 'span', class_="moose-float-caption-text")
+        text = html.Tag(caption, 'span', class_="moose-caption-text")
         html.String(text, content=token.caption)
+
+        tabs = html.Tag(card, 'div', class_="card-tabs")
+        ul = html.Tag(tabs, 'ul', class_="tabs")
+        tab_content = html.Tag(card, 'div', class_='card-content grey lighten-4')
+
+        for key, value in token.data.iteritems():
+            id_ = uuid.uuid4()
+            li = html.Tag(ul, 'li', class_="tab")
+            tab = html.Tag(li, 'a', class_="active", href="#{}".format(id_))
+            html.String(tab, content=key)
+
+            div = html.Tag(tab_content, 'div', id=id_)
+            pre = html.Tag(div, 'pre')
+            code = html.Tag(pre, 'code', class_="language-{}".format(key.lower()))
+            html.String(code, content=value, escape=True)
+
+        # Preview
+        if token.preview:
+            tag = uuid.uuid4()
+            btn = html.Tag(caption, 'a', class_="btn modal-trigger right", href="#{}".format(tag) )
+            icon = html.Tag(btn, 'i', class_="material-icons right")
+            html.String(btn, content=u'Preview')
+            html.String(icon, content=u"visibility")
+
+            modal = html.Tag(parent, 'div', class_="modal", id_=tag)
+            modal_content = html.Tag(modal, 'div', class_="modal-content")
+            #heading = html.Tag(modal_content, 'h4')
+            #html.Tag(heading)
+
+            preview = self.renderer.render(token.preview)
+            preview.find('body').parent = modal_content
+
+            footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
+            close = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
+            html.String(close, content=u'Done')
 
 
 class RenderRow(base.RenderComponent):
@@ -193,6 +269,18 @@ class RenderRow(base.RenderComponent):
 class RenderColumn(base.RenderComponent):
     def createHTML(self, token, parent):
         return html.Tag(parent, 'div', class_="col s12 m12 l4")#, **token.attributes)
+
+class RenderCard(base.RenderComponent):
+    def createMaterialize(self, token, parent):
+        return html.Tag(parent, 'div', class_="card")
+
+class RenderCardTabs(base.RenderComponent):
+    def createMaterialize(self, token, parent):
+        return html.Tag(parent, 'div', class_="card-tabs")
+
+class RenderCardContent(base.RenderComponent):
+    def createMaterialize(self, token, parent):
+        return html.Tag(parent, 'div', class_="card-content")
 
 class RenderTabs(base.RenderComponent):
 

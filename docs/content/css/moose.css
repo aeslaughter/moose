@@ -158,7 +158,7 @@ blockquote {
 	border-left: 5px solid var(--inl-blue);
 }
 
-.moose-listing-div p.moose-float-caption
+.moose-listing-div p.moose--caption
 {
   border-bottom-style: solid;
   border-width: 3px;
@@ -215,10 +215,16 @@ blockquote {
   margin-bottom: 30px;
 }
 
-.moose-figure-caption-text,
-.moose-table-caption-text,
-.moose-listing-caption-text
-{
+.moose-caption{
+  font-size:120%;
+}
+
+.moose-caption-heading{
+  font-weight: 600;
+}
+
+
+.moose-caption-text{
   font-weight: 300;
 }
 
