@@ -24,8 +24,9 @@ class Renderer(ReaderRenderBase):
         #TODO: check if it exists
         self.__functions[token] = function
 
-    def render(self, ast):
-        self.reinit()
+    def render(self, ast, reinit=True):
+        if reinit:
+            self.reinit()
 
     def method(self, component):
         if hasattr(component, self.METHOD):
@@ -72,8 +73,8 @@ class Renderer(ReaderRenderBase):
 class HTMLRenderer(Renderer):
     METHOD = 'createHTML'
 
-    def render(self, ast, root=None):
-        Renderer.render(self, ast)
+    def render(self, ast, root=None, reinit=True):
+        Renderer.render(self, ast, reinit=reinit)
         if root is None:
             root = html.Tag(None, 'body')
         self.process(ast, root)
@@ -93,8 +94,7 @@ class MaterializeRenderer(HTMLRenderer):
             #TODO: raise RenderException
             pass
 
-    def render(self, ast, root=None):
-        Renderer.render(self, ast)
+    def render(self, ast, root=None, reinit=True):
 
         if root is None:
             root = html.Tag(None, '!DOCTYPE html', close=False)
@@ -120,7 +120,7 @@ class MaterializeRenderer(HTMLRenderer):
         body = html.Tag(root, 'body')
         div = html.Tag(body, 'div', class_="container")
 
-        HTMLRenderer.render(self, ast, div)
+        HTMLRenderer.render(self, ast, div, reinit=reinit)
 
         # Add sections
         """

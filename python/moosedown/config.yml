@@ -4,6 +4,8 @@ translator: moosedown.base.Translator
 extensions:
     - moosedown.extensions.core
     - moosedown.extensions.devel
+    - moosedown.extensions.floats
+
 pages:
     framework:
        root_dir: docs/content

@@ -106,11 +106,14 @@ class MarkdownExtension(TokenExtension):
 
     def addCommand(self, command):
         command.setup(self.reader)
+        #TODO: error if it exists
         MarkdownExtension.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
 
+    """
     def addBlockCommand(self, command):
         command.setup(self.reader)
         MarkdownExtension.__BLOCKCOMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
+    """
 
     def addBlock(self, component, location='_end'):
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)

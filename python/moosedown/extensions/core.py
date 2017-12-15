@@ -42,6 +42,7 @@ class CoreMarkdownExtension(base.MarkdownExtension):
         self.addBlock(Code())
         self.addBlock(Command())
         self.addBlock(BlockCommand())
+        #self.addBlock(FileCommand())
         self.addBlock(Quote())
         self.addBlock(HeadingHash())
         self.addBlock(OrderedList())
@@ -136,10 +137,12 @@ class Command(MarkdownComponent):
     """
 
 class BlockCommand(Command):
-    RE = re.compile('\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)$(?P<content>.*?)(^!end!)',
+    RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)$(?P<content>.*?)(^!\1-end!)',
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-    COMMANDS = base.MarkdownExtension.__BLOCKCOMMANDS__
+    #COMMANDS = base.MarkdownExtension.__BLOCKCOMMANDS__
 
+class FileCommand(Command):
+    RE = re.compile(r'\s*!(?P<command>\w+)\s(?P<filename>.*?\.(?P<subcommand>\w+))(?P<settings>.*?$)?(?P<content>.*?)(?:\n{2,}|\Z)', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
 class Code(MarkdownComponent):
     """
@@ -408,7 +411,6 @@ class CoreRenderExtension(base.RenderExtension):
         if isinstance(self.renderer, base.LatexRenderer):
             self.renderer.addPackage(u'hyperref')
             self.renderer.addPackage(u'ulem')
-
 
 class CoreRenderComponentBase(base.RenderComponent):
     """

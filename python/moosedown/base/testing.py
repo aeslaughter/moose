@@ -16,7 +16,7 @@ class MarkdownTestCase(unittest.TestCase):
     """
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
-    EXTENSIONS = ['moosedown.extensions.core']
+    EXTENSIONS = ['moosedown.extensions.core', 'moosedown.extensions.devel', 'moosedown.extensions.floats']
     READER = base.MarkdownReader
     RENDERER = base.HTMLRenderer
     CONFIG = dict()

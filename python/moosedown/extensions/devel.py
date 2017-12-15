@@ -7,51 +7,20 @@ import importlib
 import collections
 
 from moosedown import base, common
-from moosedown.extensions import core
+from moosedown.extensions import core, floats
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
 def make_extension():
     return DevelMarkdownExtension(), DevelRenderExtension()
 
-
-"""TABS extension"""
-# Card, CardContent, CardTabs, Modal
-class Card(tokens.Token):
-    pass
-
-class CardTabs(tokens.Token):
-    pass
-
-class CardContent(tokens.Token):
-    pass
-
-class Caption(tokens.Token):
-    pass
-
-
-class Tabs(tokens.Token):
-    pass
-class Tab(tokens.Token):
-    PROPERTIES = [Property("title", ptype=unicode, required=True)]
-class TabContent(tokens.Token):
-    pass
-
-class Modal(tokens.Token):
-    pass
-
-"""Materialize extension"""
-class Row(tokens.Token):
-    pass
-class Column(tokens.Token):
-    pass
-
+"""
 class Example(tokens.Token):
     PROPERTIES = [Property("caption", ptype=unicode, required=True),
-                  Property("prefix", ptype=unicode, default=u'Example'),
+                 # Property("prefix", ptype=unicode, default=u'Example'),
                   Property("data", ptype=collections.OrderedDict, required=True),
                   Property("preview")]
-
+"""
 
 class Table(tokens.Token):
     PROPERTIES = [Property('headings', ptype=list), Property('rows', ptype=list)]
@@ -60,13 +29,17 @@ class Table(tokens.Token):
         #TODO: error check headings and data
 
 class DevelMarkdownExtension(base.MarkdownExtension):
+    #TODO: require float, materializes
+
     def extend(self):
-        self.addBlockCommand(ExampleComponent())
+        self.addCommand(Example())
         self.addCommand(ComponentSettings())
 
-class ExampleComponent(core.MarkdownCommandComponent):
+class Example(core.MarkdownCommandComponent):
     COMMAND = 'devel'
-    SUBCOMMAND = 'spec'
+    SUBCOMMAND = 'example'
+    EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
+                            flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     @staticmethod
     def defaultSettings():
@@ -78,6 +51,28 @@ class ExampleComponent(core.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
+        master = floats.Float(parent)
+        caption = floats.Caption(master, prefix=u'Example')
+
+        grammer = self.reader.lexer.grammer('inline')
+        self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
+
+
+
+        for example in self.EXAMPLE_RE.finditer(match.group('content')):
+            print example.groups()
+
+
+        return master
+        """
+        content = match.group('content').split('~~~')
+        data = collections.OrderedDict()
+        data[u'Markdown'] = content[0]
+        data[u'HTML'] = content[1]
+        data[u'Latex'] = content[2]
+        """
+
+        """
         content = match.group('content').split('~~~')
         data = collections.OrderedDict()
         data[u'Markdown'] = content[0]
@@ -88,55 +83,20 @@ class ExampleComponent(core.MarkdownCommandComponent):
         if self.settings['preview']:
             preview = self.reader.parse(content[0], tokens.Token(None))
 
-
-
         return Example(parent,
                        caption=self.settings['caption'],
-                       prefix=self.settings['prefix'],
                        preview=preview,
                        data=data,
                        **self.attributes)
-
-
-
-        """
-        example = tokens.Float(parent, label="example", caption=self.settings['caption'], **self.attributes )
-        tabs = Tabs(example)
-
-        #print match.group('content')
-        content = match.group('content').split('~~~')
-        #print repr(content)
-
-        md = Tab(tabs, title=u'MooseDown')
-        tokens.Code(TabContent(md), code=content[0], language=u'markdown')
-
-        html = Tab(tabs, title=u'HTML')
-        tokens.Code(TabContent(html), code=content[1], language=u'html')
-
-        rendered = Tab(tabs, title=u'HTML (Rendered)')
-        root = TabContent(rendered, class_="moose-html-rendered-tab")
-        root = self.reader.parse(content[0], root)
-
-        tex = Tab(tabs, title=u'Latex')
-        tokens.Code(TabContent(tex), code=content[2], language=u'latex')
         """
 
-        """
-        # TODO: this is for tabs
-        #regex = r'~{3}(?P<title>.*?)(?:\s+(?P<settings>.*?))?$(?P<content>.*?)(?=^~|\Z)'
+        # Float
+        #   - Caption
+        #     - Modal
+        #   - FloatContent
+        #     - Tabs
+        #       - Tab
 
-        for i, match in enumerate(re.finditer(regex, content, flags=re.MULTILINE|re.DOTALL)):
-            settings, _ = common.parse_settings(defaults, match.group('settings'))
-            #id_ = uuid.uuid4()
-
-            if i == 0:
-                tab = Tab(left, title=match.group('title'))
-            else:
-                tab = Tab(right, title=match.group('title'))
-
-            content = TabContent(tab)
-            code = tokens.Code(content, code=match.group('content'), language=settings['language'])
-        """
         return example
 
 class ComponentSettings(core.MarkdownCommandComponent):
@@ -167,62 +127,35 @@ class ComponentSettings(core.MarkdownCommandComponent):
 
 class DevelRenderExtension(base.RenderExtension):
     def extend(self):
-
-        #self.add(Row, RenderRow())
-        #self.add(Column, RenderColumn())
-
-        #self.add(Tabs, RenderTabs())
-        #self.add(Tab, RenderTab())
-        #self.add(TabContent, RenderTabContent())
-
-        #self.add(Card, RenderCard())
-        #self.add(CardTabs, RenderCardTabs())
-        #self.add(CardContent, RenderCardContent())
-
-        #self.add(Caption, RenderCaption())
-
-        #self.add(tokens.Float, RenderFloat())
-
-        self.add(Example, RenderExample())
-
+        #self.add(Example, RenderExample())
         self.add(Table, RenderTable())
 
-class RenderFloat(base.RenderComponent):
+class RenderExample(base.RenderComponent):
     def __init__(self, *args, **kwargs):
         base.RenderComponent.__init__(self, *args, **kwargs)
-        self._count = collections.defaultdict(int)
+        self._count = 0
 
     def reinit(self):
-        self._count.clear()
+        self._count = 0
 
-    def createHTML(self, token, parent):
-        attrs = token.attributes
-        if attrs['class'] is not None:
-            attrs['class'] = 'moose-float-div'
-        div = html.Tag(parent, 'div', **attrs)
-
-        if token.caption:
-            self._count[token.label] += 1
-            caption = html.Tag(div, 'p', class_="moose-caption")
-            heading = html.Tag(caption, 'span', class_="moose-caption-heading")
-            html.String(heading, content=u'{} {}: '.format(token.label.title(), self._count[token.label]))
-            text = html.Tag(caption, 'span', class_="moose-caption-text")
-            html.String(text, content=token.caption)
-
-        return div
-
-class RenderExample(base.RenderComponent):
     def createHTML(self, token, parent):
         raise NotImplementedError("Not done...")
 
     def createMaterialize(self, token, parent):
+
+        self._count += 1
+        prefix = u'Example {}: '.format(self._count)
+        print 'PREFIX:', prefix
+
         row = html.Tag(parent, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12")
         card = html.Tag(col, 'div', class_="card")
         cap_div = html.Tag(card, 'div', class_="card-content")
+        obj = common.float.Caption(u"Example", self._count, token.caption)
+        obj.createMaterialize()
         caption = html.Tag(cap_div, 'p', class_="moose-caption")
         heading = html.Tag(caption, 'span', class_="moose-caption-heading")
-        html.String(heading, content=u'{} {}: '.format(token.prefix, '1'));#self._count[token.prefix.lower()]))
+        html.String(heading, content=prefix)
         text = html.Tag(caption, 'span', class_="moose-caption-text")
         html.String(text, content=token.caption)
 
@@ -254,70 +187,13 @@ class RenderExample(base.RenderComponent):
             #heading = html.Tag(modal_content, 'h4')
             #html.Tag(heading)
 
-            preview = self.renderer.render(token.preview)
+            preview = self.renderer.render(token.preview, reinit=False)
             preview.find('body').parent = modal_content
 
             footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
             close = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
             html.String(close, content=u'Done')
 
-
-class RenderRow(base.RenderComponent):
-    def createHTML(self, token, parent):
-        return html.Tag(parent, 'div', class_="row")#, **token.attributes)
-
-class RenderColumn(base.RenderComponent):
-    def createHTML(self, token, parent):
-        return html.Tag(parent, 'div', class_="col s12 m12 l4")#, **token.attributes)
-
-class RenderCard(base.RenderComponent):
-    def createMaterialize(self, token, parent):
-        return html.Tag(parent, 'div', class_="card")
-
-class RenderCardTabs(base.RenderComponent):
-    def createMaterialize(self, token, parent):
-        return html.Tag(parent, 'div', class_="card-tabs")
-
-class RenderCardContent(base.RenderComponent):
-    def createMaterialize(self, token, parent):
-        return html.Tag(parent, 'div', class_="card-content")
-
-class RenderTabs(base.RenderComponent):
-
-    def createHTML(self, token, parent):
-        #row = html.Tag(parent, 'div', class_="row", **token.attributes)
-        #col = html.Tag(row, 'div', class_="col s12 m6")
-        return html.Tag(parent, 'ul', class_="tabs")
-
-#    def createMaterialize(self, token, parent):
-#        return self.createHTML(token, parent)
-        #for child in token:
-        #    li = html.Tag(ul, 'li', class_="tab")
-        #    a = html.Tag(li, 'a', href='#' + str(child['id']))
-        #    html.String(a, content=child.title, escape=True)
-
-    def createLatex(self, token, parent):
-        pass
-        #TODO: do something
-        #return latex.Environment(parent, 'UNKNOWN')
-
-class RenderTab(base.RenderComponent):
-    def createHTML(self, token, parent):
-        li = html.Tag(parent, 'li', class_="tab")
-        a = html.Tag(li, 'a', href='#{}'.format(uuid.uuid4()))
-        html.String(a, content=token.title)
-        return li
-
-    #def createMaterialize(self, token, parent):
-    #    return self.createHTML(token, parent)
-
-class RenderTabContent(base.RenderComponent):
-    def createHTML(self, token, parent):
-        a = parent.find('a')
-        return html.Tag(parent.parent.parent, 'div', id_=a['href'].strip('#'), **token.attributes)
-
-    #def createMaterialize(self, token, parent):
-    #    return self.createHTML(token, parent)
 
 
 class RenderTable(base.RenderComponent):
