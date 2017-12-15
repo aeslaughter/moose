@@ -38,7 +38,7 @@ the code block are defined by key-value pairings that follow the backticks.
 
 !devel settings module=moosedown.extensions.core object=Code
 
-!devel! spec caption=Basic fenced code block.
+!devel! example caption=Basic fenced code block.
 ```language=bash
 export METHOD=opt
 ```
@@ -50,12 +50,12 @@ export METHOD=opt
 \begin{listing}3
 export METHOD=opt
 \end{listing}
-!end!
+!devel-end!
 
 ### Quotations
 Quote blocks are created by starting a line with the `>` character.g
 
-!devel! spec caption=Basic block quote.
+!devel! example caption=Basic block quote.
 > This is a quotation.
 ~~~
 <blockquote>
@@ -65,7 +65,7 @@ Quote blocks are created by starting a line with the `>` character.g
 \begin{quote}
 This is a quotation.
 \end{quote}
-!end!
+!devel-end!
 
 Quote blocks can contain any valid markdown, including other quotations.
 
@@ -89,7 +89,7 @@ following.
 
 !devel settings module=moosedown.extensions.core object=HeadingHash
 
-!devel! spec caption=Basic use of all six heading levels.
+!devel! example caption=Basic use of all six heading levels.
 # Level One
 ## Level Two
 ### Level Three
@@ -119,7 +119,7 @@ following.
 <h2 style="font-size:14pt" id="level-two">Level Two</h2>
 ~~~
 \section{Level Two\label{level-two}}
-!end!
+!devel-end!
 
 ### Unordered List
 Unordered list items in MooseDown +must+ begin with a dash (`-`).
@@ -143,7 +143,7 @@ List items may contain lists, code, or any other markdown content and the item c
 span many lines. The continuation is specified by indenting the content to be included within the
 item by two spaces.
 
-!devel! spec caption=Lists can contain other markdown content.
+!devel! example caption=Lists can contain other markdown content.
 - Item with code
   Content can be contained within a list, all valid MooseDown syntax can be used.
 
@@ -162,7 +162,7 @@ item by two spaces.
 </ul>
 ~~~
 LaTeX
-!end!
+!devel-end!
 
 
 - As mentioned above, lists can contain lists, which can contain lists, etc.
@@ -191,7 +191,7 @@ after this paragraph will create a new list.
   blank lines between list items.
 
 
-!devel! spec caption=foo
+!devel! example caption=foo2
 - Item One
 - Item Two
   - Nested One
@@ -220,7 +220,7 @@ after this paragraph will create a new list.
     \end{itemize}
   \item Item Three
 \end{itemize}
-!end!
+!devel-end!
 
 
 
