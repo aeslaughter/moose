@@ -93,10 +93,13 @@ class MaterializeRenderer(HTMLRenderer):
             #TODO: raise RenderException
             pass
 
-    def render(self, ast):
+    def render(self, ast, root=None):
         Renderer.render(self, ast)
 
-        root = html.Tag(None, '!DOCTYPE html', close=False)
+        if root is None:
+            root = html.Tag(None, '!DOCTYPE html', close=False)
+
+
         html.Tag(root, 'html')
 
 
