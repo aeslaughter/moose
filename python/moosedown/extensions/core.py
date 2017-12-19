@@ -109,7 +109,7 @@ class Command(MarkdownComponent):
     New commands are added by creating a CommandComponent object and adding this component to the
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
-    RE = re.compile('\s*!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?$)?(?P<content>.*?)(?:\n{2,}|\Z)',
+    RE = re.compile('\s*!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?)?\n(?P<content>.*?)(?:\n{2,}|\Z)',
                     flags=re.MULTILINE|re.DOTALL)
     PARSE_SETTINGS = False
     COMMANDS = base.MarkdownExtension.__COMMANDS__
@@ -137,7 +137,7 @@ class Command(MarkdownComponent):
     """
 
 class BlockCommand(Command):
-    RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)$(?P<content>.*?)(^!\1-end!)',
+    RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     #COMMANDS = base.MarkdownExtension.__BLOCKCOMMANDS__
 

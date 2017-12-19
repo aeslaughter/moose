@@ -50,11 +50,13 @@ def main():
 
     data = load_config(config_file)
     root = moosedown.tree.build_page_tree.doc_tree(data['pages'].values())
+
+    print root
+
     translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
 
-
+    """
     server = livereload.Server()
-
     root.name = '' #TODO: This should not be needed
     for node in anytree.PreOrderIter(root):
         node.root = destination
@@ -64,3 +66,4 @@ def main():
             server.watch(node.source, lambda: node.build(translator))
 
     server.serve(root=destination, port=8000)
+    """
