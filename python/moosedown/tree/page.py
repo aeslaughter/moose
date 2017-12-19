@@ -7,6 +7,8 @@ import logging
 import codecs
 import types
 
+import anytree
+
 import base
 import mooseutils
 
@@ -25,11 +27,26 @@ class PageNodeBase(base.NodeBase):
 
 class LocationNodeBase(PageNodeBase):
     PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str), base.Property('root', ptype=str)]
+    __CACHE__ = dict()
 
     @property
     def local(self):
         path = os.path.join(self.parent.local, self.name) if self.parent else self.name
         return path
+
+    def find(self, name, maxcount=1):
+        func = lambda n: n.local.endswith(name)
+
+        # TODO: do this with try cast to avoid double lookup???
+        if name in self.__CACHE__:
+            nodes = self.__CACHE__[name]
+        else:
+            nodes = anytree.search.findall(self.root, func)
+            self.__CACHE__[name] = nodes
+
+        #TODO: error check
+
+        return nodes
 
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'

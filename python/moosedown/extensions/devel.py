@@ -37,7 +37,7 @@ class DevelMarkdownExtension(base.MarkdownExtension):
 
 class Example(core.MarkdownCommandComponent):
     COMMAND = 'devel'
-    SUBCOMMAND = 'example'
+    SUBCOMMAND = 'md'
     EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
                             flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
@@ -57,47 +57,24 @@ class Example(core.MarkdownCommandComponent):
         grammer = self.reader.lexer.grammer('inline')
         self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
 
+        data = match.group('content').split('~~~')[1:]
 
+        tabs = floats.Tabs(master)
+        tab = floats.Tab(tabs, title=u'MooseDown')
+        tokens.Code(tab, code=data[0], language=u'markdown', escape=True)
 
-        for example in self.EXAMPLE_RE.finditer(match.group('content')):
-            print example.groups()
+        tab = floats.Tab(tabs, title=u'HTML')
+        tokens.Code(tab, code=data[1], language=u'HTML', escape=True)
 
+        tab = floats.Tab(tabs, title=u'LaTeX')
+        tokens.Code(tab, code=data[2], language=u'latex', escape=True)
+
+        if self.settings['preview']:
+            modal = floats.Modal(caption, title=u"Preview", icon=u"visibility")
+            #content = floats.Content(modal, class_="modal-content")
+            preview = self.reader.parse(data[0], modal)
 
         return master
-        """
-        content = match.group('content').split('~~~')
-        data = collections.OrderedDict()
-        data[u'Markdown'] = content[0]
-        data[u'HTML'] = content[1]
-        data[u'Latex'] = content[2]
-        """
-
-        """
-        content = match.group('content').split('~~~')
-        data = collections.OrderedDict()
-        data[u'Markdown'] = content[0]
-        data[u'HTML'] = content[1]
-        data[u'Latex'] = content[2]
-
-        preview = None
-        if self.settings['preview']:
-            preview = self.reader.parse(content[0], tokens.Token(None))
-
-        return Example(parent,
-                       caption=self.settings['caption'],
-                       preview=preview,
-                       data=data,
-                       **self.attributes)
-        """
-
-        # Float
-        #   - Caption
-        #     - Modal
-        #   - FloatContent
-        #     - Tabs
-        #       - Tab
-
-        return example
 
 class ComponentSettings(core.MarkdownCommandComponent):
     COMMAND = 'devel'
@@ -145,7 +122,6 @@ class RenderExample(base.RenderComponent):
 
         self._count += 1
         prefix = u'Example {}: '.format(self._count)
-        print 'PREFIX:', prefix
 
         row = html.Tag(parent, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12")
