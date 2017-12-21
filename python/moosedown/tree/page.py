@@ -28,11 +28,11 @@ class PageNodeBase(base.NodeBase):
 
 class LocationNodeBase(PageNodeBase):
     PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str, required=True), base.Property('base', ptype=str, default='')]
-    __CACHE__ = dict()
 
     def __init__(self, *args, **kwargs):
         PageNodeBase.__init__(self, *args, **kwargs)
         self.name = os.path.basename(self.source)
+        self.__cache = dict()
 
     @property
     def local(self):
@@ -44,12 +44,13 @@ class LocationNodeBase(PageNodeBase):
         if maxcount and not isinstance(maxcount, int):
             raise TypeError("The 'maxcount' input must be an integer, but '{}' was provided.".format(type(maxcount).__name__))
 
+
         try:
-            nodes = self.__CACHE__[name]
+            nodes = self.__cache[name]
         except KeyError:
             func = lambda n: n.local.endswith(name)
             nodes = anytree.search.findall(self.root, func)
-            self.__CACHE__[name] = nodes
+            self.__cache[name] = nodes
 
         if maxcount and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
@@ -89,6 +90,7 @@ class FileNode(LocationNodeBase):
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
+#    PROPERTIES = FileNode.PROPERTIES + [base.Property('master', ptype=set, default=set)]
 
     def __init__(self, *args, **kwargs):
         FileNode.__init__(self, *args, **kwargs)
