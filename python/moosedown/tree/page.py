@@ -15,7 +15,7 @@ import mooseutils
 LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
-    PROPERTIES = [base.Property('content', ptype=unicode, required=False)]#, base.Property('master', ptype=set)]
+    PROPERTIES = [base.Property('content', ptype=unicode, required=False), base.Property('source', ptype=str)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
@@ -27,7 +27,7 @@ class PageNodeBase(base.NodeBase):
 
 
 class LocationNodeBase(PageNodeBase):
-    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str, required=True), base.Property('base', ptype=str, default='')]
+    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('base', ptype=str, default='')]
 
     def __init__(self, *args, **kwargs):
         PageNodeBase.__init__(self, *args, **kwargs)
@@ -43,7 +43,6 @@ class LocationNodeBase(PageNodeBase):
 
         if maxcount and not isinstance(maxcount, int):
             raise TypeError("The 'maxcount' input must be an integer, but '{}' was provided.".format(type(maxcount).__name__))
-
 
         try:
             nodes = self.__cache[name]
@@ -77,7 +76,6 @@ class FileNode(LocationNodeBase):
     COLOR = 'MAGENTA'
 
     #TODO: convert to content property that opens the file if needed
-
     def read(self):
         if os.path.exists(self.source):
             with codecs.open(self.source, encoding='utf-8') as fid:

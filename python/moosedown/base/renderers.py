@@ -52,10 +52,10 @@ class Renderer(ReaderRenderBase):
             func = self.function(token)
             el = func(token, parent) if func else None
         except Exception as e:
-            if token.source and token.match:
+            if token.match:
                 msg = "\nAn exception occured while rendering, the exception was raised when\n" \
                       "executing the {} function while processing the following content.\n" \
-                      "{}:{}".format(func, token.source, token.line)
+                      "{}:{}".format(func, 'foo', token.line)
                 LOG.exception(moosedown.common.box(token.match.group(0), title=msg, line=token.line))
             else:
                 msg = "\nAn exception occured on line {} while rendering, the exception was\n" \

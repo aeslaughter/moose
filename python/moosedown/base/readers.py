@@ -62,6 +62,7 @@ class Reader(ReaderRenderBase):
         n = 100
         title = []
         if isinstance(node, page.LocationNodeBase):
+            token.source = node.source
             title += textwrap.wrap(u"An exception occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
                                    u"following content.".format(token.pattern.name), n)

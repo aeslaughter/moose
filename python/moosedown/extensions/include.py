@@ -31,7 +31,7 @@ class Include(core.MarkdownCommandComponent):
         node = self.reader.node.findall(match.group('filename'), maxcount=1)[0]
         node.read()
 
-        #TODO: check type of node, must be markdown for this to work
+        #TODO: check type of node, must be markdown for this to work or the node needs to be created
 
         # Set the master node, so that when livereload fires on this included node that the
         # node that does the including is reloaded
