@@ -40,9 +40,9 @@ class CoreMarkdownExtension(base.MarkdownExtension):
 
         # Block
         self.addBlock(Code())
+        self.addBlock(FileCommand())
         self.addBlock(Command())
         self.addBlock(BlockCommand())
-        #self.addBlock(FileCommand())
         self.addBlock(Quote())
         self.addBlock(HeadingHash())
         self.addBlock(OrderedList())
@@ -109,7 +109,7 @@ class Command(MarkdownComponent):
     New commands are added by creating a CommandComponent object and adding this component to the
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
-    RE = re.compile('\s*!(?P<command>\w+)\s(?P<subcommand>\w+)(?P<settings>.*?)?\n(?P<content>.*?)(?:\n{2,}|\Z)',
+    RE = re.compile('\s*!(?P<command>\w+) (?P<subcommand>\w+) *(?P<settings>.*?)',
                     flags=re.MULTILINE|re.DOTALL)
     PARSE_SETTINGS = False
     COMMANDS = base.MarkdownExtension.__COMMANDS__
@@ -139,10 +139,9 @@ class Command(MarkdownComponent):
 class BlockCommand(Command):
     RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-    #COMMANDS = base.MarkdownExtension.__BLOCKCOMMANDS__
 
 class FileCommand(Command):
-    RE = re.compile(r'\s*!(?P<command>\w+)\s(?P<filename>.*?\.(?P<subcommand>\w+))(?P<settings>.*?$)?(?P<content>.*?)(?:\n{2,}|\Z)', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    RE = re.compile(r'\s*!(?P<command>\w+) (?P<filename>.*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)', flags=re.UNICODE)
 
 class Code(MarkdownComponent):
     """
@@ -213,7 +212,7 @@ class Shortcut(MarkdownComponent):
     RE = re.compile(r'\s*\[(?P<key>.*?)\]:\s'  # shortcut key
                     r'(?P<content>.*?)'        # shortcut value
                     r'(?:\n+|\Z)',             # stop new line or end of file
-                    flags=re.MULTILINE)
+                    flags=re.MULTILINE|re.UNICODE)
 
     def createToken(self, match, parent):
         token = tokens.Shortcut(parent, key=match.group('key'), content=match.group('content'))
@@ -463,23 +462,23 @@ class RenderCode(CoreRenderComponentBase):
         return latex.Environment(parent, 'verbatim')
 
 class RenderShortcutLink(CoreRenderComponentBase):
-    """InlineCode"""
+    """ShortcutLink"""
 
     def createHTML(self, token, parent):
         a = html.Tag(parent, 'a', **token.attributes)
         s = html.String(a, content=token.key)
 
         if token.key not in SHORTCUT_DATABASE:
-            msg = "The shortcut link key '%s' was not located in the list of shortcuts on line %d"
-            LOG.error(msg, token.key, token.line)
+            msg = "The shortcut link key '{}' was not located in the list of shortcuts."
+            raise Exception(msg.format(token.key))
         else:
             a['href'] = SHORTCUT_DATABASE[token.key]
         return a
 
     def createLatex(self, token, parent):
         if token.key not in SHORTCUT_DATABASE:
-            msg = "The shortcut link key '%s' was not located in the list of shortcuts on line %d"
-            LOG.error(msg, token.key, token.line)
+            msg = "The shortcut link key '{}' was not located in the list of shortcuts."
+            raise Exception(msg.format(token.key))
         else:
             cmd = latex.CustomCommand(parent, 'href')
             arg0 = latex.Brace(cmd, string=SHORTCUT_DATABASE[token.key])

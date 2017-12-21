@@ -14,12 +14,18 @@ class Extension(object):
     def __init__(self):
         self.__config = dict()
         self.__items = list()
+        self.__tranlator = None
+
+    @property
+    def translator(self):
+        return self.__tranlator
 
     def update(self, config):
         self.__config.update(config)
 
-    def setup(self, *args, **kwargs):
-        pass
+    def init(self, translator):
+        #TODO: error if called twice
+        self.__tranlator = translator
 
     def reinit(self):
         pass
@@ -37,7 +43,6 @@ class Extension(object):
 class RenderExtension(Extension): #TODO: inherit from Extension to get config stuff
     def __init__(self):
         Extension.__init__(self)
-        self.__renderer = None
         self.__components = list()
 
     def reinit(self):
@@ -46,22 +51,11 @@ class RenderExtension(Extension): #TODO: inherit from Extension to get config st
 
     @property
     def renderer(self):
-        return self.__renderer
-
-    """
-    @renderer.setter
-    def renderer(self, value):
-        #TODO: type check
-        self.__renderer = value
-    """
-
-    def setup(self, renderer):
-        #TODO: type and error check
-        self.__renderer = renderer
+        return self.translator.renderer
 
     def add(self, token_class, component):
         # TODO: test token_class is type
-        component.setup(self.__renderer)
+        component.init(self.translator)
         self.__components.append(component)
         func = component.renderer.method(component)
         Extension.add(self, token_class, func)
@@ -70,24 +64,19 @@ class TokenExtension(Extension):
 
     def __init__(self):
         Extension.__init__(self)
-        self.__reader = None
         self.__components = list()
 
     def reinit(self):
         for comp in self.__components:
             comp.reinit()
 
-    def setup(self, reader):
-        #TODO: type check
-        self.__reader = reader
-
     @property
     def reader(self):
-        return self.__reader
+        return self.translator.reader
 
     def add(self, group, name, component, location='_end'):
         self.__components.append(component)
-        component.setup(self.__reader)
+        component.init(self.translator)
         func = lambda m, p: self.__function(m, p, component)
         Extension.add(self, group, name, component.RE, func, location)
 
@@ -102,18 +91,11 @@ class TokenExtension(Extension):
 class MarkdownExtension(TokenExtension):
     #: Internal global for storing commands
     __COMMANDS__ = dict()
-    __BLOCKCOMMANDS__ = dict()
 
     def addCommand(self, command):
-        command.setup(self.reader)
+        command.init(self.translator)
         #TODO: error if it exists
         MarkdownExtension.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
-
-    """
-    def addBlockCommand(self, command):
-        command.setup(self.reader)
-        MarkdownExtension.__BLOCKCOMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
-    """
 
     def addBlock(self, component, location='_end'):
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)

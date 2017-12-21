@@ -28,11 +28,16 @@ class Include(core.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
-        pass
+        node = self.reader.node.findall(match.group('filename'))[0]
+        node.read()
+        ast = self.translator.ast(node)
+        for child in ast:
+            child.parent = parent
+        return parent
 
 class IncludeRenderExtension(base.RenderExtension):
     def extend(self):
-        self.add(Table, RenderInclude())
+        pass
 
 class RenderInclude(base.RenderComponent):
 

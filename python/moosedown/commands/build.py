@@ -51,19 +51,26 @@ def main():
     data = load_config(config_file)
     root = moosedown.tree.build_page_tree.doc_tree(data['pages'].values())
 
-    print root
-
     translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
 
-    """
-    server = livereload.Server()
-    root.name = '' #TODO: This should not be needed
-    for node in anytree.PreOrderIter(root):
-        node.root = destination
-        node.build(translator)
+    if False:
+        #print '    ROOT', root._path[0]
+        idx = root.findall('index.md')[0]
+        idx.read()
+        #print idx.get_root()#root(-1)(0)(1)._path[0]
+        translator.convert(idx)
+        #print ast
 
-        if node.source and os.path.isfile(node.source):
-            server.watch(node.source, lambda: node.build(translator))
+        #translator.convert(ast)
+    else:
 
-    server.serve(root=destination, port=8000)
-    """
+        server = livereload.Server()
+        root.name = '' #TODO: This should not be needed
+        for node in anytree.PreOrderIter(root):
+            node.base = destination
+            node.build(translator)
+
+            if node.source and os.path.isfile(node.source):
+                server.watch(node.source, lambda: node.build(translator))
+
+        server.serve(root=destination, port=8000)

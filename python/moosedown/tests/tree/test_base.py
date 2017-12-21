@@ -140,6 +140,17 @@ class TestNodeBaseWithProperties(unittest.TestCase):
             node.day = 1.1
         self.assertIn("must be of type 'int'", e.exception.message)
 
+    def testPropertiesWithMultipleInstances(self):
+
+        class Date(base.NodeBase):
+            PROPERTIES = [base.Property('month'), base.Property('year', 1980), base.Property('day', 24, int)]
+
+        node0 = Date(year=1980)
+        node1 = Date(year=1981)
+
+        self.assertEqual(node0.year, 1980)
+        self.assertEqual(node1.year, 1981)
+
     def testPropertiesWithKwargs(self):
         class Time(base.NodeBase):
             PROPERTIES = [base.Property('hour', ptype=int), base.Property('minute')]
@@ -190,14 +201,25 @@ class TestNodeBaseWithProperties(unittest.TestCase):
             PROPERTIES = 'not list'
         with self.assertRaises(TypeError) as e:
             node = NotList()
-        self.assertEqual("The class attribute 'PROPERTIES' must be a list.", e.exception.message)
+        gold = "The class attribute 'PROPERTIES' must be a list."
+        self.assertEqual(e.exception.message, gold)
 
         class NotProperty(base.NodeBase):
             PROPERTIES = ['not prop']
         with self.assertRaises(TypeError) as e:
             node = NotProperty()
-        self.assertEqual("The supplied property must be a Property object.", e.exception.message)
+        gold = "The supplied property must be a Property object, but str provided."
+        self.assertEqual(e.exception.message, gold)
 
+    @unittest.skip("Not ready, may not be possible")
+    def testPropExistsError(self):
+        class TestNode(base.NodeBase):
+            PROPERTIES = [base.Property('root')]
+
+        with self.assertRaises(TypeError) as e:
+            node = TestNode(None)
+        gold = "The supplied property 'root' is already a defined property on the TestNode object."
+        self.assertEqual(e.exception.message, gold)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

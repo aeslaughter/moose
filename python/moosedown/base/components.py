@@ -1,4 +1,4 @@
-from MooseDocs import common
+from translators import Translator
 
 class Component(object):
     RE = None
@@ -13,7 +13,9 @@ class Component(object):
         self.__settings = dict()
     #    self.__line = None
         self.__config = dict()
+        self.__tranlator = None
 
+    """
     @property
     def config(self):
         return self.__config
@@ -21,6 +23,19 @@ class Component(object):
     @config.setter
     def config(self, config):
         self.__config = config
+    """
+
+    def init(self, translator):
+        #TODO: error if called twice
+        if not isinstance(translator, Translator):
+            raise TypeError("The supplied object must be of type 'Translator', but a '{}' was provided.".format(type(translator).__name__))
+        #TODO: type and error check
+        self.__tranlator = translator
+
+    @property
+    def translator(self):
+        return self.__tranlator
+
 
     """
     @property
@@ -47,15 +62,10 @@ class TokenComponent(Component):
 
     def __init__(self):
         Component.__init__(self)
-        self.__reader = None
 
     @property
     def reader(self):
-        return self.__reader
-
-    def setup(self, value):
-        #TODO: type check
-        self.__reader = value
+        return self.translator.reader
 
     def createToken(self, match, parent):
         pass
@@ -64,15 +74,10 @@ class RenderComponent(Component):
 
     def __init__(self):
         Component.__init__(self)
-        self.__renderer = None #TODO: only for RenderComponent
 
     @property
     def renderer(self):
-        return self.__renderer
-
-    def setup(self, value):
-        #TODO: type check
-        self.__renderer = value
+        return self.translator.renderer
 
 class CommandComponent(TokenComponent):
     COMMAND = None

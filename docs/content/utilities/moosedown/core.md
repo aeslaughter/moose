@@ -235,3 +235,5 @@ This is ***something* with various
 levels** of html formatting *that
 spans* many lines. It all *should* work
 fine.
+
+[markdown]: https://en.wikipedia.org/wiki/Markdown

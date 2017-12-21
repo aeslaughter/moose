@@ -37,7 +37,7 @@ class DevelMarkdownExtension(base.MarkdownExtension):
 
 class Example(core.MarkdownCommandComponent):
     COMMAND = 'devel'
-    SUBCOMMAND = 'md'
+    SUBCOMMAND = 'example'
     EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
                             flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
