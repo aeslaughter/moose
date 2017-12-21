@@ -50,7 +50,6 @@ class TestUnorderedListTokenize(testing.MarkdownTestCase):
 
     def testNestedCode(self):
         token = self.ast('- foo\n  ```language=text\n  code\n  ```\n')
-        print token
         token = self.ast('- foo\n\n  ```language=text\n  code\n  ```\n')
         self.assertIsInstance(token(0), tree.tokens.UnorderedList)
         self.assertIsInstance(token(0)(0), tree.tokens.ListItem)
