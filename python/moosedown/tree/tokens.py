@@ -7,6 +7,7 @@ import collections
 import logging
 
 import base
+from moosedown.base.Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class Token(base.NodeBase):
                         settings property and may be retrieved via the various access methods.
     """
     PROPERTIES = [base.Property('line', ptype=int),
-                  base.Property('source', ptype=str), #TODO: get rid of this, it should be handled by exception
+                 # base.Property('source', ptype=str), #TODO: get rid of this, it should be handled by exception
                   base.Property('match')]
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
@@ -31,11 +32,12 @@ class String(Token):
     """
     PROPERTIES = Token.PROPERTIES + [base.Property('content', ptype=unicode)]
 
-class Error(Token):
+class Exception(Token):
     """
     When the lexer object fails create a token, an error token will be created.
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('pattern', required=True)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('pattern', required=True, ptype=Grammer.Pattern),
+                                     base.Property('traceback', required=True, ptype=str)]
 
 class Word(String):
     """

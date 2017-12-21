@@ -1,5 +1,6 @@
 import collections
 import logging
+import traceback
 
 import moosedown
 from moosedown import tree, common
@@ -31,8 +32,8 @@ class Lexer(object):
             try:
                 obj = self.buildObject(pattern, mo, parent, line)
             except Exception as e:
-                obj = tree.tokens.Error(parent, match=mo, pattern=pattern, line=line)
-                #self._errorHandler(e, mo, pattern, self._node, line)
+                obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line,
+                                            traceback=traceback.format_exc())
 
             line += mo.group(0).count('\n')
             pos = mo.end()
@@ -65,21 +66,6 @@ class Lexer(object):
         #    obj.source = self._node.source
 
         return obj
-
-    """
-    @staticmethod
-    def _errorHandler(exception, match, pattern, node, line):
-        if isinstance(node, tree.page.LocationNodeBase):
-            msg = "\nAn exception occurred while tokenizing, the exception was raised when\n" \
-                  "executing the {} object while processing the following content.\n" \
-                  "{}:{}".format(pattern.name, node.source, line)
-        else:
-            msg = "\nAn exception occurred on line {} while tokenizing, the exception was\n" \
-                  "raised when executing the {} object while processing the following content.\n"
-            msg = msg.format(line, pattern.name)
-
-        LOG.exception(moosedown.common.box(match.group(0), title=msg, line=line))
-    """
 
 class RecursiveLexer(Lexer):
     def __init__(self, base, *args):

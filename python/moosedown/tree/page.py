@@ -15,32 +15,19 @@ import mooseutils
 LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
-    PROPERTIES = [base.Property('content', ptype=unicode)]#, base.Property('master', ptype=base.NodeBase)]
+    PROPERTIES = [base.Property('content', ptype=unicode, required=False)]#, base.Property('master', ptype=set)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
         base.NodeBase.__init__(self, *args, **kwargs)
-        self.__master = self
-
-    @property
-    def master(self):
-        return self.__master
-
-    @master.setter
-    def master(self, node):
-        # TODO: type check
-        self.__master = node
-
 
     def build(self, translator):
-        return translator.convert(self.master)
+        #TODO: error check content
+        translator.convert(self.content)
 
-    def __repr__(self):
-        out = '{} ({}): {}'.format(self.name, self.__class__.__name__, self.source)
-        return mooseutils.colorText(out, self.COLOR)
 
 class LocationNodeBase(PageNodeBase):
-    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str, required=True), base.Property('base', ptype=str)]
+    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str, required=True), base.Property('base', ptype=str, default='')]
     __CACHE__ = dict()
 
     def __init__(self, *args, **kwargs):
@@ -72,6 +59,11 @@ class LocationNodeBase(PageNodeBase):
 
         return nodes
 
+    def __repr__(self):
+        out = '{} ({}): {}'.format(self.name, self.__class__.__name__, self.source)
+        return mooseutils.colorText(out, self.COLOR)
+
+
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
 
@@ -83,6 +75,8 @@ class DirectoryNode(LocationNodeBase):
 class FileNode(LocationNodeBase):
     COLOR = 'MAGENTA'
 
+    #TODO: convert to content property that opens the file if needed
+
     def read(self):
         if os.path.exists(self.source):
             with codecs.open(self.source, encoding='utf-8') as fid:
@@ -91,15 +85,31 @@ class FileNode(LocationNodeBase):
         #TODO: error if not exist
 
     def build(self, translator=None):
-        dst = os.path.join(self.master.base, self.master.local)
+        dst = os.path.join(self.base, self.local)
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
-    def build(self, translator):
-        self.master.read()
-        html = translator.convert(self)
 
-        dst = os.path.join(self.master.base, self.master.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
-        print '{} -> {}'.format(self.master.source, dst)
+    def __init__(self, *args, **kwargs):
+        FileNode.__init__(self, *args, **kwargs)
+        self.__master = set()
+
+
+    @property
+    def master(self):
+        return self.__master
+
+
+    def build(self, translator):
+        for node in self.master:
+            node.build(translator)
+
+        self.read()
+        ast, html = translator.convert(self) #TODO: build cache for html body in translator
+
+        dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
+        LOG.debug('%s -> %s', self.source, dst)
         with open(dst, 'w') as fid:
             fid.write(html.write())
+
+        return ast, html

@@ -11,12 +11,12 @@ class TestExampleTokenize(testing.MarkdownTestCase):
 
     def testBasic(self):
         ex = self.ast('!devel example\n~~~\nfoo\n~~~\nbar')
-        print ex
+        #print ex
 
 
     def testCaption(self):
         ex = self.ast('!devel example caption=foo\n~~~\nfoo\n~~~\nbar')
-        print ex
+        #print ex
 
 
 

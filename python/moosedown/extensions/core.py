@@ -116,13 +116,13 @@ class Command(MarkdownComponent):
 
     def createToken(self, match, parent):
 
-        #TODO: Handle extensions in subcommand (SUBCOMAND='*.md' or SUBDOMAND='*.jpg|*.png')
 
         cmd = (match.group('command'), match.group('subcommand'))
 
         #TODO: Error check
         if cmd not in self.COMMANDS:
-            return tokens.String(parent, match.group())
+            msg = "The following command combination is unknown: '{} {}'."
+            raise common.exceptions.TokenizeException(msg.format(*cmd))
 
         obj = self.COMMANDS[cmd]
         obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
