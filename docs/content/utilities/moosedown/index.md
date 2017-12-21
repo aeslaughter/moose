@@ -28,6 +28,8 @@ used and promotes uniformity among the MooseDown files.
 
 !include core.md
 
+!include include.md
+
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 [HTML]: https://en.wikipedia.org/wiki/HTML
 [CommonMark]: http://commonmark.org/

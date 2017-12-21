@@ -6,16 +6,20 @@ from moosedown import tree, common
 from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
+
 class Lexer(object):
     def __init__(self):
         self._node = None
 
     def tokenize(self, text, parent, grammer, line=1):
 
+        if not isinstance(text, unicode):
+            raise TypeError("The supplied text to the lexer must be of type 'unicode' but '{}' was provided.".format(type(text).__name__))
+
         #TODO: "text" should be required to be a node and self._node should be removed
-        if isinstance(text, moosedown.tree.page.PageNodeBase):
-            self._node = text
-            text = self._node.content
+        #if isinstance(text, moosedown.tree.page.PageNodeBase):
+            #self._node = text
+        #    text = text.content
             #TODO: test for None
 
         n = len(text)
@@ -27,8 +31,8 @@ class Lexer(object):
             try:
                 obj = self.buildObject(pattern, mo, parent, line)
             except Exception as e:
-                self._errorHandler(e, mo, pattern, self._node, line)
-                obj = tree.tokens.Error(match=mo)
+                obj = tree.tokens.Error(parent, match=mo, pattern=pattern, line=line)
+                #self._errorHandler(e, mo, pattern, self._node, line)
 
             line += mo.group(0).count('\n')
             pos = mo.end()
@@ -57,11 +61,12 @@ class Lexer(object):
         obj.match = match
 
         # TODO: This should be handled at RecursiveLexer level
-        if self._node and self._node.source:
-            obj.source = self._node.source
+        #if self._node and self._node.source:
+        #    obj.source = self._node.source
 
         return obj
 
+    """
     @staticmethod
     def _errorHandler(exception, match, pattern, node, line):
         if isinstance(node, tree.page.LocationNodeBase):
@@ -74,6 +79,7 @@ class Lexer(object):
             msg = msg.format(line, pattern.name)
 
         LOG.exception(moosedown.common.box(match.group(0), title=msg, line=line))
+    """
 
 class RecursiveLexer(Lexer):
     def __init__(self, base, *args):

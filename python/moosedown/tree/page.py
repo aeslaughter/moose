@@ -15,13 +15,22 @@ import mooseutils
 LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
-    PROPERTIES = [base.Property('content', ptype=unicode), base.Property('master', ptype=base.NodeBase)]
+    PROPERTIES = [base.Property('content', ptype=unicode)]#, base.Property('master', ptype=base.NodeBase)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
         base.NodeBase.__init__(self, *args, **kwargs)
-        if self.master is None:
-            self.master = self
+        self.__master = self
+
+    @property
+    def master(self):
+        return self.__master
+
+    @master.setter
+    def master(self, node):
+        # TODO: type check
+        self.__master = node
+
 
     def build(self, translator):
         return translator.convert(self.master)
@@ -65,8 +74,6 @@ class LocationNodeBase(PageNodeBase):
 
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
-
-
 
     def build(self, translator=None):
         dst = os.path.join(self.base, self.local)
