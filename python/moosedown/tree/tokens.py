@@ -37,7 +37,8 @@ class Exception(Token):
     When the lexer object fails create a token, an error token will be created.
     """
     PROPERTIES = Token.PROPERTIES + [base.Property('pattern', required=True, ptype=Grammer.Pattern),
-                                     base.Property('traceback', required=True, ptype=str)]
+                                     base.Property('traceback', required=True, ptype=str),
+                                     base.Property('source', ptype=str)]
 
 class Word(String):
     """

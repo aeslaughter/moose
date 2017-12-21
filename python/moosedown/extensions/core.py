@@ -2,6 +2,7 @@
 This defines the core Markdown translation to HTML and LaTeX.
 """
 import re
+import uuid
 import logging
 
 import moosedown
@@ -388,6 +389,7 @@ class CoreRenderExtension(base.RenderExtension):
         self.add(tokens.ShortcutLink, RenderShortcutLink())
         self.add(tokens.InlineCode, RenderBacktick())
         self.add(tokens.Break, RenderBreak())
+        self.add(tokens.Exception, RenderException())
 
         self.add(tokens.Link, RenderLink())
         self.add(tokens.Paragraph, RenderParagraph())
@@ -647,3 +649,42 @@ class RenderSubscript(CoreRenderComponentBase):
         cmd = latex.Command(math, 'text')
         latex.String(math, content='}')
         return cmd
+
+class RenderException(CoreRenderComponentBase):
+    def createHTML(self, token, parent):
+        div = html.Tag(parent, 'div', class_="moose-exception", **token.attributes)
+        html.String(div, content=token.match.group())
+        return div
+
+    def createMaterialize(self, token, parent):
+        id_ = uuid.uuid4()
+        a = html.Tag(parent, 'a', class_="moose-exception modal-trigger", href='#{}'.format(id_))
+        html.String(a, content=token.match.group())
+
+        modal = html.Tag(parent, 'div', id_=id_, class_="modal")
+        content = html.Tag(modal, 'div', class_="modal-content")
+        head = html.Tag(content, 'h2')
+        html.String(head, content=u'Tokenize Exception')
+        p = html.Tag(content, 'p')
+
+        msg = u"An exception occurred while tokenizing, the exception was " \
+              u"raised when executing the {} object while processing the " \
+              u"following content.".format(token.pattern.name)
+        html.String(p, content=msg)
+        html.Tag(p, 'br', close=False)
+        fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.source))
+        html.String(fname, content=u"{}:{}".format(token.source, token.line))
+
+        pre = html.Tag(content, 'pre')
+        code = html.Tag(pre, 'code', class_="language-markdown")
+        html.String(code, content=token.match.group(0), escape=True)
+
+        pre = html.Tag(content, 'pre', style="font-size:80%;")
+        html.String(pre, content=unicode(token.traceback), escape=True)
+        print token.traceback
+
+        footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
+        done = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
+        html.String(done, content=u"Done")
+
+        return content

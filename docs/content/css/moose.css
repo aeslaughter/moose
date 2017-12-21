@@ -6,7 +6,6 @@ html {
     line-height: 2rem;
     color: rgba(0,0,0,1.0);
     font-size: 20px;
-    text-align: justify;
     font-weight: 300;
 }
 
@@ -52,6 +51,10 @@ html {
 
 .tabs .indicator {
 	background-color: var(--inl-blue);
+}
+
+.moose-exception {
+  color: red;
 }
 
 div.moose-code-compare pre
