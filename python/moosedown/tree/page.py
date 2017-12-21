@@ -15,11 +15,16 @@ import mooseutils
 LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
-    PROPERTIES = [base.Property('content', ptype=unicode)]
+    PROPERTIES = [base.Property('content', ptype=unicode), base.Property('master', ptype=base.NodeBase)]
     COLOR = None
 
+    def __init__(self, *args, **kwargs):
+        base.NodeBase.__init__(self, *args, **kwargs)
+        if self.master is None:
+            self.master = self
+
     def build(self, translator):
-        return translator.convert(self)
+        return translator.convert(self.master)
 
     def __repr__(self):
         out = '{} ({}): {}'.format(self.name, self.__class__.__name__, self.source)
@@ -50,7 +55,6 @@ class LocationNodeBase(PageNodeBase):
             nodes = anytree.search.findall(self.root, func)
             self.__CACHE__[name] = nodes
 
-
         if maxcount and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
             for node in nodes:
@@ -61,6 +65,8 @@ class LocationNodeBase(PageNodeBase):
 
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
+
+
 
     def build(self, translator=None):
         dst = os.path.join(self.base, self.local)
@@ -78,15 +84,15 @@ class FileNode(LocationNodeBase):
         #TODO: error if not exist
 
     def build(self, translator=None):
-        dst = os.path.join(self.base, self.local)
+        dst = os.path.join(self.master.base, self.master.local)
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
     def build(self, translator):
-        self.read()
+        self.master.read()
         html = translator.convert(self)
 
-        dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
-        print '{} -> {}'.format(self.source, dst)
+        dst = os.path.join(self.master.base, self.master.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
+        print '{} -> {}'.format(self.master.source, dst)
         with open(dst, 'w') as fid:
             fid.write(html.write())
