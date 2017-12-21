@@ -19,7 +19,7 @@ class Token(base.NodeBase):
                         settings property and may be retrieved via the various access methods.
     """
     PROPERTIES = [base.Property('line', ptype=int),
-                  base.Property('source', ptype=str),
+                  base.Property('source', ptype=str), #TODO: get rid of this, it should be handled by exception
                   base.Property('match')]
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
@@ -29,13 +29,13 @@ class String(Token):
     """
     Base class for all tokens meant to contain characters.
     """
-    PROPERTIES = [base.Property('content', ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('content', ptype=unicode)]
 
-class Error(String):
+class Error(Token):
     """
     When the lexer object fails create a token, an error token will be created.
     """
-    PROPERTIES = [base.Property('match', required=True)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('pattern', required=True)]
 
 class Word(String):
     """

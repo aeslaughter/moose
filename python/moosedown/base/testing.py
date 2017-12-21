@@ -16,7 +16,10 @@ class MarkdownTestCase(unittest.TestCase):
     """
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
-    EXTENSIONS = ['moosedown.extensions.core', 'moosedown.extensions.devel', 'moosedown.extensions.floats']
+    EXTENSIONS = ['moosedown.extensions.core',
+                  'moosedown.extensions.devel',
+                  'moosedown.extensions.floats',
+                  'moosedown.extensions.include']
     READER = base.MarkdownReader
     RENDERER = base.HTMLRenderer
     CONFIG = dict()
@@ -46,7 +49,7 @@ class MarkdownTestCase(unittest.TestCase):
         Inputs:
             ast: Markdown token tree.
         """
-        ast = self.ast(md) if isinstance(md, str) else md
+        ast = self.ast(md) if isinstance(md, unicode) else md
         return self._translator.renderer.render(ast)
 
     def write(self, node):

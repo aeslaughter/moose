@@ -20,7 +20,7 @@ export METHOD=opt
 export METHOD=opt
 </code></pre>
 ~~~
-\begin{listing}3
+\begin{listing}
 export METHOD=opt
 \end{listing}
 !devel-end!
