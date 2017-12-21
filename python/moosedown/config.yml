@@ -5,6 +5,7 @@ extensions:
     - moosedown.extensions.core
     - moosedown.extensions.devel
     - moosedown.extensions.floats
+    - moosedown.extensions.include
 
 pages:
     framework:

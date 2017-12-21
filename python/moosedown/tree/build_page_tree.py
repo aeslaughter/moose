@@ -130,7 +130,7 @@ def doc_tree(items):
     nodes = dict()
 
     # Create the root node
-    nodes[()] = page.DirectoryNode()
+    nodes[()] = page.DirectoryNode(source='')
 
     # Create the file tree
     for value in items:

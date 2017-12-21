@@ -9,12 +9,16 @@ class Reader(ReaderRenderBase):
 
     def __init__(self, lexer, extensions=None):
         self.__lexer = lexer
-
+        self.__node = None
         ReaderRenderBase.__init__(self, extensions)
 
     @property
     def lexer(self):
         return self.__lexer
+
+    @property
+    def node(self):
+        return self.__node
 
     """
     def read(self, input):
@@ -23,9 +27,10 @@ class Reader(ReaderRenderBase):
         return self.parse(text)
     """
 
-    def parse(self, text, root=None):
+    def parse(self, node, root=None):
         ast = root if root else tokens.Token(None)
-        self.__lexer.tokenize(text, ast)
+        self.__node = node
+        self.__lexer.tokenize(node, ast)
         return ast
 
     def add(self, *args):#name, regex, func, location=-1):

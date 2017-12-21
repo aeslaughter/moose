@@ -107,9 +107,18 @@ class NodeBase(anytree.NodeMixin):
 
         # Apply the default values
         for prop in self.PROPERTIES:
+            #print prop.name
+            #print dir(self)
             if not isinstance(prop, Property):
                 msg = "The supplied property must be a Property object, but {} provided."
                 raise TypeError(msg.format(type(prop).__name__))
+
+            # TODO: this can't work because properties are class methods
+            """
+            if hasattr(self, prop.name):
+                msg = "The supplied property '{}' is already a defined property on the {} object."
+                raise TypeError(msg.format(prop.name, type(self).__name__))
+            """
             setattr(self.__class__, prop.name, prop)
             self.__properties[prop.name] = prop.default
 
@@ -203,6 +212,12 @@ class NodeBase(anytree.NodeMixin):
         for child in self.children:
             out += child.write()
         return out
+
+    def get_root(self):
+        if self.parent:
+            return self._path[0]
+        else:
+            return self
 
     def find(self, name):
         """

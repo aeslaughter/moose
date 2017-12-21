@@ -16,6 +16,7 @@ class Lexer(object):
         if isinstance(text, moosedown.tree.page.PageNodeBase):
             self._node = text
             text = self._node.content
+            #TODO: test for None
 
         n = len(text)
         pos = 0
@@ -49,11 +50,11 @@ class Lexer(object):
         obj = pattern.function(match, parent)
 
 
-        #TODO: test obj is correct type
+        #TODO: test obj is correct type and not None (None case just use parent?)
 
-        #TODO: line and match should not be needed, all components should raise a TokenExceptions
-        #obj.line = line #
-        #obj.match = match
+        # Set the line and regex match for error reporting within Renderers.
+        obj.line = line #
+        obj.match = match
 
         # TODO: This should be handled at RecursiveLexer level
         if self._node and self._node.source:

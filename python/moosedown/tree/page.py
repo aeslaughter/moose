@@ -26,25 +26,36 @@ class PageNodeBase(base.NodeBase):
         return mooseutils.colorText(out, self.COLOR)
 
 class LocationNodeBase(PageNodeBase):
-    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str), base.Property('root', ptype=str)]
+    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('source', ptype=str, required=True), base.Property('base', ptype=str)]
     __CACHE__ = dict()
+
+    def __init__(self, *args, **kwargs):
+        PageNodeBase.__init__(self, *args, **kwargs)
+        self.name = os.path.basename(self.source)
 
     @property
     def local(self):
         path = os.path.join(self.parent.local, self.name) if self.parent else self.name
         return path
 
-    def find(self, name, maxcount=1):
-        func = lambda n: n.local.endswith(name)
+    def findall(self, name, maxcount=None):
 
-        # TODO: do this with try cast to avoid double lookup???
-        if name in self.__CACHE__:
+        if maxcount and not isinstance(maxcount, int):
+            raise TypeError("The 'maxcount' input must be an integer, but '{}' was provided.".format(type(maxcount).__name__))
+
+        try:
             nodes = self.__CACHE__[name]
-        else:
+        except KeyError:
+            func = lambda n: n.local.endswith(name)
             nodes = anytree.search.findall(self.root, func)
             self.__CACHE__[name] = nodes
 
-        #TODO: error check
+
+        if maxcount and len(nodes) > maxcount:
+            msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
+            for node in nodes:
+                msg += '\n  {} (source: {})'.format(node.local, node.source)
+            raise ValueError(msg)
 
         return nodes
 
@@ -52,26 +63,30 @@ class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
 
     def build(self, translator=None):
-        dst = os.path.join(self.root, self.local)
+        dst = os.path.join(self.base, self.local)
         if not os.path.isdir(dst):
             os.makedirs(dst)
 
 class FileNode(LocationNodeBase):
     COLOR = 'MAGENTA'
 
-    def build(self, translator=None):
-        dst = os.path.join(self.root, self.local)
-        shutil.copyfile(self.source, dst)
-
-class MarkdownNode(FileNode):
-    def build(self, translator):
+    def read(self):
         if os.path.exists(self.source):
             with codecs.open(self.source, encoding='utf-8') as fid:
                 self.content = fid.read()
 
+        #TODO: error if not exist
+
+    def build(self, translator=None):
+        dst = os.path.join(self.base, self.local)
+        shutil.copyfile(self.source, dst)
+
+class MarkdownNode(FileNode):
+    def build(self, translator):
+        self.read()
         html = translator.convert(self)
 
-        dst = os.path.join(self.root, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
+        dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
         print '{} -> {}'.format(self.source, dst)
         with open(dst, 'w') as fid:
             fid.write(html.write())

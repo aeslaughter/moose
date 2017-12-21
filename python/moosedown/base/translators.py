@@ -44,15 +44,19 @@ class Translator(object):
         # Load the extensions
         config, reader_extensions, render_extensions = self.load(extensions)
 
+        for ext in reader_extensions:
+            ext.init(self)
+        for ext in render_extensions:
+            ext.init(self)
 
         self.__config = self.getConfig()
         self.__config.update(config)
         #self.__config.update(kwargs)
 
         self.__reader = reader(reader_extensions)
-        self.__reader.setup(config)
+        self.__reader.init(config)
         self.__renderer = renderer(render_extensions)
-        self.__renderer.setup(config)
+        self.__renderer.init(config)
         #self.__ast = None
 
     def load(self, extensions):

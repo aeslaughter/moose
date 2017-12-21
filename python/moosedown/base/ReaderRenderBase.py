@@ -2,17 +2,25 @@ class ReaderRenderBase(object):
     def __init__(self, extensions=[]):
         self.__config = dict()
         self.__extensions = extensions
+        self.__initialized = False
+
+    def init(self, config):
+        """
+        Called automaticily, do not use
+        """
+        #TODO: error if called again
+        self.update(config)
         for ext in self.__extensions:
-            ext.setup(self)
             ext.extend()
             for items in ext:
                 self.add(*items)
+        self.__initialized = True
 
     def reinit(self):
         for ext in self.__extensions:
             ext.reinit()
 
-    def setup(self, config):
+    def update(self, config):
         self.__config.update(config)
 
     def getConfig(self):
