@@ -30,6 +30,11 @@ class Include(core.MarkdownCommandComponent):
     def createToken(self, match, parent):
         node = self.reader.node.findall(match.group('filename'))[0]
         node.read()
+
+        # Set the master node, so that when livereload fires on this included node that the
+        # node that does the including is reloaded
+        node.master = self.reader.node
+
         ast = self.translator.ast(node)
         for child in ast:
             child.parent = parent
