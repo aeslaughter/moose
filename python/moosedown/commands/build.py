@@ -75,13 +75,14 @@ def main():
         root.name = '' #TODO: This should not be needed
         for node in anytree.PreOrderIter(root):
             node.base = destination
-            node.translator = translator#node.build(translator)
+            node.translator = translator#TODO: formalize this with a Property
 
             if node.source and os.path.isfile(node.source):
                 #print 'WATCH:', type(node), node.source
                 #server.watch(node.source, lambda: node.build(translator))
                 server.watch(node.source, node.build)
 
+        # Everything needs translator before it can build
         for node in anytree.PreOrderIter(root):
             node.build(translator)
 
