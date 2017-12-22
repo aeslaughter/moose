@@ -107,7 +107,8 @@ following.
 !end!
 
 
-!devel! spec caption=Use of settings within heading.
+!devel! example caption=Use of settings within heading.
+~~~
 ## Level Two style=font-size:15pt id=level-two
 ~~~
 <h2 style="font-size:14pt" id="level-two">Level Two</h2>
@@ -118,7 +119,7 @@ following.
 ### Unordered List
 Unordered list items in MooseDown +must+ begin with a dash (`-`).
 
-!devel! spec caption=Unordered list basic syntax.
+!devel! example caption=Unordered list basic syntax.
 ~~~
 - Item 1
 - Item 2
@@ -144,7 +145,7 @@ item by two spaces.
   Content can be contained within a list, all valid MooseDown syntax can be used.
 
   ```
-  foo
+  int combo = 12345;
   ```
 - Another item
 ~~~
@@ -191,6 +192,7 @@ after this paragraph will create a new list.
 ~~~
 - Item One
 - Item Two
+
   - Nested One
   - Nested Two
 - Item Three

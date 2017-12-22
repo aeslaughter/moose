@@ -110,13 +110,12 @@ class Command(MarkdownComponent):
     New commands are added by creating a CommandComponent object and adding this component to the
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
-    RE = re.compile('\s*!(?P<command>\w+) (?P<subcommand>\w+) *(?P<settings>.*?)',
-                    flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile('\s*!(?P<command>\w+) (?P<subcommand>\w+) *(?P<settings>.*?)$',
+                    flags=re.UNICODE|re.MULTILINE)
     PARSE_SETTINGS = False
     COMMANDS = base.MarkdownExtension.__COMMANDS__
 
     def createToken(self, match, parent):
-
 
         cmd = (match.group('command'), match.group('subcommand'))
 
@@ -138,18 +137,17 @@ class Command(MarkdownComponent):
     """
 
 class BlockCommand(Command):
-    RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+)\s*(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
+    RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+) *(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
 class FileCommand(Command):
-    RE = re.compile(r'\s*!(?P<command>\w+) (?P<filename>.*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)', flags=re.UNICODE)
+    RE = re.compile(r'\s*!(?P<command>\w+) (?P<filename>\S*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)$', flags=re.UNICODE|re.MULTILINE)
 
 class Code(MarkdownComponent):
     """
     Fenced code blocks.
     """
-    RE = re.compile(r'\s*`{3}(?P<settings>.*?)$(?P<code>.*?)`{3}',
-                    flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile(r'\s*`{3}(?P<settings>.*?)$(?P<code>.*?)`{3}', flags=re.MULTILINE|re.DOTALL)
 
     @staticmethod
     def defaultSettings():
