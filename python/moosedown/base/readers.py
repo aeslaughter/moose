@@ -16,16 +16,17 @@ class Reader(ReaderRenderBase):
 
     def __init__(self, lexer, extensions=None):
         self.__lexer = lexer
-#        self.__node = None
+        #self.__node = None
+        #self.__old_node = None
         ReaderRenderBase.__init__(self, extensions)
 
     @property
     def lexer(self):
         return self.__lexer
 
-    @property
-    def node(self):
-        return self.__node
+    #@property
+    #def node(self):
+    #    return self.__node
 
     """
     def read(self, input):
@@ -37,21 +38,22 @@ class Reader(ReaderRenderBase):
     def parse(self, node, root=None):
         ast = root if root else tokens.Token(None)
 
+        #self.__old_node = self.__node
+
+
         if isinstance(node, unicode):
             node = page.PageNodeBase(content=node)
 
-        elif isinstance(node, page.PageNodeBase):
-            self.__node = node
-            #self.__lexer._node = node
-        else:
+        if not isinstance(node, page.PageNodeBase):
             raise TypeError("The supplied content must be a unicode or PageNodeBase object.")
 
-        self.__lexer.tokenize(node.content, ast)
+        self.__lexer.tokenize(node.content, ast, node=node)
 
         for token in anytree.PreOrderIter(ast):
             if isinstance(token, tokens.Exception):
                 self._exceptionHandler(token, node)
 
+        #self.__node = self.__old_node
         return ast
 
     def add(self, *args):#name, regex, func, location=-1):

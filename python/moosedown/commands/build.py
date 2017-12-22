@@ -1,9 +1,13 @@
 import os
 import copy
 import shutil
-import mooseutils
+import logging
 import anytree
 import livereload
+
+import mooseutils
+
+
 import moosedown
 
 def command_line_options(subparser):
@@ -39,6 +43,8 @@ def main():
     #config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
     #extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
 
+    #logging.basicConfig(level=logging.DEBUG)
+
     destination = '/Users/slauae/.local/share/moose/site'
     if os.path.isdir(destination):
         shutil.rmtree(destination)
@@ -50,6 +56,7 @@ def main():
 
     data = load_config(config_file)
     root = moosedown.tree.build_page_tree.doc_tree(data['pages'].values())
+
 
     translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
 
@@ -68,9 +75,15 @@ def main():
         root.name = '' #TODO: This should not be needed
         for node in anytree.PreOrderIter(root):
             node.base = destination
-            node.build(translator)
+            node.translator = translator#node.build(translator)
 
             if node.source and os.path.isfile(node.source):
-                server.watch(node.source, lambda: node.build(translator))
+                #print 'WATCH:', type(node), node.source
+                #server.watch(node.source, lambda: node.build(translator))
+                server.watch(node.source, node.build)
+
+        for node in anytree.PreOrderIter(root):
+            node.build(translator)
+
 
         server.serve(root=destination, port=8000)
