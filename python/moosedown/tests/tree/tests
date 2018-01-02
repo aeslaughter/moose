@@ -19,7 +19,7 @@
     type = PythonUnitTest
     input = test_page.py
   [../]
-  [./page_tree]
+  [./build_page_tree]
     type = PythonUnitTest
     input = test_build_page_tree.py
   [../]
