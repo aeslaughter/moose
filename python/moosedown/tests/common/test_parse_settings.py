@@ -63,5 +63,18 @@ class TestParseSettings(unittest.TestCase):
         self.assertIn('month', unknown)
         self.assertEqual(unknown['month'], 'june')
 
+    def testUnknownException(self):
+        """
+        Test unknown key, value pairs with error exception
+        """
+        defaults = dict(year=(1980, 'doc'))
+        raw = 'year=2003 month=june'
+        with self.assertRaises(KeyError) as e:
+            known, unknown = common.parse_settings(defaults, raw, error_on_unknown=True)
+
+        self.assertIn("The following key, value settings are unknown:", e.exception.message)
+        self.assertIn("month", e.exception.message)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

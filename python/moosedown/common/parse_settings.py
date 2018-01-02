@@ -44,15 +44,15 @@ def match_settings(defaults, raw):
     return known, unknown
 
 
-def parse_settings(defaults, local):
+def parse_settings(defaults, local, error_on_unknown=False):
     """
 
     """
     settings, unknown = match_settings(defaults, local)
-    if unknown:
+    if error_on_unknown and unknown:
         msg = "The following key, value settings are unknown:"
         for key, value in unknown.iteritems():
             msg += '\n{}{}={}'.format(' '*4, key, repr(value))
-        raise TokenizeException(msg) #TODO: TokenException
+        raise KeyError(msg)
 
     return settings, unknown
