@@ -11,7 +11,7 @@ class TestRenderOrderedListHTML(testing.MarkdownTestCase):
         return self.render(text)(0)
 
     def testTree(self):
-        node = self.node('1. foo\n1. bar')
+        node = self.node(u'1. foo\n1. bar')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.Tag)
         self.assertIsInstance(node(1), tree.html.Tag)
@@ -33,7 +33,7 @@ class TestRenderOrderedListHTML(testing.MarkdownTestCase):
         self.assertString(node(1)(0)(0).content, 'bar')
 
     def testWrite(self):
-        node = self.node('1. foo\n1. bar')
+        node = self.node(u'1. foo\n1. bar')
         html = node.write()
         self.assertString(html, '<ol><li><p>foo</p></li><li><p>bar</p></li></ol>')
 
@@ -43,7 +43,7 @@ class TestRenderOrderedListMaterialize(TestRenderOrderedListHTML):
         return self.render(text).find('body')(0)(0)
 
     def testWrite(self):
-        node = self.node('1. foo\n1. bar')
+        node = self.node(u'1. foo\n1. bar')
         html = self.write(node)
         self.assertString(html,
                           '<ol class="browser-default"><li><p>foo</p></li><li><p>bar</p></li></ol>')
@@ -52,7 +52,7 @@ class TestRenderOrderedListLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('1. foo\n1. bar')(-1)(0)
+        node = self.render(u'1. foo\n1. bar')(-1)(0)
 
         self.assertIsInstance(node, tree.latex.Environment)
         self.assertIsInstance(node(0), tree.latex.CustomCommand)
@@ -71,7 +71,7 @@ class TestRenderOrderedListLatex(testing.MarkdownTestCase):
         self.assertString(node(5).content, 'bar')
 
     def testWrite(self):
-        node = self.render('1. foo\n1. bar')(-1)(0)
+        node = self.render(u'1. foo\n1. bar')(-1)(0)
         tex = self.write(node).strip('\n')
         self.assertString(tex,
                           '\\begin{enumerate}\n\\item\n\\par\nfoo\n\\item\n\\par\nbar\n\\end{enumerate}')

@@ -14,7 +14,7 @@ class TestRenderLinkHTML(testing.MarkdownTestCase):
         return self.render(text)(0)(0)
 
     def testTree(self):
-        node = self.node('[link](url.html)')
+        node = self.node(u'[link](url.html)')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertEqual(node.name, 'a')
         self.assertIsInstance(node(0), tree.html.String)
@@ -22,7 +22,7 @@ class TestRenderLinkHTML(testing.MarkdownTestCase):
         self.assertString(node['href'], 'url.html')
 
     def testTreeSettings(self):
-        node = self.node('[link](url.html id=foo)')
+        node = self.node(u'[link](url.html id=foo)')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertEqual(node.name, 'a')
         self.assertIsInstance(node(0), tree.html.String)
@@ -31,12 +31,12 @@ class TestRenderLinkHTML(testing.MarkdownTestCase):
         self.assertString(node['id'], 'foo')
 
     def testWrite(self):
-        link = self.node('[link](url.html)')
+        link = self.node(u'[link](url.html)')
         html = self.write(link)
         self.assertString(html, '<a href="url.html">link</a>')
 
     def testWriteSettings(self):
-        link = self.node('[link](url.html id=bar)')
+        link = self.node(u'[link](url.html id=bar)')
         html = self.write(link)
         self.assertString(html, '<a href="url.html" id="bar">link</a>')
 
@@ -49,7 +49,7 @@ class TestRenderLinkLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('[link](url.html)')(-1)(1)
+        node = self.render(u'[link](url.html)')(-1)(1)
         self.assertIsInstance(node, tree.latex.Command)
         self.assertIsInstance(node(0), tree.latex.Brace)
         self.assertIsInstance(node(0)(0), tree.latex.String)
@@ -61,7 +61,7 @@ class TestRenderLinkLatex(testing.MarkdownTestCase):
         self.assertString(node(1)(0).content, 'link')
 
     def testWrite(self):
-        node = self.render('[link](url.html)')(-1)(1)
+        node = self.render(u'[link](url.html)')(-1)(1)
         tex = self.write(node)
         self.assertString(tex, '\\href{url.html}{link}')
 

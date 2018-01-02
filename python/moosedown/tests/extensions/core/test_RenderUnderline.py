@@ -11,7 +11,7 @@ class TestRenderUnderlineHTML(testing.MarkdownTestCase):
         return self.render(text)(0)(0)
 
     def testTree(self):
-        node = self.node('=content=')
+        node = self.node(u'=content=')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.String)
 
@@ -19,7 +19,7 @@ class TestRenderUnderlineHTML(testing.MarkdownTestCase):
         self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node('=content=')
+        node = self.node(u'=content=')
         html = node.write()
         self.assertString(html, '<u>content</u>')
 
@@ -32,7 +32,7 @@ class TestRenderUnderlineLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('=content=')(-1)(1)
+        node = self.render(u'=content=')(-1)(1)
 
         self.assertIsInstance(node, tree.latex.Command)
         self.assertIsInstance(node(0), tree.latex.String)
@@ -41,7 +41,7 @@ class TestRenderUnderlineLatex(testing.MarkdownTestCase):
         self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.render('=content=')(-1)(1)
+        node = self.render(u'=content=')(-1)(1)
         tex = self.write(node)
         self.assertString(tex, '\\underline{content}')
 

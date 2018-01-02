@@ -14,7 +14,7 @@ class TestRenderParagraphHTML(testing.MarkdownTestCase):
         return self.render(text).find('body')
 
     def testTree(self):
-        node = self.node('foo\n\n\n\nbar')
+        node = self.node(u'foo\n\n\n\nbar')
         self.assertIsInstance(node, tree.html.Tag)
 
         self.assertIsInstance(node(0), tree.html.Tag)
@@ -28,7 +28,7 @@ class TestRenderParagraphHTML(testing.MarkdownTestCase):
         self.assertString(node(1)(0).content, 'bar')
 
     def testWrite(self):
-        node = self.node('foo\n\n\n\nbar')
+        node = self.node(u'foo\n\n\n\nbar')
         html = self.write(node(0))
         self.assertString(html, '<p>foo</p>')
         html = self.write(node(1))
@@ -43,7 +43,7 @@ class TestRenderParagraphLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('[link](url.html)')(-1)(1)
+        node = self.render(u'[link](url.html)')(-1)(1)
         self.assertIsInstance(node, tree.latex.Command)
         self.assertIsInstance(node(0), tree.latex.Brace)
         self.assertIsInstance(node(0)(0), tree.latex.String)
@@ -55,7 +55,7 @@ class TestRenderParagraphLatex(testing.MarkdownTestCase):
         self.assertString(node(1)(0).content, 'link')
 
     def testWrite(self):
-        node = self.render('+content+')(-1)(1)
+        node = self.render(u'+content+')(-1)(1)
         tex = self.write(node)
         self.assertString(tex, '\\textbf{content}')
 
