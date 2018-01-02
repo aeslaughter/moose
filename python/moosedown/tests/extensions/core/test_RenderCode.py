@@ -10,7 +10,7 @@ class TestRenderCodeHTML(testing.MarkdownTestCase):
     """Code HTML"""
 
     def testTree(self):
-        node = self.render('```\nint x;\n```').find('pre')
+        node = self.render(u'```\nint x;\n```').find('pre')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.Tag)
         self.assertIsInstance(node(0)(0), tree.html.String)
@@ -21,16 +21,16 @@ class TestRenderCodeHTML(testing.MarkdownTestCase):
         self.assertString(node(0)(0).content, '\nint x;\n')
 
     def testWrite(self):
-        node = self.render('```\nint x;\n```').find('pre')
+        node = self.render(u'```\nint x;\n```').find('pre')
         html = self.write(node)
         self.assertString(html, '<pre><code class="language-text">\nint x;\n</code></pre>')
 
     def testTreeLanguage(self):
-        node = self.render('```language=cpp\nint x;\n```').find('pre')
+        node = self.render(u'```language=cpp\nint x;\n```').find('pre')
         self.assertString(node(0)['class'], 'language-cpp')
 
     def testWriteLanguage(self):
-        node = self.render('```language=cpp\nint x;\n```').find('pre')
+        node = self.render(u'```language=cpp\nint x;\n```').find('pre')
         html = self.write(node)
         self.assertString(html, '<pre><code class="language-cpp">\nint x;\n</code></pre>')
 

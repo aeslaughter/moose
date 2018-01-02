@@ -8,7 +8,7 @@ from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderLabelHTML(testing.MarkdownTestCase):
     def testWrite(self):
-        node = tree.tokens.Label(None, text='foo')
+        node = tree.tokens.Label(None, text=u'foo')
         html = self.write(node)
         self.assertEqual(html, '')
 
@@ -19,7 +19,7 @@ class TestRenderLabelLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testWrite(self):
-        node = self.render(tree.tokens.Label(None, text='foo')).find('document')(-1)
+        node = self.render(tree.tokens.Label(None, text=u'foo')).find('document')(-1)
         tex = self.write(node)
         self.assertString(tex, '\\label{foo}')
 

@@ -470,7 +470,7 @@ class RenderShortcutLink(CoreRenderComponentBase):
 
         if token.key not in SHORTCUT_DATABASE:
             msg = "The shortcut link key '{}' was not located in the list of shortcuts."
-            raise Exception(msg.format(token.key))
+            raise KeyError(msg.format(token.key))
         else:
             a['href'] = SHORTCUT_DATABASE[token.key]
         return a
@@ -481,8 +481,8 @@ class RenderShortcutLink(CoreRenderComponentBase):
             raise Exception(msg.format(token.key))
         else:
             cmd = latex.CustomCommand(parent, 'href')
-            arg0 = latex.Brace(cmd, string=SHORTCUT_DATABASE[token.key])
-            arg1 = latex.Brace(cmd, string=token.key)
+            arg0 = latex.Brace(cmd, string=unicode(SHORTCUT_DATABASE[token.key]))
+            arg1 = latex.Brace(cmd, string=unicode(token.key))
             return arg1
 
 class RenderBacktick(CoreRenderComponentBase):
@@ -643,9 +643,9 @@ class RenderSubscript(CoreRenderComponentBase):
 
     def createLatex(self, token, parent):
         math = latex.InlineMath(parent)
-        latex.String(math, content='_{')
+        latex.String(math, content=u'_{')
         cmd = latex.Command(math, 'text')
-        latex.String(math, content='}')
+        latex.String(math, content=u'}')
         return cmd
 
 class RenderException(CoreRenderComponentBase):

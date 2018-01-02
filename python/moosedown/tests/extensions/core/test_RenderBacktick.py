@@ -9,7 +9,7 @@ from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 class TestRenderBacktickHTML(testing.MarkdownTestCase):
 
     def node(self):
-        return self.render('foo `code` bar')(0)
+        return self.render(u'foo `code` bar')(0)
 
     def testTree(self):
         node = self.node()
@@ -36,14 +36,14 @@ class TestRenderBacktickHTML(testing.MarkdownTestCase):
 class TestRenderBacktickMaterialize(TestRenderBacktickHTML):
 
     def node(self):
-        return self.render('foo `code` bar').find('body')(0)(0)
+        return self.render(u'foo `code` bar').find('body')(0)(0)
 
     RENDERER = MaterializeRenderer
 
 class TestRenderBacktickLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
     def testTree(self):
-        node = self.render('foo `code` bar')(-1)
+        node = self.render(u'foo `code` bar')(-1)
         self.assertIsInstance(node, tree.latex.Environment)
         self.assertIsInstance(node(0), tree.latex.CustomCommand)
         self.assertIsInstance(node(1), tree.latex.String)
@@ -61,7 +61,7 @@ class TestRenderBacktickLatex(testing.MarkdownTestCase):
         self.assertString(node(5).content, 'bar')
 
     def testWrite(self):
-        node = self.render('foo `code` bar')(-1)
+        node = self.render(u'foo `code` bar')(-1)
         tex = self.write(node)
         self.assertString(tex, '\n\\begin{document}\n\\par\nfoo \\texttt{code} bar\n\\end{document}\n')
 

@@ -11,7 +11,7 @@ class TestRenderStringHTML(testing.MarkdownTestCase):
         return self.render(text).find('body')(0)
 
     def testTree(self):
-        node = self.node('sit amet, consectetur')
+        node = self.node(u'sit amet, consectetur')
         self.assertIsInstance(node, tree.html.Tag)
         for i in range(6):
             self.assertIsInstance(node(i), tree.html.String)
@@ -24,7 +24,7 @@ class TestRenderStringHTML(testing.MarkdownTestCase):
         self.assertString(node(5).content, 'consectetur')
 
     def testWrite(self):
-        node = self.node('sit amet, consectetur')
+        node = self.node(u'sit amet, consectetur')
         html = self.write(node)
         self.assertString(html, '<p>sit amet, consectetur</p>')
 
@@ -37,7 +37,7 @@ class TestRenderStringLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('sit amet, consectetur').find('document')
+        node = self.render(u'sit amet, consectetur').find('document')
         for i in range(1,7):
             self.assertIsInstance(node(i), tree.latex.String)
 
@@ -49,7 +49,7 @@ class TestRenderStringLatex(testing.MarkdownTestCase):
         self.assertString(node(6).content, 'consectetur')
 
     def testWrite(self):
-        node = self.render('sit amet, consectetur').find('document')
+        node = self.render(u'sit amet, consectetur').find('document')
         tex = self.write(node)
         self.assertString(tex, '\n\\begin{document}\n\\par\nsit amet, consectetur\n\\end{document}\n')
 

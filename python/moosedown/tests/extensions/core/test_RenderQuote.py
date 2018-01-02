@@ -14,9 +14,9 @@ class TestRenderQuoteHTML(testing.MarkdownTestCase):
         return self.render(text)(0)
 
     def testTree(self):
-        node = self.node('> foo bar')
+        node = self.node(u'> foo bar')
         self.assertIsInstance(node, tree.html.Tag)
-        self.assertEqual(node.name, 'quote')
+        self.assertEqual(node.name, 'blockquote')
         self.assertIsInstance(node(0), tree.html.Tag)
         self.assertString(node(0).name, 'p')
 
@@ -30,9 +30,9 @@ class TestRenderQuoteHTML(testing.MarkdownTestCase):
         self.assertString(node(0)(2).content, 'bar')
 
     def testWrite(self):
-        node = self.node('> foo bar')
+        node = self.node(u'> foo bar')
         html = self.write(node)
-        self.assertString(html, '<quote><p>foo bar</p></quote>')
+        self.assertString(html, '<blockquote><p>foo bar</p></blockquote>')
 
 class TestRenderQuoteMaterialize(TestRenderQuoteHTML):
     RENDERER = MaterializeRenderer
@@ -43,7 +43,7 @@ class TestRenderQuoteLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('> foo bar').find('document')(-1)
+        node = self.render(u'> foo bar').find('document')(-1)
         self.assertIsInstance(node, tree.latex.Environment)
         self.assertString(node.name, 'quote')
 
@@ -60,7 +60,7 @@ class TestRenderQuoteLatex(testing.MarkdownTestCase):
 
 
     def testWrite(self):
-        node = self.render('> foo bar').find('document')(-1)
+        node = self.render(u'> foo bar').find('document')(-1)
         tex = self.write(node).strip('\n')
         self.assertString(tex, '\\begin{quote}\n\\par\nfoo bar\n\\end{quote}')
 

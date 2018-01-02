@@ -11,7 +11,7 @@ class TestRenderHeadingHTML(testing.MarkdownTestCase):
         return self.render(text)(0)
 
     def testBasic(self):
-        h = self.node('# Heading with Spaces')
+        h = self.node(u'# Heading with Spaces')
         self.assertIsInstance(h, tree.html.Tag)
         self.assertEqual(h.name, 'h1')
         for child in h.children:
@@ -25,7 +25,7 @@ class TestRenderHeadingHTML(testing.MarkdownTestCase):
         self.assertString(h.write(), "<h1>Heading with Spaces</h1>")
 
     def testSettings(self):
-        h = self.node('# Heading with Spaces style=font-size:42pt;')
+        h = self.node(u'# Heading with Spaces style=font-size:42pt;')
         self.assertIsInstance(h, tree.html.Tag)
         self.assertEqual(h.name, 'h1')
         for child in h.children:
@@ -47,9 +47,8 @@ class TestRenderHeadingMaterialize(TestRenderHeadingHTML):
 class TestRenderHeadingLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
-
     def checkLevel(self, lvl, cmd):
-        node = self.render('{} Heading with Space'.format('#'*lvl))(-1)(0)
+        node = self.render(u'{} Heading with Space'.format('#'*lvl))(-1)(0)
         self.assertIsInstance(node, tree.latex.Command)
         self.assertString(node.name, cmd)
 
