@@ -22,11 +22,6 @@ class Example(tokens.Token):
                   Property("preview")]
 """
 
-class Table(tokens.Token):
-    PROPERTIES = [Property('headings', ptype=list), Property('rows', ptype=list)]
-    def __init__(self, *args, **kwargs):
-        tokens.Token.__init__(self, *args, **kwargs)
-        #TODO: error check headings and data
 
 class DevelMarkdownExtension(base.MarkdownExtension):
     #TODO: require float, commands
@@ -52,7 +47,7 @@ class Example(command.MarkdownCommandComponent):
 
     def createToken(self, match, parent):
         master = floats.Float(parent)
-        caption = floats.Caption(master, prefix=u'Example')
+        caption = floats.Caption(master, prefix=self.settings['prefix'])
 
         grammer = self.reader.lexer.grammer('inline')
         self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
@@ -70,7 +65,7 @@ class Example(command.MarkdownCommandComponent):
         tokens.Code(tab, code=data[2], language=u'latex', escape=True)
 
         if self.settings['preview']:
-            modal = floats.Modal(caption, title=u"Preview", icon=u"visibility")
+            modal = floats.Modal(caption, title=u"HTML Preview", icon=u"visibility")
             #content = floats.Content(modal, class_="modal-content")
             preview = self.reader.parse(data[0], modal)
 
@@ -85,6 +80,9 @@ class ComponentSettings(command.MarkdownCommandComponent):
         settings = command.MarkdownCommandComponent.defaultSettings()
         settings['module'] = (None, "The name of the module containing the object.")
         settings['object'] = (None, "The name of the object to import from the 'module'.")
+        settings['caption'] = (None, "The caption to use for the settings table created.")
+        settings['prefix'] = (u'Table', "The caption prefix (e.g., Table).")
+
         return settings
 
     def createToken(self, match, parent):
@@ -93,19 +91,32 @@ class ComponentSettings(command.MarkdownCommandComponent):
         #TODO: error if 'module' and 'object' not provided
         #TODO: this should raise, but result in an error token
 
+        master = floats.Float(parent)
+
+        if self.settings['caption']:
+            caption = floats.Caption(master, prefix=self.settings['prefix'])
+            grammer = self.reader.lexer.grammer('inline')
+            self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
+
+
+        tbl = floats.Content(master, class_="card-content")
+
+
         mod = importlib.import_module(self.settings['module'])
         obj = getattr(mod, self.settings['object'])
 
         #TODO: error if defaultSettings not there or  it returns something that is not a dict()
         settings = obj.defaultSettings()
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
-        return Table(parent, headings=[u'Key', u'Default', u'Description'], rows=rows)
+        floats.Table(tbl, headings=[u'Key', u'Default', u'Description'], rows=rows)
+        return master
 
 
 class DevelRenderExtension(base.RenderExtension):
     def extend(self):
+        pass
         #self.add(Example, RenderExample())
-        self.add(Table, RenderTable())
+        #self.add(Table, RenderTable())
 
 class RenderExample(base.RenderComponent):
     def __init__(self, *args, **kwargs):
@@ -155,7 +166,7 @@ class RenderExample(base.RenderComponent):
             tag = uuid.uuid4()
             btn = html.Tag(caption, 'a', class_="btn modal-trigger right", href="#{}".format(tag) )
             icon = html.Tag(btn, 'i', class_="material-icons right")
-            html.String(btn, content=u'Preview')
+            html.String(btn, content=u'HTML Preview')
             html.String(icon, content=u"visibility")
 
             modal = html.Tag(parent, 'div', class_="modal", id_=tag)
@@ -169,25 +180,3 @@ class RenderExample(base.RenderComponent):
             footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
             close = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
             html.String(close, content=u'Done')
-
-
-
-class RenderTable(base.RenderComponent):
-
-    #def createMaterialize(self, token, parent):
-    #    return self.createHTML(token, parent)
-
-    def createHTML(self, token, parent):
-        attrs = token.attributes
-        attrs['class'] = 'moose-table-div'
-        tbl = html.Tag(parent, 'table', **attrs)
-        tr = html.Tag(tbl, 'tr')
-        for h in token.headings:
-            th = html.Tag(tr, 'th')
-            html.String(th, content=unicode(h), escape=True)
-        for r in token.rows:
-            tr = html.Tag(tbl, 'tr')
-            for d in r:
-                td = html.Tag(tr, 'td')
-                html.String(td, content=unicode(d), escape=True)
-        return tbl
