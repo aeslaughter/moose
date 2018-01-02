@@ -37,7 +37,6 @@ class Reader(ReaderRenderBase):
 
     def parse(self, node, root=None):
         ast = root if root else tokens.Token(None)
-
         #self.__old_node = self.__node
 
 
@@ -57,6 +56,7 @@ class Reader(ReaderRenderBase):
         return ast
 
     def add(self, *args):#name, regex, func, location=-1):
+        print args
         self.__lexer.add(*args)
 
     @staticmethod

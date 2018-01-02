@@ -88,12 +88,13 @@ class TokenExtension(Extension):
         token = component.createToken(match, parent)
         return token
 
-
 class MarkdownExtension(TokenExtension):
     #: Internal global for storing commands
     __COMMANDS__ = dict()
 
     def addCommand(self, command):
+        # TODO: All Command related stuff is in the command extensions, with the exception of
+        # this function. Figure out how to avoid this special code here...
         command.init(self.translator)
         #TODO: error if it exists
         MarkdownExtension.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command

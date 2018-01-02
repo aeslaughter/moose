@@ -7,7 +7,7 @@ import importlib
 import collections
 
 from moosedown import base, common
-from moosedown.extensions import core, floats
+from moosedown.extensions import core, floats, command
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
@@ -29,13 +29,13 @@ class Table(tokens.Token):
         #TODO: error check headings and data
 
 class DevelMarkdownExtension(base.MarkdownExtension):
-    #TODO: require float, materializes
+    #TODO: require float, commands
 
     def extend(self):
         self.addCommand(Example())
         self.addCommand(ComponentSettings())
 
-class Example(core.MarkdownCommandComponent):
+class Example(command.MarkdownCommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'example'
     EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
@@ -43,7 +43,7 @@ class Example(core.MarkdownCommandComponent):
 
     @staticmethod
     def defaultSettings():
-        settings = core.MarkdownCommandComponent.defaultSettings()
+        settings = command.MarkdownCommandComponent.defaultSettings()
         settings['caption'] = (None, "The caption to use for the code specification example.")
         settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
         settings['preview'] = (True, "Display a preview of the rendered result.")
@@ -76,13 +76,13 @@ class Example(core.MarkdownCommandComponent):
 
         return master
 
-class ComponentSettings(core.MarkdownCommandComponent):
+class ComponentSettings(command.MarkdownCommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'settings'
 
     @staticmethod
     def defaultSettings():
-        settings = core.MarkdownCommandComponent.defaultSettings()
+        settings = command.MarkdownCommandComponent.defaultSettings()
         settings['module'] = (None, "The name of the module containing the object.")
         settings['object'] = (None, "The name of the object to import from the 'module'.")
         return settings

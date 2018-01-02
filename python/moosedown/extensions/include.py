@@ -6,7 +6,7 @@ import importlib
 import collections
 
 from moosedown import base, common
-from moosedown.extensions import core, floats
+from moosedown.extensions import core, command, floats
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
@@ -18,18 +18,18 @@ class IncludeMarkdownExtension(base.MarkdownExtension):
     def extend(self):
         self.addCommand(Include())
 
-class Include(core.MarkdownCommandComponent):
+class Include(command.MarkdownCommandComponent):
     COMMAND = 'include'
     SUBCOMMAND = 'md'
 
     @staticmethod
     def defaultSettings():
-        settings = core.MarkdownCommandComponent.defaultSettings()
+        settings = command.MarkdownCommandComponent.defaultSettings()
         return settings
 
     def createToken(self, match, parent):
 
-        print parent.node
+        #print parent.node
 
         #print self.reader.node, type(self.reader.node), match.groups()
 
@@ -41,7 +41,7 @@ class Include(core.MarkdownCommandComponent):
         # Set the master node, so that when livereload fires on this included node that the
         # node that does the including is reloaded
         node.master.add(parent.node)
-        print node.name, parent.node.name, node.master
+        #print node.name, parent.node.name, node.master
 
         ast = self.reader.parse(node)
         for child in ast.children:
