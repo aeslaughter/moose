@@ -78,7 +78,3 @@ class RenderComponent(Component):
     @property
     def renderer(self):
         return self.translator.renderer
-
-class CommandComponent(TokenComponent):
-    COMMAND = None
-    SUBCOMMAND = None

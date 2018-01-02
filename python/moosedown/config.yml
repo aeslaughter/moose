@@ -3,6 +3,7 @@ renderer: moosedown.base.MaterializeRenderer
 translator: moosedown.base.Translator
 extensions:
     - moosedown.extensions.core
+    - moosedown.extensions.command
     - moosedown.extensions.devel
     - moosedown.extensions.floats
     - moosedown.extensions.include

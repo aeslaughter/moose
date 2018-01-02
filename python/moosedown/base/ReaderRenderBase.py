@@ -4,6 +4,9 @@ class ReaderRenderBase(object):
         self.__extensions = extensions
         self.__initialized = False
 
+    def add(self, *args, **kwargs):
+        raise NotImplementedError("...") #TODO: improve this
+
     def init(self, config):
         """
         Called automaticily, do not use
