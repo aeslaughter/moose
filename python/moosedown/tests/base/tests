@@ -3,4 +3,8 @@
     type = PythonUnitTest
     input = test_Translator.py
   [../]
+  [./reader]
+    type = PythonUnitTest
+    input = test_Reader.py
+  [../]
 []

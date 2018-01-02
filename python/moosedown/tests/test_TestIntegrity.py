@@ -84,10 +84,8 @@ class TestExtensions(unittest.TestCase):
 
     """ Objects listed here are ignored because they are base class objects that are not
         designed for use."""
-    BASE = [extensions.core.Command,
-            extensions.core.List,
+    BASE = [extensions.core.List,
             extensions.core.MarkdownComponent,
-            extensions.core.MarkdownCommandComponent,
             extensions.core.CoreRenderComponentBase]
 
 

@@ -72,7 +72,6 @@ Foo
 \begin{quote}
 Another item, that also includes code.
 
-
 ### Headings
 All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
 number of hashes indicate the heading level. The hash(es) must be followed by a single space.
