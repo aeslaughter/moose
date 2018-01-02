@@ -44,7 +44,7 @@ def match_settings(defaults, raw):
     return known, unknown
 
 
-def parse_settings(defaults, local, error_on_unknown=False):
+def parse_settings(defaults, local, error_on_unknown=True):
     """
 
     """

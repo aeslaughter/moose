@@ -57,7 +57,7 @@ class TestParseSettings(unittest.TestCase):
         """
         defaults = dict(year=(1980, 'doc'))
         raw = 'year=2003 month=june'
-        known, unknown = common.parse_settings(defaults, raw)
+        known, unknown = common.parse_settings(defaults, raw, error_on_unknown=False)
         self.assertEqual(known['year'], 2003)
         self.assertNotIn('month', known)
         self.assertIn('month', unknown)
@@ -70,7 +70,7 @@ class TestParseSettings(unittest.TestCase):
         defaults = dict(year=(1980, 'doc'))
         raw = 'year=2003 month=june'
         with self.assertRaises(KeyError) as e:
-            known, unknown = common.parse_settings(defaults, raw, error_on_unknown=True)
+            known, unknown = common.parse_settings(defaults, raw)
 
         self.assertIn("The following key, value settings are unknown:", e.exception.message)
         self.assertIn("month", e.exception.message)
