@@ -82,7 +82,7 @@ class TestFindall(unittest.TestCase):
 
         with self.assertRaises(ValueError) as e:
             nodes = root.findall('core.md', maxcount=1)
-        self.assertIn("The 'maxcount' was set to 1 but 3", str(e.exception))
+        self.assertIn("The 'maxcount' was set to 1 but 2", str(e.exception))
 
 
 

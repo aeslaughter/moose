@@ -28,7 +28,7 @@ class TestLatex(unittest.TestCase):
         enc = latex.Enclosure(enclose=('#','@'))
         self.assertEqual(enc.enclose, ('#','@'))
 
-        enc = latex.Enclosure(enclose=(';',';'), string='foo')
+        enc = latex.Enclosure(enclose=(';',';'), string=u'foo')
         self.assertIsInstance(enc(0), latex.String)
         self.assertEqual(enc(0).content, 'foo')
 
@@ -48,7 +48,7 @@ class TestLatex(unittest.TestCase):
         cmd = latex.Command(None, 'foo')
         self.assertEqual(cmd.write(), '\\foo{}')
 
-        cmd = latex.Command(None, 'foo', string='bar')
+        cmd = latex.Command(None, 'foo', string=u'bar')
         self.assertIsInstance(cmd(0), latex.String)
         self.assertEqual(cmd(0).content, 'bar')
         self.assertEqual(cmd.write(), '\\foo{bar}')
@@ -60,8 +60,8 @@ class TestLatex(unittest.TestCase):
         cmd = latex.CustomCommand(None, 'foo')
         self.assertEqual(cmd.write(), '\\foo')
 
-        latex.Bracket(cmd, string='bar')
-        latex.Brace(cmd, string='test')
+        latex.Bracket(cmd, string=u'bar')
+        latex.Brace(cmd, string=u'test')
 
         self.assertEqual(cmd.write(), '\\foo[bar]{test}')
 
@@ -73,7 +73,7 @@ class TestLatex(unittest.TestCase):
         self.assertEqual(env.write(), '\n\\begin{foo}\n\n\\end{foo}\n')
 
     def testString(self):
-        s = latex.String(content='foo')
+        s = latex.String(content=u'foo')
         self.assertEqual(s.content, 'foo')
 
 
