@@ -15,15 +15,15 @@ class TestHTML(unittest.TestCase):
         self.assertEqual(tag.write(), '<section></section>')
 
     def testString(self):
-        tag = html.String(content='section')
+        tag = html.String(content=u'section')
         self.assertEqual(tag.write(), 'section')
 
-        tag = html.String(content='<section>', escape=True)
+        tag = html.String(content=u'<section>', escape=True)
         self.assertEqual(tag.write(), '&lt;section&gt;')
 
     def testTagString(self):
         tag = html.Tag(None, 'h1')
-        html.String(content='foo', parent=tag)
+        html.String(content=u'foo', parent=tag)
         self.assertEqual(tag.write(), '<h1>foo</h1>')
 
         with self.assertRaises(TypeError) as e:

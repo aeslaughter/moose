@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import unittest
+import re
 import logging
 import inspect
 import mock
 
 from moosedown.tree import tokens
+from moosedown.base.Grammer import Grammer
 
 class TestTokens(unittest.TestCase):
 
@@ -12,7 +14,7 @@ class TestTokens(unittest.TestCase):
         status = []
         msg = "The following classes in tokens module do not have a required test.\n"
         for name, obj in inspect.getmembers(tokens):
-            if inspect.isclass(obj):
+            if inspect.isclass(obj) and tokens.Token in inspect.getmro(obj):
                 status.append(hasattr(self, 'test' + obj.__name__))
                 if not status[-1]:
                     msg += '    {}\n'.format(obj.__name__)
@@ -32,20 +34,16 @@ class TestTokens(unittest.TestCase):
         self.assertEqual(e.exception.message, gold)
 
     def testString(self):
-        token = tokens.String(content="content")
+        token = tokens.String(content=u"content")
         self.assertEqual(token.content, "content")
 
         with self.assertRaises(TypeError) as e:
             token = tokens.String(content=1980)
-        gold = "The supplied property 'content' must be of type 'str', but 'int' was provided."
+        gold = "The supplied property 'content' must be of type 'unicode', but 'int' was provided."
         self.assertEqual(e.exception.message, gold)
 
-    def testUnknown(self):
-        token = tokens.Unknown(content="content")
-        self.assertEqual(token.content, "content")
-
     def testWord(self):
-        token = tokens.Word(content="content")
+        token = tokens.Word(content=u"content")
         self.assertEqual(token.content, "content")
 
     def testSpace(self):
@@ -77,15 +75,15 @@ class TestTokens(unittest.TestCase):
         self.assertEqual(e.exception.message, gold)
 
     def testPunctuation(self):
-        token = tokens.Punctuation(content='---')
+        token = tokens.Punctuation(content=u'---')
         self.assertEqual(token.content, '---')
 
     def testNumber(self):
-        token = tokens.Punctuation(content='1980')
+        token = tokens.Punctuation(content=u'1980')
         self.assertEqual(token.content, '1980')
 
     def testCode(self):
-        token = tokens.Code(code="x+y=2;")
+        token = tokens.Code(code=u"x+y=2;")
         self.assertEqual(token.code, "x+y=2;")
 
     def testHeading(self):
@@ -129,25 +127,25 @@ class TestTokens(unittest.TestCase):
             token = tokens.Link()
         self.assertIn("The property 'url' is required.", e.exception.message)
 
-        token = tokens.Link(url='foo')
+        token = tokens.Link(url=u'foo')
         self.assertEqual(token.url, 'foo')
-        token.url = 'bar'
+        token.url = u'bar'
         self.assertEqual(token.url, 'bar')
 
         with self.assertRaises(TypeError) as e:
             token.url = 42
-        gold = "The supplied property 'url' must be of type 'str', but 'int' was provided."
+        gold = "The supplied property 'url' must be of type 'unicode', but 'int' was provided."
         self.assertEqual(e.exception.message, gold)
 
     def testShortcut(self):
         with self.assertRaises(IOError) as e:
-            token = tokens.Shortcut(key='foo')
+            token = tokens.Shortcut(key=u'foo')
         self.assertEqual("The property 'content' is required.", e.exception.message)
         with self.assertRaises(IOError) as e:
-            token = tokens.Shortcut(content='foo')
+            token = tokens.Shortcut(content=u'foo')
         self.assertEqual("The property 'key' is required.", e.exception.message)
 
-        token = tokens.Shortcut(key='key', content='content')
+        token = tokens.Shortcut(key=u'key', content=u'content')
         self.assertEqual(token.key, 'key')
         self.assertEqual(token.content, 'content')
 
@@ -156,14 +154,14 @@ class TestTokens(unittest.TestCase):
             token = tokens.ShortcutLink()
         self.assertEqual("The property 'key' is required.", e.exception.message)
 
-        token = tokens.ShortcutLink(key='key')
+        token = tokens.ShortcutLink(key=u'key')
         self.assertEqual(token.key, 'key')
 
     def testInlineCode(self):
         with self.assertRaises(IOError) as e:
             token = tokens.InlineCode()
         self.assertIn("The property 'code' is required.", e.exception.message)
-        token = tokens.InlineCode(code='int x;')
+        token = tokens.InlineCode(code=u'int x;')
         self.assertEqual(token.code, 'int x;')
 
     def testStrong(self):
@@ -188,8 +186,29 @@ class TestTokens(unittest.TestCase):
         token = tokens.Subscript()
 
     def testLabel(self):
-        token = tokens.Label(text='foo')
+        token = tokens.Label(text=u'foo')
         self.assertEqual(token.text, 'foo')
+
+    def testFloat(self):
+        token = tokens.Float(label='foo')
+        self.assertEqual(token.label, 'foo')
+        self.assertEqual(token.caption, None)
+        self.assertEqual(token.id, None)
+
+        token = tokens.Float(label='foo', caption=u'bar', id='12345')
+        self.assertEqual(token.label, 'foo')
+        self.assertEqual(token.caption, 'bar')
+        self.assertEqual(token.id, '12345')
+
+        with self.assertRaises(IOError) as e:
+            token = tokens.Float()
+        self.assertIn("The property 'label' is required.", e.exception.message)
+
+    def testException(self):
+        def func():
+            pass
+        pattern = Grammer.Pattern(name='foo', regex=re.compile('\S'), function=func)
+        token = tokens.Exception(pattern=pattern, traceback='foo')
 
 
 if __name__ == '__main__':
