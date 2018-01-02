@@ -11,7 +11,7 @@ class TestRenderSuperscriptHTML(testing.MarkdownTestCase):
         return self.render(text)(0)(0)
 
     def testTree(self):
-        node = self.node('^{content}')
+        node = self.node(u'^{content}')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.String)
 
@@ -19,7 +19,7 @@ class TestRenderSuperscriptHTML(testing.MarkdownTestCase):
         self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node('^{content}')
+        node = self.node(u'^{content}')
         html = node.write()
         self.assertString(html, '<sup>content</sup>')
 
@@ -32,7 +32,7 @@ class TestRenderSuperscriptLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('foo^{content}')(-1)
+        node = self.render(u'foo^{content}')(-1)
 
         self.assertIsInstance(node(1), tree.latex.String)
         self.assertString(node(1).content, 'foo')
@@ -47,7 +47,7 @@ class TestRenderSuperscriptLatex(testing.MarkdownTestCase):
         self.assertString(node(2)(2).content, '}')
 
     def testWrite(self):
-        node = self.render('foo^{content}')(-1)
+        node = self.render(u'foo^{content}')(-1)
         tex = self.write(node(2))
         self.assertString(tex, '$\^\{\\text{content}\}$')
 

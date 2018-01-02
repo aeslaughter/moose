@@ -81,7 +81,7 @@ class TokenExtension(Extension):
         Extension.add(self, group, name, component.RE, func, location)
 
     def __function(self, match, parent, component):
-        component.settings = component.defaultSettings()
+        component.settings = {k:v[0] for k, v in component.defaultSettings().iteritems()}
         if 'settings' in match.groupdict() and component.PARSE_SETTINGS:
             component.settings, _ = common.parse_settings(component.settings, match.group('settings'))
         token = component.createToken(match, parent)
