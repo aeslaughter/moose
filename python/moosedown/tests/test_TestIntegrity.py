@@ -82,9 +82,12 @@ class TestExtensions(unittest.TestCase):
     READER_REQUIRED = ['Test{}Tokenize']
     RENDER_REQUIRED = ['Test{}HTML', 'Test{}Materialize', 'Test{}Latex']
 
+    """ Objects listed here are ignored because they are base class objects that are not
+        designed for use."""
     BASE = [extensions.core.Command,
             extensions.core.List,
             extensions.core.MarkdownComponent,
+            extensions.core.MarkdownCommandComponent,
             extensions.core.CoreRenderComponentBase]
 
 
