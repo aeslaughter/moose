@@ -679,7 +679,7 @@ class RenderException(CoreRenderComponentBase):
 
         pre = html.Tag(content, 'pre', style="font-size:80%;")
         html.String(pre, content=unicode(token.traceback), escape=True)
-        print token.traceback
+        #print token.traceback
 
         footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
         done = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")

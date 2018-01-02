@@ -17,12 +17,16 @@ class Renderer(ReaderRenderBase):
         ReaderRenderBase.__init__(self, extensions)
 
     def add(self, token, function):
+        #print 'ADD:', token, function
+
 
         if not isinstance(token, type):
             raise TypeError("The supplied token must be a 'type' not an instance.")
 
         #TODO: check if it exists
         self.__functions[token] = function
+        #for k, v in self.__functions.iteritems():
+        #    print k, v
 
     def render(self, ast, reinit=True):
         if reinit:
@@ -37,11 +41,11 @@ class Renderer(ReaderRenderBase):
 
     def function(self, token):
         #TODO: error if not found
-        for token_type, func in self.__functions.iteritems():
-            if isinstance(token, token_type):
-                return func
-        #if type(token) in self.__functions:
-        #    return self.__functions[type(token)]
+        #for token_type, func in self.__functions.iteritems():
+        #    if isinstance(token, token_type):
+        #        return func
+        if type(token) in self.__functions:
+            return self.__functions[type(token)]
 
     def write(self, ast):
         text = ast.write()
@@ -50,6 +54,7 @@ class Renderer(ReaderRenderBase):
     def process(self, token, parent):
         try:
             func = self.function(token)
+        #    print 'EVAL:', token.name, func
             el = func(token, parent) if func else None
         except Exception as e:
             if token.match:

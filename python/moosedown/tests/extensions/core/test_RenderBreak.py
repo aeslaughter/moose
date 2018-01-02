@@ -18,7 +18,7 @@ class TestRenderBreakHTML(testing.MarkdownTestCase):
         self.assertIsInstance(node(2), tree.html.String)
 
         self.assertString(node(0).content, 'foo')
-        self.assertString(node(1).content, ' ')
+        self.assertString(node(1).content, u' ')
         self.assertString(node(2).content, 'bar')
 
     def testWrite(self):

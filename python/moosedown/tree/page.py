@@ -50,6 +50,9 @@ class LocationNodeBase(PageNodeBase):
             func = lambda n: n.local.endswith(name)
             nodes = anytree.search.findall(self.root, func)
             self.__cache[name] = nodes
+        #func = lambda n: n.local.endswith(name)
+        #nodes = anytree.search.findall(self.root, func)
+
 
         if maxcount and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
@@ -101,7 +104,6 @@ class MarkdownNode(FileNode):
 
 
     def build(self, translator=None):
-        print self.master
         for node in self.master:
             node.build(translator)
 
