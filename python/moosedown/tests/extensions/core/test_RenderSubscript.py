@@ -11,7 +11,7 @@ class TestRenderSubscriptHTML(testing.MarkdownTestCase):
         return self.render(text)(0)(0)
 
     def testTree(self):
-        node = self.node('_{content}')
+        node = self.node(u'_{content}')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.String)
 
@@ -19,7 +19,7 @@ class TestRenderSubscriptHTML(testing.MarkdownTestCase):
         self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node('_{content}')
+        node = self.node(u'_{content}')
         html = node.write()
         self.assertString(html, '<sub>content</sub>')
 
@@ -32,7 +32,7 @@ class TestRenderSubscriptLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render('foo_{content}')(-1)
+        node = self.render(u'foo_{content}')(-1)
 
         self.assertIsInstance(node(1), tree.latex.String)
         self.assertString(node(1).content, 'foo')
@@ -47,7 +47,7 @@ class TestRenderSubscriptLatex(testing.MarkdownTestCase):
         self.assertString(node(2)(2).content, '}')
 
     def testWrite(self):
-        node = self.render('foo_{content}')(-1)
+        node = self.render(u'foo_{content}')(-1)
         tex = self.write(node(2))
         self.assertString(tex, '$\_\{\\text{content}\}$')
 

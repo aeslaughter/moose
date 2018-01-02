@@ -66,6 +66,7 @@ class Renderer(ReaderRenderBase):
 
         if el is None:
             el = parent
+
         #TODO: check return type
         for child in token.children:
             self.process(child, el)
@@ -101,6 +102,8 @@ class MaterializeRenderer(HTMLRenderer):
 
 
         html.Tag(root, 'html')
+
+        #TODO: create methods for pre/post render tree manipulation
 
 
         # <head>

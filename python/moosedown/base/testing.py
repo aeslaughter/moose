@@ -5,7 +5,7 @@ import unittest
 import inspect
 import logging
 
-from moosedown import base
+from moosedown import base, tree
 from mooseutils import text_diff
 
 logging.basicConfig()
@@ -49,6 +49,9 @@ class MarkdownTestCase(unittest.TestCase):
         Inputs:
             ast: Markdown token tree.
         """
+        if not (isinstance(md, unicode) or isinstance(md, tree.tokens.Token)):
+            raise TypeError("The supplied content must be a Token object or unicode text.")
+
         ast = self.ast(md) if isinstance(md, unicode) else md
         return self._translator.renderer.render(ast)
 

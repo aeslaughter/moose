@@ -630,9 +630,9 @@ class RenderSuperscript(CoreRenderComponentBase):
 
     def createLatex(self, token, parent):
         math = latex.InlineMath(parent)
-        latex.String(math, content='^{')
+        latex.String(math, content=u'^{')
         cmd = latex.Command(math, 'text')
-        latex.String(math, content='}')
+        latex.String(math, content=u'}')
         return cmd
 
 class RenderSubscript(CoreRenderComponentBase):

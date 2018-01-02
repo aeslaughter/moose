@@ -253,9 +253,9 @@ def text_diff(text, gold):
     """
 
     # Convert to line
-    if isinstance(text, str):
+    if isinstance(text, (str, unicode)):
         text = text.splitlines(True)
-    if isinstance(gold, str):
+    if isinstance(gold, (str, unicode)):
         gold = gold.splitlines(True)
 
     # Perform diff

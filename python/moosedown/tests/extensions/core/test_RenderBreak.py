@@ -8,7 +8,7 @@ from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderBreakHTML(testing.MarkdownTestCase):
     def node(self):
-        return self.render('foo\nbar')(0)
+        return self.render(u'foo\nbar')(0)
 
     def testTree(self):
         node = self.node()
@@ -29,12 +29,12 @@ class TestRenderBreakHTML(testing.MarkdownTestCase):
 class TestRenderBreakMaterialize(TestRenderBreakHTML):
     RENDERER = MaterializeRenderer
     def node(self):
-        return self.render('foo\nbar').find('body')(0)(0)
+        return self.render(u'foo\nbar').find('body')(0)(0)
 
 class TestRenderBreakLatex(testing.MarkdownTestCase):
     RENDERER = LatexRenderer
     def testTree(self):
-        node = self.render('foo\nbar')(-1)
+        node = self.render(u'foo\nbar')(-1)
         self.assertIsInstance(node, tree.latex.Environment)
         self.assertIsInstance(node(0), tree.latex.CustomCommand)
         self.assertIsInstance(node(1), tree.latex.String)
@@ -47,7 +47,7 @@ class TestRenderBreakLatex(testing.MarkdownTestCase):
         self.assertString(node(3).content, 'bar')
 
     def testWrite(self):
-        node = self.render('foo\nbar')(-1)
+        node = self.render(u'foo\nbar')(-1)
         tex = self.write(node)
         self.assertString(tex, '\n\\begin{document}\n\\par\nfoo bar\n\\end{document}\n')
 
