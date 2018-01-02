@@ -165,7 +165,7 @@ blockquote {
     background: beige;
 }
 
-.moose-table-header-tr
+.moose-table-div table thead
 {
   border-bottom-style: solid;
   border-width: 1px;
@@ -176,10 +176,10 @@ blockquote {
   font-size: smaller;
 }
 
-.moose-table-div td, th{
+.moose-table-div table tbody td, th{
   padding-top: 5px;
   padding-bottom: 5px;
-  line-height: 1.5;
+  line-height: 1.25;
 }
 
 .moose-listing-div pre
