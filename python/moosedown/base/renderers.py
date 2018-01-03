@@ -131,7 +131,7 @@ class MaterializeRenderer(HTMLRenderer):
         HTMLRenderer.render(self, ast, div, reinit=reinit)
 
         # Add sections
-
+        """
         level = 'h{}'.format(self['section-level'])
         parent = div
         for child in div:
@@ -153,7 +153,7 @@ class MaterializeRenderer(HTMLRenderer):
 
             else:
                 child.parent = parent
-
+        """
         return root
 
 

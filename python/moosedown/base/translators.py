@@ -42,6 +42,7 @@ class Translator(object):
             raise TypeError("The supplied renderer must inherit from moosedown.base.Renderer.")
 
         # Load the extensions
+        self.__extensions = extensions
         config, reader_extensions, render_extensions = self.load(extensions)
 
         for ext in reader_extensions:
@@ -58,6 +59,9 @@ class Translator(object):
         self.__renderer = renderer(render_extensions)
         self.__renderer.init(config)
         #self.__ast = None
+
+    def extensions(self):
+        return self.__extensions
 
     def load(self, extensions):
         """

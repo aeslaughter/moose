@@ -219,6 +219,9 @@ class Paragraph(MarkdownComponent):
     """
     RE = re.compile(r'\s*(?P<inline>.*?)(?:\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
+    #TODO: Figure out settings???
+    # foo=bar This is the actual content???
+
     def createToken(self, match, parent):
         return tokens.Paragraph(parent)
 
@@ -274,6 +277,15 @@ class OrderedList(List):
                     flags=re.MULTILINE|re.DOTALL)
     SPLIT_RE = re.compile(r'\n*^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
     TOKEN = tokens.OrderedList
+
+    #TODO: figure out how to handle settings???
+    # 1. start=42 type=a This is the actual content.
+
+
+    @staticmethod
+    def defaultSettings():
+        settings = List.defaultSettings()
+        settings['type'] = ('1', "The list type (1, A, a, i, or I).")
 
     def createToken(self, match, parent):
         token = List.createToken(self, match, parent)
@@ -479,6 +491,8 @@ class RenderOrderedList(CoreRenderComponentBase):
     def createMaterialize(self, token, parent):
         tag = CoreRenderComponentBase.createMaterialize(self, token, parent)
         tag['class'] = 'browser-default'
+        tag['start'] = token.start
+        #tag['type'] = token.type
         return tag
 
     def createLatex(self, token, parent):
