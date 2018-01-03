@@ -33,8 +33,8 @@ class DevelMarkdownExtension(base.MarkdownExtension):
 class Example(command.MarkdownCommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'example'
-    EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
-                            flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    #EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
+    #                        flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     @staticmethod
     def defaultSettings():
@@ -46,29 +46,39 @@ class Example(command.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
-        master = floats.Float(parent)
+        master = floats.Float(parent, **self.attributes)
         caption = floats.Caption(master, prefix=self.settings['prefix'])
 
         grammer = self.reader.lexer.grammer('inline')
         self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
 
-        data = match.group('content').split('~~~')[1:]
+        data = match.group('content')
 
         tabs = floats.Tabs(master)
         tab = floats.Tab(tabs, title=u'MooseDown')
-        tokens.Code(tab, code=data[0], language=u'markdown', escape=True)
+        tokens.Code(tab, code=data, language=u'markdown', escape=True)
+
+        translator = base.Translator(type(self.reader), base.MaterializeRenderer, self.translator.extensions())
+        ast = translator.reader.parse(data)
+        html = translator.renderer.render(ast)
 
         tab = floats.Tab(tabs, title=u'HTML')
-        tokens.Code(tab, code=data[1], language=u'HTML', escape=True)
+        tokens.Code(tab, code=html.find('body')(0).write(), language=u'HTML', escape=True)
+
+
+        translator = base.Translator(type(self.reader), base.LatexRenderer, self.translator.extensions())
+        ast = translator.reader.parse(data)
+        tex = translator.renderer.render(ast)
 
         tab = floats.Tab(tabs, title=u'LaTeX')
-        tokens.Code(tab, code=data[2], language=u'latex', escape=True)
+        content = re.sub(r'\\(begin|end){document}', '', tex.find('document').write())
+        tokens.Code(tab, code=unicode(content), language=u'latex', escape=True)
 
         if self.settings['preview']:
             modal = floats.Modal(caption, title=u"HTML Preview", icon=u"visibility")
             #content = floats.Content(modal, class_="modal-content")
-            preview = self.reader.parse(data[0], modal)
-
+            ast.parent = modal
+            preview = ast
         return master
 
 class ComponentSettings(command.MarkdownCommandComponent):

@@ -33,7 +33,12 @@ class MarkdownCommandComponent(base.TokenComponent):
 
     @staticmethod
     def defaultSettings():
-        return base.TokenComponent.defaultSettings()
+        settings = base.TokenComponent.defaultSettings()
+        settings = base.TokenComponent.defaultSettings()
+        settings['style'] = ('', "The style settings that are passed to the HTML flags.")
+        settings['class'] = ('', "The class settings to be passed to the HTML flags.")
+        settings['id'] = ('', "The class settings to be passed to the HTML flags.")
+        return settings
 
     @property
     def attributes(self):
