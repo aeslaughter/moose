@@ -81,10 +81,16 @@ class TokenExtension(Extension):
         Extension.add(self, group, name, component.RE, func, location)
 
     def __function(self, match, parent, component):
+        defaults = component.defaultSettings()
+        if not isinstance(defaults, dict):
+            raise common.exceptions.TokenizeException("The component '{}' must return a dict from the defaultSettings static method.".format(component))
+
+
+
         if 'settings' in match.groupdict() and component.PARSE_SETTINGS:
-            component.settings, _ = common.parse_settings(component.defaultSettings(), match.group('settings'))
+            component.settings, _ = common.parse_settings(defaults, match.group('settings'))
         else:
-            component.settings = {k:v[0] for k, v in component.defaultSettings().iteritems()}
+            component.settings = {k:v[0] for k, v in defaults.iteritems()}
         token = component.createToken(match, parent)
         return token
 

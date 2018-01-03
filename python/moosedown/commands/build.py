@@ -65,8 +65,8 @@ def main():
         idx = root.findall('index.md')[0]
         idx.read()
         #print idx.get_root()#root(-1)(0)(1)._path[0]
-        translator.convert(idx)
-        #print ast
+        ast, html = translator.convert(idx)
+        print ast
 
         #translator.convert(ast)
     else:

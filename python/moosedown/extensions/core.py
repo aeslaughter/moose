@@ -233,8 +233,6 @@ class Backtick(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.InlineCode(parent, code=match.group('code'))
 
-
-
 class List(MarkdownComponent):
     """
     Base for lists components.
@@ -286,6 +284,7 @@ class OrderedList(List):
     def defaultSettings():
         settings = List.defaultSettings()
         settings['type'] = ('1', "The list type (1, A, a, i, or I).")
+        return settings
 
     def createToken(self, match, parent):
         token = List.createToken(self, match, parent)

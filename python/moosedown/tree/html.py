@@ -11,11 +11,28 @@ class Tag(NodeBase):
     PROPERTIES = [Property('close', default=True, ptype=bool)]
 
     def __init__(self, parent, name,  **kwargs):
+        style = kwargs.pop('style', None)
+        self.__style = dict()
+        if style:
+            for pair in style.split(';'):
+                key, value = pair.split(':')
+                self.__style[key.strip()] = value.strip()
+
         super(Tag, self).__init__(name=name, parent=parent, **kwargs)
+
+    @property
+    def style(self):
+        return self.__style
+
 
     def write(self):
         out = ''
         attr = ' '.join(['{}="{}"'.format(key, str(value)) for key, value in self.attributes.iteritems() if value])
+        if self.__style:
+
+            style_string = ';'.join(['{}:{}'.format(key, str(value)) for key, value in self.__style.iteritems() if value])
+            attr += ' style="{}"'.format(style_string)
+
         if attr:
             out += '<{} {}>'.format(self.name, attr)
         else:
@@ -26,6 +43,7 @@ class Tag(NodeBase):
         if self.close:
             out += '</{}>'.format(self.name)
         return out
+
 
 class String(NodeBase):
     """
