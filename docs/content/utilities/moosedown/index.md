@@ -26,9 +26,19 @@ respect to format as well as easily extendable so that MOOSE-based applications 
 system to meet their documentation needs. The strictness allows for a simple parsing strategy to be
 used and promotes uniformity among the MooseDown files.
 
-!include core.md
+| Extension | Description |
+| :- | :- |
+| core | Basic markdown syntax such as code blocks, lists, and bold text. |
+| include | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
 
-!include include.md
+
+
+
+
+
+
+
+
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 [HTML]: https://en.wikipedia.org/wiki/HTML

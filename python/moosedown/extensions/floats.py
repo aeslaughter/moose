@@ -5,7 +5,7 @@ import collections
 import uuid
 
 from moosedown import base
-from moosedown.extensions import core
+from moosedown.extensions import core, table
 from moosedown.tree import tokens, html
 from moosedown.tree.base import Property
 
@@ -41,11 +41,6 @@ class Modal(tokens.Token):
                   Property("icon", ptype=unicode)]
     pass
 
-class Table(tokens.Token):
-    PROPERTIES = [Property('headings', ptype=list), Property('rows', ptype=list)]
-    def __init__(self, *args, **kwargs):
-        tokens.Token.__init__(self, *args, **kwargs)
-        #TODO: error check headings and data
 
 
 """
@@ -62,7 +57,6 @@ class FloatRenderExtension(base.RenderExtension):
         self.add(Modal, RenderModal())
         self.add(Tabs, RenderTabs())
         self.add(Tab, RenderTab())
-        self.add(Table, RenderTable())
 
 class RenderFloat(base.RenderComponent):
     def createHTML(self, token, parent):
@@ -168,25 +162,3 @@ class RenderTab(base.RenderComponent):
         div = html.Tag(parent.parent.children[-1], 'div', id_=tag)
 
         return  div
-
-class RenderTable(base.RenderComponent):
-
-    def createHTML(self, token, parent):
-        attrs = token.attributes
-        attrs['class'] = 'moose-table-div'
-        div = html.Tag(parent, 'div', **attrs)
-        tbl = html.Tag(div, 'table')
-
-        thead = html.Tag(tbl, 'thead')
-        tr = html.Tag(thead, 'tr')
-        for h in token.headings:
-            th = html.Tag(tr, 'th')
-            html.String(th, content=unicode(h), escape=True)
-
-        tbody = html.Tag(tbl, 'tbody')
-        for r in token.rows:
-            tr = html.Tag(tbody, 'tr')
-            for d in r:
-                td = html.Tag(tr, 'td')
-                html.String(td, content=unicode(d), escape=True)
-        return div

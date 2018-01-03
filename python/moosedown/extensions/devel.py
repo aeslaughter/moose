@@ -7,7 +7,7 @@ import importlib
 import collections
 
 from moosedown import base, common
-from moosedown.extensions import core, floats, command
+from moosedown.extensions import core, floats, command, table
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
@@ -118,7 +118,7 @@ class ComponentSettings(command.MarkdownCommandComponent):
         #TODO: error if defaultSettings not there or  it returns something that is not a dict()
         settings = obj.defaultSettings()
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
-        floats.Table(tbl, headings=[u'Key', u'Default', u'Description'], rows=rows)
+        table.Table(tbl, headings=[u'Key', u'Default', u'Description'], rows=rows)
         return master
 
 
