@@ -14,6 +14,9 @@ class Lexer(object):
 
     def tokenize(self, text, parent, grammer, line=1, node=None):
 
+        #if node is None:
+        #    node = parent.node
+
         #text = node.content
 
         if not isinstance(text, unicode):
@@ -38,12 +41,13 @@ class Lexer(object):
 
             obj.line = line #
             obj.match = mo
+            obj.node = node
 
             line += mo.group(0).count('\n')
             pos = mo.end()
             mo, pattern = self._search(text, grammer, pos)
 
-        if pos < n:
+        if pos < n: #TODO: exception
             obj = tree.tokens.Unknown(content=text[pos:])
             obj.parent = parent
             obj.line = line
@@ -56,7 +60,7 @@ class Lexer(object):
         return None, None
 
     def buildObject(self, pattern, match, parent, line, node):
-        parent.node = node #TODO: is there a better way
+        #parent.node = node #TODO: is there a better way
         obj = pattern.function(match, parent)
 
 

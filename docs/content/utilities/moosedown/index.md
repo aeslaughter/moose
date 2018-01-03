@@ -28,8 +28,8 @@ used and promotes uniformity among the MooseDown files.
 
 | Extension | Description |
 | :- | :- |
-| core | Basic markdown syntax such as code blocks, lists, and bold text. |
-| include | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
+| [core](core.md) | Basic markdown syntax such as code blocks, lists, and bold text. |
+| [include](include.md) | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
 
 
 

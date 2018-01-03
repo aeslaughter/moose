@@ -10,16 +10,16 @@ from moosedown.tree.base import Property
 def make_extension():
     return TableMarkdownExtension(), TableRenderExtension()
 
+#class Table(object):
+#    def __init__
 
 
-class Table(tokens.Token):
+
+
+class TableToken(tokens.Token):
     PROPERTIES = [Property('headings', ptype=list),
                   Property('rows', required=True, ptype=list),
                   Property('format', ptype=list)]
-    CENTER = 0
-    LEFT = 1
-    RIGHT = 2
-
     def __init__(self, *args, **kwargs):
         tokens.Token.__init__(self, *args, **kwargs)
         #TODO: error check headings, data, and format
@@ -28,15 +28,28 @@ class Table(tokens.Token):
             self.format = [self.LEFT] * len(self.rows[0])
 
 
+class Table(tokens.Token):
+    pass
+
+class TableBody(tokens.Token):
+    pass
+
+class TableHead(tokens.Token):
+    pass
+
+class TableRow(tokens.Token):
+    pass
+
+class TableItem(tokens.Token):
+    PROPERTIES = [Property('align', ptype=str, default='center')]
+
+class TableHeaderItem(TableItem):
+    pass
 
 
 class TableMarkdownExtension(base.MarkdownExtension): #TODO:  CommandMarkdownExtension
     def extend(self):
         self.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
-
-class TableRenderExtension(base.RenderExtension):
-    def extend(self):
-        self.add(Table, RenderTable())
 
 
 class TableComponent(core.MarkdownComponent):
@@ -44,7 +57,15 @@ class TableComponent(core.MarkdownComponent):
     FORMAT_RE = re.compile(r'^(?P<format>\|[ \|:\-]+\|)$', flags=re.MULTILINE|re.UNICODE)
 
     def createToken(self, match, parent):
+
+
+        grammer = self.reader.lexer.grammer('inline')
+
+
         content = match.group('table')
+        table = Table(parent)
+
+
 
         head = None
         body = None
@@ -56,34 +77,81 @@ class TableComponent(core.MarkdownComponent):
             body = content[format_match.end('format'):]
             form = [item.strip() for item in format_match.group('format').split('|') if item]
 
-        rows = []
-        if not body:
-            #TODO: error
-            pass
-
-        for line in body.splitlines():
-            if line:
-                rows.append([item.strip() for item in line.split('|') if item])
-
-
         if form:
             for i, string in enumerate(form):
                 if string.startswith(':'):
-                    form[i] = Table.LEFT
+                    form[i] = 'left'
                 elif string.endswith(':'):
-                    form[i] = Table.RIGHT
+                    form[i] = 'right'
                 elif string.startswith('-'):
-                    form[i] = Table.CENTER
+                    form[i] = 'center'
                 else:
-                    # TODO: warning/errorg
-                    form[i] = Table.LEFT
-                print string, form[i]
+                    # TODO: warning/error
+                    form[i] = 'left'
+                #print string, form[i]
 
-        return Table(parent, rows=rows, headings=head, format=form)
-        #lines = .splitlines()
+        if head:
+
+            row = TableRow(TableHead(table))
+            for i, h in enumerate(head):
+                item = TableHeaderItem(row, format=form[i])
+                self.reader.lexer.tokenize(h, item, grammer, node=self.translator.node) #TODO: add line number
+
+
+        for line in body.splitlines():
+            if line:
+                row = TableRow(TableBody(table))
+                for i, content in enumerate([item.strip() for item in line.split('|') if item]):
+                    item = TableItem(row, format=form[i])
+                    self.reader.lexer.tokenize(content, item, grammer, node=self.translator.node) #TODO: add line number
 
 
 
+        return table
+
+
+class TableRenderExtension(base.RenderExtension):
+    def extend(self):
+        self.add(Table, RenderTable())
+        self.add(TableHead, RenderTag('thead'))
+        self.add(TableBody, RenderTag('tbody'))
+        self.add(TableRow, RenderTag('tr'))
+        self.add(TableHeaderItem, RenderTag('th'))
+        self.add(TableItem, RenderTag('td'))
+
+
+
+class RenderTable(base.RenderComponent):
+    def createHTML(self, token, parent):
+        attrs = token.attributes
+        attrs['class'] = 'moose-table-div'
+        div = html.Tag(parent, 'div', **attrs)
+        tbl = html.Tag(div, 'table')
+
+        return tbl
+
+class RenderTag(base.RenderComponent):
+    def __init__(self, tag):
+        base.RenderComponent.__init__(self)
+        self.__tag = tag
+
+    def createHTML(self, token, parent):
+        return html.Tag(parent, self.__tag)
+
+"""
+class RenderTableSection(base.RenderComponent):
+    def __init__(self, tag_name):
+        base.RenderComponent.__init__(self)
+        self.__tag_name = tag_name
+"""
+
+
+
+class RenderTableRow(base.RenderComponent):
+    def createHTML(self, token, parent):
+        return html.Tag('')
+
+"""
 class RenderTable(base.RenderComponent):
     ALIGN = {Table.CENTER:u'center', Table.LEFT:u'left', Table.RIGHT:u'right'}
 
@@ -109,3 +177,4 @@ class RenderTable(base.RenderComponent):
                 td.style['text-align'] = self.ALIGN[token.format[i]]
                 html.String(td, content=unicode(d), escape=True)
         return div
+"""

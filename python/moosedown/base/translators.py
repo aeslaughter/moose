@@ -2,6 +2,7 @@ import importlib
 import logging
 import inspect
 
+from moosedown.tree import page
 from readers import Reader
 from renderers import Renderer
 from extensions import TokenExtension, RenderExtension
@@ -60,8 +61,14 @@ class Translator(object):
         self.__renderer.init(config)
         #self.__ast = None
 
+        self.__node = None
+
     def extensions(self):
         return self.__extensions
+
+    @property
+    def node(self):
+        return self.__node
 
     def load(self, extensions):
         """
@@ -82,21 +89,21 @@ class Translator(object):
 
             reader_ext, render_ext = module.make_extension()
 
-            if not isinstance(reader_ext, TokenExtension):
-                msg = "The first return item (reader object) returned by the {} extension must be " \
-                      "an instance of a moosedown.base.TokenExtension, but a '{}' object was found."
-                raise TypeError(msg.format(module.__name__, type(reader_ext).__name__))
+            if reader_ext:
+                if not isinstance(reader_ext, TokenExtension):
+                    msg = "The first return item (reader object) returned by the {} extension must be " \
+                          "an instance of a moosedown.base.TokenExtension, but a '{}' object was found."
+                    raise TypeError(msg.format(module.__name__, type(reader_ext).__name__))
+                config.update(reader_ext.getConfig())
+                reader_extensions.append(reader_ext)
 
-            if not isinstance(render_ext, RenderExtension):
-                msg = "The second return item (render object) returned by the {} extension must be "\
-                      "an instance of a moosedown.base.RenderExtension, but a '{}' object was found."
-                raise TypeError(msg.format(module.__name__, type(render_ext).__name__))
-
-            config.update(reader_ext.getConfig())
-            config.update(render_ext.getConfig())
-
-            reader_extensions.append(reader_ext)
-            render_extensions.append(render_ext)
+            if render_ext:
+                if not isinstance(render_ext, RenderExtension):
+                    msg = "The second return item (render object) returned by the {} extension must be "\
+                          "an instance of a moosedown.base.RenderExtension, but a '{}' object was found."
+                    raise TypeError(msg.format(module.__name__, type(render_ext).__name__))
+                config.update(render_ext.getConfig())
+                render_extensions.append(render_ext)
 
         return config, reader_extensions, render_extensions
 
@@ -121,5 +128,6 @@ class Translator(object):
         return self.__reader.parse(content)
 
     def convert(self, content):
+        self.__node = content if isinstance(content, page.PageNodeBase) else None
         ast = self.ast(content)
         return ast, self.__renderer.render(ast)

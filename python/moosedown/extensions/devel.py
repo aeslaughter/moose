@@ -118,7 +118,7 @@ class ComponentSettings(command.MarkdownCommandComponent):
         #TODO: error if defaultSettings not there or  it returns something that is not a dict()
         settings = obj.defaultSettings()
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
-        table.Table(tbl, headings=[u'Key', u'Default', u'Description'], rows=rows)
+        table.Table(tbl, headings=[u'Key', u'Default', u'Description'], rows=rows) #TODO: this doesn't work anymore
         return master
 
 
