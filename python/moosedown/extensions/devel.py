@@ -50,7 +50,7 @@ class Example(command.MarkdownCommandComponent):
         caption = floats.Caption(master, prefix=self.settings['prefix'])
 
         grammer = self.reader.lexer.grammer('inline')
-        self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
+        self.reader.lexer.tokenize(unicode(self.settings['caption']), caption, grammer)#, line=self.line)
 
         data = match.group('content')
 
@@ -58,27 +58,40 @@ class Example(command.MarkdownCommandComponent):
         tab = floats.Tab(tabs, title=u'MooseDown')
         tokens.Code(tab, code=data, language=u'markdown', escape=True)
 
+        # HTML
         translator = base.Translator(type(self.reader), base.MaterializeRenderer, self.translator.extensions())
         ast = translator.reader.parse(data)
         html = translator.renderer.render(ast)
 
-        tab = floats.Tab(tabs, title=u'HTML')
-        tokens.Code(tab, code=html.find('body')(0).write(), language=u'HTML', escape=True)
+        code = ''
+        for child in html.find('body')(0)(0)(0):
+            code += child.write()
+        if code:
+            tab = floats.Tab(tabs, title=u'HTML')
+            tokens.Code(tab, code=unicode(code), language=u'HTML', escape=True)
+
+            # PREVIEW
+            if self.settings['preview']:
+                modal = floats.Modal(caption, title=u"HTML Preview", icon=u"visibility")
+                #content = floats.Content(modal, class_="modal-content")
+                ast.parent = modal
+                preview = ast
 
 
+        # LATEX
         translator = base.Translator(type(self.reader), base.LatexRenderer, self.translator.extensions())
         ast = translator.reader.parse(data)
         tex = translator.renderer.render(ast)
 
-        tab = floats.Tab(tabs, title=u'LaTeX')
-        content = re.sub(r'\\(begin|end){document}', '', tex.find('document').write())
-        tokens.Code(tab, code=unicode(content), language=u'latex', escape=True)
+        code = ''
+        for child in tex.find('document'):
+            code += child.write()
 
-        if self.settings['preview']:
-            modal = floats.Modal(caption, title=u"HTML Preview", icon=u"visibility")
-            #content = floats.Content(modal, class_="modal-content")
-            ast.parent = modal
-            preview = ast
+        if code:
+            tab = floats.Tab(tabs, title=u'LaTeX')
+            tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
+
+
         return master
 
 class ComponentSettings(command.MarkdownCommandComponent):
@@ -108,9 +121,7 @@ class ComponentSettings(command.MarkdownCommandComponent):
             grammer = self.reader.lexer.grammer('inline')
             self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
 
-
-        tbl = floats.Content(master, class_="card-content")
-
+        content = floats.Content(master, class_="card-content")
 
         mod = importlib.import_module(self.settings['module'])
         obj = getattr(mod, self.settings['object'])
@@ -118,7 +129,9 @@ class ComponentSettings(command.MarkdownCommandComponent):
         #TODO: error if defaultSettings not there or  it returns something that is not a dict()
         settings = obj.defaultSettings()
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
-        table.Table(tbl, headings=[u'Key', u'Default', u'Description'], rows=rows) #TODO: this doesn't work anymore
+
+        tbl = table.builder(rows, headings=[u'Key', u'Default', u'Description'])
+        tbl.parent = content
         return master
 
 

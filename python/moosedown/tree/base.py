@@ -217,10 +217,10 @@ class NodeBase(anytree.NodeMixin):
         else:
             return self
 
-    def find(self, name):
+    def find(self, name, maxlevel=None):
         """
         Search for a node, by name.
         """
-        for node in anytree.PreOrderIter(self):
+        for node in anytree.PreOrderIter(self, maxlevel=maxlevel):
             if node.name == name:
                 return node

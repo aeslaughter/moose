@@ -354,7 +354,7 @@ class CoreRenderExtension(base.RenderExtension):
         self.add(tokens.Subscript, RenderSubscript())
         self.add(tokens.Label, RenderLabel())
 
-        for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number]:
+        for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number, tokens.String]:
             self.add(t, RenderString())
 
         #TODO: Make a generic preamble method?
@@ -525,6 +525,8 @@ class RenderString(CoreRenderComponentBase):
     """String"""
 
     def createHTML(self, token, parent):
+        #if parent.name =='td':
+        #    print parent
         return html.String(parent, content=token.content)
 
     def createLatex(self, token, parent):

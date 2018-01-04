@@ -1,10 +1,12 @@
-## Core Extension
+# Core Extension
 The core extension is the portion of the MooseDown language that is designed to mimic [markdown]
 syntax. As mentioned above MooseDown is far more strict than traditional [markdown] implementations.
 There for the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
 
-### Code Blocks
+## Block Content
+
+### Code
 Code blocks are created by enclosing the code for display in triple backticks. Settings for
 the code block are defined by key-value pairings that follow the backticks.
 
@@ -107,9 +109,7 @@ starts with any character except the dash (`-`).
 To create a new list immediately following another list, the two lists must be separated by
 two empty lines.
 
-
-
-### Numbered List
+### Ordered List
 A numbered list that starts with a numbered followed by a period and a single space. They work
 in a similar fashion as [unordered lists](#unordered) and contain contain nested content. The
 number used for the first item in the list will be the number used for the start of the list.
@@ -131,11 +131,17 @@ Again, to create another list following
       ```
 !devel-end!
 
+### Shortcuts
+It is possible to define shortcuts for use within your document via a [shortcut link](#shortcut-link). The shortcuts
+are defined using traditional markdown syntax.
+
+!devel! example caption=Markdown shortcut definition.
+[foo]: bar
+!devel-end!
 
 
 
-
-
+## Inline Content
 ### Text Formatting
 
 em, strong, need to add strikethrough, underline, subscript, superscript, mark, inserted
@@ -144,5 +150,7 @@ This is ***something* with various
 levels** of html formatting *that
 spans* many lines. It all *should* work
 fine.
+
+### Shortcut links id=shortcut-link
 
 [markdown]: https://en.wikipedia.org/wiki/Markdown

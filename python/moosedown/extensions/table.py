@@ -14,8 +14,6 @@ def make_extension():
 #    def __init__
 
 
-
-
 class TableToken(tokens.Token):
     PROPERTIES = [Property('headings', ptype=list),
                   Property('rows', required=True, ptype=list),
@@ -45,6 +43,31 @@ class TableItem(tokens.Token):
 
 class TableHeaderItem(TableItem):
     pass
+
+def builder(rows, headings=None):
+    node = Table()
+    if headings:
+        thead = TableHead(node)
+        row = TableRow(thead)
+        for h in headings:
+            th = TableHeaderItem(row)
+            tokens.String(th, content=unicode(h))
+
+    tbody = TableBody(node)
+    for data in rows:
+        row = TableRow(tbody)
+        for d in data:
+            tr = TableItem(row)
+            tokens.String(tr, content=unicode(d))
+
+    return node
+
+
+
+
+
+
+
 
 
 class TableMarkdownExtension(base.MarkdownExtension): #TODO:  CommandMarkdownExtension
@@ -146,10 +169,9 @@ class RenderTableSection(base.RenderComponent):
 """
 
 
-
-class RenderTableRow(base.RenderComponent):
-    def createHTML(self, token, parent):
-        return html.Tag('')
+#class RenderTableRow(base.RenderComponent):
+#    def createHTML(self, token, parent):
+#        return html.Tag('')
 
 """
 class RenderTable(base.RenderComponent):
