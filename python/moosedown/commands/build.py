@@ -24,32 +24,12 @@ DEFAULT_EXTENSIONS = set(['moosedown.extensions.core',
 
 def command_line_options(subparser):
     build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
-    #build_parser.add_argument('--extensions', nargs=?, help="The extensions")
-
-# def load_config(filename):
-#     """
-#     Load and error check config file.
-#     """
-#
-#     # Define defaults
-#     config = mooseutils.yaml_load(filename)
-#
-#     #mod = importlib.import_module('moosedown.base.MarkdownReader')
-#     #print mod
-#
-#     for opt in ['reader', 'renderer', 'translator']:
-#         if isinstance(config[opt], str):
-#             config[opt] = eval(config[opt])
-#
-#     return config
 
 def params_to_dict(node):
+    """
+    TODO: move this to mooseutils
+    """
     return {child.path():child.param() for child in node.children(node_type=hit.NodeType.Field)}
-
-
-class ConfigException(Exception):
-    pass
-
 
 def load_extensions(node, filename):
     """
@@ -98,8 +78,11 @@ def load_extensions(node, filename):
 
     return extensions
 
-
 def load_object(node, filename, default, *args):
+    """
+    Helper for loading moosedown objects: Reader, Renderer, Translator
+    """
+
     if node:
         type_ = node.param('type')
         if type_ is None:
@@ -117,6 +100,16 @@ def load_object(node, filename, default, *args):
 
     return default(*args)
 
+def load_content(node, filename):
+    if not node:
+        msg = "The [Content] section is required within the configure file {}."
+        raise KeyError(msg.format(filename))
+
+    items = [params_to_dict(child) for child in node.children(node_type=hit.NodeType.Section)]
+    return moosedown.tree.build_page_tree.doc_tree(items)
+
+
+
 def load_config(filename):
 
     # Read the config.hit file #TODO: error check on filename
@@ -128,38 +121,9 @@ def load_config(filename):
     reader = load_object(node.find['Reader'], filename, moosedown.base.MarkdownReader)
     renderer = load_object(node.find['Renderer'], filename, moosedown.base.MaterializeRenderer)
     translator = load_object(node.find['Translator'], filename, moosedown.base.Translator, reader, renderer)
+    content = load_content(node.find('Content'), filename)
 
-
-    #print defaults
-    #defaults = DEFAULT_EXTENSIONS.difference(ext.param('disable')) if
-
-
-
-
-
-
-
-
-
-
-
-
-#    #TODO: error if Renderer not available
-#    render_params = params_to_dict(root.find('Renderer'))
-
-
-
-
-    #print render_params
-
-
-
-
-    #node = root.find(settings['block'])
-    #if node is not None:
-    #    return node.render()
-
-
+    return translator, content
 
 
 
