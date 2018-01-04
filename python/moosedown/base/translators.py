@@ -129,5 +129,6 @@ class Translator(object):
 
     def convert(self, content):
         self.__node = content if isinstance(content, page.PageNodeBase) else None
+        self.__renderer.node = self.__node
         ast = self.ast(content)
         return ast, self.__renderer.render(ast)

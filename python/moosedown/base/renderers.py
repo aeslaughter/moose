@@ -1,10 +1,15 @@
 """
 
 """
+import os
+import copy
 import re
 import logging
+
+import anytree
+
 import moosedown
-from moosedown.tree import html, latex, base, tokens
+from moosedown.tree import html, latex, base, tokens, page
 from ReaderRenderBase import ReaderRenderBase
 
 LOG = logging.getLogger(__name__)
@@ -15,6 +20,7 @@ class Renderer(ReaderRenderBase):
     def __init__(self, extensions=None):
         self.__functions = dict()
         ReaderRenderBase.__init__(self, extensions)
+        self.node = None
 
     def add(self, token, function):
         #print 'ADD:', token, function
@@ -126,20 +132,60 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src="/js/init.js")
 
         body = html.Tag(root, 'body')
-        div = html.Tag(body, 'div', class_="container")
+        container = html.Tag(body, 'div', class_="container")
 
-        HTMLRenderer.render(self, ast, div, reinit=reinit)
+        # <nav> Breadcrumbs #TODO: make this a option that can be toggled on a per page (breeadcrumbs=False)
+        if self.node: #TODO: access this via translator???
 
-        # Add sections
-        """
+            row = html.Tag(container, 'div', class_="row")
+            col = html.Tag(row, 'div', class_="col hide-on-med-and-down l12")
+            nav = html.Tag(col, 'nav', class_="breadcrumb-nav")
+            div = html.Tag(nav, 'div', class_="nav-wrapper")
+
+            for n in self.node.path:
+                if not n.local:
+                    continue
+                if isinstance(n, page.DirectoryNode):
+                    idx = n.find('index.md', maxlevel=2)
+                    if idx:
+                        url = os.path.relpath(n.local, os.path.dirname(self.node.local)).replace('.md', '.html') #TODO: fix ext
+                        a = html.Tag(div, 'a', href=url, class_="breadcrumb")
+                        html.String(a, content=unicode(n.name))
+                    else:
+                        span = html.Tag(div, 'span', class_="breadcrumb")
+                        html.String(span, content=unicode(n.name))
+
+                elif isinstance(n, page.FileNode) and n.name != 'index.md':
+                    url = os.path.relpath(n.local, os.path.dirname(self.node.local)).replace('.md', '.html') #TODO: fix ext
+                    a = html.Tag(div, 'a', href=url, class_="breadcrumb")
+                    html.String(a, content=unicode(os.path.splitext(n.name)[0]))
+
+
+
+
+        # Content
+        row = html.Tag(container, 'div', class_="row")
+        col = html.Tag(row, 'div', class_="col s12 m12 l10") #TODO add scroll spy (scoll-name=False) at top of index.mdg
+
+        HTMLRenderer.render(self, ast, col, reinit=reinit)
+
+        scroll = html.Tag(row, 'div', class_="col l2 hide-on-med-and-down")
+        ul = html.Tag(scroll, 'ul', class_="section table-of-contents")
+
+        # Add sections #TODO add toggle
         level = 'h{}'.format(self['section-level'])
-        parent = div
-        for child in div:
+        parent = col
+        for child in col:
             if child.name == level:
-                if parent == div:
-                    parent = html.Tag(parent, 'details', class_='scrollspy section')
+                if parent == col:
+                    parent = html.Tag(parent, 'details', class_='scrollspy section', open="open")
                 else:
-                    parent = html.Tag(parent.parent, 'details', class_='scrollspy section')
+                    parent = html.Tag(parent.parent, 'details', class_='scrollspy section', open="open")
+
+                li = html.Tag(ul, 'li')
+                a = html.Tag(li, 'a')
+                for c in copy.deepcopy(child.children):
+                    c.parent = a
 
                 #details = html.Tag(parent, 'details')
                 summary = html.Tag(parent, 'summary')
@@ -153,7 +199,12 @@ class MaterializeRenderer(HTMLRenderer):
 
             else:
                 child.parent = parent
-        """
+
+        # TODO:Add toggle
+        scroll = html.Tag(row, 'div', class_="col l2 hide-on-med-and-down")
+        ul = html.Tag(scroll, 'ul', class_="section table-of-contents")
+
+
         return root
 
 
