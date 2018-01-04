@@ -5,11 +5,15 @@ import logging
 import anytree
 import livereload
 import importlib
+import collections
 
 import mooseutils
 import hit
 
 import moosedown
+
+
+LOG = logging.getLogger(__name__)
 
 # Set of extenions to load by default
 DEFAULT_EXTENSIONS = set(['moosedown.extensions.core',
@@ -47,31 +51,31 @@ class ConfigException(Exception):
     pass
 
 
-def load_extensions(node, errors=[]):
+def load_extensions(node, filename):
     """
     Instatiates the Extension objects, with the configuration from the hit file, for passing
     into the Translator object.
 
     Inputs:
         node[hit.Node|None]: The [Extensions] section of the hit file.
-        errors[list]: A list for appending errors
     """
 
     # The key is the extension module name, value is a dict() of configuration options, which is populated
     # from the hit nodes and applied to the object via the make_extension method.
     if (node and node.param('disable_defaults')):
-        ext_configs = dict()
+        ext_configs = collections.defaultdict(dict)
     else:
-        ext_configs = {k:dict() for k in DEFAULT_EXTENSIONS}
+        ext_configs = collections.defaultdict(dict)
+        ext_configs.update({k:dict() for k in DEFAULT_EXTENSIONS})
 
     # Process the [Extensions] block of the hit input, if it exists
     if node:
         # Update the extension conifigure options based on the content of the hit nodes
         for child in node.children(node_type=hit.NodeType.Section):
-            ext_type = child.param('type') #TODO: accumulate error
+            ext_type = child.param('type')
             if ext_type is None:
-                msg = "The section '{}' must contain a 'type' parameter.".format(child.fullpath())
-                errors.append((msg, child.line()))
+                msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter."
+                LOG.error(msg, filename, child.line(), child.fullpath())
             else:
                 config = params_to_dict(child)
                 config.pop('type')
@@ -83,14 +87,39 @@ def load_extensions(node, errors=[]):
         try:
             module = importlib.import_module(name)
             if not hasattr(module, 'make_extension'):
-                errors.append("The supplied module '{}' must have a 'make_extension' function.".format(module.__name__))
+                msg = "The supplied module '%s' must have a 'make_extension' function."
+                LOG.error(msg, module.__name__)
             else:
                 extensions.append(module.make_extension(**config))
 
         except ImportError as e:
-            errors.append("Failed to import the '{}' module.".format(name))
+            msg = "Failed to import the '%s' module."
+            LOG.error(msg, name)
 
     return extensions
+
+def load_translator(node, reader, renderer, errors=[]):
+    """
+    Instatiate the Translator object.
+
+    Inputs:
+        node[hit.Node|None]: The [Translator] section of the hit file.
+        errors[list]: A list for appending errors
+    """
+    if node:
+        type_ = child.param('type')
+        if ext_type is None:
+            msg = "The section '{}' must contain a 'type' parameter, using the default moosedown.base.Translator.".format(child.fullpath())
+            errors.append((msg, node.line))
+            return moosedown.base.Translator()
+
+        config = params_to_dict(node)
+        config.pop('type')
+        module = importlib.import_module(type_)
+        return module(**config)
+
+    return moosedown.base.Translator()
+
 
 
 def load_config(filename):
@@ -100,9 +129,13 @@ def load_config(filename):
         content = f.read()
     root = hit.parse(filename, content)
 
-    # Load extensions
     errors = []
-    extensions = load_extensions(node.find('Extensions'), errors=errors)
+
+    # Load extensions
+    extensions = load_extensions(node.find('Extensions'), filename)
+#    translator = load_translator(node.find('Translator'), errors)
+
+    reader = load_reader(node.find['Reader'], filename)
 
 
 

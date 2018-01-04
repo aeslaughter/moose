@@ -11,40 +11,6 @@
   type = moosedown.base.Translator
 []
 
-[Extensions]
-  use_defaults = True
-
-
-  [core]
-    type = moosedown.extensions.core
-    test = 1
-  []
-
-  [command]
-    type = moosedown.extensions.command
-  []
-
-  [include]
-    type = moosedown.extensions.include
-  []
-
-  [devel]
-    type = moosedown.extensions.devel
-  []
-
-  [floats]
-    type = moosedown.extensions.floats
-  []
-
-  [table]
-    type = moosedown.extensions.table
-  []
-
-  [autolink]
-    type = moosedown.extensions.autolink
-  []
-[]
-
 [Content]
   [framework]
       root_dir = docs/content
