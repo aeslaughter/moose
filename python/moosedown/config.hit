@@ -1,6 +1,7 @@
 [Reader]
   type = moosedown.base.readers.MarkdownReader
 []
+
 [Renderer]
   type = moosedown.base.MaterializeRenderer
   scrollspy = false
@@ -11,7 +12,7 @@
 []
 
 [Extensions]
-  disable = moosedown.extensions.include
+  use_defaults = True
 
 
   [core]

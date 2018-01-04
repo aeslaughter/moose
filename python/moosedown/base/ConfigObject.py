@@ -8,8 +8,6 @@ class ConfigObject(object):
     def __init__(self, **kwargs):
         self.__config = dict()
         self.defaultConfig(self.__config)
-
-        print 'ConfigObject:', self.__config, kwargs
         self.update(**kwargs)
 
 
