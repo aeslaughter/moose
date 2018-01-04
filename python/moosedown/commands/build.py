@@ -98,29 +98,24 @@ def load_extensions(node, filename):
 
     return extensions
 
-def load_translator(node, reader, renderer, errors=[]):
-    """
-    Instatiate the Translator object.
 
-    Inputs:
-        node[hit.Node|None]: The [Translator] section of the hit file.
-        errors[list]: A list for appending errors
-    """
+def load_object(node, filename, default, *args):
     if node:
-        type_ = child.param('type')
-        if ext_type is None:
-            msg = "The section '{}' must contain a 'type' parameter, using the default moosedown.base.Translator.".format(child.fullpath())
-            errors.append((msg, node.line))
-            return moosedown.base.Translator()
+        type_ = node.param('type')
+        if type_ is None:
+            msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter, using the default %s."
+            LOG.error(msg, filename, node.line(), node.fullpath(), type(default).__name__)
+        else:
+            config = params_to_dict(node)
+            config.pop('type')
+            try:
+                return eval(type_)(*args, **config)
+            except NameError:
+                param = node.find('type')
+                msg = "ERROR\n%s:%s\nThe parameter '%s' must contain a valid object name, using the default %s."
+                LOG.error(msg, filename, param.line(), param.fullpath())
 
-        config = params_to_dict(node)
-        config.pop('type')
-        module = importlib.import_module(type_)
-        return module(**config)
-
-    return moosedown.base.Translator()
-
-
+    return default(*args)
 
 def load_config(filename):
 
@@ -129,14 +124,10 @@ def load_config(filename):
         content = f.read()
     root = hit.parse(filename, content)
 
-    errors = []
-
-    # Load extensions
     extensions = load_extensions(node.find('Extensions'), filename)
-#    translator = load_translator(node.find('Translator'), errors)
-
-    reader = load_reader(node.find['Reader'], filename)
-
+    reader = load_object(node.find['Reader'], filename, moosedown.base.MarkdownReader)
+    renderer = load_object(node.find['Renderer'], filename, moosedown.base.MaterializeRenderer)
+    translator = load_object(node.find['Translator'], filename, moosedown.base.Translator, reader, renderer)
 
 
     #print defaults

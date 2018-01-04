@@ -114,13 +114,9 @@ class MaterializeRenderer(HTMLRenderer):
 
     #TODO: Add config
     @staticmethod
-    def defaultConfig():
-        config = HTMLRenderer.defaultConfig()
+    def defaultConfig(config):
         config['scrollspy'] = (True, "Toggle the use of the right scrollable navigation.")
         config['section-level'] = (2, "The section level for creating collapsible sections and scrollspy.")
-
-        return config
-
 
     def method(self, component):
         if hasattr(component, self.METHOD):
