@@ -11,14 +11,14 @@ from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
 def make_extension():
-    return CommandMarkdownExtension(), CommandRenderExtension()
+    return CommandExtension()
 
-class CommandMarkdownExtension(base.MarkdownExtension):
+class CommandExtension(base.Extension):
 
-    def extend(self):
-        self.addBlock(FileCommand(), location='<moosedown.extensions.core.Code')
-        self.addBlock(InlineCommand(), location='>moosedown.extensions.command.FileCommand')
-        self.addBlock(BlockCommand(), location='>moosedown.extensions.command.InlineCommand')
+    def extend(self, reader, renderer):
+        reader.addBlock(FileCommand(), location='<moosedown.extensions.core.Code')
+        reader.addBlock(InlineCommand(), location='>moosedown.extensions.command.FileCommand')
+        reader.addBlock(BlockCommand(), location='>moosedown.extensions.command.InlineCommand')
 
 
 #        self.addCommand(Include())
@@ -60,7 +60,7 @@ class CommandBase(core.MarkdownComponent):
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
     PARSE_SETTINGS = False
-    COMMANDS = base.MarkdownExtension.__COMMANDS__
+    COMMANDS = base.MarkdownReader.__COMMANDS__ #TODO: this should be the storage, CommandExtension should add the addCommand method
 
     def createToken(self, match, parent):
 
@@ -93,7 +93,3 @@ class BlockCommand(CommandBase):
 
 class FileCommand(CommandBase):
     RE = re.compile(r'\s*!(?P<command>\w+) (?P<filename>\S*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)$', flags=re.UNICODE|re.MULTILINE)
-
-class CommandRenderExtension(base.RenderExtension):
-    def extend(self):
-        pass

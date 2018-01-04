@@ -1,0 +1,55 @@
+[Reader]
+  type = moosedown.base.readers.MarkdownReader
+[]
+[Renderer]
+  type = moosedown.base.MaterializeRenderer
+  scrollspy = false
+[]
+
+[Translator]
+  type = moosedown.base.Translator
+[]
+
+[Extensions]
+  disable = moosedown.extensions.include
+
+
+  [core]
+    type = moosedown.extensions.core
+    test = 1
+  []
+
+  [command]
+    type = moosedown.extensions.command
+  []
+
+  [include]
+    type = moosedown.extensions.include
+  []
+
+  [devel]
+    type = moosedown.extensions.devel
+  []
+
+  [floats]
+    type = moosedown.extensions.floats
+  []
+
+  [table]
+    type = moosedown.extensions.table
+  []
+
+  [autolink]
+    type = moosedown.extensions.autolink
+  []
+[]
+
+[Content]
+  [framework]
+      root_dir = docs/content
+      content = 'utilities/moosedown/*
+                 contrib/**
+                 css/*
+                 js/*'
+  []
+[]

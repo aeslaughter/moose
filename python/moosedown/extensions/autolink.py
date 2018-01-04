@@ -4,13 +4,13 @@ from moosedown.extensions import core, table
 from moosedown.tree import tokens, html
 from moosedown.tree.base import Property
 
-def make_extension():
-    return None, AutoLinkRenderExtension()
+def make_extension(**kwargs):
+    return AutoLinkExtension(**kwargs)
 
-class AutoLinkRenderExtension(base.RenderExtension):
+class AutoLinkExtension(base.Extension):
 
-    def extend(self):
-        self.add(tokens.Link, RenderAutoLink())
+    def extend(self, reader, renderer):
+        renderer.add(tokens.Link, RenderAutoLink())
 
 
 class RenderAutoLink(core.RenderLink):

@@ -12,7 +12,7 @@ from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
 def make_extension():
-    return DevelMarkdownExtension(), DevelRenderExtension()
+    return DevelExtension()
 
 """
 class Example(tokens.Token):
@@ -23,7 +23,7 @@ class Example(tokens.Token):
 """
 
 
-class DevelMarkdownExtension(base.MarkdownExtension):
+class DevelExtension(base.Extension):
     #TODO: require float, commands
 
     def extend(self):
@@ -135,9 +135,9 @@ class ComponentSettings(command.MarkdownCommandComponent):
         return master
 
 
-class DevelRenderExtension(base.RenderExtension):
-    def extend(self):
-        pass
+#class DevelRenderExtension(base.RenderExtension):
+#    def extend(self):
+#        pass
         #self.add(Example, RenderExample())
         #self.add(Table, RenderTable())
 

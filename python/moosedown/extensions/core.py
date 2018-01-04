@@ -13,52 +13,85 @@ from moosedown.tree import tokens, html, latex
 LOG = logging.getLogger(__name__)
 SHORTCUT_DATABASE = dict()
 
-def make_extension():
+
+def make_extension(**kwargs):
     """
     Create and return the MarkdownExtension and RenderExtension objects for the core extension.
     """
-    return CoreMarkdownExtension(), CoreRenderExtension()
+    return CoreExtension(**kwargs)
 
-class CoreMarkdownExtension(base.MarkdownExtension):
+class CoreExtension(base.Extension):
     """
     The core markdown parser extension.
 
     This extension provides to core conversion from markdown syntax to an AST.
     """
     @staticmethod
-    def getConfig():
+    def defaultConfig(config):
         """
         The default configuration options.
         """
-        config = base.MarkdownExtension.getConfig()
-        config['section-level'] = (2, "The section level for creating collapsible sections and scrollspy.")
-        return config
+        print 'CoreExtension::defaultConfig'
+        #config = base.Extension.defaultConfig()
+        config['test'] = (0, 'foo')
+        #return config
 
-    def extend(self):
+    def extend(self, reader, renderer):
         """
         Add the extension components.
         """
 
         # Block
-        self.addBlock(Code())
-        self.addBlock(Quote())
-        self.addBlock(HeadingHash())
-        self.addBlock(OrderedList())
-        self.addBlock(UnorderedList())
-        self.addBlock(Shortcut())
-        self.addBlock(Paragraph())
-        self.addBlock(Break())
+        reader.addBlock(Code())
+        reader.addBlock(Quote())
+        reader.addBlock(HeadingHash())
+        reader.addBlock(OrderedList())
+        reader.addBlock(UnorderedList())
+        reader.addBlock(Shortcut())
+        reader.addBlock(Paragraph())
+        reader.addBlock(Break())
 
         # Inline
-        self.addInline(Backtick())
-        self.addInline(Format())
-        self.addInline(Link())
-        self.addInline(ShortcutLink())
-        self.addInline(Punctuation())
-        self.addInline(Number())
-        self.addInline(Word())
-        self.addInline(Break())
-        self.addInline(Space())
+        reader.addInline(Backtick())
+        reader.addInline(Format())
+        reader.addInline(Link())
+        reader.addInline(ShortcutLink())
+        reader.addInline(Punctuation())
+        reader.addInline(Number())
+        reader.addInline(Word())
+        reader.addInline(Break())
+        reader.addInline(Space())
+
+        # Render
+        renderer.add(tokens.Heading, RenderHeading())
+        renderer.add(tokens.Code, RenderCode())
+        renderer.add(tokens.ShortcutLink, RenderShortcutLink())
+        renderer.add(tokens.InlineCode, RenderBacktick())
+        renderer.add(tokens.Break, RenderBreak())
+        renderer.add(tokens.Exception, RenderException())
+
+        renderer.add(tokens.Link, RenderLink())
+        renderer.add(tokens.Paragraph, RenderParagraph())
+        renderer.add(tokens.UnorderedList, RenderUnorderedList())
+        renderer.add(tokens.OrderedList, RenderOrderedList())
+        renderer.add(tokens.ListItem, RenderListItem())
+        renderer.add(tokens.Quote, RenderQuote())
+        renderer.add(tokens.Strong, RenderStrong())
+        renderer.add(tokens.Underline, RenderUnderline())
+        renderer.add(tokens.Emphasis, RenderEmphasis())
+        renderer.add(tokens.Strikethrough, RenderStrikethrough())
+        renderer.add(tokens.Superscript, RenderSuperscript())
+        renderer.add(tokens.Subscript, RenderSubscript())
+        renderer.add(tokens.Label, RenderLabel())
+
+        for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number, tokens.String]:
+            renderer.add(t, RenderString())
+
+        #TODO: Make a generic preamble method?
+        if isinstance(renderer, base.LatexRenderer):
+            renderer.addPackage(u'hyperref')
+            renderer.addPackage(u'ulem')
+
 
 class MarkdownComponent(base.TokenComponent):
     """
@@ -327,40 +360,6 @@ class Quote(MarkdownComponent):
 # Rendering.
 #####################################################################################################
 
-class CoreRenderExtension(base.RenderExtension):
-    """
-    HTML, Materialize, and LaTeX rendering.
-    """
-    def extend(self):
-
-        self.add(tokens.Heading, RenderHeading())
-        self.add(tokens.Code, RenderCode())
-        self.add(tokens.ShortcutLink, RenderShortcutLink())
-        self.add(tokens.InlineCode, RenderBacktick())
-        self.add(tokens.Break, RenderBreak())
-        self.add(tokens.Exception, RenderException())
-
-        self.add(tokens.Link, RenderLink())
-        self.add(tokens.Paragraph, RenderParagraph())
-        self.add(tokens.UnorderedList, RenderUnorderedList())
-        self.add(tokens.OrderedList, RenderOrderedList())
-        self.add(tokens.ListItem, RenderListItem())
-        self.add(tokens.Quote, RenderQuote())
-        self.add(tokens.Strong, RenderStrong())
-        self.add(tokens.Underline, RenderUnderline())
-        self.add(tokens.Emphasis, RenderEmphasis())
-        self.add(tokens.Strikethrough, RenderStrikethrough())
-        self.add(tokens.Superscript, RenderSuperscript())
-        self.add(tokens.Subscript, RenderSubscript())
-        self.add(tokens.Label, RenderLabel())
-
-        for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number, tokens.String]:
-            self.add(t, RenderString())
-
-        #TODO: Make a generic preamble method?
-        if isinstance(self.renderer, base.LatexRenderer):
-            self.renderer.addPackage(u'hyperref')
-            self.renderer.addPackage(u'ulem')
 
 class CoreRenderComponentBase(base.RenderComponent):
     """

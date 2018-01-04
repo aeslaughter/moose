@@ -5,20 +5,22 @@ import logging
 
 import moosedown
 
+from moosedown import common
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
 
-from ReaderRenderBase import ReaderRenderBase
 
 LOG = logging.getLogger(__name__)
 
-class Reader(ReaderRenderBase):
+class Reader(object):
 
-    def __init__(self, lexer, extensions=None):
+    def __init__(self, lexer, **kwargs):
         self.__lexer = lexer
         #self.__node = None
         #self.__old_node = None
-        ReaderRenderBase.__init__(self, extensions)
+        #ExtensionObject.__init__(self, extensions, **kwargs)
+
+        self.translator = None
 
     @property
     def lexer(self):
@@ -55,8 +57,33 @@ class Reader(ReaderRenderBase):
         #self.__node = self.__old_node
         return ast
 
-    def add(self, *args):#name, regex, func, location=-1):
-        self.__lexer.add(*args)
+
+    def add(self, group, name, component, location='_end'):
+        #self.__components.append(component)
+        component.init(self.translator)
+        func = lambda m, p: self.__function(m, p, component)
+        self.__lexer.add(group, name, component.RE, func, location)
+
+    def __function(self, match, parent, component):
+        defaults = component.defaultSettings()
+        if not isinstance(defaults, dict):
+            raise common.exceptions.TokenizeException("The component '{}' must return a dict from the defaultSettings static method.".format(component))
+
+
+
+        if 'settings' in match.groupdict() and component.PARSE_SETTINGS:
+            component.settings, _ = common.parse_settings(defaults, match.group('settings'))
+        else:
+            component.settings = {k:v[0] for k, v in defaults.iteritems()}
+        token = component.createToken(match, parent)
+        return token
+
+
+#    def add(self, *args):#name, regex, func, location=-1):
+#        self.__lexer.add(*args)
+
+
+
 
     @staticmethod
     def _exceptionHandler(token, node):
@@ -77,7 +104,37 @@ class Reader(ReaderRenderBase):
         box = moosedown.common.box(token.match.group(0), line=token.line, width=n)
         LOG.exception(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
 
+
+
+
+
+
+
+
+
+
+
 class MarkdownReader(Reader):
-    def __init__(self, ext=None):
-        super(MarkdownReader, self).__init__(lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),
-                                             extensions=ext)
+    #: Internal global for storing commands
+    __COMMANDS__ = dict()
+
+    def __init__(self, extensions=None, **kwargs):
+        Reader.__init__(self,
+                        lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),
+                        extensions=extensions,
+                        **kwargs)
+
+    def addCommand(self, command):
+        # TODO: All Command related stuff is in the command extensions, with the exception of
+        # this function. Figure out how to avoid this special code here...
+        command.init(self.translator)
+        #TODO: error if it exists
+        self.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
+
+    def addBlock(self, component, location='_end'):
+        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
+        Reader.add(self, moosedown.BLOCK, name, component, location)
+
+    def addInline(self, component, location='_end'):
+        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
+        Reader.add(self, moosedown.INLINE, name, component, location)

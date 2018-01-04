@@ -8,7 +8,7 @@ from moosedown.tree.base import Property
 #from moosedown.extensions import floats
 
 def make_extension():
-    return TableMarkdownExtension(), TableRenderExtension()
+    return TableExtension()
 
 #class Table(object):
 #    def __init__
@@ -62,17 +62,16 @@ def builder(rows, headings=None):
 
     return node
 
+class TableExtension(base.Extension): #TODO:  CommandMarkdownExtension
+    def extend(self, reader, renderer):
+        reader.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
 
-
-
-
-
-
-
-
-class TableMarkdownExtension(base.MarkdownExtension): #TODO:  CommandMarkdownExtension
-    def extend(self):
-        self.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
+        renderer.add(Table, RenderTable())
+        renderer.add(TableHead, RenderTag('thead'))
+        renderer.add(TableBody, RenderTag('tbody'))
+        renderer.add(TableRow, RenderTag('tr'))
+        renderer.add(TableHeaderItem, RenderTag('th'))
+        renderer.add(TableItem, RenderTag('td'))
 
 
 class TableComponent(core.MarkdownComponent):
@@ -133,14 +132,6 @@ class TableComponent(core.MarkdownComponent):
         return table
 
 
-class TableRenderExtension(base.RenderExtension):
-    def extend(self):
-        self.add(Table, RenderTable())
-        self.add(TableHead, RenderTag('thead'))
-        self.add(TableBody, RenderTag('tbody'))
-        self.add(TableRow, RenderTag('tr'))
-        self.add(TableHeaderItem, RenderTag('th'))
-        self.add(TableItem, RenderTag('td'))
 
 
 

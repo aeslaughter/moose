@@ -10,7 +10,7 @@ from moosedown.tree import tokens, html
 from moosedown.tree.base import Property
 
 def make_extension():
-    return FloatMarkdownExtension(), FloatRenderExtension()
+    return FloatExtension()
 
 class Float(tokens.Token):
     pass
@@ -22,9 +22,15 @@ class Content(tokens.Token):
     pass
     #PROPERTIES = [Property("class", ptype=unicode, required=True)]
 
-class FloatMarkdownExtension(base.MarkdownExtension):
-    def extend(self):
-        pass
+class FloatExtension(base.Extension):
+    def extend(self, reader, renderer):
+        renderer.add(Content, RenderContent())
+        renderer.add(Float, RenderFloat())
+        renderer.add(Caption, RenderCaption())
+        renderer.add(Modal, RenderModal())
+        renderer.add(Tabs, RenderTabs())
+        renderer.add(Tab, RenderTab())
+
         #self.addCommand(ExampleCommand())
 
 class Modal(tokens.Token):
@@ -42,21 +48,6 @@ class Modal(tokens.Token):
     pass
 
 
-
-"""
-class FloatComponent(core.MarkdownCommandComponent):
-    pass
-"""
-
-
-class FloatRenderExtension(base.RenderExtension):
-    def extend(self):
-        self.add(Content, RenderContent())
-        self.add(Float, RenderFloat())
-        self.add(Caption, RenderCaption())
-        self.add(Modal, RenderModal())
-        self.add(Tabs, RenderTabs())
-        self.add(Tab, RenderTab())
 
 class RenderFloat(base.RenderComponent):
     def createHTML(self, token, parent):
