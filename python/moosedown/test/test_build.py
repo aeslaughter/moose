@@ -2,8 +2,10 @@
 import unittest
 import mock
 
-from moosedown.commands.build import DEFAULT_EXTENSIONS, load_extensions, load_translator
 import hit
+
+import moosedown
+from moosedown.commands.build import DEFAULT_EXTENSIONS, load_extensions, load_object
 
 
 class TestLoadExtensions(unittest.TestCase):
@@ -64,15 +66,96 @@ class TestLoadExtensions(unittest.TestCase):
         args, _ = mock.call_args
         self.assertEqual("Failed to import the '%s' module.", args[0])
 
+class TestLoadReader(unittest.TestCase):
+    def testEmpty(self):
+        obj = load_object(None, 'foo', moosedown.base.MarkdownReader)
+        self.assertIsInstance(obj, moosedown.base.MarkdownReader)
+
+    @mock.patch('logging.Logger.error')
+    def testNode(self, mock):
+        node = hit.NewSection('Reader')
+        node.addChild(hit.NewField('type', hit.FieldKind.String, 'moosedown.base.MarkdownReader'))
+
+        obj = load_object(node, 'foo', moosedown.base.MarkdownReader)
+
+        mock.assert_not_called()
+        self.assertIsInstance(obj, moosedown.base.MarkdownReader)
+
+    @mock.patch('logging.Logger.error')
+    def testMissingTypeError(self, mock):
+        node = hit.NewSection('Reader')
+
+        obj = load_object(node, 'foo', moosedown.base.MarkdownReader)
+        self.assertIsInstance(obj, moosedown.base.MarkdownReader)
+
+        mock.assert_called_once()
+        args, _ = mock.call_args
+        self.assertIn("The section '%s' must contain a 'type' parameter, using the default", args[0])
+
+class TestLoadRenderer(unittest.TestCase):
+    def testEmpty(self):
+        obj = load_object(None, 'foo', moosedown.base.MaterializeRenderer)
+        self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
+
+    @mock.patch('logging.Logger.error')
+    def testNode(self, mock):
+        node = hit.NewSection('Renderer')
+        node.addChild(hit.NewField('type', hit.FieldKind.String, 'moosedown.base.HTMLRenderer'))
+
+        obj = load_object(node, 'foo', moosedown.base.MaterializeRenderer)
+        mock.assert_not_called()
+        self.assertIsInstance(obj, moosedown.base.HTMLRenderer)
+
+    @mock.patch('logging.Logger.error')
+    def testMissingTypeError(self, mock):
+        node = hit.NewSection('Renderer')
+
+        obj = load_object(node, 'foo', moosedown.base.MaterializeRenderer)
+        self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
+
+        mock.assert_called_once()
+        args, _ = mock.call_args
+        self.assertIn("The section '%s' must contain a 'type' parameter, using the default", args[0])
+
+    @mock.patch('logging.Logger.error')
+    def testBadTypeError(self, mock):
+        node = hit.NewSection('Renderer')
+        node.addChild(hit.NewField('type', hit.FieldKind.String, 'wrong'))
+
+        obj = load_object(node, 'foo', moosedown.base.MaterializeRenderer)
+        self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
+
+        mock.assert_called_once()
+        args, _ = mock.call_args
+        self.assertIn("The parameter '%s' must contain a valid object name, using the default", args[0])
+
+
 class TestLoadTranslator(unittest.TestCase):
     def testEmpty(self):
-        pass
-        """
-        err = []
-        tran = load_translator(None, err)
-        self.assertIsInstance(tran, moosedown.base.Translator)
-        self.assertEqual(err, [])
-        """
+        obj = load_object(None, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
+        self.assertIsInstance(obj, moosedown.base.Translator)
+
+    @mock.patch('logging.Logger.error')
+    def testNode(self, mock):
+        node = hit.NewSection('Translator')
+        node.addChild(hit.NewField('type', hit.FieldKind.String, 'moosedown.base.Translator'))
+
+        obj = load_object(node, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
+        mock.assert_not_called()
+        self.assertIsInstance(obj, moosedown.base.Translator)
+
+    @mock.patch('logging.Logger.error')
+    def testMissingTypeError(self, mock):
+        node = hit.NewSection('Translator')
+
+        obj = load_object(node, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
+        self.assertIsInstance(obj, moosedown.base.Translator)
+
+        mock.assert_called_once()
+        args, _ = mock.call_args
+        self.assertIn("The section '%s' must contain a 'type' parameter, using the default", args[0])
+
+
 
 
 if __name__ == '__main__':

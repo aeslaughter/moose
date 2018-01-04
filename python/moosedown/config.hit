@@ -1,16 +1,3 @@
-[Reader]
-  type = moosedown.base.readers.MarkdownReader
-[]
-
-[Renderer]
-  type = moosedown.base.MaterializeRenderer
-  scrollspy = false
-[]
-
-[Translator]
-  type = moosedown.base.Translator
-[]
-
 [Content]
   [framework]
       root_dir = docs/content
