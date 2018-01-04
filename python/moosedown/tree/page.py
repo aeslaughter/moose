@@ -108,7 +108,7 @@ class MarkdownNode(FileNode):
             node.build(translator)
 
         self.read()
-        ast, html = self.translator.convert(self) #TODO: build cache for html body in translator
+        ast, html = translator.convert(self) #TODO: build cache for html body in translator
 
         dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
         #LOG.info('%s -> %s', self.source, dst) #TODO: this doesn't work

@@ -9,36 +9,53 @@ import logging
 import anytree
 
 import moosedown
+from moosedown import common
 from moosedown.tree import html, latex, base, tokens, page
-from ReaderRenderBase import ReaderRenderBase
+from extensions import ExtensionObject
+from ConfigObject import ConfigObject
 
 LOG = logging.getLogger(__name__)
 
-class Renderer(ReaderRenderBase):
+class Renderer(ConfigObject):
     METHOD = None
 
-    def __init__(self, extensions=None):
-        self.__functions = dict()
-        ReaderRenderBase.__init__(self, extensions)
-        self.node = None
 
-    def add(self, token, function):
+
+    def __init__(self, **kwargs):
+        ConfigObject.__init__(self, **kwargs)
+        self.__functions = dict()
+        self.node = None
+        self.translator = None
+
+
+    def add(self, token, component):
+        # TODO: test token_class is type
+        component.init(self.translator)
+#        self.__components.append(component)
+        func = self.__method(component)
+#        Extension.add(self, token_class, func)
+
+
+#    def add(self, token, function):
         #print 'ADD:', token, function
 
 
         if not isinstance(token, type):
             raise TypeError("The supplied token must be a 'type' not an instance.")
 
+        print component
+
         #TODO: check if it exists
-        self.__functions[token] = function
+        self.__functions[token] = func
         #for k, v in self.__functions.iteritems():
         #    print k, v
 
     def render(self, ast, reinit=True):
-        if reinit:
-            self.reinit()
+        pass
+        #if reinit:
+        #    self.reinit()
 
-    def method(self, component):
+    def __method(self, component): #TODO: just move to add
         if hasattr(component, self.METHOD):
             return getattr(component, self.METHOD)
         else:
@@ -83,7 +100,7 @@ class Renderer(ReaderRenderBase):
             self.process(child, el)
 
 class HTMLRenderer(Renderer):
-    METHOD = 'createHTML'
+    METHOD = 'createHTML' #TODO: make this a config option???
 
     def render(self, ast, root=None, reinit=True):
         Renderer.render(self, ast, reinit=reinit)
@@ -96,6 +113,14 @@ class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
 
     #TODO: Add config
+    @staticmethod
+    def defaultConfig():
+        config = HTMLRenderer.defaultConfig()
+        config['scrollspy'] = (True, "Toggle the use of the right scrollable navigation.")
+        config['section-level'] = (2, "The section level for creating collapsible sections and scrollspy.")
+
+        return config
+
 
     def method(self, component):
         if hasattr(component, self.METHOD):

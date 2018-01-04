@@ -10,13 +10,13 @@ from moosedown.extensions import core, command, floats
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
-def make_extension():
-    return IncludeMarkdownExtension(), IncludeRenderExtension()
+def make_extension(**kwargs):
+    return IncludeExtension()
 
-class IncludeMarkdownExtension(base.MarkdownExtension):
+class IncludeExtension(base.Extension):
 
-    def extend(self):
-        self.addCommand(Include())
+    def extend(self, reader, renderer):
+        reader.addCommand(Include())
 
 class Include(command.MarkdownCommandComponent):
     COMMAND = 'include'
@@ -47,15 +47,3 @@ class Include(command.MarkdownCommandComponent):
         for child in ast.children:
             child.parent = parent
         return parent
-
-class IncludeRenderExtension(base.RenderExtension):
-    def extend(self):
-        pass
-
-class RenderInclude(base.RenderComponent):
-
-    def createHTML(self, token, parent):
-        raise NotImplementedError("Not done...")
-
-    def createMaterialize(self, token, parent):
-        pass
