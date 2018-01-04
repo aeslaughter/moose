@@ -11,6 +11,7 @@ import hit
 
 import moosedown
 
+# Set of extenions to load by default
 DEFAULT_EXTENSIONS = set(['moosedown.extensions.core',
                           'moosedown.extensions.command',
                           'moosedown.extensions.include'])
@@ -46,51 +47,50 @@ class ConfigException(Exception):
     pass
 
 
-def load_extensions(root):
-    errors = []
+def load_extensions(node, errors=[]):
+    """
+    Instatiates the Extension objects, with the configuration from the hit file, for passing
+    into the Translator object.
 
-    node = root.find('Extensions')
-    if node is None:
-        pass #TODO: accumulate errors and report all at end DO NOTHING and use defaults
+    Inputs:
+        node[hit.Node|None]: The [Extensions] section of the hit file.
+        errors[list]: A list for appending errors
+    """
 
-    # Determine the list of defaults to build
-    disable = node.param('disable').split()
-    if disable:
-        defaults = DEFAULT_EXTENSIONS.difference(set(disable))
+    # The key is the extension module name, value is a dict() of configuration options, which is populated
+    # from the hit nodes and applied to the object via the make_extension method.
+    if (node and node.param('disable_defaults')):
+        ext_configs = dict()
     else:
-        defaults = DEFAULT_EXTENSIONS
+        ext_configs = {k:dict() for k in DEFAULT_EXTENSIONS}
 
-    ext_configs = dict()
-    for ext in defaults:
-        ext_configs[ext] = dict()
+    # Process the [Extensions] block of the hit input, if it exists
+    if node:
+        # Update the extension conifigure options based on the content of the hit nodes
+        for child in node.children(node_type=hit.NodeType.Section):
+            ext_type = child.param('type') #TODO: accumulate error
+            if ext_type is None:
+                msg = "The section '{}' must contain a 'type' parameter.".format(child.fullpath())
+                errors.append((msg, child.line()))
+            else:
+                config = params_to_dict(child)
+                config.pop('type')
+                ext_configs[ext_type].update(config)
 
-    # Build defaults
-    #extensions = dict()
-    #for name in defaults:
-    #    extensions[name] = eval(name) #TODO: accumulate error if it fails
-
-    # Build/update the extensions from config file
-    for child in node.children(node_type=hit.NodeType.Section):
-        ext_type = child.param('type') #TODO: accumulate error
-
-        config = params_to_dict(child)
-        config.pop('type')
-        ext_configs[ext_type] = config
-
-
+    # Build the Extension objects
     extensions = []
     for name, config in ext_configs.iteritems():
-        module = importlib.import_module(name)
+        try:
+            module = importlib.import_module(name)
+            if not hasattr(module, 'make_extension'):
+                errors.append("The supplied module '{}' must have a 'make_extension' function.".format(module.__name__))
+            else:
+                extensions.append(module.make_extension(**config))
 
-        if not hasattr(module, 'make_extension'):
-            msg = "The supplied module '{}' must have a 'make_extension' function."
-            #raise ImportError(msg.format(module.__name__)) TODO: accumulate errors
+        except ImportError as e:
+            errors.append("Failed to import the '{}' module.".format(name))
 
-        else:
-            extensions.append(module.make_extension(**config))
-
-
-    return extensions, errors
+    return extensions
 
 
 def load_config(filename):
@@ -100,8 +100,9 @@ def load_config(filename):
         content = f.read()
     root = hit.parse(filename, content)
 
-    # EXTENSIONS
-    extensions = load_extensions(roots)
+    # Load extensions
+    errors = []
+    extensions = load_extensions(node.find('Extensions'), errors=errors)
 
 
 

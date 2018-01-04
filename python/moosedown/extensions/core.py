@@ -31,10 +31,7 @@ class CoreExtension(base.Extension):
         """
         The default configuration options.
         """
-        print 'CoreExtension::defaultConfig'
-        #config = base.Extension.defaultConfig()
         config['test'] = (0, 'foo')
-        #return config
 
     def extend(self, reader, renderer):
         """
