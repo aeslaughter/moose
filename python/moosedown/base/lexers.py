@@ -48,9 +48,10 @@ class Lexer(object):
             mo, pattern = self._search(text, grammer, pos)
 
         if pos < n: #TODO: exception
-            obj = tree.tokens.Unknown(content=text[pos:])
-            obj.parent = parent
-            obj.line = line
+            obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line)#content=text[pos:])
+            obj.line = line #
+            obj.match = mo
+            obj.node = node
 
     def _search(self, text, grammer, position=0):
         for pattern in grammer:

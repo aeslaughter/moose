@@ -43,7 +43,6 @@ class Renderer(ConfigObject):
         if not isinstance(token, type):
             raise TypeError("The supplied token must be a 'type' not an instance.")
 
-        print component
 
         #TODO: check if it exists
         self.__functions[token] = func

@@ -26,9 +26,9 @@ class Example(tokens.Token):
 class DevelExtension(base.Extension):
     #TODO: require float, commands
 
-    def extend(self):
-        self.addCommand(Example())
-        self.addCommand(ComponentSettings())
+    def extend(self, reader, renderer):
+        reader.addCommand(Example())
+        reader.addCommand(ComponentSettings())
 
 class Example(command.MarkdownCommandComponent):
     COMMAND = 'devel'
@@ -59,7 +59,7 @@ class Example(command.MarkdownCommandComponent):
         tokens.Code(tab, code=data, language=u'markdown', escape=True)
 
         # HTML
-        translator = base.Translator(type(self.reader), base.MaterializeRenderer, self.translator.extensions())
+        translator = base.Translator(type(self.reader)(), base.MaterializeRenderer(), self.translator.extensions)
         ast = translator.reader.parse(data)
         html = translator.renderer.render(ast)
 
@@ -79,7 +79,7 @@ class Example(command.MarkdownCommandComponent):
 
 
         # LATEX
-        translator = base.Translator(type(self.reader), base.LatexRenderer, self.translator.extensions())
+        translator = base.Translator(type(self.reader)(), base.LatexRenderer(), self.translator.extensions)
         ast = translator.reader.parse(data)
         tex = translator.renderer.render(ast)
 
@@ -90,7 +90,6 @@ class Example(command.MarkdownCommandComponent):
         if code:
             tab = floats.Tab(tabs, title=u'LaTeX')
             tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
-
 
         return master
 
@@ -132,6 +131,8 @@ class ComponentSettings(command.MarkdownCommandComponent):
 
         tbl = table.builder(rows, headings=[u'Key', u'Default', u'Description'])
         tbl.parent = content
+
+        #print master
         return master
 
 

@@ -16,9 +16,13 @@ import moosedown
 LOG = logging.getLogger(__name__)
 
 # Set of extenions to load by default
-DEFAULT_EXTENSIONS = set(['moosedown.extensions.core',
-                          'moosedown.extensions.command',
-                          'moosedown.extensions.include'])
+DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
+                      'moosedown.extensions.command',
+                      'moosedown.extensions.include',
+                      'moosedown.extensions.floats',
+                      'moosedown.extensions.table',
+                      'moosedown.extensions.autolink',
+                      'moosedown.extensions.devel']
 
 
 
@@ -42,11 +46,11 @@ def load_extensions(node, filename):
 
     # The key is the extension module name, value is a dict() of configuration options, which is populated
     # from the hit nodes and applied to the object via the make_extension method.
-    if (node and node.param('disable_defaults')):
-        ext_configs = collections.defaultdict(dict)
-    else:
-        ext_configs = collections.defaultdict(dict)
-        ext_configs.update({k:dict() for k in DEFAULT_EXTENSIONS})
+    ext_configs = collections.OrderedDict()
+    if not (node and node.param('disable_defaults')):
+        ext_configs = collections.OrderedDict()
+        for key in DEFAULT_EXTENSIONS:
+            ext_configs[key] = dict()
 
     # Process the [Extensions] block of the hit input, if it exists
     if node:
@@ -59,7 +63,7 @@ def load_extensions(node, filename):
             else:
                 config = params_to_dict(child)
                 config.pop('type')
-                ext_configs[ext_type].update(config)
+                ext_configs[ext_type] = config
 
     # Build the Extension objects
     extensions = []
@@ -73,8 +77,8 @@ def load_extensions(node, filename):
                 extensions.append(module.make_extension(**config))
 
         except ImportError as e:
-            msg = "Failed to import the '%s' module."
-            LOG.error(msg, name)
+            msg = "Failed to import the '%s' module.\n%s"
+            LOG.error(msg, name, e.message)
 
     return extensions
 
@@ -105,22 +109,24 @@ def load_content(node, filename):
         msg = "The [Content] section is required within the configure file {}."
         raise KeyError(msg.format(filename))
 
-    items = [params_to_dict(child) for child in node.children(node_type=hit.NodeType.Section)]
+    items = []
+    for child in node.children(node_type=hit.NodeType.Section):
+        content = child.param('content').split() if child.param('content') else []
+        items.append(dict(root_dir=child.param('root_dir'), content=content))
+
     return moosedown.tree.build_page_tree.doc_tree(items)
-
-
 
 def load_config(filename):
 
     # Read the config.hit file #TODO: error check on filename
     with open(filename) as f:
         content = f.read()
-    root = hit.parse(filename, content)
+    node = hit.parse(filename, content)
 
     extensions = load_extensions(node.find('Extensions'), filename)
-    reader = load_object(node.find['Reader'], filename, moosedown.base.MarkdownReader)
-    renderer = load_object(node.find['Renderer'], filename, moosedown.base.MaterializeRenderer)
-    translator = load_object(node.find['Translator'], filename, moosedown.base.Translator, reader, renderer)
+    reader = load_object(node.find('Reader'), filename, moosedown.base.MarkdownReader)
+    renderer = load_object(node.find('Renderer'), filename, moosedown.base.MaterializeRenderer)
+    translator = load_object(node.find('Translator'), filename, moosedown.base.Translator, reader, renderer, extensions)
     content = load_content(node.find('Content'), filename)
 
     return translator, content
@@ -128,72 +134,24 @@ def load_config(filename):
 
 
 def main():
-    #config = dict()
-    #config['materialize'] = (False, 'Enable the use of the Materialize framework for HTML output.')
-    #extensions = ['moosedown.extensions.core', 'moosedown.extensions.devel']
 
+    destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
     #logging.basicConfig(level=logging.DEBUG)
-
     config_file = 'config.hit'
-    config = load_config(config_file)
-
-    """
-    reader = moosedown.base.MarkdownReader()
-    renderer = moosedown.base.MaterializeRenderer()
-
-    extensions = [moosedown.extensions.core]
-    translator = moosedown.base.Translator(reader, renderer, extensions)
-
-    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/index.md'
-    node = moosedown.tree.page.MarkdownNode(None, source=filename)
-    node.build(translator)
-    #translator.convert()
-    """
 
 
-    """
+    translator, root = load_config(config_file)
 
-    destination = '/Users/slauae/.local/share/moose/site'
-    if os.path.isdir(destination):
-        shutil.rmtree(destination)
-    else:
-        os.makedirs(destination)
+    server = livereload.Server()
+    for node in anytree.PreOrderIter(root):
+        node.base = destination
+        node.translator = translator#TODO: formalize this with a Property
 
-    config_file = 'config.yml'
-
-
-    data = load_config(config_file)
-    root = moosedown.tree.build_page_tree.doc_tree(data['pages'].values())
-
-
-    translator = data['translator'](data['reader'], data['renderer'], data['extensions'])
-
-    if False:
-        #print '    ROOT', root._path[0]
-        idx = root.findall('index.md')[0]
-        idx.read()
-        #print idx.get_root()#root(-1)(0)(1)._path[0]
-        ast, html = translator.convert(idx)
-        print ast
-
-        #translator.convert(ast)
-    else:
-
-        server = livereload.Server()
-        root.name = '' #TODO: This should not be needed
-        for node in anytree.PreOrderIter(root):
-            node.base = destination
-            node.translator = translator#TODO: formalize this with a Property
-
-            if node.source and os.path.isfile(node.source):
-                #print 'WATCH:', type(node), node.source
-                #server.watch(node.source, lambda: node.build(translator))
-                server.watch(node.source, node.build)
+        if node.source and os.path.isfile(node.source):
+            server.watch(node.source, lambda: node.build(translator))
 
         # Everything needs translator before it can build
-        for node in anytree.PreOrderIter(root):
-            node.build(translator)
+        #for node in anytree.PreOrderIter(root):
+        node.build(translator)
 
-
-        server.serve(root=destination, port=8000)
-    """
+    server.serve(root=destination, port=8000)
