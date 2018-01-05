@@ -37,7 +37,6 @@ class CoreExtension(base.Extension):
         """
         Add the extension components.
         """
-
         # Block
         reader.addBlock(Code())
         reader.addBlock(Quote())

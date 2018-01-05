@@ -7,8 +7,8 @@ from moosedown.tree.base import Property
 
 #from moosedown.extensions import floats
 
-def make_extension():
-    return TableExtension()
+def make_extension(**kwargs):
+    return TableExtension(**kwargs)
 
 #class Table(object):
 #    def __init__
@@ -141,7 +141,6 @@ class RenderTable(base.RenderComponent):
         attrs['class'] = 'moose-table-div'
         div = html.Tag(parent, 'div', **attrs)
         tbl = html.Tag(div, 'table')
-
         return tbl
 
 class RenderTag(base.RenderComponent):

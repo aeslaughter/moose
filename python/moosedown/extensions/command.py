@@ -16,6 +16,9 @@ def make_extension():
 class CommandExtension(base.Extension):
 
     def extend(self, reader, renderer):
+        #TODO: require core to be loaded
+
+
         reader.addBlock(FileCommand(), location='<moosedown.extensions.core.Code')
         reader.addBlock(InlineCommand(), location='>moosedown.extensions.command.FileCommand')
         reader.addBlock(BlockCommand(), location='>moosedown.extensions.command.InlineCommand')
