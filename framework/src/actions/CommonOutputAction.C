@@ -65,6 +65,7 @@ validParams<CommonOutputAction>()
       "solution_history", false, "Print a solution history file (.slh) using the default settings");
   params.addParam<bool>("dofmap", false, "Create the dof map .json output file");
   params.addParam<bool>("controls", false, "Enable the screen output of Control systems.");
+  params.addParam<bool>("input", false, "Enable the creation of input file that includes all objects, including those added by actions.");
 
   // Common parameters
 
@@ -189,6 +190,9 @@ CommonOutputAction::act()
 
   if (getParam<bool>("controls") || _app.getParam<bool>("show_controls"))
     create("ControlOutput");
+
+  if (getParam<bool>("input"))
+    create("InputOutput");
 
   if (!getParam<bool>("color"))
     Moose::setColorConsole(false);
