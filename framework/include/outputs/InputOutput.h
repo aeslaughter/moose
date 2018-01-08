@@ -32,6 +32,9 @@ public:
   InputOutput(const InputParameters & parameters);
   virtual void output(const ExecFlagType & type) override;
   virtual std::string filename() override;
+
+  static std::map<std::string, std::string> stringifyParameters(const InputParameters & parameters);
+
 };
 
 #endif
