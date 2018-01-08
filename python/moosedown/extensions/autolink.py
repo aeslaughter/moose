@@ -23,6 +23,7 @@ class RenderAutoLink(core.RenderLink):
 
         href = tag['href']
         if href.endswith('.md'):
-            obj = self.translator.node.findall(href, maxcount=1)[0]
-            tag['href'] = os.path.relpath(obj.local, os.path.dirname(self.translator.node.local)).replace('.md', '.html') #TODO: extensions should not be hardcoded (see page.MarkdownNode)
+            obj = self.translator.node.findall(href, maxcount=1)
+            if obj:
+                tag['href'] = os.path.relpath(obj[0].local, os.path.dirname(self.translator.node.local)).replace('.md', '.html') #TODO: extensions should not be hardcoded (see page.MarkdownNode)
         return tag

@@ -142,11 +142,16 @@ class RenderTable(base.RenderComponent):
         div = html.Tag(parent, 'div', **attrs)
         tbl = html.Tag(div, 'table')
         return tbl
+    def createMaterialize(self, token, parent):
+        return self.createHTML(token, parent)
 
 class RenderTag(base.RenderComponent):
     def __init__(self, tag):
         base.RenderComponent.__init__(self)
         self.__tag = tag
+
+    def createMaterialize(self, token, parent):
+        return self.createHTML(token, parent)
 
     def createHTML(self, token, parent):
         return html.Tag(parent, self.__tag)

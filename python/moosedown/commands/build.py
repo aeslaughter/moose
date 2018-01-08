@@ -139,8 +139,17 @@ def main():
     #logging.basicConfig(level=logging.DEBUG)
     config_file = 'config.hit'
 
-
     translator, root = load_config(config_file)
+
+    """
+    from moosedown.tree import page
+    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/index.md'
+    node = page.MarkdownNode(source=filename)
+    node.read()
+    ast, html = translator.convert(node)
+    #print ast
+    print html
+    """
 
     server = livereload.Server()
     for node in anytree.PreOrderIter(root):
