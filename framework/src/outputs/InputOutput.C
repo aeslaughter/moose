@@ -16,8 +16,10 @@
 #include "InputOutput.h"
 #include "FEProblemBase.h"
 #include "NonlinearSystem.h"
-#include "MooseObjectWarehouse.h"
+#include "MooseObjectWarehouseBase.h"
+#include "KernelBase.h"
 #include "parse.h"
+
 
 template <>
 InputParameters
@@ -40,21 +42,103 @@ void
 InputOutput::output(const ExecFlagType & /*type*/)
 {
   hit::Section root("");
+  addSubSectionNodes<KernelBase>("Kernels", _problem_ptr->getNonlinearSystem().getKernelWarehouse(), &root);
 
-  hit::Section node("Kernels");
-  root.addChild(&node);
 
+
+  //hit::Section node("Kernels");
+  //root.addChild(&node);
+
+  /*
   const MooseObjectWarehouse<KernelBase> & warehouse = _problem_ptr->getNonlinearSystem().getKernelWarehouse();
   const std::vector<std::shared_ptr<KernelBase>> & kernels = warehouse.getObjects();
-  //for (const auto & kernel : kernels)
+  for (const std::shared_ptr<KernelBase> & kernel : kernels)
+  {
+    hit::Section * sub_section = new hit::Section(kernel->name());
+    node.addChild(sub_section);
+
+    for (const auto & map_pair : kernel->parameters())
+      addParameterNodes(map_pair.first, map_pair.second, sub_section, kernel->parameters());
+    }
+    */
 
 
 
   std::cout << root.render() << std::endl;
 }
 
+void
+InputOutput::addParameterNodes(const std::string & name, libMesh::Parameters::Value * value, hit::Node * parent, const InputParameters & parameters)
+{
+  /*
+  std::string syntax;
+  if (parameters.isParamValid("parser_syntax"))
+  {
+    syntax = parameters.get<std::string>("parser_syntax");
+    std::cout << "syntax = " << syntax << std::endl;
+  }
+  */
+
+  if (!parameters.isPrivate(name) && parameters.isParamValid(name))
+  {
+    /*
+    if (param_name == "control_tags")
+    {
+      // deal with the control tags. The current parser_syntax is automatically added to this. So
+      // we can remove the parameter if that's all there is in it
+    }
+    else
+    */
+    {
+      // special treatment for some types
+      auto param_bool = dynamic_cast<InputParameters::Parameter<bool> *>(value);
+
+      // parameter value
+      std::string param_string;
+      if (param_bool)
+        param_string = param_bool->get() ? "true" : "false";
+      else
+      {
+        std::stringstream ss;
+        value->print(ss);
+        param_string = MooseUtils::trim(ss.str());
+      }
+
+      // delete trailing space
+
+      //if (param_value.back() == ' ')
+      //  param_value.pop_back();
+
+      // add quotes if the parameter contains spaces
+      if (param_string.find_first_of(" ") != std::string::npos)
+        param_string = "'" + param_string + "'";
 
 
+      hit::Field * field = new hit::Field(name, hit::Field::Kind::String, param_string);
+      parent->addChild(field);
+
+    }
+  }
+
+}
+
+/*
+template<class T>
+void
+InputOutput::addSubSectionNodes(const std::string & name, const MooseObjectWarehouseBase<T> & warehouse, hit::Node * parent)
+{
+  const std::vector<std::shared_ptr<T>> & objects = warehouse.getObjects();
+  for (const std::shared_ptr<T> & object_ptr : objects)
+  {
+    hit::Section * sub_section = new hit::Section(object_ptr->name());
+    parent->addChild(sub_section);
+    for (const auto & map_pair : object_ptr->parameters())
+      addParameterNodes(map_pair.first, map_pair.second, sub_section, object_ptr->parameters());
+}
+*/
+
+
+/*
 std::map<std::string, std::string>
 InputOutput::stringifyParameters(const InputParameters & parameters)
 {
@@ -107,3 +191,4 @@ InputOutput::stringifyParameters(const InputParameters & parameters)
 
   return parameter_map;
 }
+*/

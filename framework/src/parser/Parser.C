@@ -368,6 +368,7 @@ Parser::walkRaw(std::string /*fullpath*/, std::string /*nodepath*/, hit::Node * 
         std::dynamic_pointer_cast<MooseObjectAction>(action_obj);
     if (object_action)
     {
+      std::cout << "CURR: " << curr_identifier << std::endl;
       extractParams(curr_identifier, object_action->getObjectParams());
       object_action->getObjectParams()
           .set<std::vector<std::string>>("control_tags")
