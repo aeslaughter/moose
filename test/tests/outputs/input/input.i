@@ -1,3 +1,17 @@
+[Adaptivity]
+  steps = 1
+  marker = box
+  [./Markers]
+    [./box]
+      bottom_left = '0.3 0.3 0'
+      inside = refine
+      top_right = '0.6 0.6 0'
+      outside = do_nothing
+      type = BoxMarker
+    [../]
+  [../]
+[]
+
 [Mesh]
   type = GeneratedMesh
   dim = 2

@@ -17,9 +17,17 @@
 #include "FEProblemBase.h"
 #include "NonlinearSystem.h"
 #include "MooseObjectWarehouseBase.h"
-#include "KernelBase.h"
+#include "Conversion.h"
 #include "parse.h"
 
+#include "KernelBase.h"
+#include "GeneralDamper.h"
+#include "ElementDamper.h"
+#include "NodalDamper.h"
+#include "Marker.h"
+#include "Indicator.h"
+
+#include "SetAdaptivityOptionsAction.h"
 
 template <>
 InputParameters
@@ -41,154 +49,99 @@ InputOutput::filename()
 void
 InputOutput::output(const ExecFlagType & /*type*/)
 {
-  hit::Section root("");
-  addSubSectionNodes<KernelBase>("Kernels", _problem_ptr->getNonlinearSystem().getKernelWarehouse(), &root);
 
+  hit::Section * root = new hit::Section("");
 
-
-  //hit::Section node("Kernels");
-  //root.addChild(&node);
-
-  /*
-  const MooseObjectWarehouse<KernelBase> & warehouse = _problem_ptr->getNonlinearSystem().getKernelWarehouse();
-  const std::vector<std::shared_ptr<KernelBase>> & kernels = warehouse.getObjects();
-  for (const std::shared_ptr<KernelBase> & kernel : kernels)
+  // Adaptivity
+  hit::Node * node = addSystem<SetAdaptivityOptionsAction>("Adaptivity", root);
+  if (node)
   {
-    hit::Section * sub_section = new hit::Section(kernel->name());
-    node.addChild(sub_section);
+    addSystem<Marker>("Markers", node, _problem_ptr->getMarkerWarehouse());
+    addSystem<Marker>("Indicators", node, _problem_ptr->getIndicatorWarehouse());
+  }
 
-    for (const auto & map_pair : kernel->parameters())
-      addParameterNodes(map_pair.first, map_pair.second, sub_section, kernel->parameters());
-    }
-    */
+  addSystem<KernelBase>("Kernels", root, _problem_ptr->getNonlinearSystem().getKernelWarehouse());
+
+  // Dampers
+  const MooseObjectWarehouseBase<GeneralDamper> & general_dampers = _problem_ptr->getNonlinearSystem().getGeneralDamperWarehouse();
+  const MooseObjectWarehouseBase<ElementDamper> & element_dampers = _problem_ptr->getNonlinearSystem().getElementDamperWarehouse();
+  const MooseObjectWarehouseBase<NodalDamper> & nodal_dampers = _problem_ptr->getNonlinearSystem().getNodalDamperWarehouse();
+  if (general_dampers.hasObjects() || element_dampers.hasObjects() || nodal_dampers.hasObjects())
+  {
+    hit::Node * dampers = addSystem("Dampers", root);
+    addObjects<GeneralDamper>(dampers, general_dampers);
+    addObjects<ElementDamper>(dampers, element_dampers);
+    addObjects<NodalDamper>(dampers, nodal_dampers);
+  }
 
 
 
-  std::cout << root.render() << std::endl;
+  std::cout << root->render() << std::endl;
+  delete root;
 }
 
-void
-InputOutput::addParameterNodes(const std::string & name, libMesh::Parameters::Value * value, hit::Node * parent, const InputParameters & parameters)
+hit::Node *
+InputOutput::addSystem(const std::string & name, hit::Node * parent)
 {
-  /*
-  std::string syntax;
-  if (parameters.isParamValid("parser_syntax"))
-  {
-    syntax = parameters.get<std::string>("parser_syntax");
-    std::cout << "syntax = " << syntax << std::endl;
-  }
-  */
+  hit::Section * node = new hit::Section(name);
+  parent->addChild(node);
+  return node;
+}
 
-  if (!parameters.isPrivate(name) && parameters.isParamValid(name))
+/*
+hit::Node *
+InputOutput::addSystem(const std::string & name, hit::Node * parent, const std::string & action_name)
+{
+  for ()
+
+  return nullptr;
+}
+*/
+
+void
+InputOutput::addParameterNode(const std::string & name, libMesh::Parameters::Value * value, hit::Node * parent, const InputParameters & parameters)
+{
+  if (!parameters.isPrivate(name) && parameters.isParamSetByUser(name))
   {
-    /*
-    if (param_name == "control_tags")
+  //  if (name[0] == '_')
+  //    mooseWarning("The parameter '", name, "' begins with and underscore but it is not private.");
+
+    std::string param_string; // the parameter string to output
+
+    // Special case for bool parameters
+    auto param_bool = dynamic_cast<InputParameters::Parameter<bool> *>(value);
+    if (param_bool)
+      param_string = param_bool->get() ? "true" : "false";
+
+    // Remove "control_tags" added by MOOSE
+    else if (name == "control_tags" && parameters.isParamValid("parser_syntax"))
     {
-      // deal with the control tags. The current parser_syntax is automatically added to this. So
-      // we can remove the parameter if that's all there is in it
+      std::string tag = MooseUtils::baseName(parameters.get<std::string>("parser_syntax"));
+      std::vector<std::string> tags;
+      for (const auto & t : parameters.get<std::vector<std::string>>("control_tags"))
+        if (t != tag)
+          tags.push_back(t);
+
+      param_string = Moose::stringify(tags);
     }
+
+    // General case
     else
-    */
     {
-      // special treatment for some types
-      auto param_bool = dynamic_cast<InputParameters::Parameter<bool> *>(value);
+      std::stringstream ss;
+      value->print(ss);
+      param_string = MooseUtils::trim(ss.str());
+    }
 
-      // parameter value
-      std::string param_string;
-      if (param_bool)
-        param_string = param_bool->get() ? "true" : "false";
-      else
-      {
-        std::stringstream ss;
-        value->print(ss);
-        param_string = MooseUtils::trim(ss.str());
-      }
-
-      // delete trailing space
-
-      //if (param_value.back() == ' ')
-      //  param_value.pop_back();
-
-      // add quotes if the parameter contains spaces
+    // Create the parameter node
+    if (!param_string.empty())
+    {
+      // If spaces exists add quotes
       if (param_string.find_first_of(" ") != std::string::npos)
         param_string = "'" + param_string + "'";
 
-
       hit::Field * field = new hit::Field(name, hit::Field::Kind::String, param_string);
       parent->addChild(field);
-
     }
   }
-
 }
-
-/*
-template<class T>
-void
-InputOutput::addSubSectionNodes(const std::string & name, const MooseObjectWarehouseBase<T> & warehouse, hit::Node * parent)
-{
-  const std::vector<std::shared_ptr<T>> & objects = warehouse.getObjects();
-  for (const std::shared_ptr<T> & object_ptr : objects)
-  {
-    hit::Section * sub_section = new hit::Section(object_ptr->name());
-    parent->addChild(sub_section);
-    for (const auto & map_pair : object_ptr->parameters())
-      addParameterNodes(map_pair.first, map_pair.second, sub_section, object_ptr->parameters());
-}
-*/
-
-
-/*
-std::map<std::string, std::string>
-InputOutput::stringifyParameters(const InputParameters & parameters)
-{
-  std::map<std::string, std::string> parameter_map;
-
-  std::string syntax;
-  if (parameters.isParamValid("parser_syntax"))
-    syntax = parameters.get<std::string>("parser_syntax");
-
-  for (auto & value_pair : parameters)
-  {
-    // parameter name
-    const auto & param_name = value_pair.first;
-
-    if (!parameters.isPrivate(param_name) && parameters.isParamValid(param_name))
-    {
-      if (param_name == "control_tags")
-      {
-        // deal with the control tags. The current parser_syntax is automatically added to this. So
-        // we can remove the parameter if that's all there is in it
-      }
-      else
-      {
-        // special treatment for some types
-        auto param_bool = dynamic_cast<InputParameters::Parameter<bool> *>(value_pair.second);
-
-        // parameter value
-        std::string param_value;
-        if (param_bool)
-          param_value = param_bool->get() ? "true" : "false";
-        else
-        {
-          std::stringstream ss;
-          value_pair.second->print(ss);
-          param_value = ss.str();
-        }
-
-        // delete trailing space
-        if (param_value.back() == ' ')
-          param_value.pop_back();
-
-        // add quotes if the parameter contains spaces
-        if (param_value.find_first_of(" ") != std::string::npos)
-          param_value = "'" + param_value + "'";
-
-        parameter_map[param_name] = param_value;
-      }
-    }
-  }
-
-  return parameter_map;
-}
-*/
