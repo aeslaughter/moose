@@ -53,6 +53,11 @@
   petsc_options_value = 'hypre boomeramg'
 []
 
+[Problem]
+  solve = false
+  kernel_coverage_check = false
+[]
+
 [Outputs]
   input = true
 []
