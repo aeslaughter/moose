@@ -15,7 +15,9 @@ import mooseutils
 LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
-    PROPERTIES = [base.Property('content', ptype=unicode, required=False), base.Property('source', ptype=str)]
+    PROPERTIES = [base.Property('content', ptype=unicode),
+                  base.Property('source', ptype=str)]
+                #  base.Property('meta', ptype=dict, default=dict())]
     COLOR = None
 
     def __init__(self, *args, **kwargs):

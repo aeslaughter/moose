@@ -1,3 +1,7 @@
+!meta!
+section-level=3
+!meta-end!
+
 # Core Extension
 The core extension is the portion of the MooseDown language that is designed to mimic [markdown]
 syntax. As mentioned above MooseDown is far more strict than traditional [markdown] implementations.

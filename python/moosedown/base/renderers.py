@@ -18,6 +18,7 @@ LOG = logging.getLogger(__name__)
 
 class Renderer(ConfigObject):
     METHOD = None
+    ROOT = None
 
 
 
@@ -49,10 +50,21 @@ class Renderer(ConfigObject):
         #for k, v in self.__functions.iteritems():
         #    print k, v
 
-    def render(self, ast, reinit=True):
-        pass
+    def render(self, ast, root, reinit=True):
+#        self.onPreRender(root)
+        self.process(ast, root)
+#        self.onPostRender(root)
+        return root
         #if reinit:
         #    self.reinit()
+
+
+
+#    def onPreRender(self, root):
+#        pass
+
+#    def onPostRender(self, root):
+#        pass
 
     def __method(self, component): #TODO: just move to add
         if hasattr(component, self.METHOD):
@@ -102,11 +114,9 @@ class HTMLRenderer(Renderer):
     METHOD = 'createHTML' #TODO: make this a config option???
 
     def render(self, ast, root=None, reinit=True):
-        Renderer.render(self, ast, reinit=reinit)
         if root is None:
             root = html.Tag(None, 'body')
-        self.process(ast, root)
-        return root
+        return Renderer.render(self, ast, root, reinit=reinit)
 
 class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
@@ -125,6 +135,9 @@ class MaterializeRenderer(HTMLRenderer):
         else:
             #TODO: raise RenderException
             pass
+
+    def onPreRender(self, root):
+        pass
 
     def render(self, ast, root=None, reinit=True):
 
@@ -180,20 +193,79 @@ class MaterializeRenderer(HTMLRenderer):
                     a = html.Tag(div, 'a', href=url, class_="breadcrumb")
                     html.String(a, content=unicode(os.path.splitext(n.name)[0]))
 
-
-
-
         # Content
         row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12 m12 l10") #TODO add scroll spy (scoll-name=False) at top of index.mdg
 
         HTMLRenderer.render(self, ast, col, reinit=reinit)
 
+        # TODO: toggle, make sub function
+        # Add sections
+        section = col
+        for child in section.children:#copy.deepcopy(col.children):
+            if child.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+                level = int(child.name[-1])
+                current = section.get("data_section_level", 0) # get the current section lvel
+
+                if level == current:
+                    section = html.Tag(section.parent, 'section', data_section_level=level)
+                elif level > current:
+                    section = html.Tag(section, 'section', data_section_level=level)
+                elif level < current:
+                    section = html.Tag(section.parent.parent, 'section', data_section_level=level)
+
+            child.parent = section
+
+        # TODO: toggle, with levels
+        # Add summary/details
+        for node in anytree.PreOrderIter(col, filter_=lambda n: n.name == 'section'):
+            summary = html.Tag(None, 'summary')
+            node(0).parent = summary
+
+            details = html.Tag(None, 'details')
+            details.children = node.children
+            summary.parent = details
+            details.parent = node
+
+            icon = html.Tag(None, 'span', class_='moose-section-icon')
+            summary(0).children = [icon] + list(summary(0).children)
+
+
+            #for c in child:
+            #    c.parent = details
+
+            #details.parent = section
+            #details(1).parent = summary
+
+
+            #    c.parent = details
+
+        #    summary = html.Tag(details, 'summary')
+            #for x in copy.deepcopy(child.children):
+            #    x.parent = details
+        #    child(0).parent = summary
+
+            #else:
+            #    child.parent = parent
+
+        """
+        for child in col:
+            print child.name
+            for c in child:
+                print " "*2, c.name
+                for d in c:
+                    print " "*4, d.name
+        """
+
+
+        """
         scroll = html.Tag(row, 'div', class_="col l2 hide-on-med-and-down")
         ul = html.Tag(scroll, 'ul', class_="section table-of-contents")
 
         # Add sections #TODO add toggle
-        level = 'h{}'.format(self['section-level'])
+        #level = 'h{}'.format(self['section-level'])
+        #print 'NODE:', self.translator.node, ast
+        level = 'h{}'.format(self.translator.node.get('section-level', self['section-level']))
         parent = col
         for child in col:
             if child.name == level:
@@ -220,10 +292,11 @@ class MaterializeRenderer(HTMLRenderer):
             else:
                 child.parent = parent
 
+
         # TODO:Add toggle
         scroll = html.Tag(row, 'div', class_="col l2 hide-on-med-and-down")
         ul = html.Tag(scroll, 'ul', class_="section table-of-contents")
-
+        """
 
         return root
 

@@ -105,15 +105,6 @@ class Reader(object):
         LOG.exception(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
 
 
-
-
-
-
-
-
-
-
-
 class MarkdownReader(Reader):
     #: Internal global for storing commands
     __COMMANDS__ = dict()

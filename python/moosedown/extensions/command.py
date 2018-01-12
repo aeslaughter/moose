@@ -87,11 +87,11 @@ class CommandBase(core.MarkdownComponent):
     """
 
 class InlineCommand(CommandBase):
-    RE = re.compile('\s*!(?P<command>\w+) (?P<subcommand>\w+) *(?P<settings>.*?)$',
+    RE = re.compile(r'\s*!(?P<command>\w+) (?P<subcommand>\w+)? *(?P<settings>.*?)$',
                     flags=re.UNICODE|re.MULTILINE)
 
 class BlockCommand(CommandBase):
-    RE = re.compile(r'\s*^!(?P<command>\w+)!\s(?P<subcommand>\w+) *(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
+    RE = re.compile(r'\s*^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
 class FileCommand(CommandBase):
