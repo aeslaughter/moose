@@ -216,13 +216,13 @@ class MaterializeRenderer(HTMLRenderer):
 
             child.parent = section
 
-        # TODO: toggle, with levels
+        # TODO: toggle, with levels and default open settings
         # Add summary/details
         for node in anytree.PreOrderIter(col, filter_=lambda n: n.name == 'section'):
             summary = html.Tag(None, 'summary')
             node(0).parent = summary
 
-            details = html.Tag(None, 'details')
+            details = html.Tag(None, 'details', class_="moose-section-content")
             details.children = node.children
             summary.parent = details
             details.parent = node
