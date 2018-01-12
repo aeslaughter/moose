@@ -17,6 +17,7 @@ LOG = logging.getLogger(__name__)
 
 # Set of extenions to load by default
 DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
+                      'moosedown.extensions.meta',
                       'moosedown.extensions.command',
                       'moosedown.extensions.include',
                       'moosedown.extensions.floats',
@@ -143,12 +144,14 @@ def main():
 
     """
     from moosedown.tree import page
-    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/index.md'
+    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/core.md'
     node = page.MarkdownNode(source=filename)
     node.read()
     ast, html = translator.convert(node)
+    with open('test.html', 'w') as fid:
+        fid.write(html.write())
     #print ast
-    print html
+    #print html
     """
 
     server = livereload.Server()

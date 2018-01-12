@@ -187,7 +187,7 @@ class NodeBase(anytree.NodeMixin):
         value = self.__attributes.get(key, default)
         if value is None:
             value = default
-        return default
+        return value
 
     @property
     def attributes(self):

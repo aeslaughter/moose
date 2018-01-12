@@ -380,6 +380,7 @@ class RenderHeading(CoreRenderComponentBase):
     LATEX_SECTIONS = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph']
 
     def createHTML(self, token, parent):
+        #section = html.Tag(parent, 'section')
         return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
 
     def createLatex(self, token, parent):

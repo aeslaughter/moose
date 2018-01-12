@@ -26,6 +26,9 @@ class Token(base.NodeBase):
         super(Token, self).__init__(*args, **kwargs)
         self.name = self.__class__.__name__
 
+class Section(Token):
+    pass
+
 class String(Token):
     """
     Base class for all tokens meant to contain characters.

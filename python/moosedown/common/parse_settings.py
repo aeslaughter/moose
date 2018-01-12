@@ -6,7 +6,7 @@ import copy
 
 from exceptions import TokenizeException
 
-SETTINGS_RE = re.compile(r'(?P<key>[^\s=]+)=(?P<value>.*?)(?=(?:\s[^\s=]+=|$))')
+SETTINGS_RE = re.compile(r'(?P<key>[^\s=]+)=(?P<value>.*?)(?=(?:\s[^\s=]+=|$))', flags=re.MULTILINE|re.UNICODE)
 
 def match_settings(defaults, raw):
     """
