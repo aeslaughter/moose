@@ -1,5 +1,5 @@
 !config!
-Renderer/collapsible-sections=[None, 'open', 'close', None, None, None]
+Renderer/collapsible-sections=[None, 'open', 'open', None, None, None]
 Renderer/breadcrumbs=True
 !config-end!
 
@@ -8,6 +8,12 @@ The core extension is the portion of the MooseDocs language that is designed to 
 syntax. MooseDown is far more strict than traditional [markdown] implementations.
 Therefore, the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
+
+!alert! note title=MooseDown is a restricted version of [markdown].
+To unify the markdown content and to create a fast parser a limited set of
+markdown is being used to define the MooseDocs language. The following sections
+detail the syntax that comprise the syntax.
+!alert-end!
 
 ## Block Content
 

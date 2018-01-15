@@ -30,8 +30,6 @@ class ConfigCommand(command.BlockCommand):
             config[block][item] = eval(value)
 
         #TODO: skip if not an option
-        print 'ConfigCommand:', config
-        print 'Render', self.translator.renderer.config(), type(self.translator.renderer), self.translator.renderer
         self.translator.reader.update(**config['Reader'])
         self.translator.renderer.update(**config['Renderer'])
 
