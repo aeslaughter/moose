@@ -107,9 +107,6 @@ class Reader(ConfigObject):
 
 
 class MarkdownReader(Reader):
-    #: Internal global for storing commands
-#    __COMMANDS__ = dict()
-
     def __init__(self, **kwargs):
         Reader.__init__(self,
                         lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),

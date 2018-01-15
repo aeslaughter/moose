@@ -37,9 +37,8 @@ class Example(command.MarkdownCommandComponent):
     #EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
     #                        flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
-    #TEX_TRANSLATOR = None
-    #HTML_TRANSLATOR = None
-
+    TEX_TRANSLATOR = None
+    HTML_TRANSLATOR = None
 
     def __init__(self, *args, **kwargs):
         command.MarkdownCommandComponent.__init__(self, *args, **kwargs)
@@ -55,17 +54,17 @@ class Example(command.MarkdownCommandComponent):
         #self.__html_translator = base.Translator(type(self.reader)(), base.MaterializeRenderer(), copy.deepcopy(self.translator.extensions))
         #self.__tex_translator = base.Translator(type(self.reader)(), base.LatexRenderer(), self.translator.extensions)
 
-    #def getTexTranslator(self):
-    #    if self.TEX_TRANSLATOR is None:
-    #        extensions = [type(ext)() for ext in self.translator.extenions]
-    #        self.TEX_TRANSLATOR = base.Translator(type(self.reader)(), base.LatexRenderer(), extensions)
-    #    return self.TEX_TRANSLATOR
+    def getTexTranslator(self):
+        if self.TEX_TRANSLATOR is None:
+            extensions = [type(ext)(**ext.getConfig()) for ext in self.translator.extensions]
+            self.TEX_TRANSLATOR = base.Translator(type(self.reader)(), base.LatexRenderer(), extensions)
+        return self.TEX_TRANSLATOR
 
-    #def getHTMLTranslator(self):
-    #    return base.Translator(type(self.reader)(), base.MaterializeRenderer(), self.translator.extensions)
-    #    if self.HTML_TRANSLATOR is None:
-    #        self.HTML_TRANSLATOR = base.Translator(type(self.reader)(), base.MaterializeRenderer(), self.translator.extensions)
-    #    return self.HTML_TRANSLATOR
+    def getHTMLTranslator(self):
+        if self.HTML_TRANSLATOR is None:
+            extensions = [type(ext)(**ext.getConfig()) for ext in self.translator.extensions]
+            self.HTML_TRANSLATOR = base.Translator(type(self.reader)(), base.MaterializeRenderer(), extensions)
+        return self.HTML_TRANSLATOR
 
 
     @staticmethod
@@ -91,32 +90,9 @@ class Example(command.MarkdownCommandComponent):
         tokens.Code(tab, code=data, language=u'markdown', escape=True)
 
         # HTML
-        reader = base.MarkdownReader()
-        renderer = base.MaterializeRenderer()
-        #extensions = copy.copy(self.translator.extensions)
-        extensions = [type(ext)(**ext.getConfig()) for ext in self.translator.extensions]
-        #for ext in extensions:
-        #    print ext.translator
-        #rom moosedown.commands import build
-        #translator, _ = build.load_config('config.hit')
+        ast = self.getHTMLTranslator().reader.parse(data)
+        html = base.HTMLRenderer.render(self.getHTMLTranslator().renderer, ast)
 
-        #translator = None
-        translator = base.Translator(reader, renderer, extensions, debug=True)
-        print '==========================='
-        print 'SELF', self
-        print 'TRANSLATOR', self.translator, translator
-        print 'READER', self.translator.reader, reader
-        print 'RENDER', self.translator.renderer, renderer
-        for ext in extensions:
-            print 'EXT', ext.translator
-        if self.translator == translator:
-            raise Exception('How is this happening...')
-
-        #ast = reader .parse(data)
-        #ast = self.getHTMLTranslator().reader.parse(data)
-        #html = base.HTMLRenderer.render(self.getHTMLTranslator().renderer, ast)
-
-        """
         code = ''
         for child in html:#.find('body')(0)(0)(0):
             code += child.write()
@@ -130,12 +106,10 @@ class Example(command.MarkdownCommandComponent):
                 #content = floats.Content(modal, class_="modal-content")
                 ast.parent = modal
                 preview = ast
-        """
 
         # LATEX
         #ast = self.getTexTranslator().reader.parse(data)
-        #tex = self.getTexTranslator().renderer.render(ast)
-        """
+        tex = self.getTexTranslator().renderer.render(ast)
         code = ''
         for child in tex.find('document'):
             code += child.write()
@@ -143,7 +117,6 @@ class Example(command.MarkdownCommandComponent):
         if code:
             tab = floats.Tab(tabs, title=u'LaTeX')
             tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
-        """
 
         return master
 

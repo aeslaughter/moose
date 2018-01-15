@@ -23,7 +23,8 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.floats',
                       'moosedown.extensions.table',
                       'moosedown.extensions.autolink',
-                      'moosedown.extensions.devel']
+                      'moosedown.extensions.devel',
+                      'moosedown.extensions.alert']
 
 
 

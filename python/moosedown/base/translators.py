@@ -42,34 +42,20 @@ class Translator(ConfigObject):
         #    raise TypeError("The supplied renderer must inherit from moosedown.base.Renderer.")
 
 
-        if debug:
-            self.__extensions = extensions
-            #config, reader_extensions, render_extensions = self.load(extensions)
-            self.__reader = reader
-            self.__renderer = renderer
-            self.__reader.translator = self #TODO: self.__reader.init(self)
-            self.__renderer.translator = self #TODO: init
-            for ext in self.__extensions:
-                ext.init(self)
-                ext.extend(self.__reader, self.__renderer) #This breaks reload
+        # Load the extensions
+        self.__extensions = extensions
+        #config, reader_extensions, render_extensions = self.load(extensions)
+        self.__reader = reader
+        self.__renderer = renderer
 
-        else:
+        self.__reader.translator = self #TODO: self.__reader.init(self)
+        self.__renderer.translator = self #TODO: init
 
-            # Load the extensions
-            self.__extensions = extensions
-            #config, reader_extensions, render_extensions = self.load(extensions)
-            self.__reader = reader
-            self.__renderer = renderer
+        for ext in self.__extensions:
+            ext.init(self)
+            ext.extend(reader, renderer)
 
-            self.__reader.translator = self #TODO: self.__reader.init(self)
-            self.__renderer.translator = self #TODO: init
-
-            for ext in self.__extensions:
-                print 'EXTENDING:', self, reader, renderer, ext
-                ext.init(self)
-                ext.extend(reader, renderer)
-
-            self.__node = None
+        self.__node = None
 
     @property
     def extensions(self):

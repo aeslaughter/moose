@@ -1,5 +1,11 @@
 :root {
   --inl-blue: rgba(0, 88, 151, 1.0);
+  --alert-error: #ef5350;
+  --alert-error-content: #ffebee;
+  --alert-note: var(--inl-blue);
+  --alert-note-content: white;
+  --alert-warning: #ffb74d;
+  --alert-warning-content: #fff3e0;
 }
 
 html {
@@ -586,87 +592,57 @@ footer.page-footer {
   margin: 0;
 }
 
-/* Admonition */
-.admonition-title{
-    margin-top:0px;
-    font-weight: bold;
-    display: block;
-    padding: 6px 6px;
-    color: #fff;
-    margin-bottom: 12px;
-    border: 0px solid transparent;
+/* ALERTS */
+.moose-alert .card-content{
+  padding:0;
 }
 
-.admonition {
-    padding: 0px;
-    overflow: auto;
-    margin-bottom: 20px;
+.moose-alert .card-content .card-title{
+  margin: 0;
+  margin-bottom: 0;
 }
 
-.info .admonition-title {
-    background: #528452;
+.moose-alert-title, .moose-alert-content{
+  padding:10pt;
 }
 
-.admonition > p{
-    margin: 0px;
-    padding: 6px;
-    text-align: left;
+
+.moose-alert-error .moose-alert-title{
+  color: white;
+  background-color: var(--alert-error);
 }
 
-.admonition-message{
-  margin-left: 12px;
-  margin-right: 12px;
+.moose-alert-error .moose-alert-content{
+  background-color: var(--alert-error-content);
 }
 
-.admonition.info {
-    background: #82e0aa;
-    color: #000;
-    border: 0px solid transparent;
+
+.moose-alert-warning .moose-alert-title{
+  color: white;
+  background-color: var(--alert-warning);
 }
 
-.note .admonition-title {
-    background: #3a7296;
-}
-.admonition.note {
-    background: #85c1e9;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-warning .moose-alert-content{
+  background-color: var(--alert-warning-content);
 }
 
-.important .admonition-title {
-    background: #b100b0;
-}
-.admonition.important {
-    background: #FF00FF;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-note .moose-alert-title{
+  color: white;
+  background-color: var(--alert-note);
 }
 
-.warning .admonition-title {
-    background: #968b2b;
-}
-.admonition.warning {
-    background: #ffec46;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-note .moose-alert-content{
+  background-color: var(--alert-note-content);
 }
 
-.danger .admonition-title {
-    background: #b14d00;
-}
-.admonition.danger {
-    background: #f75e1d;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-title-brand{
+  text-transform: uppercase;
+  padding-right: 1ex;
+  font-weight: 400;
 }
 
-.error .admonition-title {
-    background: #940000;
-}
-.admonition.error {
-    background: #ffb4b4;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-title-brand::after{
+  content: ":"
 }
 
 .moose-katex-error{
