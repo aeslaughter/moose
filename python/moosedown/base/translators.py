@@ -21,12 +21,8 @@ class Translator(ConfigObject):
         extensions: [list] A list of extensions objects to use.
     """
 
-    @staticmethod
-    def defaultConfig(config):
-        pass
 
-
-    def __init__(self, reader, renderer, extensions=[], **kwargs):
+    def __init__(self, reader, renderer, extensions=[], debug=False, **kwargs):
         ConfigObject.__init__(self, **kwargs)
 
         # Check that supplied reader/renderr are types
@@ -45,21 +41,35 @@ class Translator(ConfigObject):
         #if Renderer not in inspect.getmro(renderer):
         #    raise TypeError("The supplied renderer must inherit from moosedown.base.Renderer.")
 
-        # Load the extensions
-        self.__extensions = extensions
-        #config, reader_extensions, render_extensions = self.load(extensions)
-        self.__reader = reader
-        self.__renderer = renderer
 
+        if debug:
+            self.__extensions = extensions
+            #config, reader_extensions, render_extensions = self.load(extensions)
+            self.__reader = reader
+            self.__renderer = renderer
+            self.__reader.translator = self #TODO: self.__reader.init(self)
+            self.__renderer.translator = self #TODO: init
+            for ext in self.__extensions:
+                ext.init(self)
+                ext.extend(self.__reader, self.__renderer) #This breaks reload
 
-        self.__reader.translator = self #TODO: self.__reader.init(self)
-        self.__renderer.translator = self #TODO: init
+        else:
 
-        for ext in self.__extensions:
-            ext.init(self)
-            ext.extend(reader, renderer)
+            # Load the extensions
+            self.__extensions = extensions
+            #config, reader_extensions, render_extensions = self.load(extensions)
+            self.__reader = reader
+            self.__renderer = renderer
 
-        self.__node = None
+            self.__reader.translator = self #TODO: self.__reader.init(self)
+            self.__renderer.translator = self #TODO: init
+
+            for ext in self.__extensions:
+                print 'EXTENDING:', self, reader, renderer, ext
+                ext.init(self)
+                ext.extend(reader, renderer)
+
+            self.__node = None
 
     @property
     def extensions(self):

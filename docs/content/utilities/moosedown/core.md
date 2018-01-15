@@ -1,11 +1,12 @@
-!meta!
-section-level=3
-!meta-end!
+!config!
+Renderer/collapsible-sections=[None, 'open', 'close', None, None, None]
+Renderer/breadcrumbs=True
+!config-end!
 
 # Core Extension
-The core extension is the portion of the MooseDown language that is designed to mimic [markdown]
-syntax. As mentioned above MooseDown is far more strict than traditional [markdown] implementations.
-There for the following sections should be read in detail to understand the supported syntax,
+The core extension is the portion of the MooseDocs language that is designed to mimic [markdown]
+syntax. MooseDown is far more strict than traditional [markdown] implementations.
+Therefore, the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
 
 ## Block Content
@@ -14,7 +15,7 @@ especially if you are familiar with more general markdown formats.
 Code blocks are created by enclosing the code for display in triple backticks. Settings for
 the code block are defined by key-value pairings that follow the backticks.
 
-!devel settings module=moosedown.extensions.core object=Code
+!devel settings module=moosedown.extensions.core object=Code caption=Foo
 
 !devel! example caption=Basic fenced code block.
 ```language=bash

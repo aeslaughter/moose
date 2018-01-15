@@ -1,17 +1,20 @@
 class ConfigObject(object):
 
     @staticmethod
-    def defaultConfig(config):
-        pass
-
+    def defaultConfig():
+        return dict()
 
     def __init__(self, **kwargs):
-        self.__config = dict()
-        self.defaultConfig(self.__config)
+        self.__config = self.defaultConfig()
+        #TODO: check self.__config type
         self.update(**kwargs)
 
 
     def update(self, **kwargs):
+
+    #    print 'CONFIG:', self.__config
+    #    print 'KWARGS:', kwargs
+
         unknown = []
         for key, value in kwargs.iteritems():
 
@@ -27,8 +30,14 @@ class ConfigObject(object):
             raise KeyError(msg.format(type(self)))
 
 
+    def config(self):
+        return self.__config
+
     def getConfig(self):
         return {key:value[0] for key, value in self.__config.iteritems()}
 
     def __getitem__(self, name):
+        return self.get(name)
+
+    def get(self, name):
         return self.__config[name][0]

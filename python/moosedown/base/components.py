@@ -47,8 +47,8 @@ class Component(object):
         self.__line = value
     """
 
-    def reinit(self):
-        pass
+#    def reinit(self):
+#        pass
 
     @property
     def settings(self):

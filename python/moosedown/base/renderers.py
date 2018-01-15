@@ -25,21 +25,15 @@ class Renderer(ConfigObject):
     def __init__(self, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         self.__functions = dict()
-        self.node = None
         self.translator = None
 
 
     def add(self, token, component):
         # TODO: test token_class is type
         component.init(self.translator)
-#        self.__components.append(component)
+
         func = self.__method(component)
 #        Extension.add(self, token_class, func)
-
-
-#    def add(self, token, function):
-        #print 'ADD:', token, function
-
 
         if not isinstance(token, type):
             raise TypeError("The supplied token must be a 'type' not an instance.")
@@ -58,13 +52,6 @@ class Renderer(ConfigObject):
         #if reinit:
         #    self.reinit()
 
-
-
-#    def onPreRender(self, root):
-#        pass
-
-#    def onPostRender(self, root):
-#        pass
 
     def __method(self, component): #TODO: just move to add
         if hasattr(component, self.METHOD):
@@ -110,6 +97,10 @@ class Renderer(ConfigObject):
         for child in token.children:
             self.process(child, el)
 
+#    def get(self, name):
+#        return self.translator.node.get(name, ConfigObject.get(self, name))
+
+
 class HTMLRenderer(Renderer):
     METHOD = 'createHTML' #TODO: make this a config option???
 
@@ -123,9 +114,30 @@ class MaterializeRenderer(HTMLRenderer):
 
     #TODO: Add config
     @staticmethod
-    def defaultConfig(config):
-        config['scrollspy'] = (True, "Toggle the use of the right scrollable navigation.")
-        config['section-level'] = (2, "The section level for creating collapsible sections and scrollspy.")
+    def defaultConfig():
+        #config['scrollspy'] = (True, "Toggle the use of the right scrollable navigation.")
+        config = HTMLRenderer.defaultConfig()
+        config['breadcrumbs'] = (True, "Toggle for the breadcrumb links at the top of page.")
+        config['sections'] = (True, "Group heading content into <section> tags.")
+        config['collapsible-sections'] = ([None, 'open', None, None, None, None],
+                                         "Collapsible setting for the six heading level " \
+                                         "sections, possible values include None, 'open', and " \
+                                         "'close'. Each indicates if the associated section " \
+                                         "should be collapsible, if so should it be open or " \
+                                         "closed initially. The 'sections' setting must be " \
+                                         "True for this to operate.")
+        return config
+
+    def update(self, **kwargs):
+        HTMLRenderer.update(self, **kwargs)
+
+        collapsible = self['collapsible-sections']
+        if not isinstance(collapsible, list) or len(collapsible) != 6:
+            msg = "The config option 'collapsible-sections' input must be a list of six entries, " \
+                  "the item supplied is a {} of length {}."
+            raise ValueError(msg.format(type(collapsible), len(collapsible)))
+
+
 
     def method(self, component):
         if hasattr(component, self.METHOD):
@@ -133,22 +145,15 @@ class MaterializeRenderer(HTMLRenderer):
         elif hasattr(component, HTMLRenderer.METHOD):
             return getattr(component, HTMLRenderer.METHOD)
         else:
-            #TODO: raise RenderException
+            #TODO: raise Exception
             pass
 
-    def onPreRender(self, root):
-        pass
 
     def render(self, ast, root=None, reinit=True):
 
         if root is None:
             root = html.Tag(None, '!DOCTYPE html', close=False)
-
-
         html.Tag(root, 'html')
-
-        #TODO: create methods for pre/post render tree manipulation
-
 
         # <head>
         head = html.Tag(root, 'head')
@@ -167,42 +172,61 @@ class MaterializeRenderer(HTMLRenderer):
         body = html.Tag(root, 'body')
         container = html.Tag(body, 'div', class_="container")
 
-        # <nav> Breadcrumbs #TODO: make this a option that can be toggled on a per page (breeadcrumbs=False)
-        if self.node: #TODO: access this via translator???
+        #print self.getConfig()
 
-            row = html.Tag(container, 'div', class_="row")
-            col = html.Tag(row, 'div', class_="col hide-on-med-and-down l12")
-            nav = html.Tag(col, 'nav', class_="breadcrumb-nav")
-            div = html.Tag(nav, 'div', class_="nav-wrapper")
-
-            for n in self.node.path:
-                if not n.local:
-                    continue
-                if isinstance(n, page.DirectoryNode):
-                    idx = n.find('index.md', maxlevel=2)
-                    if idx:
-                        url = os.path.relpath(n.local, os.path.dirname(self.node.local)).replace('.md', '.html') #TODO: fix ext
-                        a = html.Tag(div, 'a', href=url, class_="breadcrumb")
-                        html.String(a, content=unicode(n.name))
-                    else:
-                        span = html.Tag(div, 'span', class_="breadcrumb")
-                        html.String(span, content=unicode(n.name))
-
-                elif isinstance(n, page.FileNode) and n.name != 'index.md':
-                    url = os.path.relpath(n.local, os.path.dirname(self.node.local)).replace('.md', '.html') #TODO: fix ext
-                    a = html.Tag(div, 'a', href=url, class_="breadcrumb")
-                    html.String(a, content=unicode(os.path.splitext(n.name)[0]))
+        # Breadcrumbs
+        if self['breadcrumbs']:
+            self.addBreadcrumbs(container)
 
         # Content
         row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12 m12 l10") #TODO add scroll spy (scoll-name=False) at top of index.mdg
-
         HTMLRenderer.render(self, ast, col, reinit=reinit)
 
-        # TODO: toggle, make sub function
-        # Add sections
-        section = col
-        for child in section.children:#copy.deepcopy(col.children):
+        # Sections
+        if self['sections']:
+            self.addSections(col, self['collapsible-sections'])
+
+        return root
+
+    def addBreadcrumbs(self, root):
+        """
+        Inserts breacrumb links at the top of the page.
+        """
+        row = html.Tag(root, 'div', class_="row")
+        col = html.Tag(row, 'div', class_="col hide-on-med-and-down l12")
+        nav = html.Tag(col, 'nav', class_="breadcrumb-nav")
+        div = html.Tag(nav, 'div', class_="nav-wrapper")
+
+        for n in self.translator.node.path:
+            if not n.local:
+                continue
+            if isinstance(n, page.DirectoryNode):
+                idx = n.find('index.md', maxlevel=2)
+                if idx:
+                    url = os.path.relpath(n.local, os.path.dirname(self.translator.node.local)).replace('.md', '.html') #TODO: fix ext
+                    a = html.Tag(div, 'a', href=url, class_="breadcrumb")
+                    html.String(a, content=unicode(n.name))
+                else:
+                    span = html.Tag(div, 'span', class_="breadcrumb")
+                    html.String(span, content=unicode(n.name))
+
+            elif isinstance(n, page.FileNode) and n.name != 'index.md':
+                url = os.path.relpath(n.local, os.path.dirname(self.translator.node.local)).replace('.md', '.html') #TODO: fix ext
+                a = html.Tag(div, 'a', href=url, class_="breadcrumb")
+                html.String(a, content=unicode(os.path.splitext(n.name)[0]))
+
+    def addSections(self, root, collapsible):
+        """
+        Group content into <section> tags based on the heading tag.
+
+        Inputs:
+            root[tree.html.Tag]: The root tree.html node tree to add sections.
+            collapsible[list]: A list with six entries indicating the sections to create as
+                               collapsible.
+        """
+        section = root
+        for child in section.children:
             if child.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 level = int(child.name[-1])
                 current = section.get("data_section_level", 0) # get the current section lvel
@@ -216,89 +240,22 @@ class MaterializeRenderer(HTMLRenderer):
 
             child.parent = section
 
-        # TODO: toggle, with levels and default open settings
-        # Add summary/details
-        for node in anytree.PreOrderIter(col, filter_=lambda n: n.name == 'section'):
-            summary = html.Tag(None, 'summary')
-            node(0).parent = summary
+        for node in anytree.PreOrderIter(root, filter_=lambda n: n.name == 'section'):
+            status = collapsible[node['data_section_level']-1]
+            if status:
+                summary = html.Tag(None, 'summary')
+                node(0).parent = summary
 
-            details = html.Tag(None, 'details', class_="moose-section-content")
-            details.children = node.children
-            summary.parent = details
-            details.parent = node
+                details = html.Tag(None, 'details', class_="moose-section-content")
+                if status.lower() == 'open':
+                    details['open'] = 'open'
+                details.children = node.children
+                summary.parent = details
+                details.parent = node
 
-            icon = html.Tag(None, 'span', class_='moose-section-icon')
-            summary(0).children = [icon] + list(summary(0).children)
+                icon = html.Tag(None, 'span', class_='moose-section-icon')
+                summary(0).children = [icon] + list(summary(0).children)
 
-
-            #for c in child:
-            #    c.parent = details
-
-            #details.parent = section
-            #details(1).parent = summary
-
-
-            #    c.parent = details
-
-        #    summary = html.Tag(details, 'summary')
-            #for x in copy.deepcopy(child.children):
-            #    x.parent = details
-        #    child(0).parent = summary
-
-            #else:
-            #    child.parent = parent
-
-        """
-        for child in col:
-            print child.name
-            for c in child:
-                print " "*2, c.name
-                for d in c:
-                    print " "*4, d.name
-        """
-
-
-        """
-        scroll = html.Tag(row, 'div', class_="col l2 hide-on-med-and-down")
-        ul = html.Tag(scroll, 'ul', class_="section table-of-contents")
-
-        # Add sections #TODO add toggle
-        #level = 'h{}'.format(self['section-level'])
-        #print 'NODE:', self.translator.node, ast
-        level = 'h{}'.format(self.translator.node.get('section-level', self['section-level']))
-        parent = col
-        for child in col:
-            if child.name == level:
-                if parent == col:
-                    parent = html.Tag(parent, 'details', class_='scrollspy section', open="open")
-                else:
-                    parent = html.Tag(parent.parent, 'details', class_='scrollspy section', open="open")
-
-                li = html.Tag(ul, 'li')
-                a = html.Tag(li, 'a')
-                for c in copy.deepcopy(child.children):
-                    c.parent = a
-
-                #details = html.Tag(parent, 'details')
-                summary = html.Tag(parent, 'summary')
-                html.Tag(child, 'span', class_='moose-section-icon')
-                child.parent = summary
-
-                children = list(child.children[:-1])
-                children.insert(0, child.children[-1])
-                child.children = children
-                #child.children = child.children
-
-            else:
-                child.parent = parent
-
-
-        # TODO:Add toggle
-        scroll = html.Tag(row, 'div', class_="col l2 hide-on-med-and-down")
-        ul = html.Tag(scroll, 'ul', class_="section table-of-contents")
-        """
-
-        return root
 
 
 class LatexRenderer(Renderer):

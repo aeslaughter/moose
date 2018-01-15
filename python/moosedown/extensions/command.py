@@ -63,18 +63,20 @@ class CommandBase(core.MarkdownComponent):
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
     PARSE_SETTINGS = False
-    COMMANDS = base.MarkdownReader.__COMMANDS__ #TODO: this should be the storage, CommandExtension should add the addCommand method
+    def __init__(self, *args, **kwargs):
+        core.MarkdownComponent.__init__(self, *args, **kwargs)
+        #self.__commands = dict()#base.MarkdownReader.__COMMANDS__ #TODO: this should be the storage, CommandExtension should add the addCommand method
 
     def createToken(self, match, parent):
-
+        #print 'CommandBase:', match.groups()
         cmd = (match.group('command'), match.group('subcommand'))
 
         #TODO: Error check
-        if cmd not in self.COMMANDS:
+        if cmd not in self.translator.reader._commands:
             msg = "The following command combination is unknown: '{} {}'."
             raise common.exceptions.TokenizeException(msg.format(*cmd))
 
-        obj = self.COMMANDS[cmd]
+        obj = self.translator.reader._commands[cmd]
         obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
         token = obj.createToken(match, parent)
         return token

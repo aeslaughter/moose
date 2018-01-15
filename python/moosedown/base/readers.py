@@ -8,13 +8,14 @@ import moosedown
 from moosedown import common
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
-
+from ConfigObject import ConfigObject
 
 LOG = logging.getLogger(__name__)
 
-class Reader(object):
+class Reader(ConfigObject):
 
     def __init__(self, lexer, **kwargs):
+        ConfigObject.__init__(self, **kwargs)
         self.__lexer = lexer
         #self.__node = None
         #self.__old_node = None
@@ -107,20 +108,20 @@ class Reader(object):
 
 class MarkdownReader(Reader):
     #: Internal global for storing commands
-    __COMMANDS__ = dict()
+#    __COMMANDS__ = dict()
 
-    def __init__(self, extensions=None, **kwargs):
+    def __init__(self, **kwargs):
         Reader.__init__(self,
                         lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),
-                        extensions=extensions,
                         **kwargs)
+        self._commands = dict()
 
     def addCommand(self, command):
         # TODO: All Command related stuff is in the command extensions, with the exception of
         # this function. Figure out how to avoid this special code here...
         command.init(self.translator)
         #TODO: error if it exists
-        self.__COMMANDS__[(command.COMMAND, command.SUBCOMMAND)] = command
+        self._commands[(command.COMMAND, command.SUBCOMMAND)] = command
 
     def addBlock(self, component, location='_end'):
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)

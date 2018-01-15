@@ -26,12 +26,6 @@ class CoreExtension(base.Extension):
 
     This extension provides to core conversion from markdown syntax to an AST.
     """
-    @staticmethod
-    def defaultConfig(config):
-        """
-        The default configuration options.
-        """
-        config['test'] = (0, 'foo')
 
     def extend(self, reader, renderer):
         """
