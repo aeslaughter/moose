@@ -180,7 +180,7 @@ class NodeBase(anytree.NodeMixin):
         """
         self.__attributes[key] = value
 
-    def get(self, key, default):
+    def get(self, key, default=None):
         """
         Get an attribute with a possible default.
         """

@@ -12,6 +12,11 @@ class Extension(ConfigObject):
         ConfigObject.__init__(self, **kwargs)
         self.__tranlator = None
 
+    #def __copy__(self):
+    #    new = type(self)(**self.getConfig())
+    #    print new
+    #    return new
+
     @property
     def translator(self):
         return self.__tranlator

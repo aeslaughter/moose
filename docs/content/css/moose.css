@@ -76,18 +76,31 @@ html, body {
   text-align: left;
 }
 
+<<<<<<< HEAD
 .table-of-contents
 {
   height: 95vh;
+=======
+.table-of-contents ul < li < a{
+  text-overflow: ellipsis;
+}
+
+.table-of-contents
+{
+  height: 90hv;
+>>>>>>> figured out crazy reload problem
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 .table-of-contents a{
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+=======
+>>>>>>> figured out crazy reload problem
 
 .nav ul:not(.browser-default) li{
   list-style-type: none;
@@ -836,7 +849,7 @@ summary::-webkit-details-marker {
   vertical-align: middle;
 }
 
-details[open] .moose-section-icon::before{
+details[open] > summary .moose-section-icon::before{
   content: 'keyboard_arrow_down';
 }
 

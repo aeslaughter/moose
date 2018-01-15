@@ -8,24 +8,31 @@ import codecs
 import types
 
 import anytree
+import mooseutils
 
 import base
-import mooseutils
+import moosedown
 
 LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
     PROPERTIES = [base.Property('content', ptype=unicode),
                   base.Property('source', ptype=str)]
-                #  base.Property('meta', ptype=dict, default=dict())]
+            #      base.Property('translator')]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
         base.NodeBase.__init__(self, *args, **kwargs)
+        self.translator = None
 
-    def build(self, translator):
-        #TODO: error check content
-        translator.convert(self.content)
+    #def init(self, translator):
+    #    self.tranlator = translator
+
+
+    def build(self):
+        pass
+        #TODO: error check translator
+        #translator.convert(self.content)
 
 
 class LocationNodeBase(PageNodeBase):
@@ -72,7 +79,7 @@ class LocationNodeBase(PageNodeBase):
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
 
-    def build(self, translator=None):
+    def build(self):
         dst = os.path.join(self.base, self.local)
         if not os.path.isdir(dst):
             os.makedirs(dst)
@@ -84,11 +91,12 @@ class FileNode(LocationNodeBase):
     def read(self):
         if os.path.exists(self.source):
             with codecs.open(self.source, encoding='utf-8') as fid:
+                LOG.debug('READ: {}'.format(self.source))
                 self.content = fid.read()
 
         #TODO: error if not exist
 
-    def build(self, translator=None):
+    def build(self):
         dst = os.path.join(self.base, self.local)
         shutil.copyfile(self.source, dst)
 
@@ -100,21 +108,21 @@ class MarkdownNode(FileNode):
         self.__master = set()
 
 
-    @property
-    def master(self):
-        return self.__master
+#    @property
+#    def master(self):
+#        return self.__master
 
 
-    def build(self, translator=None):
-        for node in self.master:
-            node.build(translator)
+    def build(self):
+        #for node in self.master:
+        #    node.build(translator)
 
         self.read()
-        ast, html = translator.convert(self) #TODO: build cache for html body in translator
+        ast, html = self.translator.convert(self) #TODO: build cache for html body in translator
 
         dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
-        #LOG.info('%s -> %s', self.source, dst) #TODO: this doesn't work
-        print '{} -> {}'.format(self.source, dst)
+        LOG.info('%s -> %s', self.source, dst)
+        #LOG.debug('%s -> %s', self.source, dst)
         with open(dst, 'w') as fid:
             fid.write(html.write())
 

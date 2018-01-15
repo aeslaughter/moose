@@ -15,8 +15,9 @@ class Tag(NodeBase):
         self.__style = dict()
         if style:
             for pair in style.split(';'):
-                key, value = pair.split(':')
-                self.__style[key.strip()] = value.strip()
+                if pair:
+                    key, value = pair.split(':')
+                    self.__style[key.strip()] = value.strip()
 
         super(Tag, self).__init__(name=name, parent=parent, **kwargs)
 

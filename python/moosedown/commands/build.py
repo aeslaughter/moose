@@ -12,12 +12,12 @@ import hit
 
 import moosedown
 
-
+logging.basicConfig(level=logging.DEBUG) #TODO: need to get this into config
 LOG = logging.getLogger(__name__)
 
 # Set of extenions to load by default
 DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
-                      'moosedown.extensions.meta',
+                      'moosedown.extensions.config',
                       'moosedown.extensions.command',
                       'moosedown.extensions.include',
                       'moosedown.extensions.floats',
@@ -133,18 +133,21 @@ def load_config(filename):
     return translator, content
 
 
-
 def main():
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
-    #logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     config_file = 'config.hit'
 
+    # TODO: add this to config.hit and command line
+    #LOG.setLevel(logging.DEBUG)
+
     translator, root = load_config(config_file)
+    print 'Translator:', translator
 
     """
     from moosedown.tree import page
-    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/core.md'
+    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
     node = page.MarkdownNode(source=filename)
     node.read()
     ast, html = translator.convert(node)
@@ -157,13 +160,12 @@ def main():
     server = livereload.Server()
     for node in anytree.PreOrderIter(root):
         node.base = destination
-        node.translator = translator#TODO: formalize this with a Property
+        node.translator = translator
 
         if node.source and os.path.isfile(node.source):
-            server.watch(node.source, lambda: node.build(translator))
+            server.watch(node.source, node.build)
 
         # Everything needs translator before it can build
-        #for node in anytree.PreOrderIter(root):
-        node.build(translator)
+        node.build()
 
     server.serve(root=destination, port=8000)

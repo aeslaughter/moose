@@ -18,7 +18,6 @@ class RenderAutoLink(core.RenderLink):
     def createHTML(self, token, parent):
         tag = core.RenderLink.createHTML(self, token, parent)
 
-
         #TODO: do nothing if self.translator.node is None
 
         href = tag['href']
