@@ -9,25 +9,36 @@ syntax. MooseDown is far more strict than traditional [markdown] implementations
 Therefore, the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
 
+Syntax is separated into two groups: [block](#core-block) and [inline](#core-inline). Block
+content is made of items that make, as the name suggests, blocks of text. Blocks of
+text include items such as code snippets, quotations, and paragraphs themselves. On the other hand,
+inline items are those that are applicable to small portions of text (e.g., words). Bold and
+italics are two examples of inline items.
+
 !alert! note title=MooseDown is a restricted version of [markdown].
 To unify the markdown content and to create a fast parser a limited set of
 markdown is being used to define the MooseDocs language. The following sections
 detail the syntax that comprise the syntax.
 !alert-end!
 
-## Block Content
+## Block Content id=core-block
 
 ### Code
-Code blocks are created by enclosing the code for display in triple backticks. Settings for
-the code block are defined by key-value pairings that follow the backticks.
+Code snippets are created by enclosing the code for display in triple backticks (```), as
+shown in.
 
-!devel settings module=moosedown.extensions.core object=Code caption=Foo
-
-!devel! example caption=Basic fenced code block.
+!devel! example caption=Basic fenced code block. id=code-block-example
 ```language=bash
 export METHOD=opt
 ```
 !devel-end!
+
+
+Settings for code blocks are code block are defined by key-value pairings that follow the backticks;
+[code-settings] lists the available settings for code blocks.
+
+!devel settings module=moosedown.extensions.core object=Code id=code-settings caption=Foo
+
 
 ### Quotations
 Quote blocks are created by starting a line with the `>` character, with a single trailing
@@ -152,7 +163,7 @@ are defined using traditional markdown syntax.
 
 
 
-## Inline Content
+## Inline Content id=core-inline
 ### Text Formatting
 
 em, strong, need to add strikethrough, underline, subscript, superscript, mark, inserted

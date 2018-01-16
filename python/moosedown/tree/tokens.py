@@ -127,8 +127,9 @@ class Link(Token):
     PROPERTIES = [base.Property('url', required=True, ptype=unicode)]
 
 class Shortcut(Token):
-    PROPERTIES = [base.Property('content', required=True, ptype=unicode),
-                  base.Property('key', required=True, ptype=unicode)]
+    PROPERTIES = [base.Property('content', required=False, ptype=unicode),
+                  base.Property('key', required=True, ptype=unicode),
+                  base.Property('link', required=True, ptype=unicode)]
 
 class ShortcutLink(Token):
     PROPERTIES = [base.Property('key', ptype=unicode, required=True)]

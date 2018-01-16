@@ -47,7 +47,7 @@ class Example(command.MarkdownCommandComponent):
 
     def init(self, *args, **kwargs):
         command.MarkdownCommandComponent.init(self, *args, **kwargs)
-
+        self.__counts = collections.defaultdict(int)
         # TODO: check current type
         #self.__html_renderer = base.MaterializeRenderer()
 
@@ -77,8 +77,11 @@ class Example(command.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
+
+        print self.attributes
+
         master = floats.Float(parent, **self.attributes)
-        caption = floats.Caption(master, prefix=self.settings['prefix'])
+        caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
 
         grammer = self.reader.lexer.grammer('inline')
         self.reader.lexer.tokenize(unicode(self.settings['caption']), caption, grammer)#, line=self.line)
@@ -140,10 +143,10 @@ class ComponentSettings(command.MarkdownCommandComponent):
         #TODO: error if 'module' and 'object' not provided
         #TODO: this should raise, but result in an error token
 
-        master = floats.Float(parent)
+        master = floats.Float(parent, **self.attributes)
 
         if self.settings['caption']:
-            caption = floats.Caption(master, prefix=self.settings['prefix'])
+            caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
             grammer = self.reader.lexer.grammer('inline')
             self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
 
