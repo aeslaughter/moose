@@ -77,7 +77,6 @@ class BuildStatusPattern(MooseMarkdownCommon, Pattern):
 
     Usage:
      !buildstatus http://civet/buildstatus/site css_attribute=setting
-
     """
 
     # Find !buildstatus url attribute=value

@@ -14,22 +14,56 @@ def make_extension():
 
 class Float(tokens.Token):
     pass
+    #def __init__(self, *args, **kwargs):
+    #    tokens.Token.__init__(self, *args, **kwargs)
+            #tokens.Word(shortcut, content=u'Example')
+            #tokens.Space(shortcut)
+            #tokens.Number(shortcut, content=u'42')
+
 
 class Caption(tokens.Token):
-    PROPERTIES = [Property("prefix", ptype=unicode, required=True)]
+    PROPERTIES = [Property("prefix", ptype=unicode, required=True),
+                  Property("number", ptype=int), # set by constructor
+                  Property("key", ptype=unicode)]
+    COUNTS = collections.defaultdict(int)
+
+    def reinit(self):
+        COUNTS.clear()
+
+    def __init__(self, *args, **kwargs):
+        print kwargs
+        tokens.Token.__init__(self, *args, **kwargs)
+
+        Caption.COUNTS[self.prefix] += 1
+        self.number = Caption.COUNTS[self.prefix]
+
+        if self.key:
+            shortcut = tokens.Shortcut(self.root, key=self.key,
+                                       link=u'#{}'.format(self.key),
+                                       content=u'{} {}'.format(self.prefix.title(), self.number))
+
+
+        #print 'Caption', self.attributes
+        #if 'id' in self.attributes and self.attributes['id']:
+        #    tokens.Shortcut(self.root, key=self.attributes['id'], content=u'This')
+            #print self.root
 
 class Content(tokens.Token):
     pass
     #PROPERTIES = [Property("class", ptype=unicode, required=True)]
 
 class FloatExtension(base.Extension):
+
     def extend(self, reader, renderer):
+
         renderer.add(Content, RenderContent())
         renderer.add(Float, RenderFloat())
         renderer.add(Caption, RenderCaption())
         renderer.add(Modal, RenderModal())
         renderer.add(Tabs, RenderTabs())
         renderer.add(Tab, RenderTab())
+
+        #renderer.add(ShortcutLink, RenderShortcutLink)
 
         #self.addCommand(ExampleCommand())
 
@@ -48,12 +82,19 @@ class Modal(tokens.Token):
     pass
 
 
+#class RenderShortcutLink(core.RenderShortcutLink):
+#    pass
+    #def createHTML()
+
 
 class RenderFloat(base.RenderComponent):
     def createHTML(self, token, parent):
         attrs = token.attributes
+    #    print 'ATTRS:', attrs
+
         if attrs['class'] is not None:
             attrs['class'] = 'moose-float-div'
+
         div = html.Tag(parent, 'div', **attrs)
 
         """
@@ -69,7 +110,9 @@ class RenderFloat(base.RenderComponent):
         return div
 
     def createMaterialize(self, token, parent):
-        div = html.Tag(parent, 'div', class_='card')
+        attributes = token.attributes
+        attributes.pop('class', None)
+        div = html.Tag(parent, 'div', class_='card', **attributes)
         return div
 
 class RenderContent(base.RenderComponent):
@@ -84,19 +127,21 @@ class RenderCaption(base.RenderComponent):
 
     def __init__(self, *args, **kwargs):
         base.RenderComponent.__init__(self, *args, **kwargs)
-        self._count = collections.defaultdict(int)
+    #    self._count = collections.defaultdict(int)
 
-    def reinit(self):
-        self._count.clear()
+    #def reinit(self):
+    #    self._count.clear() #TODO: restore the reinit() method
 
     def createMaterialize(self, token, parent):
         tag = token.prefix.lower()
-        self._count[tag] += 1
+        #self._count[tag] += 1
+
 
         content = html.Tag(parent, 'div', class_="card-content")
         caption = html.Tag(content, 'p', class_="moose-caption")
+
         heading = html.Tag(caption, 'span', class_="moose-caption-heading")
-        html.String(heading, content=u"{} {}: ".format(token.prefix, self._count[tag]))
+        html.String(heading, content=u"{} {}: ".format(token.prefix, token.number))
         text = html.Tag(caption, 'span', class_="moose-caption-text")
         return text
 

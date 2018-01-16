@@ -25,11 +25,13 @@ class Renderer(ConfigObject):
     def __init__(self, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         self.__functions = dict()
+        self.__components = []
         self.translator = None
 
 
     def add(self, token, component):
         # TODO: test token_class is type
+        self.__components.append(component)
         component.init(self.translator)
 
         func = self.__method(component)
@@ -43,6 +45,11 @@ class Renderer(ConfigObject):
         self.__functions[token] = func
         #for k, v in self.__functions.iteritems():
         #    print k, v
+
+    def reinit(self):
+        for comp in self.__components:
+            comp.reinit()
+
 
     def render(self, ast, root, reinit=True):
 #        self.onPreRender(root)

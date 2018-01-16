@@ -17,11 +17,16 @@ class Reader(ConfigObject):
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         self.__lexer = lexer
+        self.__components = []
         #self.__node = None
         #self.__old_node = None
         #ExtensionObject.__init__(self, extensions, **kwargs)
 
         self.translator = None
+
+    def reinit(self):
+        for comp in self.__components:
+            comp.reinit()
 
     @property
     def lexer(self):
@@ -60,7 +65,7 @@ class Reader(ConfigObject):
 
 
     def add(self, group, name, component, location='_end'):
-        #self.__components.append(component)
+        self.__components.append(component)
         component.init(self.translator)
         func = lambda m, p: self.__function(m, p, component)
         self.__lexer.add(group, name, component.RE, func, location)

@@ -5,13 +5,14 @@ import re
 import uuid
 import logging
 
+import anytree
+
 import moosedown
 from moosedown import base
 from moosedown import common
 from moosedown.tree import tokens, html, latex
 
 LOG = logging.getLogger(__name__)
-SHORTCUT_DATABASE = dict()
 
 
 def make_extension(**kwargs):
@@ -90,9 +91,9 @@ class MarkdownComponent(base.TokenComponent):
     @staticmethod
     def defaultSettings():
         settings = base.TokenComponent.defaultSettings()
-        settings['style'] = ('', "The style settings that are passed to the HTML flags.")
-        settings['class'] = ('', "The class settings to be passed to the HTML flags.")
-        settings['id'] = ('', "The class settings to be passed to the HTML flags.")
+        settings['style'] = (u'', "The style settings that are passed to the HTML flags.")
+        settings['class'] = (u'', "The class settings to be passed to the HTML flags.")
+        settings['id'] = (u'', "The class settings to be passed to the HTML flags.")
         return settings
 
     @property
@@ -170,16 +171,12 @@ class Shortcut(MarkdownComponent):
     [foo]: something or another
     """
     RE = re.compile(r'\s*\[(?P<key>.*?)\]:\s'  # shortcut key
-                    r'(?P<content>.*?)'        # shortcut value
+                    r'(?P<link>.*?)'        # shortcut value
                     r'(?:\n+|\Z)',             # stop new line or end of file
                     flags=re.MULTILINE|re.UNICODE)
 
     def createToken(self, match, parent):
-        token = tokens.Shortcut(parent, key=match.group('key'), content=match.group('content'))
-
-        #TODO: remove this database, just look at the tree when rendering
-        SHORTCUT_DATABASE[token.key] = token.content
-        return token
+        return tokens.Shortcut(parent, key=match.group('key'), link=match.group('link'))
 
 class ShortcutLink(MarkdownComponent):
     """
@@ -405,26 +402,41 @@ class RenderCode(CoreRenderComponentBase):
 class RenderShortcutLink(CoreRenderComponentBase):
     """ShortcutLink"""
 
+    def __init__(self, *args, **kwargs):
+        CoreRenderComponentBase.__init__(self, *args, **kwargs)
+        self.__cache = dict()
+
     def createHTML(self, token, parent):
         a = html.Tag(parent, 'a', **token.attributes)
-        s = html.String(a, content=token.key)
 
-        if token.key not in SHORTCUT_DATABASE:
-            msg = "The shortcut link key '{}' was not located in the list of shortcuts."
-            raise KeyError(msg.format(token.key))
+        node = self.getShortcut(token)
+        if node.content:
+            html.String(a, content=node.content)
         else:
-            a['href'] = SHORTCUT_DATABASE[token.key]
+            html.String(a, content=node.key)
+
+        a['href'] = node.link
         return a
 
     def createLatex(self, token, parent):
-        if token.key not in SHORTCUT_DATABASE:
-            msg = "The shortcut link key '{}' was not located in the list of shortcuts."
-            raise Exception(msg.format(token.key))
-        else:
-            cmd = latex.CustomCommand(parent, 'href')
-            arg0 = latex.Brace(cmd, string=unicode(SHORTCUT_DATABASE[token.key]))
-            arg1 = latex.Brace(cmd, string=unicode(token.key))
-            return arg1
+        cmd = latex.CustomCommand(parent, 'href')
+        arg0 = latex.Brace(cmd, string=unicode(self.getShortcut(token)))
+        arg1 = latex.Brace(cmd, string=unicode(token.key))
+        return arg1
+
+    def getShortcut(self, token):
+
+        if token in self.__cache:
+            return self.__cache[token]
+
+        for node in anytree.PreOrderIter(token.root, maxlevel=2):
+            if isinstance(node, tokens.Shortcut) and node.key == token.key:
+                self.__cache[token.key] = node
+                return node
+
+        msg = "The shortcut link key '{}' was not located in the list of shortcuts."
+        raise KeyError(msg.format(token.key))
+
 
 class RenderBacktick(CoreRenderComponentBase):
     """InlineCode"""

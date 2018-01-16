@@ -144,17 +144,16 @@ def main():
     #LOG.setLevel(logging.DEBUG)
 
     translator, root = load_config(config_file)
-    print 'Translator:', translator
 
     """
     from moosedown.tree import page
-    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
+    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/core.md'
     node = page.MarkdownNode(source=filename)
     node.read()
     ast, html = translator.convert(node)
-    with open('test.html', 'w') as fid:
-        fid.write(html.write())
-    #print ast
+    #with open('test.html', 'w') as fid:
+#        fid.write(html.write())
+    print ast
     #print html
     """
 

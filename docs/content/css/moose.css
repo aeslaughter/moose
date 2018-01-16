@@ -3,9 +3,9 @@
   --alert-error: #ef5350;
   --alert-error-content: #ffebee;
   --alert-note: var(--inl-blue);
-  --alert-note-content: white;
-  --alert-warning: #ffb74d;
-  --alert-warning-content: #fff3e0;
+  --alert-note-content: rgba(0, 88, 151, 0.1);
+  --alert-warning: #fbc02d;
+  --alert-warning-content: #fffde7;
 }
 
 html {
