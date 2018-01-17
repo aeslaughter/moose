@@ -157,6 +157,7 @@ class MaterializeRenderer(HTMLRenderer):
 
 
     def render(self, ast, root=None, reinit=True):
+        self.reinit()
 
         if root is None:
             root = html.Tag(None, '!DOCTYPE html', close=False)
@@ -262,8 +263,6 @@ class MaterializeRenderer(HTMLRenderer):
 
                 icon = html.Tag(None, 'span', class_='moose-section-icon')
                 summary(0).children = [icon] + list(summary(0).children)
-
-
 
 class LatexRenderer(Renderer):
     METHOD = 'createLatex'

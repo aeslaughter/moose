@@ -65,6 +65,12 @@ class Translator(ConfigObject):
     def node(self):
         return self.__node
 
+    def reinit(self):
+        self.reader.reinit()
+        self.renderer.reinit()
+        for ext in self.__extensions:
+            ext.reinit()
+
 
     @property
     def reader(self):
@@ -87,8 +93,7 @@ class Translator(ConfigObject):
 
     def convert(self, content):
         self.__node = content if isinstance(content, page.PageNodeBase) else None
-        self.reader.reinit()
-        self.renderer.reinit()
+        self.reinit()
         #self.__renderer.node = self.__node
         ast = self.ast(content)
         return ast, self.__renderer.render(ast)

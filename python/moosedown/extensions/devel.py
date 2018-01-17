@@ -78,7 +78,6 @@ class Example(command.MarkdownCommandComponent):
 
     def createToken(self, match, parent):
 
-        print self.attributes
 
         master = floats.Float(parent, **self.attributes)
         caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])

@@ -168,10 +168,6 @@ h6 {
     margin-bottom:10px;
 }
 
-p {
-    top-margin:1.5rem;
-}
-
 ul {
      margin-left:1.5rem;
 }
@@ -590,6 +586,16 @@ footer.page-footer {
 
 .katex-display{
   margin: 0;
+}
+
+li p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.card .card-content{
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 /* ALERTS */

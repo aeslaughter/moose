@@ -27,18 +27,14 @@ class Caption(tokens.Token):
                   Property("key", ptype=unicode)]
     COUNTS = collections.defaultdict(int)
 
-    def reinit(self):
-        COUNTS.clear()
-
     def __init__(self, *args, **kwargs):
-        print kwargs
         tokens.Token.__init__(self, *args, **kwargs)
 
         Caption.COUNTS[self.prefix] += 1
         self.number = Caption.COUNTS[self.prefix]
 
         if self.key:
-            shortcut = tokens.Shortcut(self.root, key=self.key,
+            tokens.Shortcut(self.root, key=self.key,
                                        link=u'#{}'.format(self.key),
                                        content=u'{} {}'.format(self.prefix.title(), self.number))
 
@@ -66,6 +62,10 @@ class FloatExtension(base.Extension):
         #renderer.add(ShortcutLink, RenderShortcutLink)
 
         #self.addCommand(ExampleCommand())
+
+    def reinit(self):
+        Caption.COUNTS.clear()
+
 
 class Modal(tokens.Token):
     pass
