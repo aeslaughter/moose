@@ -8,11 +8,32 @@ from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
 
+class LexerInformation(object):
+    #TODO: make these methods better __contains__ should do groupdict() stuff
+    #      __get__ should call group
+    #      __iter__ should loop groups
+    #      createToken should be createToken(self, parent, info)
+    #      createHTML should be self, parent, token
+    #      node should change to page
+    def __init__(self, match, pattern, node, line):
+        self.match = match
+        self.pattern = pattern
+        self.node = node
+        self.line = line
+
+    def group(self, value=0):
+        return self.match.group(value)
+    def groups(self):
+        return self.match.groups()
+    def groupdict(self):
+        return self.match.groupdict()
+
+
 class Lexer(object):
     def __init__(self):
         self._node = None
 
-    def tokenize(self, text, parent, grammer, line=1, node=None):
+    def tokenize(self, parent, grammer, text, node, line=1):
 
         #if node is None:
         #    node = parent.node
@@ -30,24 +51,25 @@ class Lexer(object):
         n = len(text)
         pos = 0
         mo, pattern = self._search(text, grammer, pos)
+
         while (mo is not None) and (pos < n): # pos < n is needed to avoid empty string
 
             #print pattern
 
+            info = LexerInformation(mo, pattern, node, line)
             try:
-                obj = self.buildObject(pattern, mo, parent, line, node)
+                obj = self.buildObject(parent, info)
             except Exception as e:
-                obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line,
-                                            traceback=traceback.format_exc(), source='foo')
-
-            obj.line = line #
-            obj.match = mo
-            obj.node = node
-            obj.pattern = pattern
+                obj = tree.tokens.Exception(parent, info=info, traceback=traceback.format_exc()) #TODO: use info object
+            #obj.line = line #
+            #obj.match = mo
+            #obj.node = node
+            #obj.pattern = pattern
 
             line += mo.group(0).count('\n')
             pos = mo.end()
             mo, pattern = self._search(text, grammer, pos)
+
 
         if pos < n: #TODO: better exception
             print repr(text[pos:])
@@ -64,33 +86,23 @@ class Lexer(object):
                 return m, pattern
         return None, None
 
-    def buildObject(self, pattern, match, parent, line, node):
-        #parent.node = node #TODO: is there a better way
-        obj = pattern.function(match, parent)
-
-
-        #TODO: test obj is correct type and not None (None case just use parent?)
-
-        # Set the line and regex match for error reporting within Renderers.
-
-        # TODO: This should be handled at RecursiveLexer level
-        #if self._node and self._node.source:
-        #    obj.source = self._node.source
-
+    def buildObject(self, parent, info):
+        obj = info.pattern.function(info, parent)
+        obj.info = info #TODO: set ptype on base Token, change to info
         return obj
 
 class RecursiveLexer(Lexer):
     def __init__(self, base, *args):
-        super(RecursiveLexer, self).__init__()
+        Lexer.__init__(self)
         self._grammers = collections.OrderedDict()
         self._grammers[base] = Grammer()
         for name in args:
             self._grammers[name] = Grammer()
 
-    def tokenize(self, text, parent, grammer=None, line=1, node=None):
-        if grammer is None:
-            grammer = self._grammers[self._grammers.keys()[0]]
-        super(RecursiveLexer, self).tokenize(text, parent, grammer, line, node)
+    #def tokenize(self, parent, grammer, text, node, line=1):
+        #if grammer is None:
+        #    grammer = self._grammers[self._grammers.keys()[0]]
+    #    super(RecursiveLexer, self).tokenize(parent, grammer, text, node, line)
 
     def grammer(self, group=None):
         if group is None:
@@ -103,11 +115,11 @@ class RecursiveLexer(Lexer):
     def add(self, group, *args):
         self.grammer(group).add(*args)
 
-    def buildObject(self, pattern, match, parent, line, node):
-        obj = super(RecursiveLexer, self).buildObject(pattern, match, parent, line, node)
-        for key, value in self._grammers.iteritems():
-            if key in match.groupdict():
-                text = match.group(key)
+    def buildObject(self, parent, info):
+        obj = super(RecursiveLexer, self).buildObject(parent, info)
+        for key, grammer in self._grammers.iteritems():
+            if key in info.groupdict():
+                text = info.group(key)
                 if text is not None:
-                    self.tokenize(text, obj, value, line, node)
+                    self.tokenize(obj, grammer, text, info.node, info.line)
         return obj

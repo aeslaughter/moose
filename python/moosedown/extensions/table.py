@@ -119,7 +119,7 @@ class TableComponent(core.MarkdownComponent):
             row = TableRow(TableHead(table))
             for i, h in enumerate(head):
                 item = TableHeaderItem(row, format=form[i])
-                self.reader.lexer.tokenize(h, item, grammer, node=self.translator.node) #TODO: add line number
+                self.reader.lexer.tokenize(h, item, grammer, match.node, match.line) #TODO: add line number
 
 
         for line in body.splitlines():
@@ -127,7 +127,7 @@ class TableComponent(core.MarkdownComponent):
                 row = TableRow(TableBody(table))
                 for i, content in enumerate([item.strip() for item in line.split('|') if item]):
                     item = TableItem(row, format=form[i])
-                    self.reader.lexer.tokenize(content, item, grammer, node=self.translator.node) #TODO: add line number
+                    self.reader.lexer.tokenize(content, item, grammer, match.node, match.line) #TODO: add line number
 
 
 

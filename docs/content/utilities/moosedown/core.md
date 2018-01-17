@@ -21,12 +21,13 @@ markdown is being used to define the MooseDocs language. The following sections
 detail the syntax that comprise the syntax.
 !alert-end!
 
-## Block Content id=core-block
+## Block Syntax id=core-block
 
 Block level content, as the name suggest, are blocks of text. In all cases, blocks must
 begin and end with empty lines (with the exception of the start and end of the file). This
 restriction allows for special characters such as the hash (`#`) to be used at the start
-of a line without conflicting with heading creation (see [headings]).
+of a line without conflicting with heading creation (see [headings]). Additionally, this
+allows content and settings to be spanned across multiple lines.
 
 In general, most block level syntax accepts key-value pair settings. Where the settings
 appear within the block level syntax varies and is detailed in each section below. However,
@@ -59,27 +60,29 @@ export METHOD=opt
 !devel settings module=moosedown.extensions.core object=Code id=code-settings caption=Available settings for fenced code blocks.
 
 ### Quotations
-Quote blocks are created by starting a line with the `>` character, with a single trailing
-space.
 
-!devel! example caption=Basic block quote.
+Quotation blocks are created by starting a line with the `>` character, with a single trailing
+space as shown in [quote-example]. Then each additional line that belongs within the quotation
+must also begin with a `>` character. Within the quotations any valid markdown is acceptable,
+as shown in [quote-nested-example].
+
+!devel! example caption=Basic block quote. id=quote-example
 > This is a quotation.
 !devel-end!
 
-Quote blocks can contain any valid markdown, including other quotations.
-> test
-
-
-!devel! example caption=Nested content in block quotes.
-> Foo
+!devel! example caption=Nested content in block quotes. id=quote-nested-example
+> Quotations begin with the `<` character and may
+> contain any valid markdown content, include quotes and code as shown here.
 >
-> > Another item, that also includes code.
+> > This begins another quotation, which also contains a fenced code block.
 > >
 > > ```language=python
 > > for i in range(10):
 > >   print i
 > > ```
-> See, I told you.
+>
+> Since quotations are block content they must end with an empty line,
+> therefore the nested quote above must contain an empty line.
 !devel-end!
 
 ### Headings id=headings
