@@ -41,7 +41,7 @@ class Exception(Token):
     """
     PROPERTIES = Token.PROPERTIES + [base.Property('pattern', required=True, ptype=Grammer.Pattern),
                                      base.Property('traceback', required=True, ptype=str),
-                                     base.Property('source', ptype=str)]
+                                     base.Property('source', required=True, ptype=str)]
 
 class Word(String):
     """

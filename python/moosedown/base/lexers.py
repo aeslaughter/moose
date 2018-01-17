@@ -32,26 +32,30 @@ class Lexer(object):
         mo, pattern = self._search(text, grammer, pos)
         while (mo is not None) and (pos < n): # pos < n is needed to avoid empty string
 
-            #TODO: move exception handling to here (except common.TokenizeException)
+            #print pattern
+
             try:
                 obj = self.buildObject(pattern, mo, parent, line, node)
             except Exception as e:
                 obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line,
-                                            traceback=traceback.format_exc())
+                                            traceback=traceback.format_exc(), source='foo')
 
             obj.line = line #
             obj.match = mo
             obj.node = node
+            obj.pattern = pattern
 
             line += mo.group(0).count('\n')
             pos = mo.end()
             mo, pattern = self._search(text, grammer, pos)
 
-        if pos < n: #TODO: exception
-            obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line)#content=text[pos:])
-            obj.line = line #
-            obj.match = mo
-            obj.node = node
+        if pos < n: #TODO: better exception
+            print repr(text[pos:])
+            #obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line)#content=text[pos:])
+            #obj.line = line #
+            #obj.match = mo
+            #obj.node = node
+            #obj.pattern = pattern
 
     def _search(self, text, grammer, position=0):
         for pattern in grammer:
