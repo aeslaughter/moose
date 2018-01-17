@@ -84,7 +84,7 @@ class Example(command.MarkdownCommandComponent):
         grammer = self.reader.lexer.grammer('inline')
         self.reader.lexer.tokenize(caption, grammer, unicode(self.settings['caption']), match.node, match.line)
 
-        data = match.group('content')
+        data = match['content']
 
         tabs = floats.Tabs(master)
         tab = floats.Tab(tabs, title=u'MooseDown')

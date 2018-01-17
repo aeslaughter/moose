@@ -71,7 +71,7 @@ as shown in [quote-nested-example].
 !devel-end!
 
 !devel! example caption=Nested content in block quotes. id=quote-nested-example
-> Quotations begin with the `<` character and may
+> Quotations begin with the `<` character and mayg
 > contain any valid markdown content, include quotes and code as shown here.
 >
 > > This begins another quotation, which also contains a fenced code block.

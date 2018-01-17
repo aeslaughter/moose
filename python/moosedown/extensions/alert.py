@@ -44,11 +44,11 @@ class AlertCommandBase(command.BlockCommand):
         title_token = AlertTitle(alert)
         if title:
             grammer = self.reader.lexer.grammer('inline')
-            self.reader.lexer.tokenize(title_token, grammer, title, match.node, match.line)# TODO: line=self.line)
+            self.reader.lexer.tokenize(title_token, grammer, title, match.node, match.line)
 
         content = AlertContent(alert)
         grammer = self.reader.lexer.grammer('block')
-        self.reader.lexer.tokenize(content, grammer, match.group('content'), match.node, match.line)# TODO: line=self.line)
+        self.reader.lexer.tokenize(content, grammer, match['content'], match.node, match.line)
         return alert
 
 class ErrorAlertCommand(AlertCommandBase):

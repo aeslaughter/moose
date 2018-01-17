@@ -124,9 +124,9 @@ class Code(MarkdownComponent): #TODO: Rename these classes to use the word compo
     def createToken(self, match, parent):
         if self.settings['caption']:
             flt = tokens.Float(parent, label=settings['label'], caption=settings['caption'], **self.attributes)
-            return tokens.Code(flt, code=match.group('code'), language=self.settings['language'])
+            return tokens.Code(flt, code=match['code'], language=self.settings['language'])
         else:
-            return tokens.Code(parent, code=match.group('code'),
+            return tokens.Code(parent, code=match['code'],
                                language=self.settings['language'], **self.attributes)
 
 class Quote(MarkdownComponent):
@@ -139,7 +139,7 @@ class Quote(MarkdownComponent):
     def createToken(self, match, parent):
 
         content = []
-        for line in match.group('quote').rstrip('\n').split('\n'):
+        for line in match['quote'].rstrip('\n').split('\n'):
             if line == u'>':
                 content.append('')
             elif line.startswith(u'> '):
@@ -149,7 +149,7 @@ class Quote(MarkdownComponent):
 
         #TODO: error check that all lines begin with '> '
         quote = tokens.Quote(parent)
-        #content = self.SUB_RE.sub(r'', match.group('quote'))
+        #content = self.SUB_RE.sub(r'', match['quote'])
         self.reader.parse('\n'.join(content), root=quote)
         return quote
 
@@ -172,8 +172,8 @@ class HeadingHash(MarkdownComponent):
         return settings
 
     def createToken(self, match, parent):
-        content = unicode(match.group('inline')) #TODO: is there a better way?
-        heading = tokens.Heading(parent, level=match.group('level').count('#'), **self.attributes)
+        content = unicode(match['inline']) #TODO: is there a better way?
+        heading = tokens.Heading(parent, level=match['level'].count('#'), **self.attributes)
         label = tokens.Label(heading, text=content)
         return heading
 
@@ -186,12 +186,12 @@ class List(MarkdownComponent):
    TOKEN = None
 
    def createToken(self, match, parent):
-       marker = match.group('marker')
+       marker = match['marker']
        n = len(marker)
        marker = marker.strip()
 
        token = self.TOKEN(parent)
-       items = self.SPLIT_RE.split(match.group('items'))
+       items = self.SPLIT_RE.split(match['items'])
        regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
        for item in items:
            if not item:
@@ -232,7 +232,7 @@ class OrderedList(List):
 
    def createToken(self, match, parent):
        token = List.createToken(self, match, parent)
-       token.start = int(match.group('marker').strip('. '))
+       token.start = int(match['marker'].strip('. '))
        return token
 
 class Shortcut(MarkdownComponent):
@@ -247,7 +247,7 @@ class Shortcut(MarkdownComponent):
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, match, parent):
-        return tokens.Shortcut(parent, key=match.group('key'), link=match.group('link'))
+        return tokens.Shortcut(parent, key=match['key'], link=match['link'])
 
 class Paragraph(MarkdownComponent):
     """
@@ -271,7 +271,7 @@ class Link(MarkdownComponent):
                     )
 
     def createToken(self, match, parent):
-        return tokens.Link(parent, url=match.group('url'), **self.attributes)
+        return tokens.Link(parent, url=match['url'], **self.attributes)
 
 class ShortcutLink(MarkdownComponent):
     """
@@ -279,14 +279,14 @@ class ShortcutLink(MarkdownComponent):
     """
     RE = re.compile(r'\[(?P<key>.*?)\]')
     def createToken(self, match, parent):
-        return tokens.ShortcutLink(parent, key=match.group('key'))
+        return tokens.ShortcutLink(parent, key=match['key'])
 
 class String(MarkdownComponent):
     """
     Base token for strings (i.e., words, numbers, etc.)
     """
     def createToken(self, match, parent):
-        return token.String(parent, content=match.group())
+        return token.String(parent, content=match[0])
 
 class Break(String):
     """
@@ -294,7 +294,7 @@ class Break(String):
     """
     RE = re.compile(r'(?P<break>\n+)')
     def createToken(self, match, parent):
-        return tokens.Break(parent, count=len(match.group('break')))
+        return tokens.Break(parent, count=len(match['break']))
 
 class Space(String):
     """
@@ -302,7 +302,7 @@ class Space(String):
     """
     RE = re.compile(r'(?P<space> +)')
     def createToken(self, match, parent):
-        return tokens.Space(parent, count=len(match.group('space')))
+        return tokens.Space(parent, count=len(match['space']))
 
 class Punctuation(String):
     """
@@ -310,7 +310,7 @@ class Punctuation(String):
     """
     RE = re.compile(r'([^A-Za-z0-9\s]+)')
     def createToken(self, match, parent):
-        return tokens.Punctuation(parent, content=match.group())
+        return tokens.Punctuation(parent, content=match[0])
 
 class Number(String):
     """
@@ -318,7 +318,7 @@ class Number(String):
     """
     RE = re.compile(r'([0-9]+)')
     def createToken(self, match, parent):
-        return tokens.Number(parent, content=match.group())
+        return tokens.Number(parent, content=match[0])
 
 class Word(String):
     """
@@ -326,7 +326,7 @@ class Word(String):
     """
     RE = re.compile(r'([A-Za-z]+)')
     def createToken(self, match, parent):
-        return tokens.Word(parent, content=match.group())
+        return tokens.Word(parent, content=match[0])
 
 
 class Backtick(MarkdownComponent):
@@ -335,7 +335,7 @@ class Backtick(MarkdownComponent):
     """
     RE = re.compile(r"`(?P<code>.+?)`", flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
-        return tokens.InlineCode(parent, code=match.group('code'))
+        return tokens.InlineCode(parent, code=match['code'])
 
 
 class Format(MarkdownComponent):
@@ -351,7 +351,7 @@ class Format(MarkdownComponent):
                     flags=re.MULTILINE|re.DOTALL)
 
     def createToken(self, match, parent):
-        for key, content in match.groupdict().iteritems():
+        for key, content in match.iteritems():
             if content is not None:
                 token = eval('tokens.{}(parent, **self.attributes)'.format(key.title()))
                 grammer = self.reader.lexer.grammer('inline')
@@ -637,13 +637,13 @@ class RenderPunctuation(RenderString):
 class RenderException(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         div = html.Tag(parent, 'div', class_="moose-exception", **token.attributes)
-        html.String(div, content=token.info.match.group())
+        html.String(div, content=token.info[0])
         return div
 
     def createMaterialize(self, token, parent):
         id_ = uuid.uuid4()
         a = html.Tag(parent, 'a', class_="moose-exception modal-trigger", href='#{}'.format(id_))
-        html.String(a, content=token.info.match.group())
+        html.String(a, content=token.info[0])
 
         modal = html.Tag(parent.root, 'div', id_=id_, class_="modal")
         content = html.Tag(modal, 'div', class_="modal-content")
@@ -661,7 +661,7 @@ class RenderException(CoreRenderComponentBase):
 
         pre = html.Tag(content, 'pre')
         code = html.Tag(pre, 'code', class_="language-markdown")
-        html.String(code, content=token.info.match.group(0), escape=True)
+        html.String(code, content=token.info[0], escape=True)
 
         pre = html.Tag(content, 'pre', style="font-size:80%;")
         html.String(pre, content=unicode(token.traceback), escape=True)
