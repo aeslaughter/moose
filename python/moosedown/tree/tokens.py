@@ -90,8 +90,14 @@ class Heading(Token):
     """
     Section headings.
     """
-    PROPERTIES = [base.Property('level', ptype=int),
-                  base.Property('text', ptype=unicode)]
+    PROPERTIES = [base.Property('level', ptype=int)]
+    def __init__(self, *args, **kwargs):
+        Token.__init__(self, *args, **kwargs)
+
+        id_ = self.get('id', None)
+        if id_:
+            Shortcut(self.root, key=id_, link=u'#{}'.format(id_), tokens=self.children)
+
 
 class Paragraph(Token):
     """
@@ -127,9 +133,36 @@ class Link(Token):
     PROPERTIES = [base.Property('url', required=True, ptype=unicode)]
 
 class Shortcut(Token):
-    PROPERTIES = [base.Property('content', required=False, ptype=unicode),
-                  base.Property('key', required=True, ptype=unicode),
-                  base.Property('link', required=True, ptype=unicode)]
+    """
+    Create a Shortcut that will be used to create a database of keys for use by ShortcutLink tokens.
+
+    When creating Shortcut tokens they should be added to the root level of the tree, for example
+    consider the Heading token. Also, refer to core.RenderShortcutLink for how these are used when
+    rendering.
+
+    Properties:
+        key[unicode]: (Required) The shortcut key, i.e., the string used to look up content in a database,
+                      the key is what is used within a ShortcutLink, the content is then pulled from this
+                      token. If the 'content' and 'tokens' are empty, then the key is also used for the
+                      shortcut text, see RenderShortcutLink.
+        link[unicode]: (Required) The content to which the shortcut links against, e.g., the value of 'href'
+                       for HTML.
+        content[unicode]: (Optional) When present the text provided is used for the link text, this option
+                          may not be used with 'tokens'.
+        tokens[tuple]: (Optional) When present the tokens provided are rendered and used for the link text,
+                       this option may not be used with 'content'.
+    """
+    PROPERTIES = [base.Property('key', required=True, ptype=unicode),
+                  base.Property('link', required=True, ptype=unicode),
+                  base.Property('content', required=False, ptype=unicode),
+                  base.Property('tokens', required=False, ptype=tuple)]
+
+    def __init__(self, *args, **kwargs):
+        Token.__init__(self, *args, **kwargs)
+
+        if self.content and self.tokens:
+            raise ValueError("Both the 'content' and 'tokens' properties may not be set.")
+
 
 class ShortcutLink(Token):
     PROPERTIES = [base.Property('key', ptype=unicode, required=True)]

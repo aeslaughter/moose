@@ -4,6 +4,7 @@ This defines the core Markdown translation to HTML and LaTeX.
 import re
 import uuid
 import logging
+import copy
 
 import anytree
 
@@ -74,8 +75,9 @@ class CoreExtension(base.Extension):
         renderer.add(tokens.Superscript, RenderSuperscript())
         renderer.add(tokens.Subscript, RenderSubscript())
         renderer.add(tokens.Label, RenderLabel())
+        renderer.add(tokens.Punctuation, RenderPunctuation())
 
-        for t in [tokens.Word, tokens.Space, tokens.Punctuation, tokens.Number, tokens.String]:
+        for t in [tokens.Word, tokens.Space, tokens.Number, tokens.String]:
             renderer.add(t, RenderString())
 
         #TODO: Make a generic preamble method?
@@ -109,7 +111,7 @@ class Code(MarkdownComponent):
     """
     Fenced code blocks.
     """
-    RE = re.compile(r'\s*`{3}(?P<settings>.*?)$(?P<code>.*?)`{3}', flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile(r'\s*^`{3}(?P<settings>.*?)$(?P<code>.*?)`{3}', flags=re.MULTILINE|re.DOTALL)
 
     @staticmethod
     def defaultSettings():
@@ -412,6 +414,9 @@ class RenderShortcutLink(CoreRenderComponentBase):
         node = self.getShortcut(token)
         if node.content:
             html.String(a, content=node.content)
+        elif node.tokens:
+            for n in node.tokens:
+                self.translator.renderer.process(n, a)
         else:
             html.String(a, content=node.key)
 
@@ -604,6 +609,15 @@ class RenderSubscript(CoreRenderComponentBase):
         cmd = latex.Command(math, 'text')
         latex.String(math, content=u'}')
         return cmd
+
+class RenderPunctuation(RenderString):
+    def createHTML(self, token, parent):
+        if token.content == u'--':
+            return html.String(parent, content=u'&ndash;')
+        elif token.content == u'---':
+            return html.String(parent, content=u'&mdash;')
+
+        return RenderString.createHTML(self, token, parent)
 
 class RenderException(CoreRenderComponentBase):
     def createHTML(self, token, parent):

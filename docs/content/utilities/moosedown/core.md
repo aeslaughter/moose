@@ -8,7 +8,6 @@ The core extension is the portion of the MooseDocs language that is designed to 
 syntax. MooseDown is far more strict than traditional [markdown] implementations.
 Therefore, the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
-
 Syntax is separated into two groups: [block](#core-block) and [inline](#core-inline). Block
 content is made of items that make, as the name suggests, blocks of text. Blocks of
 text include items such as code snippets, quotations, and paragraphs themselves. On the other hand,
@@ -23,22 +22,34 @@ detail the syntax that comprise the syntax.
 
 ## Block Content id=core-block
 
-### Code
-Code snippets are created by enclosing the code for display in triple backticks (```), as
-shown in.
+In general, most block level syntax accepts key-value pair settings. Where the settings
+appear within the block level syntax varies and is detailed in each section below. However,
+the settings are applied in a uniform manner. Foremost, the key and value are separated by an
+equal (`=`) sign +without spaces+ surrounding. The value may contain spaces, with the space after
+the equal sign being the exception.
 
-!devel! example caption=Basic fenced code block. id=code-block-example
+If syntax has settings the key-value pairs, the default value (if any), and a short description
+will be provided in a table. For example, [code-settings] lists the available settings
+for the fenced code blocks discussed in the [fenced-code] section.
+
+### Code id=fenced-code
+Code blocks or snippets---as shown in [fenced-code-example]---are created by enclosing the code for
+display in triple backticks (```), this is commonly referred to as fenced code blocks. Two
+requirements exist for creating the code blocks:
+
+1. the backticks must be proceeded by an empty line and
+1. the backticks must start at the beginning of a line.
+
+Settings for code blocks are defined by key-value pairings that follow the backticks;
+[code-settings] lists the available settings for code blocks.
+
+!devel! example caption=Basic fenced code block. id=fenced-code-example
 ```language=bash
 export METHOD=opt
 ```
 !devel-end!
 
-
-Settings for code blocks are code block are defined by key-value pairings that follow the backticks;
-[code-settings] lists the available settings for code blocks.
-
-!devel settings module=moosedown.extensions.core object=Code id=code-settings caption=Foo
-
+!devel settings module=moosedown.extensions.core object=Code id=code-settings caption=Available settings for fenced code blocks.
 
 ### Quotations
 Quote blocks are created by starting a line with the `>` character, with a single trailing

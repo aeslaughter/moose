@@ -44,6 +44,8 @@ class Reader(ConfigObject):
     """
 
     def parse(self, node, root=None):
+        self.reinit()
+
         ast = root if root else tokens.Token(None)
         #self.__old_node = self.__node
 

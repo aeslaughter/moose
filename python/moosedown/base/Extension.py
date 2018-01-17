@@ -27,3 +27,6 @@ class Extension(ConfigObject):
 
     def extend(self, reader, renderer):
         pass
+
+    def reinit(self):
+        pass

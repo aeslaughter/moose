@@ -12,7 +12,7 @@ class AutoLinkExtension(base.Extension):
     def extend(self, reader, renderer):
         renderer.add(tokens.Link, RenderAutoLink())
 
-
+#TODO: [foo.md] should create a link and use the top level heading???
 class RenderAutoLink(core.RenderLink):
 
     def createHTML(self, token, parent):
