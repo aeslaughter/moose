@@ -43,7 +43,7 @@ class Reader(ConfigObject):
         return self.parse(text)
     """
 
-    def parse(self, node, root=None):
+    def parse(self, node, root=None): #TODO: node->page
         self.reinit()
 
         ast = root if root else tokens.Token(None)
@@ -56,11 +56,11 @@ class Reader(ConfigObject):
         if not isinstance(node, page.PageNodeBase):
             raise TypeError("The supplied content must be a unicode or PageNodeBase object.")
 
-        self.__lexer.tokenize(node.content, ast, node=node)
+        self.__lexer.tokenize(ast, self.__lexer.grammer(), node.content, node)
 
         for token in anytree.PreOrderIter(ast):
             if isinstance(token, tokens.Exception):
-                self._exceptionHandler(token, node)
+                self._exceptionHandler(token)
 
         #self.__node = self.__old_node
         return ast
@@ -94,22 +94,22 @@ class Reader(ConfigObject):
 
 
     @staticmethod
-    def _exceptionHandler(token, node):
+    def _exceptionHandler(token):
         n = 100
         title = []
-        if isinstance(node, page.LocationNodeBase):
-            token.source = node.source
+        print token.name, token.info
+        if isinstance(token.info.node, page.LocationNodeBase):
             title += textwrap.wrap(u"An exception occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
-                                   u"following content.".format(token.pattern.name), n)
-            title += [u"{}:{}".format(node.source, token.line)]
+                                   u"following content.".format(token.info.pattern.name), n)
+            title += [u"{}:{}".format(token.info.node.source, token.info.line)]
         else:
             title += textwrap.wrap(u"An exception occurred on line {} while tokenizing, the " \
                                    u"exception was raised when executing the {} object while " \
                                    u"processing the following content." \
-                                   .format(token.line, token.pattern.name), n)
+                                   .format(token.info.line, token.info.pattern.name), n)
 
-        box = moosedown.common.box(token.match.group(0), line=token.line, width=n)
+        box = moosedown.common.box(token.info.match.group(0), line=token.info.line, width=n)
         LOG.exception(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
 
 

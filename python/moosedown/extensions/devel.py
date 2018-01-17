@@ -73,7 +73,6 @@ class Example(command.MarkdownCommandComponent):
         settings['caption'] = (None, "The caption to use for the code specification example.")
         settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
         settings['preview'] = (True, "Display a preview of the rendered result.")
-        #settings['class'] = ('moose-devel-code-compare', settings['class'][1])
         return settings
 
     def createToken(self, match, parent):
@@ -83,7 +82,7 @@ class Example(command.MarkdownCommandComponent):
         caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
 
         grammer = self.reader.lexer.grammer('inline')
-        self.reader.lexer.tokenize(unicode(self.settings['caption']), caption, grammer)#, line=self.line)
+        self.reader.lexer.tokenize(caption, grammer, unicode(self.settings['caption']), match.node, match.line)
 
         data = match.group('content')
 
@@ -93,10 +92,12 @@ class Example(command.MarkdownCommandComponent):
 
         # HTML
         ast = self.getHTMLTranslator().reader.parse(data)
-        html = base.HTMLRenderer.render(self.getHTMLTranslator().renderer, ast)
+
+        root = html.Tag(None, '')
+        self.getHTMLTranslator().renderer.process(ast, root)
 
         code = ''
-        for child in html:#.find('body')(0)(0)(0):
+        for child in root:#.find('body')(0)(0)(0):
             code += child.write()
         if code:
             tab = floats.Tab(tabs, title=u'HTML')
@@ -119,6 +120,7 @@ class Example(command.MarkdownCommandComponent):
         if code:
             tab = floats.Tab(tabs, title=u'LaTeX')
             tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
+
 
         return master
 
@@ -147,7 +149,7 @@ class ComponentSettings(command.MarkdownCommandComponent):
         if self.settings['caption']:
             caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
             grammer = self.reader.lexer.grammer('inline')
-            self.reader.lexer.tokenize(self.settings['caption'], caption, grammer)#, line=self.line)
+            self.reader.lexer.tokenize(caption, grammer, self.settings['caption'], match.node, match.line)#, line=self.line)
 
         content = floats.Content(master, class_="card-content")
 

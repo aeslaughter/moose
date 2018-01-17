@@ -86,7 +86,7 @@ class CoreExtension(base.Extension):
             renderer.addPackage(u'ulem')
 
 
-class MarkdownComponent(base.TokenComponent):
+class MarkdownComponent(base.TokenComponent): #TODO: Just put this in TokenComponent
     """
     Base Markdown component which defines the typically html tag settings and a means to apply them.
     """
@@ -107,7 +107,7 @@ class MarkdownComponent(base.TokenComponent):
 
 
 
-class Code(MarkdownComponent):
+class Code(MarkdownComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
     """
     Fenced code blocks.
     """
@@ -133,12 +133,24 @@ class Quote(MarkdownComponent):
     """
     Block quote.
     """
-    SUB_RE = re.compile(r'^> {0,1}', flags=re.MULTILINE)
-    RE = re.compile(r'\s*(?P<quote>^>[ $].*?)(?=^[^>]|\Z)', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+
+    #TODO: settings ???
+    RE = re.compile(r'(?:\A|\n{2,})(?P<quote>^>[ $].*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     def createToken(self, match, parent):
+
+        content = []
+        for line in match.group('quote').rstrip('\n').split('\n'):
+            if line == u'>':
+                content.append('')
+            elif line.startswith(u'> '):
+                content.append(line[2:])
+            else:
+                raise Exception(repr(line))
+
+        #TODO: error check that all lines begin with '> '
         quote = tokens.Quote(parent)
-        content = self.SUB_RE.sub(r'', match.group('quote'))
-        self.reader.parse(content, root=quote)
+        #content = self.SUB_RE.sub(r'', match.group('quote'))
+        self.reader.parse('\n'.join(content), root=quote)
         return quote
 
 class HeadingHash(MarkdownComponent):
@@ -157,7 +169,6 @@ class HeadingHash(MarkdownComponent):
     @staticmethod
     def defaultSettings():
         settings = MarkdownComponent.defaultSettings()
-        #settings['collapsible'] = (True, "Enable/disable the collapsible feature when using MaterializeRenderer.")
         return settings
 
     def createToken(self, match, parent):
@@ -250,12 +261,6 @@ class Paragraph(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.Paragraph(parent)
 
-
-
-
-
-
-
 class Link(MarkdownComponent):
     """
     Markdown links [foo](bar with=settings)
@@ -328,7 +333,7 @@ class Backtick(MarkdownComponent):
     """
     Inline code
     """
-    RE = re.compile(r"`(?P<code>[^`].+?)`", flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile(r"`(?P<code>.+?)`", flags=re.MULTILINE|re.DOTALL)
     def createToken(self, match, parent):
         return tokens.InlineCode(parent, code=match.group('code'))
 
@@ -350,7 +355,7 @@ class Format(MarkdownComponent):
             if content is not None:
                 token = eval('tokens.{}(parent, **self.attributes)'.format(key.title()))
                 grammer = self.reader.lexer.grammer('inline')
-                self.reader.lexer.tokenize(content, token, grammer)#, line=self.line)
+                self.reader.lexer.tokenize(token, grammer, content, match.node, match.line)#, line=self.line)
                 return token
 
 
@@ -632,13 +637,13 @@ class RenderPunctuation(RenderString):
 class RenderException(CoreRenderComponentBase):
     def createHTML(self, token, parent):
         div = html.Tag(parent, 'div', class_="moose-exception", **token.attributes)
-        html.String(div, content=token.match.group())
+        html.String(div, content=token.info.match.group())
         return div
 
     def createMaterialize(self, token, parent):
         id_ = uuid.uuid4()
         a = html.Tag(parent, 'a', class_="moose-exception modal-trigger", href='#{}'.format(id_))
-        html.String(a, content=token.match.group())
+        html.String(a, content=token.info.match.group())
 
         modal = html.Tag(parent.root, 'div', id_=id_, class_="modal")
         content = html.Tag(modal, 'div', class_="modal-content")
@@ -648,15 +653,15 @@ class RenderException(CoreRenderComponentBase):
 
         msg = u"An exception occurred while tokenizing, the exception was " \
               u"raised when executing the {} object while processing the " \
-              u"following content.".format(token.pattern.name)
+              u"following content.".format(token.info.pattern.name)
         html.String(p, content=msg)
         html.Tag(p, 'br', close=False)
-        fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.source))
-        html.String(fname, content=u"{}:{}".format(token.source, token.line))
+        fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.info.node.source))
+        html.String(fname, content=u"{}:{}".format(token.info.node.source, token.info.line))
 
         pre = html.Tag(content, 'pre')
         code = html.Tag(pre, 'code', class_="language-markdown")
-        html.String(code, content=token.match.group(0), escape=True)
+        html.String(code, content=token.info.match.group(0), escape=True)
 
         pre = html.Tag(content, 'pre', style="font-size:80%;")
         html.String(pre, content=unicode(token.traceback), escape=True)

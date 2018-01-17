@@ -51,14 +51,9 @@ class Renderer(ConfigObject):
             comp.reinit()
 
 
-    def render(self, ast, root, reinit=True):
-#        self.onPreRender(root)
+    def render(self, ast, root=None):
         self.process(ast, root)
-#        self.onPostRender(root)
         return root
-        #if reinit:
-        #    self.reinit()
-
 
     def __method(self, component): #TODO: just move to add
         if hasattr(component, self.METHOD):
@@ -82,23 +77,21 @@ class Renderer(ConfigObject):
     def process(self, token, parent):
         try:
             func = self.function(token)
-        #    print 'EVAL:', token.name, func
             el = func(token, parent) if func else None
         except Exception as e:
-#            if token.match:
-            src = self.translator.node.source if self.translator.node else 'fixme'
+            src = token.info.node.source if token.info.node else 'fixme' #TODO
             msg = "\nAn exception occured while rendering, the exception was raised when\n" \
                   "executing the {} function while processing the following content.\n" \
-                      "{}:{}".format(func, src, token.line)
-            LOG.exception(moosedown.common.box(token.match.group(0), title=msg, line=token.line))
+                      "{}:{}".format(func, src, token.info.line)
+            LOG.exception(moosedown.common.box(token.info.match.group(0), title=msg, line=token.info.line))
 #            else:
 #                msg = "\nAn exception occured on line {} while rendering, the exception was\n" \
 #                      "raised when executing the {} object while processing the following content.\n"
 #                msg = msg.format(token.line, token.__class__.__name__)
 #                LOG.exception(msg)
 
-            token = tokens.Exception(parent, pattern=token.pattern, traceback=traceback.format_exc(), match=token.match, line=token.line, source=src)
-            func = self.function(token)#raise e
+            token = tokens.Exception(parent, info=token.info, traceback=traceback.format_exc())
+            func = self.function(token)
             el = func(token, parent)
 
         if el is None:
@@ -112,10 +105,10 @@ class Renderer(ConfigObject):
 class HTMLRenderer(Renderer):
     METHOD = 'createHTML' #TODO: make this a config option???
 
-    def render(self, ast, root=None, reinit=True):
+    def render(self, ast, root=None):
         if root is None:
             root = html.Tag(None, 'body')
-        return Renderer.render(self, ast, root, reinit=reinit)
+        return Renderer.render(self, ast, root)
 
 class MaterializeRenderer(HTMLRenderer):
     METHOD = 'createMaterialize'
@@ -157,7 +150,7 @@ class MaterializeRenderer(HTMLRenderer):
             pass
 
 
-    def render(self, ast, root=None, reinit=True):
+    def render(self, ast, root=None):
         self.reinit()
 
         if root is None:
@@ -190,7 +183,7 @@ class MaterializeRenderer(HTMLRenderer):
         # Content
         row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12 m12 l10") #TODO add scroll spy (scoll-name=False) at top of index.mdg
-        HTMLRenderer.render(self, ast, col, reinit=reinit)
+        HTMLRenderer.render(self, ast, col)
 
         # Sections
         if self['sections']:
