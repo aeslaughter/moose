@@ -18,7 +18,7 @@ class ConfigCommand(command.BlockCommand):
     def createToken(self, match, parent):
 
         config = dict(Reader=dict(), Renderer=dict())
-        for data in match.group('content').strip(' \n').split('\n'):
+        for data in match['content'].strip(' \n').split('\n'):
             key, value = data.split('=')
             block, item = key.split('/', 1)
 

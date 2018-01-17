@@ -16,17 +16,29 @@ class LexerInformation(object):
     #      createHTML should be self, parent, token
     #      node should change to page
     def __init__(self, match, pattern, node, line):
-        self.match = match
+        self.__match = match
         self.pattern = pattern
         self.node = node
         self.line = line
 
-    def group(self, value=0):
-        return self.match.group(value)
-    def groups(self):
-        return self.match.groups()
-    def groupdict(self):
-        return self.match.groupdict()
+    def __getitem__(self, value):
+        return self.__match.group(value)
+
+    def keys(self):
+        return self.__match.groupdict().keys()
+
+    def iteritems(self):
+        for key, value in self.__match.groupdict().iteritems():
+            yield key, value
+#    def groups(self):
+#        return self.match.groups()
+
+
+    def __contains__(self, value):
+        return value in self.__match.groupdict()
+
+#    def groupdict(self):
+#        return self.match.groupdict()
 
 
 class Lexer(object):
@@ -60,11 +72,7 @@ class Lexer(object):
             try:
                 obj = self.buildObject(parent, info)
             except Exception as e:
-                obj = tree.tokens.Exception(parent, info=info, traceback=traceback.format_exc()) #TODO: use info object
-            #obj.line = line #
-            #obj.match = mo
-            #obj.node = node
-            #obj.pattern = pattern
+                obj = tree.tokens.Exception(parent, info=info, traceback=traceback.format_exc())
 
             line += mo.group(0).count('\n')
             pos = mo.end()
@@ -73,11 +81,6 @@ class Lexer(object):
 
         if pos < n: #TODO: better exception
             print repr(text[pos:])
-            #obj = tree.tokens.Exception(parent, match=mo, pattern=pattern, line=line)#content=text[pos:])
-            #obj.line = line #
-            #obj.match = mo
-            #obj.node = node
-            #obj.pattern = pattern
 
     def _search(self, text, grammer, position=0):
         for pattern in grammer:
@@ -118,8 +121,8 @@ class RecursiveLexer(Lexer):
     def buildObject(self, parent, info):
         obj = super(RecursiveLexer, self).buildObject(parent, info)
         for key, grammer in self._grammers.iteritems():
-            if key in info.groupdict():
-                text = info.group(key)
+            if key in info.keys():
+                text = info[key]
                 if text is not None:
                     self.tokenize(obj, grammer, text, info.node, info.line)
         return obj

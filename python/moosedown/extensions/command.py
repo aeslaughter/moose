@@ -69,7 +69,7 @@ class CommandBase(core.MarkdownComponent):
 
     def createToken(self, match, parent):
         #print 'CommandBase:', match.groups()
-        cmd = (match.group('command'), match.group('subcommand'))
+        cmd = (match['command'], match['subcommand'])
 
         #TODO: Error check
         if cmd not in self.translator.reader._commands:
@@ -77,7 +77,7 @@ class CommandBase(core.MarkdownComponent):
             raise common.exceptions.TokenizeException(msg.format(*cmd))
 
         obj = self.translator.reader._commands[cmd]
-        obj.settings, _ = common.parse_settings(obj.defaultSettings(), match.group('settings'))
+        obj.settings, _ = common.parse_settings(obj.defaultSettings(), match['settings'])
         token = obj.createToken(match, parent)
         return token
 

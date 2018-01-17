@@ -77,10 +77,8 @@ class Reader(ConfigObject):
         if not isinstance(defaults, dict):
             raise common.exceptions.TokenizeException("The component '{}' must return a dict from the defaultSettings static method.".format(component))
 
-
-
-        if 'settings' in match.groupdict() and component.PARSE_SETTINGS:
-            component.settings, _ = common.parse_settings(defaults, match.group('settings'))
+        if 'settings' in match and component.PARSE_SETTINGS:
+            component.settings, _ = common.parse_settings(defaults, match['settings'])
         else:
             component.settings = {k:v[0] for k, v in defaults.iteritems()}
         token = component.createToken(match, parent)
@@ -97,7 +95,6 @@ class Reader(ConfigObject):
     def _exceptionHandler(token):
         n = 100
         title = []
-        print token.name, token.info
         if isinstance(token.info.node, page.LocationNodeBase):
             title += textwrap.wrap(u"An exception occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
@@ -109,7 +106,7 @@ class Reader(ConfigObject):
                                    u"processing the following content." \
                                    .format(token.info.line, token.info.pattern.name), n)
 
-        box = moosedown.common.box(token.info.match.group(0), line=token.info.line, width=n)
+        box = moosedown.common.box(token.info[0], line=token.info.line, width=n)
         LOG.exception(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
 
 
