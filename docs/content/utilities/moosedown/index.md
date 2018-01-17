@@ -41,6 +41,9 @@ used and promotes uniformity among the MooseDown files.
 
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+
 [HTML]: https://en.wikipedia.org/wiki/HTML
+
 [CommonMark]: http://commonmark.org/
+
 [markdown]: https://en.wikipedia.org/wiki/Markdown

@@ -4,6 +4,7 @@ Renderer/breadcrumbs=True
 !config-end!
 
 # Core Extension
+
 The core extension is the portion of the MooseDocs language that is designed to mimic [markdown]
 syntax. MooseDown is far more strict than traditional [markdown] implementations.
 Therefore, the following sections should be read in detail to understand the supported syntax,
@@ -22,6 +23,11 @@ detail the syntax that comprise the syntax.
 
 ## Block Content id=core-block
 
+Block level content, as the name suggest, are blocks of text. In all cases, blocks must
+begin and end with empty lines (with the exception of the start and end of the file). This
+restriction allows for special characters such as the hash (`#`) to be used at the start
+of a line without conflicting with heading creation (see [headings]).
+
 In general, most block level syntax accepts key-value pair settings. Where the settings
 appear within the block level syntax varies and is detailed in each section below. However,
 the settings are applied in a uniform manner. Foremost, the key and value are separated by an
@@ -33,6 +39,7 @@ will be provided in a table. For example, [code-settings] lists the available se
 for the fenced code blocks discussed in the [fenced-code] section.
 
 ### Code id=fenced-code
+
 Code blocks or snippets---as shown in [fenced-code-example]---are created by enclosing the code for
 display in triple backticks (```), this is commonly referred to as fenced code blocks. Two
 requirements exist for creating the code blocks:
@@ -60,6 +67,8 @@ space.
 !devel-end!
 
 Quote blocks can contain any valid markdown, including other quotations.
+> test
+
 
 !devel! example caption=Nested content in block quotes.
 > Foo
@@ -73,7 +82,7 @@ Quote blocks can contain any valid markdown, including other quotations.
 > See, I told you.
 !devel-end!
 
-### Headings
+### Headings id=headings
 All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
 number of hashes indicate the heading level. The hash(es) must be followed by a single space.
 
@@ -165,6 +174,7 @@ Again, to create another list following
 !devel-end!
 
 ### Shortcuts
+
 It is possible to define shortcuts for use within your document via a [shortcut link](#shortcut-link). The shortcuts
 are defined using traditional markdown syntax.
 
@@ -175,6 +185,7 @@ are defined using traditional markdown syntax.
 
 
 ## Inline Content id=core-inline
+
 ### Text Formatting
 
 em, strong, need to add strikethrough, underline, subscript, superscript, mark, inserted
@@ -185,5 +196,10 @@ spans* many lines. It all *should* work
 fine.
 
 ### Shortcut links id=shortcut-link
+
+
+
+
+
 
 [markdown]: https://en.wikipedia.org/wiki/Markdown

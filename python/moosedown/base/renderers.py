@@ -5,7 +5,7 @@ import os
 import copy
 import re
 import logging
-
+import traceback
 import anytree
 
 import moosedown
@@ -85,17 +85,21 @@ class Renderer(ConfigObject):
         #    print 'EVAL:', token.name, func
             el = func(token, parent) if func else None
         except Exception as e:
-            if token.match:
-                msg = "\nAn exception occured while rendering, the exception was raised when\n" \
-                      "executing the {} function while processing the following content.\n" \
-                      "{}:{}".format(func, 'foo', token.line)
-                LOG.exception(moosedown.common.box(token.match.group(0), title=msg, line=token.line))
-            else:
-                msg = "\nAn exception occured on line {} while rendering, the exception was\n" \
-                      "raised when executing the {} object while processing the following content.\n"
-                msg = msg.format(token.line, token.__class__.__name__)
-                LOG.exception(msg)
-            raise e
+#            if token.match:
+            src = self.translator.node.source if self.translator.node else 'fixme'
+            msg = "\nAn exception occured while rendering, the exception was raised when\n" \
+                  "executing the {} function while processing the following content.\n" \
+                      "{}:{}".format(func, src, token.line)
+            LOG.exception(moosedown.common.box(token.match.group(0), title=msg, line=token.line))
+#            else:
+#                msg = "\nAn exception occured on line {} while rendering, the exception was\n" \
+#                      "raised when executing the {} object while processing the following content.\n"
+#                msg = msg.format(token.line, token.__class__.__name__)
+#                LOG.exception(msg)
+
+            token = tokens.Exception(parent, pattern=token.pattern, traceback=traceback.format_exc(), match=token.match, line=token.line, source=src)
+            func = self.function(token)#raise e
+            el = func(token, parent)
 
         if el is None:
             el = parent
@@ -103,9 +107,6 @@ class Renderer(ConfigObject):
         #TODO: check return type
         for child in token.children:
             self.process(child, el)
-
-#    def get(self, name):
-#        return self.translator.node.get(name, ConfigObject.get(self, name))
 
 
 class HTMLRenderer(Renderer):
