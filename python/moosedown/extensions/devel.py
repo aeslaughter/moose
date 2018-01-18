@@ -82,7 +82,7 @@ class Example(command.MarkdownCommandComponent):
         caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
 
         grammer = self.reader.lexer.grammer('inline')
-        self.reader.lexer.tokenize(caption, grammer, unicode(self.settings['caption']), match.node, match.line)
+        self.reader.lexer.tokenize(caption, grammer, unicode(self.settings['caption']), match.line)
 
         data = match['content']
 
@@ -149,7 +149,7 @@ class ComponentSettings(command.MarkdownCommandComponent):
         if self.settings['caption']:
             caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
             grammer = self.reader.lexer.grammer('inline')
-            self.reader.lexer.tokenize(caption, grammer, self.settings['caption'], match.node, match.line)#, line=self.line)
+            self.reader.lexer.tokenize(caption, grammer, self.settings['caption'], match.line)#, line=self.line)
 
         content = floats.Content(master, class_="card-content")
 

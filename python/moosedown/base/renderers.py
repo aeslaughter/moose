@@ -79,6 +79,8 @@ class Renderer(ConfigObject):
             func = self.function(token)
             el = func(token, parent) if func else None
         except Exception as e:
+            print repr(token)
+            raise e
             src = token.info.node.source if token.info.node else 'fixme' #TODO
             msg = "\nAn exception occured while rendering, the exception was raised when\n" \
                   "executing the {} function while processing the following content.\n" \
@@ -155,6 +157,8 @@ class MaterializeRenderer(HTMLRenderer):
 
         if root is None:
             root = html.Tag(None, '!DOCTYPE html', close=False)
+
+        root.page = ast.page #meta data
         html.Tag(root, 'html')
 
         # <head>
@@ -200,13 +204,14 @@ class MaterializeRenderer(HTMLRenderer):
         nav = html.Tag(col, 'nav', class_="breadcrumb-nav")
         div = html.Tag(nav, 'div', class_="nav-wrapper")
 
-        for n in self.translator.node.path:
+        node = root.root.page
+        for n in node.path:
             if not n.local:
                 continue
             if isinstance(n, page.DirectoryNode):
                 idx = n.find('index.md', maxlevel=2)
                 if idx:
-                    url = os.path.relpath(n.local, os.path.dirname(self.translator.node.local)).replace('.md', '.html') #TODO: fix ext
+                    url = os.path.relpath(n.local, os.path.dirname(node.local)).replace('.md', '.html') #TODO: fix ext
                     a = html.Tag(div, 'a', href=url, class_="breadcrumb")
                     html.String(a, content=unicode(n.name))
                 else:
@@ -214,7 +219,7 @@ class MaterializeRenderer(HTMLRenderer):
                     html.String(span, content=unicode(n.name))
 
             elif isinstance(n, page.FileNode) and n.name != 'index.md':
-                url = os.path.relpath(n.local, os.path.dirname(self.translator.node.local)).replace('.md', '.html') #TODO: fix ext
+                url = os.path.relpath(n.local, os.path.dirname(node.local)).replace('.md', '.html') #TODO: fix ext
                 a = html.Tag(div, 'a', href=url, class_="breadcrumb")
                 html.String(a, content=unicode(os.path.splitext(n.name)[0]))
 

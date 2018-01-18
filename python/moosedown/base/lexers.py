@@ -8,17 +8,18 @@ from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
 
-class LexerInformation(object):
+class LexerInformation(object): #TODO: TokenMetaData ???
     #TODO: make these methods better __contains__ should do groupdict() stuff
     #      __get__ should call group
     #      __iter__ should loop groups
     #      createToken should be createToken(self, parent, info)
     #      createHTML should be self, parent, token
     #      node should change to page
-    def __init__(self, match, pattern, node, line):
+    def __init__(self, match=None, pattern=None, line=None):
+
+        # TODO: make setters and getters that check types
         self.__match = match
         self.pattern = pattern
-        self.node = node
         self.line = line
 
     def __getitem__(self, value):
@@ -30,22 +31,16 @@ class LexerInformation(object):
     def iteritems(self):
         for key, value in self.__match.groupdict().iteritems():
             yield key, value
-#    def groups(self):
-#        return self.match.groups()
-
 
     def __contains__(self, value):
         return value in self.__match.groupdict()
-
-#    def groupdict(self):
-#        return self.match.groupdict()
 
 
 class Lexer(object):
     def __init__(self):
         self._node = None
 
-    def tokenize(self, parent, grammer, text, node, line=1):
+    def tokenize(self, parent, grammer, text, line=1):
 
         #if node is None:
         #    node = parent.node
@@ -55,11 +50,6 @@ class Lexer(object):
         if not isinstance(text, unicode):
             raise TypeError("The supplied text to the lexer must be of type 'unicode' but '{}' was provided.".format(type(text).__name__))
 
-        #TODO: "text" should be required to be a node and self._node should be removed
-        #if isinstance(text, moosedown.tree.page.PageNodeBase):
-            #self._node = text
-        #    text = text.content
-            #TODO: test for None
         n = len(text)
         pos = 0
         mo, pattern = self._search(text, grammer, pos)
@@ -68,7 +58,7 @@ class Lexer(object):
 
             #print pattern
 
-            info = LexerInformation(mo, pattern, node, line)
+            info = LexerInformation(mo, pattern, line)
             try:
                 obj = self.buildObject(parent, info)
             except Exception as e:
@@ -102,11 +92,6 @@ class RecursiveLexer(Lexer):
         for name in args:
             self._grammers[name] = Grammer()
 
-    #def tokenize(self, parent, grammer, text, node, line=1):
-        #if grammer is None:
-        #    grammer = self._grammers[self._grammers.keys()[0]]
-    #    super(RecursiveLexer, self).tokenize(parent, grammer, text, node, line)
-
     def grammer(self, group=None):
         if group is None:
             group = self._grammers.keys()[0]
@@ -124,5 +109,5 @@ class RecursiveLexer(Lexer):
             if key in info.keys():
                 text = info[key]
                 if text is not None:
-                    self.tokenize(obj, grammer, text, info.node, info.line)
+                    self.tokenize(obj, grammer, text, info.line)
         return obj

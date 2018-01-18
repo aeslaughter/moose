@@ -19,10 +19,12 @@ class Token(base.NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
+    PROPERTIES = [base.Property('page', required=False)] # only exists on root...
+                  #base.Property('info')] # change to meta
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent=None, name=None, **kwargs):
         self.__info = kwargs.pop('info', None)
-        super(Token, self).__init__(*args, **kwargs)
+        super(Token, self).__init__(parent, name, **kwargs)
         self.name = self.__class__.__name__
 
     @property
@@ -34,6 +36,10 @@ class Token(base.NodeBase):
         self.___info = value
         for child in self.children:
             child.info = value
+
+
+#TODO: create class Root that requies page
+
 
 class Section(Token):
     pass

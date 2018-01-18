@@ -89,12 +89,13 @@ class CommandBase(core.MarkdownComponent):
     """
 
 class InlineCommand(CommandBase):
-    RE = re.compile(r'\s*!(?P<command>\w+) (?P<subcommand>\w+)? *(?P<settings>.*?)$',
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+) *(?P<subcommand>\w+)? *(?P<settings>.*?)(?=\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE)
 
 class BlockCommand(CommandBase):
-    RE = re.compile(r'\s*^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)?\n(?P<content>.*?)(^!\1-end!)',
-                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)$(?P<content>.*?)(^!\1-end!)(?=\Z|\n{2,})',
+                    flags=re.UNICODE|re.MULTILINE)
 
 class FileCommand(CommandBase):
-    RE = re.compile(r'\s*!(?P<command>\w+) (?P<filename>\S*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)$', flags=re.UNICODE|re.MULTILINE)
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+) (?P<filename>\S*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)(?=\Z|\n{2,})',
+                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)

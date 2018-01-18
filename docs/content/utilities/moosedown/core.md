@@ -42,13 +42,13 @@ for the fenced code blocks discussed in the [fenced-code] section.
 ### Code id=fenced-code
 
 Code blocks or snippets---as shown in [fenced-code-example]---are created by enclosing the code for
-display in triple backticks (```), this is commonly referred to as fenced code blocks. Two
+display in triple back-ticks (```), this is commonly referred to as fenced code blocks. Two
 requirements exist for creating the code blocks:
 
-1. the backticks must be proceeded by an empty line and
-1. the backticks must start at the beginning of a line.
+1. the back-ticks must be proceeded by an empty line and
+1. the back-ticks must start at the beginning of a line.
 
-Settings for code blocks are defined by key-value pairings that follow the backticks;
+Settings for code blocks are defined by key-value pairings that follow the back-ticks;
 [code-settings] lists the available settings for code blocks.
 
 !devel! example caption=Basic fenced code block. id=fenced-code-example
@@ -86,15 +86,18 @@ as shown in [quote-nested-example].
 !devel-end!
 
 ### Headings id=headings
-All headings from level 1 to 6 must be specified using the hash (`#`) character, where the
-number of hashes indicate the heading level. The hash(es) must be followed by a single space.
 
-Settings may be applied after the heading title text, the available settings include the
-following.
+Headings can range from level one to six and are specified using the hash (`#`) character, where the
+number of hashes indicate the heading level (see [heading-basic-example]). The following is required
+to define a heading:
 
-!devel settings module=moosedown.extensions.core object=HeadingHash
+1. the hash(es) must be followed by a single space,
+1. the hash(es) must +not+ be proceeded by a space.
 
-!devel! example caption=Basic use of all six heading levels.
+Settings, as listed in [heading-settings], are be applied after the heading title text (see [headings-settings-example]) and as shown in [headings-multiline] headings
+may also span multiple lines.
+
+!devel! example caption=Basic use of all six heading levels. id=heading-basic-example
 # Level One
 ## Level Two
 ### Level Three
@@ -103,10 +106,24 @@ following.
 ###### Level Six
 !devel-end!
 
-
-!devel! example caption=Use of settings within heading.
+!devel! example caption=Use of settings within heading. id=heading-settings
 ## Level Two style=font-size:15pt id=level-two
 !devel-end!
+
+!devel! example caption=Use of settings within heading. id=heading-multiline
+## A Heading May Span
+Multiple Lines (this is useful if they are really long)
+   style=font-size:15pt
+   id=level-two
+!devel-end!
+
+
+!devel settings module=moosedown.extensions.core
+                object=HeadingHash
+                caption=Available settings for headings.
+                id=heading-settings
+
+
 
 ### Unordered List id=unordered
 Unordered list items in MooseDown +must+ begin with a dash (`-`).
@@ -184,7 +201,6 @@ are defined using traditional markdown syntax.
 !devel! example caption=Markdown shortcut definition.
 [foo]: bar
 !devel-end!
-
 
 
 ## Inline Content id=core-inline
