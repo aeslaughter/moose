@@ -40,7 +40,8 @@ class Reader(ConfigObject):
 
     def parse(self, root, content):
 
-        #TODO: root should be token.Token
+        if not isinstance(root, tokens.Token):
+            raise TypeError("Wrong type...") #TODO
 
         self.reinit()
 

@@ -27,16 +27,19 @@ class Token(base.NodeBase):
         super(Token, self).__init__(parent, name, **kwargs)
         self.name = self.__class__.__name__
 
+#    def __repr__(self):
+#        return base.NodeBase.__repr__(self) + ' info=' + str(self.__info)
+
     @property
     def info(self):
         return self.__info
 
     @info.setter
     def info(self, value):
-        self.___info = value
-        for child in self.children:
-            child.info = value
-
+        if value is not None:
+            self.__info = value
+            #for child in self.children:
+            #    child.info = value
 
 #TODO: create class Root that requies page
 

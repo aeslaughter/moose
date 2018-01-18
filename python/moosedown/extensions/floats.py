@@ -38,12 +38,6 @@ class Caption(tokens.Token):
                                        link=u'#{}'.format(self.key),
                                        content=u'{} {}'.format(self.prefix.title(), self.number))
 
-
-        #print 'Caption', self.attributes
-        #if 'id' in self.attributes and self.attributes['id']:
-        #    tokens.Shortcut(self.root, key=self.attributes['id'], content=u'This')
-            #print self.root
-
 class Content(tokens.Token):
     pass
     #PROPERTIES = [Property("class", ptype=unicode, required=True)]

@@ -92,4 +92,5 @@ class Translator(ConfigObject):
         #self.reinit()
         #self.__renderer.node = self.__node
         self.__reader.parse(ast, content)
+    #    print ast
         return ast, self.__renderer.render(ast)

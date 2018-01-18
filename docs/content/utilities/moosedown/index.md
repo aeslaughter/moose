@@ -32,14 +32,6 @@ used and promotes uniformity among the MooseDown files.
 | [include](include.md) | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
 
 
-
-
-
-
-
-
-
-
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 
 [HTML]: https://en.wikipedia.org/wiki/HTML

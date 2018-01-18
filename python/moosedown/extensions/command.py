@@ -16,12 +16,9 @@ def make_extension():
 class CommandExtension(base.Extension):
 
     def extend(self, reader, renderer):
-        #TODO: require core to be loaded
-
-
-        reader.addBlock(FileCommand(), location='<moosedown.extensions.core.Code')
-        reader.addBlock(InlineCommand(), location='>moosedown.extensions.command.FileCommand')
-        reader.addBlock(BlockCommand(), location='>moosedown.extensions.command.InlineCommand')
+        reader.addBlock(FileCommand(), location='_begin')
+        reader.addBlock(InlineCommand(), location='_begin')
+        reader.addBlock(BlockCommand(), location='_begin')
 
 
 #        self.addCommand(Include())
@@ -94,7 +91,7 @@ class InlineCommand(CommandBase):
 
 class BlockCommand(CommandBase):
     RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)$(?P<content>.*?)(^!\1-end!)(?=\Z|\n{2,})',
-                    flags=re.UNICODE|re.MULTILINE)
+                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class FileCommand(CommandBase):
     RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+) (?P<filename>\S*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)(?=\Z|\n{2,})',

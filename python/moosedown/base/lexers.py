@@ -35,6 +35,9 @@ class LexerInformation(object): #TODO: TokenMetaData ???
     def __contains__(self, value):
         return value in self.__match.groupdict()
 
+    def __str__(self):
+        return 'line:{} match:{} pattern:{}'.format(self.line, self.__match, self.pattern)
+
 
 class Lexer(object):
     def __init__(self):
@@ -52,36 +55,25 @@ class Lexer(object):
 
         n = len(text)
         pos = 0
-        mo, pattern = self._search(text, grammer, pos)
+        while (pos < n):
+            for pattern in grammer:
+                match = pattern.regex.match(text, pos)
+                if match:
+                    info = LexerInformation(match, pattern, line)
+                    obj = self.buildObject(parent, info)
+                    if obj:
+                        obj.info = info #TODO: set ptype on base Token, change to info
+                        line += match.group(0).count('\n')
+                        pos = match.end()
+                        break
+                    else:
+                        continue
 
-        while (mo is not None) and (pos < n): # pos < n is needed to avoid empty string
-
-            #print pattern
-
-            info = LexerInformation(mo, pattern, line)
-            try:
-                obj = self.buildObject(parent, info)
-            except Exception as e:
-                obj = tree.tokens.Exception(parent, info=info, traceback=traceback.format_exc())
-
-            line += mo.group(0).count('\n')
-            pos = mo.end()
-            mo, pattern = self._search(text, grammer, pos)
-
-
-        if pos < n: #TODO: better exception
-            print repr(text[pos:])
-
-    def _search(self, text, grammer, position=0):
-        for pattern in grammer:
-            m = pattern.regex.match(text, position)
-            if m:
-                return m, pattern
-        return None, None
+        #if pos < n: #TODO: better exception
+        #    print repr(text[pos:])
 
     def buildObject(self, parent, info):
         obj = info.pattern.function(info, parent)
-        obj.info = info #TODO: set ptype on base Token, change to info
         return obj
 
 class RecursiveLexer(Lexer):

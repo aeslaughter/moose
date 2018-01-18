@@ -10,6 +10,7 @@ import anytree
 
 import moosedown
 from moosedown import common
+from moosedown.common import exceptions
 from moosedown.tree import html, latex, base, tokens, page
 from extensions import ExtensionObject
 from ConfigObject import ConfigObject
@@ -77,15 +78,14 @@ class Renderer(ConfigObject):
     def process(self, token, parent):
         try:
             func = self.function(token)
+            #print token
             el = func(token, parent) if func else None
         except Exception as e:
-            print repr(token)
-            raise e
-            src = token.info.node.source if token.info.node else 'fixme' #TODO
+            src = token.root.page.source if token.root.page else 'fixme' #TODO
             msg = "\nAn exception occured while rendering, the exception was raised when\n" \
                   "executing the {} function while processing the following content.\n" \
                       "{}:{}".format(func, src, token.info.line)
-            LOG.exception(moosedown.common.box(token.info.match.group(0), title=msg, line=token.info.line))
+            LOG.exception(moosedown.common.box(token.info[0], title=msg, line=token.info.line))
 #            else:
 #                msg = "\nAn exception occured on line {} while rendering, the exception was\n" \
 #                      "raised when executing the {} object while processing the following content.\n"
@@ -276,7 +276,6 @@ class LatexRenderer(Renderer):
 
         for package in self._packages:
             latex.Command(root, 'usepackage', string=package, end='\n')
-
 
         doc = latex.Environment(root, 'document')
         self.process(ast, doc)

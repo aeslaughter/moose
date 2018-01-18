@@ -49,6 +49,7 @@ class Grammer(object):
     def patterns(self):
         return self.__patterns
 
+
     def __getitem__(self, key):
         """
         Return the pattern for a given key.

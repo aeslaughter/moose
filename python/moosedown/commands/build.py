@@ -26,8 +26,6 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.devel',
                       'moosedown.extensions.alert']
 
-
-
 def command_line_options(subparser):
     build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
 
@@ -147,12 +145,10 @@ def main():
 
     """
     from moosedown.tree import page
-    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/core.md'
+    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
     node = page.MarkdownNode(source=filename)
     node.read()
     ast, html = translator.convert(node)
-    #with open('test.html', 'w') as fid:
-#        fid.write(html.write())
     print ast
     #print html
     """
