@@ -11,6 +11,7 @@ import anytree
 import moosedown
 from moosedown import base
 from moosedown import common
+from moosedown.common import exceptions
 from moosedown.tree import tokens, html, latex
 
 LOG = logging.getLogger(__name__)
@@ -41,7 +42,6 @@ class CoreExtension(base.Extension):
         reader.addBlock(UnorderedList())
         reader.addBlock(Shortcut())
         reader.addBlock(Paragraph())
-        #reader.addBlock(Break())
 
         # Inline
         reader.addInline(Backtick())
@@ -277,9 +277,10 @@ class ShortcutLink(MarkdownComponent):
     """
     Markdown shortcut use.
     """
-    RE = re.compile(r'\[(?P<key>.*?)\]')
+    RE = re.compile(r'(?: |^)\[(?P<key>.*?)\](?= |$)', flags=re.UNICODE|re.MULTILINE)
     def createToken(self, match, parent):
-        return tokens.ShortcutLink(parent, key=match['key'])
+        if parent.children and isinstance(parent.children[-1], tokens.Space):
+            return tokens.ShortcutLink(parent, key=match['key'])
 
 class String(MarkdownComponent):
     """
@@ -445,7 +446,6 @@ class RenderShortcutLink(CoreRenderComponentBase):
         return arg1
 
     def getShortcut(self, token):
-
         if token in self.__cache:
             return self.__cache[token]
 
@@ -656,8 +656,8 @@ class RenderException(CoreRenderComponentBase):
               u"following content.".format(token.info.pattern.name)
         html.String(p, content=msg)
         html.Tag(p, 'br', close=False)
-        fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.info.node.source))
-        html.String(fname, content=u"{}:{}".format(token.info.node.source, token.info.line))
+        fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.root.page.source))
+        html.String(fname, content=u"{}:{}".format(token.root.page.source, token.info.line))
 
         pre = html.Tag(content, 'pre')
         code = html.Tag(pre, 'code', class_="language-markdown")

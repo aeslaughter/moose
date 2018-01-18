@@ -91,7 +91,8 @@ class Example(command.MarkdownCommandComponent):
         tokens.Code(tab, code=data, language=u'markdown', escape=True)
 
         # HTML
-        ast = self.getHTMLTranslator().reader.parse(data)
+        ast = tokens.Token(None)
+        self.getHTMLTranslator().reader.parse(ast, data)
 
         root = html.Tag(None, '')
         self.getHTMLTranslator().renderer.process(ast, root)
