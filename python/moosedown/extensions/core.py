@@ -279,8 +279,7 @@ class ShortcutLink(MarkdownComponent):
     """
     RE = re.compile(r'(?: |^)\[(?P<key>.*?)\](?= |$)', flags=re.UNICODE|re.MULTILINE)
     def createToken(self, match, parent):
-        if parent.children and isinstance(parent.children[-1], tokens.Space):
-            return tokens.ShortcutLink(parent, key=match['key'])
+        return tokens.ShortcutLink(parent, key=match['key'])
 
 class String(MarkdownComponent):
     """
