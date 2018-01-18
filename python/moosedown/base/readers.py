@@ -13,15 +13,10 @@ from ConfigObject import ConfigObject
 LOG = logging.getLogger(__name__)
 
 class Reader(ConfigObject):
-
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         self.__lexer = lexer
         self.__components = []
-        #self.__node = None
-        #self.__old_node = None
-        #ExtensionObject.__init__(self, extensions, **kwargs)
-
         self.translator = None
 
     def reinit(self):
@@ -43,27 +38,24 @@ class Reader(ConfigObject):
         return self.parse(text)
     """
 
-    def parse(self, node, root=None): #TODO: node->page
+    def parse(self, root, content):
+
+        #TODO: root should be token.Token
+
         self.reinit()
 
-        ast = root if root else tokens.Token(None)
+        #ast = root if root else tokens.Token(None)
         #self.__old_node = self.__node
 
-
-        if isinstance(node, unicode):
-            node = page.PageNodeBase(content=node)
-
+        node = page.PageNodeBase(content=content) if isinstance(content, unicode) else content
         if not isinstance(node, page.PageNodeBase):
-            raise TypeError("The supplied content must be a unicode or PageNodeBase object.")
+            raise TypeError("The supplied content must be a unicode or PageNodeBase object, but {} was provided.".format(type(node)))
 
-        self.__lexer.tokenize(ast, self.__lexer.grammer(), node.content, node)
+        self.__lexer.tokenize(root, self.__lexer.grammer(), node.content)
 
-        for token in anytree.PreOrderIter(ast):
+        for token in anytree.PreOrderIter(root):
             if isinstance(token, tokens.Exception):
                 self._exceptionHandler(token)
-
-        #self.__node = self.__old_node
-        return ast
 
 
     def add(self, group, name, component, location='_end'):
@@ -95,11 +87,11 @@ class Reader(ConfigObject):
     def _exceptionHandler(token):
         n = 100
         title = []
-        if isinstance(token.info.node, page.LocationNodeBase):
+        if isinstance(token.root.page, page.LocationNodeBase):
             title += textwrap.wrap(u"An exception occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
                                    u"following content.".format(token.info.pattern.name), n)
-            title += [u"{}:{}".format(token.info.node.source, token.info.line)]
+            title += [u"{}:{}".format(token.root.page.source, token.info.line)]
         else:
             title += textwrap.wrap(u"An exception occurred on line {} while tokenizing, the " \
                                    u"exception was raised when executing the {} object while " \

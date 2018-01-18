@@ -198,7 +198,7 @@ class List(MarkdownComponent):
                continue
            root = tokens.ListItem(token)
            item = regex.sub(r'\1', item)
-           self.reader.parse(item, root=root)
+           self.reader.parse(root, item)
 
        return token
 
@@ -355,7 +355,7 @@ class Format(MarkdownComponent):
             if content is not None:
                 token = eval('tokens.{}(parent, **self.attributes)'.format(key.title()))
                 grammer = self.reader.lexer.grammer('inline')
-                self.reader.lexer.tokenize(token, grammer, content, match.node, match.line)#, line=self.line)
+                self.reader.lexer.tokenize(token, grammer, content, match.line)
                 return token
 
 

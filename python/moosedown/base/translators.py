@@ -3,7 +3,8 @@ import importlib
 import logging
 import inspect
 
-from moosedown.tree import page
+from moosedown.tree import tokens, page #TODO: change to pages
+from lexers import LexerInformation #TODO: make this MetaData or something better and move from lexer
 from readers import Reader
 from renderers import Renderer
 from extensions import Extension
@@ -55,22 +56,21 @@ class Translator(ConfigObject):
             ext.init(self)
             ext.extend(reader, renderer)
 
-        self.__node = None
+        #self.__node = None
 
     @property
     def extensions(self):
         return self.__extensions
 
-    @property
-    def node(self):
-        return self.__node
+    #@property
+    #def node(self):
+    #  return self.__node
 
     def reinit(self):
         self.reader.reinit()
         self.renderer.reinit()
         for ext in self.__extensions:
             ext.reinit()
-
 
     @property
     def reader(self):
@@ -86,14 +86,10 @@ class Translator(ConfigObject):
         """
         return self.__renderer
 
-    def ast(self, content):
-        #ast = self.__reader.parse(content)
-        #print ast
-        return self.__reader.parse(content)
-
     def convert(self, content):
-        self.__node = content if isinstance(content, page.PageNodeBase) else None
-        self.reinit()
+        node = content if isinstance(content, page.PageNodeBase) else None
+        ast = tokens.Token(None, page=node) # root node
+        #self.reinit()
         #self.__renderer.node = self.__node
-        ast = self.ast(content)
+        self.__reader.parse(ast, content)
         return ast, self.__renderer.render(ast)

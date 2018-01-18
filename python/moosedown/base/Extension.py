@@ -10,7 +10,7 @@ class Extension(ConfigObject):
 
     def __init__(self, **kwargs):
         ConfigObject.__init__(self, **kwargs)
-        self.__tranlator = None
+    #    self.__tranlator = None
 
     #def __copy__(self):
     #    new = type(self)(**self.getConfig())
