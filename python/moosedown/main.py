@@ -1,25 +1,36 @@
+"""
+Main program for running MooseDocs. The moosedocs.py script that exists within the
+documentation directory for applications call this in similar fashion to
+MOOSE run_tests.
+"""
 import argparse
 import logging
 
 from commands import build
-#import common
-#import extensions
 
-
+#TODO: Create colored and counted logging messages.
 logging.basicConfig()
 
 def command_line_options():
-    parser = argparse.ArgumentParser(description="Utility for build MOOSE documentation.")
+    """
+    The main command line parser, this creates the main parser and calls the
+    calls the command_line_options method for each command.
+    """
+    desc = "MooseDocs: A utility to build MOOSE documentation from a single source."
+    parser = argparse.ArgumentParser(description=desc)
     subparser = parser.add_subparsers(help='Available commands.')
+
     build.command_line_options(subparser)
 
     return parser.parse_args()
 
 def main():
-
+    """
+    Parse the command line options and run the correct command.
+    """
     options = command_line_options()
-
-    build.main()
+    if options.build:
+        build.main(options)
 
 
 if __name__ == '__main__':

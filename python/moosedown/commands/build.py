@@ -132,7 +132,7 @@ def load_config(filename):
     return translator, content
 
 
-def main():
+def main(options):
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
     logging.basicConfig(level=logging.DEBUG)
