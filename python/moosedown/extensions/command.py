@@ -90,7 +90,7 @@ class InlineCommand(CommandBase):
                     flags=re.UNICODE|re.MULTILINE)
 
 class BlockCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)$(?P<content>.*?)(^!\1-end!)(?=\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)\n+(?P<content>.*?)(^!\1-end!)(?=\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class FileCommand(CommandBase):

@@ -143,25 +143,26 @@ def main():
 
     translator, root = load_config(config_file)
 
-    """
-    from moosedown.tree import page
-    filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
-    node = page.MarkdownNode(source=filename)
-    node.read()
-    ast, html = translator.convert(node)
-    print ast
-    #print html
-    """
 
-    server = livereload.Server()
-    for node in anytree.PreOrderIter(root):
-        node.base = destination
-        node.translator = translator
+    if False:
+        from moosedown.tree import page
+        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/core.md'
+        node = page.MarkdownNode(source=filename)
+        node.read()
+        ast, html = translator.convert(node)
+        #print ast
+        #print html
 
-        if node.source and os.path.isfile(node.source):
-            server.watch(node.source, node.build)
+    else:
+        server = livereload.Server()
+        for node in anytree.PreOrderIter(root):
+            node.base = destination
+            node.translator = translator
 
-        # Everything needs translator before it can build
-        node.build()
+            if node.source and os.path.isfile(node.source):
+                server.watch(node.source, node.build)
 
-    server.serve(root=destination, port=8000)
+            # Everything needs translator before it can build
+            node.build()
+
+        server.serve(root=destination, port=8000)

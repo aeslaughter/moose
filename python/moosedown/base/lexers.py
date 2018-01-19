@@ -56,12 +56,17 @@ class Lexer(object):
         n = len(text)
         pos = 0
         while (pos < n):
+            match = None
             for pattern in grammer:
+                #print repr(text[pos:])
                 match = pattern.regex.match(text, pos)
                 if match:
                     info = LexerInformation(match, pattern, line)
-                    obj = self.buildObject(parent, info)
-                    if obj:
+                    try:
+                        obj = self.buildObject(parent, info)
+                    except Exception as e:
+                        obj = tree.tokens.Exception(parent, info=info, traceback=traceback.format_exc())
+                    if obj is not None:
                         obj.info = info #TODO: set ptype on base Token, change to info
                         line += match.group(0).count('\n')
                         pos = match.end()
@@ -69,6 +74,12 @@ class Lexer(object):
                     else:
                         continue
 
+            if match is None:
+                #print pattern
+                #print '---------------------'
+                #print repr(text[pos:])
+                #print 'Stoped at line ', info.line
+                break
         #if pos < n: #TODO: better exception
         #    print repr(text[pos:])
 
