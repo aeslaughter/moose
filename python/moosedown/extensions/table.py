@@ -77,7 +77,7 @@ class TableExtension(base.Extension): #TODO:  CommandMarkdownExtension
 
 
 class TableComponent(core.MarkdownComponent):
-    RE = re.compile(r'^(?P<table>\|.*?^[^\|])', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    RE = re.compile(r'(?:\A|\n{2,})^(?P<table>\|.*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     FORMAT_RE = re.compile(r'^(?P<format>\|[ \|:\-]+\|)$', flags=re.MULTILINE|re.UNICODE)
 
     def createToken(self, match, parent):
@@ -86,7 +86,7 @@ class TableComponent(core.MarkdownComponent):
         grammer = self.reader.lexer.grammer('inline')
 
 
-        content = match.group('table')
+        content = match['table']
         table = Table(parent)
 
 
@@ -119,7 +119,7 @@ class TableComponent(core.MarkdownComponent):
             row = TableRow(TableHead(table))
             for i, h in enumerate(head):
                 item = TableHeaderItem(row, format=form[i])
-                self.reader.lexer.tokenize(h, item, grammer, match.line) #TODO: add line number
+                self.reader.lexer.tokenize(item, grammer, h, match.line) #TODO: add line number
 
 
         for line in body.splitlines():
@@ -127,7 +127,7 @@ class TableComponent(core.MarkdownComponent):
                 row = TableRow(TableBody(table))
                 for i, content in enumerate([item.strip() for item in line.split('|') if item]):
                     item = TableItem(row, format=form[i])
-                    self.reader.lexer.tokenize(content, item, grammer, match.line) #TODO: add line number
+                    self.reader.lexer.tokenize(item, grammer, content, match.line) #TODO: add line number
 
 
 

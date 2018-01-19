@@ -44,7 +44,7 @@ class CoreExtension(base.Extension):
         reader.addBlock(Paragraph())
 
         # Inline
-        reader.addInline(Backtick())
+        reader.addInline(Monospace())
         reader.addInline(Format())
         reader.addInline(Link())
         reader.addInline(ShortcutLink())
@@ -58,7 +58,7 @@ class CoreExtension(base.Extension):
         renderer.add(tokens.Heading, RenderHeading())
         renderer.add(tokens.Code, RenderCode())
         renderer.add(tokens.ShortcutLink, RenderShortcutLink())
-        renderer.add(tokens.InlineCode, RenderBacktick())
+        renderer.add(tokens.Monospace, RenderMonospace())
         renderer.add(tokens.Break, RenderBreak())
         renderer.add(tokens.Exception, RenderException())
 
@@ -337,26 +337,26 @@ class Word(String):
         return tokens.Word(parent, content=match[0])
 
 
-class Backtick(MarkdownComponent):
+class Monospace(MarkdownComponent):
     """
     Inline code
     """
-    RE = re.compile(r"`(?P<code>.+?)`", flags=re.MULTILINE|re.DOTALL)
+    RE = re.compile(r"`(?P<code>.+?)`", flags=re.MULTILINE|re.DOTALL|re.DOTALL)
     def createToken(self, match, parent):
-        return tokens.InlineCode(parent, code=match['code'])
+        return tokens.Monospace(parent, code=match['code'])
 
 
 class Format(MarkdownComponent):
     """
-    Inline text settings (e.g., underline, emphasis).
+    Inline text settings (e.g., monospaced, underline, emphasis).
     """
-    RE = re.compile(r'_{(?P<subscript>.*)}|'
-                    r'\^{(?P<superscript>.*)}|'
+    RE = re.compile(r'\_(?P<subscript>\S.*\S)\_|'
+                    r'\^(?P<superscript>\S.*\S)\^|'
                     r'\=(?P<underline>\S.*?\S)\=|'
                     r'\*(?P<emphasis>\S.*?\S)\*|'
                     r'\+(?P<strong>\S.*?\S)\+|'
                     r'~(?P<strikethrough>\S.*?\S)~',
-                    flags=re.MULTILINE|re.DOTALL)
+                    flags=re.MULTILINE|re.DOTALL|re.DOTALL)
 
     def createToken(self, match, parent):
         for key, content in match.iteritems():
@@ -465,7 +465,7 @@ class RenderShortcutLink(CoreRenderComponentBase):
         raise KeyError(msg.format(token.key))
 
 
-class RenderBacktick(CoreRenderComponentBase):
+class RenderMonospace(CoreRenderComponentBase):
     """InlineCode"""
 
     def createHTML(self, token, parent):

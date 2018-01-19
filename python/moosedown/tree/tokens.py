@@ -183,7 +183,7 @@ class Shortcut(Token):
 class ShortcutLink(Token):
     PROPERTIES = [base.Property('key', ptype=unicode, required=True)]
 
-class InlineCode(Token):
+class Monospace(Token):
     PROPERTIES = [base.Property('code', ptype=unicode, required=True)]
 
 class Strong(Token):
