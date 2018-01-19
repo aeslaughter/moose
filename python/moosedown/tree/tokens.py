@@ -112,7 +112,7 @@ class Heading(Token):
 
         id_ = self.get('id', None)
         if id_:
-            Shortcut(self.root, key=id_, link=u'#{}'.format(id_), tokens=self.children)
+            Shortcut(self.root, key=id_, link=u'#{}'.format(id_), token=self)
 
 
 class Paragraph(Token):
@@ -171,13 +171,13 @@ class Shortcut(Token):
     PROPERTIES = [base.Property('key', required=True, ptype=unicode),
                   base.Property('link', required=True, ptype=unicode),
                   base.Property('content', required=False, ptype=unicode),
-                  base.Property('tokens', required=False, ptype=tuple)]
+                  base.Property('token', required=False, ptype=Token)]
 
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
 
-        if self.content and self.tokens:
-            raise ValueError("Both the 'content' and 'tokens' properties may not be set.")
+        if self.content and self.token:
+            raise ValueError("Both the 'content' and 'token' properties may not be set.")
 
 
 class ShortcutLink(Token):

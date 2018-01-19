@@ -152,11 +152,16 @@ class RenderModal(base.RenderComponent):
 
     def createMaterialize(self, token, parent):
         tag = uuid.uuid4()
-        btn = html.Tag(parent, 'a', class_="btn modal-trigger right", href="#{}".format(tag) )
-        html.String(btn, content=token.title)
+
+        div = html.Tag(parent, 'div', class_='moose-modal-button')
+        data = {'data-tooltip':token.title, 'data-position':'top', 'data-delay':'50'}
+        btn = html.Tag(div, 'a',
+                       class_="tooltipped btn-floating btn-large modal-trigger",
+                       href="#{}".format(tag), **data)
+       # html.String(btn, content=token.title)
 
         if token.icon:
-            icon = html.Tag(btn, 'i', class_="material-icons right")
+            icon = html.Tag(btn, 'i', class_="material-icons")
             html.String(icon, content=token.icon)
 
         modal = html.Tag(parent.parent, 'div', class_="modal", id_=tag)
