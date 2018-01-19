@@ -68,10 +68,11 @@ div.moose-code-compare pre
   font-size: 85%;
 }
 
-.admonition-message pre{
-  background: #f5f2f0;
+div.moose-modal-button {
+    position: absolute;
+    top: -28px;
+    right: -28px;
 }
-
 html, body {
   height: 100%;
 }

@@ -437,8 +437,8 @@ class RenderShortcutLink(CoreRenderComponentBase):
         node = self.getShortcut(token)
         if node.content:
             html.String(a, content=node.content)
-        elif node.tokens:
-            for n in node.tokens:
+        elif node.token:
+            for n in node.token.children:
                 self.translator.renderer.process(n, a)
         else:
             html.String(a, content=node.key)
@@ -453,10 +453,13 @@ class RenderShortcutLink(CoreRenderComponentBase):
         return arg1
 
     def getShortcut(self, token):
-        if token in self.__cache:
-            return self.__cache[token]
+        if token.key in self.__cache:
+           # print 'CACHE:', token.key
+            return self.__cache[token.key]
 
         for node in anytree.PreOrderIter(token.root, maxlevel=None):
+           # if isinstance(node, tokens.Shortcut):
+            #    print repr(node)
             if isinstance(node, tokens.Shortcut) and node.key == token.key:
                 self.__cache[token.key] = node
                 return node

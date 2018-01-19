@@ -9,6 +9,7 @@ The core extension is the portion of the MooseDocs language that is designed to 
 syntax. MooseDown is far more strict than traditional [markdown] implementations.
 Therefore, the following sections should be read in detail to understand the supported syntax,
 especially if you are familiar with more general markdown formats.
+
 Syntax is separated into two groups: [block](#core-block) and [inline](#core-inline). Block
 content is made of items that make, as the name suggests, blocks of text. Blocks of
 text include items such as code snippets, quotations, and paragraphs themselves. On the other hand,
@@ -16,8 +17,8 @@ inline items are those that are applicable to small portions of text (e.g., word
 italics are two examples of inline items.
 
 !alert! note title=MooseDown is a restricted version of [markdown].
-To unify the markdown content and to create a fast parser a limited set of
-markdown is being used to define the MooseDocs language. The following sections
+To unify content and to create a fast parser a limited set of
+markdown is being used to define the MooseDocs syntax. The following sections
 detail the syntax that comprise the syntax.
 !alert-end!
 
@@ -219,7 +220,7 @@ will be the number used for the start of the list, see [ordered-example].
 
 !devel-end!
 
-### Shortcuts
+### Shortcuts id=shortcuts
 
 It is possible to define shortcuts for use within your document via a [shortcut link](#shortcut-link). The shortcuts
 are defined using traditional markdown syntax as in [shortcut-link]. However, these are block
@@ -275,9 +276,10 @@ The formatting can be arbitrarily nested and span multiple lines within the same
 as shown in [format-example], complicated and compound formatting of text is possible.
 
 !devel! example id=format-example caption=Example inline text formatting in MooseDocs
-Yo, dawg I heard you like formatting, so I created =underline formatted text that contains ~text
-with ~stikethrough that contains +bold formatting with *emphasis that has some ^superscript text
-with a _subscript_^*+~=, I hope you like it.
+Yo, dawg I heard you like formatting, so I created =underline
+formatted text that contains ~text with ~stikethrough that
+contains +bold formatting with *emphasis that has some ^superscript
+text with a _subscript_^*+~=, I hope you like it.
 !devel-end!
 
 ### Links id=links
@@ -290,11 +292,28 @@ syntax. The available settings for links is include in [link-settings].
 
 ### Shortcut links id=shortcut-link
 
+Links to shortcuts use the typical [markdown] syntax of a key enclosed in square brackets (`[key]`),
+where the key references a shortcut, which are defined as detailed in the [shortcuts] section, refer
+to [shortcut-example] for a demonstration of shortcut and shortcut link use.
+
+In addition to linking to [shortcuts] created directly, the same syntax is used to reference
+headings that have an "id" setting applied, see [heading-link-example]. When used in this fashion
+the heading text directly replaces the shortcut link and a link to the heading is created.
+
+!devel! example id=heading-link-example caption=Example showing use of shortcut links to reference a heading.
+Using shortcut link syntax, it is possible to link to [heading].
+
+# A Heading with Link id=heading
+!devel-end!
 
 ### Punctuation
 
-endash, emdash
+When rendering HTML, MooseDocs converts the following punctuation to the correct symbols, the
+table below lists the conversions that are performed.
 
-
+| MooseDocs | HTML |
+| - | - |
+| `--` | `&ndash` |
+| `---` | `&mdash` |
 
 [markdown]: https://en.wikipedia.org/wiki/Markdown

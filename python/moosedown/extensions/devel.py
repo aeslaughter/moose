@@ -104,7 +104,7 @@ class Example(command.MarkdownCommandComponent):
 
             # PREVIEW
             if self.settings['preview']:
-                modal = floats.Modal(caption, title=u"HTML Preview", icon=u"visibility")
+                modal = floats.Modal(caption, title=u"Rendered HTML Preview", icon=u"visibility")
                 #content = floats.Content(modal, class_="modal-content")
                 ast.parent = modal
                 preview = ast
@@ -172,6 +172,7 @@ class ComponentSettings(command.MarkdownCommandComponent):
         #self.add(Example, RenderExample())
         #self.add(Table, RenderTable())
 
+"""
 class RenderExample(base.RenderComponent):
     def __init__(self, *args, **kwargs):
         base.RenderComponent.__init__(self, *args, **kwargs)
@@ -216,17 +217,18 @@ class RenderExample(base.RenderComponent):
             html.String(code, content=value, escape=True)
 
         # Preview
-        if token.preview:
+        if False:#token.preview:
             tag = uuid.uuid4()
-            btn = html.Tag(caption, 'a', class_="btn modal-trigger right", href="#{}".format(tag) )
-            icon = html.Tag(btn, 'i', class_="material-icons right")
-            html.String(btn, content=u'HTML Preview')
+            div = html.Tag(card, 'div', class_="moose-example-preview-button")
+            btn = html.Tag(div, 'a', class_="btn-floating modal-trigger", href="#{}".format(tag) )
+            icon = html.Tag(btn, 'i', class_="material-icons")
+            #html.String(btn, content=u'HTML Preview')
             html.String(icon, content=u"visibility")
 
             modal = html.Tag(parent, 'div', class_="modal", id_=tag)
             modal_content = html.Tag(modal, 'div', class_="modal-content")
-            #heading = html.Tag(modal_content, 'h4')
-            #html.Tag(heading)
+            heading = html.Tag(modal_content, 'h4')
+            html.Tag(heading)
 
             preview = self.renderer.render(token.preview, reinit=False)
             preview.find('body').parent = modal_content
@@ -234,3 +236,4 @@ class RenderExample(base.RenderComponent):
             footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
             close = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
             html.String(close, content=u'Done')
+"""
