@@ -131,25 +131,24 @@ Unordered list items in MooseDown +must+ begin with a dash (`-`), as shown below
 [unordered-basic-example]. As with any block item, a list must be proceeded and followed by an empty
 line. However, lists have additional behavior that allow for nested content to be included.
 
-- An empty line will not stop the list if the following line begins with another list marker
+1. An empty line will not stop the list if the following line begins with another list marker
    (i.e., `-`), in this case the list continues.
 
-- An empty line followed by a non-list marker---everything except a hyphen---will stop the
-   list.
+1. An empty line followed by a non-list marker---everything except a hyphen---will stop the
+   list. Otherwise, a list will stop if +two+ empty lines are encountered, otherwise it will
+   continue to add items to the current list.
 
-A list will continue to add items until a line (at the current indent level for nested items)
-starts with any character except the dash (`-`).
+List items may contain lists, code, or any other markdown content and the item content may
+span many lines. The continuation is specified by indenting the content to be included within the
+item by two spaces, as shown in [unordered-nested-example].
 
 !devel! example caption=Unordered list basic syntax. id=unordered-basic-example
 - Item 1
 - Item 2
 !devel-end!
 
-List items may contain lists, code, or any other markdown content and the item content may
-span many lines. The continuation is specified by indenting the content to be included within the
-item by two spaces.
 
-!devel! example caption=Lists can contain other markdown content.
+!devel! example caption=Lists can contain other markdown content. id=unordered-nested-example
 - Item with code
   Content can be contained within a list, all valid MooseDown syntax can be used.
 
@@ -162,10 +161,13 @@ item by two spaces.
 
 
 As mentioned above, lists can contain lists, which can contain lists, etc.
-A sub-list is created by indenting the start of the list, again using a dash (`-`), by two spaces.
-The sub-list must also begin with a new line.
+A sub-list, which is a list in a list, is created by creating a list, but indenting
+with the list that should contain it. Since lists are block items, it must be begin and end
+with empty lines. And, since this is a list it also follows the aforementioned rules
+for list continuation. [unordered-sublist-example] demonstrates the syntax for creating
+nested lists.
 
-!devel! example caption=Nested unordered lists.
+!devel! example caption=Nested unordered lists. id=unordered-sublist-example
 - A
 - B
 
@@ -177,7 +179,15 @@ The sub-list must also begin with a new line.
 
   - B.3
 
-- C
+    - B.3.1
+
+      - B 3.1.1
+
+    - B.3.2
+
+  - B.4
+
+- D
 !devel-end!
 
 

@@ -221,7 +221,7 @@ class OrderedList(List):
    """
    Ordered lists.
    """
-   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}^[^-\s])',
+   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}^[^[0-9\s])',
                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
    ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
