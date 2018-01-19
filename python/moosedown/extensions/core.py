@@ -184,65 +184,33 @@ class List(MarkdownComponent):
    TOKEN = None
 
    def createToken(self, match, parent):
+
+        #print 'LIST:', repr(match[0])
+
         marker = match['marker']
         n = len(marker)
-        #marker = marker.strip()
-        #n = len(self.SPLIT)
         token = self.TOKEN(parent)
-
-
         strip_regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
 
         for item in self.ITEM_RE.finditer(match['items']):
+            #print 'ITEM:', repr(item)
             content = ' '*n + item.group('item')
             indent = re.search(r'^\S', content, flags=re.MULTILINE|re.UNICODE)
             if indent:
                 msg = "List item content must be indented by {} to match the list item " \
-                      "characters of '{}'."
+                      "characters of '{}', to end a list item you must use two empty lines."
                 raise Exception(msg.format(n, marker))
 
             content = strip_regex.sub(r'\1', content)
             self.reader.parse(tokens.ListItem(token), content)
 
-        """
-        items = self.SPLIT_RE.split(match['items'])
-        print repr(match['items']), repr(items)
-
-        c = match.line
-        for item in items:
-            content = []
-            for line in item.split('\n'):
-                if not line.startswith((marker, ' '*n)):
-                    msg = "List item content on line {} must be indented by {} to match the list item " \
-                          "characters of '{}'."
-                    raise Exception(msg.format(c, n, marker))
-                content.append(re.sub(self.SPLIT, '', line, count=1, flags=re.MULTILINE))
-                c += 1
-
-            self.reader.parse(tokens.ListItem(token), '\n'.join(content))
-
-
-#       print match['items'].split(r'\n- ')
-        """
-        """
-        items = self.SPLIT_RE.split(match['items'])
-        regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
-        for item in items:
-           # print 'ITEM---------------------------------------------'
-            if not item:
-                continue
-            root = tokens.ListItem(token)
-            item = regex.sub(r'\1', item)
-            self.reader.parse(root, item)
-            print ''
-        """
         return token
 
 class UnorderedList(List):
    """
    Unordered lists.
    """
-   RE = re.compile(r'(?:\A|\n{2,})(?P<items>(?P<marker>^- ).*?)(?=\n{3,}|\Z)',
+   RE = re.compile(r'(?:\A|\n{2,})(?P<items>(?P<marker>^- ).*?)(?=\n{3,}|\Z|\n{2}^[^-\s])',
                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
    #SPLIT = r'^- '
    #SPLIT_RE = re.compile(r'^- ', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
@@ -253,9 +221,9 @@ class OrderedList(List):
    """
    Ordered lists.
    """
-   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}\S)',
+   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}^[^-\s])',
                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-   ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9])', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+   ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
    #SPLIT_RE = re.compile(r'\n*^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
    TOKEN = tokens.OrderedList

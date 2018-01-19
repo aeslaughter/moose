@@ -123,16 +123,24 @@ Multiple Lines (this is useful if they are really long)
    id=level-two
 !devel-end!
 
-!devel settings module=moosedown.extensions.core
-                object=HeadingHash
-                caption=Available settings for headings.
-                id=heading-settings
+!devel settings module=moosedown.extensions.core object=HeadingHash caption=Available settings for headings. id=heading-settings
 
 ### Unordered List id=unordered
 
-Unordered list items in MooseDown +must+ begin with a dash (`-`).
+Unordered list items in MooseDown +must+ begin with a dash (`-`), as shown below in
+[unordered-basic-example]. As with any block item, a list must be proceeded and followed by an empty
+line. However, lists have additional behavior that allow for nested content to be included.
 
-!devel! example caption=Unordered list basic syntax.
+- An empty line will not stop the list if the following line begins with another list marker
+   (i.e., `-`), in this case the list continues.
+
+- An empty line followed by a non-list marker---everything except a hyphen---will stop the
+   list.
+
+A list will continue to add items until a line (at the current indent level for nested items)
+starts with any character except the dash (`-`).
+
+!devel! example caption=Unordered list basic syntax. id=unordered-basic-example
 - Item 1
 - Item 2
 !devel-end!
@@ -172,8 +180,6 @@ The sub-list must also begin with a new line.
 - C
 !devel-end!
 
-A list will continue to add items until a line (at the current indent level for nested items)
-starts with any character except the dash (`-`).
 
 To create a new list immediately following another list, the two lists must be separated by
 two empty lines.
