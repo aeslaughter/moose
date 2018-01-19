@@ -21,6 +21,23 @@ markdown is being used to define the MooseDocs language. The following sections
 detail the syntax that comprise the syntax.
 !alert-end!
 
+## Settings id=settings
+
+In general, most block level syntax and some inline syntax accepts key-value pair settings. Where
+the settings appear within the syntax varies and is detailed in the following sections. [settings-example] show how the settings are specified in [links].
+However, the settings are applied in a uniform manner. Foremost, the key and value are separated by
+an equal (`=`) sign +without spaces+ surrounding. The value may contain spaces, with the space after
+the equal sign being the exception.
+
+If syntax has settings the key-value pairs, the default value (if any), and a short description
+will be provided in a table. For example, [code-settings] lists the available settings
+for the fenced code blocks discussed in the [fenced-code] section.
+
+!devel! example id=settings-example caption=Example use of settings within [links], settings are key-value pairs that are specified with a separating equal sign (no spaces can exist on either side).
+[google](https://www.google.com style=color:teal;)
+!devel-end!
+
+
 ## Block Syntax id=core-block
 
 Block level content, as the name suggest, are blocks of text. In all cases, blocks must
@@ -29,15 +46,6 @@ restriction allows for special characters such as the hash (`#`) to be used at t
 of a line without conflicting with heading creation (see [headings]). Additionally, this
 allows content and settings to be spanned across multiple lines.
 
-In general, most block level syntax accepts key-value pair settings. Where the settings
-appear within the block level syntax varies and is detailed in each section below. However,
-the settings are applied in a uniform manner. Foremost, the key and value are separated by an
-equal (`=`) sign +without spaces+ surrounding. The value may contain spaces, with the space after
-the equal sign being the exception.
-
-If syntax has settings the key-value pairs, the default value (if any), and a short description
-will be provided in a table. For example, [code-settings] lists the available settings
-for the fenced code blocks discussed in the [fenced-code] section.
 
 ### Code id=fenced-code
 
@@ -160,12 +168,11 @@ item by two spaces, as shown in [unordered-nested-example].
 !devel-end!
 
 
-As mentioned above, lists can contain lists, which can contain lists, etc.
-A sub-list, which is a list in a list, is created by creating a list, but indenting
-with the list that should contain it. Since lists are block items, it must be begin and end
-with empty lines. And, since this is a list it also follows the aforementioned rules
-for list continuation. [unordered-sublist-example] demonstrates the syntax for creating
-nested lists.
+As mentioned above, lists can contain lists, which can contain lists, etc. A sub-list, which is a
+list in a list, is created by creating by indenting with at the level of the list item which is
+should contained. Since lists are block items, it must be begin and end with empty lines. And, since
+this is a list it also follows the aforementioned rules for list continuation.
+[unordered-sublist-example] demonstrates the syntax for creating nested lists.
 
 !devel! example caption=Nested unordered lists. id=unordered-sublist-example
 - A
@@ -191,19 +198,13 @@ nested lists.
 !devel-end!
 
 
-To create a new list immediately following another list, the two lists must be separated by
-two empty lines.
-
 ### Ordered List
 
-A numbered list that starts with a numbered followed by a period and a single space. They work
-in a similar fashion as [unordered lists](#unordered) and contain contain nested content. The
-number used for the first item in the list will be the number used for the start of the list.
+A numbered list work nearly identical to unordered lists (see [unordered]), but start with a
+numbered followed by a period and a single space. The number used for the first item in the list
+will be the number used for the start of the list, see [ordered-example].
 
-Again, to create another list following
-
-
-!devel! example caption=Ordered lists with a starting number.
+!devel! example id=ordered-example caption=Example of ordered lists with a starting number and a second with nested content.
 42. Foo
 1. Bar
 
@@ -221,9 +222,10 @@ Again, to create another list following
 ### Shortcuts
 
 It is possible to define shortcuts for use within your document via a [shortcut link](#shortcut-link). The shortcuts
-are defined using traditional markdown syntax.
+are defined using traditional markdown syntax as in [shortcut-link]. However, these are block
+items, so to maintain consistent behavior they must be surrounded by blank lines.
 
-!devel! example caption=Markdown shortcut definition.
+!devel! example id=shortcut-example caption=Markdown shortcut definition.
 You can create shortcuts to common items: [foo].
 
 [foo]: bar
@@ -233,19 +235,65 @@ You can create shortcuts to common items: [foo].
 
 ## Inline Content id=core-inline
 
+Inline content comprises of formatting, as the name suggest, that occurs within lines of text.
+Examples include inline code and text formatting such as +bold+.
+
+### Monospace (Inline Code) id=monospace
+
+`Monospaced` text is specified by encasing the text with single  back-ticks, the content within
+the back-ticks is reproduced verbatim, thus allowing for MooseDocs syntax to be enclosed within
+the back-ticks, as in [monospace-example].
+
+!devel! example id=monospace-example caption=Example of monospaced text.
+The following MooseDocs `[google]` will show verbatim because it
+is enclosed within back-ticks, without the back-ticks [google] creates a link.
+
+[google]: https://www.google.com
+!devel-end!
+
 ### Text Formatting
 
-em, strong, need to add strikethrough, underline, subscript, superscript, mark, inserted
+Inline text formatting differs in MooseDocs from traditional [markdown] in many ways, the reasons
+for the differences include avoiding reusing the same symbol (i.e., `*`) for multiple formats,
+making the syntax suitable to simple parsing of multiline regions, and to support a wide range of
+formats.
 
-This is ***something* with various
-levels** of html formatting *that
-spans* many lines. It all *should* work
-fine.
+For all formats the starting character must be immediately followed by a non-whitespace character;
+the ending character must be immediately proceeded by a non-whitespace character: `=like this=`.
+The following table lists the available formats with start and end characters.
+
+| Name | Character | MooseDown | Result (HTML) |
+| - | - | - | - |
+| Underline | `=` | `=underline=` | =underline= |
+| Strong | `+` | `+strong+` | +strong+ |
+| Emphasis | `*` | `*emphasis*` | *emphasis* |
+| Strikethrough | `~` | `~strikethrough~` | ~strikethrough~ |
+| Superscript | `^` | `foo^bar^` |foo^bar^ |
+| Subscript | `_` | `foo_bar_` |foo_bar_ |
+
+The formatting can be arbitrarily nested and span multiple lines within the same paragraph, thus
+as shown in [format-example], complicated and compound formatting of text is possible.
+
+!devel! example id=format-example caption=Example inline text formatting in MooseDocs
+Yo, dawg I heard you like formatting, so I created =underline formatted text that contains ~text
+with ~stikethrough that contains +bold formatting with *emphasis that has some ^superscript text
+with a _subscript_^*+~=, I hope you like it.
+!devel-end!
+
+### Links id=links
+
+MooseDocs uses traditional [markdown] syntax for links; however, it also supports settings within
+the link (see [settings-example]). The settings are the expected key-value pairings common to much of the MooseDocs
+syntax. The available settings for links is include in [link-settings].
+
+!devel settings module=moosedown.extensions.core id=link-settings object=Link caption=Available settings for links.
 
 ### Shortcut links id=shortcut-link
 
 
+### Punctuation
 
+endash, emdash
 
 
 
