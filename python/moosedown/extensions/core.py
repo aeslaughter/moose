@@ -180,8 +180,6 @@ class List(MarkdownComponent):
    Base for lists components.
    """
    RE = None
-   SPLIT = None
-   #SPLIT_RE = None
    ITEM_RE = None
    TOKEN = None
 
@@ -192,6 +190,9 @@ class List(MarkdownComponent):
         #n = len(self.SPLIT)
         token = self.TOKEN(parent)
 
+
+        strip_regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
+
         for item in self.ITEM_RE.finditer(match['items']):
             content = ' '*n + item.group('item')
             indent = re.search(r'^\S', content, flags=re.MULTILINE|re.UNICODE)
@@ -199,6 +200,8 @@ class List(MarkdownComponent):
                 msg = "List item content must be indented by {} to match the list item " \
                       "characters of '{}'."
                 raise Exception(msg.format(n, marker))
+
+            content = strip_regex.sub(r'\1', content)
             self.reader.parse(tokens.ListItem(token), content)
 
         """

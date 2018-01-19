@@ -150,7 +150,7 @@ def main():
         node = page.MarkdownNode(source=filename)
         node.read()
         ast, html = translator.convert(node)
-        #print ast
+        print ast
         #print html
 
     else:
