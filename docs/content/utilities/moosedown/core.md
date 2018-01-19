@@ -71,7 +71,7 @@ as shown in [quote-nested-example].
 !devel-end!
 
 !devel! example caption=Nested content in block quotes. id=quote-nested-example
-> Quotations begin with the `<` character and mayg
+> Quotations begin with the `<` character and may
 > contain any valid markdown content, include quotes and code as shown here.
 >
 > > This begins another quotation, which also contains a fenced code block.
@@ -94,20 +94,26 @@ to define a heading:
 1. the hash(es) must be followed by a single space,
 1. the hash(es) must +not+ be proceeded by a space.
 
-Settings, as listed in [heading-settings], are be applied after the heading title text (see [headings-settings-example]) and as shown in [headings-multiline] headings
-may also span multiple lines.
+
+Settings, as listed in [heading-settings], are be applied after the heading title text and as shown in
+[heading-multiline] headings may also span multiple lines.
 
 !devel! example caption=Basic use of all six heading levels. id=heading-basic-example
 # Level One
+
 ## Level Two
+
 ### Level Three
+
 #### Level Four
+
 ##### Level Five
+
 ###### Level Six
 !devel-end!
 
 !devel! example caption=Use of settings within heading. id=heading-settings
-## Level Two style=font-size:15pt id=level-two
+## Level Two style=font-size:75pt;color:red; id=level-two
 !devel-end!
 
 !devel! example caption=Use of settings within heading. id=heading-multiline
@@ -117,15 +123,13 @@ Multiple Lines (this is useful if they are really long)
    id=level-two
 !devel-end!
 
-
 !devel settings module=moosedown.extensions.core
                 object=HeadingHash
                 caption=Available settings for headings.
                 id=heading-settings
 
-
-
 ### Unordered List id=unordered
+
 Unordered list items in MooseDown +must+ begin with a dash (`-`).
 
 !devel! example caption=Unordered list basic syntax.
@@ -144,6 +148,7 @@ item by two spaces.
   ```
   int combo = 12345;
   ```
+
 - Another item
 !devel-end!
 
@@ -161,7 +166,9 @@ The sub-list must also begin with a new line.
 
     - B.2.1
     - B.2.2
-  -B.3
+
+  - B.3
+
 - C
 !devel-end!
 
@@ -172,6 +179,7 @@ To create a new list immediately following another list, the two lists must be s
 two empty lines.
 
 ### Ordered List
+
 A numbered list that starts with a numbered followed by a period and a single space. They work
 in a similar fashion as [unordered lists](#unordered) and contain contain nested content. The
 number used for the first item in the list will be the number used for the start of the list.
@@ -191,6 +199,7 @@ Again, to create another list following
       ```
       code
       ```
+
 !devel-end!
 
 ### Shortcuts
@@ -199,7 +208,10 @@ It is possible to define shortcuts for use within your document via a [shortcut 
 are defined using traditional markdown syntax.
 
 !devel! example caption=Markdown shortcut definition.
+You can create shortcuts to common items: [foo].
+
 [foo]: bar
+
 !devel-end!
 
 

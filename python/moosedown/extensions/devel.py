@@ -34,8 +34,6 @@ class DevelExtension(base.Extension):
 class Example(command.MarkdownCommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'example'
-    #EXAMPLE_RE = re.compile(r'^~~~ *(?P<settings>.*?)$(?P<content>.*?)(?=^~~~|\Z)',
-    #                        flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     TEX_TRANSLATOR = None
     HTML_TRANSLATOR = None
@@ -76,7 +74,7 @@ class Example(command.MarkdownCommandComponent):
         return settings
 
     def createToken(self, match, parent):
-
+        #print repr(match['content'])
 
         master = floats.Float(parent, **self.attributes)
         caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])

@@ -89,8 +89,6 @@ class Translator(ConfigObject):
     def convert(self, content):
         node = content if isinstance(content, page.PageNodeBase) else None
         ast = tokens.Token(None, page=node) # root node
-        #self.reinit()
-        #self.__renderer.node = self.__node
+        self.reinit()
         self.__reader.parse(ast, content)
-    #    print ast
         return ast, self.__renderer.render(ast)

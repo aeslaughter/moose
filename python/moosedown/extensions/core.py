@@ -105,8 +105,6 @@ class MarkdownComponent(base.TokenComponent): #TODO: Just put this in TokenCompo
         """
         return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
 
-
-
 class Code(MarkdownComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
     """
     Fenced code blocks.
@@ -150,7 +148,7 @@ class Quote(MarkdownComponent):
         #TODO: error check that all lines begin with '> '
         quote = tokens.Quote(parent)
         #content = self.SUB_RE.sub(r'', match['quote'])
-        self.reader.parse('\n'.join(content), root=quote)
+        self.reader.parse(quote, '\n'.join(content))
         return quote
 
 class HeadingHash(MarkdownComponent):
@@ -161,7 +159,7 @@ class HeadingHash(MarkdownComponent):
     """
     TOKEN = tokens.Heading
     RE = re.compile(r'(?:\A|\n{2,})^(?P<level>#{1,6}) '   # match 1 to 6 #'s at the beginning of line
-                    r'(?P<inline>.*?)'                    # heading text that will be inline parsed
+                    r'(?P<inline>.*?) *'                  # heading text that will be inline parsed
                     r'(?P<settings>\s+\w+=.*?)?'          # optional match key, value settings
                     r'(?=\Z|\n{2,})',                     # match up to end of string or newline(s)
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
@@ -182,42 +180,81 @@ class List(MarkdownComponent):
    Base for lists components.
    """
    RE = None
-   SPLIT_RE = None
+   SPLIT = None
+   #SPLIT_RE = None
+   ITEM_RE = None
    TOKEN = None
 
    def createToken(self, match, parent):
-       marker = match['marker']
-       n = len(marker)
-       marker = marker.strip()
+        marker = match['marker']
+        n = len(marker)
+        #marker = marker.strip()
+        #n = len(self.SPLIT)
+        token = self.TOKEN(parent)
 
-       token = self.TOKEN(parent)
-       items = self.SPLIT_RE.split(match['items'])
-       regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
-       for item in items:
-           if not item:
-               continue
-           root = tokens.ListItem(token)
-           item = regex.sub(r'\1', item)
-           self.reader.parse(root, item)
+        for item in self.ITEM_RE.finditer(match['items']):
+            content = ' '*n + item.group('item')
+            indent = re.search(r'^\S', content, flags=re.MULTILINE|re.UNICODE)
+            if indent:
+                msg = "List item content must be indented by {} to match the list item " \
+                      "characters of '{}'."
+                raise Exception(msg.format(n, marker))
+            self.reader.parse(tokens.ListItem(token), content)
 
-       return token
+        """
+        items = self.SPLIT_RE.split(match['items'])
+        print repr(match['items']), repr(items)
+
+        c = match.line
+        for item in items:
+            content = []
+            for line in item.split('\n'):
+                if not line.startswith((marker, ' '*n)):
+                    msg = "List item content on line {} must be indented by {} to match the list item " \
+                          "characters of '{}'."
+                    raise Exception(msg.format(c, n, marker))
+                content.append(re.sub(self.SPLIT, '', line, count=1, flags=re.MULTILINE))
+                c += 1
+
+            self.reader.parse(tokens.ListItem(token), '\n'.join(content))
+
+
+#       print match['items'].split(r'\n- ')
+        """
+        """
+        items = self.SPLIT_RE.split(match['items'])
+        regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
+        for item in items:
+           # print 'ITEM---------------------------------------------'
+            if not item:
+                continue
+            root = tokens.ListItem(token)
+            item = regex.sub(r'\1', item)
+            self.reader.parse(root, item)
+            print ''
+        """
+        return token
 
 class UnorderedList(List):
    """
    Unordered lists.
    """
-   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>-\s).*?)(?=\n{3,}|^[^- \n]|\Z)',
-                   flags=re.MULTILINE|re.DOTALL)
-   SPLIT_RE = re.compile(r'\n*^- ', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+   RE = re.compile(r'(?:\A|\n{2,})(?P<items>(?P<marker>^- ).*?)(?=\n{3,}|\Z)',
+                   flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+   #SPLIT = r'^- '
+   #SPLIT_RE = re.compile(r'^- ', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+   ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
    TOKEN = tokens.UnorderedList
 
 class OrderedList(List):
    """
    Ordered lists.
    """
-   RE = re.compile(r'(?:\A|\n{2,})(?P<marker>[0-9]+\. )(?P<items>.*?)(?=\n{2,}|^[^0-9 \n]|\Z)',
-                   flags=re.MULTILINE|re.DOTALL)
-   SPLIT_RE = re.compile(r'\n*^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
+   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}\S)',
+                   flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+   ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9])', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+
+   #SPLIT_RE = re.compile(r'\n*^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
    TOKEN = tokens.OrderedList
 
    #TODO: figure out how to handle settings???
@@ -277,7 +314,7 @@ class ShortcutLink(MarkdownComponent):
     """
     Markdown shortcut use.
     """
-    RE = re.compile(r'(?: |^)\[(?P<key>.*?)\](?= |$)', flags=re.UNICODE|re.MULTILINE)
+    RE = re.compile(r'\[(?P<key>.*?)\]', flags=re.UNICODE)
     def createToken(self, match, parent):
         return tokens.ShortcutLink(parent, key=match['key'])
 
@@ -448,7 +485,7 @@ class RenderShortcutLink(CoreRenderComponentBase):
         if token in self.__cache:
             return self.__cache[token]
 
-        for node in anytree.PreOrderIter(token.root, maxlevel=2):
+        for node in anytree.PreOrderIter(token.root, maxlevel=None):
             if isinstance(node, tokens.Shortcut) and node.key == token.key:
                 self.__cache[token.key] = node
                 return node
@@ -655,8 +692,9 @@ class RenderException(CoreRenderComponentBase):
               u"following content.".format(token.info.pattern.name)
         html.String(p, content=msg)
         html.Tag(p, 'br', close=False)
-        fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.root.page.source))
-        html.String(fname, content=u"{}:{}".format(token.root.page.source, token.info.line))
+
+        #fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.root.page.source))
+        #html.String(fname, content=u"{}:{}".format(token.root.page.source, token.info.line))
 
         pre = html.Tag(content, 'pre')
         code = html.Tag(pre, 'code', class_="language-markdown")
