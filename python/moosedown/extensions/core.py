@@ -86,23 +86,7 @@ class CoreExtension(base.Extension):
 
 
 class MarkdownComponent(base.TokenComponent): #TODO: Just put this in TokenComponent
-    """
-    Base Markdown component which defines the typically html tag settings and a means to apply them.
-    """
-    @staticmethod
-    def defaultSettings():
-        settings = base.TokenComponent.defaultSettings()
-        settings['style'] = (u'', "The style settings that are passed to the HTML flags.")
-        settings['class'] = (u'', "The class settings to be passed to the HTML flags.")
-        settings['id'] = (u'', "The class settings to be passed to the HTML flags.")
-        return settings
-
-    @property
-    def attributes(self):
-        """
-        Return a dictionary with the common html settings.
-        """
-        return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
+    pass
 
 class Code(MarkdownComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
     """
@@ -116,7 +100,7 @@ class Code(MarkdownComponent): #TODO: Rename these classes to use the word compo
         settings['language'] = (u'text', "The code language to use for highlighting.")
         settings['caption'] = (None, "The caption text for the code listing.")
         settings['label'] = ('Listing', "The numbered caption prefix.")
-        return settings
+        return settinsg
 
     def createToken(self, match, parent):
         if self.settings['caption']:

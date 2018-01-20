@@ -23,29 +23,12 @@ class CommandExtension(base.Extension):
 
 #        self.addCommand(Include())
 
-class MarkdownCommandComponent(base.TokenComponent):
+class MarkdownCommandComponent(base.TokenComponent): #TODO: Rename to CommandComponent
     """
     Base Markdown component for creating commands.
     """
     COMMAND = None
     SUBCOMMAND = None
-
-
-    @staticmethod
-    def defaultSettings():
-        #TODO: this is duplicate with core.MarkdownComponent
-        settings = base.TokenComponent.defaultSettings()
-        settings['style'] = (u'', "The style settings that are passed to the HTML flags.")
-        settings['class'] = (u'', "The class settings to be passed to the HTML flags.")
-        settings['id'] = (u'', "The class settings to be passed to the HTML flags.")
-        return settings
-
-    @property
-    def attributes(self):
-        """
-        Return a dictionary with the common html settings.
-        """
-        return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
 
 class CommandBase(core.MarkdownComponent):
     """

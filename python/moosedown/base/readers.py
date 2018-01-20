@@ -60,28 +60,11 @@ class Reader(ConfigObject):
 
 
     def add(self, group, name, component, location='_end'):
+        #TODO: check type must be TokenComponent
+
         self.__components.append(component)
         component.init(self.translator)
-        func = lambda m, p: self.__function(m, p, component)
-        self.__lexer.add(group, name, component.RE, func, location)
-
-    def __function(self, match, parent, component):
-        defaults = component.defaultSettings()
-        if not isinstance(defaults, dict):
-            raise common.exceptions.TokenizeException("The component '{}' must return a dict from the defaultSettings static method.".format(component))
-
-        if 'settings' in match and component.PARSE_SETTINGS:
-            component.settings, _ = common.parse_settings(defaults, match['settings'])
-        else:
-            component.settings = {k:v[0] for k, v in defaults.iteritems()}
-        token = component.createToken(match, parent)
-        return token
-
-
-#    def add(self, *args):#name, regex, func, location=-1):
-#        self.__lexer.add(*args)
-
-
+        self.__lexer.add(group, name, component.RE, component, location)
 
 
     @staticmethod
