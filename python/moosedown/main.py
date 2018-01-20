@@ -29,6 +29,7 @@ def main():
     Parse the command line options and run the correct command.
     """
     options = command_line_options()
+    print options
     if options.build:
         build.main(options)
 
