@@ -1,10 +1,14 @@
 [Tests]
-  [./translator]
+  [components]
+    type = PythonUnitTest
+    input = test_components.py
+  []
+  [translator]
     type = PythonUnitTest
     input = test_Translator.py
-  [../]
-  [./reader]
+  []
+  [reader]
     type = PythonUnitTest
     input = test_Reader.py
-  [../]
+  []
 []
