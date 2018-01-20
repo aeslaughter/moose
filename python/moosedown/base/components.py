@@ -11,7 +11,7 @@ class Component(object):
     features required for translation.
     """
     def __init__(self):
-        super(Component, self).__init__
+        print 'here...'
         self.__translator = None
 
     def init(self, translator):
@@ -43,6 +43,7 @@ class Component(object):
         reset when using livereload.
         """
         pass
+
 
 
 class TokenComponent(Component):
