@@ -3,6 +3,7 @@
 Tests for Component objects.
 """
 import unittest
+import inspect
 
 from moosedown.base.components import Component
 
@@ -10,8 +11,7 @@ class TestComponent(unittest.TestCase):
 
     def testBasic(self):
         comp = Component()
-        print dir(comp)
-        #self.assertEqual(comp.translator, None)
+        self.assertEqual(comp.translator, None)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,6 @@ from moosedown.tree import tokens, page #TODO: change to pages
 from lexers import LexerInformation #TODO: make this MetaData or something better and move from lexer
 from readers import Reader
 from renderers import Renderer
-from extensions import Extension
 from ConfigObject import ConfigObject
 LOG = logging.getLogger('Translator')
 
