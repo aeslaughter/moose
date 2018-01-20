@@ -1,5 +1,5 @@
 """
-This defines the core Markdown translation to HTML and LaTeX.
+Defines the "core" extension for translating MooseDocs markdown to HTML and LaTeX.
 """
 import re
 import uuid
@@ -16,25 +16,24 @@ from moosedown.tree import tokens, html, latex
 
 LOG = logging.getLogger(__name__)
 
-
 def make_extension(**kwargs):
     """
-    Create and return the MarkdownExtension and RenderExtension objects for the core extension.
+    Create and return the CoreExtension object for converting from markdown to
+    html/latex.
     """
     return CoreExtension(**kwargs)
 
 class CoreExtension(base.Extension):
     """
-    The core markdown parser extension.
-
-    This extension provides to core conversion from markdown syntax to an AST.
+    The core markdown extension object. Extension objects add the tokenize
+    and rendering components.
     """
 
     def extend(self, reader, renderer):
         """
         Add the extension components.
         """
-        # Block
+        # Block tokenize components
         reader.addBlock(Code())
         reader.addBlock(Quote())
         reader.addBlock(HeadingHash())
@@ -43,7 +42,7 @@ class CoreExtension(base.Extension):
         reader.addBlock(Shortcut())
         reader.addBlock(Paragraph())
 
-        # Inline
+        # Inline tokenize components
         reader.addInline(Monospace())
         reader.addInline(Format())
         reader.addInline(Link())
@@ -54,7 +53,7 @@ class CoreExtension(base.Extension):
         reader.addInline(Break())
         reader.addInline(Space())
 
-        # Render
+        # Render components
         renderer.add(tokens.Heading, RenderHeading())
         renderer.add(tokens.Code, RenderCode())
         renderer.add(tokens.ShortcutLink, RenderShortcutLink())
@@ -124,7 +123,7 @@ class Code(MarkdownComponent): #TODO: Rename these classes to use the word compo
             flt = tokens.Float(parent, label=settings['label'], caption=settings['caption'], **self.attributes)
             return tokens.Code(flt, code=match['code'], language=self.settings['language'])
         else:
-            return tokens.Code(parent, code=match['code'],
+                           return tokens.Code(parent, code=match['code'],
                                language=self.settings['language'], **self.attributes)
 
 class Quote(MarkdownComponent):
