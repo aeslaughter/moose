@@ -54,7 +54,7 @@ class Component(object):
 
 class TokenComponent(Component):
     """
-    Base class for creating components designed to create token during tokenization.
+    Base class for creating components designed to create a token during tokenization.
 
     # Overview
     TokenComponent objects are designed to be created by Extension objects and added to the Reader
@@ -185,10 +185,22 @@ class TokenComponent(Component):
         raise NotImplementedError("The createToken method is required.")
 
 class RenderComponent(Component):
+    """
+    RenderComponent objects are used to convert tokens to an output format such as HTML or LaTeX.
 
-    def __init__(self):
-        Component.__init__(self)
+    The function to be called is assigned by the Renderer object; however, it has the following
+    signature:
+        functionName(self, token, parent):
+            ...
+
+    This allows the RenderComponent object to have multiple methods for converting to different
+    formats. For example, the components in core.py have createHTML and createLatex methods to
+    work with the HTMLRenderer and the LatexRenderer.
+    """
 
     @property
     def renderer(self):
+        """
+        Return the Renderer object.
+        """
         return self.translator.renderer

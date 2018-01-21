@@ -8,7 +8,7 @@ import inspect
 
 from moosedown.tree import tokens
 from moosedown.common import exceptions
-from moosedown.base.components import Component, TokenComponent
+from moosedown.base.components import Component, TokenComponent, RenderComponent
 from moosedown.base.lexers import Lexer, LexerInformation
 from moosedown.base import Translator, Reader, Renderer
 
@@ -113,6 +113,17 @@ class TestTokenComponent(unittest.TestCase):
         comp = TestToken()
         comp(info, parent)
         self.assertEqual(comp.count, 1)
+
+class TestRendererComponent(unittest.TestCase):
+    """
+    Basic test for RenderComponent.
+    """
+    def test(self):
+        comp = RenderComponent()
+        renderer = Renderer()
+        t = Translator(Reader(Lexer()), renderer)
+        comp.init(t)
+        self.assertEqual(comp.renderer, renderer)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
