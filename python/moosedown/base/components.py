@@ -108,6 +108,12 @@ class TokenComponent(Component):
         # Local settings, this is updated by __call__ just prior to calling the createToken()
         self.__settings = None
 
+        # Check return type of default settings
+        defaults = self.defaultSettings()
+        if not isinstance(defaults, dict):
+            msg = "The component '{}' must return a dict from the defaultSettings static method."
+            raise exceptions.MooseDocsException(msg, self)
+
     def __call__(self, info, parent):
         """
         MooseDocs internal method, this should not be called, please use the createToken method.
@@ -120,6 +126,9 @@ class TokenComponent(Component):
             parent[tokens.Token]: The parent node in the AST for the token being created.
         """
 
+        """TODO: These type checks are likely too aggressive, this method iis called often so should
+                 be as slim as possible. This is called from the Lexer to there is little worry
+                 about the wrong types.
         # Type checking
         if not isinstance(info, LexerInformation):
             msg = "The 'info' input must be a {} object, but a {} was provided."
@@ -128,14 +137,10 @@ class TokenComponent(Component):
         if not isinstance(parent, tokens.Token):
             msg = "The 'parent' input must be a {} object, but a {} was provided."
             raise exceptions.TokenizeException(msg, tokens.Token, type(parent))
+        """
 
-        # Default settings
+        # Define the settings
         defaults = self.defaultSettings()
-        if not isinstance(defaults, dict):
-            msg = "The component '{}' must return a dict from the defaultSettings static method."
-            raise exceptions.TokenizeException(msg, self)
-
-        # Apply settings from match
         if self.PARSE_SETTINGS and ('settings' in info):
             self.__settings, _ = parse_settings(defaults, info['settings'])
         else:
