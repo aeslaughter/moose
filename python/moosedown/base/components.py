@@ -94,9 +94,9 @@ class TokenComponent(Component):
         the default settings for the compoment, see core.py for examples.
         """
         settings = dict()
-        settings['style'] = (u'', "The style settings that are passed to the HTML flags.")
-        settings['class'] = (u'', "The class settings to be passed to the HTML flags.")
-        settings['id'] = (u'', "The class settings to be passed to the HTML flags.")
+        settings['style'] = (u'', u"The style settings that are passed to rendered HTML tag.")
+        settings['class'] = (u'', u"The class settings to be passed to rendered HTML tag.")
+        settings['id'] = (u'', u"The class settings to be passed to the rendered tag.")
         return settings
 
     def __init__(self):
@@ -105,9 +105,8 @@ class TokenComponent(Component):
         """
         Component.__init__(self)
 
-        # Local settings, this is updated by the Reader just prior to calling the createToken()
-        self.__settings = dict()
-
+        # Local settings, this is updated by __call__ just prior to calling the createToken()
+        self.__settings = None
 
     def __call__(self, info, parent):
         """
@@ -120,31 +119,45 @@ class TokenComponent(Component):
             info[LexerInformation]: Object containing the lexer information object.
             parent[tokens.Token]: The parent node in the AST for the token being created.
         """
+
+        # Type checking
         if not isinstance(info, LexerInformation):
             msg = "The 'info' input must be a {} object, but a {} was provided."
-            raise common.exceptions.TokenizeException(msg, LexerInformation, type(info))
+            raise exceptions.TokenizeException(msg, LexerInformation, type(info))
 
         if not isinstance(parent, tokens.Token):
             msg = "The 'parent' input must be a {} object, but a {} was provided."
-            raise common.exceptions.TokenizeException(msg, tokens.Token, type(parent))
+            raise exceptions.TokenizeException(msg, tokens.Token, type(parent))
 
+        # Default settings
         defaults = self.defaultSettings()
         if not isinstance(defaults, dict):
             msg = "The component '{}' must return a dict from the defaultSettings static method."
-            raise common.exceptions.TokenizeException(msg, self)
+            raise exceptions.TokenizeException(msg, self)
 
-        if 'settings' in match and self.PARSE_SETTINGS:
-            self.__settings, _ = parse_settings(defaults, match['settings'])
+        # Apply settings from match
+        if self.PARSE_SETTINGS and ('settings' in info):
+            self.__settings, _ = parse_settings(defaults, info['settings'])
         else:
             self.__settings = {k:v[0] for k, v in defaults.iteritems()}
-        return self.createToken(match, parent)
+
+        # Call user method and reset settings
+        token = self.createToken(info, parent)
+        self.__settings = None
+        return token
 
     @property
     def attributes(self):
         """
         Return a dictionary with the common html settings.
+
+        This property is only available from within the createToken method, it returns None when
+        called externally.
         """
-        return {'style':self.settings['style'], 'id':self.settings['id'], 'class':self.settings['class']}
+        if self.__settings:
+            return {'style':self.settings['style'],
+                    'id':self.settings['id'],
+                    'class':self.settings['class']}
 
     @property
     def settings(self):
