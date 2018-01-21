@@ -3,72 +3,128 @@ import anytree
 import textwrap
 import logging
 
-import moosedown
-
 from moosedown import common
+from moosedown.common import exceptions
 from moosedown.tree import tokens, page
+from translators import Translator
 from lexers import RecursiveLexer
 from ConfigObject import ConfigObject
 
 LOG = logging.getLogger(__name__)
 
 class Reader(ConfigObject):
+    """
+    Base class for reading (parsing) files into AST.
+
+    Inputs:
+       lexer[lexers.Lexer]: Object responsible for applying tokenization (see lexers.py).
+       **kwargs: key-value pairs passed to configuration settings (see ConfigObject.py).
+
+    Usage:
+    In general, it is not necessary to deal directly with the Reader beyond initial construction.
+    The reader should be passed into the Translator, which handles all the necessary calls.
+    """
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         self.__lexer = lexer
         self.__components = []
-        self.translator = None
+        self.__translator = None
+
+    def init(self, translator):
+        """
+        Initialize this reader with the Translator object, this is automatically handled by the
+        translator instance. This is needed for passing the translator to the Component objects.
+
+        Inputs:
+            translator[Translator]: The Translator object being used for conversion.
+        """
+        if not isinstance(translator, Translator):
+            msg = "The init method requires a {} object, but a {} was provided."
+            raise MooseDocsException(msg, Translator, type(translator))
+        self.__tranlator = translator
 
     def reinit(self):
+        """
+        Call the Component reinit() methods.
+        """
         for comp in self.__components:
             comp.reinit()
 
     @property
     def lexer(self):
+        """
+        Retun the Lexer object for the reader, this is useful for preforming nested parsing as
+        is the case for the markdown parsing done by MooseDocs, see core.py for examples.
+        """
         return self.__lexer
 
-    #@property
-    #def node(self):
-    #    return self.__node
-
-    """
-    def read(self, input):
-        with open(filename, 'r') as fid:
-            text = fid.read()
-        return self.parse(text)
-    """
-
     def parse(self, root, content):
+        """
+        Perform the parsing of the supplied content into an AST with the provided root node.
 
+        Inputs:
+            root[tokens.Token]: The root node for the AST.
+            content[unicode:tree.page.PageNodeBase]: The content to parse, either as a unicode
+                                                     string or a page node object.
+        """
+
+        # Type checking
         if not isinstance(root, tokens.Token):
-            raise TypeError("Wrong type...") #TODO
-
-        self.reinit()
-
-        #ast = root if root else tokens.Token(None)
-        #self.__old_node = self.__node
+            msg = "The parse method 'root' argument requires a {} object, but a {} was provided."
+            raise MooseDocsException(msg, tokens.Token, type(root))
 
         node = page.PageNodeBase(content=content) if isinstance(content, unicode) else content
         if not isinstance(node, page.PageNodeBase):
             raise TypeError("The supplied content must be a unicode or PageNodeBase object, but {} was provided.".format(type(node)))
 
+        # Tokenize
+        self.reinit()
         self.__lexer.tokenize(root, self.__lexer.grammer(), node.content)
 
+        # Report errors
         for token in anytree.PreOrderIter(root):
             if isinstance(token, tokens.Exception):
                 self._exceptionHandler(token)
 
-
     def add(self, group, name, component, location='_end'):
-        #TODO: check type must be TokenComponent
+        """
+        Extened the Reader by adding a TokenComponent.
+
+        Inputs:
+            group[str]: Name of the lexer group to append.
+            name[str]: The name of the component being added.
+            component[components.TokenComponent]: The tokenize component to add.
+            location[str|int]: The location to insert this component (see Grammer.py)
+        """
+        # Check types
+        if not isinstance(group, str):
+            msg = "The parse method 'group' argument requires a {} object, but a {} was provided."
+            raise MooseDocsException(msg, str, type(group))
+
+        if not isinstance(name, str):
+            msg = "The parse method 'name' argument requires a {} object, but a {} was provided."
+            raise MooseDocsException(msg, str, type(name))
+
+        if not isinstance(component, components.TokenComponent):
+            msg = "The parse method 'root' argument requires a {} object, but a {} was provided."
+            raise MooseDocsException(msg, tokens.Token, type(component))
+
+        if not isinstance(location, str):
+            msg = "The parse method 'location' argument requires a {} object, but a {} was provided."
+            raise MooseDocsException(location, str, type(location))
 
         self.__components.append(component)
         component.init(self.translator)
         self.__lexer.add(group, name, component.RE, component, location)
 
-
     @staticmethod
     def _exceptionHandler(token):
+        """
+        The Lexer converts all TokenizeException caught during tokenization into tokens.Exception
+        tokens. This allows the tokenization to report all errors at once and allow for the AST and
+        rendering to be performed. This method is simply a convience function for reporting the
+        exceptions to the logging system.
+        """
         n = 100
         title = []
         if isinstance(token.root.page, page.LocationNodeBase):
@@ -87,6 +143,7 @@ class Reader(ConfigObject):
 
 
 class MarkdownReader(Reader):
+    #TODO: move addCommand to commands.py
     def __init__(self, **kwargs):
         Reader.__init__(self,
                         lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),

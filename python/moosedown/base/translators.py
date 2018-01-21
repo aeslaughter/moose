@@ -48,8 +48,8 @@ class Translator(ConfigObject):
         self.__reader = reader
         self.__renderer = renderer
 
-        self.__reader.translator = self #TODO: self.__reader.init(self)
-        self.__renderer.translator = self #TODO: init
+        self.__reader.init(self)
+        self.__renderer.init(self)
 
         for ext in self.__extensions:
             ext.init(self)
