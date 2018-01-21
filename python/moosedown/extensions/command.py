@@ -14,7 +14,7 @@ def make_extension():
     return CommandExtension()
 
 class CommandExtension(base.Extension):
-
+    #TODO: __COMMANDS__
     def extend(self, reader, renderer):
         reader.addBlock(FileCommand(), location='_begin')
         reader.addBlock(InlineCommand(), location='_begin')
