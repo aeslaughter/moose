@@ -43,6 +43,9 @@ class RenderWindow(base.ChiggerObject):
         opt.add('antialiasing', 0, "Number of antialiasing frames to perform "
                                    "(set vtkRenderWindow::SetAAFrames).", vtype=int)
 
+        # Observers
+        opt.add('observers', [], "A list of observer objects.")
+
         # Background settings
         background = misc.ChiggerBackground.getOptions()
         background.pop('layer')
