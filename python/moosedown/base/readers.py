@@ -1,12 +1,15 @@
+"""
+Defines readers that convert raw text into an AST.
+"""
 import copy
 import anytree
 import textwrap
 import logging
 
+import moosedown
 from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import tokens, page
-from translators import Translator
 from lexers import RecursiveLexer
 from ConfigObject import ConfigObject
 
@@ -38,9 +41,11 @@ class Reader(ConfigObject):
         Inputs:
             translator[Translator]: The Translator object being used for conversion.
         """
-        if not isinstance(translator, Translator):
+
+        # Check Translator, the full names is used here to avoid circular imports
+        if not isinstance(translator, moosedown.base.translators.Translator):
             msg = "The init method requires a {} object, but a {} was provided."
-            raise MooseDocsException(msg, Translator, type(translator))
+            raise MooseDocsException(msg, moosedown.base.translators.Translator, type(translator))
         self.__tranlator = translator
 
     def reinit(self):
@@ -141,26 +146,25 @@ class Reader(ConfigObject):
         box = moosedown.common.box(token.info[0], line=token.info.line, width=n)
         LOG.exception(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
 
-
 class MarkdownReader(Reader):
-    #TODO: move addCommand to commands.py
+    """
+    Reader designed to work with the 'block' and 'inline' structure of markdown to html conversion.
+    """
     def __init__(self, **kwargs):
         Reader.__init__(self,
                         lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),
                         **kwargs)
-        self._commands = dict()
-
-    def addCommand(self, command):
-        # TODO: All Command related stuff is in the command extensions, with the exception of
-        # this function. Figure out how to avoid this special code here...
-        command.init(self.translator)
-        #TODO: error if it exists
-        self._commands[(command.COMMAND, command.SUBCOMMAND)] = command
 
     def addBlock(self, component, location='_end'):
+        """
+        Add a component to the 'block' grammer.
+        """
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)
         Reader.add(self, moosedown.BLOCK, name, component, location)
 
     def addInline(self, component, location='_end'):
+        """
+        Add an inline component to the 'inline' grammer.
+        """
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)
         Reader.add(self, moosedown.INLINE, name, component, location)
