@@ -1,5 +1,5 @@
 """
-
+Defines renderers that convert AST into an output format.
 """
 import os
 import copy
@@ -13,71 +13,110 @@ from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import html, latex, base, tokens, page
 from ConfigObject import ConfigObject
+from components import RendererComponent
 
 LOG = logging.getLogger(__name__)
 
 class Renderer(ConfigObject):
+    """
+    Base renderer for converting AST to an output format.
+    """
+
+    # Method to call on the RendererComponent objects.
     METHOD = None
-    ROOT = None
-
-
 
     def __init__(self, **kwargs):
         ConfigObject.__init__(self, **kwargs)
-        self.__functions = dict()
-        self.__components = []
+        self.__functions = dict()  # functions on the RenderComponent to call
+        self.__components = []     # RenderComponent objects
         self.translator = None
 
-
     def add(self, token, component):
-        # TODO: test token_class is type
-        self.__components.append(component)
-        component.init(self.translator)
+        """
+        Associate a RenderComponent object with a token type.
 
-        func = self.__method(component)
-#        Extension.add(self, token_class, func)
+        Inputs:
+            token[type]: The token type (not instance) to associate with the supplied component.
+            compoment[RenderComponent]: The component to execute with the associated token type.
+        """
 
         if not isinstance(token, type):
-            raise TypeError("The supplied token must be a 'type' not an instance.")
+            msg = "The supplied token must be a {}, but a {} was provided."
+            raise exceptions.MooseDocsException(msg, type, type(token))
 
+        if not isinstance(compoment, RenderComponent):
+            msg = "The supplied component must be a {} but a {} was provided."
+            raise exceptions.MooseDocsException(msg, RenderComponent, type(compoment))g
 
-        #TODO: check if it exists
-        self.__functions[token] = func
-        #for k, v in self.__functions.iteritems():
-        #    print k, v
+        self.__components.append(component)
+        self.__functions[token] = self.method(component)
+
+    def method(self, component):
+        """
+        Return the desired method to call on the RenderComponent object.
+
+        Inputs:
+            component[RenderComponent]: Object to use for locating desired method for renderering.
+        """
+        if not hasattr(component, self.METHOD):
+            msg = "The component object {} does not have a {} method."
+            raise exceptions.MooseDocsException(msg, type(component), self.METHOD)
+        return getattr(component, self.METHOD)
 
     def reinit(self):
+        """
+        Call reinit() method of the RenderComponent objects.
+        """
         for comp in self.__components:
             comp.reinit()
 
+    def render(self, root, ast):
+        """
+        Render the supplied AST into the the provided root.
 
-    def render(self, ast, root=None):
-        self.process(ast, root)
-        return root
+        This method is designed to be overridden to create the desired output tree, see the
+        HTMLRenderer and/or LatexRenderer for examples.
 
-    def __method(self, component): #TODO: just move to add
-        if hasattr(component, self.METHOD):
-            return getattr(component, self.METHOD)
-        else:
-            #TODO: raise RenderException
-            pass
+        Inputs:
+            ast[tree.token]: The AST to convert.
+        """
+        raise NotImplementedError("The render() method must be defined in a child class.")
 
     def function(self, token):
-        #TODO: error if not found
-        #for token_type, func in self.__functions.iteritems():
-        #    if isinstance(token, token_type):
-        #        return func
-        if type(token) in self.__functions:
-            return self.__functions[type(token)]
+        """
+        Return the desired function for the supplied token object.
 
-    def write(self, ast):
+        Inputs:
+            token[tree.token]: token for which the associated RenderComponent function is desired.
+        """
+        try
+            return self.__functions[type(token)]
+        except KeyError:
+            msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
+                  "via the Renderer.add(...) method."
+            raise exceptions.RenderException(msg, type(token), self.METHOD)
+
+    def write(self, output):
+        """
+        Write the rendered output content to a single string, this method automatically strips
+        all double new lines.
+
+        Inputs:
+            output[tree.base.NodeBase]: The output tree created by calling render.
+        """
         text = ast.write()
         return re.sub(r'(\n{2,})', '\n', text, flags=re.MULTILINE)
 
-    def process(self, token, parent):
+    def process(self, parent, token):
+        """
+        Convert the AST defined in the token input into a output node of parent.
+
+        Inputs:
+            ast[tree.token]: The AST to convert.
+            parent[tree.base.NodeBase]: A tree object that the AST shall be converted to.
+        """
         try:
             func = self.function(token)
-            #print token
             el = func(token, parent) if func else None
         except Exception as e:
             src = token.root.page.source if token.root.page else 'fixme' #TODO
@@ -85,12 +124,6 @@ class Renderer(ConfigObject):
                   "executing the {} function while processing the following content.\n" \
                       "{}:{}".format(func, src, token.info.line)
             LOG.exception(moosedown.common.box(token.info[0], title=msg, line=token.info.line))
-#            else:
-#                msg = "\nAn exception occured on line {} while rendering, the exception was\n" \
-#                      "raised when executing the {} object while processing the following content.\n"
-#                msg = msg.format(token.line, token.__class__.__name__)
-#                LOG.exception(msg)
-
             token = tokens.Exception(parent, info=token.info, traceback=traceback.format_exc())
             func = self.function(token)
             el = func(token, parent)
@@ -98,25 +131,33 @@ class Renderer(ConfigObject):
         if el is None:
             el = parent
 
-        #TODO: check return type
         for child in token.children:
             self.process(child, el)
 
 
 class HTMLRenderer(Renderer):
+    """
+    Converts AST into HTML.
+    """
     METHOD = 'createHTML' #TODO: make this a config option???
 
-    def render(self, ast, root=None):
-        if root is None:
-            root = html.Tag(None, 'body')
-        return Renderer.render(self, ast, root)
+    def render(self, ast):
+        self.reinit()
+        root = html.Tag(None, 'body')
+        self.process(root, ast)
+        return root
 
 class MaterializeRenderer(HTMLRenderer):
+    """
+    Convert AST into HTML using the materialize javascript library (http://materializecss.com).
+    """
     METHOD = 'createMaterialize'
 
-    #TODO: Add config
     @staticmethod
     def defaultConfig():
+        """
+        Return the default configuration.
+        """
         #config['scrollspy'] = (True, "Toggle the use of the right scrollable navigation.")
         config = HTMLRenderer.defaultConfig()
         config['breadcrumbs'] = (True, "Toggle for the breadcrumb links at the top of page.")
@@ -131,6 +172,11 @@ class MaterializeRenderer(HTMLRenderer):
         return config
 
     def update(self, **kwargs):
+        """
+        Update the default configuration with the supplied values. This is an override of the
+        ConfigObject method and is simply modified here to the check the type of a configuration
+        item.
+        """
         HTMLRenderer.update(self, **kwargs)
 
         collapsible = self['collapsible-sections']
@@ -139,24 +185,26 @@ class MaterializeRenderer(HTMLRenderer):
                   "the item supplied is a {} of length {}."
             raise ValueError(msg.format(type(collapsible), len(collapsible)))
 
-
-
     def method(self, component):
+        """
+        Fallback to the HTMLRenderer method if the MaterializeRenderer method is not located.
+
+        Inputs:
+            component[RenderComponent]: Object to use for locating desired method for renderering.
+        """
         if hasattr(component, self.METHOD):
             return getattr(component, self.METHOD)
         elif hasattr(component, HTMLRenderer.METHOD):
             return getattr(component, HTMLRenderer.METHOD)
         else:
-            #TODO: raise Exception
-            pass
+            msg = "The component object {} does not have a {} method."
+            raise exceptions.MooseDocsException(msg, type(component), self.METHOD)
+            exceptions.RenderException()
 
+    def render(self, ast):
+        Renderer.render(self, ast) # calls reinit()
 
-    def render(self, ast, root=None):
-        self.reinit()
-
-        if root is None:
-            root = html.Tag(None, '!DOCTYPE html', close=False)
-
+        root = html.Tag(None, '!DOCTYPE html', close=False)
         root.page = ast.page #meta data
         html.Tag(root, 'html')
 
@@ -177,8 +225,6 @@ class MaterializeRenderer(HTMLRenderer):
         body = html.Tag(root, 'body')
         container = html.Tag(body, 'div', class_="container")
 
-        #print self.getConfig()
-
         # Breadcrumbs
         if self['breadcrumbs']:
             self.addBreadcrumbs(container)
@@ -186,7 +232,7 @@ class MaterializeRenderer(HTMLRenderer):
         # Content
         row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col s12 m12 l10") #TODO add scroll spy (scoll-name=False) at top of index.mdg
-        HTMLRenderer.render(self, ast, col)
+        HTMLRenderer.process(self, col, ast)
 
         # Sections
         if self['sections']:
@@ -197,6 +243,9 @@ class MaterializeRenderer(HTMLRenderer):
     def addBreadcrumbs(self, root):
         """
         Inserts breacrumb links at the top of the page.
+
+        Inputs:
+            root[tree.html.Tag]: The tag to which the breadcrumbs should be inserted.
         """
         row = html.Tag(root, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col hide-on-med-and-down l12")
@@ -263,6 +312,9 @@ class MaterializeRenderer(HTMLRenderer):
                 summary(0).children = [icon] + list(summary(0).children)
 
 class LatexRenderer(Renderer):
+    """
+    Renderer for converting AST to LaTeX.
+    """
     METHOD = 'createLatex'
 
     def __init__(self, *args, **kwargs):
@@ -270,6 +322,9 @@ class LatexRenderer(Renderer):
         Renderer.__init__(self, *args, **kwargs)
 
     def render(self, ast):
+        """
+        Built LaTeX tree from AST.
+        """
         root = base.NodeBase()
         latex.Command(root, 'documentclass', string=u'book', end='\n')
 
@@ -281,4 +336,7 @@ class LatexRenderer(Renderer):
         return root
 
     def addPackage(self, *args):
+        """
+        Add a LaTeX package to the list of packages for rendering.
+        """
         self._packages.update(args)
