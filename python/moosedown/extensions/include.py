@@ -18,13 +18,13 @@ class IncludeExtension(base.Extension):
     def extend(self, reader, renderer):
         reader.addCommand(Include())
 
-class Include(command.MarkdownCommandComponent):
+class Include(command.CommandComponent):
     COMMAND = 'include'
     SUBCOMMAND = 'md'
 
     @staticmethod
     def defaultSettings():
-        settings = command.MarkdownCommandComponent.defaultSettings()
+        settings = command.CommandComponent.defaultSettings()
         return settings
 
     def createToken(self, match, parent):

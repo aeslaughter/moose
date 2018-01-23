@@ -6,51 +6,15 @@ from moosedown.common import exceptions, parse_settings
 from moosedown.tree import tokens
 from lexers import LexerInformation
 from translators import Translator
+from ConfigObject import TranslatorObject
 
-
-class Component(object):
+class Component(TranslatorObject):
     """
     Each extension is made up of components, both for tokenizing and rendering. The
     compoments provide a means for defining settings as well as other customizable
     features required for translation.
     """
-    def __init__(self):
-        self.__translator = None
-
-    def init(self, translator):
-        """
-        Called by Translator object, this allows the Extension objects to be
-        created independently then passed into the translator, which then
-        calls this method to provide access to translator for when the actual
-        tokenize and render commands are called.
-        """
-        if self.__translator is not None:
-            msg = "The component has already been initialized, this method should not " \
-                  "be called twice."
-            raise exceptions.MooseDocsException(msg)
-
-        if not isinstance(translator, Translator):
-            msg = "The supplied object must be of type '{}', but a '{}' was provided."
-            raise exceptions.MooseDocsException(msg, Translator, type(translator))
-
-        self.__translator = translator
-
-    @property
-    def translator(self):
-        """
-        Returns the Translator object as property.
-        """
-        if self.__translator is None:
-            msg = "Component object must be initialized prior to accessing this property."
-            raise exceptions.MooseDocsException(msg)
-        return self.__translator
-
-    def reinit(self):
-        """
-        Called by the Translator prior to converting, this allows for state to be
-        reset when using livereload.
-        """
-        pass
+    pass
 
 class TokenComponent(Component):
     """

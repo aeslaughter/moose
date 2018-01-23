@@ -11,11 +11,11 @@ from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
-from ConfigObject import ConfigObject
+from ConfigObject import ConfigObject, TranslatorObject
 
 LOG = logging.getLogger(__name__)
 
-class Reader(ConfigObject):
+class Reader(ConfigObject, TranslatorObject):
     """
     Base class for reading (parsing) files into AST.
 
@@ -29,24 +29,9 @@ class Reader(ConfigObject):
     """
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
+        TranslatorObject.__init__(self)
         self.__lexer = lexer
         self.__components = []
-        self.__translator = None
-
-    def init(self, translator):
-        """
-        Initialize this reader with the Translator object, this is automatically handled by the
-        translator instance. This is needed for passing the translator to the Component objects.
-
-        Inputs:
-            translator[Translator]: The Translator object being used for conversion.
-        """
-
-        # Check Translator, the full names is used here to avoid circular imports
-        if not isinstance(translator, moosedown.base.translators.Translator):
-            msg = "The init method requires a {} object, but a {} was provided."
-            raise MooseDocsException(msg, moosedown.base.translators.Translator, type(translator))
-        self.__tranlator = translator
 
     def reinit(self):
         """
