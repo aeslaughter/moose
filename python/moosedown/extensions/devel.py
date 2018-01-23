@@ -31,7 +31,7 @@ class DevelExtension(base.Extension):
         reader.addCommand(Example())
         reader.addCommand(ComponentSettings())
 
-class Example(command.MarkdownCommandComponent):
+class Example(command.CommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'example'
 
@@ -39,12 +39,12 @@ class Example(command.MarkdownCommandComponent):
     HTML_TRANSLATOR = None
 
     def __init__(self, *args, **kwargs):
-        command.MarkdownCommandComponent.__init__(self, *args, **kwargs)
+        command.CommandComponent.__init__(self, *args, **kwargs)
         #self.__tex_translator = None
         #self.__html_translator = None
 
     def init(self, *args, **kwargs):
-        command.MarkdownCommandComponent.init(self, *args, **kwargs)
+        command.CommandComponent.init(self, *args, **kwargs)
         self.__counts = collections.defaultdict(int)
         # TODO: check current type
         #self.__html_renderer = base.MaterializeRenderer()
@@ -67,7 +67,7 @@ class Example(command.MarkdownCommandComponent):
 
     @staticmethod
     def defaultSettings():
-        settings = command.MarkdownCommandComponent.defaultSettings()
+        settings = command.CommandComponent.defaultSettings()
         settings['caption'] = (None, "The caption to use for the code specification example.")
         settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
         settings['preview'] = (True, "Display a preview of the rendered result.")
@@ -123,13 +123,13 @@ class Example(command.MarkdownCommandComponent):
 
         return master
 
-class ComponentSettings(command.MarkdownCommandComponent):
+class ComponentSettings(command.CommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'settings'
 
     @staticmethod
     def defaultSettings():
-        settings = command.MarkdownCommandComponent.defaultSettings()
+        settings = command.CommandComponent.defaultSettings()
         settings['module'] = (None, "The name of the module containing the object.")
         settings['object'] = (None, "The name of the object to import from the 'module'.")
         settings['caption'] = (None, "The caption to use for the settings table created.")

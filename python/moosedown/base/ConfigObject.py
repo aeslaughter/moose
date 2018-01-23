@@ -1,3 +1,5 @@
+import moosedown
+
 class ConfigObject(object):
 
     @staticmethod
@@ -12,8 +14,6 @@ class ConfigObject(object):
 
     def update(self, **kwargs):
 
-    #    print 'CONFIG:', self.__config
-    #    print 'KWARGS:', kwargs
 
         unknown = []
         for key, value in kwargs.iteritems():
@@ -41,3 +41,48 @@ class ConfigObject(object):
 
     def get(self, name):
         return self.__config[name][0]
+
+
+class TranslatorObject(object):
+    """
+    Config object that requires a translator object be created via an init method.
+    """
+    def __init__(self):
+        self.__translator = None
+
+    def init(self, translator):
+        """
+        Called by Translator object, this allows the objects to be
+        created independently then passed into the translator, which then
+        calls this method to provide access to translator for when the actual
+        tokenize and render commands are called.
+        """
+        if self.__translator is not None:
+            msg = "The component has already been initialized, this method should not " \
+                  "be called twice."
+            raise moosedown.common.exceptions.MooseDocsException(msg)
+
+        if not isinstance(translator, moosedown.base.translators.Translator):
+            msg = "The supplied object must be of type '{}', but a '{}' was provided."
+            raise moosedown.common.exceptions.MooseDocsException(msg,
+                    moosedown.base.translators.Translator,
+                    type(translator))
+
+        self.__translator = translator
+
+    @property
+    def translator(self):
+        """
+        Returns the Translator object as property.
+        """
+        if self.__translator is None:
+            msg = "Component object must be initialized prior to accessing this property."
+            raise moosedown.common.exceptions.MooseDocsException(msg)
+        return self.__translator
+
+    def reinit(self):
+        """
+        Called by the Translator prior to converting, this allows for state to be
+        reset when using livereload.
+        """
+        pass

@@ -33,7 +33,7 @@ class AlertCommandBase(command.BlockCommand):
 
     @staticmethod
     def defaultSettings():
-        settings = command.MarkdownCommandComponent.defaultSettings()
+        settings = command.CommandComponent.defaultSettings()
         settings['title'] = (None, "The optional alert title.")
         return settings
 

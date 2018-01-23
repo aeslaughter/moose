@@ -12,12 +12,11 @@ import moosedown
 from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import html, latex, base, tokens, page
-from ConfigObject import ConfigObject
-from components import RendererComponent
+from ConfigObject import ConfigObject, TranslatorObject
 
 LOG = logging.getLogger(__name__)
 
-class Renderer(ConfigObject):
+class Renderer(ConfigObject, TranslatorObject):
     """
     Base renderer for converting AST to an output format.
     """
@@ -27,9 +26,9 @@ class Renderer(ConfigObject):
 
     def __init__(self, **kwargs):
         ConfigObject.__init__(self, **kwargs)
+        TranslatorObject.__init__(self)
         self.__functions = dict()  # functions on the RenderComponent to call
         self.__components = []     # RenderComponent objects
-        self.translator = None
 
     def add(self, token, component):
         """
@@ -44,9 +43,10 @@ class Renderer(ConfigObject):
             msg = "The supplied token must be a {}, but a {} was provided."
             raise exceptions.MooseDocsException(msg, type, type(token))
 
-        if not isinstance(compoment, RenderComponent):
+        if not isinstance(compoment, moosedown.components.RenderComponent):
             msg = "The supplied component must be a {} but a {} was provided."
-            raise exceptions.MooseDocsException(msg, RenderComponent, type(compoment))g
+            raise exceptions.MooseDocsException(msg, moosedown.comonents.RenderComponent,
+                                                type(compoment))
 
         self.__components.append(component)
         self.__functions[token] = self.method(component)
@@ -89,7 +89,7 @@ class Renderer(ConfigObject):
         Inputs:
             token[tree.token]: token for which the associated RenderComponent function is desired.
         """
-        try
+        try:
             return self.__functions[type(token)]
         except KeyError:
             msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
