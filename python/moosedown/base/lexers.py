@@ -1,3 +1,6 @@
+"""
+Module for defining the default Lexer objects that plugin to base.Reader objects.
+"""
 import collections
 import logging
 import traceback
@@ -8,35 +11,67 @@ from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
 
-class LexerInformation(object): #TODO: TokenMetaData ???
-    #TODO: make these methods better __contains__ should do groupdict() stuff
-    #      __get__ should call group
-    #      __iter__ should loop groups
-    #      createToken should be createToken(self, parent, info)
-    #      createHTML should be self, parent, token
-    #      node should change to page
-    def __init__(self, match=None, pattern=None, line=None):
+class LexerInformation(object):
+    """
+    Lexer meta data object to keep track of necessary information for strong error reporting.
 
-        # TODO: make setters and getters that check types
+    Inputs:
+        match[re.Match]: The regex match object from which a Token object is to be created.
+        pattern[Grammer.Pattern]: Grammer pattern definition, see Grammer.py.
+        line[int]: Current line number in supplied parsed text.
+    """
+    def __init__(self, match=None, pattern=None, line=None):
         self.__match = match
-        self.pattern = pattern
-        self.line = line
+        self.__pattern = pattern
+        self.__line = line
+
+    @property
+    def line(self):
+        """
+        Return the line number for the regex match.
+        """
+        return self.__line
+
+    @property
+    def pattern(self):
+        """
+        Return the Grammer.Pattern for the regex match.
+        """
+        return self.__pattern
 
     def __getitem__(self, value):
+        """
+        Return the regex group by number or name.
+
+        Inputs:
+            value[int|str]: The regex group index or name.
+        """
         return self.__match.group(value)
 
     def keys(self):
+        """
+        List of named regex groups.
+        """
         return self.__match.groupdict().keys()
 
     def iteritems(self):
+        """
+        Iterate over the named groups.
+        """
         for key, value in self.__match.groupdict().iteritems():
             yield key, value
 
     def __contains__(self, value):
+        """
+        Check if a named group exists in the regex match.
+        """
         return value in self.__match.groupdict()
 
     def __str__(self):
-        return 'line:{} match:{} pattern:{}'.format(self.line, self.__match, self.pattern)
+        """
+        Return a resonable string for debugging.
+        """
+        return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match, self.__pattern)
 
 
 class Lexer(object):
@@ -45,10 +80,6 @@ class Lexer(object):
 
     def tokenize(self, parent, grammer, text, line=1):
 
-        #if node is None:
-        #    node = parent.node
-
-        #text = node.content
 
         if not isinstance(text, unicode):
             raise TypeError("The supplied text to the lexer must be of type 'unicode' but '{}' was provided.".format(type(text).__name__))
