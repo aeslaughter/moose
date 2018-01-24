@@ -90,19 +90,6 @@ class TokenComponent(Component):
             parent[tokens.Token]: The parent node in the AST for the token being created.
         """
 
-        """TODO: These type checks are likely too aggressive, this method iis called often so should
-                 be as slim as possible. This is called from the Lexer to there is little worry
-                 about the wrong types.
-        # Type checking
-        if not isinstance(info, LexerInformation):
-            msg = "The 'info' input must be a {} object, but a {} was provided."
-            raise exceptions.TokenizeException(msg, LexerInformation, type(info))
-
-        if not isinstance(parent, tokens.Token):
-            msg = "The 'parent' input must be a {} object, but a {} was provided."
-            raise exceptions.TokenizeException(msg, tokens.Token, type(parent))
-        """
-
         # Define the settings
         defaults = self.defaultSettings()
         if self.PARSE_SETTINGS and ('settings' in info):

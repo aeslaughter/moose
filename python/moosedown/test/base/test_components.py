@@ -75,28 +75,14 @@ class TestTokenComponent(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             comp.createToken([], [])
 
-        with self.assertRaises(exceptions.TokenizeException) as e:
-            comp([], [])
-        self.assertIn("The 'info' input", e.exception.message)
-
-        with self.assertRaises(exceptions.TokenizeException) as e:
-            comp([], [])
-        self.assertIn("The 'info' input", e.exception.message)
-
-        info = mock.Mock(spec=LexerInformation)
-        with self.assertRaises(exceptions.TokenizeException) as e:
-            comp(info, [])
-        self.assertIn("The 'parent' input", e.exception.message)
-
         # Test defaultSettings return type check
         class TestToken(TokenComponent):
             @staticmethod
             def defaultSettings():
                 pass
 
-        token = TestToken()
-        with self.assertRaises(exceptions.TokenizeException) as e:
-            token(info, tokens.Token())
+        with self.assertRaises(exceptions.MooseDocsException) as e:
+            TestToken()
         self.assertIn("must return a dict", e.exception.message)
 
     def testCreateToken(self):
