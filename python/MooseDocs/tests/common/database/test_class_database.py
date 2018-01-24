@@ -29,10 +29,8 @@ class TestMooseClassDatabase(unittest.TestCase):
         """
         Create class database.
         """
-        local_moose = os.path.relpath(os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include'),
-                                      MooseDocs.ROOT_DIR)
-        locations = ['include', local_moose]
-        cls.database = MooseClassDatabase('http::/testing/', locations)
+        include = ['framework/include/**']
+        cls.database = MooseClassDatabase('http::/testing/', include)
 
     def testBasic(self):
         """
@@ -69,8 +67,6 @@ class TestMooseClassDatabase(unittest.TestCase):
         self.assertEqual(info[0].remote,
                          'http::/testing/framework/include/base/MooseObjectWarehouse.h')
         self.assertEqual(info[0].filename, '/framework/include/base/MooseObjectWarehouse.h')
-
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

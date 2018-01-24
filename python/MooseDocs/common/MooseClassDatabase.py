@@ -28,22 +28,25 @@ class MooseClassDatabase(object):
 
     Inputs:
         repo_url[str]: Location of the remote for creating offsite links.
-        locations[list]: List of locations to search for .h files.
+        include[list]: List of locations to search for .h files, using */** syntax defined in
+                       moose_docs_import.py.
+        exclude[list]: List of locations to exclude for .h files.
     """
     DEFINITION_RE = re.compile(r'class\s*(?P<class>\w+)\b[^;]')
     ClassInfo = collections.namedtuple('ClassInfo', 'filename remote')
 
-    def __init__(self, repo_url, locations):
+    def __init__(self, repo_url, include, exclude=None):
 
         self.__repo_url = repo_url.rstrip('/')
         self.__definitions = dict()
 
-        for loc in locations:
-            for base, _, files in os.walk(os.path.join(MooseDocs.ROOT_DIR, loc), topdown=False):
-                for fname in files:
-                    if fname.endswith('.h'):
-                        full_file = os.path.join(base, fname)
-                        self.__search(full_file)
+
+        files = MooseDocs.common.moose_docs_import(base='.',
+                                                   include=include,
+                                                   exclude=exclude,
+                                                   extensions=('.h'))
+        for full_file in files:
+            self.__search(full_file)
 
     def __getitem__(self, value):
         """

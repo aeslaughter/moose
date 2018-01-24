@@ -47,9 +47,7 @@ class TemplateExtension(MooseMarkdownExtension):
                               "(e.g., http://github.com/idaholab/moose)."]
         config['branch'] = ['master', "The branch name to consider in repository links."]
 
-        local_moose = os.path.relpath(os.path.join(MooseDocs.MOOSE_DIR, 'framework', 'include'),
-                                      MooseDocs.ROOT_DIR)
-        config['include_dirs'] = [['include', local_moose],
+        config['include_dirs'] = [['include/**'],
                                   "List of include and source directories that contain the "
                                   ".C/.h files."]
         return config
