@@ -15,6 +15,7 @@
 #include "DataIO.h"
 #include "MooseTypes.h"
 #include "VariableWarehouse.h"
+#include "InputParameters.h"
 
 // libMesh
 #include "libmesh/exodusII_io.h"
@@ -30,6 +31,8 @@ class MooseVariable;
 class MooseMesh;
 class SubProblem;
 class SystemBase;
+class InputParameters;
+
 
 // libMesh forward declarations
 namespace libMesh
@@ -200,10 +203,11 @@ public:
    * @param scale_factor the scaling factor for the variable
    * @param active_subdomains a list of subdomain ids this variable is active on
    */
-  virtual void addVariable(const std::string & var_name,
-                           const FEType & type,
-                           Real scale_factor,
-                           const std::set<SubdomainID> * const active_subdomains = NULL);
+  // virtual void addVariable(const std::string & var_name,
+  //                         const FEType & type,
+  //                         Real scale_factor,
+  //                        const std::set<SubdomainID> * const active_subdomains = NULL);
+  virtual void addVariable(const std::string & var_type, const std::string & name, InputParameters parameters);
 
   /**
    * Query a system for a variable

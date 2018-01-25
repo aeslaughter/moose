@@ -20,13 +20,9 @@
 #include "libmesh/quadrature.h"
 #include "libmesh/dense_vector.h"
 
-MooseVariable::MooseVariable(unsigned int var_num,
-                             const FEType & fe_type,
-                             SystemBase & sys,
-                             Assembly & assembly,
-                             Moose::VarKindType var_kind)
-  : MooseVariableBase(var_num, fe_type, sys, assembly, var_kind),
 
+MooseVariable::MooseVariable(const InputParameters & parameters) :
+    MooseVariableBase(parameters),
     _qrule(_assembly.qRule()),
     _qrule_face(_assembly.qRuleFace()),
     _qrule_neighbor(_assembly.qRuleNeighbor()),

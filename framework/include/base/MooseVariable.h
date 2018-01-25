@@ -14,6 +14,9 @@
 #include "MooseVariableBase.h"
 
 // Forward declarations
+template<>
+InputParameters validParams<MooseVariable>();
+
 class Assembly;
 class SubProblem;
 class SystemBase;
@@ -38,12 +41,9 @@ class NumericVector;
 class MooseVariable : public MooseVariableBase
 {
 public:
-  MooseVariable(unsigned int var_num,
-                const FEType & fe_type,
-                SystemBase & sys,
-                Assembly & assembly,
-                Moose::VarKindType var_kind);
-  virtual ~MooseVariable();
+
+  MooseVariable(const InputParameters & paramters);
+  ~MooseVariable();
 
   /**
    * Clear out the dof indices.  We do this in case this variable is not going to be prepared at

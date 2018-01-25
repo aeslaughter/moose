@@ -22,6 +22,7 @@
 #include "ScalarInitialCondition.h"
 #include "Assembly.h"
 #include "MooseMesh.h"
+#include "InputParameters.h"
 
 /// Free function used for a libMesh callback
 void
@@ -492,6 +493,25 @@ SystemBase::addVector(const std::string & vector_name, const bool project, const
 }
 
 void
+SystemBase::addVariable(const std::string & var_type, const std::string & name, InputParameters parameters)
+{
+  for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
+  {
+    std::shared_ptr<MooseVariableBase> var =
+          _factory.create<MooseVariableBase>(var_type, name, parameters, tid);
+
+    _vars[tid].add(name, var.get());
+
+    if (var->blockRestricted())
+      for (const SubdomainID & id : var->blockIDs())
+        _var_map[var->number()].insert(id);
+    else
+        _var_map[var->number()] = std::set<SubdomainID>();
+  }
+}
+
+/*
+void
 SystemBase::addVariable(const std::string & var_name,
                         const FEType & type,
                         Real scale_factor,
@@ -520,6 +540,7 @@ SystemBase::addVariable(const std::string & var_name,
          ++it)
       _var_map[var_num].insert(*it);
 }
+*/
 
 void
 SystemBase::addScalarVariable(const std::string & var_name,

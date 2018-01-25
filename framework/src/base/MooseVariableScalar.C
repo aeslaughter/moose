@@ -20,12 +20,8 @@
 
 #include <limits>
 
-MooseVariableScalar::MooseVariableScalar(unsigned int var_num,
-                                         const FEType & fe_type,
-                                         SystemBase & sys,
-                                         Assembly & assembly,
-                                         Moose::VarKindType var_kind)
-  : MooseVariableBase(var_num, fe_type, sys, assembly, var_kind)
+MooseVariableScalar::MooseVariableScalar(const InputParameters & parameters) :
+    MooseVariableBase(parameters)
 {
 }
 

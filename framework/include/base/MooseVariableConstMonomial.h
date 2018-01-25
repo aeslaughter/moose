@@ -13,15 +13,14 @@
 #include "MooseTypes.h"
 #include "MooseVariable.h"
 
+class MooseVariableConstMonomial;
+template<>
+InputParameters validParams<MooseVariableConstMonomial>();
+
 class MooseVariableConstMonomial : public MooseVariable
 {
 public:
-  MooseVariableConstMonomial(unsigned int var_num,
-                             const FEType & fe_type,
-                             SystemBase & sys,
-                             Assembly & assembly,
-                             Moose::VarKindType var_kind);
-
+  MooseVariableConstMonomial(const InputParameters & parameters);
   virtual void computeElemValues() override;
   virtual void computeElemValuesFace() override;
   virtual void computeNeighborValuesFace() override;

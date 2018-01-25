@@ -10,6 +10,8 @@
 #ifndef MOOSEVARIABLEBASE_H
 #define MOOSEVARIABLEBASE_H
 
+#include "MooseObject.h"
+#include "BlockRestrictable.h"
 #include "MooseTypes.h"
 #include "MooseArray.h"
 
@@ -23,6 +25,11 @@ namespace libMesh
 class DofMap;
 class Variable;
 }
+
+class MooseVariableBase;
+
+template<>
+InputParameters validParams<MooseVariableBase>();
 
 typedef MooseArray<Real> VariableValue;
 typedef MooseArray<RealGradient> VariableGradient;
@@ -41,15 +48,10 @@ class SubProblem;
 class SystemBase;
 class MooseMesh;
 
-class MooseVariableBase
+class MooseVariableBase : public MooseObject, public BlockRestrictable
 {
 public:
-  MooseVariableBase(unsigned int var_num,
-                    const FEType & fe_type,
-                    SystemBase & sys,
-                    Assembly & assembly,
-                    Moose::VarKindType var_kind);
-  virtual ~MooseVariableBase();
+  MooseVariableBase(const InputParameters & parameters);
 
   /**
    * Get variable number coming from libMesh
@@ -69,8 +71,9 @@ public:
 
   /**
    * Get the variable name
+   * TODO:MooseVariableToMooseObject (see #10601): this method will be removed
    */
-  const std::string & name() const;
+  virtual const std::string & name() const;
 
   /**
    * Get all global dofindices for the variable
@@ -117,25 +120,34 @@ public:
   virtual bool isNodal() const = 0;
 
 protected:
-  /// variable number (from libMesh)
-  unsigned int _var_num;
-  /// The FEType associated with this variable
-  FEType _fe_type;
-  /// variable number within MOOSE
-  unsigned int _index;
-  Moose::VarKindType _var_kind;
-  /// Problem this variable is part of
-  SubProblem & _subproblem;
+
   /// System this variable is part of
   SystemBase & _sys;
+
+  /// The FEType associated with this variable
+  FEType _fe_type;
+
+  /// variable number (from libMesh)
+  unsigned int _var_num;
+
+  /// variable number within MOOSE
+  unsigned int _index;
+
+  /// Variable type (see MooseTypes.h)
+  Moose::VarKindType _var_kind;
+
+  /// Problem this variable is part of
+  SubProblem & _subproblem;
 
   /// libMesh variable object for this variable
   const Variable & _variable;
 
   /// Assembly data
   Assembly & _assembly;
+
   /// DOF map
   const DofMap & _dof_map;
+
   /// DOF indices
   std::vector<dof_id_type> _dof_indices;
 
@@ -144,6 +156,7 @@ protected:
 
   /// scaling factor for this variable
   Real _scaling_factor;
+
 };
 
 #endif /* MOOSEVARIABLEBASE_H */

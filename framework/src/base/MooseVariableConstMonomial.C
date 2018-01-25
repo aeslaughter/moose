@@ -14,14 +14,19 @@
 
 #include "libmesh/quadrature.h"
 
-MooseVariableConstMonomial::MooseVariableConstMonomial(unsigned int var_num,
-                                                       const FEType & fe_type,
-                                                       SystemBase & sys,
-                                                       Assembly & assembly,
-                                                       Moose::VarKindType var_kind)
-  : MooseVariable(var_num, fe_type, sys, assembly, var_kind)
+template<>
+InputParameters
+validParams<MooseVariableConstMonomial>()
+{
+  InputParameters params = validParams<MooseVariable>();
+  return params;
+}
+
+MooseVariableConstMonomial::MooseVariableConstMonomial(const InputParameters & parameters) :
+    MooseVariable(parameters)
 {
 }
+
 
 void
 MooseVariableConstMonomial::computeElemValuesHelper(const unsigned & nqp, const Real & phi)

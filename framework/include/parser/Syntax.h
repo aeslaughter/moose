@@ -119,6 +119,9 @@ public:
                            const std::string & action,
                            const std::string & task) const;
 
+  //void registerPrimarySyntax(const std::string & moose_base, const std::string & syntax);
+
+
 protected:
   /// The list of registered tasks and a flag indicating whether or not they are required
   std::map<std::string, bool> _registered_tasks;
