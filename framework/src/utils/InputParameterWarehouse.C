@@ -56,7 +56,6 @@ InputParameterWarehouse::addInputParameters(const std::string & name,
     }
   }
 
-  // Set the name and tid parameters
   ptr->addPrivateParam<THREAD_ID>("_tid", tid);
   ptr->allowCopy(false); // no more copies allowed
 

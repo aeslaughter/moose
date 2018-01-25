@@ -28,20 +28,21 @@ validParams<MooseVariableBase>()
   params += validParams<BlockRestrictable>();
 
   MooseEnum order("CONSTANT=0 FIRST=1 SECOND=2 THIRD=3 FOURTH=4", "FIRST", true);
-  params.addParam<MooseEnum>(order, "Order of the FE shape function to use for this variable (additional orders not listed here are allowed, depending on the family).");
+  params.addParam<MooseEnum>("order", order, "Order of the FE shape function to use for this variable (additional orders not listed here are allowed, depending on the family).");
 
   MooseEnum family("LAGRANGE=0 MONOMIAL=2 HERMITE=22 SCALAR=31 HIERARCHIC=1 CLOUGH=21 XYZ=5 SZABAB=4 BERNSTEIN=3 L2_LAGRANGE=7 L2_HIERARCHIC=6", "LAGRANGE");
-  params.addParam<MooseEnum>(family, "Specifies the family of FE shape functions to use for this variable.");
+  params.addParam<MooseEnum>("family", family, "Specifies the family of FE shape functions to use for this variable.");
 
   params.addParam<Real>("initial_condition", "Specifies the initial condition for this variable");
 
   // Advanced input options
   params.addParam<Real>("scaling", 1.0, "Specifies a scaling factor to apply to this variable");
-  //params.addParam<bool>("eigen", false, "True to make this variable an eigen variable");
+  params.addParam<bool>("eigen", false, "True to make this variable an eigen variable");
   params.addParamNamesToGroup("scaling eigen", "Advanced");
 
+  params.registerBase("MooseVariableBase");
   params.addPrivateParam<SystemBase *>("_system_base");
-  params.addPrivateParam<THREAD_ID>("_tid");
+  params.addPrivateParam<FEProblemBase *>("_fe_problem_base");
   params.addPrivateParam<Moose::VarKindType>("_var_kind");
 
   return params;
@@ -50,14 +51,14 @@ validParams<MooseVariableBase>()
 MooseVariableBase::MooseVariableBase(const InputParameters & parameters) :
     MooseObject(parameters),
     BlockRestrictable(this),
-    _sys(*getParam<SystemBase *>("_system_base")),
+    _sys(*getParam<SystemBase *>("_system_base")), //TODO: get from _fe_problem_base
     _fe_type(Utility::string_to_enum<Order>(getParam<MooseEnum>("order")),
              Utility::string_to_enum<FEFamily>(getParam<MooseEnum>("family"))),
     _var_num(_sys.system().add_variable(_name, _fe_type, &blockIDs())),
     _var_kind(getParam<Moose::VarKindType>("_var_kind")),
     _subproblem(_sys.subproblem()),
     _variable(_sys.system().variable(_var_num)),
-    _assembly(_subproblem.assembly(getParam<int>("_tid"))),
+    _assembly(_subproblem.assembly(getParam<THREAD_ID>("_tid"))),
     _dof_map(_sys.dofMap()),
     _mesh(_subproblem.mesh()),
     _scaling_factor(getParam<Real>("scaling"))

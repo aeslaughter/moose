@@ -73,7 +73,7 @@ public:
    * Get the variable name
    * TODO:MooseVariableToMooseObject (see #10601): this method will be removed
    */
-  virtual const std::string & name() const;
+  //virtual const std::string & name() const;
 
   /**
    * Get all global dofindices for the variable

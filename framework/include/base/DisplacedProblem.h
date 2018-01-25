@@ -109,6 +109,16 @@ public:
                                                   const std::string & var_name) override;
   virtual System & getSystem(const std::string & var_name) override;
 
+
+  virtual void addVariable(const std::string & var_type,
+                           const std::string & name,
+                           InputParameters parameters);
+  virtual void addAuxVariable(const std::string & var_type,
+                              const std::string & name,
+                              InputParameters parameters);
+
+
+  /*
   virtual void addVariable(const std::string & var_name,
                            const FEType & type,
                            Real scale_factor,
@@ -124,6 +134,7 @@ public:
                                     Order order,
                                     Real scale_factor = 1.,
                                     const std::set<SubdomainID> * const active_subdomains = NULL);
+  */
 
   // Adaptivity /////
   virtual void initAdaptivity();

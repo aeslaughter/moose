@@ -20,6 +20,13 @@
 #include "libmesh/quadrature.h"
 #include "libmesh/dense_vector.h"
 
+template<>
+InputParameters
+validParams<MooseVariable>()
+{
+  InputParameters params = validParams<MooseVariableBase>();
+  return params;
+}
 
 MooseVariable::MooseVariable(const InputParameters & parameters) :
     MooseVariableBase(parameters),

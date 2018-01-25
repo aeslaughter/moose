@@ -480,6 +480,11 @@
 #include "ElementSideNeighborLayers.h"
 #include "ElementPointNeighbors.h"
 
+// Variables
+#include "MooseVariable.h"
+#include "MooseVariableScalar.h"
+#include "MooseVariableConstMonomial.h"
+
 #include <unistd.h>
 
 // Define the available execute flags for MOOSE. The flags using a hex value are setup to retain the
@@ -910,6 +915,11 @@ registerObjects(Factory & factory)
   // RelationshipManagers
   registerRelationshipManager(ElementSideNeighborLayers);
   registerRelationshipManager(ElementPointNeighbors);
+
+  // MooseVariableBase
+  registerObject(MooseVariable);
+  registerObject(MooseVariableScalar);
+  registerObject(MooseVariableConstMonomial);
 
   registered = true;
 }

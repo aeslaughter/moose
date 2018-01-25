@@ -497,6 +497,8 @@ SystemBase::addVariable(const std::string & var_type, const std::string & name, 
 {
   for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
   {
+    parameters.set<SystemBase *>("_system_base") = this;
+
     std::shared_ptr<MooseVariableBase> var =
           _factory.create<MooseVariableBase>(var_type, name, parameters, tid);
 
@@ -542,6 +544,19 @@ SystemBase::addVariable(const std::string & var_name,
 }
 */
 
+
+ /*
+void
+SystemBase::addScalarVariable(const std::string & var_type, const std::string & name, InputParameters parameters)
+{
+  for (THREAD_ID tid = 0; tid < libMesh::n_threads(); tid++)
+  {
+    std::shared_ptr<MooseVariableBase> var =
+          _factory.create<MooseVariableBase>(var_type, name, parameters, tid);
+}
+ */
+
+ /*
 void
 SystemBase::addScalarVariable(const std::string & var_name,
                               Order order,
@@ -567,6 +582,7 @@ SystemBase::addScalarVariable(const std::string & var_name,
          ++it)
       _var_map[var_num].insert(*it);
 }
+ */
 
 bool
 SystemBase::hasVariable(const std::string & var_name)
