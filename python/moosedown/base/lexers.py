@@ -4,10 +4,11 @@ Module for defining the default Lexer objects that plugin to base.Reader objects
 import collections
 import logging
 import traceback
+import types
+import re
 
 import moosedown
 from moosedown import tree, common
-from Grammer import Grammer
 
 LOG = logging.getLogger(__name__)
 
@@ -51,6 +52,11 @@ class Grammer(object):
                                         '>foo': Insert the new definition after the definition
                                                 named 'foo'.
         """
+        common.check_type('name', name, str)
+        common.check_type('regex', regex, type(re.compile('')))
+        ##common.check_type('function', function, types.FunctionType)
+        common.check_type('location', location, (int, str))
+
         self.__patterns.add(name,
                             Grammer.Pattern(name=name, regex=regex, function=function),
                             location)
@@ -58,7 +64,6 @@ class Grammer(object):
     @property
     def patterns(self):
         return self.__patterns
-
 
     def __getitem__(self, key):
         """
