@@ -140,23 +140,43 @@ class LexerInformation(object):
         """
         return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match, self.__pattern)
 
-
 class Lexer(object):
+    """
+    Simple regex base lexer.
+
+    This provides a basic linear means to use regular expressions to tokenize text. The tokenize
+    method starts with the complete text, loops through all the patterns (defined in Grammer
+    object). When a match is found the function attached to the grammer is called. The text is then
+    searched again starting at the end position of the last match.
+    """
     def __init__(self):
-        self._node = None
+        pass
 
     def tokenize(self, parent, grammer, text, line=1):
+        """
+        Perform tokenization of the supplied text.
 
+        Inputs:
+            parent[tree.tokens]: The parent token to which the new token(s) should be attached.
+            grammer[Grammer]: Object containing the grammer (defined by regexs) to search.
+            text[unicode]: The text to tokenize.
+            line[int]: The line number to startwith, this allows for nested calls to begin with
+                       the correct line.
 
-        if not isinstance(text, unicode):
-            raise TypeError("The supplied text to the lexer must be of type 'unicode' but '{}' was provided.".format(type(text).__name__))
+        NOTE: If the functions attached to the Grammer object raise a TokenizeException it will
+              be caught by this object and converted into an Exception token. This allows for
+              the entire text to be tokenized and have the errors report upon completion. The
+              TokenizeException also contains information about the error, via a LexerInformation
+              object to improve error reports.
+        """
+
+        common.check_type('text', text, unicode, exception=common.TokenizeException)
 
         n = len(text)
         pos = 0
         while (pos < n):
             match = None
             for pattern in grammer:
-                #print repr(text[pos:])
                 match = pattern.regex.match(text, pos)
                 if match:
                     info = LexerInformation(match, pattern, line)
@@ -173,13 +193,10 @@ class Lexer(object):
                         continue
 
             if match is None:
-                #print pattern
-                #print '---------------------'
-                #print repr(text[pos:])
-                #print 'Stoped at line ', info.line
                 break
-        #if pos < n: #TODO: better exception
-        #    print repr(text[pos:])
+
+        #if pos < n: 
+            #TODO: better exception
 
     def buildObject(self, parent, info):
         obj = info.pattern.function(info, parent)
