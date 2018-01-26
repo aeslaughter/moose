@@ -947,6 +947,7 @@ Assembly::init(const CouplingMatrix * cm)
     unsigned int j = jvar->number();
     for (const auto & ivar : vars)
     {
+      std::cout << "Variable(i, j): (" << jvar->number() << ", " << ivar->number() << ") " << jvar->name() << " " << ivar->name() << std::endl;
       unsigned int i = ivar->number();
       if ((*_cm)(i, j) != 0)
         _cm_entry.push_back(std::make_pair(ivar, jvar));

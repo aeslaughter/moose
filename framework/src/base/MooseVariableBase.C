@@ -63,6 +63,9 @@ MooseVariableBase::MooseVariableBase(const InputParameters & parameters) :
     _mesh(_subproblem.mesh()),
     _scaling_factor(getParam<Real>("scaling"))
 {
+
+  std::cout << "Variable " << _name << " " << _var_num << " " << number() << std::endl;
+
 }
 
 const std::vector<dof_id_type> &

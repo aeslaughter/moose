@@ -16,6 +16,8 @@
 #include "MooseTypes.h"
 #include "VariableWarehouse.h"
 #include "InputParameters.h"
+#include "MooseObjectWarehouseBase.h"
+#include "MooseVariableBase.h"
 
 // libMesh
 #include "libmesh/exodusII_io.h"
@@ -505,6 +507,9 @@ protected:
   Moose::VarKindType _var_kind;
 
   std::vector<VarCopyInfo> _var_to_copy;
+
+  /// Storage for MooseVariable objects
+  MooseObjectWarehouseBase<MooseVariableBase> _variable_warehouse;
 };
 
 #define PARALLEL_TRY
