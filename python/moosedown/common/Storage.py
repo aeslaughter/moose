@@ -1,3 +1,6 @@
+"""
+Sorted container for storing objects.
+"""
 
 class Storage(object):
     """

@@ -26,7 +26,7 @@ class Grammer(object):
     def __init__(self):
         self.__patterns = common.Storage(Grammer.Pattern)
 
-    def add(self, name, regex, function, location=-1):
+    def add(self, name, regex, function, location='_end'):
         """
         Method for adding a Token definition to the Grammer object.
 
@@ -52,18 +52,17 @@ class Grammer(object):
                                         '>foo': Insert the new definition after the definition
                                                 named 'foo'.
         """
+
+        # Perform input type checking
         common.check_type('name', name, str)
         common.check_type('regex', regex, type(re.compile('')))
-        ##common.check_type('function', function, types.FunctionType)
+        common.check_type('function', function, types.FunctionType)
         common.check_type('location', location, (int, str))
 
+        # Add the supplied information to the storage.
         self.__patterns.add(name,
                             Grammer.Pattern(name=name, regex=regex, function=function),
                             location)
-
-    @property
-    def patterns(self):
-        return self.__patterns
 
     def __getitem__(self, key):
         """
@@ -73,6 +72,7 @@ class Grammer(object):
 
     def __iter__(self):
         """
+        Provide iterator acces to the patterns.
         """
         for obj in self.__patterns:
             yield obj
