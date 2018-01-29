@@ -19,9 +19,9 @@ def check_type(name, var, var_type, exc=exceptions.MooseDocsException):
     """
     if var_type is types.FunctionType:
         if not callable(var):
-            msg = "The argument '{}' must be callable {} but {} was provided."
-            raise exc(msg.format(name, type(var), var_type))
+            msg = "The argument '{}' must be callable but {} was provided."
+            raise exc(msg.format(name, type(var)))
     else:
         if not isinstance(var, var_type):
             msg = "The argument '{}' must be of type {} but {} was provided."
-            raise exc(msg.format(name, type(var), var_type))
+            raise exc(msg.format(name, var_type, type(var)))

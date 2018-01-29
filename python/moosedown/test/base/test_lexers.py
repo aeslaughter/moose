@@ -4,6 +4,7 @@ Tests for Lexer and related objects.
 """
 import re
 import unittest
+from moosedown.tree import tokens
 from moosedown.base import lexers
 from moosedown.common import exceptions
 
@@ -57,7 +58,7 @@ class TestLexerInformation(unittest.TestCase):
     """
     Test LexerInformation class that stores parsing data.
     """
-    def test(self):
+    def testInfo(self):
         regex = re.compile(r'(?P<key>foo)')
         match = regex.search('foo bar')
 
@@ -71,6 +72,86 @@ class TestLexerInformation(unittest.TestCase):
             self.assertEqual(value, 'foo')
         self.assertIn('key', info)
         self.assertIn('line:42', str(info))
+
+class FooBar(tokens.Word):
+    """Token class for testing lexer."""
+    pass
+
+class FooBarComponent(object):
+    """Class for testing lexer."""
+    def __call__(self, info, parent):
+        content = info['content']
+        if content in (u'foo', u'bar'):
+            return FooBar(parent, content=content)
+
+class WordComponent(object):
+    """Class for testing lexer."""
+    def __call__(self, info, parent):
+        return tokens.Word(parent, content=info['content'])
+
+class TestLexer(unittest.TestCase):
+    """
+    Test basic operation of Lexer class.
+    """
+    def testTokenize(self):
+        root = tokens.Token(None)
+        grammer = lexers.Grammer()
+        grammer.add('foo', re.compile('(?P<content>\w+) *'), FooBarComponent())
+        grammer.add('word', re.compile('(?P<content>\w+) *'), WordComponent())
+
+        lexer = lexers.Lexer()
+
+        # Basic
+        lexer.tokenize(root, grammer, u'foo bar')
+        self.assertIsInstance(root(0), FooBar)
+        self.assertEqual(root(0).content, u'foo')
+        self.assertIsInstance(root(1), FooBar)
+        self.assertEqual(root(1).content, u'bar')
+
+        # Fall through
+        root = tokens.Token(None)
+        lexer.tokenize(root, grammer, u'foo other bar')
+        self.assertIsInstance(root(0), FooBar)
+        self.assertEqual(root(0).content, u'foo')
+        self.assertIsInstance(root(1), tokens.Word)
+        self.assertNotIsInstance(root(1), FooBar)
+        self.assertEqual(root(1).content, u'other')
+        self.assertIsInstance(root(2), FooBar)
+        self.assertEqual(root(2).content, u'bar')
+
+        # Extra
+        root = tokens.Token(None)
+        lexer.tokenize(root, grammer, u'foo ???')
+        self.assertIsInstance(root(0), FooBar)
+        self.assertEqual(root(0).content, u'foo')
+        self.assertIsInstance(root(1), tokens.Exception)
+
+class EmptyComponent(object):
+    """
+    Class for testing RecursiveLexer.
+    """
+    def __call__(self, info, parent):
+        return tokens.Token(parent)
+
+class TestRecursiveLexer(unittest.TestCase):
+    """
+    Test operation of RecursiveLexer class.
+    """
+    def testTokenize(self):
+        lexer = lexers.RecursiveLexer('block', 'inline')
+        lexer.add('block', 'foo', re.compile('(?P<inline>\w+) *'), EmptyComponent())
+        lexer.add('inline', 'bar', re.compile('(?P<content>\w)'), WordComponent())
+
+        root = tokens.Token(None)
+        lexer.tokenize(root, lexer.grammer(), u'foo')
+        self.assertIsInstance(root(0), tokens.Token)
+        self.assertNotIsInstance(root(0), tokens.Word)
+        self.assertIsInstance(root(0)(0), tokens.Word)
+        self.assertEqual(root(0)(0).content, u'f')
+        self.assertIsInstance(root(0)(1), tokens.Word)
+        self.assertEqual(root(0)(1).content, u'o')
+        self.assertIsInstance(root(0)(2), tokens.Word)
+        self.assertEqual(root(0)(2).content, u'o')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

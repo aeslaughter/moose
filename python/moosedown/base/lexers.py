@@ -169,8 +169,7 @@ class Lexer(object):
               TokenizeException also contains information about the error, via a LexerInformation
               object to improve error reports.
         """
-
-        common.check_type('text', text, unicode, exception=common.TokenizeException)
+        common.check_type('text', text, unicode, exc=common.TokenizeException)
 
         n = len(text)
         pos = 0
@@ -195,14 +194,29 @@ class Lexer(object):
             if match is None:
                 break
 
-        #if pos < n: 
-            #TODO: better exception
+        # Produce Exception token if text remains that was not matched
+        if pos < n:
+            info = LexerInformation(None, None, line)
+            obj = tree.tokens.Exception(parent, info=info, traceback=None)
 
     def buildObject(self, parent, info):
         obj = info.pattern.function(info, parent)
         return obj
 
 class RecursiveLexer(Lexer):
+    """
+    A lexer that accepts mulitple grammers and automatically processes the content recusively
+    base on regex group names.
+
+    Inputs:
+        base[str]: The starting (or base) grammer group name to begin tokenization.
+        *args: Additional grammer group names that will be included.
+
+    Example:
+       Given a regular expression such as '(?P<foo>.*>)'. If this object has a 'grammer' object
+       defined with the name 'foo', tokenize will automatically be called with the content
+       of the 'foo' group using the 'foo' grammer.
+    """
     def __init__(self, base, *args):
         Lexer.__init__(self)
         self._grammers = collections.OrderedDict()
@@ -211,17 +225,32 @@ class RecursiveLexer(Lexer):
             self._grammers[name] = Grammer()
 
     def grammer(self, group=None):
+        """
+        Return the Grammer object by group name.
+
+        Inputs:
+            group[str]: The name of the grammer group to return, if not given the base is returned.
+        """
         if group is None:
             group = self._grammers.keys()[0]
         return self._grammers[group]
 
     def grammers(self):
+        """
+        Return the complete dictionary of Grammer objects.
+        """
         return self._grammers
 
     def add(self, group, *args):
+        """
+        Append a component to the provided group.
+        """
         self.grammer(group).add(*args)
 
     def buildObject(self, parent, info):
+        """
+        Override the Lexer.buildObject method to recursively tokenize base on group names.
+        """
         obj = super(RecursiveLexer, self).buildObject(parent, info)
         for key, grammer in self._grammers.iteritems():
             if key in info.keys():
