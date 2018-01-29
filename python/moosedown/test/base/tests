@@ -3,12 +3,16 @@
     type = PythonUnitTest
     input = test_components.py
   []
+  [lexer]
+    type = PythonUnitTest
+    input = test_lexers.py
+  []
   [translator]
     type = PythonUnitTest
-    input = test_Translator.py
+    input = test_translators.py
   []
   [reader]
     type = PythonUnitTest
-    input = test_Reader.py
+    input = test_readers.py
   []
 []

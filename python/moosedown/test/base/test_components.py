@@ -8,9 +8,30 @@ import inspect
 
 from moosedown.tree import tokens
 from moosedown.common import exceptions
-from moosedown.base.components import Component, TokenComponent, RenderComponent
+from moosedown.base.components import Component, TokenComponent, RenderComponent, Extension
 from moosedown.base.lexers import Lexer, LexerInformation
 from moosedown.base import Translator, Reader, Renderer
+
+class TestExtension(unittest.TestCase):
+    """
+    Test the Extension class.
+    """
+    def testExtend(self):
+        """
+        Test the extend method.
+        """
+        class ExtTester(Extension):
+            """Dummy extension for testing."""
+            def __init__(self, *args, **kwargs):
+                Extension.__init__(self, *args, **kwargs)
+                self.called = False
+            def extend(self, reader, renderer):
+                self.called = True
+
+        ext = ExtTester()
+        self.assertFalse(ext.called)
+        t = Translator(Reader(Lexer()), Renderer(), extensions=[ext])
+        self.assertTrue(ext.called)
 
 class TestComponent(unittest.TestCase):
     """

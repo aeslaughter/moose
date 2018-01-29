@@ -8,6 +8,21 @@ from lexers import LexerInformation
 from translators import Translator
 from ConfigObject import TranslatorObject
 
+class Extension(TranslatorObject):
+    """
+    Base class for creating extensions. An extension is simply a mechanism to allow for
+    the creation of reader/renderer components to be added to the translation process.
+
+    All aspects of the MooseDocs system rely on Extension objects. These extensions are passed
+    to the Translator object. The translator calls the extend method of the extension.
+    """
+
+    def extend(self, reader, renderer):
+        """
+        Method for adding reader and renderering components.
+        """
+        pass
+
 class Component(TranslatorObject):
     """
     Each extension is made up of components, both for tokenizing and rendering. The
