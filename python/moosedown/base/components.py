@@ -1,21 +1,26 @@
 """
-Component objects are used for defining extensions for translating from
-markdown to HTML/LaTeX.
+Component objects are used for defining extensions for translating from markdown to HTML/LaTeX.
 """
 from moosedown.common import exceptions, parse_settings
 from moosedown.tree import tokens
 from lexers import LexerInformation
 from translators import Translator
-from ConfigObject import TranslatorObject
+from ConfigObject import ConfigObject, TranslatorObject
 
-class Extension(TranslatorObject):
+class Extension(ConfigObject, TranslatorObject):
     """
     Base class for creating extensions. An extension is simply a mechanism to allow for
     the creation of reader/renderer components to be added to the translation process.
 
     All aspects of the MooseDocs system rely on Extension objects. These extensions are passed
     to the Translator object. The translator calls the extend method of the extension.
+
+    Inputs:
+        kwargs: All key-value pairs are treated as configure options, see ConfigObject.
     """
+    def __init__(self, **kwargs):
+        ConfigObject.__init__(self, **kwargs)
+        TranslatorObject.__init__(self)
 
     def extend(self, reader, renderer):
         """
@@ -25,9 +30,9 @@ class Extension(TranslatorObject):
 
 class Component(TranslatorObject):
     """
-    Each extension is made up of components, both for tokenizing and rendering. The
-    compoments provide a means for defining settings as well as other customizable
-    features required for translation.
+    Each extension is made up of components, both for tokenizing and rendering. The compoments
+    provide a means for defining settings as well as other customizable features required for
+    translation.
     """
     pass
 

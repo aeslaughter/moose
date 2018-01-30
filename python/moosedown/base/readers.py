@@ -95,7 +95,7 @@ class Reader(ConfigObject, TranslatorObject):
             msg = "The parse method 'name' argument requires a {} object, but a {} was provided."
             raise MooseDocsException(msg, str, type(name))
 
-        if not isinstance(component, components.TokenComponent):
+        if not isinstance(component, moosedown.base.components.TokenComponent):
             msg = "The parse method 'root' argument requires a {} object, but a {} was provided."
             raise MooseDocsException(msg, tokens.Token, type(component))
 

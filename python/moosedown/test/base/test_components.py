@@ -32,6 +32,7 @@ class TestExtension(unittest.TestCase):
         self.assertFalse(ext.called)
         t = Translator(Reader(Lexer()), Renderer(), extensions=[ext])
         self.assertTrue(ext.called)
+        self.assertIs(ext.translator, t)
 
 class TestComponent(unittest.TestCase):
     """
