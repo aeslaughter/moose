@@ -46,17 +46,17 @@ class TestComponent(unittest.TestCase):
 
         with self.assertRaises(exceptions.MooseDocsException) as e:
             comp.translator
-        self.assertIn("Component object must be initialized", e.exception.message)
+        self.assertIn("The init() method of", e.exception.message)
 
         with self.assertRaises(exceptions.MooseDocsException) as e:
             comp.init(42)
-        self.assertIn("The supplied object must be of type", e.exception.message)
+        self.assertIn("The argument 'translator' must be of type", e.exception.message)
 
         t = Translator(Reader(Lexer()), Renderer())
         comp.init(t)
         with self.assertRaises(exceptions.MooseDocsException) as e:
             comp.init(t)
-        self.assertIn("The component has already been", e.exception.message)
+        self.assertIn("already been", e.exception.message)
 
         self.assertIs(comp.translator, t)
 

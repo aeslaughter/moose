@@ -5,7 +5,8 @@ Testing for Translator object.
 import unittest
 import mock
 
-import moosedown
+from moosedown.base import Translator, MarkdownReader, HTMLRenderer
+from moosedown.extensions import core
 from moosedown.common import exceptions
 
 
@@ -17,12 +18,9 @@ class TestTranslator(unittest.TestCase):
         """
         Test most basic construction.
         """
-        translator = moosedown.base.Translator(moosedown.base.MarkdownReader(),
-                                               moosedown.base.HTMLRenderer())
-
-        self.assertIsInstance(translator.reader, moosedown.base.MarkdownReader)
-        self.assertIsInstance(translator.renderer, moosedown.base.HTMLRenderer)
-
+        translator = Translator(MarkdownReader(), HTMLRenderer())
+        self.assertIsInstance(translator.reader, MarkdownReader)
+        self.assertIsInstance(translator.renderer, HTMLRenderer)
 
     def testConstructionTypeError(self):
         """
@@ -31,21 +29,19 @@ class TestTranslator(unittest.TestCase):
 
         # Reader
         with self.assertRaises(exceptions.MooseDocsException) as e:
-            translator = moosedown.base.Translator('foo', moosedown.base.HTMLRenderer())
+            translator = Translator('foo', HTMLRenderer())
         self.assertIn("The argument 'reader' must be", e.exception.message)
 
         # Renderer
         with self.assertRaises(exceptions.MooseDocsException) as e:
-            translator = moosedown.base.Translator(moosedown.base.MarkdownReader(), 'foo')
+            translator = Translator(MarkdownReader(), 'foo')
         self.assertIn("The argument 'renderer' must be", e.exception.message)
 
     def testExtensionsFromModule(self):
         """
         Test that extensions can be loaded from a module.
         """
-        t = moosedown.base.Translator(moosedown.base.MarkdownReader(),
-                                      moosedown.base.HTMLRenderer(),
-                                      extensions=[moosedown.extensions.core.CoreExtension()])
+        t = Translator(MarkdownReader(), HTMLRenderer(), extensions=[core.CoreExtension()])
 
         self.assertIn('moosedown.extensions.core.Paragraph',
                       t.reader.lexer.grammer('block'))
@@ -58,9 +54,7 @@ class TestTranslator(unittest.TestCase):
         Test type error on Extension.
         """
         with self.assertRaises(exceptions.MooseDocsException) as e:
-            translator = moosedown.base.Translator(moosedown.base.MarkdownReader(),
-                                                   moosedown.base.HTMLRenderer(),
-                                                   extensions=['foo'])
+            translator = Translator(MarkdownReader(), HTMLRenderer(), extensions=['foo'])
         self.assertIn("The argument 'extensions' must be", e.exception.message)
 
 if __name__ == '__main__':
