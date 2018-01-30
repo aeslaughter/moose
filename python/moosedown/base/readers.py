@@ -30,6 +30,7 @@ class Reader(ConfigObject, TranslatorObject):
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         TranslatorObject.__init__(self)
+        common.check_type('lexer', lexer, RecursiveLexer)
         self.__lexer = lexer
         self.__components = []
 
@@ -59,13 +60,9 @@ class Reader(ConfigObject, TranslatorObject):
         """
 
         # Type checking
-        if not isinstance(root, tokens.Token):
-            msg = "The parse method 'root' argument requires a {} object, but a {} was provided."
-            raise MooseDocsException(msg, tokens.Token, type(root))
-
+        common.check_type('root', root, tokens.Token)
+        common.check_type('content', content, (unicode, page.PageNodeBase))
         node = page.PageNodeBase(content=content) if isinstance(content, unicode) else content
-        if not isinstance(node, page.PageNodeBase):
-            raise TypeError("The supplied content must be a unicode or PageNodeBase object, but {} was provided.".format(type(node)))
 
         # Tokenize
         self.reinit()
@@ -76,33 +73,17 @@ class Reader(ConfigObject, TranslatorObject):
             if isinstance(token, tokens.Exception):
                 self._exceptionHandler(token)
 
-    def add(self, group, name, component, location='_end'):
+    def add(self, group, component, location='_end'):
         """
-        Extened the Reader by adding a TokenComponent.
+        Add a component to Extened the Reader by adding a TokenComponent.
 
         Inputs:
             group[str]: Name of the lexer group to append.
-            name[str]: The name of the component being added.
             component[components.TokenComponent]: The tokenize component to add.
             location[str|int]: The location to insert this component (see Grammer.py)
         """
-        # Check types
-        if not isinstance(group, str):
-            msg = "The parse method 'group' argument requires a {} object, but a {} was provided."
-            raise MooseDocsException(msg, str, type(group))
-
-        if not isinstance(name, str):
-            msg = "The parse method 'name' argument requires a {} object, but a {} was provided."
-            raise MooseDocsException(msg, str, type(name))
-
-        if not isinstance(component, moosedown.base.components.TokenComponent):
-            msg = "The parse method 'root' argument requires a {} object, but a {} was provided."
-            raise MooseDocsException(msg, tokens.Token, type(component))
-
-        if not isinstance(location, str):
-            msg = "The parse method 'location' argument requires a {} object, but a {} was provided."
-            raise MooseDocsException(location, str, type(location))
-
+        # Define the name of the component being added (for sorting within Grammer)
+        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
         self.__components.append(component)
         component.init(self.translator)
         self.__lexer.add(group, name, component.RE, component, location)
@@ -144,12 +125,10 @@ class MarkdownReader(Reader):
         """
         Add a component to the 'block' grammer.
         """
-        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
-        Reader.add(self, moosedown.BLOCK, name, component, location)
+        Reader.add(self, moosedown.BLOCK, component, location)
 
     def addInline(self, component, location='_end'):
         """
         Add an inline component to the 'inline' grammer.
         """
-        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
-        Reader.add(self, moosedown.INLINE, name, component, location)
+        Reader.add(self, moosedown.INLINE, component, location)

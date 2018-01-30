@@ -2,7 +2,7 @@
 import unittest
 import mock
 
-import moosedown
+from moosedown.base import Reader, RecursiveLexer
 
 
 class TestReader(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestReader(unittest.TestCase):
         """
         Test most basic construction.
         """
-        pass
+        reader = Reader(RecursiveLexer('foo'))
 
 
 if __name__ == '__main__':
