@@ -10,7 +10,7 @@ from lexers import LexerInformation #TODO: make this MetaData or something bette
 from readers import Reader
 from renderers import Renderer
 #from components import Extension
-from ConfigObject import ConfigObject
+from __internal__ import ConfigObject
 LOG = logging.getLogger('Translator')
 
 class Translator(ConfigObject):

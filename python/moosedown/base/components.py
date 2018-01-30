@@ -5,7 +5,7 @@ from moosedown.common import exceptions, parse_settings
 from moosedown.tree import tokens
 from lexers import LexerInformation
 from translators import Translator
-from ConfigObject import ConfigObject, TranslatorObject
+from __internal__ import ConfigObject, TranslatorObject
 
 class Extension(ConfigObject, TranslatorObject):
     """
