@@ -9,7 +9,7 @@ import inspect
 from moosedown.tree import tokens
 from moosedown.common import exceptions
 from moosedown.base.components import Component, TokenComponent, RenderComponent, Extension
-from moosedown.base.lexers import Lexer, LexerInformation
+from moosedown.base.lexers import RecursiveLexer, LexerInformation
 from moosedown.base import Translator, Reader, Renderer
 
 class TestExtension(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestExtension(unittest.TestCase):
 
         ext = ExtTester()
         self.assertFalse(ext.called)
-        t = Translator(Reader(Lexer()), Renderer(), extensions=[ext])
+        t = Translator(Reader(RecursiveLexer('foo')), Renderer(), extensions=[ext])
         self.assertTrue(ext.called)
         self.assertIs(ext.translator, t)
 
@@ -52,7 +52,7 @@ class TestComponent(unittest.TestCase):
             comp.init(42)
         self.assertIn("The argument 'translator' must be of type", e.exception.message)
 
-        t = Translator(Reader(Lexer()), Renderer())
+        t = Translator(Reader(RecursiveLexer('foo')), Renderer())
         comp.init(t)
         with self.assertRaises(exceptions.MooseDocsException) as e:
             comp.init(t)
@@ -69,7 +69,7 @@ class TestTokenComponent(unittest.TestCase):
         Test basic construction and errors.
         """
         comp = TokenComponent()
-        reader = Reader(Lexer())
+        reader = Reader(RecursiveLexer('foo'))
         t = Translator(reader, Renderer())
         comp.init(t)
 
@@ -90,7 +90,7 @@ class TestTokenComponent(unittest.TestCase):
         Test that exceptions are raised.
         """
         comp = TokenComponent()
-        reader = Reader(Lexer())
+        reader = Reader(RecursiveLexer('foo'))
         t = Translator(reader, Renderer())
         comp.init(t)
 
@@ -129,7 +129,7 @@ class TestRendererComponent(unittest.TestCase):
     def test(self):
         comp = RenderComponent()
         renderer = Renderer()
-        t = Translator(Reader(Lexer()), renderer)
+        t = Translator(Reader(RecursiveLexer('foo')), renderer)
         comp.init(t)
         self.assertEqual(comp.renderer, renderer)
 

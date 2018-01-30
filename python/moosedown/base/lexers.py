@@ -154,6 +154,9 @@ class Lexer(object):
     method starts with the complete text, loops through all the patterns (defined in Grammer
     object). When a match is found the function attached to the grammer is called. The text is then
     searched again starting at the end position of the last match.
+
+    Generally, this object should not be used. It is designed to provide the general capability
+    needed for the RecursiveLexer.
     """
     def __init__(self):
         pass
