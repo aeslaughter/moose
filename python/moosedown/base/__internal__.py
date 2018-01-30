@@ -1,8 +1,13 @@
 """
 Contains base classes intended to be used internal to this module.
 """
+import uuid
 import moosedown
+from moosedown import common
 from moosedown.common import exceptions
+
+#: A value for allowing ConfigObject.get method to work with a default of None
+UNSET = uuid.uuid4()
 
 class ConfigObject(object):
     """
@@ -40,7 +45,7 @@ class ConfigObject(object):
                   "the {} object:"
             for key in unknown:
                 msg += '\n{}{}'.format(' '*4, key)
-            raise KeyError(msg.format(type(self)))
+            raise exceptions.MooseDocsException(msg.format(type(self)))
 
     def getConfig(self):
         """
@@ -55,11 +60,14 @@ class ConfigObject(object):
         """
         return self.get(name)
 
-    def get(self, name):
+    def get(self, name, default=UNSET):
         """
-        Return a configuration value by name.
+        Return a configuration value by name, with an optional default.
         """
-        return self.__config[name][0]
+        if (default is not UNSET) and (name not in self.__config):
+            return default
+        else:
+            return self.__config[name][0]
 
 class TranslatorObject(object):
     """
@@ -76,16 +84,11 @@ class TranslatorObject(object):
         tokenize and render commands are called.
         """
         if self.__translator is not None:
-            msg = "The component has already been initialized, this method should not " \
+            msg = "The {} object has already been initialized, this method should not " \
                   "be called twice."
-            raise moosedown.common.exceptions.MooseDocsException(msg)
+            raise moosedown.common.exceptions.MooseDocsException(msg, type(self))
 
-        if not isinstance(translator, moosedown.base.translators.Translator):
-            msg = "The supplied object must be of type '{}', but a '{}' was provided."
-            raise moosedown.common.exceptions.MooseDocsException(msg,
-                    moosedown.base.translators.Translator,
-                    type(translator))
-
+        common.check_type('translator', translator, moosedown.base.translators.Translator)
         self.__translator = translator
 
     @property
@@ -94,13 +97,14 @@ class TranslatorObject(object):
         Returns the Translator object as property.
         """
         if self.__translator is None:
-            msg = "Component object must be initialized prior to accessing this property."
-            raise moosedown.common.exceptions.MooseDocsException(msg)
+            msg = "The init() method of the {} object must be called prior to accessing this " \
+                  "property."
+            raise moosedown.common.exceptions.MooseDocsException(msg, type(self))
         return self.__translator
 
     def reinit(self):
         """
-        Called by the Translator prior to converting, this allows for state to be
-        reset when using livereload.
+        Called by the Translator prior to converting, this allows for state to be reset when using
+        livereload.
         """
         pass
