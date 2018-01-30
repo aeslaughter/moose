@@ -43,7 +43,7 @@ class Renderer(ConfigObject, TranslatorObject):
             msg = "The supplied token must be a {}, but a {} was provided."
             raise exceptions.MooseDocsException(msg, type, type(token))
 
-        if not isinstance(compoment, moosedown.components.RenderComponent):
+        if not isinstance(component, moosedown.base.components.RenderComponent):
             msg = "The supplied component must be a {} but a {} was provided."
             raise exceptions.MooseDocsException(msg, moosedown.comonents.RenderComponent,
                                                 type(compoment))

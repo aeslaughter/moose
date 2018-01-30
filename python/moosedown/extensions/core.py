@@ -100,7 +100,7 @@ class Code(MarkdownComponent): #TODO: Rename these classes to use the word compo
         settings['language'] = (u'text', "The code language to use for highlighting.")
         settings['caption'] = (None, "The caption text for the code listing.")
         settings['label'] = ('Listing', "The numbered caption prefix.")
-        return settinsg
+        return settings
 
     def createToken(self, match, parent):
         if self.settings['caption']:

@@ -64,6 +64,12 @@ class Grammer(object):
                             Grammer.Pattern(name=name, regex=regex, function=function),
                             location)
 
+    def __contains__(self, key):
+        """
+        Return True if the key is contained in the defined patterns.
+        """
+        return key in self.__patterns
+
     def __getitem__(self, key):
         """
         Return the pattern for a given key.
