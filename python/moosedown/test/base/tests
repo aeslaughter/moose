@@ -1,4 +1,8 @@
 [Tests]
+  [internal]
+    type = PythonUnitTest
+    input = test_internal.py
+  []
   [components]
     type = PythonUnitTest
     input = test_components.py
@@ -14,5 +18,9 @@
   [reader]
     type = PythonUnitTest
     input = test_readers.py
+  []
+  [renderer]
+    type = PythonUnitTest
+    input = test_renderers.py
   []
 []
