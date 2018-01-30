@@ -1,20 +1,32 @@
+"""
+Contains base classes intended to be used internal to this module.
+"""
 import moosedown
+from moosedown.common import exceptions
 
 class ConfigObject(object):
-
+    """
+    Base class for objects that contain configure options.
+    """
     @staticmethod
     def defaultConfig():
+        """
+        Return the default configuration for this object. The configuration should be a dict of
+        tuples, where the tuple contains the default value and the description.
+        """
         return dict()
 
     def __init__(self, **kwargs):
         self.__config = self.defaultConfig()
-        #TODO: check self.__config type
+        if not isinstance(self.__config, dict):
+            msg = "The return type from 'defaultConfig' must be a 'dict', but a {} was provided."
+            raise exceptions.MooseDocsException(msg, type(self.__config))
         self.update(**kwargs)
 
-
     def update(self, **kwargs):
-
-
+        """
+        Update the configuration with the supplied key-value pairs.
+        """
         unknown = []
         for key, value in kwargs.iteritems():
 
@@ -24,28 +36,34 @@ class ConfigObject(object):
                 self.__config[key] = (value, self.__config[key][1]) #TODO: type check???
 
         if unknown:
-            msg = "The following config options were not found in the default config options for the {} object:"
+            msg = "The following config options were not found in the default config options for " \
+                  "the {} object:"
             for key in unknown:
                 msg += '\n{}{}'.format(' '*4, key)
             raise KeyError(msg.format(type(self)))
 
-
-    def config(self):
-        return self.__config
-
     def getConfig(self):
+        """
+        Return a dict() of the key-value pairs for the supplied configuration objects, this method
+        removes the description.
+        """
         return {key:value[0] for key, value in self.__config.iteritems()}
 
     def __getitem__(self, name):
+        """
+        Return a configuration value by name using the [] operator.
+        """
         return self.get(name)
 
     def get(self, name):
+        """
+        Return a configuration value by name.
+        """
         return self.__config[name][0]
-
 
 class TranslatorObject(object):
     """
-    Config object that requires a translator object be created via an init method.
+    Class for objects that require a Translator object be created via an init method.
     """
     def __init__(self):
         self.__translator = None

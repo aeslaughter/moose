@@ -12,7 +12,7 @@ import moosedown
 from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import html, latex, base, tokens, page
-from ConfigObject import ConfigObject, TranslatorObject
+from __internal__ import ConfigObject, TranslatorObject
 
 LOG = logging.getLogger(__name__)
 

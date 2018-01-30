@@ -11,7 +11,7 @@ from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
-from ConfigObject import ConfigObject, TranslatorObject
+from __internal__ import ConfigObject, TranslatorObject
 
 LOG = logging.getLogger(__name__)
 
