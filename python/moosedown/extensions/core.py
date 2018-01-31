@@ -54,6 +54,7 @@ class CoreExtension(base.Extension):
         reader.addInline(Space())
 
         # Render components
+        renderer.add(tokens.Token, RenderEmpty())
         renderer.add(tokens.Heading, RenderHeading())
         renderer.add(tokens.Code, RenderCode())
         renderer.add(tokens.ShortcutLink, RenderShortcutLink())
@@ -350,7 +351,6 @@ class Format(base.TokenComponent):
 # Rendering.
 #####################################################################################################
 
-
 class CoreRenderComponentBase(base.RenderComponent):
     """
     Base class that includes the necessary callbacks for rendering html, materialize, and LaTeX.
@@ -367,6 +367,14 @@ class CoreRenderComponentBase(base.RenderComponent):
         #TODO: Better error message with markdown line number.
         pass
         #raise NotImplementedError("Not implement, you probably should.")
+
+class RenderEmpty(base.RenderComponent):
+    def createHTML(self, token, parent):
+        pass
+    def createMaterialize(self, token, parent):
+        pass
+    def createLatex(self, token, parent):
+        pass
 
 class RenderHeading(CoreRenderComponentBase):
     """

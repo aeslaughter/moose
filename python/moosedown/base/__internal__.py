@@ -83,7 +83,7 @@ class TranslatorObject(object):
         calls this method to provide access to translator for when the actual
         tokenize and render commands are called.
         """
-        if self.__translator is not None:
+        if self.initialized():
             msg = "The {} object has already been initialized, this method should not " \
                   "be called twice."
             raise moosedown.common.exceptions.MooseDocsException(msg, type(self))

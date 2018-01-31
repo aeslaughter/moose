@@ -40,7 +40,8 @@ class Renderer(ConfigObject, TranslatorObject):
         """
         common.check_type("token", token, type)
         common.check_type("component", component, moosedown.base.components.RenderComponent)
-        component.init(self.translator)
+        if self.initialized(): # allow use without Translator object
+            component.init(self.translator)
         self.__components.append(component)
         self.__functions[token] = self.__method(component)
 
@@ -136,10 +137,9 @@ class Renderer(ConfigObject, TranslatorObject):
         try:
             return self.__functions[type(token)]
         except KeyError:
-            return None
-            #msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
-            #      "via the Renderer.add(...) method."
-            #raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
+            msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
+                  "via the Renderer.add(...) method."
+            raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
 
 class HTMLRenderer(Renderer):
     """
