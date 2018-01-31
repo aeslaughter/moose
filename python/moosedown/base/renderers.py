@@ -38,30 +38,11 @@ class Renderer(ConfigObject, TranslatorObject):
             token[type]: The token type (not instance) to associate with the supplied component.
             compoment[RenderComponent]: The component to execute with the associated token type.
         """
-
-        if not isinstance(token, type):
-            msg = "The supplied token must be a {}, but a {} was provided."
-            raise exceptions.MooseDocsException(msg, type, type(token))
-
-        if not isinstance(component, moosedown.base.components.RenderComponent):
-            msg = "The supplied component must be a {} but a {} was provided."
-            raise exceptions.MooseDocsException(msg, moosedown.comonents.RenderComponent,
-                                                type(compoment))
+        common.check_type("token", token, type)
+        common.check_type("component", component, moosedown.base.components.RenderComponent)
 
         self.__components.append(component)
-        self.__functions[token] = self.method(component)
-
-    def method(self, component):
-        """
-        Return the desired method to call on the RenderComponent object.
-
-        Inputs:
-            component[RenderComponent]: Object to use for locating desired method for renderering.
-        """
-        if not hasattr(component, self.METHOD):
-            msg = "The component object {} does not have a {} method."
-            raise exceptions.MooseDocsException(msg, type(component), self.METHOD)
-        return getattr(component, self.METHOD)
+        self.__functions[token] = self.__method(component)
 
     def reinit(self):
         """
@@ -70,9 +51,9 @@ class Renderer(ConfigObject, TranslatorObject):
         for comp in self.__components:
             comp.reinit()
 
-    def render(self, root, ast):
+    def render(self, ast):
         """
-        Render the supplied AST into the the provided root.
+        Render the supplied AST (abstract).
 
         This method is designed to be overridden to create the desired output tree, see the
         HTMLRenderer and/or LatexRenderer for examples.
@@ -81,20 +62,6 @@ class Renderer(ConfigObject, TranslatorObject):
             ast[tree.token]: The AST to convert.
         """
         raise NotImplementedError("The render() method must be defined in a child class.")
-
-    def function(self, token):
-        """
-        Return the desired function for the supplied token object.
-
-        Inputs:
-            token[tree.token]: token for which the associated RenderComponent function is desired.
-        """
-        try:
-            return self.__functions[type(token)]
-        except KeyError:
-            msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
-                  "via the Renderer.add(...) method."
-            raise exceptions.RenderException(msg, type(token), self.METHOD)
 
     def write(self, output):
         """
@@ -116,30 +83,67 @@ class Renderer(ConfigObject, TranslatorObject):
             parent[tree.base.NodeBase]: A tree object that the AST shall be converted to.
         """
         try:
-            func = self.function(token)
-            el = func(token, parent) if func else None
-        except Exception as e:
-            src = token.root.page.source if token.root.page else 'fixme' #TODO
-            msg = "\nAn exception occured while rendering, the exception was raised when\n" \
-                  "executing the {} function while processing the following content.\n" \
-                      "{}:{}".format(func, src, token.info.line)
-            LOG.exception(moosedown.common.box(token.info[0], title=msg, line=token.info.line))
-            token = tokens.Exception(parent, info=token.info, traceback=traceback.format_exc())
-            func = self.function(token)
+            func = self.__getFunction(token)
             el = func(token, parent)
 
-        if el is None:
-            el = parent
+        except exceptions.RenderException as e:
+            msg = ''
+            if token.root.page and token.info:
+                msg += "{}:{}".format(token.root.page.source, token.info.line)
 
-        for child in token.children:
-            self.process(child, el)
+            msg += "\nAn error occured while rendering, the exception was raised when attempting\n"\
+                   "to execute the {} function on the {} token.".format(self.METHOD, type(token))
+
+            if token.info:
+                LOG.error(moosedown.common.box(token.info[0], title=msg, line=token.info.line))
+            else:
+                LOG.error(msg)
+
+            if tokens.Exception in self.__functions:
+                token = tokens.Exception(token.parent, info=token.info, traceback=traceback.format_exc())
+                self.process(parent, token)
+            else:
+                raise exceptions.MooseDocsException(msg)
+
+        if el:
+            for child in token.children:
+                self.process(el, child)
+
+    def __method(self, component):
+        """
+        Return the desired method to call on the RenderComponent object.
+
+        Inputs:
+            component[RenderComponent]: Object to use for locating desired method for renderering.
+        """
+        if self.METHOD is None:
+            msg = "The Reader class of type {} must define the METHOD class member."
+            raise exceptions.MooseDocsException(msg, type(self))
+        elif not hasattr(component, self.METHOD):
+            msg = "The component object {} does not have a {} method."
+            raise exceptions.MooseDocsException(msg, type(component), self.METHOD)
+        return getattr(component, self.METHOD)
+
+    def __getFunction(self, token):
+        """
+        Return the desired function for the supplied token object.
+
+        Inputs:
+            token[tree.token]: token for which the associated RenderComponent function is desired.
+        """
+        try:
+            return self.__functions[type(token)]
+        except KeyError:
+            msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
+                  "via the Renderer.add(...) method."
+            raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
 
 
 class HTMLRenderer(Renderer):
     """
     Converts AST into HTML.
     """
-    METHOD = 'createHTML' #TODO: make this a config option???
+    METHOD = 'createHTML'
 
     def render(self, ast):
         self.reinit()
