@@ -90,7 +90,8 @@ class Reader(ConfigObject, TranslatorObject):
         common.check_type("location", location, (str, int))
 
         # Define the name of the component being added (for sorting within Grammer)
-        name = '{}.{}'.format(component.__module__, component.__class__.__name__)
+        #name = '{}.{}'.format(component.__module__, component.__class__.__name__)
+        name = component.__class__.__name__
 
         # Store and init component, checking self.initialized() allows this object to be used
         # without the Translator which is useful in some cases.

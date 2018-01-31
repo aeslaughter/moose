@@ -22,7 +22,7 @@ def match_settings(defaults, raw):
     if not raw:
         return known, unknown
 
-    for match in SETTINGS_RE.finditer(raw):
+    for match in SETTINGS_RE.finditer(raw.replace('\n', ' ')):
 
         key = match.group('key').strip()
         value = match.group('value').strip()

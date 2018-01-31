@@ -76,16 +76,18 @@ class Example(command.CommandComponent):
         #print repr(match['content'])
 
         master = floats.Float(parent, **self.attributes)
+        master.recursive = False
+
         caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
 
         grammer = self.reader.lexer.grammer('inline')
         self.reader.lexer.tokenize(caption, grammer, unicode(self.settings['caption']), match.line)
 
-        data = match['content']
+        data = match['block'] if 'block' in match else match['inline']
 
         tabs = floats.Tabs(master)
         tab = floats.Tab(tabs, title=u'MooseDown')
-        tokens.Code(tab, code=data, language=u'markdown', escape=True)
+        code = tokens.Code(tab, code=data, language=u'markdown', escape=True)
 
         # HTML
         ast = tokens.Token(None)
@@ -118,7 +120,6 @@ class Example(command.CommandComponent):
         if code:
             tab = floats.Tab(tabs, title=u'LaTeX')
             tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
-
 
         return master
 

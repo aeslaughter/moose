@@ -70,8 +70,8 @@ div.moose-code-compare pre
 
 div.moose-modal-button {
     position: absolute;
-    top: -28px;
-    right: -28px;
+    top: -10px;
+    right: -10px;
 }
 html, body {
   height: 100%;
@@ -353,6 +353,7 @@ li.active .collapsible-header .moose-parameter-name{
 
 nav,
 .btn,
+.btn-small,
 .btn-large,
 footer.page-footer{
     background-color:#005897;

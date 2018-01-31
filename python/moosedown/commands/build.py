@@ -28,6 +28,8 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
 
 def command_line_options(subparser):
     build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
+    build_parser.add_argument('--lexer-components', action='store_true',
+                              help='Show the lexer components in order.')
 
 def params_to_dict(node):
     """
@@ -143,10 +145,17 @@ def main(options):
 
     translator, root = load_config(config_file)
 
+    if options.lexer_components:
+        for key, grammer in translator.reader.lexer.grammers().iteritems():
+            print 'GRAMMER:', key
+            for pattern in grammer:
+                print '  ', pattern
+
+
 
     if False:
         from moosedown.tree import page
-        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/core.md'
+        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
         node = page.MarkdownNode(source=filename)
         node.read()
         ast, html = translator.convert(node)

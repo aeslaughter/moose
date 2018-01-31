@@ -163,7 +163,7 @@ class RenderModal(base.RenderComponent):
         div = html.Tag(parent, 'div', class_='moose-modal-button')
         data = {'data-tooltip':token.title, 'data-position':'top', 'data-delay':'50'}
         btn = html.Tag(div, 'a',
-                       class_="tooltipped btn-floating btn-large modal-trigger",
+                       class_="tooltipped btn-floating btn-small modal-trigger",
                        href="#{}".format(tag), **data)
        # html.String(btn, content=token.title)
 

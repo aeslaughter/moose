@@ -264,9 +264,10 @@ class RecursiveLexer(Lexer):
         Override the Lexer.buildObject method to recursively tokenize base on group names.
         """
         obj = super(RecursiveLexer, self).buildObject(parent, info)
-        for key, grammer in self._grammers.iteritems():
-            if key in info.keys():
-                text = info[key]
-                if text is not None:
-                    self.tokenize(obj, grammer, text, info.line)
+        if (obj is not None) and (obj is not parent) and obj.recursive:
+            for key, grammer in self._grammers.iteritems():
+                if key in info.keys():
+                    text = info[key]
+                    if text is not None:
+                        self.tokenize(obj, grammer, text, info.line)
         return obj

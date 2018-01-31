@@ -19,7 +19,8 @@ class Token(base.NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
-    PROPERTIES = [base.Property('page', required=False)] # only exists on root...
+    PROPERTIES = [base.Property('recursive', default=True),
+                  base.Property('page', required=False)] # only exists on root...
                   #base.Property('info')] # change to meta
 
     def __init__(self, parent=None, name=None, **kwargs):

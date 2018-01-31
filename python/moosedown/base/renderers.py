@@ -88,6 +88,7 @@ class Renderer(ConfigObject, TranslatorObject):
             el = func(token, parent) if func else parent
 
         except exceptions.RenderException as e:
+            el = None
             msg = ''
             if token.root.page and token.info:
                 msg += "{}:{}".format(token.root.page.source, token.info.line)
