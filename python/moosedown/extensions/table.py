@@ -76,7 +76,7 @@ class TableExtension(base.Extension): #TODO:  CommandMarkdownExtension
         renderer.add(TableItem, RenderTag('td'))
 
 
-class TableComponent(core.MarkdownComponent):
+class TableComponent(base.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})^(?P<table>\|.*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     FORMAT_RE = re.compile(r'^(?P<format>\|[ \|:\-]+\|)$', flags=re.MULTILINE|re.UNICODE)
 
@@ -146,6 +146,8 @@ class RenderTable(base.RenderComponent):
         return tbl
     def createMaterialize(self, token, parent):
         return self.createHTML(token, parent)
+    def createLatex(self, token, parent):
+        pass
 
 class RenderTag(base.RenderComponent):
     def __init__(self, tag):
@@ -157,6 +159,9 @@ class RenderTag(base.RenderComponent):
 
     def createHTML(self, token, parent):
         return html.Tag(parent, self.__tag)
+
+    def createLatex(self, token, parent):
+        pass
 
 """
 class RenderTableSection(base.RenderComponent):

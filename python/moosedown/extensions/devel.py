@@ -24,12 +24,11 @@ class Example(tokens.Token):
 """
 
 
-class DevelExtension(base.Extension):
-    #TODO: require float, commands
+class DevelExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
-        reader.addCommand(Example())
-        reader.addCommand(ComponentSettings())
+        self.addCommand(Example())
+        self.addCommand(ComponentSettings())
 
 class Example(command.CommandComponent):
     COMMAND = 'devel'
@@ -93,7 +92,7 @@ class Example(command.CommandComponent):
         self.getHTMLTranslator().reader.parse(ast, data)
 
         root = html.Tag(None, '')
-        self.getHTMLTranslator().renderer.process(ast, root)
+        self.getHTMLTranslator().renderer.process(root, ast)
 
         code = ''
         for child in root:#.find('body')(0)(0)(0):

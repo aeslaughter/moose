@@ -146,6 +146,14 @@ class TokenComponent(Component):
         """
         return self.translator.reader
 
+    def setSettings(self, settings):
+        """
+        Method for defining the settings for this object directly.
+
+        This is required to allow for the command extension to work correctly.
+        """
+        self.__settings = settings
+
     def createToken(self, info, parent):
         """
         Method designed to be implemented by child classes, this method should create the

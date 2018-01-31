@@ -6,12 +6,12 @@ from moosedown.extensions import command
 def make_extension(**kwargs):
     return ConfigExtension(**kwargs)
 
-class ConfigExtension(base.Extension):
+class ConfigExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
-        reader.addCommand(ConfigCommand())
+        self.addCommand(ConfigCommand())
 
-class ConfigCommand(command.BlockCommand):
+class ConfigCommand(command.CommandComponent):
     COMMAND = 'config'
     SUBCOMMAND = None
 

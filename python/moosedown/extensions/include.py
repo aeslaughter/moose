@@ -13,10 +13,10 @@ from moosedown.tree.base import Property
 def make_extension(**kwargs):
     return IncludeExtension()
 
-class IncludeExtension(base.Extension):
+class IncludeExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
-        reader.addCommand(Include())
+        self.addCommand(Include())
 
 class Include(command.CommandComponent):
     COMMAND = 'include'
