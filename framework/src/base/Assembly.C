@@ -947,7 +947,6 @@ Assembly::init(const CouplingMatrix * cm)
     unsigned int j = jvar->number();
     for (const auto & ivar : vars)
     {
-      std::cout << "Variable(i, j): (" << jvar->number() << ", " << ivar->number() << ") " << jvar->name() << " " << ivar->name() << std::endl;
       unsigned int i = ivar->number();
       if ((*_cm)(i, j) != 0)
         _cm_entry.push_back(std::make_pair(ivar, jvar));
@@ -1046,9 +1045,11 @@ Assembly::prepare()
   }
 
   const std::vector<MooseVariable *> & vars = _sys.getVariables(_tid);
+  std::cout << "vars.size() = " << vars.size() << std::endl;
   for (const auto & var : vars)
     for (unsigned int i = 0; i < _sub_Re.size(); i++)
     {
+      std::cout << "DOFS: " << var->dofIndices().size() << std::endl;
       _sub_Re[i][var->number()].resize(var->dofIndices().size());
       _sub_Re[i][var->number()].zero();
     }

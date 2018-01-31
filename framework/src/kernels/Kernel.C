@@ -42,13 +42,18 @@ void
 Kernel::computeResidual()
 {
   DenseVector<Number> & re = _assembly.residualBlock(_var.number());
+  std::cout << "re.size() = " << re.size() << std::endl;
+//  mooseError("stop");
   _local_re.resize(re.size());
   _local_re.zero();
 
   precalculateResidual();
   for (_i = 0; _i < _test.size(); _i++)
     for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+    {
+      std::cout << _local_re.size() << " " << _i << std::endl;
       _local_re(_i) += _JxW[_qp] * _coord[_qp] * computeQpResidual();
+    }
 
   re += _local_re;
 
