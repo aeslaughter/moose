@@ -64,8 +64,8 @@ def builder(rows, headings=None):
 
 class TableExtension(base.Extension): #TODO:  CommandMarkdownExtension
     def extend(self, reader, renderer):
-        reader.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
-
+        #reader.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
+        reader.addBlock(TableComponent(), "<Paragraph")
 
         #print 'TableExtension::extend' #TODO: The devel Example extension calls this way too many times...
         renderer.add(Table, RenderTable())

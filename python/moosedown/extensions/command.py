@@ -49,8 +49,8 @@ class CommandExtension(base.Extension):
         Adds the various commmand components to the reader.
         """
         reader.addBlock(FileCommand(), location='_begin')
-        reader.addBlock(InlineCommand(), location='_begin')
-        reader.addBlock(BlockCommand(), location='_begin')
+        reader.addBlock(BlockCommand(), location='>FileCommand')
+        reader.addBlock(InlineCommand(), location='<BlockCommand')
 
 class CommandComponent(base.TokenComponent):
     """
@@ -89,11 +89,11 @@ class CommandBase(base.TokenComponent):
             raise common.exceptions.TokenizeException(msg.format(*cmd))
 
 class InlineCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+) *(?P<subcommand>\w+)? *(?P<settings>.*?)(?=\Z|\n{2,})',
-                    flags=re.UNICODE|re.MULTILINE)
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)(?: |$)(?P<subcommand>\w+)? *(?P<settings>.*?)(?P<inline>^\S.*?)?(?=\Z|\n{2,})',
+                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class BlockCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)! *(?P<subcommand>\w+)? *(?P<settings>.*?)\n+(?P<content>.*?)(^!\1-end!)(?=\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)!(?: +(?P<subcommand>\w+))? *(?P<settings>.*?)\n+(?P<block>.*?)(^!\1-end!)(?=\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class FileCommand(CommandBase):

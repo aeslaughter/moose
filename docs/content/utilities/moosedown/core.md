@@ -1,7 +1,6 @@
-!config!
+!config
 Renderer/collapsible-sections=[None, 'open', 'open', None, None, None]
 Renderer/breadcrumbs=True
-!config-end!
 
 # Core Extension
 
@@ -17,7 +16,7 @@ inline items are those that are applicable to small portions of text (e.g., word
 italics are two examples of inline items.
 
 !alert! note title=MooseDown is a restricted version of [markdown].
-To unify content and to create a fast parser a limited set of
+To unify content and to create a fast parser a strict, limited set of
 markdown is being used to define the MooseDocs syntax. The following sections
 detail the syntax that comprise the syntax.
 !alert-end!
@@ -34,10 +33,10 @@ If syntax has settings the key-value pairs, the default value (if any), and a sh
 will be provided in a table. For example, [code-settings] lists the available settings
 for the fenced code blocks discussed in the [fenced-code] section.
 
-!devel! example id=settings-example caption=Example use of settings within [links], settings are key-value pairs that are specified with a separating equal sign (no spaces can exist on either side).
+!devel example id=settings-example
+               caption=Example use of settings within [links], settings are key-value pairs that
+                       are specified with a separating equal sign (no spaces exist on either side).
 [google](https://www.google.com style=color:teal;)
-!devel-end!
-
 
 ## Block Syntax id=core-block
 
@@ -46,7 +45,6 @@ begin and end with empty lines (with the exception of the start and end of the f
 restriction allows for special characters such as the hash (`#`) to be used at the start
 of a line without conflicting with heading creation (see [headings]). Additionally, this
 allows content and settings to be spanned across multiple lines.
-
 
 ### Code id=fenced-code
 
@@ -60,11 +58,10 @@ requirements exist for creating the code blocks:
 Settings for code blocks are defined by key-value pairings that follow the back-ticks;
 [code-settings] lists the available settings for code blocks.
 
-!devel! example caption=Basic fenced code block. id=fenced-code-example
+!devel example caption=Basic fenced code block. id=fenced-code-example
 ```language=bash
 export METHOD=opt
 ```
-!devel-end!
 
 !devel settings module=moosedown.extensions.core object=Code id=code-settings caption=Available settings for fenced code blocks.
 
@@ -75,11 +72,10 @@ space as shown in [quote-example]. Then each additional line that belongs within
 must also begin with a `>` character. Within the quotations any valid markdown is acceptable,
 as shown in [quote-nested-example].
 
-!devel! example caption=Basic block quote. id=quote-example
+!devel example caption=Basic block quote. id=quote-example
 > This is a quotation.
-!devel-end!
 
-!devel! example caption=Nested content in block quotes. id=quote-nested-example
+!devel example caption=Nested content in block quotes. id=quote-nested-example
 > Quotations begin with the `<` character and may
 > contain any valid markdown content, include quotes and code as shown here.
 >
@@ -92,7 +88,6 @@ as shown in [quote-nested-example].
 >
 > Since quotations are block content they must end with an empty line,
 > therefore the nested quote above must contain an empty line.
-!devel-end!
 
 ### Headings id=headings
 
@@ -121,16 +116,14 @@ Settings, as listed in [heading-settings], are be applied after the heading titl
 ###### Level Six
 !devel-end!
 
-!devel! example caption=Use of settings within heading. id=heading-settings
+!devel example caption=Use of settings within heading. id=heading-settings
 ## Level Two style=font-size:75pt;color:red; id=level-two
-!devel-end!
 
-!devel! example caption=Use of settings within heading. id=heading-multiline
+!devel example caption=Use of settings within heading. id=heading-multiline
 ## A Heading May Span
 Multiple Lines (this is useful if they are really long)
    style=font-size:15pt
    id=level-two
-!devel-end!
 
 !devel settings module=moosedown.extensions.core object=HeadingHash caption=Available settings for headings. id=heading-settings
 
@@ -151,11 +144,9 @@ List items may contain lists, code, or any other markdown content and the item c
 span many lines. The continuation is specified by indenting the content to be included within the
 item by two spaces, as shown in [unordered-nested-example].
 
-!devel! example caption=Unordered list basic syntax. id=unordered-basic-example
+!devel example caption=Unordered list basic syntax. id=unordered-basic-example
 - Item 1
 - Item 2
-!devel-end!
-
 
 !devel! example caption=Lists can contain other markdown content. id=unordered-nested-example
 - Item with code
@@ -275,12 +266,11 @@ The following table lists the available formats with start and end characters.
 The formatting can be arbitrarily nested and span multiple lines within the same paragraph, thus
 as shown in [format-example], complicated and compound formatting of text is possible.
 
-!devel! example id=format-example caption=Example inline text formatting in MooseDocs
+!devel example id=format-example caption=Example inline text formatting in MooseDocs
 Yo, dawg I heard you like formatting, so I created =underline
-formatted text that contains ~text with ~stikethrough that
+formatted text that contains text with ~stikethrough that
 contains +bold formatting with *emphasis that has some ^superscript
 text with a _subscript_^*+~=, I hope you like it.
-!devel-end!
 
 ### Links id=links
 

@@ -1,5 +1,6 @@
 import re
 import collections
+from moosedown.common import exceptions
 from moosedown import base
 from moosedown.extensions import command
 
@@ -18,14 +19,17 @@ class ConfigCommand(command.CommandComponent):
     def createToken(self, match, parent):
 
         config = dict(Reader=dict(), Renderer=dict())
-        for data in match['content'].strip(' \n').split('\n'):
+
+        content = match['inline'] if 'inline' in match else match['block']
+
+        for data in content.strip(' \n').split('\n'):
             key, value = data.split('=')
             block, item = key.split('/', 1)
 
             if block not in config:
                 msg = "The supplied block '{}' is unknown, only config options for the " \
                       "Extensions, Reader, and Render block are suppored."
-                raise KeyError(msg.format(block))
+                raise exceptions.TokenizeException(msg, block)
 
             config[block][item] = eval(value)
 

@@ -178,7 +178,7 @@ class List(base.TokenComponent):
             if indent:
                 msg = "List item content must be indented by {} to match the list item " \
                       "characters of '{}', to end a list item you must use two empty lines."
-                raise Exception(msg.format(n, marker))
+                raise exceptions.TokenizeException(msg.format(n, marker))
 
             content = strip_regex.sub(r'\1', content)
             self.reader.parse(tokens.ListItem(token), content)
@@ -444,7 +444,7 @@ class RenderShortcutLink(CoreRenderComponentBase):
                 return node
 
         msg = "The shortcut link key '{}' was not located in the list of shortcuts."
-        raise KeyError(msg.format(token.key))
+        raise exceptions.RenderException(msg, token.key)
 
 
 class RenderMonospace(CoreRenderComponentBase):

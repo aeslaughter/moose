@@ -47,9 +47,10 @@ class AlertCommandBase(command.CommandComponent):
             self.reader.lexer.tokenize(title_token, grammer, title, match.line)
 
         content = AlertContent(alert)
-        grammer = self.reader.lexer.grammer('block')
-        self.reader.lexer.tokenize(content, grammer, match['content'], match.line)
-        return alert
+        #grammer = self.reader.lexer.grammer('block')
+        #self.reader.lexer.tokenize(content, grammer, match['content'], match.line)
+
+        return content
 
 class ErrorAlertCommand(AlertCommandBase):
     SUBCOMMAND = 'error'
