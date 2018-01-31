@@ -11,6 +11,12 @@ from moosedown.common import exceptions
 from moosedown.tree import tokens
 from moosedown.base import Reader, RecursiveLexer, TokenComponent
 
+class BlockComponent(TokenComponent):
+    """Class for testing MarkdownReader"""
+    RE = re.compile('(?P<inline>.*)')
+    def __call__(self, info, parent):
+        return tokens.Token(parent)
+
 class WordComponent(TokenComponent):
     """Class for testing lexer."""
     RE = re.compile('(?P<content>\w+) *')
@@ -86,6 +92,27 @@ class TestReader(unittest.TestCase):
         self.assertIsInstance(root(0), tokens.Exception)
         self.assertIsInstance(root(1), tokens.Word)
         self.assertEqual(root(1).content, u'bar')
+
+class TestMarkdownReader(unittest.TestCase):
+    """
+    Test basic function of MarkdownReader.
+    """
+    def testBasic(self):
+        """
+        Test the addBlock and addInline methods.
+        """
+        root = tokens.Token(None)
+        reader = Reader(RecursiveLexer('block', 'inline'))
+        reader.add('block', BlockComponent())
+        reader.add('inline', WordComponent())
+        reader.parse(root, u'foo bar')
+
+        self.assertIsInstance(root(0), tokens.Token)
+        self.assertIsInstance(root(0)(0), tokens.Word)
+        self.assertEqual(root(0)(0).content, u'foo')
+        self.assertIsInstance(root(0)(1), tokens.Word)
+        self.assertEqual(root(0)(1).content, u'bar')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
