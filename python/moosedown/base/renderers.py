@@ -138,7 +138,6 @@ class Renderer(ConfigObject, TranslatorObject):
                   "via the Renderer.add(...) method."
             raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
 
-
 class HTMLRenderer(Renderer):
     """
     Converts AST into HTML.
@@ -146,6 +145,9 @@ class HTMLRenderer(Renderer):
     METHOD = 'createHTML'
 
     def render(self, ast):
+        """
+        Render the supplied AST, wrapping it in a <body> tag.s
+        """
         self.reinit()
         root = html.Tag(None, 'body')
         self.process(root, ast)
