@@ -77,7 +77,9 @@ class TestTranslatorObject(unittest.TestCase):
         """
         t = Translator(MarkdownReader(), HTMLRenderer())
         obj = TranslatorObject()
+        self.assertFalse(obj.initialized())
         obj.init(t)
+        self.assertTrue(obj.initialized())
         self.assertIs(obj.translator, t)
 
     def testExceptions(self):

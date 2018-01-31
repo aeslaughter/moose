@@ -24,8 +24,11 @@ class Reader(ConfigObject, TranslatorObject):
        **kwargs: key-value pairs passed to configuration settings (see ConfigObject.py).
 
     Usage:
-    In general, it is not necessary to deal directly with the Reader beyond initial construction.
-    The reader should be passed into the Translator, which handles all the necessary calls.
+        In general, it is not necessary to deal directly with the Reader beyond construction.
+        The reader should be passed into the Translator, which handles all the necessary calls.
+
+    TODO: Currently, this requires a RecursiveLexer. It would be nice for the sake of being
+          general if this class worked with a Lexer as well.
     """
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
@@ -82,10 +85,20 @@ class Reader(ConfigObject, TranslatorObject):
             component[components.TokenComponent]: The tokenize component to add.
             location[str|int]: The location to insert this component (see Grammer.py)
         """
+        common.check_type("group", group, str)
+        common.check_type("component", component, moosedown.base.components.TokenComponent)
+        common.check_type("location", location, (str, int))
+
         # Define the name of the component being added (for sorting within Grammer)
         name = '{}.{}'.format(component.__module__, component.__class__.__name__)
+
+        # Store and init component, checking self.initialized() allows this object to be used
+        # without the Translator which is useful in some cases.
         self.__components.append(component)
-        component.init(self.translator)
+        if self.initialized():
+            component.init(self.translator)
+
+        # Update the lexer
         self.__lexer.add(group, name, component.RE, component, location)
 
     @staticmethod
@@ -99,18 +112,18 @@ class Reader(ConfigObject, TranslatorObject):
         n = 100
         title = []
         if isinstance(token.root.page, page.LocationNodeBase):
-            title += textwrap.wrap(u"An exception occurred while tokenizing, the exception was " \
+            title += textwrap.wrap(u"An error occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
                                    u"following content.".format(token.info.pattern.name), n)
             title += [u"{}:{}".format(token.root.page.source, token.info.line)]
         else:
-            title += textwrap.wrap(u"An exception occurred on line {} while tokenizing, the " \
+            title += textwrap.wrap(u"An error occurred on line {} while tokenizing, the " \
                                    u"exception was raised when executing the {} object while " \
                                    u"processing the following content." \
                                    .format(token.info.line, token.info.pattern.name), n)
 
         box = moosedown.common.box(token.info[0], line=token.info.line, width=n)
-        LOG.exception(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
+        LOG.error(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
 
 class MarkdownReader(Reader):
     """

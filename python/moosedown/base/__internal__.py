@@ -91,6 +91,12 @@ class TranslatorObject(object):
         common.check_type('translator', translator, moosedown.base.translators.Translator)
         self.__translator = translator
 
+    def initialized(self):
+        """
+        Returns True if the init method was called.
+        """
+        return self.__translator is not None
+
     @property
     def translator(self):
         """
