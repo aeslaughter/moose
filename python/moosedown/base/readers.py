@@ -1,14 +1,13 @@
 """
-Defines readers that convert raw text into an AST.
+Defines Reader objects that convert raw text into an AST.
 """
-import copy
-import anytree
 import textwrap
 import logging
 
+import anytree
+
 import moosedown
 from moosedown import common
-from moosedown.common import exceptions
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
 from __internal__ import ConfigObject, TranslatorObject
@@ -124,7 +123,7 @@ class Reader(ConfigObject, TranslatorObject):
                                    .format(token.info.line, token.info.pattern.name), n)
 
         box = moosedown.common.box(token.info[0], line=token.info.line, width=n)
-        LOG.error(u'\n{}\n{}\n{}\n\n'.format(u'\n'.join(title), box, token.traceback))
+        LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)
 
 class MarkdownReader(Reader):
     """

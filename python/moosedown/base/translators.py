@@ -1,16 +1,17 @@
-import os
-import importlib
+"""
+Module that defines Translator objects for converted AST from Reader to Rendered output from
+Renderer objects. The Translator objects exist as a place to import extensions and bridge
+between the reading and rendering content.
+"""
 import logging
-import inspect
 
 import moosedown
 from moosedown import common
-from moosedown.tree import tokens, page #TODO: change to pages
-from lexers import LexerInformation #TODO: make this MetaData or something better and move from lexer
+from moosedown.tree import tokens, page
 from readers import Reader
 from renderers import Renderer
-#from components import Extension
 from __internal__ import ConfigObject
+
 LOG = logging.getLogger('Translator')
 
 class Translator(ConfigObject):
@@ -23,14 +24,16 @@ class Translator(ConfigObject):
         renderer: [Renderer] A Renderer instance.
         extensions: [list] A list of extensions objects to use.
     """
-    def __init__(self, reader, renderer, extensions=[], debug=False, **kwargs):
+    def __init__(self, reader, renderer, extensions=None, **kwargs):
         ConfigObject.__init__(self, **kwargs)
+
+        if extensions is None:
+            extensions = []
 
         common.check_type('reader', reader, Reader)
         common.check_type('renderer', renderer, Renderer)
         common.check_type('extensions', extensions, list)
 
-        # Load the extensions
         self.__extensions = extensions
         self.__reader = reader
         self.__renderer = renderer
@@ -45,9 +48,15 @@ class Translator(ConfigObject):
 
     @property
     def extensions(self):
+        """
+        Return list of loaded Extension objects.
+        """
         return self.__extensions
 
     def reinit(self):
+        """
+        Reinitializes the Reader, Renderer, and all Extension objects.
+        """
         self.reader.reinit()
         self.renderer.reinit()
         for ext in self.__extensions:
@@ -68,6 +77,10 @@ class Translator(ConfigObject):
         return self.__renderer
 
     def convert(self, content):
+        """
+        Convert the supplied content by passing it into the Reader to build an AST. Then, the AST
+        is passed to the Renderer to create the desired output format.
+        """
         node = content if isinstance(content, page.PageNodeBase) else None
         ast = tokens.Token(None, page=node) # root node
         self.reinit()

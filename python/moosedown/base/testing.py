@@ -1,25 +1,16 @@
-import os
-import sys
-import re
+"""
+Module for common unittest related tasks.
+"""
 import unittest
-import inspect
-import logging
 
-from moosedown import base, tree
+from moosedown import base
 from mooseutils import text_diff
-
-logging.basicConfig()
-
-
 
 class MarkdownTestCase(unittest.TestCase):
     """
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
-    EXTENSIONS = ['moosedown.extensions.core',
-                  'moosedown.extensions.devel',
-                  'moosedown.extensions.floats',
-                  'moosedown.extensions.include']
+    EXTENSIONS = ['moosedown.extensions.core']
     READER = base.MarkdownReader
     RENDERER = base.HTMLRenderer
     CONFIG = dict()
@@ -28,38 +19,18 @@ class MarkdownTestCase(unittest.TestCase):
         """
         Create the Translator instance.
         """
-        self._translator = base.Translator(self.READER, self.RENDERER, self.EXTENSIONS, **self.CONFIG)
+        self._translator = base.Translator(self.READER, self.RENDERER, self.EXTENSIONS,
+                                           **self.CONFIG)
 
-    def ast(self, md):
-        """
-        Convert supplied markdown text to AST.
+    @property
+    def reader(self):
+        """Return Reader instance."""
+        return self._translator.reader
 
-        Inputs:
-            md[str]: Raw markdown content.
-        """
-        if not isinstance(md, unicode):
-            md = unicode(md)
-            #raise TypeError("The supplied content must be unicode.")
-        return self._translator.ast(md)
-
-    def render(self, md):
-        """
-        Convert the supplied markdown to Rendered tree
-
-        Inputs:
-            ast: Markdown token tree.
-        """
-        if not (isinstance(md, unicode) or isinstance(md, tree.tokens.Token)):
-            raise TypeError("The supplied content must be a Token object or unicode text.")
-
-        ast = self.ast(md) if isinstance(md, unicode) else md
-        return self._translator.renderer.render(ast)
-
-    def write(self, node):
-        """
-        Convert supplied markdown to text
-        """
-        return self._translator.renderer.write(node)
+    @property
+    def renderer(self):
+        """Return Reader instance."""
+        return self._translator.renderer
 
     def assertString(self, content, gold):
         """
