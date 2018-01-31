@@ -1,8 +1,7 @@
 """
-Defines renderers that convert AST into an output format.
+Defines Renderer objects that convert AST (from Reader) into an output format.
 """
 import os
-import copy
 import re
 import logging
 import traceback
@@ -21,7 +20,7 @@ class Renderer(ConfigObject, TranslatorObject):
     Base renderer for converting AST to an output format.
     """
 
-    # Method to call on the RendererComponent objects.
+    #:[str] The name of the method to call on RendererComponent objects.
     METHOD = None
 
     def __init__(self, **kwargs):
@@ -52,7 +51,7 @@ class Renderer(ConfigObject, TranslatorObject):
         for comp in self.__components:
             comp.reinit()
 
-    def render(self, ast):
+    def render(self, ast): #pylint: disable=unused-argument
         """
         Render the supplied AST (abstract).
 
@@ -63,9 +62,8 @@ class Renderer(ConfigObject, TranslatorObject):
             ast[tree.token]: The AST to convert.
         """
         self.reinit()
-        #raise NotImplementedError("The render() method must be defined in a child class.")
 
-    def write(self, output):
+    def write(self, output): #pylint: disable=no-self-use
         """
         Write the rendered output content to a single string, this method automatically strips
         all double new lines.
@@ -73,7 +71,7 @@ class Renderer(ConfigObject, TranslatorObject):
         Inputs:
             output[tree.base.NodeBase]: The output tree created by calling render.
         """
-        text = ast.write()
+        text = output.write()
         return re.sub(r'(\n{2,})', '\n', text, flags=re.MULTILINE)
 
     def process(self, parent, token):
@@ -88,7 +86,7 @@ class Renderer(ConfigObject, TranslatorObject):
             func = self.__getFunction(token)
             el = func(token, parent) if func else parent
 
-        except exceptions.RenderException as e:
+        except exceptions.RenderException:
             el = None
             msg = ''
             if token.root.page and token.info:
@@ -172,12 +170,12 @@ class MaterializeRenderer(HTMLRenderer):
         config['breadcrumbs'] = (True, "Toggle for the breadcrumb links at the top of page.")
         config['sections'] = (True, "Group heading content into <section> tags.")
         config['collapsible-sections'] = ([None, 'open', None, None, None, None],
-                                         "Collapsible setting for the six heading level " \
-                                         "sections, possible values include None, 'open', and " \
-                                         "'close'. Each indicates if the associated section " \
-                                         "should be collapsible, if so should it be open or " \
-                                         "closed initially. The 'sections' setting must be " \
-                                         "True for this to operate.")
+                                          "Collapsible setting for the six heading level " \
+                                          "sections, possible values include None, 'open', and " \
+                                          "'close'. Each indicates if the associated section " \
+                                          "should be collapsible, if so should it be open or " \
+                                          "closed initially. The 'sections' setting must be " \
+                                          "True for this to operate.")
         return config
 
     def update(self, **kwargs):
@@ -208,11 +206,15 @@ class MaterializeRenderer(HTMLRenderer):
         else:
             msg = "The component object {} does not have a {} method."
             raise exceptions.MooseDocsException(msg, type(component), self.METHOD)
-            exceptions.RenderException()
 
     def render(self, ast):
-        Renderer.render(self, ast) # calls reinit()
+        """
+        Convert supplied AST into a Materialize HTML tree.
 
+        Inputs:
+            ast[tokens.Token]: The root of the tokenized content to be converted.
+        """
+        Renderer.render(self, ast) # calls reinit()
 
         root = html.Tag(None, '!DOCTYPE html', close=False)
         root.page = ast.page #meta data
@@ -221,13 +223,17 @@ class MaterializeRenderer(HTMLRenderer):
         # <head>
         head = html.Tag(root, 'head')
         html.Tag(head, 'meta', close=False, charset="UTF-8")
-        html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
-        html.Tag(head, 'link', href="/contrib/materialize/materialize.min.css",  type="text/css", rel="stylesheet", media="screen,projection")
-        html.Tag(head, 'link', href="/css/moose.css",  type="text/css", rel="stylesheet")
-        html.Tag(head, 'link', href="/contrib/prism/prism.min.css",  type="text/css", rel="stylesheet")
+        html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons",
+                 rel="stylesheet")
+        html.Tag(head, 'link', href="/contrib/materialize/materialize.min.css", type="text/css",
+                 rel="stylesheet", media="screen,projection")
+        html.Tag(head, 'link', href="/css/moose.css", type="text/css", rel="stylesheet")
+        html.Tag(head, 'link', href="/contrib/prism/prism.min.css", type="text/css",
+                 rel="stylesheet")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/jquery/jquery.min.js")
-        html.Tag(head, 'script', type="text/javascript", src="/contrib/materialize/materialize.min.js")
+        html.Tag(head, 'script', type="text/javascript",
+                 src="/contrib/materialize/materialize.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/clipboard/clipboard.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/prism/prism.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/js/init.js")
@@ -241,7 +247,8 @@ class MaterializeRenderer(HTMLRenderer):
 
         # Content
         row = html.Tag(container, 'div', class_="row")
-        col = html.Tag(row, 'div', class_="col s12 m12 l10") #TODO add scroll spy (scoll-name=False) at top of index.mdg
+        #TODO add scroll spy (scoll-name=False) at top of index.mdg
+        col = html.Tag(row, 'div', class_="col s12 m12 l10")
         HTMLRenderer.process(self, col, ast)
 
         # Sections
@@ -250,12 +257,15 @@ class MaterializeRenderer(HTMLRenderer):
 
         return root
 
-    def addBreadcrumbs(self, root):
+    @staticmethod
+    def addBreadcrumbs(root):
         """
         Inserts breacrumb links at the top of the page.
 
         Inputs:
             root[tree.html.Tag]: The tag to which the breadcrumbs should be inserted.
+
+        TODO: This is relying on hard-coded .md/.html extensions, that should not be the case.
         """
         row = html.Tag(root, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col hide-on-med-and-down l12")
@@ -269,7 +279,8 @@ class MaterializeRenderer(HTMLRenderer):
             if isinstance(n, page.DirectoryNode):
                 idx = n.find('index.md', maxlevel=2)
                 if idx:
-                    url = os.path.relpath(n.local, os.path.dirname(node.local)).replace('.md', '.html') #TODO: fix ext
+                    url = os.path.relpath(n.local,
+                                          os.path.dirname(node.local)).replace('.md', '.html')
                     a = html.Tag(div, 'a', href=url, class_="breadcrumb")
                     html.String(a, content=unicode(n.name))
                 else:
@@ -277,11 +288,13 @@ class MaterializeRenderer(HTMLRenderer):
                     html.String(span, content=unicode(n.name))
 
             elif isinstance(n, page.FileNode) and n.name != 'index.md':
-                url = os.path.relpath(n.local, os.path.dirname(node.local)).replace('.md', '.html') #TODO: fix ext
+                url = os.path.relpath(n.local,
+                                      os.path.dirname(node.local)).replace('.md', '.html')
                 a = html.Tag(div, 'a', href=url, class_="breadcrumb")
                 html.String(a, content=unicode(os.path.splitext(n.name)[0]))
 
-    def addSections(self, root, collapsible):
+    @staticmethod
+    def addSections(root, collapsible):
         """
         Group content into <section> tags based on the heading tag.
 
