@@ -17,18 +17,18 @@ class AlertTitle(tokens.Token):
 class AlertContent(tokens.Token):
     pass
 
-class AlertExtension(base.Extension):
+class AlertExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
-        reader.addCommand(ErrorAlertCommand())
-        reader.addCommand(WarningAlertCommand())
-        reader.addCommand(NoteAlertCommand())
+        self.addCommand(ErrorAlertCommand())
+        self.addCommand(WarningAlertCommand())
+        self.addCommand(NoteAlertCommand())
 
         renderer.add(Alert, RenderAlert())
         renderer.add(AlertTitle, RenderAlertTitle())
         renderer.add(AlertContent, RenderAlertContent())
 
-class AlertCommandBase(command.BlockCommand):
+class AlertCommandBase(command.CommandComponent):
     COMMAND = 'alert'
 
     @staticmethod
@@ -65,6 +65,8 @@ class RenderAlert(base.RenderComponent):
     def createMaterialize(self, token, parent):
         card = html.Tag(parent, 'div', class_='card moose-alert moose-alert-{}'.format(token.brand))
         return html.Tag(card, 'div', class_='card-content'.format(token.brand))
+    def createLatex(self, token, parent):
+        pass
 
 class RenderAlertTitle(base.RenderComponent):
     def createMaterialize(self, token, parent):
@@ -72,7 +74,11 @@ class RenderAlertTitle(base.RenderComponent):
         brand = html.Tag(div, 'span', class_='moose-alert-title-brand')
         html.String(brand, content=unicode(token.parent.brand))
         return div
+    def createLatex(self, token, parent):
+        pass
 
 class RenderAlertContent(base.RenderComponent):
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'div', class_='moose-alert-content')
+    def createLatex(self, token, parent):
+        pass

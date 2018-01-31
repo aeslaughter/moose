@@ -109,12 +109,19 @@ class RenderFloat(base.RenderComponent):
         div = html.Tag(parent, 'div', class_='card', **attributes)
         return div
 
+    def createLatex(self, token, parent):
+        pass
+
+
 class RenderContent(base.RenderComponent):
     def createHTML(self, token, parent):
         pass
 
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'div', **token.attributes)
+
+    def createLatex(self, token, parent):
+        pass
 
 class RenderCaption(base.RenderComponent):
     #__COUNTS__ = collections.defaultdict(int)
@@ -178,6 +185,10 @@ class RenderModal(base.RenderComponent):
 
         return modal_content
 
+    def createLatex(self, token, parent):
+        pass
+
+
 class RenderTabs(base.RenderComponent):
     def createMaterialize(self, token, parent):
         if 'card' in parent['class']:
@@ -186,6 +197,9 @@ class RenderTabs(base.RenderComponent):
         ul = html.Tag(parent, 'ul', class_="tabs")
         content = html.Tag(parent, 'div', class_='card-content grey lighten-4')
         return ul
+
+    def createLatex(self, token, parent):
+        pass
 
 class RenderTab(base.RenderComponent):
     def createMaterialize(self, token, parent):
@@ -197,3 +211,6 @@ class RenderTab(base.RenderComponent):
         div = html.Tag(parent.parent.children[-1], 'div', id_=tag)
 
         return  div
+
+    def createLatex(self, token, parent):
+        pass

@@ -15,23 +15,34 @@ def make_extension():
 
 class CommandExtension(base.Extension):
 
-    # A common storage for all command objects, based on the COMMAND/SUBCOMMAND tuple
-    __COMMANDS__ = dict()
-
     def addCommand(self, command):
         """
         Adds a new CommandComponent to the list of available commands.
         """
-        if not isinstance(command, CommandComponent):
-            msg = "Expected a {} object but a {} was provided."
-            raise common.exceptions.MooseDocsException(msg, CommandComponent, type(command))
 
+        # Type checking
+        common.check_type('command', command, CommandComponent)
+
+        # Create a location to store the commands. I have tried this a few different ways, but
+        # settle on the following, despite its hackishness. First, the commands were stored on the
+        # Reader, which I didn't like because I want this extension to be stand-alone. Second, I
+        # stored the commands with a static member on this class, but that fails when multiple
+        # instances of the translator are created and this method is called again with other
+        # instances active. So, my solution is to just sneak the storage into the current translator
+        # object.
+        if not hasattr(self.translator, '__EXTENSION_COMMANDS__'):
+            setattr(self.translator, '__EXTENSION_COMMANDS__', dict())
+
+        # Initialize the component
+        command.init(self.translator)
+
+        # Add the command and error if it exists
         pair = (command.COMMAND, command.SUBCOMMAND)
-        if pair in CommandExtension.__COMMANDS__:
+        if pair in self.translator.__EXTENSION_COMMANDS__:
             msg = "A CommandComponent object exists with the command '{}' and subcommand '{}'."
             raise common.exceptions.MooseDocsException(msg, pair[0], pair[1])
 
-        self.__COMMANDS__[pair] = command
+        self.translator.__EXTENSION_COMMANDS__[pair] = command
 
     def extend(self, reader, renderer):
         """
@@ -62,31 +73,20 @@ class CommandBase(base.TokenComponent):
     """
     PARSE_SETTINGS = False
     def __init__(self, *args, **kwargs):
-        core.MarkdownComponent.__init__(self, *args, **kwargs)
-        #self.__commands = dict()#base.MarkdownReader.__COMMANDS__ #TODO: this should be the storage, CommandExtension should add the addCommand method
+        base.TokenComponent.__init__(self, *args, **kwargs)
 
     def createToken(self, info, parent):
-        #print 'CommandBase:', match.groups()
-        cmd = (match['command'], match['subcommand'])
+        cmd = (info['command'], info['subcommand'])
 
-        #TODO: Error check
-        if cmd not in CommandExtension.__COMMANDS__:
+        try:
+            obj = self.translator.__EXTENSION_COMMANDS__[cmd]
+            settings, _ = common.parse_settings(obj.defaultSettings(), info['settings'])
+            obj.setSettings(settings)
+            token = obj.createToken(info, parent)
+            return token
+        except KeyError:
             msg = "The following command combination is unknown: '{} {}'."
             raise common.exceptions.TokenizeException(msg.format(*cmd))
-
-        obj = CommandExtension.__COMMANDS__[cmd]
-        obj.settings, _ = common.parse_settings(obj.defaultSettings(), match['settings'])
-        if obj.translator is None:
-            obj.init(self.translator)
-        token = obj.createToken(info, parent)
-        return token
-
-    """
-    def setup(self, value):
-        MarkdownComponent.setup(self, value)
-        for obj in self.COMMANDS.itervalues():
-            obj.setup(value)
-    """
 
 class InlineCommand(CommandBase):
     RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+) *(?P<subcommand>\w+)? *(?P<settings>.*?)(?=\Z|\n{2,})',

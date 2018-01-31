@@ -40,7 +40,7 @@ class Renderer(ConfigObject, TranslatorObject):
         """
         common.check_type("token", token, type)
         common.check_type("component", component, moosedown.base.components.RenderComponent)
-
+        component.init(self.translator)
         self.__components.append(component)
         self.__functions[token] = self.__method(component)
 
@@ -61,7 +61,8 @@ class Renderer(ConfigObject, TranslatorObject):
         Inputs:
             ast[tree.token]: The AST to convert.
         """
-        raise NotImplementedError("The render() method must be defined in a child class.")
+        self.reinit()
+        #raise NotImplementedError("The render() method must be defined in a child class.")
 
     def write(self, output):
         """
@@ -84,7 +85,7 @@ class Renderer(ConfigObject, TranslatorObject):
         """
         try:
             func = self.__getFunction(token)
-            el = func(token, parent)
+            el = func(token, parent) if func else parent
 
         except exceptions.RenderException as e:
             msg = ''
@@ -100,7 +101,7 @@ class Renderer(ConfigObject, TranslatorObject):
                 LOG.error(msg)
 
             if tokens.Exception in self.__functions:
-                token = tokens.Exception(token.parent, info=token.info, traceback=traceback.format_exc())
+                token = tokens.Exception(None, info=token.info, traceback=traceback.format_exc())
                 self.process(parent, token)
             else:
                 raise exceptions.MooseDocsException(msg)
@@ -134,9 +135,10 @@ class Renderer(ConfigObject, TranslatorObject):
         try:
             return self.__functions[type(token)]
         except KeyError:
-            msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
-                  "via the Renderer.add(...) method."
-            raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
+            return None
+            #msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
+            #      "via the Renderer.add(...) method."
+            #raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
 
 class HTMLRenderer(Renderer):
     """
@@ -209,6 +211,7 @@ class MaterializeRenderer(HTMLRenderer):
 
     def render(self, ast):
         Renderer.render(self, ast) # calls reinit()
+
 
         root = html.Tag(None, '!DOCTYPE html', close=False)
         root.page = ast.page #meta data

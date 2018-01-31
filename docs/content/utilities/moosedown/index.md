@@ -1,8 +1,10 @@
 # MOOSE Markdown Specification (MooseDown)
+
 The following details the MOOSE flavored [markdown] used for documenting MOOSE and
 MOOSE-based applications with the MooseDocs system.
 
 ## Motivation id=motivation
+
 As a short-hand [HTML] format, [markdown] is ubiquitous, especially among software developers.
 However, no standard exists and the original implementation was incomplete. Currently, there are
 myriad implementations---often deemed "flavors"---of Markdown. [CommonMark](http://commonmark.org/)

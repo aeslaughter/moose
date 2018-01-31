@@ -84,11 +84,7 @@ class CoreExtension(base.Extension):
             renderer.addPackage(u'hyperref')
             renderer.addPackage(u'ulem')
 
-
-class MarkdownComponent(base.TokenComponent): #TODO: Just put this in TokenComponent
-    pass
-
-class Code(MarkdownComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
+class Code(base.TokenComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
     """
     Fenced code blocks.
     """
@@ -96,7 +92,7 @@ class Code(MarkdownComponent): #TODO: Rename these classes to use the word compo
 
     @staticmethod
     def defaultSettings():
-        settings = MarkdownComponent.defaultSettings()
+        settings = base.TokenComponent.defaultSettings()
         settings['language'] = (u'text', "The code language to use for highlighting.")
         settings['caption'] = (None, "The caption text for the code listing.")
         settings['label'] = ('Listing', "The numbered caption prefix.")
@@ -110,7 +106,7 @@ class Code(MarkdownComponent): #TODO: Rename these classes to use the word compo
                            return tokens.Code(parent, code=match['code'],
                                language=self.settings['language'], **self.attributes)
 
-class Quote(MarkdownComponent):
+class Quote(base.TokenComponent):
     """
     Block quote.
     """
@@ -134,7 +130,7 @@ class Quote(MarkdownComponent):
         self.reader.parse(quote, '\n'.join(content))
         return quote
 
-class HeadingHash(MarkdownComponent):
+class HeadingHash(base.TokenComponent):
     """
     Hash style markdown headings with settings.
 
@@ -149,7 +145,7 @@ class HeadingHash(MarkdownComponent):
 
     @staticmethod
     def defaultSettings():
-        settings = MarkdownComponent.defaultSettings()
+        settings = base.TokenComponent.defaultSettings()
         return settings
 
     def createToken(self, match, parent):
@@ -158,7 +154,7 @@ class HeadingHash(MarkdownComponent):
         label = tokens.Label(heading, text=content)
         return heading
 
-class List(MarkdownComponent):
+class List(base.TokenComponent):
    """
    Base for lists components.
    """
@@ -226,7 +222,7 @@ class OrderedList(List):
        token.start = int(match['marker'].strip('. '))
        return token
 
-class Shortcut(MarkdownComponent):
+class Shortcut(base.TokenComponent):
     """
     Markdown shortcuts.
 
@@ -240,7 +236,7 @@ class Shortcut(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.Shortcut(parent, key=match['key'], link=match['link'])
 
-class Paragraph(MarkdownComponent):
+class Paragraph(base.TokenComponent):
     """
     Paragraphs (defined by regions with more than one new line)
     """
@@ -252,7 +248,7 @@ class Paragraph(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.Paragraph(parent)
 
-class Link(MarkdownComponent):
+class Link(base.TokenComponent):
     """
     Markdown links [foo](bar with=settings)
     """
@@ -264,7 +260,7 @@ class Link(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.Link(parent, url=match['url'], **self.attributes)
 
-class ShortcutLink(MarkdownComponent):
+class ShortcutLink(base.TokenComponent):
     """
     Markdown shortcut use.
     """
@@ -272,7 +268,7 @@ class ShortcutLink(MarkdownComponent):
     def createToken(self, match, parent):
         return tokens.ShortcutLink(parent, key=match['key'])
 
-class String(MarkdownComponent):
+class String(base.TokenComponent):
     """
     Base token for strings (i.e., words, numbers, etc.)
     """
@@ -320,7 +316,7 @@ class Word(String):
         return tokens.Word(parent, content=match[0])
 
 
-class Monospace(MarkdownComponent):
+class Monospace(base.TokenComponent):
     """
     Inline code
     """
@@ -329,7 +325,7 @@ class Monospace(MarkdownComponent):
         return tokens.Monospace(parent, code=match['code'])
 
 
-class Format(MarkdownComponent):
+class Format(base.TokenComponent):
     """
     Inline text settings (e.g., monospaced, underline, emphasis).
     """

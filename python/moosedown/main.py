@@ -18,7 +18,7 @@ def command_line_options():
     """
     desc = "MooseDocs: A utility to build MOOSE documentation from a single source."
     parser = argparse.ArgumentParser(description=desc)
-    subparser = parser.add_subparsers(help='Available commands.')
+    subparser = parser.add_subparsers(dest='command', help='Available commands.')
 
     build.command_line_options(subparser)
 
@@ -29,8 +29,7 @@ def main():
     Parse the command line options and run the correct command.
     """
     options = command_line_options()
-    print options
-    if options.build:
+    if options.command == 'build':
         build.main(options)
 
 
