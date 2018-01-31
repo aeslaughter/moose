@@ -3,12 +3,10 @@
 Testing for Translator object.
 """
 import unittest
-import mock
 
 from moosedown.base import Translator, MarkdownReader, HTMLRenderer
 from moosedown.extensions import core
 from moosedown.common import exceptions
-
 
 class TestTranslator(unittest.TestCase):
     """
