@@ -41,10 +41,10 @@ class TestTranslator(unittest.TestCase):
         """
         t = Translator(MarkdownReader(), HTMLRenderer(), extensions=[core.CoreExtension()])
 
-        self.assertIn('moosedown.extensions.core.Paragraph',
+        self.assertIn('Paragraph',
                       t.reader.lexer.grammer('block'))
 
-        self.assertIn('moosedown.extensions.core.Space',
+        self.assertIn('Space',
                       t.reader.lexer.grammer('inline'))
 
     def testExtensionsErrors(self):
