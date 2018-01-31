@@ -7,8 +7,8 @@ import traceback
 import types
 import re
 
-import moosedown
 from moosedown import tree, common
+from moosedown.common import exceptions
 
 LOG = logging.getLogger(__name__)
 
@@ -82,7 +82,6 @@ class Grammer(object):
         """
         for obj in self.__patterns:
             yield obj
-
 
 class LexerInformation(object):
     """
@@ -182,7 +181,7 @@ class Lexer(object):
 
         n = len(text)
         pos = 0
-        while (pos < n):
+        while pos < n:
             match = None
             for pattern in grammer:
                 match = pattern.regex.match(text, pos)
@@ -190,8 +189,10 @@ class Lexer(object):
                     info = LexerInformation(match, pattern, line)
                     try:
                         obj = self.buildObject(parent, info)
-                    except Exception as e:
-                        obj = tree.tokens.Exception(parent, info=info, traceback=traceback.format_exc())
+                    except exceptions.TokenizeException:
+                        obj = tree.tokens.Exception(parent,
+                                                    info=info,
+                                                    traceback=traceback.format_exc())
                     if obj is not None:
                         obj.info = info #TODO: set ptype on base Token, change to info
                         line += match.group(0).count('\n')
@@ -208,9 +209,11 @@ class Lexer(object):
             info = LexerInformation(None, None, line)
             obj = tree.tokens.Exception(parent, info=info, traceback=None)
 
-    def buildObject(self, parent, info):
-        obj = info.pattern.function(info, parent)
-        return obj
+    def buildObject(self, parent, info): #pylint: disable=no-self-use
+        """
+        Return a token object for the given lexer information.
+        """
+        return info.pattern.function(info, parent)
 
 class RecursiveLexer(Lexer):
     """
