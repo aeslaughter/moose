@@ -22,5 +22,9 @@ class TestHitLoad(unittest.TestCase):
         self.assertEqual(root.children[1].children[0].children[0]['type'], 'test')
         self.assertEqual(root.children[1].children[1].name, 'B-2')
 
+        gold = ['A', 'B']
+        for i, child in enumerate(root):
+            self.assertEqual(child.name, gold[i])
+
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2)
