@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestCodeTokenize(testing.MarkdownTestCase):
+class TestCodeTokenize(testing.MooseDocsTestCase):
     """Code tokenize"""
 
     def testBasic(self):
@@ -20,8 +20,6 @@ class TestCodeTokenize(testing.MarkdownTestCase):
         self.assertIsInstance(code, tree.tokens.Code)
         self.assertString(code.code, '\nint x;\n')
         self.assertString(code.language, 'cpp')
-
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

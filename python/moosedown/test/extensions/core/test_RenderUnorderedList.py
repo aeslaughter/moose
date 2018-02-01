@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderUnorderedListHTML(testing.MarkdownTestCase):
+class TestRenderUnorderedListHTML(testing.MooseDocsTestCase):
     def node(self, text):
         return self.render(text)(0)
 
@@ -61,7 +61,7 @@ class TestRenderUnorderedListMaterialize(TestRenderUnorderedListHTML):
         self.assertString(html, '<ul class="browser-default"><li><p>foo</p><pre><code ' \
                                 'class="language-text">\ncode\n</code></pre></li></ul>')
 
-class TestRenderUnorderedListLatex(testing.MarkdownTestCase):
+class TestRenderUnorderedListLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):

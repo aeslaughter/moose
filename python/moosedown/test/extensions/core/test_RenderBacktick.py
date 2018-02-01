@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderBacktickHTML(testing.MarkdownTestCase):
+class TestRenderBacktickHTML(testing.MooseDocsTestCase):
 
     def node(self):
         return self.render(u'foo `code` bar')(0)
@@ -40,7 +40,7 @@ class TestRenderBacktickMaterialize(TestRenderBacktickHTML):
 
     RENDERER = MaterializeRenderer
 
-class TestRenderBacktickLatex(testing.MarkdownTestCase):
+class TestRenderBacktickLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
     def testTree(self):
         node = self.render(u'foo `code` bar')(-1)

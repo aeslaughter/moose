@@ -12,9 +12,9 @@ from moosedown import ROOT_DIR
 from moosedown.tree import page, tokens
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestIncludeTokenize(testing.MarkdownTestCase):
+class TestIncludeTokenize(testing.MooseDocsTestCase):
     def setUp(self):
-        testing.MarkdownTestCase.setUp(self)
+        testing.MooseDocsTestCase.setUp(self)
 
         self.loc = tempfile.mkdtemp()
         self.files = [os.path.join(self.loc, 'file0.md'),

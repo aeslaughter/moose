@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestHeadingHashTokenize(testing.MarkdownTestCase):
+class TestHeadingHashTokenize(testing.MooseDocsTestCase):
     """
     Tests that hash style headings (#) are converted.
     """

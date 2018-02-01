@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestBreakTokenize(testing.MarkdownTestCase):
+class TestBreakTokeize(testing.MooseDocsTestCase):
     """Code tokenize"""
 
     def testBasic(self):

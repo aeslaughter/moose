@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestBlockCommand(testing.MarkdownTestCase):
+class TestBlockCommand(testing.MooseDocsTestCase):
     """BlockCommand"""
 
     def testBasic(self):

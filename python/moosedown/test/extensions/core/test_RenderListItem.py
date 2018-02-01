@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderListItemHTML(testing.MarkdownTestCase):
+class TestRenderListItemHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = tree.tokens.UnorderedList(None)
@@ -29,7 +29,7 @@ class TestRenderListItemMaterialize(TestRenderListItemHTML):
         html = self.write(self.render(node).find('body')(0)(0))
         self.assertEqual(html, '<ul class="browser-default"><li></li></ul>')
 
-class TestRenderListItemLatex(testing.MarkdownTestCase):
+class TestRenderListItemLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testWrite(self):

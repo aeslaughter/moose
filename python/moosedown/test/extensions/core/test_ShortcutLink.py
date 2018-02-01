@@ -7,14 +7,14 @@ from moosedown import tree
 from moosedown.extensions import core
 from moosedown.base import testing
 
-class TestShortcutLinkTokenize(testing.MarkdownTestCase):
+class TestShortcutLinkTokenize(testing.MooseDocsTestCase):
     """
     Test shortcuts:
 
     [link]: something or another
     """
     def setUp(self):
-        testing.MarkdownTestCase.setUp(self)
+        testing.MooseDocsTestCase.setUp(self)
         core.SHORTCUT_DATABASE = dict(key='content')
 
     def testShortcutLink(self):

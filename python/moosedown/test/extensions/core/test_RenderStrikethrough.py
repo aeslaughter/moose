@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderStrikethroughHTML(testing.MarkdownTestCase):
+class TestRenderStrikethroughHTML(testing.MooseDocsTestCase):
     def node(self, text):
         return self.render(text)(0)(0)
 
@@ -28,7 +28,7 @@ class TestRenderStrikethroughMaterialize(TestRenderStrikethroughHTML):
     def node(self, text):
         return self.render(text).find('body')(0)(0)(0)
 
-class TestRenderStrikethroughLatex(testing.MarkdownTestCase):
+class TestRenderStrikethroughLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):

@@ -4,7 +4,7 @@ Module for common unittest related tasks.
 import unittest
 import inspect
 
-from moosedown import base
+from moosedown import base, common
 from mooseutils import text_diff
 
 class MooseDocsTestCase(unittest.TestCase):
@@ -12,6 +12,7 @@ class MooseDocsTestCase(unittest.TestCase):
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
     EXTENSIONS = ['moosedown.extensions.core']
+    EXTENSIONS_CONFIG = dict()
     READER = base.MarkdownReader
     RENDERER = base.HTMLRenderer
     CONFIG = dict()
@@ -22,7 +23,8 @@ class MooseDocsTestCase(unittest.TestCase):
         """
         self._reader = self.READER()
         self._renderer = self.RENDERER()
-        self._translator = base.Translator(self._reader, self._renderer, self.EXTENSIONS,
+        extensions = common.load_extensions(self.EXTENSIONS, self.EXTENSIONS_CONFIG)
+        self._translator = base.Translator(self._reader, self._renderer, extensions,
                                            **self.CONFIG)
 
     def assertString(self, content, gold):

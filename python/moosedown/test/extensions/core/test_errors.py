@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestErrors(testing.MarkdownTestCase):
+class TestErrors(testing.MooseDocsTestCase):
 
     def testUnknownSettings(self):
         html = self.render(u'# Heading with Spaces foo=bar')

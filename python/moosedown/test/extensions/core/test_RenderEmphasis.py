@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderEmphasisHTML(testing.MarkdownTestCase):
+class TestRenderEmphasisHTML(testing.MooseDocsTestCase):
     def node(self, text):
         return self.render(text)(0)(0)
 
@@ -28,7 +28,7 @@ class TestRenderEmphasisMaterialize(TestRenderEmphasisHTML):
     def node(self, text):
         return self.render(text).find('body')(0)(0)(0)
 
-class TestRenderEmphasisLatex(testing.MarkdownTestCase):
+class TestRenderEmphasisLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):

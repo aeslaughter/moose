@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestUnorderedListTokenize(testing.MarkdownTestCase):
+class TestUnorderedListTokenize(testing.MooseDocsTestCase):
     """
     Tests inline code.
     """
