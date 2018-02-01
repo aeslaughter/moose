@@ -7,4 +7,16 @@
     type = PythonUnitTest
     input = test_parse_settings.py
   [../]
+  [./exceptions]
+    type = PythonUnitTest
+    input = test_exceptions.py
+  [../]
+  [./box]
+    type = PythonUnitTest
+    input = test_box.py
+  [../]
+  [./check_types]
+    type = PythonUnitTest
+    input = test_check_type.py
+  [../]
 []

@@ -137,7 +137,7 @@ class Renderer(ConfigObject, TranslatorObject):
         except KeyError:
             msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
                   "via the Renderer.add(...) method."
-            raise exceptions.RenderException(msg, type(token).__name__, self.METHOD)
+            raise exceptions.RenderException(token.info, msg, type(token).__name__, self.METHOD)
 
 class HTMLRenderer(Renderer):
     """

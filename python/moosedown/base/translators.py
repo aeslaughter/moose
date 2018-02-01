@@ -52,16 +52,6 @@ class Translator(ConfigObject):
         Return list of loaded Extension objects.
         """
         return self.__extensions
-
-    def reinit(self):
-        """
-        Reinitializes the Reader, Renderer, and all Extension objects.
-        """
-        self.reader.reinit()
-        self.renderer.reinit()
-        for ext in self.__extensions:
-            ext.reinit()
-
     @property
     def reader(self):
         """
@@ -75,6 +65,15 @@ class Translator(ConfigObject):
         Return the Renderer object.
         """
         return self.__renderer
+
+    def reinit(self):
+        """
+        Reinitializes the Reader, Renderer, and all Extension objects.
+        """
+        self.reader.reinit()
+        self.renderer.reinit()
+        for ext in self.__extensions:
+            ext.reinit()
 
     def convert(self, content):
         """

@@ -445,14 +445,12 @@ class RenderShortcutLink(CoreRenderComponentBase):
             return self.__cache[token.key]
 
         for node in anytree.PreOrderIter(token.root, maxlevel=None):
-           # if isinstance(node, tokens.Shortcut):
-            #    print repr(node)
             if isinstance(node, tokens.Shortcut) and node.key == token.key:
                 self.__cache[token.key] = node
                 return node
 
         msg = "The shortcut link key '{}' was not located in the list of shortcuts."
-        raise exceptions.RenderException(msg, token.key)
+        raise exceptions.RenderException(token.info, msg, token.key)
 
 
 class RenderMonospace(CoreRenderComponentBase):
@@ -510,7 +508,6 @@ class RenderOrderedList(CoreRenderComponentBase):
         tag = CoreRenderComponentBase.createMaterialize(self, token, parent)
         tag['class'] = 'browser-default'
         tag['start'] = token.start
-        #tag['type'] = token.type
         return tag
 
     def createLatex(self, token, parent):
@@ -544,8 +541,6 @@ class RenderString(CoreRenderComponentBase):
     """String"""
 
     def createHTML(self, token, parent):
-        #if parent.name =='td':
-        #    print parent
         return html.String(parent, content=token.content)
 
     def createLatex(self, token, parent):
@@ -654,16 +649,12 @@ class RenderException(CoreRenderComponentBase):
         html.String(p, content=msg)
         html.Tag(p, 'br', close=False)
 
-        #fname = html.Tag(p, 'a', target="_blank", href=r"file://{}".format(token.root.page.source))
-        #html.String(fname, content=u"{}:{}".format(token.root.page.source, token.info.line))
-
         pre = html.Tag(content, 'pre')
         code = html.Tag(pre, 'code', class_="language-markdown")
         html.String(code, content=token.info[0], escape=True)
 
         pre = html.Tag(content, 'pre', style="font-size:80%;")
         html.String(pre, content=unicode(token.traceback), escape=True)
-        #print token.traceback
 
         footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
         done = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
