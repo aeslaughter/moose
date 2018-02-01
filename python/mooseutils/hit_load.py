@@ -20,6 +20,33 @@ class HitNode(anytree.NodeMixin):
         """
         return self.__parameters
 
+    def find(self, name, unique=False):
+        """
+        Locate first occurance of a node by name starting from this node.
+
+        Inputs:
+            name[str]: The name to search for within the tree.
+            unique[bool]: When False a "fuzzy" search is performed, meaning
+                          that the provide name must be in the node name. If
+                          this is set to True the names must match exact.
+        """
+        for node in anytree.PreOrderIter(self):
+            if (not unique and name in node.name) or (unique and name == node.name):
+                return node
+
+    def findall(self, name, unique=False):
+        """
+        Locate all nodes withing the tree starting from this node.
+
+        Inputs:
+            name[str]: The name to search for within the tree.
+            unique[bool]: When False a "fuzzy" search is performed, meaning
+                          that the provide name must be in the node name. If
+                          this is set to True the names must match exact.
+        """
+        filter_ = lambda n: (not unique and name in n.name) or (unique and n.name == name)
+        return [node for node in anytree.PreOrderIter(self, filter_=filter_)]
+
     def __contains__(self, param):
         """
         Provides operator in access to the parameters of this node.
