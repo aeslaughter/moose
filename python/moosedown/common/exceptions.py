@@ -18,12 +18,14 @@ class TokenizeException(MooseDocsException):
     """
     Exception for reporting problems during tokenization, this should be called from within
     the 'createToken' method of TokenComponent objects.
-
-    TODO: This should accept "LexerInfomation" object
     """
     pass
 
 class RenderException(MooseDocsException):
+    """
+    Exception for reporting problem during rendering, this should be called from within the
+    create methods (e.g., 'createHTML', 'createLatex') of RenderComponent objects.
+    """
     def __init__(self, info, message, *args):
         MooseDocsException.__init__(self, message, *args)
         self.info = info
