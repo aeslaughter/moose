@@ -1,6 +1,4 @@
-"""
-Nodes for building an HTML tree structure.
-"""
+"""Nodes for building an HTML tree structure."""
 import cgi
 from base import NodeBase, Property
 
@@ -10,7 +8,7 @@ class Tag(NodeBase):
     """
     PROPERTIES = [Property('close', default=True, ptype=bool)]
 
-    def __init__(self, parent, name,  **kwargs):
+    def __init__(self, parent, name, **kwargs):
         style = kwargs.pop('style', None)
         self.__style = dict()
         if style:
@@ -23,15 +21,23 @@ class Tag(NodeBase):
 
     @property
     def style(self):
+        """Return the HTML style attribute."""
         return self.__style
 
-
     def write(self):
+        """Write the HTML as a string, e.g., <foo>...</foo>."""
         out = ''
-        attr = ' '.join(['{}="{}"'.format(key, str(value)) for key, value in self.attributes.iteritems() if value])
-        if self.__style:
+        attr_list = []
+        for key, value in self.attributes.iteritems():
+            attr_list.append('{}="{}"'.format(key, str(value)))
+        attr = ' '.join(attr_list)
 
-            style_string = ';'.join(['{}:{}'.format(key, str(value)) for key, value in self.__style.iteritems() if value])
+        if self.__style:
+            style_list = []
+            for key, value in self.__style.iteritems():
+                if value:
+                    style_list.append('{}:{}'.format(key, str(value)))
+            style_string = ';'.join(style_list)
             attr += ' style="{}"'.format(style_string)
 
         if attr:
@@ -41,10 +47,9 @@ class Tag(NodeBase):
 
         for child in self.children:
             out += child.write()
-        if self.close:
+        if self.close: #pylint: disable=no-member
             out += '</{}>'.format(self.name)
         return out
-
 
 class String(NodeBase):
     """
@@ -52,6 +57,7 @@ class String(NodeBase):
     """
     PROPERTIES = [Property('content', default=u'', ptype=unicode),
                   Property('escape', default=False, ptype=bool)]
+
     def __init__(self, parent=None, **kwargs):
         super(String, self).__init__(parent=parent, **kwargs)
 
@@ -61,7 +67,7 @@ class String(NodeBase):
             raise TypeError(msg.format(self.name, type(self.parent).__name__))
 
     def write(self):
-        if self.escape:
-            return cgi.escape(self.content, quote=True)
+        if self.escape: #pylint: disable=no-member
+            return cgi.escape(self.content, quote=True) #pylint: disable=no-member
         else:
-            return self.content
+            return self.content #pylint: disable=no-member

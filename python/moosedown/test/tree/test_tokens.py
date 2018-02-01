@@ -6,7 +6,7 @@ import inspect
 import mock
 
 from moosedown.tree import tokens
-from moosedown.base.Grammer import Grammer
+from moosedown.base import lexers
 
 class TestTokens(unittest.TestCase):
 
@@ -24,14 +24,11 @@ class TestTokens(unittest.TestCase):
     def testToken(self, mock):
         token = tokens.Token()
         self.assertEqual(token.name, 'Token')
-        self.assertEqual(token.line, None)
-        token.line = 42
-        self.assertEqual(token.line, 42)
+        self.assertTrue(token.recursive)
 
-        with self.assertRaises(TypeError) as e:
-            token.line = "42"
-        gold = "The supplied property 'line' must be of type 'int', but 'str' was provided."
-        self.assertEqual(e.exception.message, gold)
+    def testSection(self):
+        token = tokens.Section()
+        self.assertIsInstance(token, tokens.Section)
 
     def testString(self):
         token = tokens.String(content=u"content")
@@ -140,12 +137,12 @@ class TestTokens(unittest.TestCase):
     def testShortcut(self):
         with self.assertRaises(IOError) as e:
             token = tokens.Shortcut(key=u'foo')
-        self.assertEqual("The property 'content' is required.", e.exception.message)
+        self.assertEqual("The property 'link' is required.", e.exception.message)
         with self.assertRaises(IOError) as e:
             token = tokens.Shortcut(content=u'foo')
         self.assertEqual("The property 'key' is required.", e.exception.message)
 
-        token = tokens.Shortcut(key=u'key', content=u'content')
+        token = tokens.Shortcut(key=u'key', link=u'link', content=u'content')
         self.assertEqual(token.key, 'key')
         self.assertEqual(token.content, 'content')
 
@@ -157,11 +154,11 @@ class TestTokens(unittest.TestCase):
         token = tokens.ShortcutLink(key=u'key')
         self.assertEqual(token.key, 'key')
 
-    def testInlineCode(self):
+    def testMonospace(self):
         with self.assertRaises(IOError) as e:
-            token = tokens.InlineCode()
+            token = tokens.Monospace()
         self.assertIn("The property 'code' is required.", e.exception.message)
-        token = tokens.InlineCode(code=u'int x;')
+        token = tokens.Monospace(code=u'int x;')
         self.assertEqual(token.code, 'int x;')
 
     def testStrong(self):
@@ -207,7 +204,7 @@ class TestTokens(unittest.TestCase):
     def testException(self):
         def func():
             pass
-        pattern = Grammer.Pattern(name='foo', regex=re.compile('\S'), function=func)
+        pattern = lexers.Grammer.Pattern(name='foo', regex=re.compile('\S'), function=func)
         token = tokens.Exception(pattern=pattern, traceback='foo')
 
 

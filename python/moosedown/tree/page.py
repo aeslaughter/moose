@@ -17,8 +17,7 @@ LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
     PROPERTIES = [base.Property('content', ptype=unicode),
-                  base.Property('source', ptype=str)]
-            #      base.Property('translator')]
+                  base.Property('source', ptype=str)]]
     COLOR = None
 
     def __init__(self, *args, **kwargs):

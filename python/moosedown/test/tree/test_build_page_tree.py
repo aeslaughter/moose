@@ -1,18 +1,4 @@
 #!/usr/bin/env python
-#pylint: disable=missing-docstring
-####################################################################################################
-#                                    DO NOT MODIFY THIS HEADER                                     #
-#                   MOOSE - Multiphysics Object Oriented Simulation Environment                    #
-#                                                                                                  #
-#                              (c) 2010 Battelle Energy Alliance, LLC                              #
-#                                       ALL RIGHTS RESERVED                                        #
-#                                                                                                  #
-#                            Prepared by Battelle Energy Alliance, LLC                             #
-#                               Under Contract No. DE-AC07-05ID14517                               #
-#                               With the U. S. Department of Energy                                #
-#                                                                                                  #
-#                               See COPYRIGHT for full restrictions                                #
-####################################################################################################
 import os
 import unittest
 import mock
@@ -25,9 +11,6 @@ from moosedown.tree.build_page_tree import doc_tree
 from moosedown.tree import page
 
 class TestBuildRegex(unittest.TestCase):
-    """
-    Tests regex building test function.
-    """
     def testBasic(self):
         path = '/one/**/four/five'
         self.assertEqual(build_regex(path), r'^/one/(?:.*?)/four/five$')
@@ -68,11 +51,7 @@ class TestBuildRegex(unittest.TestCase):
         path = '**/three/*/nine/**/foo.md'
         self.assertEqual(build_regex(path), r'^(?:.*?)/three/(?:[^/]*?)/nine/(?:.*?)/foo\.md$')
 
-
 class TestFindFiles(unittest.TestCase):
-    """
-    Test the file find function.
-    """
     def testBasic(self):
         filenames = ['/one/two/three/four/a.md',
                      '/one/two/three/four/b.md',
@@ -116,9 +95,6 @@ class TestFindFiles(unittest.TestCase):
         self.assertEqual(files, set(filenames[6:]))
 
 class TestDocImport(unittest.TestCase):
-    """
-    Tests for docs_import function.
-    """
     def testBasic(self):
         items = doc_import(content=['framework/doc/content/**',
                                     '!framework/doc/content/documentation/**'],
@@ -168,9 +144,6 @@ class TestDocImport(unittest.TestCase):
         self.assertIn('The "root_dir" must be a valid directory', args[-1])
 
 class TestDocTree(unittest.TestCase):
-    """
-    Test creation of file tree nodes.
-    """
     def testBasic(self):
 
         items = [dict(root_dir=os.path.join(ROOT_DIR, 'docs/content'),
@@ -195,8 +168,6 @@ class TestDocTree(unittest.TestCase):
         self.assertEqual(root(0)(0)(0).source,
                          os.path.join(ROOT_DIR,
                                       'docs/content/getting_started/installation/bash_profile.md'))
-
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
