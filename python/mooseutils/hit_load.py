@@ -128,6 +128,6 @@ def _hit_parse(root, hit_node, filename):
     return root
 
 if __name__ == '__main__':
-    filename = '/Users/slauae/projects/moose/test/tests/kernels/simple_diffusion/simple_diffusion.i'
+    filename = '../../test/tests/kernels/simple_diffusion/simple_diffusion.i'
     root = hit_load(filename)
     print root
