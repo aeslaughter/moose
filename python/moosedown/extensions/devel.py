@@ -25,6 +25,11 @@ class Example(tokens.Token):
 
 
 class DevelExtension(command.CommandExtension):
+    @staticmethod
+    def defaultConfig():
+        config = command.CommandExtension.defaultConfig()
+        config['preview'] = (True, "Enable/disable the rendered preview.") #TODO: use this
+        return config
 
     def extend(self, reader, renderer):
         self.addCommand(Example())

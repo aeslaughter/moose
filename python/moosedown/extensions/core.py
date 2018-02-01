@@ -18,17 +18,14 @@ LOG = logging.getLogger(__name__)
 
 def make_extension(**kwargs):
     """
-    Create and return the CoreExtension object for converting from markdown to
-    html/latex.
+    Create and return the CoreExtension object for converting from markdown to html/latex.
     """
     return CoreExtension(**kwargs)
 
 class CoreExtension(base.Extension):
     """
-    The core markdown extension object. Extension objects add the tokenize
-    and rendering components.
+    The core markdown extension object. Extension objects add the tokenize and rendering components.
     """
-
     def extend(self, reader, renderer):
         """
         Add the extension components.

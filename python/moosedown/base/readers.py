@@ -36,13 +36,6 @@ class Reader(ConfigObject, TranslatorObject):
         self.__lexer = lexer
         self.__components = []
 
-    def reinit(self):
-        """
-        Call the Component reinit() methods.
-        """
-        for comp in self.__components:
-            comp.reinit()
-
     @property
     def lexer(self):
         """
@@ -50,6 +43,19 @@ class Reader(ConfigObject, TranslatorObject):
         is the case for the markdown parsing done by MooseDocs, see core.py for examples.
         """
         return self.__lexer
+
+    def components(self):
+        """
+        Return the list of components.
+        """
+        return self.__components
+
+    def reinit(self):
+        """
+        Call the Component reinit() methods.
+        """
+        for comp in self.__components:
+            comp.reinit()
 
     def parse(self, root, content):
         """
