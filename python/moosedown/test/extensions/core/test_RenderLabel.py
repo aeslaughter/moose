@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderLabelHTML(testing.MarkdownTestCase):
+class TestRenderLabelHTML(testing.MooseDocsTestCase):
     def testWrite(self):
         node = tree.tokens.Label(None, text=u'foo')
         html = self.write(node)
@@ -15,7 +15,7 @@ class TestRenderLabelHTML(testing.MarkdownTestCase):
 class TestRenderLabelMaterialize(TestRenderLabelHTML):
     RENDERER = MaterializeRenderer
 
-class TestRenderLabelLatex(testing.MarkdownTestCase):
+class TestRenderLabelLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testWrite(self):

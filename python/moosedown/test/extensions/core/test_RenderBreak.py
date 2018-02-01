@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderBreakHTML(testing.MarkdownTestCase):
+class TestRenderBreakHTML(testing.MooseDocsTestCase):
     def node(self):
         return self.render(u'foo\nbar')(0)
 
@@ -31,7 +31,7 @@ class TestRenderBreakMaterialize(TestRenderBreakHTML):
     def node(self):
         return self.render(u'foo\nbar').find('body')(0)(0)
 
-class TestRenderBreakLatex(testing.MarkdownTestCase):
+class TestRenderBreakLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
     def testTree(self):
         node = self.render(u'foo\nbar')(-1)

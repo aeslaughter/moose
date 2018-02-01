@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestPunctuationTokenize(testing.MarkdownTestCase):
+class TestPunctuationTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
         node = self.ast('a-z')(0)
         self.assertIsInstance(node(0), tree.tokens.Word)

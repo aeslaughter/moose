@@ -4,7 +4,7 @@ import unittest
 from moosedown import tree
 from moosedown.base import testing
 
-class TestQuoteTokenize(testing.MarkdownTestCase):
+class TestQuoteTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
         node = self.ast('> foo bar')(0)
         self.assertIsInstance(node, tree.tokens.Quote)

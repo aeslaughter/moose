@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderCodeHTML(testing.MarkdownTestCase):
+class TestRenderCodeHTML(testing.MooseDocsTestCase):
     """Code HTML"""
 
     def testTree(self):
@@ -40,7 +40,7 @@ class TestRenderCodeMaterialize(TestRenderCodeHTML):
     RENDERER = MaterializeRenderer
 
 
-class TestRenderCodeLatex(testing.MarkdownTestCase):
+class TestRenderCodeLatex(testing.MooseDocsTestCase):
     pass
 
 

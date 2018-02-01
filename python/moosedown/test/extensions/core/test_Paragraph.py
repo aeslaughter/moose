@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestParagraphTokenize(testing.MarkdownTestCase):
+class TestParagraphTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
         for i in range(2, 5):
             token = self.ast('foo{}bar'.format('\n'*i))

@@ -7,7 +7,7 @@ from moosedown import tree
 from moosedown.extensions import core
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderShortcutLinkHTML(testing.MarkdownTestCase):
+class TestRenderShortcutLinkHTML(testing.MooseDocsTestCase):
     """
     Test Lines: [link](bar.html foo=bar)
     """
@@ -15,7 +15,7 @@ class TestRenderShortcutLinkHTML(testing.MarkdownTestCase):
         return self.render(text).find('body')(0)(0)
 
     def setUp(self):
-        testing.MarkdownTestCase.setUp(self)
+        testing.MooseDocsTestCase.setUp(self)
         core.SHORTCUT_DATABASE = dict(key='content')
 
     def testTree(self):
@@ -55,11 +55,11 @@ class TestRenderShortcutLinkMaterialize(TestRenderShortcutLinkHTML):
     def node(self, text):
         return self.render(text).find('body')(-1)(0)(0)
 
-class TestRenderShortcutLinkLatex(testing.MarkdownTestCase):
+class TestRenderShortcutLinkLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def setUp(self):
-        testing.MarkdownTestCase.setUp(self)
+        testing.MooseDocsTestCase.setUp(self)
         core.SHORTCUT_DATABASE = dict(key='content')
 
     def testTree(self):

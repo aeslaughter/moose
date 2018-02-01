@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderOrderedListHTML(testing.MarkdownTestCase):
+class TestRenderOrderedListHTML(testing.MooseDocsTestCase):
     def node(self, text):
         return self.render(text)(0)
 
@@ -48,7 +48,7 @@ class TestRenderOrderedListMaterialize(TestRenderOrderedListHTML):
         self.assertString(html,
                           '<ol class="browser-default"><li><p>foo</p></li><li><p>bar</p></li></ol>')
 
-class TestRenderOrderedListLatex(testing.MarkdownTestCase):
+class TestRenderOrderedListLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):

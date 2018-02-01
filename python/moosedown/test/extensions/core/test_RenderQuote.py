@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderQuoteHTML(testing.MarkdownTestCase):
+class TestRenderQuoteHTML(testing.MooseDocsTestCase):
     """
     Test Lines: [link](bar.html foo=bar)
     """
@@ -39,7 +39,7 @@ class TestRenderQuoteMaterialize(TestRenderQuoteHTML):
     def node(self, text):
         return self.render(text).find('body')(0)(0)
 
-class TestRenderQuoteLatex(testing.MarkdownTestCase):
+class TestRenderQuoteLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):

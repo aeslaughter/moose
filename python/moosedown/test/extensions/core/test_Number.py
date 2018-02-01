@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestNumberTokenize(testing.MarkdownTestCase):
+class TestNumberTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
         node = self.ast('foo1bar')(0)
         self.assertIsInstance(node(0), tree.tokens.Word)

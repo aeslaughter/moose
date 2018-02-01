@@ -40,7 +40,7 @@ def _get_module(ext):
         try:
             ext = importlib.import_module(name)
         except ImportError:
-            msg = "Failed to import the supplied {} module."
+            msg = "Failed to import the supplied '{}' module."
             raise exceptions.MooseDocsException(msg, name)
     else:
         msg = "The supplied module ({}) must be a module type or a string, but a {} object "\

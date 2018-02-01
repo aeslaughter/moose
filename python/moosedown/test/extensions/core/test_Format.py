@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestFormatTokenize(testing.MarkdownTestCase):
+class TestFormatTokenize(testing.MooseDocsTestCase):
     """
     Test inline formatting (e.g., *bold*, _italic_, etc.)
     """

@@ -4,7 +4,7 @@ import unittest
 from moosedown import tree
 from moosedown.base import testing
 
-class TestWordTokenize(testing.MarkdownTestCase):
+class TestWordTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
         node = self.ast('sit amet, consectetur')(0)
         self.assertIsInstance(node(0), tree.tokens.Word)

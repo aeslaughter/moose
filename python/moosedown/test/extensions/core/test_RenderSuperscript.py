@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderSuperscriptHTML(testing.MarkdownTestCase):
+class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
     def node(self, text):
         return self.render(text)(0)(0)
 
@@ -28,7 +28,7 @@ class TestRenderSuperscriptMaterialize(TestRenderSuperscriptHTML):
     def node(self, text):
         return self.render(text).find('body')(0)(0)(0)
 
-class TestRenderSuperscriptLatex(testing.MarkdownTestCase):
+class TestRenderSuperscriptLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):

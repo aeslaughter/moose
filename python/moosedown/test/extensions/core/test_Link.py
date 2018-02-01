@@ -6,7 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestLinkTokenize(testing.MarkdownTestCase):
+class TestLinkTokenize(testing.MooseDocsTestCase):
     """
     Test Lines: [link](bar.html foo=bar)
     """
