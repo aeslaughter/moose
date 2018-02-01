@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+import os
+import unittest
+import mooseutils
+
+class TestHitLoad(unittest.TestCase):
+    """
+    Test the hit_load function.
+    """
+    def testLoad(self):
+        root = mooseutils.hit_load(os.path.join('..', '..', 'test_files', 'test.hit'))
+        self.assertEqual(root.children[0].name, 'A')
+        self.assertEqual(root.children[0]['param'], 'foo')
+        self.assertEqual(root.children[0].children[0].name, 'A-1')
+        self.assertIn('param', root.children[0].children[0])
+        self.assertEqual(root.children[0].children[0]['param'], 'bar')
+
+        self.assertEqual(root.children[1].name, 'B')
+        self.assertEqual(root.children[1].children[0].name, 'B-1')
+        self.assertEqual(root.children[1].children[0].children[0].name, 'B-1-1')
+        self.assertIn('type', root.children[1].children[0].children[0])
+        self.assertEqual(root.children[1].children[0].children[0]['type'], 'test')
+        self.assertEqual(root.children[1].children[1].name, 'B-2')
+
+if __name__ == '__main__':
+    unittest.main(module=__name__, verbosity=2)

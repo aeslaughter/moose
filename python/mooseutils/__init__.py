@@ -12,7 +12,7 @@ from mooseutils import touch, unique_list, gold, make_chunks, check_file_size, c
 from mooseutils import text_diff
 from message import mooseDebug, mooseWarning, mooseMessage, mooseError
 from MooseException import MooseException
-
+from hit_load import hit_load
 from yaml_load import yaml_load
 
 try:
