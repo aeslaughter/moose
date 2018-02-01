@@ -61,7 +61,7 @@ class Storage(object):
             else:
                 index = self._keys.index(location)
         elif isinstance(location, int):
-            index = location
+            index = location #pylint: disable=redefined-variable-type
         else:
             raise TypeError("The supplied input must be of the 'str' or 'int'.")
 
