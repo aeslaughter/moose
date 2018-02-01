@@ -1,7 +1,4 @@
-
-"""
-Nodes for builing latex.
-"""
+"""Nodes for builing latex."""
 import re
 from base import NodeBase, Property
 
@@ -27,25 +24,32 @@ def escape(text):
         '>': '\\textgreater\\',
     }
 
-    regex = re.compile('|'.join(re.escape(unicode(key)) for key in sorted(conv.keys(), key = lambda item: - len(item))))
+    regex_list = []
+    for key in sorted(conv.keys(), key=lambda item: - len(item)): #pylint: disable=consider-iterating-dictionary
+        regex_list.append(re.escape(unicode(key)))
+    regex = re.compile('|'.join(regex_list))
     return regex.sub(lambda match: conv[match.group()], text)
 
 class Enclosure(NodeBase):
     """
     Class for enclosing other nodes in characters, e.g. [], {}.
     """
-    PROPERTIES = [Property('enclose', ptype=tuple, required=True), Property('string', ptype=unicode)]
+    PROPERTIES = [Property('enclose', ptype=tuple, required=True),
+                  Property('string', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         NodeBase.__init__(self, *args, **kwargs)
-        if self.string is not None:
-            String(self, content=self.string)
+        if self.string is not None: #pylint: disable=no-member
+            String(self, content=self.string) #pylint: disable=no-member
 
     def write(self):
-        out = self.enclose[0]
+        """
+        Write LaTex as a string.
+        """
+        out = self.enclose[0] #pylint: disable=no-member
         for child in self.children:
             out += child.write()
-        out += self.enclose[1]
+        out += self.enclose[1] #pylint: disable=no-member
         return out
 
 class Bracket(Enclosure):
@@ -79,15 +83,15 @@ class Command(NodeBase):
 
     def __init__(self, parent, name, *args, **kwargs):
         NodeBase.__init__(self, name=name, parent=parent, *args, **kwargs)
-        if self.string is not None:
-            String(self, content=self.string)
+        if self.string is not None: #pylint: disable=no-member
+            String(self, content=self.string) #pylint: disable=no-member
 
     def write(self):
-        out = self.start
+        out = self.start #pylint: disable=no-member
         out += '\\%s{' % self.name
         for child in self.children:
             out += child.write()
-        out += '}' + self.end
+        out += '}' + self.end #pylint: disable=no-member
         return out
 
 class CustomCommand(Command):
@@ -98,18 +102,27 @@ class CustomCommand(Command):
                   Property('end', ptype=str, default='')]
 
     def write(self):
-        out = self.start
+        """
+        Write to LaTeX string.
+        """
+        out = self.start #pylint: disable=no-member
         out += '\\%s' % self.name
         for child in self.children:
             out += child.write()
-        out += self.end
+        out += self.end #pylint: disable=no-member
         return out
 
 class Environment(NodeBase):
+    """
+    Class for LaTeX environment: \\begin{foo}...\\end{foo}
+    """
     def __init__(self, parent, name, *args, **kwargs):
         NodeBase.__init__(self, name=name, parent=parent, *args, **kwargs)
 
     def write(self):
+        """
+        Write to LaTeX string.
+        """
         out = '\n\\begin{%s}\n' % self.name
         for child in self.children:
             out += child.write()
@@ -123,7 +136,10 @@ class String(NodeBase):
     PROPERTIES = [Property('content', default=u'', ptype=unicode)]
 
     def write(self):
-        out = escape(self.content)
+        """
+        Write to LaTeX string.
+        """
+        out = escape(self.content) #pylint: disable=no-member
         for child in self.children:
             out += child.write()
         return out

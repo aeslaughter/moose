@@ -158,16 +158,16 @@ class Shortcut(Token):
     rendering.
 
     Properties:
-        key[unicode]: (Required) The shortcut key, i.e., the string used to look up content in a database,
-                      the key is what is used within a ShortcutLink, the content is then pulled from this
-                      token. If the 'content' and 'tokens' are empty, then the key is also used for the
-                      shortcut text, see RenderShortcutLink.
-        link[unicode]: (Required) The content to which the shortcut links against, e.g., the value of 'href'
-                       for HTML.
-        content[unicode]: (Optional) When present the text provided is used for the link text, this option
-                          may not be used with 'tokens'.
-        tokens[tuple]: (Optional) When present the tokens provided are rendered and used for the link text,
-                       this option may not be used with 'content'.
+        key[unicode]: (Required) The shortcut key, i.e., the string used to look up content in a
+                      database, the key is what is used within a ShortcutLink, the content is then
+                      pulled from this token. If the 'content' and 'tokens' are empty, then the key
+                      is also used for the shortcut text, see RenderShortcutLink.
+        link[unicode]: (Required) The content to which the shortcut links against, e.g., the value
+                       of 'href' for HTML.
+        content[unicode]: (Optional) When present the text provided is used for the link text, this
+                          option may not be used with 'tokens'.
+        tokens[tuple]: (Optional) When present the tokens provided are rendered and used for the
+                       link text, this option may not be used with 'content'.
     """
     PROPERTIES = [base.Property('key', required=True, ptype=unicode),
                   base.Property('link', required=True, ptype=unicode),
@@ -179,7 +179,6 @@ class Shortcut(Token):
 
         if self.content and self.token:
             raise ValueError("Both the 'content' and 'token' properties may not be set.")
-
 
 class ShortcutLink(Token):
     PROPERTIES = [base.Property('key', ptype=unicode, required=True)]

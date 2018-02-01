@@ -1,11 +1,10 @@
+"""Tools for building file trees for MooseDocs"""
 import os
 import re
 import logging
-import collections
 
 import moosedown
 from moosedown.tree import page
-
 
 LOG = logging.getLogger(__name__)
 
@@ -155,6 +154,5 @@ def doc_tree(items):
 
             # Create the file node
             nodes[key] = create_file_node(nodes[key[:-1]], key[-1], filename)
-
 
     return nodes[()]

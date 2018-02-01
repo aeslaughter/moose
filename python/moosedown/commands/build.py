@@ -145,6 +145,7 @@ def main(options):
 
     translator, root = load_config(config_file)
 
+    #TODO: clean this up with better format and make it a function
     if options.lexer_components:
         for key, grammer in translator.reader.lexer.grammers().iteritems():
             print 'GRAMMER:', key
@@ -166,7 +167,7 @@ def main(options):
         server = livereload.Server()
         for node in anytree.PreOrderIter(root):
             node.base = destination
-            node.translator = translator
+            node.init(translator)# = translator
 
             if node.source and os.path.isfile(node.source):
                 server.watch(node.source, node.build)

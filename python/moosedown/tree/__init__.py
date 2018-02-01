@@ -1,3 +1,4 @@
+"""Module for defining tree structures for various MooseDocs operations."""
 import base
 import html
 import tokens

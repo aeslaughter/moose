@@ -1,7 +1,7 @@
-import copy
+"""
+Base classes for tree objects in MooseDocs.
+"""
 import logging
-import weakref
-import inspect
 import anytree
 
 LOG = logging.getLogger(__name__)
@@ -14,9 +14,9 @@ class Property(object):
     creation on nodes that allows defaults, types, and a required status to be defined for the
     properties.
 
-    When developing the tokens it was desirable to create properties (via @property) etc. to
-    access token data, but it became a bit tedious so an automatic method was created, see
-    the documentation on the NodeBase class for information on using the automatic system.
+    When developing the tokens it was desirable to create properties (via @property) etc. to access
+    token data, but it became a bit tedious so an automatic method was created, see the
+    documentation on the NodeBase class for information on using the automatic system.
 
     This property class can also be inherited from to allow for arbitrary checks to be performed,
     for example that a number is positive or a list is the correct length.
@@ -37,6 +37,7 @@ class Property(object):
 
     @property
     def default(self):
+        """Return the default for this property."""
         return self.__default
 
     @property
@@ -54,11 +55,11 @@ class Property(object):
         if (self.__type is not None) and (not isinstance(value, self.__type)):
             msg = "The supplied property '{}' must be of type '{}', but '{}' was provided."
             raise TypeError(msg.format(self.name, self.type.__name__, type(value).__name__))
-        instance._NodeBase__properties[self.name] = value
+        instance._NodeBase__properties[self.name] = value #pylint: disable=protected-access
 
     def __get__(self, instance, key):
         """Get the property value."""
-        return instance._NodeBase__properties.get(self.name, self.default)
+        return instance._NodeBase__properties.get(self.name, self.default) #pylint: disable=protected-access
 
 class NodeBase(anytree.NodeMixin):
     """
@@ -87,17 +88,14 @@ class NodeBase(anytree.NodeMixin):
     """
     PROPERTIES = [] # this gets set by the @properties decorator
 
-    def __init__(self, parent=None, name=None, **kwargs) :
+    def __init__(self, parent=None, name=None, **kwargs):
         anytree.NodeMixin.__init__(self)
 
-        # TODO: This fails for some reason
-        # Check parent type
-        #if (parent is not None) and (not isinstance(parent, NodeBase)):
-        #    msg = "The supplied parent must be a NodeBase object, but '{}' was provided."
-        #    raise TypeError(msg.format(type(parent).__name__))
-
+        # anytree.NodeMixin properties
         self.parent = parent
         self.name = name if name is not None else self.__class__.__name__
+
+        # NodeBase content
         self.__properties = dict() # storage for property values
         self.__attributes = dict() # storage for attributes (i.e., unknown key, values)
 
@@ -111,12 +109,6 @@ class NodeBase(anytree.NodeMixin):
                 msg = "The supplied property must be a Property object, but {} provided."
                 raise TypeError(msg.format(type(prop).__name__))
 
-            # TODO: this can't work because properties are class methods
-            """
-            if hasattr(self, prop.name):
-                msg = "The supplied property '{}' is already a defined property on the {} object."
-                raise TypeError(msg.format(prop.name, type(self).__name__))
-            """
             setattr(self.__class__, prop.name, prop)
             self.__properties[prop.name] = prop.default
 
@@ -210,12 +202,6 @@ class NodeBase(anytree.NodeMixin):
         for child in self.children:
             out += child.write()
         return out
-
-    def get_root(self):
-        if self.parent:
-            return self._path[0]
-        else:
-            return self
 
     def find(self, name, maxlevel=None):
         """
