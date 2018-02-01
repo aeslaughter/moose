@@ -11,7 +11,7 @@ from moosedown.base import testing, components
 
 import hit
 
-class TestExtensions(unittest.TestCase):
+class TestExtensions(testing.MooseDocsTestCase):
     """
     Tests that extension classes have the required parts and tests. This includes making
     sure the 'make_extensions' method is working as well as that there is a test for every
@@ -27,14 +27,14 @@ class TestExtensions(unittest.TestCase):
              #extensions.base.TokenComponent,
              #extensions.core.CoreRenderComponentBase]
 
-    @unittest.skip("")
     def testReaderComponents(self):
         """
         Test TokenComponent testing
         """
         messages = []
-        for ext in self.EXTENSIONS:
-            messages += check_component(ext, TokenComponent, self.READER_REQUIRED, self.BASE)
+        for comp in self._reader.components():
+            print comp
+            #messages += check_component(ext, TokenComponent, self.READER_REQUIRED, self.BASE)
         self.assertFalse(messages, '\n'.join(messages))
 
     @unittest.skip("")
@@ -47,10 +47,10 @@ class TestExtensions(unittest.TestCase):
             messages += check_component(ext, RenderComponent, self.RENDER_REQUIRED, self.BASE)
         self.assertFalse(messages, '\n'.join(messages))
 
-    def testMakeExtension(self):
-        """
-        Test the 'make_extension' function
-        """
+    #def testMakeExtension(self):
+    #    """
+    #    Test the 'make_extension' function
+    #    """
         pass
         #for ext in self.EXTENSIONS:
         #    self.assertTrue(hasattr(ext, 'make_extension'), "Missing 'make_extension' function.")

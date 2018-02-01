@@ -20,18 +20,10 @@ class MooseDocsTestCase(unittest.TestCase):
         """
         Create the Translator instance.
         """
-        self._translator = base.Translator(self.READER, self.RENDERER, self.EXTENSIONS,
+        self._reader = self.READER()
+        self._renderer = self.RENDERER()
+        self._translator = base.Translator(self._reader, self._renderer, self.EXTENSIONS,
                                            **self.CONFIG)
-
-    @property
-    def reader(self):
-        """Return Reader instance."""
-        return self._translator.reader
-
-    @property
-    def renderer(self):
-        """Return Reader instance."""
-        return self._translator.renderer
 
     def assertString(self, content, gold):
         """
