@@ -19,4 +19,8 @@
     type = PythonUnitTest
     input = test_check_type.py
   [../]
+  [./mixins]
+    type = PythonUnitTest
+    input = test_mixins.py
+  [../]
 []

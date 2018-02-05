@@ -9,13 +9,12 @@ import anytree
 
 import moosedown
 from moosedown import common
-from moosedown.common import exceptions
+from moosedown.common import exceptions, mixins
 from moosedown.tree import html, latex, base, tokens, page
-from __internal__ import ConfigObject, TranslatorObject, ComponentObject
 
 LOG = logging.getLogger(__name__)
 
-class Renderer(ConfigObject, TranslatorObject, ComponentObject):
+class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObject):
     """
     Base renderer for converting AST to an output format.
     """
@@ -24,9 +23,9 @@ class Renderer(ConfigObject, TranslatorObject, ComponentObject):
     METHOD = None
 
     def __init__(self, **kwargs):
-        ConfigObject.__init__(self, **kwargs)
-        TranslatorObject.__init__(self)
-        ComponentObject.__init__(self)
+        mixins.ConfigObject.__init__(self, **kwargs)
+        mixins.TranslatorObject.__init__(self)
+        mixins.ComponentObject.__init__(self)
         self.__functions = dict()  # functions on the RenderComponent to call
 
     def add(self, token, component):
@@ -132,12 +131,7 @@ class Renderer(ConfigObject, TranslatorObject, ComponentObject):
         Inputs:
             token[tree.token]: token for which the associated RenderComponent function is desired.
         """
-        try:
-            return self.__functions[type(token)]
-        except KeyError:
-            msg = "The token of type {} was not associated with a RenderComponent function ({}) " \
-                  "via the Renderer.add(...) method."
-            raise exceptions.RenderException(token.info, msg, type(token).__name__, self.METHOD)
+        return self.__functions.get(type(token), None)
 
 class HTMLRenderer(Renderer):
     """
@@ -147,7 +141,7 @@ class HTMLRenderer(Renderer):
 
     def render(self, ast):
         """
-        Render the supplied AST, wrapping it in a <body> tag.s
+        Render the supplied AST, wrapping it in a <body> tag.
         """
         self.reinit()
         root = html.Tag(None, 'body')
@@ -242,7 +236,7 @@ class MaterializeRenderer(HTMLRenderer):
         container = html.Tag(body, 'div', class_="container")
 
         # Breadcrumbs
-        if self['breadcrumbs']:
+        if self['breadcrumbs'] and root.page:
             self.addBreadcrumbs(container)
 
         # Content
@@ -355,7 +349,7 @@ class LatexRenderer(Renderer):
             latex.Command(root, 'usepackage', string=package, end='\n')
 
         doc = latex.Environment(root, 'document')
-        self.process(ast, doc)
+        self.process(doc, ast)
         return root
 
     def addPackage(self, *args):

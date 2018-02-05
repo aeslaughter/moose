@@ -6,7 +6,7 @@ from moosedown.base import testing
 
 class TestWordTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
-        node = self.ast('sit amet, consectetur')(0)
+        node = self.ast(u'sit amet, consectetur')(0)
         self.assertIsInstance(node(0), tree.tokens.Word)
         self.assertIsInstance(node(1), tree.tokens.Space)
         self.assertIsInstance(node(2), tree.tokens.Word)

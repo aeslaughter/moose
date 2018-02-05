@@ -8,10 +8,12 @@ from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderOrderedListHTML(testing.MooseDocsTestCase):
     def node(self, text):
-        return self.render(text)(0)
+        root = self.render(text)
+        return root(0)
 
     def testTree(self):
         node = self.node(u'1. foo\n1. bar')
+
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.Tag)
         self.assertIsInstance(node(1), tree.html.Tag)
@@ -35,7 +37,7 @@ class TestRenderOrderedListHTML(testing.MooseDocsTestCase):
     def testWrite(self):
         node = self.node(u'1. foo\n1. bar')
         html = node.write()
-        self.assertString(html, '<ol><li><p>foo</p></li><li><p>bar</p></li></ol>')
+        self.assertString(html, '<ol><li><p>foo </p></li><li><p>bar</p></li></ol>')
 
 class TestRenderOrderedListMaterialize(TestRenderOrderedListHTML):
     RENDERER = MaterializeRenderer

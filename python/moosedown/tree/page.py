@@ -10,23 +10,20 @@ import types
 import anytree
 import mooseutils
 
-import base
 import moosedown
+from moosedown.tree import base
+from moosedown.common import mixins
 
 LOG = logging.getLogger(__name__)
 
-class PageNodeBase(base.NodeBase):
+class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
     PROPERTIES = [base.Property('content', ptype=unicode),
                   base.Property('source', ptype=str)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
+        mixins.TranslatorObject.__init__(self)
         base.NodeBase.__init__(self, *args, **kwargs)
-        self.translator = None
-
-    #def init(self, translator):
-    #    self.tranlator = translator
-
 
     def build(self):
         pass

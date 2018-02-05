@@ -31,7 +31,7 @@ class HitNode(anytree.NodeMixin):
                           this is set to True the names must match exact.
         """
         for node in anytree.PreOrderIter(self):
-            if (not unique and name in node.name) or (unique and name == node.name):
+            if (not unique and name.lower() in node.name.lower()) or (unique and name == node.name):
                 return node
 
     def findall(self, name, unique=False):

@@ -1,10 +1,9 @@
 """
 Component objects are used for defining extensions for translating from markdown to HTML/LaTeX.
 """
-from moosedown.common import exceptions, parse_settings
-from __internal__ import ConfigObject, TranslatorObject
+from moosedown.common import exceptions, parse_settings, mixins
 
-class Extension(ConfigObject, TranslatorObject):
+class Extension(mixins.ConfigObject, mixins.TranslatorObject):
     """
     Base class for creating extensions. An extension is simply a mechanism to allow for
     the creation of reader/renderer components to be added to the translation process.
@@ -16,8 +15,8 @@ class Extension(ConfigObject, TranslatorObject):
         kwargs: All key-value pairs are treated as configure options, see ConfigObject.
     """
     def __init__(self, **kwargs):
-        ConfigObject.__init__(self, **kwargs)
-        TranslatorObject.__init__(self)
+        mixins.ConfigObject.__init__(self, **kwargs)
+        mixins.TranslatorObject.__init__(self)
 
     def extend(self, reader, renderer):
         """
@@ -25,7 +24,7 @@ class Extension(ConfigObject, TranslatorObject):
         """
         pass
 
-class Component(TranslatorObject):
+class Component(mixins.TranslatorObject):
     """
     Each extension is made up of components, both for tokenizing and rendering. The compoments
     provide a means for defining settings as well as other customizable features required for

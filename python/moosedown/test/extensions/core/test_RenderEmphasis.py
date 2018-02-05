@@ -26,7 +26,7 @@ class TestRenderEmphasisHTML(testing.MooseDocsTestCase):
 class TestRenderEmphasisMaterialize(TestRenderEmphasisHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)(0)
 
 class TestRenderEmphasisLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -42,7 +42,7 @@ class TestRenderEmphasisLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'*content*')(-1)(1)
-        tex = self.write(node)
+        tex = node.write()
         self.assertString(tex, '\\emph{content}')
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ class TestRenderBreakHTML(testing.MooseDocsTestCase):
 class TestRenderBreakMaterialize(TestRenderBreakHTML):
     RENDERER = MaterializeRenderer
     def node(self):
-        return self.render(u'foo\nbar').find('body')(0)(0)
+        return self.render(u'foo\nbar').find('body')(0)(0)(0)(0)
 
 class TestRenderBreakLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -48,8 +48,8 @@ class TestRenderBreakLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'foo\nbar')(-1)
-        tex = self.write(node)
-        self.assertString(tex, '\n\\begin{document}\n\\par\nfoo bar\n\\end{document}\n')
+        tex = node.write()
+        self.assertString(tex, '\n\\begin{document}\n\n\\par\nfoo bar\n\\end{document}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
