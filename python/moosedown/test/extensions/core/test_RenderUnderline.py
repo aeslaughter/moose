@@ -20,19 +20,18 @@ class TestRenderUnderlineHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.node(u'=content=')
-        html = node.write()
-        self.assertString(html, '<u>content</u>')
+        self.assertString(node.write(), '<u>content</u>')
 
 class TestRenderUnderlineMaterialize(TestRenderUnderlineHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)(0)
 
 class TestRenderUnderlineLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render(u'=content=')(-1)(1)
+        node = self.render(u'=content=').find('document')(1)
 
         self.assertIsInstance(node, tree.latex.Command)
         self.assertIsInstance(node(0), tree.latex.String)
@@ -41,9 +40,8 @@ class TestRenderUnderlineLatex(testing.MooseDocsTestCase):
         self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.render(u'=content=')(-1)(1)
-        tex = self.write(node)
-        self.assertString(tex, '\\underline{content}')
+        node = self.render(u'=content=').find('document')(1)
+        self.assertString(node.write(), '\\underline{content}')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

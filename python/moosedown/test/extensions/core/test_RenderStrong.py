@@ -20,13 +20,12 @@ class TestRenderStrongHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.node(u'+content+')
-        html = node.write()
-        self.assertString(html, '<strong>content</strong>')
+        self.assertString(node.write(), '<strong>content</strong>')
 
 class TestRenderStrongMaterialize(TestRenderStrongHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)(0)
 
 class TestRenderStrongLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -42,8 +41,7 @@ class TestRenderStrongLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'+content+')(-1)(1)
-        tex = self.write(node)
-        self.assertString(tex, '\\textbf{content}')
+        self.assertString(node.write(), '\\textbf{content}')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

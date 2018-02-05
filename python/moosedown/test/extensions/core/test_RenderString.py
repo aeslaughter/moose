@@ -25,13 +25,12 @@ class TestRenderStringHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.node(u'sit amet, consectetur')
-        html = self.write(node)
-        self.assertString(html, '<p>sit amet, consectetur</p>')
+        self.assertString(node.write(), '<p>sit amet, consectetur</p>')
 
 class TestRenderStringMaterialize(TestRenderStringHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(-1)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)
 
 class TestRenderStringLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -50,8 +49,7 @@ class TestRenderStringLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'sit amet, consectetur').find('document')
-        tex = self.write(node)
-        self.assertString(tex, '\n\\begin{document}\n\\par\nsit amet, consectetur\n\\end{document}\n')
+        self.assertString(node.write(), '\n\\begin{document}\n\n\\par\nsit amet, consectetur\n\\end{document}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
