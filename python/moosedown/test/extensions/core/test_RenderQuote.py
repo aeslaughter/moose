@@ -7,11 +7,8 @@ from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderQuoteHTML(testing.MooseDocsTestCase):
-    """
-    Test Lines: [link](bar.html foo=bar)
-    """
     def node(self, text):
-        return self.render(text)(0)
+        return self.render(text).find('body')(0)
 
     def testTree(self):
         node = self.node(u'> foo bar')
@@ -31,13 +28,13 @@ class TestRenderQuoteHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.node(u'> foo bar')
-        html = self.write(node)
+        html = node.write()
         self.assertString(html, '<blockquote><p>foo bar</p></blockquote>')
 
 class TestRenderQuoteMaterialize(TestRenderQuoteHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)
 
 class TestRenderQuoteLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -58,12 +55,10 @@ class TestRenderQuoteLatex(testing.MooseDocsTestCase):
         self.assertString(node(2).content, ' ')
         self.assertString(node(3).content, 'bar')
 
-
     def testWrite(self):
         node = self.render(u'> foo bar').find('document')(-1)
-        tex = self.write(node).strip('\n')
-        self.assertString(tex, '\\begin{quote}\n\\par\nfoo bar\n\\end{quote}')
-
+        tex = node.write()
+        self.assertString(tex, u'\n\\begin{quote}\n\n\\par\nfoo bar\n\\end{quote}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

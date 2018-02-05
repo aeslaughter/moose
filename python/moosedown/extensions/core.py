@@ -187,8 +187,6 @@ class UnorderedList(List):
    """
    RE = re.compile(r'(?:\A|\n{2,})(?P<items>(?P<marker>^- ).*?)(?=\n{3,}|\Z|\n{2}^[^-\s])',
                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-   #SPLIT = r'^- '
-   #SPLIT_RE = re.compile(r'^- ', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
    ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
    TOKEN = tokens.UnorderedList
 
@@ -199,13 +197,11 @@ class OrderedList(List):
    RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}^[^[0-9\s])',
                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
    ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-
-   #SPLIT_RE = re.compile(r'\n*^[0-9]+\. ', flags=re.MULTILINE|re.DOTALL)
    TOKEN = tokens.OrderedList
 
    #TODO: figure out how to handle settings???
+   #TODO: combine regex for ordered/unordered
    # 1. start=42 type=a This is the actual content.
-
 
    @staticmethod
    def defaultSettings():
@@ -224,7 +220,7 @@ class Shortcut(base.TokenComponent):
 
     [foo]: something or another
     """
-    RE = re.compile(r'(?:\A|\n{2,})^\[(?P<key>.*?)\]: '  # shortcut key
+    RE = re.compile(r'(?:\A|\n{2,})^\[(?P<key>\w+)\]: '  # shortcut key
                     r'(?P<link>.*?)'        # shortcut value
                     r'(?=\Z|\n{2,})',             # stop new line or end of file
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
@@ -419,9 +415,17 @@ class RenderShortcutLink(CoreRenderComponentBase):
 
     def createLatex(self, token, parent):
         cmd = latex.CustomCommand(parent, 'href')
-        arg0 = latex.Brace(cmd, string=unicode(self.getShortcut(token)))
+        node = self.getShortcut(token)
+        print node
+        if node.content:
+            arg0 = latex.Brace(cmd, string=content)
+        elif node.token:
+            for n in node.token.children:
+                self.translator.renderer.process(n, a)
+        else:
+            arg0 = latex.Brace(cmd, string=node.link)
         arg1 = latex.Brace(cmd, string=unicode(token.key))
-        return arg1
+        #return cmd
 
     def getShortcut(self, token):
         if token.key in self.__cache:

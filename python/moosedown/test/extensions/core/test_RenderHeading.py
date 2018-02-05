@@ -80,6 +80,5 @@ class TestRenderHeadingLatex(testing.MooseDocsTestCase):
         self.checkLevel(5, 'paragraph')
         self.checkLevel(6, 'subparagraph')
 
-
 if __name__ == '__main__':
     unittest.main(verbosity=2)
