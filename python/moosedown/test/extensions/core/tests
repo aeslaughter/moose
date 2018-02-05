@@ -111,13 +111,13 @@
     type = PythonUnitTest
     input = test_RenderOrderedList.py
   [../]
-  [./Backtick]
+  [./Monospace]
     type = PythonUnitTest
-    input = test_Backtick.py
+    input = test_Monospace.py
   [../]
-  [./RenderBacktick]
+  [./RenderMonospace]
     type = PythonUnitTest
-    input = test_RenderBacktick.py
+    input = test_RenderMonospace.py
   [../]
   [./Break]
     type = PythonUnitTest

@@ -160,6 +160,13 @@ item by two spaces, as shown in [unordered-nested-example].
 !devel-end!
 
 
+- Foo
+
+  ```
+  bar
+  ```
+
+
 As mentioned above, lists can contain lists, which can contain lists, etc. A sub-list, which is a
 list in a list, is created by creating by indenting with at the level of the list item which is
 should contained. Since lists are block items, it must be begin and end with empty lines. And, since
