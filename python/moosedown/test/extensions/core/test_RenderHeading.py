@@ -35,14 +35,14 @@ class TestRenderHeadingHTML(testing.MooseDocsTestCase):
         self.assertEqual(h(2).content, 'with')
         self.assertEqual(h(3).content, ' ')
         self.assertEqual(h(4).content, 'Spaces')
-        self.assertEqual(h['style'], 'font-size:42pt;')
+        self.assertEqual(h.style, {'font-size':'42pt'})
 
         self.assertString(h.write(), '<h1 style="font-size:42pt;">Heading with Spaces</h1>')
 
 class TestRenderHeadingMaterialize(TestRenderHeadingHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)(0)
 
 class TestRenderHeadingLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -69,7 +69,7 @@ class TestRenderHeadingLatex(testing.MooseDocsTestCase):
         self.assertString(node(4).content, ' ')
         self.assertString(node(5).content, 'Space')
 
-        tex = self.write(node)
+        tex = node.write()
         self.assertString(tex, '\n\\%s{\\label{heading-with-space}Heading with Space}\n' % cmd)
 
     def testLevels(self):

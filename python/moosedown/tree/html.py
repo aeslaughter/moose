@@ -29,8 +29,8 @@ class Tag(NodeBase):
         out = ''
         attr_list = []
         for key, value in self.attributes.iteritems():
-            attr_list.append('{}="{}"'.format(key, str(value)))
-        attr = ' '.join(attr_list)
+            if value:
+                attr_list.append('{}="{}"'.format(key, str(value)))
 
         if self.__style:
             style_list = []
@@ -38,8 +38,11 @@ class Tag(NodeBase):
                 if value:
                     style_list.append('{}:{}'.format(key, str(value)))
             style_string = ';'.join(style_list)
-            attr += ' style="{}"'.format(style_string)
+            if not style_string.endswith(';'):
+                style_string += ';'
+            attr_list.append('style="{}"'.format(style_string))
 
+        attr = ' '.join(attr_list)
         if attr:
             out += '<{} {}>'.format(self.name, attr)
         else:
