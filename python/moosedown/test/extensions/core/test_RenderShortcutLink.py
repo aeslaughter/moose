@@ -9,9 +9,6 @@ from moosedown.extensions import core
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderShortcutLinkHTML(testing.MooseDocsTestCase):
-    """
-    Test Lines: [link](bar.html foo=bar)
-    """
     def node(self, text):
         return self.render(text).find('body')(0)(0)
 
@@ -33,9 +30,6 @@ class TestRenderShortcutLinkHTML(testing.MooseDocsTestCase):
 
     @mock.patch('logging.Logger.error')
     def testShortcutLinkError2(self, mock):
-        """
-        Test missing link when two empty lines are not used prior to shortcut definitions
-        """
         node = self.node(u'[item] with some text\n[item]: foo')
         args, _ = mock.call_args
         self.assertIn("The shortcut link key 'item' was not located", args[0])

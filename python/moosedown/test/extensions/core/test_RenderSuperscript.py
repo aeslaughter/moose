@@ -11,7 +11,7 @@ class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
         return self.render(text)(0)(0)
 
     def testTree(self):
-        node = self.node(u'^{content}')
+        node = self.node(u'^content^')
         self.assertIsInstance(node, tree.html.Tag)
         self.assertIsInstance(node(0), tree.html.String)
 
@@ -19,20 +19,19 @@ class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
         self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node(u'^{content}')
-        html = node.write()
-        self.assertString(html, '<sup>content</sup>')
+        node = self.node(u'^content^')
+        self.assertString(node.write(), '<sup>content</sup>')
 
 class TestRenderSuperscriptMaterialize(TestRenderSuperscriptHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)(0)
 
 class TestRenderSuperscriptLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 
     def testTree(self):
-        node = self.render(u'foo^{content}')(-1)
+        node = self.render(u'foo^content^').find('document')
 
         self.assertIsInstance(node(1), tree.latex.String)
         self.assertString(node(1).content, 'foo')
@@ -47,9 +46,8 @@ class TestRenderSuperscriptLatex(testing.MooseDocsTestCase):
         self.assertString(node(2)(2).content, '}')
 
     def testWrite(self):
-        node = self.render(u'foo^{content}')(-1)
-        tex = self.write(node(2))
-        self.assertString(tex, '$\^\{\\text{content}\}$')
+        node = self.render(u'foo^content^').find('document')(-1)
+        self.assertString(node.write(), '$\^\{\\text{content}\}$')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
