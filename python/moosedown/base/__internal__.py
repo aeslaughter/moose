@@ -114,3 +114,24 @@ class TranslatorObject(object):
         livereload.
         """
         pass
+
+class ComponentObject(object):
+    """
+    Class for objects that require a list of components (e.g., Reader and Renderers).
+    """
+    def __init__(self):
+        self.__components = []
+
+    @property
+    def components(self):
+        """
+        Return the list of Component objects.
+        """
+        return self.__components
+
+    def addComponent(self, comp):
+        """
+        Add a Component object.
+        """
+        common.check_type("component", comp, moosedown.base.components.Component)
+        self.__components.append(comp)
