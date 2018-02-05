@@ -111,7 +111,8 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         """
         n = 100
         title = []
-        if isinstance(token.root.page, page.LocationNodeBase):
+        print 'ROOT:', type(token), repr(token.parent), token.root
+        if (token.root is not None) and isinstance(token.root.page, page.LocationNodeBase):
             title += textwrap.wrap(u"An error occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
                                    u"following content.".format(token.info.pattern.name), n)

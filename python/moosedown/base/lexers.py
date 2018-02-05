@@ -184,10 +184,8 @@ class Lexer(object):
         while pos < n:
             match = None
             for pattern in grammer:
-                #print 'TEXT:', repr(text[pos:])
                 match = pattern.regex.match(text, pos)
                 if match:
-                    #print pattern
                     info = LexerInformation(match, pattern, line)
                     try:
                         obj = self.buildObject(parent, info)

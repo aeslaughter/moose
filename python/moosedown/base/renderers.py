@@ -105,7 +105,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
             else:
                 raise exceptions.MooseDocsException(msg)
 
-        if el:
+        if el is not None:
             for child in token.children:
                 self.process(el, child)
 
