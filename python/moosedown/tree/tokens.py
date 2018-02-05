@@ -43,7 +43,7 @@ class Token(base.NodeBase):
             #    child.info = value
 
 #TODO: create class Root that requies page
-
+#TODO: info should be a Property
 
 class Section(Token):
     pass
@@ -99,9 +99,9 @@ class Code(Token):
     """
     Code content (i.e., Monospace content)
     """
-    PROPERTIES = [base.Property('code', ptype=unicode, required=True),
-                  base.Property('language', ptype=unicode, default=u'text'),
-                  base.Property('escape', ptype=bool, default=True)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('code', ptype=unicode, required=True),
+                                     base.Property('language', ptype=unicode, default=u'text'),
+                                     base.Property('escape', ptype=bool, default=True)]
 
 class Heading(Token):
     """
@@ -132,7 +132,7 @@ class OrderedList(Token):
     """
     Token for a numbered list.
     """
-    PROPERTIES = [base.Property('start', default=1, ptype=int)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('start', default=1, ptype=int)]
 
 class ListItem(Token):
     """
@@ -147,7 +147,7 @@ class Link(Token):
     """
     Token for urls.
     """
-    PROPERTIES = [base.Property('url', required=True, ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('url', required=True, ptype=unicode)]
 
 class Shortcut(Token):
     """
@@ -169,10 +169,10 @@ class Shortcut(Token):
         tokens[tuple]: (Optional) When present the tokens provided are rendered and used for the
                        link text, this option may not be used with 'content'.
     """
-    PROPERTIES = [base.Property('key', required=True, ptype=unicode),
-                  base.Property('link', required=True, ptype=unicode),
-                  base.Property('content', required=False, ptype=unicode),
-                  base.Property('token', required=False, ptype=Token)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('key', required=True, ptype=unicode),
+                                     base.Property('link', required=True, ptype=unicode),
+                                     base.Property('content', required=False, ptype=unicode),
+                                     base.Property('token', required=False, ptype=Token)]
 
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
@@ -181,10 +181,10 @@ class Shortcut(Token):
             raise ValueError("Both the 'content' and 'token' properties may not be set.")
 
 class ShortcutLink(Token):
-    PROPERTIES = [base.Property('key', ptype=unicode, required=True)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('key', ptype=unicode, required=True)]
 
 class Monospace(Token):
-    PROPERTIES = [base.Property('code', ptype=unicode, required=True)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('code', ptype=unicode, required=True)]
 
 class Strong(Token):
     pass
@@ -208,8 +208,9 @@ class Subscript(Token):
     pass
 
 class Label(Token):
-    PROPERTIES = [base.Property('text', required=True, ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('text', required=True, ptype=unicode)]
 
 class Float(Token):
-    PROPERTIES = [base.Property('id', ptype=str), base.Property('caption', ptype=unicode),
-                  base.Property('label', ptype=str, required=True)]
+    PROPERTIES = Token.PROPERTIES + [base.Property('id', ptype=str),
+                                     base.Property('caption', ptype=unicode),
+                                     base.Property('label', ptype=str, required=True)]

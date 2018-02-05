@@ -109,10 +109,6 @@ class TestProperty(unittest.TestCase):
         self.assertIn("must be of type 'str'", e.exception.message)
 
 class TestNodeBaseWithProperties(unittest.TestCase):
-    """
-    Tests for NodeBase class with @properties decorator.
-    """
-
     def testProperties(self):
 
         class Date(base.NodeBase):
@@ -139,6 +135,10 @@ class TestNodeBaseWithProperties(unittest.TestCase):
         with self.assertRaises(TypeError) as e:
             node.day = 1.1
         self.assertIn("must be of type 'int'", e.exception.message)
+
+        # Set properties with kwargs
+        node = Date(year=1998)
+        self.assertEqual(node.year, 1998)
 
     def testPropertiesWithMultipleInstances(self):
 

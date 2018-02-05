@@ -10,7 +10,7 @@ class TestBreakTokeize(testing.MooseDocsTestCase):
     """Code tokenize"""
 
     def testBasic(self):
-        node = self.ast('foo\nbar')(0)
+        node = self.ast(u'foo\nbar')(0)
         self.assertIsInstance(node, tree.tokens.Paragraph)
         self.assertIsInstance(node(0), tree.tokens.Word)
         self.assertIsInstance(node(1), tree.tokens.Break)

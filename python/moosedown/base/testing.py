@@ -3,9 +3,12 @@ Module for common unittest related tasks.
 """
 import unittest
 import inspect
+import logging
 
-from moosedown import base, common
+from moosedown import base, common, tree
 from mooseutils import text_diff
+
+logging.basicConfig()
 
 class MooseDocsTestCase(unittest.TestCase):
     """
@@ -35,6 +38,21 @@ class MooseDocsTestCase(unittest.TestCase):
             ast: HTML tree.
         """
         self.assertEqual(content, gold, text_diff(content, gold))
+
+    def ast(self, content):
+        """
+        Create AST from Reader object.
+        """
+        ast = tree.tokens.Token(None)
+        self._reader.parse(ast, content)
+        return ast
+
+    def render(self, content):
+        """
+        Convert text into rendered content.
+        """
+        _, root = self._translator.convert(content)
+        return root#ast, root
 
 def get_parent_objects(module, cls):
     """

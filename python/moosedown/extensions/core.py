@@ -40,7 +40,6 @@ class CoreExtension(base.Extension):
         reader.addBlock(Paragraph())
 
         # Inline tokenize components
-        reader.addInline(Monospace())
         reader.addInline(Format())
         reader.addInline(Link())
         reader.addInline(ShortcutLink())
@@ -51,7 +50,6 @@ class CoreExtension(base.Extension):
         reader.addInline(Space())
 
         # Render components
-        renderer.add(tokens.Token, RenderEmpty())
         renderer.add(tokens.Heading, RenderHeading())
         renderer.add(tokens.Code, RenderCode())
         renderer.add(tokens.ShortcutLink, RenderShortcutLink())
@@ -313,40 +311,37 @@ class Word(String):
     def createToken(self, match, parent):
         return tokens.Word(parent, content=match[0])
 
-
-class Monospace(base.TokenComponent):
-    """
-    Inline code
-    """
-    RE = re.compile(r"`(?P<code>.+?)`", flags=re.MULTILINE|re.DOTALL|re.DOTALL)
-    def createToken(self, match, parent):
-        return tokens.Monospace(parent, code=match['code'])
-
-
 class Format(base.TokenComponent):
     """
     Inline text settings (e.g., monospaced, underline, emphasis).
     """
-    RE = re.compile(r'\_(?P<subscript>\S.*\S)\_|'
-                    r'\^(?P<superscript>\S.*\S)\^|'
-                    r'\=(?P<underline>\S.*?\S)\=|'
-                    r'\*(?P<emphasis>\S.*?\S)\*|'
-                    r'\+(?P<strong>\S.*?\S)\+|'
-                    r'~(?P<strikethrough>\S.*?\S)~',
+    RE = re.compile(r'(?P<token>[\_\^\=\*\+~`])(?=\S)(?P<inline>.*)(?<=\S)(?:\1)',
                     flags=re.MULTILINE|re.DOTALL|re.DOTALL)
 
     def createToken(self, match, parent):
-        for key, content in match.iteritems():
-            if content is not None:
-                token = eval('tokens.{}(parent, **self.attributes)'.format(key.title()))
-                grammer = self.reader.lexer.grammer('inline')
-                self.reader.lexer.tokenize(token, grammer, content, match.line)
-                return token
+        tok = match['token']
+        if tok == '_':
+            return tokens.Subscript(parent)
+        elif tok == '^':
+            return tokens.Superscript(parent)
+        elif tok == '=':
+            return tokens.Underline(parent)
+        elif tok == '*':
+            return tokens.Emphasis(parent)
+        elif tok == '+':
+            return tokens.Strong(parent)
+        elif tok == '~':
+            return tokens.Strikethrough(parent)
+        elif tok == '`':
+            #print 'Creating Monospace'
+            mono = tokens.Monospace(parent, code=match['inline'], recursive=False)
+            mono.recursive=False
+            return mono
+            #return tokens.Monospace(parent, code=match['inline'], recursive=False)
 
-
-#####################################################################################################
+####################################################################################################
 # Rendering.
-#####################################################################################################
+####################################################################################################
 
 class CoreRenderComponentBase(base.RenderComponent):
     """
@@ -364,14 +359,6 @@ class CoreRenderComponentBase(base.RenderComponent):
         #TODO: Better error message with markdown line number.
         pass
         #raise NotImplementedError("Not implement, you probably should.")
-
-class RenderEmpty(base.RenderComponent):
-    def createHTML(self, token, parent):
-        pass
-    def createMaterialize(self, token, parent):
-        pass
-    def createLatex(self, token, parent):
-        pass
 
 class RenderHeading(CoreRenderComponentBase):
     """

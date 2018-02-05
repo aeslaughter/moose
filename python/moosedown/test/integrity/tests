@@ -1,6 +1,10 @@
 [Tests]
   [./integrity]
     type = PythonUnitTest
-    input = test_TestIntegrity.py
+    input = test_spec_files.py
+  [../]
+  [./extensions]
+    type = PythonUnitTest
+    input = test_extensions.py
   [../]
 []

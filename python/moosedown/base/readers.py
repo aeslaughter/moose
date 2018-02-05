@@ -8,13 +8,13 @@ import anytree
 
 import moosedown
 from moosedown import common
+from moosedown.common import mixins
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
-from __internal__ import ConfigObject, TranslatorObject, ComponentObject
 
 LOG = logging.getLogger(__name__)
 
-class Reader(ConfigObject, TranslatorObject, ComponentObject):
+class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObject):
     """
     Base class for reading (parsing) files into AST.
 
@@ -30,9 +30,9 @@ class Reader(ConfigObject, TranslatorObject, ComponentObject):
           general if this class worked with a Lexer as well.
     """
     def __init__(self, lexer, **kwargs):
-        ConfigObject.__init__(self, **kwargs)
-        ComponentObject.__init__(self)
-        TranslatorObject.__init__(self)
+        mixins.ConfigObject.__init__(self, **kwargs)
+        mixins.ComponentObject.__init__(self)
+        mixins.TranslatorObject.__init__(self)
         common.check_type('lexer', lexer, RecursiveLexer)
         self.__lexer = lexer
 

@@ -10,7 +10,7 @@ from moosedown.base import testing# MarkdownExtension, RenderExtension
 
 #import hit
 
-class TestErrorHandling(testing.MooseDocsTestCase):
+class TestErrorHandling(testing.MarkdownTestCase):
 
     def content(self):
         return u'This is some text that contains a command\n\n!unkown command\n, it should error ' \
@@ -43,7 +43,7 @@ class TestErrorHandling(testing.MooseDocsTestCase):
 
         node = page.MarkdownNode(None, source=filename)
         node.read()
-        ast = self._translator.ast(node)
+        ast = self.ast(node)
 
         self.assertEqual(mock.call_count, 2)
 

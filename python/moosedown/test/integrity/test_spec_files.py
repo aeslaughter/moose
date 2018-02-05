@@ -6,11 +6,11 @@ import inspect
 import pkgutil
 import glob
 
+import mooseutils
+
 import moosedown
 from moosedown import extensions
-from moosedown.common import testing
-from moosedown.base import testing, TokenComponent, RenderComponent
-from moosedown.base import MarkdownExtension, RenderExtension
+from moosedown.base import testing
 
 import hit
 
@@ -30,15 +30,22 @@ class TestSpecFiles(unittest.TestCase):
         tested = set()
 
         spec = os.path.join(location, 'tests')
-        if os.path.exists(spec):
-            with open(spec, 'r') as fid:
-                data = fid.read()
-                node = hit.parse(spec, data)
-                for block in node.children():
-                    for child in block.children():
-                        if (child.type() != hit.NodeType.Blank) and
-                           (child.find('type').param() == 'PythonUnitTest'):
-                            tested.add(child.find('input').param())
+        if not os.path.exists(spec):
+            messages.append("Missing a test spec file in '{}'".format(os.path.dirname(spec)))
+        else:
+            node = mooseutils.hit_load(os.path.join(location, 'tests'))
+            for block in node.find('Tests'):
+                if block['type'] == 'PythonUnitTest':
+                    tested.add(block['input'])
+        # if os.path.exists(spec):
+        #     with open(spec, 'r') as fid:
+        #         data = fid.read()
+        #         node = hit.parse(spec, data)
+        #         for block in node.children():
+        #             for child in block.children():
+        #                 if (child.type() != hit.NodeType.Blank) and \
+        #                    (child.find('type').param() == 'PythonUnitTest'):
+        #                     tested.add(child.find('input').param())
 
         # Loop through python files in this directory
         for filename in glob.glob(os.path.join(location, '*.py')):
@@ -64,10 +71,11 @@ class TestSpecFiles(unittest.TestCase):
         Test that all unittest.TestCases have an entry in a tests spec file.
         """
 
-        messages = []
-        location = os.path.join(os.path.dirname(moosedown.__file__), 'tests')
+        messages = ['']
+        location = os.path.join(os.path.dirname(moosedown.__file__), 'test')
         for root, dirs, _ in os.walk(location):
             for d in dirs:
+                print d
                 messages += self.check(os.path.join(root, d))
 
         self.assertFalse(messages, '\n'.join(messages))

@@ -11,7 +11,7 @@ class TestHeadingHashTokenize(testing.MooseDocsTestCase):
     Tests that hash style headings (#) are converted.
     """
     def testBasic(self):
-        ast = self.ast('# Heading with Spaces')
+        ast = self.ast(u'# Heading with Spaces')
         h = ast(0)
         self.assertIsInstance(h, tree.tokens.Heading)
         self.assertEqual(h.level, 1)
@@ -27,7 +27,7 @@ class TestHeadingHashTokenize(testing.MooseDocsTestCase):
 
     def testLevels(self):
         for i in range(1,7):
-            ast = self.ast('{} Heading'.format('#'*i))
+            ast = self.ast(u'{} Heading'.format('#'*i))
             self.assertEqual(ast(0).level, i)
 
 if __name__ == '__main__':

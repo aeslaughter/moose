@@ -1,8 +1,4 @@
 [Tests]
-  [internal]
-    type = PythonUnitTest
-    input = test_internal.py
-  []
   [components]
     type = PythonUnitTest
     input = test_components.py

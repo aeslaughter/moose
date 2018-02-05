@@ -26,6 +26,9 @@ class TestTokens(unittest.TestCase):
         self.assertEqual(token.name, 'Token')
         self.assertTrue(token.recursive)
 
+        token.tokens.Token(recursive=False)
+        self.assertFalse(token.recursive)
+
     def testSection(self):
         token = tokens.Section()
         self.assertIsInstance(token, tokens.Section)
@@ -206,7 +209,6 @@ class TestTokens(unittest.TestCase):
             pass
         pattern = lexers.Grammer.Pattern(name='foo', regex=re.compile('\S'), function=func)
         token = tokens.Exception(pattern=pattern, traceback='foo')
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

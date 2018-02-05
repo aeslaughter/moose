@@ -6,8 +6,7 @@ import mock
 from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
-class TestRenderBacktickHTML(testing.MooseDocsTestCase):
-
+class TestRenderMonospaceHTML(testing.MooseDocsTestCase):
     def node(self):
         return self.render(u'foo `code` bar')(0)
 
@@ -33,14 +32,12 @@ class TestRenderBacktickHTML(testing.MooseDocsTestCase):
         html = node.write()
         self.assertString(html, '<p>foo <code>code</code> bar</p>')
 
-class TestRenderBacktickMaterialize(TestRenderBacktickHTML):
-
-    def node(self):
-        return self.render(u'foo `code` bar').find('body')(0)(0)
-
+class TestRenderMonospaceMaterialize(TestRenderMonospaceHTML):
     RENDERER = MaterializeRenderer
+    def node(self):
+        return self.render(u'foo `code` bar').find('body')(0)(0)(0)(0)
 
-class TestRenderBacktickLatex(testing.MooseDocsTestCase):
+class TestRenderMonospaceLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
     def testTree(self):
         node = self.render(u'foo `code` bar')(-1)
@@ -62,8 +59,8 @@ class TestRenderBacktickLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'foo `code` bar')(-1)
-        tex = self.write(node)
-        self.assertString(tex, '\n\\begin{document}\n\\par\nfoo \\texttt{code} bar\n\\end{document}\n')
+        tex = node.write()
+        self.assertString(tex, '\n\\begin{document}\n\n\\par\nfoo \\texttt{code} bar\n\\end{document}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

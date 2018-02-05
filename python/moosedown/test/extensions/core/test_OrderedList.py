@@ -11,7 +11,7 @@ class TestOrderedListTokenize(testing.MooseDocsTestCase):
     Tests inline code.
     """
     def testBasic(self):
-        token = self.ast('1. foo\n1. bar')
+        token = self.ast(u'1. foo\n1. bar')
         self.assertIsInstance(token(0), tree.tokens.OrderedList)
         self.assertIsInstance(token(0)(0), tree.tokens.ListItem)
         self.assertIsInstance(token(0)(0)(0), tree.tokens.Paragraph)
@@ -22,12 +22,12 @@ class TestOrderedListTokenize(testing.MooseDocsTestCase):
         self.assertIsInstance(token(0)(1)(0)(0), tree.tokens.Word)
 
     def testStart(self):
-        token = self.ast('42. foo\n1. bar')
+        token = self.ast(u'42. foo\n1. bar')
         self.assertIsInstance(token(0), tree.tokens.OrderedList)
         self.assertEqual(token(0).start, 42)
 
     def testSeparate(self):
-        token = self.ast('1. foo\n\n\n1. bar')
+        token = self.ast(u'1. foo\n\n\n1. bar')
         self.assertIsInstance(token(0), tree.tokens.OrderedList)
         self.assertIsInstance(token(0)(0), tree.tokens.ListItem)
         self.assertIsInstance(token(0)(0)(0), tree.tokens.Paragraph)
@@ -39,7 +39,7 @@ class TestOrderedListTokenize(testing.MooseDocsTestCase):
         self.assertIsInstance(token(1)(0)(0)(0), tree.tokens.Word)
 
     def testNesting(self):
-        token = self.ast('1. foo\n\n   - nested\n   - list\n1. bar')
+        token = self.ast(u'1. foo\n\n   - nested\n   - list\n1. bar')
         self.assertIsInstance(token(0), tree.tokens.OrderedList)
         self.assertIsInstance(token(0)(0), tree.tokens.ListItem)
         self.assertIsInstance(token(0)(0)(0), tree.tokens.Paragraph)

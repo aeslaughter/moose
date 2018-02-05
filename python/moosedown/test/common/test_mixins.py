@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 """
-Tests for __internal__.py module.
+Tests for mixin.py module.
 """
 import unittest
 from moosedown.common import exceptions
 from moosedown.base import Translator, MarkdownReader, HTMLRenderer
-from moosedown.base.__internal__ import ConfigObject, TranslatorObject
+from moosedown.common import mixins
 
-class Foo(ConfigObject):
+class Foo(mixins.ConfigObject):
     """Testing instance of ConfigObject."""
     @staticmethod
     def defaultConfig():
-        config = ConfigObject.defaultConfig()
+        config = mixins.ConfigObject.defaultConfig()
         config['foo'] = ('bar', "Testing...")
         return config
 
-class Bar(ConfigObject):
+class Bar(mixins.ConfigObject):
     """Testing instance of ConfigObject."""
     @staticmethod
     def defaultConfig():
@@ -29,7 +29,7 @@ class TestConfigObject(unittest.TestCase):
         """
         Test most basic construction.
         """
-        obj = ConfigObject()
+        obj = mixins.ConfigObject()
         self.assertEqual(obj.getConfig(), dict())
 
     def testDefaultConfig(self):
@@ -76,7 +76,7 @@ class TestTranslatorObject(unittest.TestCase):
         Test correct use.
         """
         t = Translator(MarkdownReader(), HTMLRenderer())
-        obj = TranslatorObject()
+        obj = mixins.TranslatorObject()
         self.assertFalse(obj.initialized())
         obj.init(t)
         self.assertTrue(obj.initialized())
@@ -87,7 +87,7 @@ class TestTranslatorObject(unittest.TestCase):
         Test Exceptions.
         """
         t = Translator(MarkdownReader(), HTMLRenderer())
-        obj = TranslatorObject()
+        obj = mixins.TranslatorObject()
         with self.assertRaises(exceptions.MooseDocsException) as e:
             obj.init('')
         self.assertIn("The argument 'translator'", e.exception.message)

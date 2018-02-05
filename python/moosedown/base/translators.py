@@ -7,14 +7,14 @@ import logging
 
 import moosedown
 from moosedown import common
+from moosedown.common import mixins
 from moosedown.tree import tokens, page
 from readers import Reader
 from renderers import Renderer
-from __internal__ import ConfigObject
 
 LOG = logging.getLogger('Translator')
 
-class Translator(ConfigObject):
+class Translator(mixins.ConfigObject):
     """
     Object responsible for converting reader content into an AST and rendering with the
     supplied renderer.
@@ -25,7 +25,7 @@ class Translator(ConfigObject):
         extensions: [list] A list of extensions objects to use.
     """
     def __init__(self, reader, renderer, extensions=None, **kwargs):
-        ConfigObject.__init__(self, **kwargs)
+        mixins.ConfigObject.__init__(self, **kwargs)
 
         if extensions is None:
             extensions = []
@@ -52,6 +52,7 @@ class Translator(ConfigObject):
         Return list of loaded Extension objects.
         """
         return self.__extensions
+
     @property
     def reader(self):
         """

@@ -8,7 +8,7 @@ from moosedown.base import testing
 
 class TestNumberTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
-        node = self.ast('foo1bar')(0)
+        node = self.ast(u'foo1bar')(0)
         self.assertIsInstance(node(0), tree.tokens.Word)
         self.assertIsInstance(node(1), tree.tokens.Number)
         self.assertIsInstance(node(2), tree.tokens.Word)

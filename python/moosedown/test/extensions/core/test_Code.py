@@ -10,13 +10,13 @@ class TestCodeTokenize(testing.MooseDocsTestCase):
     """Code tokenize"""
 
     def testBasic(self):
-        code = self.ast('```\nint x;\n```')(0)
+        code = self.ast(u'```\nint x;\n```')(0)
         self.assertIsInstance(code, tree.tokens.Code)
         self.assertString(code.code, '\nint x;\n')
         self.assertString(code.language, 'text')
 
     def testLanguage(self):
-        code = self.ast('```language=cpp\nint x;\n```')(0)
+        code = self.ast(u'```language=cpp\nint x;\n```')(0)
         self.assertIsInstance(code, tree.tokens.Code)
         self.assertString(code.code, '\nint x;\n')
         self.assertString(code.language, 'cpp')

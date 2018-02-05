@@ -9,22 +9,12 @@ from moosedown.commands.build import DEFAULT_EXTENSIONS, load_extensions, load_o
 
 
 class TestLoadExtensions(unittest.TestCase):
-    """
-    Test load_extensions method
-    """
-
     def testEmpty(self):
-        """
-        Check that excluding [Extensions] section creates the defaults.
-        """
         ext = load_extensions(None, 'foo')
         names = set([e.__module__ for e in ext])
         self.assertEqual(names, DEFAULT_EXTENSIONS)
 
     def testDisableDefaults(self):
-        """
-        Check that defaults can be disabled.
-        """
         ext = hit.NewSection('Extensions')
         ext.addChild(hit.NewField('disable_defaults', hit.FieldKind.Bool, 'True'))
 
@@ -33,9 +23,6 @@ class TestLoadExtensions(unittest.TestCase):
 
     @mock.patch('logging.Logger.error')
     def testMissingTypeError(self, mock):
-        """
-        Test error when Extensions section are missing type.
-        """
         ext = hit.NewSection('Extensions')
         ext.addChild(hit.NewField('disable_defaults', hit.FieldKind.Bool, 'True'))
         ext.addChild(hit.NewSection('foo'))
@@ -49,10 +36,6 @@ class TestLoadExtensions(unittest.TestCase):
 
     @mock.patch('logging.Logger.error')
     def testModuleImportError(self, mock):
-        """
-        Test error that a bad extension name errors.
-        """
-
         ext = hit.NewSection('Extensions')
         ext.addChild(hit.NewField('disable_defaults', hit.FieldKind.Bool, 'True'))
         foo = hit.NewSection('foo')
@@ -64,7 +47,7 @@ class TestLoadExtensions(unittest.TestCase):
         self.assertEqual(ext, [])
         mock.assert_called_once()
         args, _ = mock.call_args
-        self.assertEqual("Failed to import the '%s' module.", args[0])
+        self.assertIn("Failed to import the '%s' module.", args[0])
 
 class TestLoadReader(unittest.TestCase):
     def testEmpty(self):
@@ -129,7 +112,6 @@ class TestLoadRenderer(unittest.TestCase):
         args, _ = mock.call_args
         self.assertIn("The parameter '%s' must contain a valid object name, using the default", args[0])
 
-
 class TestLoadTranslator(unittest.TestCase):
     def testEmpty(self):
         obj = load_object(None, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
@@ -154,9 +136,6 @@ class TestLoadTranslator(unittest.TestCase):
         mock.assert_called_once()
         args, _ = mock.call_args
         self.assertIn("The section '%s' must contain a 'type' parameter, using the default", args[0])
-
-
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

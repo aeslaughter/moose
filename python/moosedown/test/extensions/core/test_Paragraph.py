@@ -9,7 +9,7 @@ from moosedown.base import testing
 class TestParagraphTokenize(testing.MooseDocsTestCase):
     def testBasic(self):
         for i in range(2, 5):
-            token = self.ast('foo{}bar'.format('\n'*i))
+            token = self.ast(u'foo{}bar'.format('\n'*i))
             self.assertIsInstance(token(0), tree.tokens.Paragraph)
             self.assertIsInstance(token(0)(0), tree.tokens.Word)
 
