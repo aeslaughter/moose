@@ -24,22 +24,21 @@ class TestExtensions(testing.MooseDocsTestCase):
         Test TokenComponent testing
         """
         messages = ['\n']
-        for comp in self._reader.components():
-            messages += self.checkComponent(comp, self.READER_REQUIRED, self.BASE)
+        for comp in self._reader.components:
+            messages += self.checkComponent(comp, self.READER_REQUIRED)
         self.assertFalse(messages, '\n'.join(messages))
 
-    @unittest.skip("")
     def testRenderComponents(self):
         """
         Test RenderComponent testing
         """
         messages = ['\n']
-        for comp in self._renderer.components():
-            messages += self.checkComponent(comp, self.RENDER_REQUIRED, self.BASE)
+        for comp in self._renderer.components:
+            messages += self.checkComponent(comp, self.RENDER_REQUIRED)
         self.assertFalse(messages, '\n'.join(messages))
 
     @staticmethod
-    def checkComponent(component, required, skip):
+    def checkComponent(component, required):
         """
         Tool for inspecting the existence of the necessary test objects.
 
@@ -63,7 +62,7 @@ class TestExtensions(testing.MooseDocsTestCase):
             tests = set([obj[0] for obj in testing.get_parent_objects(module, unittest.TestCase)])
             for missing in tests.difference(set([r.format(name) for r in required])):
                 msg = "'{}' must be added to '{}' in {}.".format(missing, testname, path)
-                messages.append(msg)x
+                messages.append(msg)
             sys.path.remove(path)
         return messages
 

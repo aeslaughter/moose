@@ -10,11 +10,11 @@ import moosedown
 from moosedown import common
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
-from __internal__ import ConfigObject, TranslatorObject
+from __internal__ import ConfigObject, TranslatorObject, ComponentObject
 
 LOG = logging.getLogger(__name__)
 
-class Reader(ConfigObject, TranslatorObject):
+class Reader(ConfigObject, TranslatorObject, ComponentObject):
     """
     Base class for reading (parsing) files into AST.
 
@@ -31,10 +31,10 @@ class Reader(ConfigObject, TranslatorObject):
     """
     def __init__(self, lexer, **kwargs):
         ConfigObject.__init__(self, **kwargs)
+        ComponentObject.__init__(self)
         TranslatorObject.__init__(self)
         common.check_type('lexer', lexer, RecursiveLexer)
         self.__lexer = lexer
-        self.__components = []
 
     @property
     def lexer(self):
@@ -44,17 +44,11 @@ class Reader(ConfigObject, TranslatorObject):
         """
         return self.__lexer
 
-    def components(self):
-        """
-        Return the list of components.
-        """
-        return self.__components
-
     def reinit(self):
         """
         Call the Component reinit() methods.
         """
-        for comp in self.__components:
+        for comp in self.components:
             comp.reinit()
 
     def parse(self, root, content):
@@ -100,7 +94,7 @@ class Reader(ConfigObject, TranslatorObject):
 
         # Store and init component, checking self.initialized() allows this object to be used
         # without the Translator which is useful in some cases.
-        self.__components.append(component)
+        self.addComponent(component)
         if self.initialized():
             component.init(self.translator)
 

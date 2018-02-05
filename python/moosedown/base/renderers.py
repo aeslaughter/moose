@@ -11,11 +11,11 @@ import moosedown
 from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import html, latex, base, tokens, page
-from __internal__ import ConfigObject, TranslatorObject
+from __internal__ import ConfigObject, TranslatorObject, ComponentObject
 
 LOG = logging.getLogger(__name__)
 
-class Renderer(ConfigObject, TranslatorObject):
+class Renderer(ConfigObject, TranslatorObject, ComponentObject):
     """
     Base renderer for converting AST to an output format.
     """
@@ -26,8 +26,8 @@ class Renderer(ConfigObject, TranslatorObject):
     def __init__(self, **kwargs):
         ConfigObject.__init__(self, **kwargs)
         TranslatorObject.__init__(self)
+        ComponentObject.__init__(self)
         self.__functions = dict()  # functions on the RenderComponent to call
-        self.__components = []     # RenderComponent objects
 
     def add(self, token, component):
         """
@@ -41,14 +41,14 @@ class Renderer(ConfigObject, TranslatorObject):
         common.check_type("component", component, moosedown.base.components.RenderComponent)
         if self.initialized(): # allow use without Translator object
             component.init(self.translator)
-        self.__components.append(component)
+        self.addComponent(component)
         self.__functions[token] = self.__method(component)
 
     def reinit(self):
         """
         Call reinit() method of the RenderComponent objects.
         """
-        for comp in self.__components:
+        for comp in self.components:
             comp.reinit()
 
     def render(self, ast): #pylint: disable=unused-argument

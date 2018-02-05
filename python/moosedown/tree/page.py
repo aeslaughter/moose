@@ -17,7 +17,7 @@ LOG = logging.getLogger(__name__)
 
 class PageNodeBase(base.NodeBase):
     PROPERTIES = [base.Property('content', ptype=unicode),
-                  base.Property('source', ptype=str)]]
+                  base.Property('source', ptype=str)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
@@ -60,7 +60,6 @@ class LocationNodeBase(PageNodeBase):
             self.__cache[name] = nodes
         #func = lambda n: n.local.endswith(name)
         #nodes = anytree.search.findall(self.root, func)
-
 
         if maxcount and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
