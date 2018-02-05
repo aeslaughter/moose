@@ -89,6 +89,7 @@ class TestReader(unittest.TestCase):
         reader = Reader(RecursiveLexer('foo'))
         reader.add('foo', WordComponent())
         reader.parse(root, u'throw bar')
+        root
         self.assertIsInstance(root(0), tokens.Exception)
         self.assertIsInstance(root(1), tokens.Word)
         self.assertEqual(root(1).content, u'bar')

@@ -172,6 +172,10 @@ class NodeBase(anytree.NodeMixin):
         """
         self.__attributes[key] = value
 
+    def __len__(self):
+        """Return the number of children."""
+        return len(self.children)
+
     def get(self, key, default=None):
         """
         Get an attribute with a possible default.

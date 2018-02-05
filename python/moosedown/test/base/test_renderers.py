@@ -51,13 +51,11 @@ class TestHTMLRenderer(unittest.TestCase):
             renderer.add(tokens.Paragraph, BadComponent())
         self.assertIn("does not have a createHTML method", e.exception.message)
 
-    def testProcessException(self):
+    def testProcessWithUnlistedToken(self):
         renderer = renderers.HTMLRenderer()
-        with self.assertRaises(exceptions.MooseDocsException) as e:
-            renderer.process(html.Tag(None, 'div'), tokens.Token(None))
-        self.assertIn("An error occured while rendering", e.exception.message)
-        self.assertIn("execute the createHTML", e.exception.message)
-        self.assertIn("tokens.Token", e.exception.message)
+        root = html.Tag(None, 'div')
+        renderer.process(root, tokens.Token(None))
+        self.assertEqual(len(root), 0)
 
     def testReinit(self):
         ast = tokens.Paragraph(None)
@@ -78,6 +76,7 @@ class TestHTMLRenderer(unittest.TestCase):
 
         root = html.Tag(None, 'div')
         renderer.process(root, ast)
+
         self.assertIsInstance(root(0), html.Tag)
         self.assertEqual(root(0).name, 'p')
         self.assertIsInstance(root(0)(0), html.String)
