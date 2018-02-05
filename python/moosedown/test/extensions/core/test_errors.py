@@ -8,10 +8,11 @@ from moosedown.base import testing
 
 class TestErrors(testing.MooseDocsTestCase):
 
-    def testUnknownSettings(self):
+    @mock.patch('logging.Logger.error')
+    def testUnknownSettings(self, mock):
         html = self.render(u'# Heading with Spaces foo=bar')
         h = html(0)
-
+        mock.assert_called_once()
         self.assertIsInstance(h, tree.html.Tag)
         self.assertEqual(h.name, 'div')
         self.assertEqual(h(0).content, '# Heading with Spaces foo=bar')

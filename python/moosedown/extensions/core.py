@@ -159,9 +159,6 @@ class List(base.TokenComponent):
    TOKEN = None
 
    def createToken(self, match, parent):
-
-        #print 'LIST:', repr(match[0])
-
         marker = match['marker']
         n = len(marker)
         token = self.TOKEN(parent)
@@ -329,11 +326,7 @@ class Format(base.TokenComponent):
         elif tok == '~':
             return tokens.Strikethrough(parent)
         elif tok == '`':
-            #print 'Creating Monospace'
-            mono = tokens.Monospace(parent, code=match['inline'], recursive=False)
-            mono.recursive=False
-            return mono
-            #return tokens.Monospace(parent, code=match['inline'], recursive=False)
+            return tokens.Monospace(parent, code=match['inline'], recursive=False)
 
 ####################################################################################################
 # Rendering.
@@ -416,20 +409,17 @@ class RenderShortcutLink(CoreRenderComponentBase):
     def createLatex(self, token, parent):
         cmd = latex.CustomCommand(parent, 'href')
         node = self.getShortcut(token)
-        print node
         if node.content:
             arg0 = latex.Brace(cmd, string=content)
         elif node.token:
             for n in node.token.children:
-                self.translator.renderer.process(n, a)
+                self.translator.renderer.process(n, cmd)
         else:
             arg0 = latex.Brace(cmd, string=node.link)
         arg1 = latex.Brace(cmd, string=unicode(token.key))
-        #return cmd
 
     def getShortcut(self, token):
         if token.key in self.__cache:
-           # print 'CACHE:', token.key
             return self.__cache[token.key]
 
         for node in anytree.PreOrderIter(token.root, maxlevel=None):

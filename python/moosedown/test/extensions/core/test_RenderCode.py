@@ -7,8 +7,6 @@ from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderCodeHTML(testing.MooseDocsTestCase):
-    """Code HTML"""
-
     def testTree(self):
         node = self.render(u'```\nint x;\n```').find('pre')
         self.assertIsInstance(node, tree.html.Tag)
@@ -22,8 +20,7 @@ class TestRenderCodeHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'```\nint x;\n```').find('pre')
-        html = self.write(node)
-        self.assertString(html, '<pre><code class="language-text">\nint x;\n</code></pre>')
+        self.assertString(node.write(), '<pre><code class="language-text">\nint x;\n</code></pre>')
 
     def testTreeLanguage(self):
         node = self.render(u'```language=cpp\nint x;\n```').find('pre')
@@ -31,14 +28,10 @@ class TestRenderCodeHTML(testing.MooseDocsTestCase):
 
     def testWriteLanguage(self):
         node = self.render(u'```language=cpp\nint x;\n```').find('pre')
-        html = self.write(node)
-        self.assertString(html, '<pre><code class="language-cpp">\nint x;\n</code></pre>')
-
+        self.assertString(node.write(), '<pre><code class="language-cpp">\nint x;\n</code></pre>')
 
 class TestRenderCodeMaterialize(TestRenderCodeHTML):
-    """Code Materialize"""
     RENDERER = MaterializeRenderer
-
 
 class TestRenderCodeLatex(testing.MooseDocsTestCase):
     pass

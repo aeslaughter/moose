@@ -8,17 +8,8 @@ from moosedown.extensions import core
 from moosedown.base import testing
 
 class TestShortcutLinkTokenize(testing.MooseDocsTestCase):
-    """
-    Test shortcuts:
-
-    [link]: something or another
-    """
-    def setUp(self):
-        testing.MooseDocsTestCase.setUp(self)
-        core.SHORTCUT_DATABASE = dict(key='content')
-
     def testShortcutLink(self):
-        link = self.ast('[key]')(0)(0)
+        link = self.ast(u'[key]\n\n[key]: content')(0)(0)
         self.assertIsInstance(link, tree.tokens.ShortcutLink)
         self.assertEqual(link.key, 'key')
 

@@ -6,11 +6,8 @@ import mock
 from moosedown import tree
 from moosedown.base import testing
 
-class TestBacktickTokenize(testing.MooseDocsTestCase):
-    """
-    Tests inline code.
-    """
-    def testFenced(self):
+class TestMonospaceTokenize(testing.MooseDocsTestCase):
+    def testBasic(self):
         token = self.ast(u'foo `code` bar')
         self.assertIsInstance(token(0), tree.tokens.Paragraph)
         self.assertIsInstance(token(0)(0), tree.tokens.Word)

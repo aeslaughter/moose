@@ -7,9 +7,6 @@ from moosedown import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestRenderLinkHTML(testing.MooseDocsTestCase):
-    """
-    Test Lines: [link](bar.html foo=bar)
-    """
     def node(self, text):
         return self.render(text)(0)(0)
 
@@ -32,18 +29,16 @@ class TestRenderLinkHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         link = self.node(u'[link](url.html)')
-        html = self.write(link)
-        self.assertString(html, '<a href="url.html">link</a>')
+        self.assertString(link.write(), '<a href="url.html">link</a>')
 
     def testWriteSettings(self):
         link = self.node(u'[link](url.html id=bar)')
-        html = self.write(link)
-        self.assertString(html, '<a href="url.html" id="bar">link</a>')
+        self.assertString(link.write(), '<a href="url.html" id="bar">link</a>')
 
 class TestRenderLinkMaterialize(TestRenderLinkHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(0)(0)(0)
+        return self.render(text).find('body')(0)(0)(0)(0)(0)
 
 class TestRenderLinkLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -62,9 +57,7 @@ class TestRenderLinkLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'[link](url.html)')(-1)(1)
-        tex = self.write(node)
-        self.assertString(tex, '\\href{url.html}{link}')
-
+        self.assertString(node.write(), '\\href{url.html}{link}')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
