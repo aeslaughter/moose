@@ -29,15 +29,15 @@ class TestRenderParagraphHTML(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.node(u'foo\n\n\n\nbar')
-        html = self.write(node(0))
+        html = node(0).write()
         self.assertString(html, '<p>foo</p>')
-        html = self.write(node(1))
+        html = node(1).write()
         self.assertString(html, '<p>bar</p>')
 
 class TestRenderParagraphMaterialize(TestRenderParagraphHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
-        return self.render(text).find('body')(-1)
+        return self.render(text).find('body')(0)(0)(0)
 
 class TestRenderParagraphLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
@@ -56,7 +56,7 @@ class TestRenderParagraphLatex(testing.MooseDocsTestCase):
 
     def testWrite(self):
         node = self.render(u'+content+')(-1)(1)
-        tex = self.write(node)
+        tex = node.write()
         self.assertString(tex, '\\textbf{content}')
 
 

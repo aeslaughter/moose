@@ -85,13 +85,13 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
             func = self.__getFunction(token)
             el = func(token, parent) if func else parent
 
-        except exceptions.RenderException:
+        except exceptions.RenderException as e:
             el = None
-            msg = ''
+            msg = '\n' + e.message
             if token.root.page and token.info:
                 msg += "{}:{}".format(token.root.page.source, token.info.line)
 
-            msg += "\nAn error occured while rendering, the exception was raised when attempting\n"\
+            msg += "\nAn error occured while rendering, the error occured when attempting\n"\
                    "to execute the {} function on the {} token.".format(self.METHOD, type(token))
 
             if token.info:
