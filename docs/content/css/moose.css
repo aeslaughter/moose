@@ -1,8 +1,17 @@
+:root {
+  --inl-blue: rgba(0, 88, 151, 1.0);
+  --alert-error: #ef5350;
+  --alert-error-content: #ffebee;
+  --alert-note: var(--inl-blue);
+  --alert-note-content: rgba(0, 88, 151, 0.1);
+  --alert-warning: #fbc02d;
+  --alert-warning-content: #fffde7;
+}
+
 html {
     line-height: 2rem;
     color: rgba(0,0,0,1.0);
     font-size: 20px;
-    text-align: justify;
     font-weight: 300;
 }
 
@@ -30,15 +39,40 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-/* make inline code snippets have a non-white background */
-code {
-  background: #f5f2f0;
+.tabs .tab a:hover, .tabs .tab a.active {
+	background-color: transparent;
+  color: var(--inl-blue);
 }
 
-.admonition-message pre{
-  background: #f5f2f0;
+.moose-html-rendered-tab{
+  background-color:#F5F6CE;
 }
 
+.tabs .tab a
+{
+  background-color: transparent;
+  color: var(--inl-blue);
+  font-size: 110%;
+}
+
+.tabs .indicator {
+	background-color: var(--inl-blue);
+}
+
+.moose-exception {
+  color: red;
+}
+
+div.moose-code-compare pre
+{
+  font-size: 85%;
+}
+
+div.moose-modal-button {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
 html, body {
   height: 100%;
 }
@@ -49,18 +83,17 @@ html, body {
   text-align: left;
 }
 
+.table-of-contents ul < li < a{
+  text-overflow: ellipsis;
+}
+
 .table-of-contents
 {
-  height: 95vh;
+  height: 90hv;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-.table-of-contents a{
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .nav ul:not(.browser-default) li{
   list-style-type: none;
@@ -83,7 +116,7 @@ html, body {
 
 h1, h2, h3, h4, h5, h6 {
   text-align: left;
-  margin-top: 10px;
+/*  margin-top: 10px; */
 }
 
 h1 {
@@ -122,16 +155,15 @@ h6 {
     margin-bottom:10px;
 }
 
-p {
-    top-margin:1.5rem;
-}
-
 ul {
      margin-left:1.5rem;
 }
 
+blockquote {
+	border-left: 5px solid var(--inl-blue);
+}
 
-.moose-listing-div p.moose-float-caption
+.moose-listing-div p.moose--caption
 {
   border-bottom-style: solid;
   border-width: 3px;
@@ -150,7 +182,7 @@ ul {
     background: beige;
 }
 
-.moose-table-header-tr
+.moose-table-div table thead
 {
   border-bottom-style: solid;
   border-width: 1px;
@@ -161,10 +193,10 @@ ul {
   font-size: smaller;
 }
 
-.moose-table-div td, th{
+.moose-table-div table tbody td, th{
   padding-top: 5px;
   padding-bottom: 5px;
-  line-height: 1.5;
+  line-height: 1.25;
 }
 
 .moose-listing-div pre
@@ -188,10 +220,16 @@ ul {
   margin-bottom: 30px;
 }
 
-.moose-figure-caption-text,
-.moose-table-caption-text,
-.moose-listing-caption-text
-{
+.moose-caption{
+  font-size:120%;
+}
+
+.moose-caption-heading{
+  font-weight: 600;
+}
+
+
+.moose-caption-text{
   font-weight: 300;
 }
 
@@ -315,6 +353,7 @@ li.active .collapsible-header .moose-parameter-name{
 
 nav,
 .btn,
+.btn-small,
 .btn-large,
 footer.page-footer{
     background-color:#005897;
@@ -537,87 +576,67 @@ footer.page-footer {
   margin: 0;
 }
 
-/* Admonition */
-.admonition-title{
-    margin-top:0px;
-    font-weight: bold;
-    display: block;
-    padding: 6px 6px;
-    color: #fff;
-    margin-bottom: 12px;
-    border: 0px solid transparent;
+li p {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-.admonition {
-    padding: 0px;
-    overflow: auto;
-    margin-bottom: 20px;
+.card .card-content{
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
-.info .admonition-title {
-    background: #528452;
+/* ALERTS */
+.moose-alert .card-content{
+  padding:0;
 }
 
-.admonition > p{
-    margin: 0px;
-    padding: 6px;
-    text-align: left;
+.moose-alert .card-content .card-title{
+  margin: 0;
+  margin-bottom: 0;
 }
 
-.admonition-message{
-  margin-left: 12px;
-  margin-right: 12px;
+.moose-alert-title, .moose-alert-content{
+  padding:10pt;
 }
 
-.admonition.info {
-    background: #82e0aa;
-    color: #000;
-    border: 0px solid transparent;
+
+.moose-alert-error .moose-alert-title{
+  color: white;
+  background-color: var(--alert-error);
 }
 
-.note .admonition-title {
-    background: #3a7296;
-}
-.admonition.note {
-    background: #85c1e9;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-error .moose-alert-content{
+  background-color: var(--alert-error-content);
 }
 
-.important .admonition-title {
-    background: #b100b0;
-}
-.admonition.important {
-    background: #FF00FF;
-    color: #000;
-    border: 0px solid transparent;
+
+.moose-alert-warning .moose-alert-title{
+  color: white;
+  background-color: var(--alert-warning);
 }
 
-.warning .admonition-title {
-    background: #968b2b;
-}
-.admonition.warning {
-    background: #ffec46;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-warning .moose-alert-content{
+  background-color: var(--alert-warning-content);
 }
 
-.danger .admonition-title {
-    background: #b14d00;
-}
-.admonition.danger {
-    background: #f75e1d;
-    color: #000;
-    border: 0px solid transparent;
+.moose-alert-note .moose-alert-title{
+  color: white;
+  background-color: var(--alert-note);
 }
 
-.error .admonition-title {
-    background: #940000;
+.moose-alert-note .moose-alert-content{
+  background-color: var(--alert-note-content);
 }
-.admonition.error {
-    background: #ffb4b4;
-    color: #000;
-    border: 0px solid transparent;
+
+.moose-alert-title-brand{
+  text-transform: uppercase;
+  padding-right: 1ex;
+  font-weight: 400;
+}
+
+.moose-alert-title-brand::after{
+  content: ":"
 }
 
 .moose-katex-error{
@@ -782,4 +801,36 @@ span.badge.new.pass{
 .reveal .moose-copy-button{
     bottom: 0;
     left: 0;
+}
+
+
+/* COLLAPSIBLE SECTIONS */
+summary {
+  display: block;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.moose-section-icon::before {
+  font-family: Material Icons;
+  content: 'keyboard_arrow_right';
+  vertical-align: middle;
+}
+
+details[open] > summary .moose-section-icon::before{
+  content: 'keyboard_arrow_down';
+}
+
+details[open] hr{
+  display: none;
+}
+
+details[open] .moose-section-content {
+   animation: sweep 0.2s ease-in-out;
+}
+  @keyframes sweep {
+      0% {opacity: 0; margin-top: 0px}
+      100% {opacity: 1; margin-left: 0px}
 }

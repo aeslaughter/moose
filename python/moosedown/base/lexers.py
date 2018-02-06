@@ -150,7 +150,7 @@ class LexerInformation(object):
         """
         Return a resonable string for debugging.
         """
-        return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match.group(), self.__pattern)
+        return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match, self.__pattern)
 
 class Lexer(object):
     """

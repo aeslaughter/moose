@@ -1,14 +1,16 @@
+"""
+Defines the MooseDocs build command.
+"""
 import os
 import copy
-import shutil
 import logging
-import anytree
-import livereload
 import importlib
 import collections
 
+import anytree
+import livereload
+
 import mooseutils
-import hit
 
 import moosedown
 
@@ -27,15 +29,12 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.alert']
 
 def command_line_options(subparser):
+    """
+    Define the command line options for the build command.
+    """
     build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
     build_parser.add_argument('--lexer-components', action='store_true',
                               help='Show the lexer components in order.')
-
-def params_to_dict(node):
-    """
-    TODO: move this to mooseutils
-    """
-    return {child.path():child.param() for child in node.children(node_type=hit.NodeType.Field)}
 
 def load_extensions(node, filename):
     """
@@ -46,8 +45,8 @@ def load_extensions(node, filename):
         node[hit.Node|None]: The [Extensions] section of the hit file.
     """
 
-    # The key is the extension module name, value is a dict() of configuration options, which is populated
-    # from the hit nodes and applied to the object via the make_extension method.
+    # The key is the extension module name, value is a dict() of configuration options, which is
+    # populated from the hit nodes and applied to the object via the make_extension method.
     ext_configs = collections.OrderedDict()
     if not (node and node.param('disable_defaults')):
         ext_configs = collections.OrderedDict()
@@ -56,16 +55,14 @@ def load_extensions(node, filename):
 
     # Process the [Extensions] block of the hit input, if it exists
     if node:
-        # Update the extension conifigure options based on the content of the hit nodes
-        for child in node.children(node_type=hit.NodeType.Section):
-            ext_type = child.param('type')
-            if ext_type is None:
+        for child in node:
+            if 'type' not in child:
                 msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter."
                 LOG.error(msg, filename, child.line(), child.fullpath())
             else:
-                config = params_to_dict(child)
-                config.pop('type')
-                ext_configs[ext_type] = config
+                config = copy.copy(child.parameters)
+                ext_type = config.pop('type')
+                ext_configs[ext_type] = {k:v.value for k, v in config.iteritems()}
 
     # Build the Extension objects
     extensions = []
@@ -90,51 +87,59 @@ def load_object(node, filename, default, *args):
     """
 
     if node:
-        type_ = node.param('type')
-        if type_ is None:
-            msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter, using the default %s."
+        if 'type' not in node:
+            msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter, " \
+                  "using the default %s."
             LOG.error(msg, filename, node.line(), node.fullpath(), type(default).__name__)
         else:
-            config = params_to_dict(node)
+            config = copy.copy(node.parameters)
             config.pop('type')
+            config = {k:v.value for k, v in config.iteritems()}
             try:
-                return eval(type_)(*args, **config)
+                return eval(node['type'])(*args, **config)
             except NameError:
-                param = node.find('type')
-                msg = "ERROR\n%s:%s\nThe parameter '%s' must contain a valid object name, using the default %s."
-                LOG.error(msg, filename, param.line(), param.fullpath())
+                param = node.parameters['type']
+                msg = "ERROR\n%s:%s\nThe parameter '%s' must contain a valid object name, using " \
+                      "the default %s."
+                LOG.error(msg, filename, param.line, param.fullpath)
 
     return default(*args)
 
 def load_content(node, filename):
+    """
+    Load the [Content] block from the config.hit file.
+    """
     if not node:
         msg = "The [Content] section is required within the configure file {}."
         raise KeyError(msg.format(filename))
 
     items = []
-    for child in node.children(node_type=hit.NodeType.Section):
-        content = child.param('content').split() if child.param('content') else []
-        items.append(dict(root_dir=child.param('root_dir'), content=content))
+    for child in node:
+        content = child['content'].split() if 'content' in child else []
+        items.append(dict(root_dir=child['root_dir'], content=content))
 
     return moosedown.tree.build_page_tree.doc_tree(items)
 
 def load_config(filename):
-
-    # Read the config.hit file #TODO: error check on filename
-    with open(filename) as f:
-        content = f.read()
-    node = hit.parse(filename, content)
+    """
+    Read the config.hit file and create the Translator object.
+    """
+    node = mooseutils.hit_load(filename)
 
     extensions = load_extensions(node.find('Extensions'), filename)
     reader = load_object(node.find('Reader'), filename, moosedown.base.MarkdownReader)
     renderer = load_object(node.find('Renderer'), filename, moosedown.base.MaterializeRenderer)
-    translator = load_object(node.find('Translator'), filename, moosedown.base.Translator, reader, renderer, extensions)
+    translator = load_object(node.find('Translator'), filename, moosedown.base.Translator,
+                             reader, renderer, extensions)
     content = load_content(node.find('Content'), filename)
 
     return translator, content
 
 
 def main(options):
+    """
+    Main function for the build command.
+    """
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
     logging.basicConfig(level=logging.DEBUG)
@@ -151,8 +156,6 @@ def main(options):
             print 'GRAMMER:', key
             for pattern in grammer:
                 print '  ', pattern
-
-
 
     if False:
         from moosedown.tree import page

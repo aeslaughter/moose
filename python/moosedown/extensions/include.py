@@ -51,3 +51,9 @@ class RenderInclude(components.RenderComponent):
 
         for child in token.include.rendered:
             child.parent = parent
+
+    def createMaterialize(self, token, parent):
+        return self.createHTML(token, parent)
+
+    def createLatex(self, token, parent):
+        pass

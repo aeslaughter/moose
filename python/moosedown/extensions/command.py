@@ -1,4 +1,5 @@
 """
+Extension for adding commands to Markdown syntax.
 """
 import re
 import uuid

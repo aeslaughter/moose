@@ -1,8 +1,19 @@
 import os
 import sys
+import copy
+
 import anytree
+
 import hit
 import message
+
+class Parameter(object):
+    """
+    """
+    def __init__(self, hit_node):
+        self.value = hit_node.param()
+        self.line = hit_node.line()
+        self.fullpath = hit_node.fullpath()
 
 class HitNode(anytree.NodeMixin):
     """
@@ -17,7 +28,7 @@ class HitNode(anytree.NodeMixin):
     @property
     def parameters(self):
         """
-        Access to the parameters dict() for this node.
+        Create a copy of the parameters dict() for this node.
         """
         return self.__parameters
 
@@ -71,7 +82,7 @@ class HitNode(anytree.NodeMixin):
         """
         Provides operator [] access to the parameters of this node.
         """
-        return self.__parameters[param]
+        return self.__parameters[param].value
 
     def __repr__(self):
         """
@@ -126,7 +137,7 @@ def _hit_parse(root, hit_node, filename):
             new = HitNode(hit_child.path(), parent=root)
             _hit_parse(new, hit_child, filename)
         elif hit_child.type() == hit.NodeType.Field:
-            root.parameters[hit_child.path()] = hit_child.param()
+            root.parameters[hit_child.path()] = Parameter(hit_child)
     return root
 
 if __name__ == '__main__':
