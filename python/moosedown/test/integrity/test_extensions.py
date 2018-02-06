@@ -23,19 +23,19 @@ class TestExtensions(testing.MooseDocsTestCase):
         """
         Test TokenComponent testing
         """
-        messages = ['\n']
+        messages = []
         for comp in self._reader.components:
             messages += self.checkComponent(comp, self.READER_REQUIRED)
-        self.assertFalse(messages, '\n'.join(messages))
+        self.assertFalse(messages, '\n' + '\n'.join(messages))
 
     def testRenderComponents(self):
         """
         Test RenderComponent testing
         """
-        messages = ['\n']
+        messages = []
         for comp in self._renderer.components:
             messages += self.checkComponent(comp, self.RENDER_REQUIRED)
-        self.assertFalse(messages, '\n'.join(messages))
+        self.assertFalse(messages, '\n' + '\n'.join(messages))
 
     @staticmethod
     def checkComponent(component, required):
@@ -60,7 +60,8 @@ class TestExtensions(testing.MooseDocsTestCase):
             sys.path.append(path)
             module = importlib.import_module(testname[:-3])
             tests = set([obj[0] for obj in testing.get_parent_objects(module, unittest.TestCase)])
-            for missing in tests.difference(set([r.format(name) for r in required])):
+            req = set([r.format(name) for r in required])
+            for missing in req.difference(tests):
                 msg = "'{}' must be added to '{}' in {}.".format(missing, testname, path)
                 messages.append(msg)
             sys.path.remove(path)

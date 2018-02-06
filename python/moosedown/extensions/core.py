@@ -638,3 +638,6 @@ class RenderException(CoreRenderComponentBase):
         html.String(done, content=u"Done")
 
         return content
+
+    def createLatex(self, token, parent):
+        pass

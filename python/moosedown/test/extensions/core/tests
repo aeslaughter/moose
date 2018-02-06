@@ -83,6 +83,10 @@
     type = PythonUnitTest
     input = test_Punctuation.py
   [../]
+  [./RenderPunctuation]
+    type = PythonUnitTest
+    input = test_RenderPunctuation.py
+  [../]
   [./String]
     type = PythonUnitTest
     input = test_String.py
@@ -142,6 +146,10 @@
   [./RenderListItem]
     type = PythonUnitTest
     input = test_RenderListItem.py
+  [../]
+  [./RenderException]
+    type = PythonUnitTest
+    input = test_RenderException.py
   [../]
   [./errors]
     type = PythonUnitTest

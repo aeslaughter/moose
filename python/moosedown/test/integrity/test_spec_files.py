@@ -22,10 +22,10 @@ class TestSpecFiles(unittest.TestCase):
 
         # Load the test spec and create a list of PythonUnitTest files
         tested = set()
-
         spec = os.path.join(location, 'tests')
         if not os.path.exists(spec):
-            messages.append("Missing a test spec file in '{}'".format(os.path.dirname(spec)))
+            if glob.glob(os.path.join(spec, '*.py')):
+                messages.append("Missing a test spec file in '{}'".format(os.path.dirname(spec)))
         else:
             node = mooseutils.hit_load(os.path.join(location, 'tests'))
             for block in node.find('Tests'):
@@ -52,13 +52,13 @@ class TestSpecFiles(unittest.TestCase):
         return messages
 
     def testSpec(self):
-        messages = ['']
+        messages = []
         location = os.path.join(os.path.dirname(moosedown.__file__), 'test')
         for root, dirs, _ in os.walk(location):
             for d in dirs:
                 messages += self.check(os.path.join(root, d))
 
-        self.assertFalse(messages, '\n'.join(messages))
+        self.assertFalse(messages, '\n' + '\n'.join(messages))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

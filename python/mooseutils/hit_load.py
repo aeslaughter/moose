@@ -1,4 +1,5 @@
 import os
+import sys
 import anytree
 import hit
 import message
@@ -101,6 +102,7 @@ def hit_load(filename):
             content = fid.read()
     else:
         message.mooseError("Unable to load the hit file ", filename)
+        sys.exit(1)
 
     root = HitNode()
     hit_node = hit.parse(filename, content)
