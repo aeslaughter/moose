@@ -7,12 +7,11 @@ import hit
 import moosedown
 from moosedown.commands.build import DEFAULT_EXTENSIONS, load_extensions, load_object
 
-
 class TestLoadExtensions(unittest.TestCase):
     def testEmpty(self):
         ext = load_extensions(None, 'foo')
         names = set([e.__module__ for e in ext])
-        self.assertEqual(names, DEFAULT_EXTENSIONS)
+        self.assertEqual(names, set(DEFAULT_EXTENSIONS))
 
     def testDisableDefaults(self):
         ext = hit.NewSection('Extensions')

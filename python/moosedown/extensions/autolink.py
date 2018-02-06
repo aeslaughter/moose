@@ -1,5 +1,5 @@
 import os
-from moosedown import base
+from moosedown.base import components
 from moosedown.extensions import core, table
 from moosedown.tree import tokens, html
 from moosedown.tree.base import Property

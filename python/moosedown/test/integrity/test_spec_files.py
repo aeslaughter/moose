@@ -15,13 +15,7 @@ from moosedown.base import testing
 import hit
 
 class TestSpecFiles(unittest.TestCase):
-    """
-    Tests that all unittest classes are listed in a tests spec file.
-    """
     def check(self, location):
-        """
-        Check the test directory.
-        """
 
         # List of errors
         messages = []
@@ -37,15 +31,6 @@ class TestSpecFiles(unittest.TestCase):
             for block in node.find('Tests'):
                 if block['type'] == 'PythonUnitTest':
                     tested.add(block['input'])
-        # if os.path.exists(spec):
-        #     with open(spec, 'r') as fid:
-        #         data = fid.read()
-        #         node = hit.parse(spec, data)
-        #         for block in node.children():
-        #             for child in block.children():
-        #                 if (child.type() != hit.NodeType.Blank) and \
-        #                    (child.find('type').param() == 'PythonUnitTest'):
-        #                     tested.add(child.find('input').param())
 
         # Loop through python files in this directory
         for filename in glob.glob(os.path.join(location, '*.py')):
@@ -67,15 +52,10 @@ class TestSpecFiles(unittest.TestCase):
         return messages
 
     def testSpec(self):
-        """
-        Test that all unittest.TestCases have an entry in a tests spec file.
-        """
-
         messages = ['']
         location = os.path.join(os.path.dirname(moosedown.__file__), 'test')
         for root, dirs, _ in os.walk(location):
             for d in dirs:
-                print d
                 messages += self.check(os.path.join(root, d))
 
         self.assertFalse(messages, '\n'.join(messages))

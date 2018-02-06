@@ -46,7 +46,6 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
             node.init(self._translator)
 
     def build(self):
-        self.root.build()
         for child in self.root:
             child.build()
 
@@ -79,50 +78,12 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
         self.assertIsInstance(self.root(3).ast(1), include.IncludeToken)
         self.assertIs(self.root(3).ast(1).include, self.root(2))
 
-        #print self.root(0).ast
-
-
-        #print self.root(0).rendered
-        #print self.root(1).rendered
-        #print self.root(2).ast
-        #print self.root(2).rendered
-
-        #print self.root(3).rendered
-
     def testMaster(self):
         self.build()
         self.assertEqual(self.root(0).master, set())
         self.assertEqual(self.root(1).master, set([self.root(0)]))
         self.assertEqual(self.root(2).master, set([self.root(1), self.root(3)]))
-
-    def testMasterBuild(self):
-        self.build()
-        with open(self.files[0], 'w') as fid:
-            fid.write('File 1 updated\n\n!include {}'.format(os.path.basename(self.files[1])))
-        self.root(0).build()
-        ast = self.root(0).ast
-        self.assertIsInstance(ast(0)(4), tokens.Word)
-        self.assertEqual(ast(0)(4).content, u'updated')
-
-        with open(self.files[1], 'w') as fid:
-            fid.write('File 2 updated\n\n!include {}'.format(os.path.basename(self.files[2])))
-        self.root(1).build()
-        ast = self.root(1).ast
-        self.assertIsInstance(ast(0)(4), tokens.Word)
-        self.assertEqual(ast(0)(4).content, u'updated')
-        self.assertIsInstance(ast(1)(4), tokens.Word)
-        self.assertEqual(ast(1)(4).content, u'updated')
-
-        with open(self.files[2], 'w') as fid:
-            fid.write('File 3 updated')
-        self.root(0).build()
-        ast = self.root(2).ast
-        self.assertIsInstance(ast(0)(4), tokens.Word)
-        self.assertEqual(ast(0)(4).content, u'updated')
-        self.assertIsInstance(ast(1)(4), tokens.Word)
-        self.assertEqual(ast(1)(4).content, u'updated')
-        self.assertIsInstance(ast(2)(4), tokens.Word)
-        self.assertEqual(ast(2)(4).content, u'updated')
+        self.assertEqual(self.root(3).master, set())
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

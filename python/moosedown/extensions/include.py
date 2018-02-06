@@ -42,51 +42,12 @@ class Include(command.CommandComponent):
         include_page.master.add(master_page)
         token = IncludeToken(parent, include=include_page)
 
-
-        #print '\n'
-        #print ' MASTER PAGE:', master_page.name, master_page.master
-        #print 'INCLUDE PAGE:', include_page.name, include_page.master
-
         return parent
-
-        """
-        #print match
-
-        #print parent.node
-
-        #print self.reader.node, type(self.reader.node), match.groups()
-
-        master_page = parent.root.page
-        slave_page = master_page.findall(info['filename'], maxcount=1)[0]
-        slave_page.read()
-
-        print '\n'
-        print 'MASTER:', master_page
-        print ' SLAVE:', slave_page
-        #subpage = parent.root.page.
-        #subpage.read()
-
-        #TODO: check type of node, must be markdown for this to work or the node needs to be created
-
-        # Set the master node, so that when livereload fires on this included node that the
-        # node that does the including is reloaded
-        slave_page.master.add(master_page)#subpage.master.add(parent.root.page)
-        #print node.name, parent.node.name, node.master
-
-        r =
-        self.reader.parse(parent, slave_page)
-        ast.page = slave_page
-        #for child in ast.children:
-        #    child.parent = parent
-        return parent
-        """
 
 class RenderInclude(components.RenderComponent):
     def createHTML(self, token, parent):
         if token.include.rendered is None:
-            token.include.build()#rendered
-
-        #print token.include.rendered
+            token.include.build()
 
         for child in token.include.rendered:
             child.parent = parent
