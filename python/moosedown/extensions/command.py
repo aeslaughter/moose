@@ -15,13 +15,10 @@ def make_extension():
 
 class CommandExtension(base.Extension):
 
-    def addCommand(self, command):
+    def init(self, translator):
         """
-        Adds a new CommandComponent to the list of available commands.
         """
-
-        # Type checking
-        common.check_type('command', command, CommandComponent)
+        base.Extension.init(self, translator)
 
         # Create a location to store the commands. I have tried this a few different ways, but
         # settle on the following, despite its hackishness. First, the commands were stored on the
@@ -32,6 +29,14 @@ class CommandExtension(base.Extension):
         # object.
         if not hasattr(self.translator, '__EXTENSION_COMMANDS__'):
             setattr(self.translator, '__EXTENSION_COMMANDS__', dict())
+
+    def addCommand(self, command):
+        """
+        Adds a new CommandComponent to the list of available commands.
+        """
+
+        # Type checking
+        common.check_type('command', command, CommandComponent)
 
         # Initialize the component
         command.init(self.translator)
