@@ -4,13 +4,10 @@ Defines the "core" extension for translating MooseDocs markdown to HTML and LaTe
 import re
 import uuid
 import logging
-import copy
 
 import anytree
 
-import moosedown
 from moosedown.base import components, renderers
-from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import tokens, html, latex
 
@@ -80,11 +77,16 @@ class CoreExtension(components.Extension):
             renderer.addPackage(u'hyperref')
             renderer.addPackage(u'ulem')
 
-class Code(components.TokenComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
-    """
-    Fenced code blocks.
-    """
-    RE = re.compile(r'(?:\A|\n{2,})^`{3}(?P<settings>.*?)$(?P<code>.*?)^`{3}(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL)
+# Documenting all these classes is far to repeative and useless.
+#pylint: disable=missing-docstring
+
+#TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
+class Code(components.TokenComponent):
+    RE = re.compile(r'(?:\A|\n{2,})^'         # start of string or empty line
+                    r'`{3}(?P<settings>.*?)$' # start of code with key=value settings
+                    r'(?P<code>.*?)^`{3}'     # code and end of fenced block
+                    r'(?=\Z|\n{2,})',         # end of string or empty line
+                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
     @staticmethod
     def defaultSettings():
@@ -94,25 +96,24 @@ class Code(components.TokenComponent): #TODO: Rename these classes to use the wo
         settings['label'] = ('Listing', "The numbered caption prefix.")
         return settings
 
-    def createToken(self, match, parent):
+    def createToken(self, info, parent):
         if self.settings['caption']:
-            flt = tokens.Float(parent, label=settings['label'], caption=settings['caption'], **self.attributes)
-            return tokens.Code(flt, code=match['code'], language=self.settings['language'])
+            flt = tokens.Float(parent, label=self.settings['label'],
+                               caption=self.settings['caption'], **self.attributes)
+            return tokens.Code(flt, code=info['code'], language=self.settings['language'])
         else:
-                           return tokens.Code(parent, code=match['code'],
-                               language=self.settings['language'], **self.attributes)
+            return tokens.Code(parent, code=info['code'], language=self.settings['language'],
+                               **self.attributes)
 
 class Quote(components.TokenComponent):
-    """
-    Block quote.
-    """
+    RE = re.compile(r'(?:\A|\n{2,})'         # start of string or empty line
+                    r'(?P<quote>^>[ $].*?)'  # quote content
+                    r'(?=\Z|\n{2,})',        # end of string or empty line
+                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
-    #TODO: settings ???
-    RE = re.compile(r'(?:\A|\n{2,})(?P<quote>^>[ $].*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-    def createToken(self, match, parent):
-
+    def createToken(self, info, parent):
         content = []
-        for line in match['quote'].rstrip('\n').split('\n'):
+        for line in info['quote'].rstrip('\n').split('\n'):
             if line == u'>':
                 content.append('')
             elif line.startswith(u'> '):
@@ -122,7 +123,6 @@ class Quote(components.TokenComponent):
 
         #TODO: error check that all lines begin with '> '
         quote = tokens.Quote(parent)
-        #content = self.SUB_RE.sub(r'', match['quote'])
         self.reader.parse(quote, '\n'.join(content))
         return quote
 
@@ -133,43 +133,37 @@ class HeadingHash(components.TokenComponent):
     # Heading Level One with=settings
     """
     TOKEN = tokens.Heading
-    RE = re.compile(r'(?:\A|\n{2,})^(?P<level>#{1,6}) '   # match 1 to 6 #'s at the beginning of line
-                    r'(?P<inline>.*?) *'                  # heading text that will be inline parsed
-                    r'(?P<settings>\s+\w+=.*?)?'          # optional match key, value settings
-                    r'(?=\Z|\n{2,})',                     # match up to end of string or newline(s)
+    RE = re.compile(r'(?:\A|\n{2,})'             # start of string or empty line
+                    r'^(?P<level>#{1,6}) '       # match 1 to 6 #'s at the beginning of line
+                    r'(?P<inline>.*?) *'         # heading text that will be inline parsed
+                    r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
+                    r'(?=\Z|\n{2,})',            # match up to end of string or newline(s)
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
-    @staticmethod
-    def defaultSettings():
-        settings = components.TokenComponent.defaultSettings()
-        return settings
-
-    def createToken(self, match, parent):
-        content = unicode(match['inline']) #TODO: is there a better way?
-        heading = tokens.Heading(parent, level=match['level'].count('#'), **self.attributes)
-        label = tokens.Label(heading, text=content)
+    def createToken(self, info, parent):
+        #content = unicode(info['inline']) #TODO: is there a better way?
+        content = info['inline']
+        heading = tokens.Heading(parent, level=info['level'].count('#'), **self.attributes)
+        tokens.Label(heading, text=content)
         return heading
 
 class List(components.TokenComponent):
-   """
-   Base for lists components.
-   """
-   RE = None
-   ITEM_RE = None
-   TOKEN = None
+    RE = None
+    ITEM_RE = None
+    TOKEN = None
 
-   def createToken(self, match, parent):
-        marker = match['marker']
+    def createToken(self, info, parent):
+        marker = info['marker']
         n = len(marker)
-        token = self.TOKEN(parent)
+        token = self.TOKEN(parent) #pylint: disable=not-callable
         strip_regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
 
-        for item in self.ITEM_RE.finditer(match['items']):
+        for item in self.ITEM_RE.finditer(info['items']):
             content = ' '*n + item.group('item')
             indent = re.search(r'^\S', content, flags=re.MULTILINE|re.UNICODE)
             if indent:
                 msg = "List item content must be indented by {} to match the list item " \
-                      "characters of '{}', to end a list item you must use two empty lines."
+                       "characters of '{}', to end a list item you must use two empty lines."
                 raise exceptions.TokenizeException(msg.format(n, marker))
 
             content = strip_regex.sub(r'\1', content)
@@ -178,135 +172,100 @@ class List(components.TokenComponent):
         return token
 
 class UnorderedList(List):
-   """
-   Unordered lists.
-   """
-   RE = re.compile(r'(?:\A|\n{2,})(?P<items>(?P<marker>^- ).*?)(?=\n{3,}|\Z|\n{2}^[^-\s])',
-                   flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-   ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-   TOKEN = tokens.UnorderedList
+    RE = re.compile(r'(?:\A|\n{2,})'                   # start of string or empty line
+                    r'(?P<items>(?P<marker>^- ).*?)'   # all items
+                    r'(?=\n{3,}|\Z|\n{2}^[^-\s])',     # stop with 2 empty or 1 not with marker
+                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    TOKEN = tokens.UnorderedList
 
 class OrderedList(List):
-   """
-   Ordered lists.
-   """
-   RE = re.compile(r'(?:\A|\n{2,})^(?P<items>(?P<marker>[0-9]+\. ).*?)(?=\n{3,}|\Z|\n{2}^[^[0-9\s])',
-                   flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-   ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-   TOKEN = tokens.OrderedList
+    """Ordered lists."""
+    RE = re.compile(r'(?:\A|\n{2,})'                        # start of string or empty line
+                    r'(?P<items>(?P<marker>^[0-9]+\. ).*?)' # all items
+                    r'(?=\n{3,}|\Z|\n{2}^[^[0-9\s])',       # stop with 2 empty or 1 not with marker
+                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )',
+                         flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    TOKEN = tokens.OrderedList
 
-   #TODO: figure out how to handle settings???
-   #TODO: combine regex for ordered/unordered
-   # 1. start=42 type=a This is the actual content.
+    #TODO: figure out how to handle settings???
+    #TODO: combine regex for ordered/unordered
+    # 1. ::start=42 type=a:: This is the actual content.???
 
-   @staticmethod
-   def defaultSettings():
-       settings = List.defaultSettings()
-       settings['type'] = ('1', "The list type (1, A, a, i, or I).")
-       return settings
+    @staticmethod
+    def defaultSettings():
+        settings = List.defaultSettings()
+        settings['type'] = ('1', "The list type (1, A, a, i, or I).")
+        return settings
 
-   def createToken(self, match, parent):
-       token = List.createToken(self, match, parent)
-       token.start = int(match['marker'].strip('. '))
-       return token
+    def createToken(self, info, parent):
+        token = List.createToken(self, info, parent)
+        token.start = int(info['marker'].strip('. '))
+        return token
 
 class Shortcut(components.TokenComponent):
-    """
-    Markdown shortcuts.
-
-    [foo]: something or another
-    """
     RE = re.compile(r'(?:\A|\n{2,})^\[(?P<key>\w+)\]: '  # shortcut key
-                    r'(?P<link>.*?)'        # shortcut value
-                    r'(?=\Z|\n{2,})',             # stop new line or end of file
+                    r'(?P<link>.*?)'                     # shortcut value
+                    r'(?=\Z|\n{2,})',                    # stop new line or end of file
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
-    def createToken(self, match, parent):
-        return tokens.Shortcut(parent, key=match['key'], link=match['link'])
+    def createToken(self, info, parent):
+        return tokens.Shortcut(parent, key=info['key'], link=info['link'])
 
 class Paragraph(components.TokenComponent):
-    """
-    Paragraphs (defined by regions with more than one new line)
-    """
-    RE = re.compile(r'(?:\A|\n{2,})(?P<inline>.*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    RE = re.compile(r'(?:\A|\n{2,})'   # start of string of empty line
+                    r'(?P<inline>.*?)' # content
+                    r'(?=\Z|\n{2,})',  # stop with end or empty line
+                    flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
-    #TODO: Figure out settings???
-    # foo=bar This is the actual content???
-
-    def createToken(self, match, parent):
+    def createToken(self, info, parent): #pylint: disable=unused-argument
         return tokens.Paragraph(parent)
 
 class Link(components.TokenComponent):
-    """
-    Markdown links [foo](bar with=settings)
-    """
-    RE = re.compile(r'\[(?P<inline>.*?)\]'         # link text
-                    r'\((?P<url>.*?)'              # link url
-                    r'(?:\s+(?P<settings>.*?))?\)' # settings
-                    )
+    RE = re.compile(r'\[(?P<inline>.*?)\]'          # link text
+                    r'\((?P<url>.*?)'               # link url
+                    r'(?:\s+(?P<settings>.*?))?\)', # settings
+                    flags=re.UNICODE)
 
-    def createToken(self, match, parent):
-        return tokens.Link(parent, url=match['url'], **self.attributes)
+    def createToken(self, info, parent):
+        return tokens.Link(parent, url=info['url'], **self.attributes)
 
 class ShortcutLink(components.TokenComponent):
-    """
-    Markdown shortcut use.
-    """
     RE = re.compile(r'\[(?P<key>.*?)\]', flags=re.UNICODE)
-    def createToken(self, match, parent):
-        return tokens.ShortcutLink(parent, key=match['key'])
+    def createToken(self, info, parent):
+        return tokens.ShortcutLink(parent, key=info['key'])
 
-class String(components.TokenComponent):
-    """
-    Base token for strings (i.e., words, numbers, etc.)
-    """
-    def createToken(self, match, parent):
-        return token.String(parent, content=match[0])
+#class String(components.TokenComponent):
+#    def createToken(self, info, parent):
+#        return tokens.String(parent, content=info[0])
 
-class Break(String):
-    """
-    Line breaks.
-    """
+class Break(components.TokenComponent):
     RE = re.compile(r'(?P<break>\n+)')
-    def createToken(self, match, parent):
-        return tokens.Break(parent, count=len(match['break']))
+    def createToken(self, info, parent):
+        return tokens.Break(parent, count=len(info['break']))
 
-class Space(String):
-    """
-    Spaces.
-    """
+class Space(components.TokenComponent):
     RE = re.compile(r'(?P<space> +)')
-    def createToken(self, match, parent):
-        return tokens.Space(parent, count=len(match['space']))
+    def createToken(self, info, parent):
+        return tokens.Space(parent, count=len(info['space']))
 
-class Punctuation(String):
-    """
-    Not letters, numbers, or spaces.
-    """
+class Punctuation(components.TokenComponent):
     RE = re.compile(r'([^A-Za-z0-9\s]+)')
-    def createToken(self, match, parent):
-        return tokens.Punctuation(parent, content=match[0])
+    def createToken(self, info, parent):
+        return tokens.Punctuation(parent, content=info[0])
 
-class Number(String):
-    """
-    Numbers.
-    """
+class Number(components.TokenComponent):
     RE = re.compile(r'([0-9]+)')
-    def createToken(self, match, parent):
-        return tokens.Number(parent, content=match[0])
+    def createToken(self, info, parent):
+        return tokens.Number(parent, content=info[0])
 
-class Word(String):
-    """
-    Letters.
-    """
+class Word(components.TokenComponent):
     RE = re.compile(r'([A-Za-z]+)')
-    def createToken(self, match, parent):
-        return tokens.Word(parent, content=match[0])
+    def createToken(self, info, parent):
+        return tokens.Word(parent, content=info[0])
 
 class Format(components.TokenComponent):
-    """
-    Inline text settings (e.g., monospaced, underline, emphasis).
-    """
     RE = re.compile(r'(?P<token>[\_\^\=\*\+~`])(?=\S)(?P<inline>.*)(?<=\S)(?:\1)',
                     flags=re.MULTILINE|re.DOTALL|re.DOTALL)
 
@@ -331,63 +290,38 @@ class Format(components.TokenComponent):
 # Rendering.
 ####################################################################################################
 
-class CoreRenderComponentBase(components.RenderComponent): #TODO: get rid of this class, MaterializeRenderer should make the createHTML check
-    """
-    Base class that includes the necessary callbacks for rendering html, materialize, and LaTeX.
-    """
+class RenderHeading(components.RenderComponent):
+    LATEX_SECTIONS = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph',
+                      'subparagraph']
 
-    def createHTML(self, token, parent):
-        #TODO: Better error message with markdown line number.
-        raise NotImplementedError("Not implement, you probably should.")
-
-    def createMaterialize(self, token, parent):
-        return self.createHTML(token, parent)
-
-    def createLatex(self, token, parent):
-        #TODO: Better error message with markdown line number.
-        pass
-        #raise NotImplementedError("Not implement, you probably should.")
-
-class RenderHeading(CoreRenderComponentBase):
-    """
-    Render heading.
-    """
-    LATEX_SECTIONS = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph']
-
-    def createHTML(self, token, parent):
-        #section = html.Tag(parent, 'section')
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'h{}'.format(token.level), **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, self.LATEX_SECTIONS[token.level], start='\n', end='\n')
 
-class RenderLabel(CoreRenderComponentBase):
-    """Label"""
-    def createHTML(self, token, parent):
+class RenderLabel(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
         pass
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use
         label = token.get('id', re.sub(r' +', r'-', token.text.lower()))
         return latex.Command(parent, 'label', string=label)
 
-class RenderCode(CoreRenderComponentBase):
-    """Code"""
-
-    def createHTML(self, token, parent):
+class RenderCode(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         language = 'language-{}'.format(token.language)
         pre = html.Tag(parent, 'pre', **token.attributes)
         code = html.Tag(pre, 'code', class_=language)
-        string = html.String(code, content=token.code, escape=token.escape)
+        html.String(code, content=token.code, escape=token.escape)
         return pre
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'verbatim')
 
-class RenderShortcutLink(CoreRenderComponentBase):
-    """ShortcutLink"""
-
+class RenderShortcutLink(components.RenderComponent):
     def __init__(self, *args, **kwargs):
-        CoreRenderComponentBase.__init__(self, *args, **kwargs)
+        components.RenderComponent.__init__(self, *args, **kwargs)
         self.__cache = dict()
 
     def createHTML(self, token, parent):
@@ -409,13 +343,14 @@ class RenderShortcutLink(CoreRenderComponentBase):
         cmd = latex.CustomCommand(parent, 'href')
         node = self.getShortcut(token)
         if node.content:
-            arg0 = latex.Brace(cmd, string=content)
+            latex.Brace(cmd, string=node.content)
         elif node.token:
             for n in node.token.children:
                 self.translator.renderer.process(n, cmd)
         else:
-            arg0 = latex.Brace(cmd, string=node.link)
-        arg1 = latex.Brace(cmd, string=unicode(token.key))
+            latex.Brace(cmd, string=node.link)
+        latex.Brace(cmd, string=unicode(token.key))
+        return cmd
 
     def getShortcut(self, token):
         if token.key in self.__cache:
@@ -429,165 +364,134 @@ class RenderShortcutLink(CoreRenderComponentBase):
         msg = "The shortcut link key '{}' was not located in the list of shortcuts."
         raise exceptions.RenderException(token.info, msg, token.key)
 
-
-class RenderMonospace(CoreRenderComponentBase):
-    """InlineCode"""
-
-    def createHTML(self, token, parent):
+class RenderMonospace(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         code = html.Tag(parent, 'code')
         html.String(code, content=token.code, escape=True)
         return code
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use
         code = latex.Command(parent, 'texttt')
         latex.String(code, content=token.code)
         return
 
-class RenderBreak(CoreRenderComponentBase):
-    """Break"""
-
-    def createHTML(self, token, parent):
+class RenderBreak(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return html.String(parent, content=u' ')
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.String(parent, content=u' ')
 
-class RenderLink(CoreRenderComponentBase):
-    """Link"""
-
-    def createHTML(self, token, parent):
+class RenderLink(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'a', href=token.url, **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         url = token.url.lstrip('#')
         cmd = latex.CustomCommand(parent, 'href')
-        arg0 = latex.Brace(cmd, string=url)
+        latex.Brace(cmd, string=url)
         arg1 = latex.Brace(cmd)
         return arg1
 
-class RenderParagraph(CoreRenderComponentBase):
-    """Paragraph"""
-
-    def createHTML(self, token, parent):
+class RenderParagraph(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return html.Tag(parent, 'p', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         latex.CustomCommand(parent, 'par', start='\n', end='\n')
         return parent
 
-class RenderOrderedList(CoreRenderComponentBase):
-    """OrderedList"""
-
-    def createHTML(self, token, parent):
+class RenderOrderedList(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return html.Tag(parent, 'ol', **token.attributes)
 
-    def createMaterialize(self, token, parent):
-        tag = CoreRenderComponentBase.createMaterialize(self, token, parent)
+    def createMaterialize(self, token, parent): #pylint: disable=no-self-use
+        tag = self.createHTML(token, parent)
         tag['class'] = 'browser-default'
         tag['start'] = token.start
         return tag
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'enumerate')
 
-class RenderUnorderedList(CoreRenderComponentBase):
-    """UnorderedList"""
-
-    def createHTML(self, token, parent):
+class RenderUnorderedList(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'ul', **token.attributes)
 
-    def createMaterialize(self, token, parent):
-        tag = CoreRenderComponentBase.createMaterialize(self, token, parent)
+    def createMaterialize(self, token, parent): #pylint: disable=no-self-use
+        tag = self.createHTML(token, parent)
         tag['class'] = 'browser-default'
         return tag
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'itemize')
 
-class RenderListItem(CoreRenderComponentBase):
-    """ListItem"""
-
-    def createHTML(self, token, parent):
+class RenderListItem(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'li', **token.attributes)
 
-    def createLatex(self, token, parent):
-        item = latex.CustomCommand(parent, 'item', start='\n')
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
+        latex.CustomCommand(parent, 'item', start='\n')
         return parent
 
-class RenderString(CoreRenderComponentBase):
-    """String"""
-
-    def createHTML(self, token, parent):
+class RenderString(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.String(parent, content=token.content)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use
         return latex.String(parent, content=token.content)
 
-class RenderQuote(CoreRenderComponentBase):
-    """Blockquote"""
-
-    def createHTML(self, token, parent):
+class RenderQuote(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'blockquote', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'quote')
 
-class RenderStrong(CoreRenderComponentBase):
-    """Strong"""
-
-    def createHTML(self, token, parent):
+class RenderStrong(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'strong', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'textbf')
 
-class RenderUnderline(CoreRenderComponentBase):
-    """Underline"""
-
-    def createHTML(self, token, parent):
+class RenderUnderline(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'u', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'underline')
 
-class RenderEmphasis(CoreRenderComponentBase):
-    """Emphasis"""
-
-    def createHTML(self, token, parent):
+class RenderEmphasis(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'em', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'emph')
 
-class RenderStrikethrough(CoreRenderComponentBase):
-    """Strikethrough"""
-
-    def createHTML(self, token, parent):
+class RenderStrikethrough(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'strike', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'sout')
 
-class RenderSuperscript(CoreRenderComponentBase):
-    """Superscript"""
-
-    def createHTML(self, token, parent):
+class RenderSuperscript(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'sup', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         math = latex.InlineMath(parent)
         latex.String(math, content=u'^{')
         cmd = latex.Command(math, 'text')
         latex.String(math, content=u'}')
         return cmd
 
-class RenderSubscript(CoreRenderComponentBase):
-    """Subscript"""
-
-    def createHTML(self, token, parent):
+class RenderSubscript(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'sub', **token.attributes)
 
-    def createLatex(self, token, parent):
+    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         math = latex.InlineMath(parent)
         latex.String(math, content=u'_{')
         cmd = latex.Command(math, 'text')
@@ -595,7 +499,7 @@ class RenderSubscript(CoreRenderComponentBase):
         return cmd
 
 class RenderPunctuation(RenderString):
-    def createHTML(self, token, parent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         if token.content == u'--':
             return html.String(parent, content=u'&ndash;')
         elif token.content == u'---':
@@ -603,13 +507,13 @@ class RenderPunctuation(RenderString):
 
         return RenderString.createHTML(self, token, parent)
 
-class RenderException(CoreRenderComponentBase):
-    def createHTML(self, token, parent):
+class RenderException(components.RenderComponent):
+    def createHTML(self, token, parent): #pylint: disable=no-self-use
         div = html.Tag(parent, 'div', class_="moose-exception", **token.attributes)
         html.String(div, content=token.info[0])
         return div
 
-    def createMaterialize(self, token, parent):
+    def createMaterialize(self, token, parent): #pylint: disable=no-self-use
         id_ = uuid.uuid4()
         a = html.Tag(parent, 'a', class_="moose-exception modal-trigger", href='#{}'.format(id_))
         html.String(a, content=token.info[0])

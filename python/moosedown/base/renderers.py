@@ -41,7 +41,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
         if self.initialized(): # allow use without Translator object
             component.init(self.translator)
         self.addComponent(component)
-        self.__functions[token] = self.__method(component)
+        self.__functions[token] = self._method(component)
 
     def reinit(self):
         """
@@ -109,7 +109,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
             for child in token.children:
                 self.process(el, child)
 
-    def __method(self, component):
+    def _method(self, component):
         """
         Return the desired method to call on the RenderComponent object.
 
@@ -186,7 +186,7 @@ class MaterializeRenderer(HTMLRenderer):
                   "the item supplied is a {} of length {}."
             raise ValueError(msg.format(type(collapsible), len(collapsible)))
 
-    def method(self, component):
+    def _method(self, component):
         """
         Fallback to the HTMLRenderer method if the MaterializeRenderer method is not located.
 
