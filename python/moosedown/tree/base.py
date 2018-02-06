@@ -176,6 +176,16 @@ class NodeBase(anytree.NodeMixin):
         """Return the number of children."""
         return len(self.children)
 
+    def __nonzero__(self):
+        """
+        When __len__ is defined it is used for bool operations.
+
+        If this class exists then it should evaluate to True. This is actually a requirement for
+        the node to continue to work with anytree itself. Therefore, this method is defined
+        to make sure that it always returns True when queried as a boolean.
+        """
+        return True
+
     def get(self, key, default=None):
         """
         Get an attribute with a possible default.
