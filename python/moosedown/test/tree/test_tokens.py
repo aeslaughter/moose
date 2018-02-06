@@ -26,7 +26,7 @@ class TestTokens(unittest.TestCase):
         self.assertEqual(token.name, 'Token')
         self.assertTrue(token.recursive)
 
-        token.tokens.Token(recursive=False)
+        token = tokens.Token(recursive=False)
         self.assertFalse(token.recursive)
 
     def testSection(self):

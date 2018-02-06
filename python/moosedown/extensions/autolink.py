@@ -7,7 +7,7 @@ from moosedown.tree.base import Property
 def make_extension(**kwargs):
     return AutoLinkExtension(**kwargs)
 
-class AutoLinkExtension(base.Extension):
+class AutoLinkExtension(components.Extension):
 
     def extend(self, reader, renderer):
         renderer.add(tokens.Link, RenderAutoLink())

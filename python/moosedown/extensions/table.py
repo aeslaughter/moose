@@ -1,6 +1,7 @@
 import re
 
-from moosedown import base, common
+from moosedown import common
+from moosedown.base import components
 from moosedown.extensions import core
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
@@ -62,7 +63,7 @@ def builder(rows, headings=None):
 
     return node
 
-class TableExtension(base.Extension): #TODO:  CommandMarkdownExtension
+class TableExtension(components.Extension): #TODO:  CommandMarkdownExtension
     def extend(self, reader, renderer):
         #reader.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
         reader.addBlock(TableComponent(), "<Paragraph")
@@ -76,7 +77,7 @@ class TableExtension(base.Extension): #TODO:  CommandMarkdownExtension
         renderer.add(TableItem, RenderTag('td'))
 
 
-class TableComponent(base.TokenComponent):
+class TableComponent(components.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})^(?P<table>\|.*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     FORMAT_RE = re.compile(r'^(?P<format>\|[ \|:\-]+\|)$', flags=re.MULTILINE|re.UNICODE)
 
@@ -137,7 +138,7 @@ class TableComponent(base.TokenComponent):
 
 
 
-class RenderTable(base.RenderComponent):
+class RenderTable(components.RenderComponent):
     def createHTML(self, token, parent):
         attrs = token.attributes
         attrs['class'] = 'moose-table-div'
@@ -149,9 +150,9 @@ class RenderTable(base.RenderComponent):
     def createLatex(self, token, parent):
         pass
 
-class RenderTag(base.RenderComponent):
+class RenderTag(components.RenderComponent):
     def __init__(self, tag):
-        base.RenderComponent.__init__(self)
+        components.RenderComponent.__init__(self)
         self.__tag = tag
 
     def createMaterialize(self, token, parent):
@@ -164,19 +165,19 @@ class RenderTag(base.RenderComponent):
         pass
 
 """
-class RenderTableSection(base.RenderComponent):
+class RenderTableSection(components.RenderComponent):
     def __init__(self, tag_name):
-        base.RenderComponent.__init__(self)
+        components.RenderComponent.__init__(self)
         self.__tag_name = tag_name
 """
 
 
-#class RenderTableRow(base.RenderComponent):
+#class RenderTableRow(components.RenderComponent):
 #    def createHTML(self, token, parent):
 #        return html.Tag('')
 
 """
-class RenderTable(base.RenderComponent):
+class RenderTable(components.RenderComponent):
     ALIGN = {Table.CENTER:u'center', Table.LEFT:u'left', Table.RIGHT:u'right'}
 
     def createHTML(self, token, parent):

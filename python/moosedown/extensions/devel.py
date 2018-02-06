@@ -178,9 +178,9 @@ class ComponentSettings(command.CommandComponent):
         #self.add(Table, RenderTable())
 
 """
-class RenderExample(base.RenderComponent):
+class RenderExample(components.RenderComponent):
     def __init__(self, *args, **kwargs):
-        base.RenderComponent.__init__(self, *args, **kwargs)
+        components.RenderComponent.__init__(self, *args, **kwargs)
         self._count = 0
 
     def reinit(self):

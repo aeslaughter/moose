@@ -4,7 +4,7 @@ Extension for floats such as figures, tables, and code listings
 import collections
 import uuid
 
-from moosedown import base
+from moosedown.base import components
 from moosedown.extensions import core, table
 from moosedown.tree import tokens, html
 from moosedown.tree.base import Property
@@ -42,7 +42,7 @@ class Content(tokens.Token):
     pass
     #PROPERTIES = [Property("class", ptype=unicode, required=True)]
 
-class FloatExtension(base.Extension):
+class FloatExtension(components.Extension):
 
     def extend(self, reader, renderer):
 
@@ -81,7 +81,7 @@ class Modal(tokens.Token):
     #def createHTML()
 
 
-class RenderFloat(base.RenderComponent):
+class RenderFloat(components.RenderComponent):
     def createHTML(self, token, parent):
         attrs = token.attributes
     #    print 'ATTRS:', attrs
@@ -113,7 +113,7 @@ class RenderFloat(base.RenderComponent):
         pass
 
 
-class RenderContent(base.RenderComponent):
+class RenderContent(components.RenderComponent):
     def createHTML(self, token, parent):
         pass
 
@@ -123,11 +123,11 @@ class RenderContent(base.RenderComponent):
     def createLatex(self, token, parent):
         pass
 
-class RenderCaption(base.RenderComponent):
+class RenderCaption(components.RenderComponent):
     #__COUNTS__ = collections.defaultdict(int)
 
     def __init__(self, *args, **kwargs):
-        base.RenderComponent.__init__(self, *args, **kwargs)
+        components.RenderComponent.__init__(self, *args, **kwargs)
     #    self._count = collections.defaultdict(int)
 
     #def reinit(self):
@@ -152,7 +152,7 @@ class RenderCaption(base.RenderComponent):
     def createLatex(self, root, **kwargs):
         pass
 
-class RenderModal(base.RenderComponent):
+class RenderModal(components.RenderComponent):
 
     def createHTML(self, token, parent):
         pass
@@ -189,7 +189,7 @@ class RenderModal(base.RenderComponent):
         pass
 
 
-class RenderTabs(base.RenderComponent):
+class RenderTabs(components.RenderComponent):
     def createMaterialize(self, token, parent):
         if 'card' in parent['class']:
             parent = html.Tag(parent, 'div', class_="card-tabs")
@@ -201,7 +201,7 @@ class RenderTabs(base.RenderComponent):
     def createLatex(self, token, parent):
         pass
 
-class RenderTab(base.RenderComponent):
+class RenderTab(components.RenderComponent):
     def createMaterialize(self, token, parent):
         tag = uuid.uuid4()
         tab = html.Tag(parent, 'li', class_="tab")

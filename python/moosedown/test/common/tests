@@ -1,26 +1,30 @@
 [Tests]
-  [./storage]
+  [storage]
     type = PythonUnitTest
     input = test_storage.py
-  [../]
-  [./parse_settings]
+  []
+  [parse_settings]
     type = PythonUnitTest
     input = test_parse_settings.py
-  [../]
-  [./exceptions]
+  []
+  [exceptions]
     type = PythonUnitTest
     input = test_exceptions.py
-  [../]
-  [./box]
+  []
+  [box]
     type = PythonUnitTest
     input = test_box.py
-  [../]
-  [./check_types]
+  []
+  [check_types]
     type = PythonUnitTest
     input = test_check_type.py
-  [../]
-  [./mixins]
+  []
+  [mixins]
     type = PythonUnitTest
     input = test_mixins.py
-  [../]
+  []
+  [load_extensions]
+    type = PythonUnitTest
+    input = test_load_extensions.py
+  []
 []

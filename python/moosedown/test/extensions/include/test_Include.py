@@ -8,18 +8,24 @@ import tempfile
 import time
 import shutil
 
+import anytree
+
+import moosedown
 from moosedown import ROOT_DIR
 from moosedown.tree import page, tokens
+from moosedown.extensions import include
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestIncludeTokenize(testing.MooseDocsTestCase):
+    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.command, moosedown.extensions.include]
     def setUp(self):
         testing.MooseDocsTestCase.setUp(self)
 
         self.loc = tempfile.mkdtemp()
         self.files = [os.path.join(self.loc, 'file0.md'),
                       os.path.join(self.loc, 'file1.md'),
-                      os.path.join(self.loc, 'file2.md')]
+                      os.path.join(self.loc, 'file2.md'),
+                      os.path.join(self.loc, 'file3.md')]
 
         with open(self.files[0], 'w') as fid:
             fid.write('File 0\n\n!include {}'.format(os.path.basename(self.files[1])))
@@ -27,43 +33,81 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
             fid.write('File 1\n\n!include {}'.format(os.path.basename(self.files[2])))
         with open(self.files[2], 'w') as fid:
             fid.write('File 2')
+        with open(self.files[3], 'w') as fid:
+            fid.write('File 3\n\n!include {}'.format(os.path.basename(self.files[2])))
 
-        #del self.root
         self.root = page.DirectoryNode(None, source=self.loc)
         page.MarkdownNode(self.root, base=os.path.dirname(self.loc), source=self.files[0])
         page.MarkdownNode(self.root, base=os.path.dirname(self.loc), source=self.files[1])
         page.MarkdownNode(self.root, base=os.path.dirname(self.loc), source=self.files[2])
+        page.MarkdownNode(self.root, base=os.path.dirname(self.loc), source=self.files[3])
+
+        for node in anytree.PreOrderIter(self.root):
+            node.init(self._translator)
+
+    def build(self):
+        self.root.build()
+        for child in self.root:
+            child.build()
 
     def tearDown(self):
         shutil.rmtree(self.loc)
 
     def testAST(self):
-        ast, _ = self.root(0).build(self._translator)
-        for i in range(3):
-            self.assertIsInstance(ast(i), tokens.Paragraph)
-            self.assertIsInstance(ast(i)(0), tokens.Word)
-            self.assertIsInstance(ast(i)(1), tokens.Space)
-            self.assertIsInstance(ast(i)(2), tokens.Number)
-            self.assertEqual(ast(i)(0).content, u'File')
-            self.assertEqual(ast(i)(2).content, unicode(i))
+        self.build()
+        for i in range(4):
+            ast = self.root(i).ast
+            self.assertIsInstance(ast(0), tokens.Paragraph)
+            self.assertIsInstance(ast(0)(0), tokens.Word)
+            self.assertIsInstance(ast(0)(1), tokens.Space)
+            self.assertIsInstance(ast(0)(2), tokens.Number)
+            self.assertEqual(ast(0)(0).content, u'File')
+            self.assertEqual(ast(0)(2).content, unicode(i))
+
+        # File0
+        self.assertIsInstance(self.root(0).ast(1), include.IncludeToken)
+        self.assertIs(self.root(0).ast(1).include, self.root(1))
+
+        # File1
+        self.assertIsInstance(self.root(1).ast(1), include.IncludeToken)
+        self.assertIs(self.root(1).ast(1).include, self.root(2))
+
+        # File2 (no includes)
+        self.assertEqual(len(self.root(2).ast), 1)
+
+        # File3
+        self.assertIsInstance(self.root(3).ast(1), include.IncludeToken)
+        self.assertIs(self.root(3).ast(1).include, self.root(2))
+
+        #print self.root(0).ast
+
+
+        #print self.root(0).rendered
+        #print self.root(1).rendered
+        #print self.root(2).ast
+        #print self.root(2).rendered
+
+        #print self.root(3).rendered
 
     def testMaster(self):
-        ast, _ = self.root(0).build(self._translator)
+        self.build()
         self.assertEqual(self.root(0).master, set())
         self.assertEqual(self.root(1).master, set([self.root(0)]))
-        self.assertEqual(self.root(2).master, set([self.root(1)]))
+        self.assertEqual(self.root(2).master, set([self.root(1), self.root(3)]))
 
     def testMasterBuild(self):
-        ast, _ = self.root(0).build(self._translator)
+        self.build()
         with open(self.files[0], 'w') as fid:
             fid.write('File 1 updated\n\n!include {}'.format(os.path.basename(self.files[1])))
-        ast, _ = self.root(0).build(self._translator)
+        self.root(0).build()
+        ast = self.root(0).ast
         self.assertIsInstance(ast(0)(4), tokens.Word)
         self.assertEqual(ast(0)(4).content, u'updated')
 
         with open(self.files[1], 'w') as fid:
             fid.write('File 2 updated\n\n!include {}'.format(os.path.basename(self.files[2])))
-        ast, _ = self.root(0).build(self._translator)
+        self.root(1).build()
+        ast = self.root(1).ast
         self.assertIsInstance(ast(0)(4), tokens.Word)
         self.assertEqual(ast(0)(4).content, u'updated')
         self.assertIsInstance(ast(1)(4), tokens.Word)
@@ -71,7 +115,8 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
 
         with open(self.files[2], 'w') as fid:
             fid.write('File 3 updated')
-        ast, _ = self.root(0).build(self._translator)
+        self.root(0).build()
+        ast = self.root(2).ast
         self.assertIsInstance(ast(0)(4), tokens.Word)
         self.assertEqual(ast(0)(4).content, u'updated')
         self.assertIsInstance(ast(1)(4), tokens.Word)

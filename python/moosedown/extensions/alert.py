@@ -62,14 +62,14 @@ class NoteAlertCommand(AlertCommandBase):
     SUBCOMMAND = 'note'
 
 
-class RenderAlert(base.RenderComponent):
+class RenderAlert(components.RenderComponent):
     def createMaterialize(self, token, parent):
         card = html.Tag(parent, 'div', class_='card moose-alert moose-alert-{}'.format(token.brand))
         return html.Tag(card, 'div', class_='card-content'.format(token.brand))
     def createLatex(self, token, parent):
         pass
 
-class RenderAlertTitle(base.RenderComponent):
+class RenderAlertTitle(components.RenderComponent):
     def createMaterialize(self, token, parent):
         div = html.Tag(parent, 'div', class_='card-title moose-alert-title')
         brand = html.Tag(div, 'span', class_='moose-alert-title-brand')
@@ -78,7 +78,7 @@ class RenderAlertTitle(base.RenderComponent):
     def createLatex(self, token, parent):
         pass
 
-class RenderAlertContent(base.RenderComponent):
+class RenderAlertContent(components.RenderComponent):
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'div', class_='moose-alert-content')
     def createLatex(self, token, parent):

@@ -74,27 +74,27 @@ class Column(tokens.Token):
         """
 
 
-class RenderRow(base.RenderComponent):
+class RenderRow(components.RenderComponent):
     def createHTML(self, token, parent):
         return html.Tag(parent, 'div', class_="row")#, **token.attributes)
 
-class RenderColumn(base.RenderComponent):
+class RenderColumn(components.RenderComponent):
     def createHTML(self, token, parent):
         return html.Tag(parent, 'div', class_="col s12 m12 l4")#, **token.attributes)
 
-class RenderCard(base.RenderComponent):
+class RenderCard(components.RenderComponent):
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'div', class_="card")
 
-class RenderCardTabs(base.RenderComponent):
+class RenderCardTabs(components.RenderComponent):
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'div', class_="card-tabs")
 
-class RenderCardContent(base.RenderComponent):
+class RenderCardContent(components.RenderComponent):
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'div', class_="card-content")
 
-class RenderTabs(base.RenderComponent):
+class RenderTabs(components.RenderComponent):
 
     def createHTML(self, token, parent):
         #row = html.Tag(parent, 'div', class_="row", **token.attributes)
@@ -113,7 +113,7 @@ class RenderTabs(base.RenderComponent):
         #TODO: do something
         #return latex.Environment(parent, 'UNKNOWN')
 
-class RenderTab(base.RenderComponent):
+class RenderTab(components.RenderComponent):
     def createHTML(self, token, parent):
         li = html.Tag(parent, 'li', class_="tab")
         a = html.Tag(li, 'a', href='#{}'.format(uuid.uuid4()))
@@ -123,7 +123,7 @@ class RenderTab(base.RenderComponent):
     #def createMaterialize(self, token, parent):
     #    return self.createHTML(token, parent)
 
-class RenderTabContent(base.RenderComponent):
+class RenderTabContent(components.RenderComponent):
     def createHTML(self, token, parent):
         a = parent.find('a')
         return html.Tag(parent.parent.parent, 'div', id_=a['href'].strip('#'), **token.attributes)

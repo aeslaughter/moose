@@ -25,11 +25,15 @@ class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
         mixins.TranslatorObject.__init__(self)
         base.NodeBase.__init__(self, *args, **kwargs)
 
+    #def init(self, translator):
+    #    mixins.TranslatorObject.init(self, translator)
+    #    for child in self.children:
+    #        child.init(translator)
+
     def build(self):
         pass
         #TODO: error check translator
         #translator.convert(self.content)
-
 
 class LocationNodeBase(PageNodeBase):
     PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('base', ptype=str, default='')]
@@ -70,7 +74,6 @@ class LocationNodeBase(PageNodeBase):
         out = '{} ({}): {}'.format(self.name, self.__class__.__name__, self.source)
         return mooseutils.colorText(out, self.COLOR)
 
-
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
 
@@ -96,29 +99,43 @@ class FileNode(LocationNodeBase):
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
-#    PROPERTIES = FileNode.PROPERTIES + [base.Property('master', ptype=set, default=set)]
+    PROPERTIES = FileNode.PROPERTIES + [base.Property('master', ptype=set)]
 
     def __init__(self, *args, **kwargs):
         FileNode.__init__(self, *args, **kwargs)
-        self.__master = set()
+        self._ast = None
+        self._html = None
+        #self._filename = os.path.join(self.base, self.local)
+        #self._modified_time = os.path.getmtime(self._filename)
 
+        self.master = set()
 
-#    @property
-#    def master(self):
-#        return self.__master
+    @property
+    def ast(self):
+        #TODO: error if none, this could be an attribute
+        return self._ast
 
+    @property
+    def rendered(self):
+        #if self._html is None:
+        #    self.build()
+        #TODO: error if none
+        return self._html #TODO change name of _html to something better
 
     def build(self):
         #for node in self.master:
-        #    node.build(translator)
+        #    node.build()
 
+        #mod = os.path.getmtime(self._filename)
+        #if (self._ast is None) or (self._html is None) or (mod > self._modified_time):
         self.read()
-        ast, html = self.translator.convert(self) #TODO: build cache for html body in translator
+        self._ast, self._html = self.translator.convert(self) #TODO: build cache of body within Translator
+        #self._modified_time = mode
 
         dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
         LOG.info('%s -> %s', self.source, dst)
         #LOG.debug('%s -> %s', self.source, dst)
         with open(dst, 'w') as fid:
-            fid.write(html.write())
+            fid.write(self._html.write())
 
-        return ast, html
+        #return ast, html

@@ -9,7 +9,7 @@ import copy
 import anytree
 
 import moosedown
-from moosedown import base
+from moosedown.base import components, renderers
 from moosedown import common
 from moosedown.common import exceptions
 from moosedown.tree import tokens, html, latex
@@ -22,7 +22,7 @@ def make_extension(**kwargs):
     """
     return CoreExtension(**kwargs)
 
-class CoreExtension(base.Extension):
+class CoreExtension(components.Extension):
     """
     The core markdown extension object. Extension objects add the tokenize and rendering components.
     """
@@ -76,11 +76,11 @@ class CoreExtension(base.Extension):
             renderer.add(t, RenderString())
 
         #TODO: Make a generic preamble method?
-        if isinstance(renderer, base.LatexRenderer):
+        if isinstance(renderer, renderers.LatexRenderer):
             renderer.addPackage(u'hyperref')
             renderer.addPackage(u'ulem')
 
-class Code(base.TokenComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
+class Code(components.TokenComponent): #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
     """
     Fenced code blocks.
     """
@@ -88,7 +88,7 @@ class Code(base.TokenComponent): #TODO: Rename these classes to use the word com
 
     @staticmethod
     def defaultSettings():
-        settings = base.TokenComponent.defaultSettings()
+        settings = components.TokenComponent.defaultSettings()
         settings['language'] = (u'text', "The code language to use for highlighting.")
         settings['caption'] = (None, "The caption text for the code listing.")
         settings['label'] = ('Listing', "The numbered caption prefix.")
@@ -102,7 +102,7 @@ class Code(base.TokenComponent): #TODO: Rename these classes to use the word com
                            return tokens.Code(parent, code=match['code'],
                                language=self.settings['language'], **self.attributes)
 
-class Quote(base.TokenComponent):
+class Quote(components.TokenComponent):
     """
     Block quote.
     """
@@ -126,7 +126,7 @@ class Quote(base.TokenComponent):
         self.reader.parse(quote, '\n'.join(content))
         return quote
 
-class HeadingHash(base.TokenComponent):
+class HeadingHash(components.TokenComponent):
     """
     Hash style markdown headings with settings.
 
@@ -141,7 +141,7 @@ class HeadingHash(base.TokenComponent):
 
     @staticmethod
     def defaultSettings():
-        settings = base.TokenComponent.defaultSettings()
+        settings = components.TokenComponent.defaultSettings()
         return settings
 
     def createToken(self, match, parent):
@@ -150,7 +150,7 @@ class HeadingHash(base.TokenComponent):
         label = tokens.Label(heading, text=content)
         return heading
 
-class List(base.TokenComponent):
+class List(components.TokenComponent):
    """
    Base for lists components.
    """
@@ -165,7 +165,6 @@ class List(base.TokenComponent):
         strip_regex = re.compile(r'^ {%s}(.*?)$' % n, flags=re.MULTILINE)
 
         for item in self.ITEM_RE.finditer(match['items']):
-            #print 'ITEM:', repr(item)
             content = ' '*n + item.group('item')
             indent = re.search(r'^\S', content, flags=re.MULTILINE|re.UNICODE)
             if indent:
@@ -211,7 +210,7 @@ class OrderedList(List):
        token.start = int(match['marker'].strip('. '))
        return token
 
-class Shortcut(base.TokenComponent):
+class Shortcut(components.TokenComponent):
     """
     Markdown shortcuts.
 
@@ -225,7 +224,7 @@ class Shortcut(base.TokenComponent):
     def createToken(self, match, parent):
         return tokens.Shortcut(parent, key=match['key'], link=match['link'])
 
-class Paragraph(base.TokenComponent):
+class Paragraph(components.TokenComponent):
     """
     Paragraphs (defined by regions with more than one new line)
     """
@@ -237,7 +236,7 @@ class Paragraph(base.TokenComponent):
     def createToken(self, match, parent):
         return tokens.Paragraph(parent)
 
-class Link(base.TokenComponent):
+class Link(components.TokenComponent):
     """
     Markdown links [foo](bar with=settings)
     """
@@ -249,7 +248,7 @@ class Link(base.TokenComponent):
     def createToken(self, match, parent):
         return tokens.Link(parent, url=match['url'], **self.attributes)
 
-class ShortcutLink(base.TokenComponent):
+class ShortcutLink(components.TokenComponent):
     """
     Markdown shortcut use.
     """
@@ -257,7 +256,7 @@ class ShortcutLink(base.TokenComponent):
     def createToken(self, match, parent):
         return tokens.ShortcutLink(parent, key=match['key'])
 
-class String(base.TokenComponent):
+class String(components.TokenComponent):
     """
     Base token for strings (i.e., words, numbers, etc.)
     """
@@ -304,7 +303,7 @@ class Word(String):
     def createToken(self, match, parent):
         return tokens.Word(parent, content=match[0])
 
-class Format(base.TokenComponent):
+class Format(components.TokenComponent):
     """
     Inline text settings (e.g., monospaced, underline, emphasis).
     """
@@ -332,7 +331,7 @@ class Format(base.TokenComponent):
 # Rendering.
 ####################################################################################################
 
-class CoreRenderComponentBase(base.RenderComponent):
+class CoreRenderComponentBase(components.RenderComponent): #TODO: get rid of this class, MaterializeRenderer should make the createHTML check
     """
     Base class that includes the necessary callbacks for rendering html, materialize, and LaTeX.
     """

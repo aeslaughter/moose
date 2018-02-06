@@ -5,7 +5,8 @@ import uuid
 import importlib
 import collections
 
-from moosedown import base, common
+from moosedown import common
+from moosedown.base import components
 from moosedown.extensions import core, floats
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
@@ -13,12 +14,12 @@ from moosedown.tree.base import Property
 def make_extension():
     return CommandExtension()
 
-class CommandExtension(base.Extension):
+class CommandExtension(components.Extension):
 
     def init(self, translator):
         """
         """
-        base.Extension.init(self, translator)
+        components.Extension.init(self, translator)
 
         # Create a location to store the commands. I have tried this a few different ways, but
         # settle on the following, despite its hackishness. First, the commands were stored on the
@@ -57,14 +58,14 @@ class CommandExtension(base.Extension):
         reader.addBlock(BlockCommand(), location='>FileCommand')
         reader.addBlock(InlineCommand(), location='<BlockCommand')
 
-class CommandComponent(base.TokenComponent):
+class CommandComponent(components.TokenComponent):
     """
     Base component for creating commands.
     """
     COMMAND = None
     SUBCOMMAND = None
 
-class CommandBase(base.TokenComponent):
+class CommandBase(components.TokenComponent):
     """
     Provides a component for creating commands.
 
@@ -78,7 +79,7 @@ class CommandBase(base.TokenComponent):
     """
     PARSE_SETTINGS = False
     def __init__(self, *args, **kwargs):
-        base.TokenComponent.__init__(self, *args, **kwargs)
+        components.TokenComponent.__init__(self, *args, **kwargs)
 
     def createToken(self, info, parent):
         cmd = (info['command'], info['subcommand'])

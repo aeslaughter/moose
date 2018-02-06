@@ -111,6 +111,13 @@ class LexerInformation(object):
         """
         return self.__pattern
 
+    @property
+    def match(self):
+        """
+        Return the re Match object.
+        """
+        return self.__match
+
     def __getitem__(self, value):
         """
         Return the regex group by number or name.
@@ -143,7 +150,7 @@ class LexerInformation(object):
         """
         Return a resonable string for debugging.
         """
-        return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match, self.__pattern)
+        return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match.group(), self.__pattern)
 
 class Lexer(object):
     """
