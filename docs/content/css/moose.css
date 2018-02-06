@@ -49,43 +49,18 @@ html, body {
   text-align: left;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 .table-of-contents
 {
   height: 95vh;
-=======
-.table-of-contents ul < li < a{
-  text-overflow: ellipsis;
-}
-
-.table-of-contents
-{
-  height: 90hv;
->>>>>>> figured out crazy reload problem
-=======
-.table-of-contents
-{
-  height: 95vh;
->>>>>>> Restore content to current moose
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Restore content to current moose
 .table-of-contents a{
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-<<<<<<< HEAD
-=======
->>>>>>> figured out crazy reload problem
-=======
->>>>>>> Restore content to current moose
 
 .nav ul:not(.browser-default) li{
   list-style-type: none;

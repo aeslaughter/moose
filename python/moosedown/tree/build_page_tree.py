@@ -98,7 +98,6 @@ def doc_import(root_dir, content=None):
 
     return sorted(output)
 
-
 def create_file_node(parent, name, filename):
     """
     Create the correct node object for the given extension.
@@ -108,7 +107,6 @@ def create_file_node(parent, name, filename):
         return page.MarkdownNode(parent, name=name, source=filename)
     else:
         return page.FileNode(parent, name=name, source=filename)
-
 
 def doc_tree(items):
     """
@@ -123,7 +121,6 @@ def doc_tree(items):
         LOG.error('The suplied items must be a list of dict items, each with a "root_dir" and '
                   '"content" entry.')
         return None
-
 
     # Define a dict for storing nodes by path
     nodes = dict()

@@ -148,8 +148,8 @@ class TestDocTree(unittest.TestCase):
 
         items = [dict(root_dir=os.path.join(ROOT_DIR, 'docs/content'),
                       content=['getting_started/**']),
-                 dict(root_dir=os.path.join(ROOT_DIR, 'framework/doc/content'),
-                      content=['documentation/systems/Adaptivity/**'])]
+                 dict(root_dir=os.path.join(ROOT_DIR, 'docs/content'),
+                      content=['documentation/systems/Adaptivity/framework/**'])]
 
         root = doc_tree(items)
 
