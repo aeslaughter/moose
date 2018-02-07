@@ -26,7 +26,8 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.table',
                       'moosedown.extensions.autolink',
                       'moosedown.extensions.devel',
-                      'moosedown.extensions.alert']
+                      'moosedown.extensions.alert',
+                      'moosedown.extensions.katex']
 
 def command_line_options(subparser):
     """
@@ -157,7 +158,7 @@ def main(options):
             for pattern in grammer:
                 print '  ', pattern
 
-    if False:
+    if True:
         from moosedown.tree import page
         filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
         node = page.MarkdownNode(source=filename)

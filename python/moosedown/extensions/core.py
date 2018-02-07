@@ -35,6 +35,7 @@ class CoreExtension(components.Extension):
         reader.addBlock(UnorderedList())
         reader.addBlock(Shortcut())
         reader.addBlock(Paragraph())
+        reader.addBlock(EndOfFile())
 
         # Inline tokenize components
         reader.addInline(Format())
@@ -221,6 +222,11 @@ class Paragraph(components.TokenComponent):
 
     def createToken(self, info, parent): #pylint: disable=unused-argument
         return tokens.Paragraph(parent)
+
+class EndOfFile(components.TokenComponent):
+    RE = re.compile(r'\s+', flags=re.UNICODE|re.MULTILINE)
+    def createToken(self, info, parent):
+        return parent
 
 class Link(components.TokenComponent):
     RE = re.compile(r'\[(?P<inline>.*?)\]'          # link text

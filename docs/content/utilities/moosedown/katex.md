@@ -1,3 +1,3 @@
 \begin{equation}
-y = ax + b
+y = a\cdot x + b
 \end{equation}

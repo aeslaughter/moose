@@ -33,7 +33,7 @@ used and promotes uniformity among the MooseDown files.
 | [core](core.md) | Basic markdown syntax such as code blocks, lists, and bold text. |
 | [include](include.md) | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
 | [alert](alert.md) | Creates alert boxes to draw attention to content. |
-
+| [katex](katex.md) | Enables use of KaTeX rendered equations. |
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 

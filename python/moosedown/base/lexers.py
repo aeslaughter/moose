@@ -213,8 +213,8 @@ class Lexer(object):
 
         # Produce Exception token if text remains that was not matched
         if pos < n:
-            info = LexerInformation(None, None, line)
-            obj = tree.tokens.Exception(parent, info=info, traceback=None)
+            msg = u'Unprocessed text exists:\n{}'.format(common.box(text[pos:], line=line))
+            LOG.error(msg)
 
     def buildObject(self, parent, info): #pylint: disable=no-self-use
         """
