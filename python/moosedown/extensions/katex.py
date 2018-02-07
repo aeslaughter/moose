@@ -80,19 +80,7 @@ class RenderTexEquation(components.RenderComponent):
         script = html.Tag(div, 'script')
         content = u'var element = document.getElementById("%s");' % eq_id
         content += u'katex.render("%s", element, {displayMode:%s,throwOnError:false});' % (token.tex, 'true')
-        # text = 'var element = document.getElementById("{}");'.format(eq_id)
-        # text += 'try{katex.render("%s", element, {displayMode:%s});}' % (token.tex, 'false')
-        # text += 'catch (exception){'
-        # text += 'console.log("KaTeX render failed: {}");'.format(token.tex)
-        # text += 'var err=document.createElement("span");'
-        # text += 'err.setAttribute("class", "moose-katex-error");'
-        # text += 'err.textContent = "LaTeX Error: {}";'.format(token.tex)
-        # text += 'element.appendChild(err);'
-        # text += '}'
         html.String(script, content=content)
-
-
-
 
         return parent
     #def createMaterialize(self, token, parent):
