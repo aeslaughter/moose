@@ -87,7 +87,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
 
         except exceptions.RenderException as e:
             el = None
-            msg = '\n' + e.message
+            msg = '\n' + e.message + '\n'
             if token.root.page and token.info:
                 msg += "{}:{}".format(token.root.page.source, token.info.line)
 

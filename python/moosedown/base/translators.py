@@ -78,18 +78,33 @@ class Translator(mixins.ConfigObject):
         """
         Reinitializes the Reader, Renderer, and all Extension objects.
         """
+        tokens.CountToken.COUNTS.clear()
         self.reader.reinit()
         self.renderer.reinit()
         for ext in self.__extensions:
             ext.reinit()
 
+    def ast(self, content):
+        node = content if isinstance(content, page.PageNodeBase) else None
+        ast = tokens.Token(None, page=node) # root node
+        self.reinit()
+        if node:
+            node.read()
+            self.__reader.parse(ast, node.content)
+        else:
+            self.__reader.parse(ast, content)
+        return ast
+
+    def render(self, ast):
+        return self.__renderer.render(ast)
+
+    """
     def convert(self, content):
-        """
-        Convert the supplied content by passing it into the Reader to build an AST. Then, the AST
-        is passed to the Renderer to create the desired output format.
-        """
+        # Convert the supplied content by passing it into the Reader to build an AST. Then, the AST
+        #is passed to the Renderer to create the desired output format.
         node = content if isinstance(content, page.PageNodeBase) else None
         ast = tokens.Token(None, page=node) # root node
         self.reinit()
         self.__reader.parse(ast, content)
         return ast, self.__renderer.render(ast)
+    """

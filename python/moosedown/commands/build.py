@@ -121,6 +121,7 @@ def load_content(node, filename):
 
     return moosedown.tree.build_page_tree.doc_tree(items)
 
+#TODO: Move this to common
 def load_config(filename):
     """
     Read the config.hit file and create the Translator object.
@@ -160,10 +161,12 @@ def main(options):
 
     if False:
         from moosedown.tree import page
-        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
+        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/autolink.md'
         node = page.MarkdownNode(source=filename)
+        node.init(translator)
         node.read()
-        ast, html = translator.convert(node)
+        ast = node.ast()
+        html = node.render()
         print ast
         print html
 
@@ -177,7 +180,23 @@ def main(options):
             if node.source and os.path.isfile(node.source):
                 server.watch(node.source, node.build)
 
-            # Everything needs translator before it can build
-            node.build()
+
+        # TODO: make these steps parallel, print progress (in parallel)
+        # Breaking this up allows for the complete AST for all pages to be available to others
+        # when rendering (see autolink.py)
+        LOG.info("Building AST...")
+        for node in anytree.PreOrderIter(root):
+            if isinstance(node, moosedown.tree.page.MarkdownNode):
+                node.ast()
+
+        LOG.info("Rendering AST...")
+        for node in anytree.PreOrderIter(root):
+            if isinstance(node, moosedown.tree.page.MarkdownNode):
+                node.render()
+
+
+        for node in anytree.PreOrderIter(root):
+            node.build(reset=False)
+
 
         server.serve(root=destination, port=8000)

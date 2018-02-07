@@ -206,9 +206,9 @@ class OrderedList(List):
         return token
 
 class Shortcut(components.TokenComponent):
-    RE = re.compile(r'(?:\A|\n{2,})^\[(?P<key>\w+)\]: '  # shortcut key
-                    r'(?P<link>.*?)'                     # shortcut value
-                    r'(?=\Z|\n{2,})',                    # stop new line or end of file
+    RE = re.compile(r'(?:\A|\n{2,})^\[(?P<key>\w+)\]: ' # shortcut key
+                    r'(?P<link>.*?)'                    # shortcut value
+                    r'(?=\Z|\n{2,})',                   # stop new line or end of file
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, info, parent):
@@ -238,13 +238,13 @@ class Link(components.TokenComponent):
         return tokens.Link(parent, url=info['url'], **self.attributes)
 
 class ShortcutLink(components.TokenComponent):
-    RE = re.compile(r'\[(?P<key>.*?)\]', flags=re.UNICODE)
+    RE = re.compile(r'\['                         # opening [
+                    r'(?P<key>.*?)'               # key
+                    r'(?:\s+(?P<settings>.*?))?'  # settings
+                    r'\]',                        # closing ]
+                    flags=re.UNICODE)
     def createToken(self, info, parent):
         return tokens.ShortcutLink(parent, key=info['key'])
-
-#class String(components.TokenComponent):
-#    def createToken(self, info, parent):
-#        return tokens.String(parent, content=info[0])
 
 class Break(components.TokenComponent):
     RE = re.compile(r'(?P<break>\n+)')
@@ -272,7 +272,7 @@ class Word(components.TokenComponent):
         return tokens.Word(parent, content=info[0])
 
 class Format(components.TokenComponent):
-    RE = re.compile(r'(?P<token>[\_\^\=\*\+~`])(?=\S)(?P<inline>.*)(?<=\S)(?:\1)',
+    RE = re.compile(r'(?P<token>[\_\^\=\*\+~`])(?=\S)(?P<inline>.*?)(?<=\S)(?:\1)',
                     flags=re.MULTILINE|re.DOTALL|re.DOTALL)
 
     def createToken(self, match, parent):
@@ -335,7 +335,6 @@ class RenderShortcutLink(components.RenderComponent):
 
         node = self.getShortcut(token)
         if node.content is not None:
-            print 'CONTENT:', node.content
             html.String(a, content=node.content)
         elif node.token:
             for n in node.token.children:
@@ -345,6 +344,13 @@ class RenderShortcutLink(components.RenderComponent):
 
         a['href'] = node.link
         return a
+
+    def createMaterialize(self, token, parent):
+        tag = self.createHTML(token, parent)
+        tag['class'] = 'tooltipped'
+        tag['data-tooltip'] = tag['href']
+        tag['data-position'] = 'top'
+        return tag
 
     def createLatex(self, token, parent):
         cmd = latex.CustomCommand(parent, 'href')
@@ -393,6 +399,13 @@ class RenderBreak(components.RenderComponent):
 class RenderLink(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'a', href=token.url, **token.attributes)
+
+    def createMaterialize(self, token, parent):
+        tag = self.createHTML(token, parent)
+        tag['class'] = 'tooltipped'
+        tag['data-tooltip'] = tag['href']
+        tag['data-position'] = 'top'
+        return tag
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         url = token.url.lstrip('#')

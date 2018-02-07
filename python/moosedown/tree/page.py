@@ -12,7 +12,7 @@ import mooseutils
 
 import moosedown
 from moosedown.tree import base
-from moosedown.common import mixins
+from moosedown.common import exceptions, mixins
 
 LOG = logging.getLogger(__name__)
 
@@ -30,10 +30,13 @@ class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
     #    for child in self.children:
     #        child.init(translator)
 
-    def build(self):
-        pass
+    def build(self, *args, **kwargs):
+        self.write()
         #TODO: error check translator
         #translator.convert(self.content)
+
+    def write(self):
+        pass
 
 class LocationNodeBase(PageNodeBase):
     PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('base', ptype=str, default='')]
@@ -48,10 +51,11 @@ class LocationNodeBase(PageNodeBase):
         path = os.path.join(self.parent.local, self.name) if self.parent else self.name
         return path
 
-    def findall(self, name, maxcount=None):
+    def findall(self, name, maxcount=None, mincount=None, exc=exceptions.MooseDocsException):
 
         if maxcount and not isinstance(maxcount, int):
-            raise TypeError("The 'maxcount' input must be an integer, but '{}' was provided.".format(type(maxcount).__name__))
+            raise exc("The 'maxcount' input must be an integer, but '{}' was provided.",
+                      type(maxcount).__name__)
 
         try:
             nodes = self.__cache[name]
@@ -59,14 +63,18 @@ class LocationNodeBase(PageNodeBase):
             func = lambda n: n.local.endswith(name)
             nodes = anytree.search.findall(self.root, func)
             self.__cache[name] = nodes
-        #func = lambda n: n.local.endswith(name)
-        #nodes = anytree.search.findall(self.root, func)
 
         if maxcount and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
             for node in nodes:
                 msg += '\n  {} (source: {})'.format(node.local, node.source)
-            raise ValueError(msg)
+            raise exc(msg)
+
+        elif mincount and len(nodes) < mincount:
+            msg = "The 'mincount' was set to {} but {} nodes were found.".format(mincount, len(nodes))
+            for node in nodes:
+                msg += '\n  {} (source: {})'.format(node.local, node.source)
+            raise exc(msg)
 
         return nodes
 
@@ -77,7 +85,7 @@ class LocationNodeBase(PageNodeBase):
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
 
-    def build(self):
+    def write(self):
         dst = os.path.join(self.base, self.local)
         if not os.path.isdir(dst):
             os.makedirs(dst)
@@ -94,7 +102,10 @@ class FileNode(LocationNodeBase):
 
         #TODO: error if not exist
 
-    def build(self):
+   # def build(self):
+    #    self.write()
+
+    def write(self):
         dst = os.path.join(self.base, self.local)
         shutil.copyfile(self.source, dst)
 
@@ -110,30 +121,39 @@ class MarkdownNode(FileNode):
 
         self.master = set()
 
-    @property
-    def ast(self):
+    def ast(self, reset=False):
+        if reset or self._ast is None:
+            self._ast = self.translator.ast(self)
         #TODO: error if none, this could be an attribute
         return self._ast
 
-    @property
-    def rendered(self):
-        #if self._html is None:
-        #    self.build()
+    def render(self, reset=False):
+        if reset or self._html is None:
+            self._html = self.translator.render(self.ast(reset))
         #TODO: error if none
         return self._html #TODO change name of _html to something better
 
-    def build(self):
-        #for node in self.master:
+    def build(self, reset=True):
+        LOG.info('Building %s', self.source)
+        #for node in self.master: # This needs to get fixed...
         #    node.build()
 
         #mod = os.path.getmtime(self._filename)
         #if (self._ast is None) or (self._html is None) or (mod > self._modified_time):
         self.read()
-        self._ast, self._html = self.translator.convert(self) #TODO: build cache of body within Translator
+        #self._ast, self._html = self.translator.convert(self) #TODO: build cache of body within Translator
+        #self.ast(reset=True)
+
+        self.render(reset=reset)
+
+        self.write()
+        #self._ast = self.translator.ast(self)
+        #self._html = self.translator.render(self._ast)
         #self._modified_time = mode
 
+    def write(self):
         dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
-        LOG.info('%s -> %s', self.source, dst)
+        LOG.debug('Writing %s -> %s', self.source, dst)
         #LOG.debug('%s -> %s', self.source, dst)
         with open(dst, 'w') as fid:
             fid.write(self._html.write())

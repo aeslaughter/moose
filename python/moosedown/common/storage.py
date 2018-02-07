@@ -34,7 +34,7 @@ class Storage(object):
                                '_begin': Insert the key being added to the beginning of container
                                '<key': Insert the new key before the key given with the '<' prefix
                                '>key': Insert the new key after the key given with the '<' prefix
-                               'key': Insert the new key after the key (same as '<' prefix)
+                               '=key': Replace existing key with the the new key
         """
 
         # Check the type
@@ -48,6 +48,7 @@ class Storage(object):
             raise ValueError("The key '{}' already exists.".format(key))
 
         # Determine the index
+        insert = True
         index = None
         if isinstance(location, str):
             if location == '_end':
@@ -58,6 +59,9 @@ class Storage(object):
                 index = self._keys.index(location[1:])
             elif location.startswith('>'):
                 index = self._keys.index(location[1:]) + 1
+            elif location.startswith('='):
+                index = self._keys.index(location[1:])
+                insert = False
             else:
                 index = self._keys.index(location)
         elif isinstance(location, int):
@@ -65,8 +69,12 @@ class Storage(object):
         else:
             raise TypeError("The supplied input must be of the 'str' or 'int'.")
 
-        self._keys.insert(index, key)
-        self._objects.insert(index, obj)
+        if insert:
+            self._keys.insert(index, key)
+            self._objects.insert(index, obj)
+        else:
+            self._keys[index] = key
+            self._objects[index] = obj
 
     def __getitem__(self, key):
         """

@@ -116,6 +116,7 @@ class Example(command.CommandComponent):
                 preview = ast
 
         # LATEX
+        """
         #ast = self.getTexTranslator().reader.parse(data)
         tex = self.getTexTranslator().renderer.render(ast)
         code = ''
@@ -125,7 +126,7 @@ class Example(command.CommandComponent):
         if code:
             tab = floats.Tab(tabs, title=u'LaTeX')
             tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
-
+        """
         return master
 
 class ComponentSettings(command.CommandComponent):
@@ -160,8 +161,15 @@ class ComponentSettings(command.CommandComponent):
         mod = importlib.import_module(self.settings['module'])
         obj = getattr(mod, self.settings['object'])
 
-        #TODO: error if defaultSettings not there or  it returns something that is not a dict()
-        settings = obj.defaultSettings()
+        if hasattr(obj, 'defaultSettings'):
+            settings = obj.defaultSettings()
+        elif hasattr(obj, 'defaultConfig'):
+            settings = obj.defaultConfig()
+        else:
+            msg = "The '{}' object in the '{}' module does not have a 'defaultSettings' or "\
+                  "'defaultConfig' method."
+            raise exceptions.TokenizeException(msg, mod, obj)
+
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
 
         tbl = table.builder(rows, headings=[u'Key', u'Default', u'Description'])
@@ -169,76 +177,3 @@ class ComponentSettings(command.CommandComponent):
 
         #print master
         return master
-
-
-#class DevelRenderExtension(base.RenderExtension):
-#    def extend(self):
-#        pass
-        #self.add(Example, RenderExample())
-        #self.add(Table, RenderTable())
-
-"""
-class RenderExample(components.RenderComponent):
-    def __init__(self, *args, **kwargs):
-        components.RenderComponent.__init__(self, *args, **kwargs)
-        self._count = 0
-
-    def reinit(self):
-        self._count = 0
-
-    def createHTML(self, token, parent):
-        raise NotImplementedError("Not done...")
-
-    def createMaterialize(self, token, parent):
-
-        self._count += 1
-        prefix = u'Example {}: '.format(self._count)
-
-        row = html.Tag(parent, 'div', class_="row")
-        col = html.Tag(row, 'div', class_="col s12")
-        card = html.Tag(col, 'div', class_="card")
-        cap_div = html.Tag(card, 'div', class_="card-content")
-        obj = common.float.Caption(u"Example", self._count, token.caption)
-        obj.createMaterialize()
-        caption = html.Tag(cap_div, 'p', class_="moose-caption")
-        heading = html.Tag(caption, 'span', class_="moose-caption-heading")
-        html.String(heading, content=prefix)
-        text = html.Tag(caption, 'span', class_="moose-caption-text")
-        html.String(text, content=token.caption)
-
-        tabs = html.Tag(card, 'div', class_="card-tabs")
-        ul = html.Tag(tabs, 'ul', class_="tabs")
-        tab_content = html.Tag(card, 'div', class_='card-content grey lighten-4')
-
-        for key, value in token.data.iteritems():
-            id_ = uuid.uuid4()
-            li = html.Tag(ul, 'li', class_="tab")
-            tab = html.Tag(li, 'a', class_="active", href="#{}".format(id_))
-            html.String(tab, content=key)
-
-            div = html.Tag(tab_content, 'div', id=id_)
-            pre = html.Tag(div, 'pre')
-            code = html.Tag(pre, 'code', class_="language-{}".format(key.lower()))
-            html.String(code, content=value, escape=True)
-
-        # Preview
-        if False:#token.preview:
-            tag = uuid.uuid4()
-            div = html.Tag(card, 'div', class_="moose-example-preview-button")
-            btn = html.Tag(div, 'a', class_="btn-floating modal-trigger", href="#{}".format(tag) )
-            icon = html.Tag(btn, 'i', class_="material-icons")
-            #html.String(btn, content=u'HTML Preview')
-            html.String(icon, content=u"visibility")
-
-            modal = html.Tag(parent, 'div', class_="modal", id_=tag)
-            modal_content = html.Tag(modal, 'div', class_="modal-content")
-            heading = html.Tag(modal_content, 'h4')
-            html.Tag(heading)
-
-            preview = self.renderer.render(token.preview, reinit=False)
-            preview.find('body').parent = modal_content
-
-            footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
-            close = html.Tag(footer, 'a', class_="modal-action modal-close btn-flat")
-            html.String(close, content=u'Done')
-"""

@@ -6,12 +6,12 @@ import re
 import collections
 import logging
 
-import base
+from moosedown.tree.base import Property, NodeBase
 #from moosedown.base.lexers import LexerInformation
 
 LOG = logging.getLogger(__name__)
 
-class Token(base.NodeBase):
+class Token(NodeBase):
     """
     Base class for AST tokens.
 
@@ -19,8 +19,8 @@ class Token(base.NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
-    PROPERTIES = [base.Property('recursive', default=True),
-                  base.Property('page', required=False)] # only exists on root...
+    PROPERTIES = [Property('recursive', default=True),
+                  Property('page', required=False)] # only exists on root...
                   #base.Property('info')] # change to meta
 
     def __init__(self, parent=None, name=None, **kwargs):
@@ -62,6 +62,22 @@ class Token(base.NodeBase):
 #TODO: create class Root that requies page
 #TODO: info should be a Property
 
+class CountToken(Token):
+    """
+    Token that maintains counts based on prefix, the Translator clears the counts prior to building.
+    """
+    PROPERTIES = Token.PROPERTIES + [Property('prefix', ptype=unicode),
+                                     Property('number', ptype=int)]
+    COUNTS = collections.defaultdict(int)
+    def __init__(self, *args, **kwargs):
+        Token.__init__(self, *args, **kwargs)
+
+        if self.prefix is not None:
+            CountToken.COUNTS[self.prefix] += 1
+            self.number = CountToken.COUNTS[self.prefix]
+
+
+
 class Section(Token):
     pass
 
@@ -69,13 +85,13 @@ class String(Token):
     """
     Base class for all tokens meant to contain characters.
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('content', ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [Property('content', ptype=unicode)]
 
 class Exception(Token):
     """
     When the lexer object fails create a token, an error token will be created.
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('traceback', required=False, ptype=str)]
+    PROPERTIES = Token.PROPERTIES + [Property('traceback', required=False, ptype=str)]
 
 class Word(String):
     """
@@ -87,7 +103,7 @@ class Space(String):
     """
     Space token that can define the number of space via count property.
     """
-    PROPERTIES = String.PROPERTIES + [base.Property('count', ptype=int, default=1)]
+    PROPERTIES = String.PROPERTIES + [Property('count', ptype=int, default=1)]
     def __init__(self, *args, **kwargs):
         super(Space, self).__init__(*args, **kwargs)
         self.content = u' '
@@ -116,15 +132,15 @@ class Code(Token):
     """
     Code content (i.e., Monospace content)
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('code', ptype=unicode, required=True),
-                                     base.Property('language', ptype=unicode, default=u'text'),
-                                     base.Property('escape', ptype=bool, default=True)]
+    PROPERTIES = Token.PROPERTIES + [Property('code', ptype=unicode, required=True),
+                                     Property('language', ptype=unicode, default=u'text'),
+                                     Property('escape', ptype=bool, default=True)]
 
 class Heading(Token):
     """
     Section headings.
     """
-    PROPERTIES = [base.Property('level', ptype=int)]
+    PROPERTIES = [Property('level', ptype=int)]
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
 
@@ -149,7 +165,7 @@ class OrderedList(Token):
     """
     Token for a numbered list.
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('start', default=1, ptype=int)]
+    PROPERTIES = Token.PROPERTIES + [Property('start', default=1, ptype=int)]
 
 class ListItem(Token):
     """
@@ -164,7 +180,7 @@ class Link(Token):
     """
     Token for urls.
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('url', required=True, ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [Property('url', required=True, ptype=unicode)]
 
 class Shortcut(Token):
     """
@@ -186,10 +202,10 @@ class Shortcut(Token):
         tokens[tuple]: (Optional) When present the tokens provided are rendered and used for the
                        link text, this option may not be used with 'content'.
     """
-    PROPERTIES = Token.PROPERTIES + [base.Property('key', required=True, ptype=unicode),
-                                     base.Property('link', required=True, ptype=unicode),
-                                     base.Property('content', required=False, ptype=unicode),
-                                     base.Property('token', required=False, ptype=Token)]
+    PROPERTIES = Token.PROPERTIES + [Property('key', required=True, ptype=unicode),
+                                     Property('link', required=True, ptype=unicode),
+                                     Property('content', required=False, ptype=unicode),
+                                     Property('token', required=False, ptype=Token)]
 
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
@@ -198,10 +214,10 @@ class Shortcut(Token):
             raise ValueError("Both the 'content' and 'token' properties may not be set.")
 
 class ShortcutLink(Token):
-    PROPERTIES = Token.PROPERTIES + [base.Property('key', ptype=unicode, required=True)]
+    PROPERTIES = Token.PROPERTIES + [Property('key', ptype=unicode, required=True)]
 
 class Monospace(Token):
-    PROPERTIES = Token.PROPERTIES + [base.Property('code', ptype=unicode, required=True)]
+    PROPERTIES = Token.PROPERTIES + [Property('code', ptype=unicode, required=True)]
 
 class Strong(Token):
     pass
@@ -225,9 +241,9 @@ class Subscript(Token):
     pass
 
 class Label(Token):
-    PROPERTIES = Token.PROPERTIES + [base.Property('text', required=True, ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [Property('text', required=True, ptype=unicode)]
 
 class Float(Token):
-    PROPERTIES = Token.PROPERTIES + [base.Property('id', ptype=str),
-                                     base.Property('caption', ptype=unicode),
-                                     base.Property('label', ptype=str, required=True)]
+    PROPERTIES = Token.PROPERTIES + [Property('id', ptype=str),
+                                     Property('caption', ptype=unicode),
+                                     Property('label', ptype=str, required=True)]
