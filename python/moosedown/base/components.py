@@ -30,7 +30,9 @@ class Component(mixins.TranslatorObject):
     provide a means for defining settings as well as other customizable features required for
     translation.
     """
-    pass
+    def __init__(self):
+        mixins.TranslatorObject.__init__(self)
+        self.extension = None
 
 class TokenComponent(Component):
     """

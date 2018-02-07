@@ -334,7 +334,8 @@ class RenderShortcutLink(components.RenderComponent):
         a = html.Tag(parent, 'a', **token.attributes)
 
         node = self.getShortcut(token)
-        if node.content:
+        if node.content is not None:
+            print 'CONTENT:', node.content
             html.String(a, content=node.content)
         elif node.token:
             for n in node.token.children:
@@ -348,7 +349,7 @@ class RenderShortcutLink(components.RenderComponent):
     def createLatex(self, token, parent):
         cmd = latex.CustomCommand(parent, 'href')
         node = self.getShortcut(token)
-        if node.content:
+        if node.content is not None:
             latex.Brace(cmd, string=node.content)
         elif node.token:
             for n in node.token.children:
@@ -362,6 +363,7 @@ class RenderShortcutLink(components.RenderComponent):
         if token.key in self.__cache:
             return self.__cache[token.key]
 
+        #TODO: error if more than one found
         for node in anytree.PreOrderIter(token.root, maxlevel=None):
             if isinstance(node, tokens.Shortcut) and node.key == token.key:
                 self.__cache[token.key] = node

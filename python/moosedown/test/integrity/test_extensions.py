@@ -15,7 +15,8 @@ class TestExtensions(testing.MooseDocsTestCase):
     Tests that Extension objects have the
 
     """
-    EXTENSIONS = [moosedown.extensions.core]
+    EXTENSIONS = [moosedown.extensions.core,
+                  moosedown.extensions.katex]
     READER_REQUIRED = set(['Test{}Tokenize'])
     RENDER_REQUIRED = set(['Test{}HTML', 'Test{}Materialize', 'Test{}Latex'])
 

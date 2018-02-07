@@ -20,7 +20,8 @@ class Float(tokens.Token):
             #tokens.Space(shortcut)
             #tokens.Number(shortcut, content=u'42')
 
-
+#TODO: create a base CountToken that has the 'prefix' and 'number' stuff, also this static
+#      approach fails since it will count across md files, can reinit fix this.
 class Caption(tokens.Token):
     PROPERTIES = [Property("prefix", ptype=unicode, required=True),
                   Property("number", ptype=int), # set by constructor

@@ -1,3 +1,6 @@
+Testing [eq-label]
+
 \begin{equation}
-y = a\cdot x + b
+\label{eq-label}
+y = a\foo + b
 \end{equation}

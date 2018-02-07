@@ -45,6 +45,13 @@ class Translator(mixins.ConfigObject):
             common.check_type('extensions', ext, moosedown.base.components.Extension)
             ext.init(self)
             ext.extend(reader, renderer)
+            for comp in self.__reader.components:
+                if comp.extension is None:
+                    comp.extension = ext
+            for comp in self.__renderer.components:
+                if comp.extension is None:
+                    comp.extension = ext
+
 
     @property
     def extensions(self):

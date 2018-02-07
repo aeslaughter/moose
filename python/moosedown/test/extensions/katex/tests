@@ -1,0 +1,6 @@
+[Tests]
+  [KatexBlockEquation]
+    type = PythonUnitTest
+    input = test_KatexBlockEquation.py
+  []
+[]

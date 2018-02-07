@@ -158,14 +158,15 @@ def main(options):
             for pattern in grammer:
                 print '  ', pattern
 
-    if True:
+    if False:
         from moosedown.tree import page
         filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/test.md'
         node = page.MarkdownNode(source=filename)
         node.read()
         ast, html = translator.convert(node)
         print ast
-        #print html
+        print html
+
 
     else:
         server = livereload.Server()

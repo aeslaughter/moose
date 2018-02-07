@@ -151,6 +151,10 @@
     type = PythonUnitTest
     input = test_RenderException.py
   [../]
+  [./EndOfFile]
+    type = PythonUnitTest
+    input = test_EndOfFile.py
+  [../]
   [./errors]
     type = PythonUnitTest
     input = test_errors.py
