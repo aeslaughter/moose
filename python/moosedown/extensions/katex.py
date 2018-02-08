@@ -39,8 +39,8 @@ class KatexExtension(components.Extension):
         reader.addBlock(KatexBlockEquationComponent(), location='>Code')
         reader.addInline(KatexInlineEquationComponent(), location='>Format')
 
-        renderer.add(LatexBlockEquation, RenderTexEquation())
-        renderer.add(LatexInlineEquation, RenderTexEquation())
+        renderer.add(LatexBlockEquation, RenderLatexEquation())
+        renderer.add(LatexInlineEquation, RenderLatexEquation())
 
 class KatexBlockEquationComponent(components.TokenComponent):
     """
@@ -100,7 +100,7 @@ class KatexInlineEquationComponent(components.TokenComponent):
         LatexInlineEquation(parent, tex=tex, id_=eq_id)
         return parent
 
-class RenderTexEquation(components.RenderComponent):
+class RenderLatexEquation(components.RenderComponent):
     """Render LatexBlockEquation and LatexInlineEquation tokens"""
     def createHTML(self, token, parent):
 

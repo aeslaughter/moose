@@ -1,6 +1,14 @@
 [Tests]
-  [KatexBlockEquation]
+  [block]
     type = PythonUnitTest
-    input = test_KatexBlockEquation.py
+    input = test_KatexBlockEquationComponent.py
+  []
+  [inline]
+    type = PythonUnitTest
+    input = test_KatexBlockEquationComponent.py
+  []
+  [RenderLatexEquation]
+    type = PythonUnitTest
+    input = test_RenderLatexEquation.py
   []
 []

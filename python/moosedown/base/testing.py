@@ -43,17 +43,13 @@ class MooseDocsTestCase(unittest.TestCase):
         """
         Create AST from Reader object.
         """
-        ast = tree.tokens.Token(None)
-        self._reader.parse(ast, content)
-        return ast
+        return self._translator.ast(content)
 
     def render(self, content):
         """
         Convert text into rendered content.
         """
-        ast = self.ast(content)
-        root = self._translator.render(ast)
-        return root#ast, root
+        return self._translator.render(self.ast(content))
 
 def get_parent_objects(module, cls):
     """

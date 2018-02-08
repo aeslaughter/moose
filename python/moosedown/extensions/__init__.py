@@ -1,4 +1,5 @@
 import core
+import config
 import devel
 import floats
 import include
