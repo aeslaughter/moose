@@ -6,7 +6,7 @@ class Tag(NodeBase):
     """
     A node representing an HTML tag (e.g., h1, strong).
     """
-    PROPERTIES = [Property('close', default=True, ptype=bool)]
+    PROPERTIES = [Property('close', default=True, ptype=bool), Property('string', ptype=unicode)]
 
     def __init__(self, parent, name, **kwargs):
         style = kwargs.pop('style', None)
@@ -18,6 +18,9 @@ class Tag(NodeBase):
                     self.__style[key.strip()] = value.strip()
 
         super(Tag, self).__init__(name=name, parent=parent, **kwargs)
+
+        if self.string:
+            String(self, content=self.string)
 
     @property
     def style(self):

@@ -193,9 +193,13 @@ class RenderModal(components.RenderComponent):
 class RenderTabs(components.RenderComponent):
     def createMaterialize(self, token, parent):
         if 'card' in parent['class']:
-            parent = html.Tag(parent, 'div', class_="card-tabs")
+            cls = '{} {}'.format(token.get('class', ''), 'card-tabs')
+            parent = html.Tag(parent, 'div', class_=cls)
+            cls = 'tabs'
+        else:
+            cls = '{} {}'.format(token.get('class', ''), 'tabs')
 
-        ul = html.Tag(parent, 'ul', class_="tabs")
+        ul = html.Tag(parent, 'ul', class_=cls)
         content = html.Tag(parent, 'div', class_='card-content grey lighten-4')
         return ul
 

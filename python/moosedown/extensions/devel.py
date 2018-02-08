@@ -7,7 +7,8 @@ import uuid
 import importlib
 import collections
 
-from moosedown import base, common
+from moosedown import common
+from moosedown.base import components
 from moosedown.extensions import core, floats, command, table
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
@@ -23,6 +24,9 @@ class Example(tokens.Token):
                   Property("preview")]
 """
 
+class ExampleToken(tokens.Token):
+   PROPERTIES = tokens.Token.PROPERTIES + [Property("data", ptype=unicode, required=True)]
+
 
 class DevelExtension(command.CommandExtension):
     @staticmethod
@@ -34,6 +38,8 @@ class DevelExtension(command.CommandExtension):
     def extend(self, reader, renderer):
         self.addCommand(Example())
         self.addCommand(ComponentSettings())
+
+        renderer.add(ExampleToken, RenderExampleToken())
 
 class Example(command.CommandComponent):
     COMMAND = 'devel'
@@ -50,38 +56,17 @@ class Example(command.CommandComponent):
     def init(self, *args, **kwargs):
         command.CommandComponent.init(self, *args, **kwargs)
         self.__counts = collections.defaultdict(int)
-        # TODO: check current type
-        #self.__html_renderer = base.MaterializeRenderer()
-
-        #self.__html_translator = base.Translator(type(self.reader)(), base.MaterializeRenderer(), copy.deepcopy(self.translator.extensions))
-        #self.__tex_translator = base.Translator(type(self.reader)(), base.LatexRenderer(), self.translator.extensions)
-
-    def getTexTranslator(self):
-        if self.TEX_TRANSLATOR is None:
-            extensions = [type(ext)(**ext.getConfig()) for ext in self.translator.extensions]
-            self.TEX_TRANSLATOR = base.Translator(type(self.reader)(), base.LatexRenderer(), extensions)
-        return self.TEX_TRANSLATOR
-
-    def getHTMLTranslator(self):
-        if self.HTML_TRANSLATOR is None:
-            extensions = [type(ext)(**ext.getConfig()) for ext in self.translator.extensions]
-            self.HTML_TRANSLATOR = base.Translator(type(self.reader)(), base.MaterializeRenderer(), extensions)
-        return self.HTML_TRANSLATOR
-
 
     @staticmethod
     def defaultSettings():
         settings = command.CommandComponent.defaultSettings()
         settings['caption'] = (None, "The caption to use for the code specification example.")
         settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
-        settings['preview'] = (True, "Display a preview of the rendered result.")
         return settings
 
     def createToken(self, match, parent):
-        #print repr(match['content'])
 
         master = floats.Float(parent, **self.attributes)
-        master.recursive = False
 
         caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
 
@@ -90,44 +75,9 @@ class Example(command.CommandComponent):
 
         data = match['block'] if 'block' in match else match['inline']
 
-        tabs = floats.Tabs(master)
-        tab = floats.Tab(tabs, title=u'MooseDown')
-        code = tokens.Code(tab, code=data, language=u'markdown', escape=True)
+        example = ExampleToken(master, data=data)
 
-        # HTML
-        ast = tokens.Token(None)
-        self.getHTMLTranslator().reader.parse(ast, data)
-
-        root = html.Tag(None, '')
-        self.getHTMLTranslator().renderer.process(root, ast)
-
-        code = ''
-        for child in root:#.find('body')(0)(0)(0):
-            code += child.write()
-        if code:
-            tab = floats.Tab(tabs, title=u'HTML')
-            tokens.Code(tab, code=unicode(code), language=u'HTML', escape=True)
-
-            # PREVIEW
-            if self.settings['preview']:
-                modal = floats.Modal(caption, title=u"Rendered HTML Preview", icon=u"visibility")
-                #content = floats.Content(modal, class_="modal-content")
-                ast.parent = modal
-                preview = ast
-
-        # LATEX
-        """
-        #ast = self.getTexTranslator().reader.parse(data)
-        tex = self.getTexTranslator().renderer.render(ast)
-        code = ''
-        for child in tex.find('document'):
-            code += child.write()
-
-        if code:
-            tab = floats.Tab(tabs, title=u'LaTeX')
-            tokens.Code(tab, code=unicode(code), language=u'latex', escape=True)
-        """
-        return master
+        return example
 
 class ComponentSettings(command.CommandComponent):
     COMMAND = 'devel'
@@ -177,3 +127,19 @@ class ComponentSettings(command.CommandComponent):
 
         #print master
         return master
+
+
+class RenderExampleToken(components.RenderComponent):
+
+    def createMaterialize(self, token, parent):
+
+        div = html.Tag(parent, 'div', class_='row card-content')
+
+        # LEFT
+        left = html.Tag(div, 'div', class_='moose-example-code col s12 m12 l6')
+        ast = tokens.Code(left, code=token.data)
+        self.translator.renderer.process(left, ast)
+
+        # RIGHT
+        right = html.Tag(div, 'div', class_='moose-example-rendered col s12 m12 l6')
+        return right

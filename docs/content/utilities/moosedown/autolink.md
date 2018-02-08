@@ -17,14 +17,14 @@ are compared using the python "endswith" method. Thus, the supplied name is cons
 one path from all possible paths ends with the supplied text, see [link-example].
 
 !devel example id=link-example caption=Example automatic link to another markdown page.
-[Core](/core.md)
+[Core](core.md)
 
 The markdown filename link also supports html bookmark style links, as shown in [link-bookmark-example].
 
 !devel example id=link-bookmark-example
                caption=Example of automatic link to another markdown page that includes an html
                        bookmark.
-[Core](/core.md#shortcut-link)
+[Core](core.md#shortcut-link)
 
 ## Automatic Link Shortcuts
 
@@ -35,7 +35,7 @@ in [example-shortcut-link].
 
 !devel example id=example-shortcut-link
                caption=Example of a shortcut link that contains a markdown filename.
-[/core.md]
+[core.md]
 
 It is also possible to include html style bookmarks with the filename, depending on the configuration
 (see [autolink-config]) the link text will include the name of the text within the bookmark and
