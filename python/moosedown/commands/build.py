@@ -96,7 +96,7 @@ def main(options):
 
 
         for node in anytree.PreOrderIter(root):
-            node.build(reset=False)
+            node.build(reset=False) #TODO: This probably should just be write()
 
 
         server.serve(root=destination, port=8000)
