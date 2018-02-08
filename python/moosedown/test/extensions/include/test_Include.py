@@ -55,7 +55,7 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
     def testAST(self):
         self.build()
         for i in range(4):
-            ast = self.root(i).ast
+            ast = self.root(i).ast()
             self.assertIsInstance(ast(0), tokens.Paragraph)
             self.assertIsInstance(ast(0)(0), tokens.Word)
             self.assertIsInstance(ast(0)(1), tokens.Space)
@@ -64,19 +64,19 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
             self.assertEqual(ast(0)(2).content, unicode(i))
 
         # File0
-        self.assertIsInstance(self.root(0).ast(1), include.IncludeToken)
-        self.assertIs(self.root(0).ast(1).include, self.root(1))
+        self.assertIsInstance(self.root(0).ast()(1), include.IncludeToken)
+        self.assertIs(self.root(0).ast()(1).include, self.root(1))
 
         # File1
-        self.assertIsInstance(self.root(1).ast(1), include.IncludeToken)
-        self.assertIs(self.root(1).ast(1).include, self.root(2))
+        self.assertIsInstance(self.root(1).ast()(1), include.IncludeToken)
+        self.assertIs(self.root(1).ast()(1).include, self.root(2))
 
         # File2 (no includes)
-        self.assertEqual(len(self.root(2).ast), 1)
+        self.assertEqual(len(self.root(2).ast()), 1)
 
         # File3
-        self.assertIsInstance(self.root(3).ast(1), include.IncludeToken)
-        self.assertIs(self.root(3).ast(1).include, self.root(2))
+        self.assertIsInstance(self.root(3).ast()(1), include.IncludeToken)
+        self.assertIs(self.root(3).ast()(1).include, self.root(2))
 
     def testMaster(self):
         self.build()

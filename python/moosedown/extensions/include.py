@@ -4,6 +4,7 @@ import re
 import uuid
 import importlib
 import collections
+import copy
 
 from moosedown import common
 from moosedown.base import components
@@ -46,11 +47,9 @@ class Include(command.CommandComponent):
 
 class RenderInclude(components.RenderComponent):
     def createHTML(self, token, parent):
-        if token.include.rendered is None:
-            token.include.build()
-
-        for child in token.include.rendered:
-            child.parent = parent
+        ast = token.include.ast()
+        for child in ast:
+            self.translator.renderer.process(parent, child)
 
     def createMaterialize(self, token, parent):
         return self.createHTML(token, parent)
