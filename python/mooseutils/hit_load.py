@@ -1,36 +1,44 @@
 import os
-import sys
-import copy
-
 import anytree
-
 import hit
 import message
-
-class Parameter(object):
-    """
-    """
-    def __init__(self, hit_node):
-        self.value = hit_node.param()
-        self.line = hit_node.line()
-        self.fullpath = hit_node.fullpath()
 
 class HitNode(anytree.NodeMixin):
     """
     An anytree.Node object for building a hit tree.
     """
-    def __init__(self, name='', parent=None):
+    def __init__(self, name='', parent=None, line=None):
         super(HitNode, self).__init__()
         self.name = name           # anytree.Node property
         self.parent = parent       # anytree.Node property
         self.__parameters = dict() # HitNode property
+        self.__line = line
 
     @property
     def parameters(self):
         """
-        Create a copy of the parameters dict() for this node.
+        Access to the parameters dict() for this node.
         """
         return self.__parameters
+
+    @property
+    def line(self):
+        """
+        Access to the line number.
+        """
+        return self.__line
+
+    @property
+    def fullpath(self):
+        """
+        Return the node full path.
+        """
+        out = []
+        node = self
+        while (node is not None):
+            out.append(node.name)
+            node = node.parent
+        return '/'.join(out)
 
     def find(self, name, unique=False):
         """
@@ -43,7 +51,7 @@ class HitNode(anytree.NodeMixin):
                           this is set to True the names must match exact.
         """
         for node in anytree.PreOrderIter(self):
-            if (not unique and name.lower() in node.name.lower()) or (unique and name == node.name):
+            if (not unique and name in node.name) or (unique and name == node.name):
                 return node
 
     def findall(self, name, unique=False):
@@ -82,7 +90,7 @@ class HitNode(anytree.NodeMixin):
         """
         Provides operator [] access to the parameters of this node.
         """
-        return self.__parameters[param].value
+        return self.__parameters[param]
 
     def __repr__(self):
         """
@@ -113,7 +121,6 @@ def hit_load(filename):
             content = fid.read()
     else:
         message.mooseError("Unable to load the hit file ", filename)
-        sys.exit(1)
 
     root = HitNode()
     hit_node = hit.parse(filename, content)
@@ -134,10 +141,10 @@ def _hit_parse(root, hit_node, filename):
     """
     for hit_child in hit_node.children():
         if hit_child.type() == hit.NodeType.Section:
-            new = HitNode(hit_child.path(), parent=root)
+            new = HitNode(hit_child.path(), parent=root, line=hit_child.line())
             _hit_parse(new, hit_child, filename)
         elif hit_child.type() == hit.NodeType.Field:
-            root.parameters[hit_child.path()] = Parameter(hit_child)
+            root.parameters[hit_child.path()] = hit_child.param()
     return root
 
 if __name__ == '__main__':

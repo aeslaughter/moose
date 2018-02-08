@@ -16,6 +16,7 @@ class TestExtensions(testing.MooseDocsTestCase):
 
     """
     EXTENSIONS = [moosedown.extensions.core,
+                  moosedown.extensions.config,
                   moosedown.extensions.katex]
     READER_REQUIRED = set(['Test{}Tokenize'])
     RENDER_REQUIRED = set(['Test{}HTML', 'Test{}Materialize', 'Test{}Latex'])

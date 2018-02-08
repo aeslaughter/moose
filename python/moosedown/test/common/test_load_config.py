@@ -1,15 +1,25 @@
 #!/usr/bin/env python
+import collections
+
 import unittest
 import mock
 
 import hit
+import mooseutils
+from mooseutils.hit_load import _hit_parse, HitNode
 
 import moosedown
-from moosedown.commands.build import DEFAULT_EXTENSIONS, load_extensions, load_object
+from moosedown.common import exceptions
+from moosedown.common.load_config import _hit_load_extensions, _hit_load_object, DEFAULT_EXTENSIONS
+
+def parse_hit(hit_node):
+    root = HitNode()
+    _hit_parse(root, hit_node, '')
+    return root
 
 class TestLoadExtensions(unittest.TestCase):
     def testEmpty(self):
-        ext = load_extensions(None, 'foo')
+        ext = _hit_load_extensions(None, 'foo')
         names = set([e.__module__ for e in ext])
         self.assertEqual(names, set(DEFAULT_EXTENSIONS))
 
@@ -17,7 +27,7 @@ class TestLoadExtensions(unittest.TestCase):
         ext = hit.NewSection('Extensions')
         ext.addChild(hit.NewField('disable_defaults', hit.FieldKind.Bool, 'True'))
 
-        ext = load_extensions(ext, '')
+        ext = _hit_load_extensions(parse_hit(ext), '')
         self.assertEqual(ext, [])
 
     @mock.patch('logging.Logger.error')
@@ -26,31 +36,28 @@ class TestLoadExtensions(unittest.TestCase):
         ext.addChild(hit.NewField('disable_defaults', hit.FieldKind.Bool, 'True'))
         ext.addChild(hit.NewSection('foo'))
 
-        ext = load_extensions(ext, 'foo')
+        ext = _hit_load_extensions(parse_hit(ext), 'foo')
         self.assertEqual(ext, [])
 
         mock.assert_called_once()
         args, _ = mock.call_args
         self.assertIn("The section '%s' must contain a 'type' parameter.", args[0])
 
-    @mock.patch('logging.Logger.error')
-    def testModuleImportError(self, mock):
+    def testModuleImportError(self):
         ext = hit.NewSection('Extensions')
         ext.addChild(hit.NewField('disable_defaults', hit.FieldKind.Bool, 'True'))
         foo = hit.NewSection('foo')
         foo.addChild(hit.NewField('type', hit.FieldKind.String, 'Bad'))
         ext.addChild(foo)
 
-        ext = load_extensions(ext, 'foo')
+        with self.assertRaises(exceptions.MooseDocsException) as e:
+            ext = _hit_load_extensions(parse_hit(ext), 'foo')
 
-        self.assertEqual(ext, [])
-        mock.assert_called_once()
-        args, _ = mock.call_args
-        self.assertIn("Failed to import the '%s' module.", args[0])
+        self.assertIn("Failed to import the supplied 'Bad' module.", e.exception.message)
 
 class TestLoadReader(unittest.TestCase):
     def testEmpty(self):
-        obj = load_object(None, 'foo', moosedown.base.MarkdownReader)
+        obj = _hit_load_object(None, 'foo', moosedown.base.MarkdownReader)
         self.assertIsInstance(obj, moosedown.base.MarkdownReader)
 
     @mock.patch('logging.Logger.error')
@@ -58,7 +65,7 @@ class TestLoadReader(unittest.TestCase):
         node = hit.NewSection('Reader')
         node.addChild(hit.NewField('type', hit.FieldKind.String, 'moosedown.base.MarkdownReader'))
 
-        obj = load_object(node, 'foo', moosedown.base.MarkdownReader)
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.MarkdownReader)
 
         mock.assert_not_called()
         self.assertIsInstance(obj, moosedown.base.MarkdownReader)
@@ -67,7 +74,7 @@ class TestLoadReader(unittest.TestCase):
     def testMissingTypeError(self, mock):
         node = hit.NewSection('Reader')
 
-        obj = load_object(node, 'foo', moosedown.base.MarkdownReader)
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.MarkdownReader)
         self.assertIsInstance(obj, moosedown.base.MarkdownReader)
 
         mock.assert_called_once()
@@ -76,7 +83,7 @@ class TestLoadReader(unittest.TestCase):
 
 class TestLoadRenderer(unittest.TestCase):
     def testEmpty(self):
-        obj = load_object(None, 'foo', moosedown.base.MaterializeRenderer)
+        obj = _hit_load_object(None, 'foo', moosedown.base.MaterializeRenderer)
         self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
 
     @mock.patch('logging.Logger.error')
@@ -84,7 +91,7 @@ class TestLoadRenderer(unittest.TestCase):
         node = hit.NewSection('Renderer')
         node.addChild(hit.NewField('type', hit.FieldKind.String, 'moosedown.base.HTMLRenderer'))
 
-        obj = load_object(node, 'foo', moosedown.base.MaterializeRenderer)
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.MaterializeRenderer)
         mock.assert_not_called()
         self.assertIsInstance(obj, moosedown.base.HTMLRenderer)
 
@@ -92,7 +99,7 @@ class TestLoadRenderer(unittest.TestCase):
     def testMissingTypeError(self, mock):
         node = hit.NewSection('Renderer')
 
-        obj = load_object(node, 'foo', moosedown.base.MaterializeRenderer)
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.MaterializeRenderer)
         self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
 
         mock.assert_called_once()
@@ -104,7 +111,7 @@ class TestLoadRenderer(unittest.TestCase):
         node = hit.NewSection('Renderer')
         node.addChild(hit.NewField('type', hit.FieldKind.String, 'wrong'))
 
-        obj = load_object(node, 'foo', moosedown.base.MaterializeRenderer)
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.MaterializeRenderer)
         self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
 
         mock.assert_called_once()
@@ -113,7 +120,7 @@ class TestLoadRenderer(unittest.TestCase):
 
 class TestLoadTranslator(unittest.TestCase):
     def testEmpty(self):
-        obj = load_object(None, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
+        obj = _hit_load_object(None, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
         self.assertIsInstance(obj, moosedown.base.Translator)
 
     @mock.patch('logging.Logger.error')
@@ -121,7 +128,7 @@ class TestLoadTranslator(unittest.TestCase):
         node = hit.NewSection('Translator')
         node.addChild(hit.NewField('type', hit.FieldKind.String, 'moosedown.base.Translator'))
 
-        obj = load_object(node, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
         mock.assert_not_called()
         self.assertIsInstance(obj, moosedown.base.Translator)
 
@@ -129,7 +136,7 @@ class TestLoadTranslator(unittest.TestCase):
     def testMissingTypeError(self, mock):
         node = hit.NewSection('Translator')
 
-        obj = load_object(node, 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
+        obj = _hit_load_object(parse_hit(node), 'foo', moosedown.base.Translator, moosedown.base.MarkdownReader(), moosedown.base.MaterializeRenderer())
         self.assertIsInstance(obj, moosedown.base.Translator)
 
         mock.assert_called_once()

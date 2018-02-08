@@ -1,6 +1,2 @@
 [Tests]
-  [build]
-    type = PythonUnitTest
-    input = test_build.py
-  []
 []

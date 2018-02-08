@@ -51,7 +51,8 @@ class MooseDocsTestCase(unittest.TestCase):
         """
         Convert text into rendered content.
         """
-        _, root = self._translator.convert(content)
+        ast = self.ast(content)
+        root = self._translator.render(ast)
         return root#ast, root
 
 def get_parent_objects(module, cls):

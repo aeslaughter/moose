@@ -15,11 +15,9 @@ text include items such as code snippets, quotations, and paragraphs themselves.
 inline items are those that are applicable to small portions of text (e.g., words). Bold and
 italics are two examples of inline items.
 
-!alert! note title=MooseDown is a restricted version of [markdown].
-To unify content and to create a fast parser a strict, limited set of
-markdown is being used to define the MooseDocs syntax. The following sections
-detail the syntax that comprise the syntax.
-!alert-end!
+!alert note title=MooseDown is a restricted version of [markdown].
+To unify content and to create a fast parser a strict, limited set of markdown is being used to
+define the MooseDocs syntax. The following sections detail the syntax that comprise the syntax.
 
 ## Settings id=settings
 

@@ -1,3 +1,6 @@
+"""
+Extension for changing configure options within the page.
+"""
 import re
 import collections
 from moosedown.common import exceptions
@@ -8,7 +11,6 @@ def make_extension(**kwargs):
     return ConfigExtension(**kwargs)
 
 class ConfigExtension(command.CommandExtension):
-
     def extend(self, reader, renderer):
         self.addCommand(ConfigCommand())
 
@@ -21,7 +23,6 @@ class ConfigCommand(command.CommandComponent):
         config = dict(Reader=dict(), Renderer=dict())
 
         content = match['inline'] if 'inline' in match else match['block']
-
         for data in content.strip(' \n').split('\n'):
             key, value = data.split('=')
             block, item = key.split('/', 1)
