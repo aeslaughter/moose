@@ -40,6 +40,17 @@ class TestRenderLinkMaterialize(TestRenderLinkHTML):
     def node(self, text):
         return self.render(text).find('body')(0)(0)(0)(0)(0)
 
+    def testWrite(self):
+        link = self.node(u'[link](url.html)')
+        self.assertString(link.write(), '<a data-position="top" href="url.html" ' \
+                                        'data-tooltip="url.html" class="tooltipped">link</a>')
+
+    def testWriteSettings(self):
+        link = self.node(u'[link](url.html id=bar)')
+        self.assertString(link.write(), '<a data-position="top" href="url.html" id="bar" ' \
+                                        'data-tooltip="url.html" class="tooltipped">link</a>')
+
+
 class TestRenderLinkLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer
 

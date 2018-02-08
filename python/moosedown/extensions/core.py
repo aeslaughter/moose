@@ -244,7 +244,7 @@ class ShortcutLink(components.TokenComponent):
                     r'\]',                        # closing ]
                     flags=re.UNICODE)
     def createToken(self, info, parent):
-        return tokens.ShortcutLink(parent, key=info['key'])
+        return tokens.ShortcutLink(parent, key=info['key'], **self.attributes)
 
 class Break(components.TokenComponent):
     RE = re.compile(r'(?P<break>\n+)')

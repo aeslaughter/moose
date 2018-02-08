@@ -184,7 +184,7 @@ class Lexer(object):
               TokenizeException also contains information about the error, via a LexerInformation
               object to improve error reports.
         """
-        common.check_type('text', text, unicode, exc=common.TokenizeException)
+        common.check_type('text', text, unicode, exc=exceptions.TokenizeException)
 
         n = len(text)
         pos = 0

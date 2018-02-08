@@ -38,14 +38,25 @@ class TestRenderShortcutLinkHTML(testing.MooseDocsTestCase):
         node = self.node(u'[key]\n\n[key]: content')
         self.assertString(node.write(), '<a href="content">key</a>')
 
-    def testWriteShortcutLinkWithShortcut(self):
-        node = self.node(u'[test] with some text\n\n[test]: foo')
-        self.assertString(node.write(), '<a href="foo">test</a>')
+    def testWriteSettings(self):
+        link = self.node(u'[test id=bar]\n\n[test]: foo')
+        self.assertString(link.write(), '<a href="foo" id="bar">test</a>')
+
 
 class TestRenderShortcutLinkMaterialize(TestRenderShortcutLinkHTML):
     RENDERER = MaterializeRenderer
     def node(self, text):
         return self.render(text).find('body')(0)(0)(0)(0)(0)
+
+    def testWrite(self):
+        node = self.node(u'[key]\n\n[key]: content')
+        self.assertString(node.write(), '<a data-position="top" href="content" ' \
+                                        'data-tooltip="content" class="tooltipped">key</a>')
+
+    def testWriteSettings(self):
+        link = self.node(u'[test id=bar]\n\n[test]: foo')
+        self.assertString(link.write(), '<a data-position="top" href="foo" id="bar" ' \
+                                        'data-tooltip="foo" class="tooltipped">test</a>')
 
 class TestRenderShortcutLinkLatex(testing.MooseDocsTestCase):
     RENDERER = LatexRenderer

@@ -103,15 +103,6 @@ class TestFormatTokenize(testing.MooseDocsTestCase):
         self.assertIsInstance(ast(0)(1)(1)(0), tree.tokens.Word)
         self.assertEqual(ast(0)(1)(1)(0).content, "x")
 
-        ast = self.ast(u's^y^x^^')
-        self.assertIsInstance(ast(0), tree.tokens.Paragraph)
-        self.assertIsInstance(ast(0)(0), tree.tokens.Word)
-        self.assertIsInstance(ast(0)(1), tree.tokens.Superscript)
-        self.assertIsInstance(ast(0)(1)(0), tree.tokens.Word)
-        self.assertIsInstance(ast(0)(1)(1), tree.tokens.Superscript)
-        self.assertIsInstance(ast(0)(1)(1)(0), tree.tokens.Word)
-        self.assertEqual(ast(0)(1)(1)(0).content, "x")
-
         ast = self.ast(u's^y_x_^')
         self.assertIsInstance(ast(0), tree.tokens.Paragraph)
         self.assertIsInstance(ast(0)(0), tree.tokens.Word)
