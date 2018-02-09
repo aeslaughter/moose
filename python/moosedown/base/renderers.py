@@ -144,7 +144,7 @@ class HTMLRenderer(Renderer):
         Render the supplied AST, wrapping it in a <body> tag.
         """
         self.reinit()
-        root = html.Tag(None, 'body')
+        root = html.Tag(None, 'body', class_='moose-content')
         self.process(root, ast)
         return root
 
@@ -243,7 +243,7 @@ class MaterializeRenderer(HTMLRenderer):
         # Content
         row = html.Tag(container, 'div', class_="row")
         #TODO add scroll spy (scoll-name=False) at top of index.mdg
-        col = html.Tag(row, 'div', class_="col s12 m12 l10")
+        col = html.Tag(row, 'div', class_="moose-content col s12 m12 l10")
         HTMLRenderer.process(self, col, ast)
 
         # Sections
