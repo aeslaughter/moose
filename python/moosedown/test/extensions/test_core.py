@@ -1470,45 +1470,45 @@ class TestRenderUnderlineHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderUnderline with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'=content='
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
 
     def testTree(self):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.String)
+
+        self.assertString(node.name, 'u')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertString(node.write(), '<u>content</u>')
 
 class TestRenderUnderlineMaterialize(TestRenderUnderlineHTML):
     """Test renderering of RenderUnderline with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderUnderlineLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderUnderline with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'=content=').find('document')(1)
+
+        self.assertIsInstance(node, latex.Command)
+        self.assertIsInstance(node(0), latex.String)
+
+        self.assertString(node.name, 'underline')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'=content=').find('document')(1)
+        self.assertString(node.write(), '\\underline{content}')
 
 class TestRenderUnorderedListHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderUnorderedList with HTMLRenderer"""
@@ -1516,43 +1516,86 @@ class TestRenderUnorderedListHTML(testing.MooseDocsTestCase):
     RENDERER = renderers.HTMLRenderer
     TEXT = u'ENTER TEXT HERE'
 
-    def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+    def node(self, text):
+        return self.render(text).find('moose-content', attr='class')(0)
 
     def testTree(self):
-        node = self.node()
+        node = self.node(u'- foo\n- bar')
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.Tag)
+        self.assertIsInstance(node(1), html.Tag)
+
+        self.assertIsInstance(node(0)(0), html.Tag)
+        self.assertIsInstance(node(1)(0), html.Tag)
+
+        self.assertIsInstance(node(0)(0)(0), html.String)
+        self.assertIsInstance(node(1)(0)(0), html.String)
+
+        self.assertString(node.name, 'ul')
+        self.assertString(node(0).name, 'li')
+        self.assertString(node(1).name, 'li')
+
+        self.assertString(node(0)(0).name, 'p')
+        self.assertString(node(1)(0).name, 'p')
+
+        self.assertString(node(0)(0)(0).content, 'foo')
+        self.assertString(node(1)(0)(0).content, 'bar')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.node(u'- foo\n- bar')
+        self.assertString(node.write(), '<ul><li><p>foo </p></li><li><p>bar</p></li></ul>')
+
+    def testNestedCode(self):
+        node = self.node(u'- foo\n\n  ```language=text\n  code\n  ```')
+        self.assertString(node.write(), '<ul><li><p>foo</p><pre><code ' \
+                                        'class="language-text">\ncode\n</code></pre></li></ul>')
+
 
 class TestRenderUnorderedListMaterialize(TestRenderUnorderedListHTML):
     """Test renderering of RenderUnorderedList with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.node(u'- foo\n- bar')
+        self.assertString(node.write(),
+                          '<ul class="browser-default"><li><p>foo </p></li><li><p>bar</p></li></ul>')
+
+    def testNestedCode(self):
+        node = self.node(u'- foo\n\n  ```language=text\n  code\n  ```')
+        self.assertString(node.write(), '<ul class="browser-default"><li><p>foo</p><pre><code ' \
+                                        'class="language-text">\ncode\n</code></pre></li></ul>')
 
 class TestRenderUnorderedListLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderUnorderedList with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'- foo\n- bar').find('document')(0)
+
+        self.assertIsInstance(node, latex.Environment)
+        self.assertIsInstance(node(0), latex.CustomCommand)
+        self.assertIsInstance(node(1), latex.Command)
+        self.assertIsInstance(node(2), latex.String)
+        self.assertIsInstance(node(3), latex.String)
+        self.assertIsInstance(node(4), latex.CustomCommand)
+        self.assertIsInstance(node(5), latex.Command)
+        self.assertIsInstance(node(6), latex.String)
+
+        self.assertString(node.name, 'itemize')
+        self.assertString(node(0).name, 'item')
+        self.assertString(node(1).name, 'par')
+        self.assertString(node(2).content, 'foo')
+        self.assertString(node(3).content, ' ')
+        self.assertString(node(4).name, 'item')
+        self.assertString(node(5).name, 'par')
+        self.assertString(node(6).content, 'bar')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'- foo\n- bar').find('document')(0)
+        self.assertString(node.write(),
+                          '\n\\begin{itemize}\n\n\\item\n\\par\nfoo \n\\item\n\\par\nbar\n\\end{itemize}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
