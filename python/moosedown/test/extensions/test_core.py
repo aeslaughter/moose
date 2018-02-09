@@ -1274,133 +1274,148 @@ class TestRenderStringHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderString with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'sit amet, consectetur'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        for i in range(6):
+            self.assertIsInstance(node(i), html.String)
+
+        self.assertString(node(0).content, 'sit')
+        self.assertString(node(1).content, ' ')
+        self.assertString(node(2).content, 'amet')
+        self.assertString(node(3).content, ',')
+        self.assertString(node(4).content, ' ')
+        self.assertString(node(5).content, 'consectetur')
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertString(node.write(), '<p>sit amet, consectetur</p>')
 
 class TestRenderStringMaterialize(TestRenderStringHTML):
     """Test renderering of RenderString with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderStringLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderString with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'sit amet, consectetur').find('document')
+        for i in range(1,7):
+            self.assertIsInstance(node(i), latex.String)
+
+        self.assertString(node(1).content, 'sit')
+        self.assertString(node(2).content, ' ')
+        self.assertString(node(3).content, 'amet')
+        self.assertString(node(4).content, ',')
+        self.assertString(node(5).content, ' ')
+        self.assertString(node(6).content, 'consectetur')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'sit amet, consectetur').find('document')
+        self.assertString(node.write(),
+                          '\n\\begin{document}\n\n\\par\nsit amet, consectetur\n\\end{document}\n')
 
 class TestRenderStrongHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderStrong with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'+content+'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
 
     def testTree(self):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.String)
+
+        self.assertString(node.name, 'strong')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertString(node.write(), '<strong>content</strong>')
 
 class TestRenderStrongMaterialize(TestRenderStrongHTML):
     """Test renderering of RenderStrong with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderStrongLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderStrong with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'+content+')(-1)(1)
+
+        self.assertIsInstance(node, latex.Command)
+        self.assertIsInstance(node(0), latex.String)
+
+        self.assertString(node.name, 'textbf')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'+content+')(-1)(1)
+        self.assertString(node.write(), '\\textbf{content}')
 
 class TestRenderSubscriptHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderSubscript with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'_content_'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
 
     def testTree(self):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.String)
+
+        self.assertString(node.name, 'sub')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertString(node.write(), '<sub>content</sub>')
 
 class TestRenderSubscriptMaterialize(TestRenderSubscriptHTML):
     """Test renderering of RenderSubscript with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderSubscriptLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderSubscript with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'foo_content_')(-1)
+
+        self.assertIsInstance(node(1), latex.String)
+        self.assertString(node(1).content, 'foo')
+
+        self.assertIsInstance(node(2), latex.InlineMath)
+        self.assertString(node(2)(0).content, '_{')
+
+        self.assertIsInstance(node(2)(1), latex.Command)
+        self.assertString(node(2)(1).name, 'text')
+        self.assertString(node(2)(1)(0).content, 'content')
+
+        self.assertString(node(2)(2).content, '}')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'foo_content_').find('document')(-1)
+        self.assertString(node.write(), '$\_\{\\text{content}\}$')
 
 class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderSuperscript with HTMLRenderer"""
