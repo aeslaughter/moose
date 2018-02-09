@@ -42,8 +42,8 @@ class TestCodeTokenize(testing.MooseDocsTestCase):
 class TestEndOfFileTokenize(testing.MooseDocsTestCase):
     """Test tokenization of EndOfFile"""
     def testToken(self):
-        # TODO:As far as I can tell the core.EndOfFile component is not reachable, if a way to reach
-        # it found then it needs to get added to this test.
+        # As far as I can tell the core.EndOfFile component is not reachable, if a way to reach it
+        # found then it needs to get added to this test.
         ast = self.ast(u'foo\n     ')(0)
         self.assertIsInstance(ast, tokens.Paragraph)
 
@@ -522,19 +522,15 @@ class TestRenderCodeLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderCode with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
 
-    def node(self):
-        return self.render(self.TEXT).find('document')
-
-    @unittest.skip('TODO')
     def testTree(self):
-        node = self.node()
+        node = self.render(u'```\nint x;\n```').find('document')(0)
+        self.assertIsInstance(node, latex.Environment)
+        self.assertIsInstance(node(0), latex.String)
 
-    @unittest.skip('TODO')
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'```\nint x;\n```').find('document')(0)
+        self.assertEqual(node.write(), u'\n\\begin{verbatim}\n\nint x;\n\n\\end{verbatim}\n')
 
 class TestRenderEmphasisHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderEmphasis with HTMLRenderer"""
@@ -608,7 +604,8 @@ class TestRenderExceptionMaterialize(TestRenderExceptionHTML):
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testWrite(self):
+    @mock.patch('logging.Logger.error')
+    def testWrite(self, mock):
         node = self.node()
         self.assertIn('class="moose-exception modal-trigger">!unknown command</a>', node.write())
 
@@ -1596,6 +1593,17 @@ class TestRenderUnorderedListLatex(testing.MooseDocsTestCase):
         node = self.render(u'- foo\n- bar').find('document')(0)
         self.assertString(node.write(),
                           '\n\\begin{itemize}\n\n\\item\n\\par\nfoo \n\\item\n\\par\nbar\n\\end{itemize}\n')
+
+class TestErrors(testing.MooseDocsTestCase):
+
+    @mock.patch('logging.Logger.error')
+    def testUnknownSettings(self, mock):
+        h = self.render(u'# Heading with Spaces foo=bar')(0)
+        mock.assert_called_once()
+        self.assertIsInstance(h, html.Tag)
+        self.assertEqual(h.name, 'div')
+        self.assertEqual(h(0).content, '# Heading with Spaces foo=bar')
+        self.assertString(h.write(), '<div class="moose-exception"># Heading with Spaces foo=bar</div>')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

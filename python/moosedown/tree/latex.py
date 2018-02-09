@@ -116,8 +116,12 @@ class Environment(NodeBase):
     """
     Class for LaTeX environment: \\begin{foo}...\\end{foo}
     """
+    PROPERTIES = [Property('string', ptype=unicode)]
+
     def __init__(self, parent, name, *args, **kwargs):
         NodeBase.__init__(self, name=name, parent=parent, *args, **kwargs)
+        if self.string is not None: #pylint: disable=no-member
+            String(self, content=self.string) #pylint: disable=no-member
 
     def write(self):
         """

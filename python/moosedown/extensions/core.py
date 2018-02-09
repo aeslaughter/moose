@@ -322,8 +322,8 @@ class RenderCode(components.RenderComponent):
         html.String(code, content=token.code, escape=token.escape)
         return pre
 
-    def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
-        return latex.Environment(parent, 'verbatim')
+    def createLatex(self, token, parent): #pylint: edisable=no-self-use,unused-argument
+        return latex.Environment(parent, 'verbatim', string=token.code)
 
 class RenderShortcutLink(components.RenderComponent):
     def __init__(self, *args, **kwargs):
