@@ -129,9 +129,9 @@ class TokenComponent(Component):
         called externally.
         """
         if self.__settings:
-            return {'style':self.settings['style'],
-                    'id':self.settings['id'],
-                    'class':self.settings['class']}
+            return {'style':self.settings['style'].strip(),
+                    'id':self.settings['id'].strip(),
+                    'class':self.settings['class'].strip()}
 
     @property
     def settings(self):

@@ -42,13 +42,13 @@ class Tag(NodeBase):
         attr_list = []
         for key, value in self.attributes.iteritems():
             if value:
-                attr_list.append('{}="{}"'.format(key, str(value)))
+                attr_list.append('{}="{}"'.format(key, str(value).strip()))
 
         if self.__style:
             style_list = []
             for key, value in self.__style.iteritems():
                 if value:
-                    style_list.append('{}:{}'.format(key, str(value)))
+                    style_list.append('{}:{}'.format(key, str(value).strip()))
             style_string = ';'.join(style_list)
             if not style_string.endswith(';'):
                 style_string += ';'
