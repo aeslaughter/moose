@@ -1421,45 +1421,50 @@ class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderSuperscript with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'^content^'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
 
     def testTree(self):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.String)
+
+        self.assertString(node.name, 'sup')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertString(node.write(), '<sup>content</sup>')
 
 class TestRenderSuperscriptMaterialize(TestRenderSuperscriptHTML):
     """Test renderering of RenderSuperscript with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderSuperscriptLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderSuperscript with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
-
     def testTree(self):
-        node = self.node()
+        node = self.render(u'foo^content^').find('document')
+
+        self.assertIsInstance(node(1), latex.String)
+        self.assertString(node(1).content, 'foo')
+
+        self.assertIsInstance(node(2), latex.InlineMath)
+        self.assertString(node(2)(0).content, '^{')
+
+        self.assertIsInstance(node(2)(1), latex.Command)
+        self.assertString(node(2)(1).name, 'text')
+        self.assertString(node(2)(1)(0).content, 'content')
+
+        self.assertString(node(2)(2).content, '}')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'foo^content^').find('document')(-1)
+        self.assertString(node.write(), '$\^\{\\text{content}\}$')
 
 class TestRenderUnderlineHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderUnderline with HTMLRenderer"""
