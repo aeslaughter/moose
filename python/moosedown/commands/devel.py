@@ -106,7 +106,7 @@ HEAD="""#!/usr/bin/env python
 \"\"\"Testing for <EXTENSION> MooseDocs extension.\"\"\"
 import unittest
 from <EXTENSIONROOT> import <EXTENSIONNAME>
-from moosedown.tree import tokens
+from moosedown.tree import tokens, html, latex
 from moosedown.base import testing, renderers
 """
 

@@ -26,7 +26,7 @@ class Video(tokens.Token):
 
 
 class MediaExtension(command.CommandExtension):
-    REQUIRES = [moosedown.extensions.command, moosedown.extensions.floats] #TODO: check this
+    #REQUIRES = [moosedown.extensions.command, moosedown.extensions.floats] #TODO: check this
 
     @staticmethod
     def defaultConfig():

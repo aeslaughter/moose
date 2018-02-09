@@ -7,67 +7,86 @@ import importlib
 
 import moosedown
 from moosedown.base import testing, components
-
-import hit
+from moosedown.tree import tokens
 
 class TestExtensions(testing.MooseDocsTestCase):
     """
     Tests that Extension objects have the
 
     """
-    EXTENSIONS = [moosedown.extensions.core,
-                  moosedown.extensions.config,
-                  moosedown.extensions.katex]
-    READER_REQUIRED = set(['Test{}Tokenize'])
-    RENDER_REQUIRED = set(['Test{}HTML', 'Test{}Materialize', 'Test{}Latex'])
+    EXTENSIONS = [moosedown.extensions.core]
 
-    def testReaderComponents(self):
-        """
-        Test TokenComponent testing
-        """
-        messages = []
-        for comp in self._reader.components:
-            messages += self.checkComponent(comp, self.READER_REQUIRED)
-        self.assertFalse(messages, '\n' + '\n'.join(messages))
+    REQUIRED_TOKENIZE = set(['Test{}Tokenize'])
+    REQUIRED_RENDERER = set(['Test{}HTML', 'Test{}Materialize', 'Test{}Latex'])
+
+    @classmethod
+    def setUpClass(cls):
+        ext = os.path.join(moosedown.MOOSE_DIR, 'python', 'moosedown', 'test', 'extensions')
+        sys.path.append(ext)
+
+    def testTokenComponents(self):
+        self.checkTestCases(components.TokenComponent, self.REQUIRED_TOKENIZE)
 
     def testRenderComponents(self):
-        """
-        Test RenderComponent testing
-        """
+        self.checkTestCases(components.RenderComponent, self.REQUIRED_RENDERER)
+
+    def testTokens(self):
         messages = []
-        for comp in self._renderer.components:
-            messages += self.checkComponent(comp, self.RENDER_REQUIRED)
+        for mod in TestExtensions.EXTENSIONS:
+            name = mod.__name__.split('.')[-1]
+            objects = testing.get_parent_objects(mod, tokens.Token)
+
+            try:
+                tmod = importlib.import_module('test_{}'.format(name))
+            except ImportError:
+                msg = "test_{0}.py must be added to test/extensions, run './moosedocs.py devel " \
+                      "--generate-extension-tests {0}'".format(name)
+                messages.append(msg)
+                continue
+
+            case = None
+            for case_name, case_type in testing.get_parent_objects(tmod, unittest.TestCase):
+                if case_name == 'TestTokens':
+                    case = case_type
+
+            if case is None:
+                msg = 'TestTokens must be created in test_{}.py'.format(name)
+                messages.append(msg)
+                continue
+
+            testcases = dir(case)
+            for obj in objects:
+                test_case = 'test{}'.format(obj[0])
+                if test_case not in testcases:
+                    msg = "{} method must be added to TestTokens in test_{}.py".format(test_case, name)
+                    messages.append(msg)
+
         self.assertFalse(messages, '\n' + '\n'.join(messages))
 
-    @staticmethod
-    def checkComponent(component, required):
-        """
-        Tool for inspecting the existence of the necessary test objects.
 
-        Inputs:
-            ext: The component instance to inspect
-            required: List of required test objects format strings (e.g., ['Test{}Foo', 'Test{}Bar'])
-        """
-        path = os.path.abspath(os.path.join(os.getcwd(), '..',
-                               *str(component.__module__).split('.')[1:]))
-        name = component.__class__.__name__
-        testname = 'test_{}.py'.format(name)
-        filename = os.path.join(path, testname)
-
+    def checkTestCases(self, obj_type, required):
         messages = []
-        if not os.path.exists(filename):
-            msg = "'{}' needs to be created in {}.".format(testname, path)
-            messages.append(msg)
-        else:
-            sys.path.append(path)
-            module = importlib.import_module(testname[:-3])
-            tests = set([obj[0] for obj in testing.get_parent_objects(module, unittest.TestCase)])
-            req = set([r.format(name) for r in required])
-            for missing in req.difference(tests):
-                msg = "'{}' must be added to '{}' in {}.".format(missing, testname, path)
+        for mod in TestExtensions.EXTENSIONS:
+            name = mod.__name__.split('.')[-1]
+            objects = testing.get_parent_objects(mod, obj_type)
+
+            try:
+                tmod = importlib.import_module('test_{}'.format(name))
+            except ImportError:
+                msg = "test_{0}.py must be added to test/extensions, run './moosedocs.py devel " \
+                      "--generate-extension-tests {0}'".format(name)
                 messages.append(msg)
-            sys.path.remove(path)
-        return messages
+                continue
+
+            testcases = [name for name, _ in testing.get_parent_objects(tmod, unittest.TestCase)]
+            for req in required:
+                for obj in objects:
+                    test_case = req.format(obj[0])
+                    if test_case not in testcases:
+                        msg = "{} unittest.TestCase must be added to test_{}.py".format(obj[0], name)
+                        messages.append(msg)
+
+        self.assertFalse(messages, '\n' + '\n'.join(messages))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -52,7 +52,7 @@ class TestRenderImageHTML(testing.MooseDocsTestCase):
 
     RENDERER = renderers.HTMLRenderer
     TEXT = u'ENTER TEXT HERE'
-    
+
     def node(self):
         return self.render(self.TEXT).find('moose-content', attr='class')
 
@@ -67,7 +67,7 @@ class TestRenderImageMaterialize(TestRenderImageHTML):
     """Test renderering of RenderImage with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
-    
+
     def testTree(self):
         node = self.node()
 
@@ -80,7 +80,7 @@ class TestRenderImageLatex(testing.MooseDocsTestCase):
 
     RENDERER = renderers.LatexRenderer
     TEXT = u'ENTER TEXT HERE'
-    
+
     def node(self):
         return self.render(self.TEXT).find('document')
 
@@ -96,7 +96,7 @@ class TestRenderVideoHTML(testing.MooseDocsTestCase):
 
     RENDERER = renderers.HTMLRenderer
     TEXT = u'ENTER TEXT HERE'
-    
+
     def node(self):
         return self.render(self.TEXT).find('moose-content', attr='class')
 
@@ -111,7 +111,7 @@ class TestRenderVideoMaterialize(TestRenderVideoHTML):
     """Test renderering of RenderVideo with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
-    
+
     def testTree(self):
         node = self.node()
 
@@ -124,7 +124,7 @@ class TestRenderVideoLatex(testing.MooseDocsTestCase):
 
     RENDERER = renderers.LatexRenderer
     TEXT = u'ENTER TEXT HERE'
-    
+
     def node(self):
         return self.render(self.TEXT).find('document')
 
