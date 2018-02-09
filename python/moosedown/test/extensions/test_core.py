@@ -723,73 +723,73 @@ class TestRenderLabelHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderLabel with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
-
-    def testTree(self):
-        node = self.node()
 
     def testWrite(self):
-        node = self.node()
+        node = tree.tokens.Label(None, text=u'foo')
         html = node.write()
+        self.assertEqual(html, '')
 
 class TestRenderLabelMaterialize(TestRenderLabelHTML):
     """Test renderering of RenderLabel with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderLabelLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderLabel with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
-
-    def testTree(self):
-        node = self.node()
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self._renderer.render(tree.tokens.Label(None, text=u'foo')).find('document')(-1)
+        tex = node.write()
+        self.assertString(tex, '\\label{foo}')
 
 class TestRenderLinkHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderLink with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
 
-    def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+    def node(self, text):
+        return self.render(text).find('moose-content', attr='class')(0)(0)
 
-    def testTree(self):
-        node = self.node()
+        node = self.node(u'[link](url.html)')
+        self.assertIsInstance(node, tree.html.Tag)
+        self.assertEqual(node.name, 'a')
+        self.assertIsInstance(node(0), tree.html.String)
+        self.assertString(node(0).content, 'link')
+        self.assertString(node['href'], 'url.html')
+
+    def testTreeSettings(self):
+        node = self.node(u'[link](url.html id=foo)')
+        self.assertIsInstance(node, tree.html.Tag)
+        self.assertEqual(node.name, 'a')
+        self.assertIsInstance(node(0), tree.html.String)
+        self.assertString(node(0).content, 'link')
+        self.assertString(node['href'], 'url.html')
+        self.assertString(node['id'], 'foo')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        link = self.node(u'[link](url.html)')
+        self.assertString(link.write(), '<a href="url.html">link</a>')
+
+    def testWriteSettings(self):
+        link = self.node(u'[link](url.html id=bar)')
+        self.assertString(link.write(), '<a href="url.html" id="bar">link</a>')
 
 class TestRenderLinkMaterialize(TestRenderLinkHTML):
     """Test renderering of RenderLink with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        link = self.node(u'[link](url.html)')
+        self.assertString(link.write(), '<a data-position="top" href="url.html" ' \
+                                        'data-tooltip="url.html" class="tooltipped">link</a>')
+
+    def testWriteSettings(self):
+        link = self.node(u'[link](url.html id=bar)')
+        self.assertString(link.write(), '<a data-position="top" href="url.html" id="bar" ' \
+                                        'data-tooltip="url.html" class="tooltipped">link</a>')
 
 class TestRenderLinkLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderLink with LatexRenderer"""
