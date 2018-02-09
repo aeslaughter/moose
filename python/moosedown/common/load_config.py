@@ -17,6 +17,7 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.command',
                       'moosedown.extensions.include',
                       'moosedown.extensions.floats',
+                      'moosedown.extensions.media',
                       'moosedown.extensions.table',
                       'moosedown.extensions.autolink',
                       'moosedown.extensions.devel',
@@ -88,6 +89,8 @@ def _hit_load_extensions(node, filename):
     Inputs:
         node[HitNode|None]: The [Extensions] section of the hit file.
     """
+
+    #TODO: handle common options from top level [Extennsions]
 
     # The key is the extension module name, value is a dict() of configuration options, which is
     # populated from the hit nodes and applied to the object via the make_extension method.

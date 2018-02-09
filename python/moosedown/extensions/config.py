@@ -16,8 +16,8 @@ class ConfigExtension(command.CommandExtension):
 
 class ConfigCommand(command.CommandComponent):
     COMMAND = 'config'
-    SUBCOMMAND = None
-
+    SUBCOMMAND = None #TODO: make (Renderer, Extensions, Translator, etc... for available input blocks)
+                      # TODO: Extensions should loop over all avaiable and apply if the parameter is the same...
     def createToken(self, match, parent):
 
         config = dict(Reader=dict(), Renderer=dict())

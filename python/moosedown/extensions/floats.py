@@ -14,25 +14,12 @@ def make_extension():
 
 class Float(tokens.Token):
     pass
-    #def __init__(self, *args, **kwargs):
-    #    tokens.Token.__init__(self, *args, **kwargs)
-            #tokens.Word(shortcut, content=u'Example')
-            #tokens.Space(shortcut)
-            #tokens.Number(shortcut, content=u'42')
 
-#TODO: create a base CountToken that has the 'prefix' and 'number' stuff, also this static
-#      approach fails since it will count across md files, can reinit fix this.
-class Caption(tokens.Token):
-    PROPERTIES = [Property("prefix", ptype=unicode, required=True),
-                  Property("number", ptype=int), # set by constructor
-                  Property("key", ptype=unicode)]
-    COUNTS = collections.defaultdict(int)
+class Caption(tokens.CountToken):
+    PROPERTIES = tokens.CountToken.PROPERTIES + [Property("key", ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
-        tokens.Token.__init__(self, *args, **kwargs)
-
-        Caption.COUNTS[self.prefix] += 1
-        self.number = Caption.COUNTS[self.prefix]
+        tokens.CountToken.__init__(self, *args, **kwargs)
 
         if self.key:
             tokens.Shortcut(self.root, key=self.key,

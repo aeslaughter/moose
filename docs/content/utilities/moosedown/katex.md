@@ -17,18 +17,22 @@ Numbered and non-numbered equations are defined using the `\begin{equation}` and
 environment common to [LaTeX mathematics](https://en.wikibooks.org/wiki/LaTeX/Mathematics),
 as shown in [katex-numbered].
 
-!devel example id=katex-numbered caption=Example of syntax for creating numbered equations with [KaTeX].
+!devel! example id=katex-numbered
+                caption=Example of syntax for creating numbered equations with [KaTeX].
 \begin{equation}
 y = a\cdot x + b
 \end{equation}
+!devel-end!
 
 To include a non-numbered equation, simply use the `*` version of the environment, as shown in
 [katex-no-number].
 
-!devel example id=katex-no-number caption=Example of syntax for creating non-numbered equations with Katex.
+!devel! example id=katex-no-number
+                caption=Example of syntax for creating non-numbered equations with Katex.
 \begin{equation*}
 c^2 = a^2 + b^2
 \end{equation*}
+!devel-end!
 
 It is possible to reference numbered block equations. First, the equation must contain a label. A
 label is added using traditional `\label{my-eq}` command. Then within the text this label can be used
@@ -37,7 +41,8 @@ within a shortcut link, e.g. `[my-eq]` (see [/core.md#shortcut-link]).
 [eq-label-example] provides a complete example of creating and referencing an equation. The prefix
 is dictated by the extension prefix configuration option (see [katex-extension-config]).
 
-!devel! example id=eq-label-example caption=Example that references a labeled, numbered block equation.
+!devel! example id=eq-label-example
+                caption=Example that references a labeled, numbered block equation.
 [eq-label] is a famous equation.
 
 \begin{equation}

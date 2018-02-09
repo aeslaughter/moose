@@ -1,7 +1,8 @@
 [Content]
   [framework]
       root_dir = docs/content
-      content = 'utilities/moosedown/*
+      content = 'utilities/moosedown/**
+                 media/**
                  contrib/**
                  css/*
                  js/*'

@@ -61,7 +61,7 @@ class LocationNodeBase(PageNodeBase):
             nodes = self.__cache[name]
         except KeyError:
             func = lambda n: n.local.endswith(name)
-            nodes = anytree.search.findall(self.root, func)
+            nodes = anytree.search.findall(self.root, filter_=func)
             self.__cache[name] = nodes
 
         if maxcount and len(nodes) > maxcount:

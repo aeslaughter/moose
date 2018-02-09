@@ -39,17 +39,31 @@ class CommandExtension(components.Extension):
 
         # Type checking
         common.check_type('command', command, CommandComponent)
+        common.check_type('COMMAND', command.COMMAND, str)
+        common.check_type('SUBCOMMAND', command.SUBCOMMAND, (type(None), str, tuple))
 
         # Initialize the component
         command.init(self.translator)
+        command.extension = self
+
+        # Subcommands can be tuples
+        if not isinstance(command.SUBCOMMAND, tuple):
+            subcommands = tuple([command.SUBCOMMAND])
+        else:
+            subcommands = command.SUBCOMMAND
 
         # Add the command and error if it exists
-        pair = (command.COMMAND, command.SUBCOMMAND)
-        if pair in self.translator.__EXTENSION_COMMANDS__:
-            msg = "A CommandComponent object exists with the command '{}' and subcommand '{}'."
-            raise common.exceptions.MooseDocsException(msg, pair[0], pair[1])
+        for sub in subcommands:
+            pair = (command.COMMAND, sub)
+            if pair in self.translator.__EXTENSION_COMMANDS__:
+                msg = "A CommandComponent object exists with the command '{}' and subcommand '{}'."
+                raise common.exceptions.MooseDocsException(msg, pair[0], pair[1])
+            elif (command.COMMAND, None) in self.translator.__EXTENSION_COMMANDS__:
+                msg = "A CommandComponent object exists with the command '{}' with no subcommand, " \
+                      "you can't add a subcommand."
+                raise common.exceptions.MooseDocsException(msg, command.COMMAND)
 
-        self.translator.__EXTENSION_COMMANDS__[pair] = command
+            self.translator.__EXTENSION_COMMANDS__[pair] = command
 
     def extend(self, reader, renderer):
         """
