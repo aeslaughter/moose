@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Testing for moosedown.extensions.core MooseDocs extension."""
 import unittest
+import mock
+import moosedown
 from moosedown.extensions import core
 from moosedown.tree import tokens, html, latex
 from moosedown.base import testing, renderers
@@ -487,29 +489,34 @@ class TestRenderCodeHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderCode with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'```\nint x;\n```').find('pre')
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.Tag)
+        self.assertIsInstance(node(0)(0), html.String)
+
+        self.assertEqual(node.name, 'pre')
+        self.assertEqual(node(0).name, 'code')
+        self.assertString(node(0)['class'], 'language-text')
+        self.assertString(node(0)(0).content, '\nint x;\n')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'```\nint x;\n```').find('pre')
+        self.assertString(node.write(), '<pre><code class="language-text">\nint x;\n</code></pre>')
+
+    def testTreeLanguage(self):
+        node = self.render(u'```language=cpp\nint x;\n```').find('pre')
+        self.assertString(node(0)['class'], 'language-cpp')
+
+    def testWriteLanguage(self):
+        node = self.render(u'```language=cpp\nint x;\n```').find('pre')
+        self.assertString(node.write(), '<pre><code class="language-cpp">\nint x;\n</code></pre>')
 
 class TestRenderCodeMaterialize(TestRenderCodeHTML):
     """Test renderering of RenderCode with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
-
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
 
 class TestRenderCodeLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderCode with LatexRenderer"""
@@ -520,9 +527,11 @@ class TestRenderCodeLatex(testing.MooseDocsTestCase):
     def node(self):
         return self.render(self.TEXT).find('document')
 
+    @unittest.skip('TODO')
     def testTree(self):
         node = self.node()
 
+    @unittest.skip('TODO')
     def testWrite(self):
         node = self.node()
         html = node.write()
@@ -531,117 +540,145 @@ class TestRenderEmphasisHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderEmphasis with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'*content*'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
 
     def testTree(self):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.String)
+
+        self.assertString(node.name, 'em')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
         html = node.write()
+        self.assertString(html, '<em>content</em>')
 
 class TestRenderEmphasisMaterialize(TestRenderEmphasisHTML):
     """Test renderering of RenderEmphasis with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderEmphasisLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderEmphasis with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
-
-    def node(self):
-        return self.render(self.TEXT).find('document')
 
     def testTree(self):
-        node = self.node()
+        node = self.render(u'*content*')(-1)(1)
+
+        self.assertIsInstance(node, latex.Command)
+        self.assertIsInstance(node(0), latex.String)
+
+        self.assertString(node.name, 'emph')
+        self.assertString(node(0).content, 'content')
 
     def testWrite(self):
-        node = self.node()
-        html = node.write()
+        node = self.render(u'*content*')(-1)(1)
+        tex = node.write()
+        self.assertString(tex, '\\emph{content}')
 
 class TestRenderExceptionHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderException with HTMLRenderer"""
-
+    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.command]
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'!unknown command'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
-    def testTree(self):
+    @mock.patch('logging.Logger.error')
+    def testTree(self, mock):
         node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertIsInstance(node(0), html.String)
+        mock.assert_called_once()
 
-    def testWrite(self):
+    @mock.patch('logging.Logger.error')
+    def testWrite(self, mock):
         node = self.node()
-        html = node.write()
+        self.assertString(node.write(), '<div class="moose-exception">!unknown command</div>')
 
 class TestRenderExceptionMaterialize(TestRenderExceptionHTML):
     """Test renderering of RenderException with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertIn('class="moose-exception modal-trigger">!unknown command</a>', node.write())
 
 class TestRenderExceptionLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderException with LatexRenderer"""
 
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'!unknown command'
 
     def node(self):
         return self.render(self.TEXT).find('document')
 
-    def testTree(self):
-        node = self.node()
+    @mock.patch('logging.Logger.error')
+    def testTree(self, mock):
+        node = self.render(u'!unknown command').find('document')
+        self.assertString(node(1).content, '!')
+        self.assertString(node(2).content, 'unknown')
+        self.assertString(node(3).content, ' ')
+        self.assertString(node(4).content, 'command')
 
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
+    @mock.patch('logging.Logger.error')
+    def testWrite(self, mock):
+        node = self.render(u'!unknown command').find('document')
+        self.assertString(node.write(), '\n\\begin{document}\n\n\\par\n!unknown command\n\\end{document}\n')
 
 class TestRenderHeadingHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderHeading with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
 
-    def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+    def node(self, content):
+        return self.render(content).find('moose-content', attr='class')(0)
 
     def testTree(self):
-        node = self.node()
+        h = self.node(u'# Heading with Spaces')
+        self.assertIsInstance(h, html.Tag)
+        self.assertEqual(h.name, 'h1')
+        for child in h.children:
+            self.assertIsInstance(child, html.String)
+        self.assertEqual(h(0).content, 'Heading')
+        self.assertEqual(h(1).content, ' ')
+        self.assertEqual(h(2).content, 'with')
+        self.assertEqual(h(3).content, ' ')
+        self.assertEqual(h(4).content, 'Spaces')
 
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
+        self.assertString(h.write(), "<h1>Heading with Spaces</h1>")
+
+    def testSettings(self):
+        h = self.node(u'# Heading with Spaces style=font-size:42pt;')
+        self.assertIsInstance(h, html.Tag)
+        self.assertEqual(h.name, 'h1')
+        for child in h.children:
+            self.assertIsInstance(child, html.String)
+        self.assertEqual(h(0).content, 'Heading')
+        self.assertEqual(h(1).content, ' ')
+        self.assertEqual(h(2).content, 'with')
+        self.assertEqual(h(3).content, ' ')
+        self.assertEqual(h(4).content, 'Spaces')
+        self.assertEqual(h.style, {'font-size':'42pt'})
+
+        self.assertString(h.write(), '<h1 style="font-size:42pt;">Heading with Spaces</h1>')
 
 class TestRenderHeadingMaterialize(TestRenderHeadingHTML):
     """Test renderering of RenderHeading with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
+    def node(self, text):
+        return self.render(text).find('moose-content', attr='class')(0)(0)
 
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
 
 class TestRenderHeadingLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderHeading with LatexRenderer"""
@@ -649,15 +686,38 @@ class TestRenderHeadingLatex(testing.MooseDocsTestCase):
     RENDERER = renderers.LatexRenderer
     TEXT = u'ENTER TEXT HERE'
 
-    def node(self):
-        return self.render(self.TEXT).find('document')
+    def checkLevel(self, lvl, cmd):
+        node = self.render(u'{} Heading with Space'.format('#'*lvl))(-1)(0)
+        self.assertIsInstance(node, latex.Command)
+        self.assertString(node.name, cmd)
 
-    def testTree(self):
-        node = self.node()
+        self.assertIsInstance(node(0), latex.Command)
+        self.assertString(node(0).name, 'label')
+        self.assertString(node(0)(0).content, 'heading-with-space')
 
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
+        self.assertIsInstance(node(1), latex.String)
+        self.assertIsInstance(node(2), latex.String)
+        self.assertIsInstance(node(3), latex.String)
+        self.assertIsInstance(node(4), latex.String)
+        self.assertIsInstance(node(5), latex.String)
+
+       # self.assertString(node(0).name, 'par')
+        self.assertString(node(1).content, 'Heading')
+        self.assertString(node(2).content, ' ')
+        self.assertString(node(3).content, 'with')
+        self.assertString(node(4).content, ' ')
+        self.assertString(node(5).content, 'Space')
+
+        tex = node.write()
+        self.assertString(tex, '\n\\%s{\\label{heading-with-space}Heading with Space}\n' % cmd)
+
+    def testLevels(self):
+        self.checkLevel(1, 'chapter')
+        self.checkLevel(2, 'section')
+        self.checkLevel(3, 'subsection')
+        self.checkLevel(4, 'subsubsection')
+        self.checkLevel(5, 'paragraph')
+        self.checkLevel(6, 'subparagraph')
 
 class TestRenderLabelHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderLabel with HTMLRenderer"""
