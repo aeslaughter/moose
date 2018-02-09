@@ -122,9 +122,6 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
 
     def createToken(self, info, parent): #pylint: disable=doc-string
         match = LINK_RE.search(info['key'])
-        if '[core.md]' in info[0]:
-            print info['key'], match
-
         if match and (parent.root.page is not None):
             return AutoShortcutLink(parent,
                                     key=match.group('filename'),

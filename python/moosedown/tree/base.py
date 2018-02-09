@@ -172,6 +172,12 @@ class NodeBase(anytree.NodeMixin):
         """
         self.__attributes[key] = value
 
+    def __contains__(self, key):
+        """
+        Allow for "in" operator to check for attributes.
+        """
+        return key in self.__attributes
+
     def __len__(self):
         """Return the number of children."""
         return len(self.children)

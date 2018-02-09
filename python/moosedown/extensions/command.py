@@ -69,9 +69,9 @@ class CommandExtension(components.Extension):
         """
         Adds the various commmand components to the reader.
         """
-        reader.addBlock(FileCommand(), location='_begin')
-        reader.addBlock(BlockCommand(), location='>FileCommand')
+        reader.addBlock(BlockCommand(), location='_begin')
         reader.addBlock(InlineCommand(), location='<BlockCommand')
+
 
 class CommandComponent(components.TokenComponent):
     """
@@ -93,30 +93,42 @@ class CommandBase(components.TokenComponent):
     MarkdownExtension via the addCommand method (see extensions/devel.py for an example).
     """
     PARSE_SETTINGS = False
+    FILENAME_RE = re.compile(r'(?P<filename>\S*\.(?P<ext>\w+))', flags=re.UNICODE)
+
     def __init__(self, *args, **kwargs):
         components.TokenComponent.__init__(self, *args, **kwargs)
 
     def createToken(self, info, parent):
-        cmd = (info['command'], info['subcommand'])
 
+        cmd = (info['command'], info['subcommand'])
+        settings = info['settings']
+
+        # Handle filename and None subcommand
+        match = self.FILENAME_RE.search(info['subcommand']) if info['subcommand'] else None
+        if match:
+            cmd = (info['command'], match.group('ext'))
+        elif info['subcommand'] and '=' in info['subcommand']:
+            settings += ' ' + info['subcommand']
+            cmd = (info['command'], None)
+
+        # Locate the command object to call
         try:
             obj = self.translator.__EXTENSION_COMMANDS__[cmd]
-            settings, _ = common.parse_settings(obj.defaultSettings(), info['settings'])
-            obj.setSettings(settings)
-            token = obj.createToken(info, parent)
-            return token
         except KeyError:
             msg = "The following command combination is unknown: '{} {}'."
             raise common.exceptions.TokenizeException(msg.format(*cmd))
 
+        # Build the token
+        settings, _ = common.parse_settings(obj.defaultSettings(), settings)
+        obj.setSettings(settings)
+        token = obj.createToken(info, parent)
+        return token
+
+
 class InlineCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)(?: |$)(?P<subcommand>\w+)? *(?P<settings>.*?)(?P<inline>^\S.*?)?(?=\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)(?: |$)(?P<subcommand>\S+)? *(?P<settings>.*?)(?P<inline>^\S.*?)?(?=\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class BlockCommand(CommandBase):
     RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)!(?: +(?P<subcommand>\w+))? *(?P<settings>.*?)\n+(?P<block>.*?)(^!\1-end!)(?=\Z|\n{2,})',
-                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)
-
-class FileCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+) (?P<filename>\S*?\.(?P<subcommand>\w+)) *(?P<settings>.*?)(?=\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)

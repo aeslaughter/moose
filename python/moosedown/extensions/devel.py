@@ -8,6 +8,7 @@ import importlib
 import collections
 
 from moosedown import common
+from moosedown.common import exceptions
 from moosedown.base import components
 from moosedown.extensions import core, floats, command, table
 from moosedown.tree import html, latex, tokens
@@ -108,8 +109,17 @@ class ComponentSettings(command.CommandComponent):
 
         content = floats.Content(master, class_="card-content")
 
-        mod = importlib.import_module(self.settings['module'])
-        obj = getattr(mod, self.settings['object'])
+        try:
+            mod = importlib.import_module(self.settings['module'])
+        except ImportError:
+            msg = "Unable to load the '{}' module."
+            raise exceptions.TokenizeException(msg, self.settings['module'])
+
+        try:
+            obj = getattr(mod, self.settings['object'])
+        except AttributeError:
+            msg = "Unable to load the '{}' attribute from the '{}' module."
+            raise exceptions.TokenizeException(msg, self.settings['object'], self.settings['module'])
 
         if hasattr(obj, 'defaultSettings'):
             settings = obj.defaultSettings()
@@ -121,11 +131,8 @@ class ComponentSettings(command.CommandComponent):
             raise exceptions.TokenizeException(msg, mod, obj)
 
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
-
         tbl = table.builder(rows, headings=[u'Key', u'Default', u'Description'])
         tbl.parent = content
-
-        #print master
         return master
 
 

@@ -122,15 +122,19 @@ class RenderCaption(components.RenderComponent):
     #    self._count.clear() #TODO: restore the reinit() method
 
     def createMaterialize(self, token, parent):
-        tag = token.prefix.lower()
+
+
+        #tag = token.prefix.lower()
         #self._count[tag] += 1
 
 
         content = html.Tag(parent, 'div', class_="card-content")
         caption = html.Tag(content, 'p', class_="moose-caption")
 
-        heading = html.Tag(caption, 'span', class_="moose-caption-heading")
-        html.String(heading, content=u"{} {}: ".format(token.prefix, token.number))
+        if token.prefix:
+            heading = html.Tag(caption, 'span', class_="moose-caption-heading")
+            html.String(heading, content=u"{} {}: ".format(token.prefix, token.number))
+
         text = html.Tag(caption, 'span', class_="moose-caption-text")
         return text
 

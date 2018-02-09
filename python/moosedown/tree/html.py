@@ -22,6 +22,15 @@ class Tag(NodeBase):
         if self.string:
             String(self, content=self.string)
 
+    def __setitem__(self, key, value):
+        """
+        Create/set an attribute.
+        """
+        if (key == 'class') and (key in self):
+            NodeBase.__setitem__(self, key, '{} {}'.format(self.get(key), value))
+        else:
+            NodeBase.__setitem__(self, key, value)
+
     @property
     def style(self):
         """Return the HTML style attribute."""

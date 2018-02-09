@@ -51,7 +51,7 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         for comp in self.components:
             comp.reinit()
 
-    def parse(self, root, content):
+    def parse(self, root, content, group=None):
         """
         Perform the parsing of the supplied content into an AST with the provided root node.
 
@@ -68,7 +68,7 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
 
         # Tokenize
         self.reinit()
-        self.__lexer.tokenize(root, self.__lexer.grammer(), node.content)
+        self.__lexer.tokenize(root, self.__lexer.grammer(group), node.content)
 
         # Report errors
         for token in anytree.PreOrderIter(root):

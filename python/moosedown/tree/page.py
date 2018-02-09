@@ -78,6 +78,9 @@ class LocationNodeBase(PageNodeBase):
 
         return nodes
 
+    def relative(self, other):
+        return os.path.relpath(self.local, os.path.dirname(other.local))
+
     def __repr__(self):
         out = '{} ({}): {}'.format(self.name, self.__class__.__name__, self.source)
         return mooseutils.colorText(out, self.COLOR)
