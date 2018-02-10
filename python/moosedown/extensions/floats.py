@@ -37,7 +37,7 @@ class FloatExtension(components.Extension):
         renderer.add(Content, RenderContent())
         renderer.add(Float, RenderFloat())
         renderer.add(Caption, RenderCaption())
-        #renderer.add(Modal, RenderModal())
+        renderer.add(Modal, RenderModal())
         #renderer.add(Tabs, RenderTabs())
         #renderer.add(Tab, RenderTab())
 
@@ -48,20 +48,17 @@ class FloatExtension(components.Extension):
     def reinit(self):
         Caption.COUNTS.clear()
 
-
-class Modal(tokens.Token):
-    pass
-
+"""
 class Tabs(tokens.Token):
     pass
 
 class Tab(tokens.Token):
     PROPERTIES = [Property("title", ptype=unicode, required=True)]
+"""
 
 class Modal(tokens.Token):
     PROPERTIES = [Property("title", ptype=unicode, required=True),
-                  Property("icon", ptype=unicode)]
-    pass
+                  Property("bottom", ptype=bool, default=False)]
 
 
 #class RenderShortcutLink(core.RenderShortcutLink):
@@ -92,10 +89,9 @@ class RenderFloat(components.RenderComponent):
         return div
 
     def createMaterialize(self, token, parent):
-        attributes = token.attributes
-        attributes.pop('class', None)
-        div = html.Tag(parent, 'div', class_='card', **attributes)
-        return div
+        div = html.Tag(parent, 'div', **token.attributes)
+        div['class'] = 'card'
+        return html.Tag(div, 'div', class_='card-content')
 
     def createLatex(self, token, parent):
         pass
@@ -106,7 +102,9 @@ class RenderContent(components.RenderComponent):
         pass
 
     def createMaterialize(self, token, parent):
-        return html.Tag(parent, 'div', **token.attributes)
+        content = html.Tag(parent, 'div', **token.attributes)
+        content['class'] = 'card-content'
+        return content
 
     def createLatex(self, token, parent):
         pass
@@ -128,8 +126,8 @@ class RenderCaption(components.RenderComponent):
         #self._count[tag] += 1
 
 
-        content = html.Tag(parent, 'div', class_="card-content")
-        caption = html.Tag(content, 'p', class_="moose-caption")
+        #content = html.Tag(parent, 'div', class_="card-content")
+        caption = html.Tag(parent, 'p', class_="moose-caption")
 
         if token.prefix:
             heading = html.Tag(caption, 'span', class_="moose-caption-heading")
@@ -152,12 +150,28 @@ class RenderModal(components.RenderComponent):
     def createMaterialize(self, token, parent):
         tag = uuid.uuid4()
 
+        # TODO: parent must be <a>
+        parent['class'] = 'modal-trigger'
+        parent['href'] = u'#{}'.format(tag)
+
+
+        cls = "modal bottom-sheet" if token.bottom else "modal"
+        modal = html.Tag(parent.parent, 'div', class_=cls, id_=tag)
+        modal_content = html.Tag(modal, 'div', class_="modal-content")
+        html.Tag(modal_content, 'h4', string=token.title)
+
+        #footer = html.Tag(modal, 'div', class_="modal-footer grey lighten-3")
+        #close = html.Tag(footer, 'a', string=u'Done', class_="modal-action modal-close btn-flat")
+
+        return modal_content
+
+        """
         div = html.Tag(parent, 'div', class_='moose-modal-button')
         data = {'data-tooltip':token.title, 'data-position':'top', 'data-delay':'50'}
         btn = html.Tag(div, 'a',
                        class_="tooltipped btn-floating btn-small modal-trigger",
                        href="#{}".format(tag), **data)
-       # html.String(btn, content=token.title)
+        # html.String(btn, content=token.title)
 
         if token.icon:
             icon = html.Tag(btn, 'i', class_="material-icons")
@@ -176,6 +190,7 @@ class RenderModal(components.RenderComponent):
         html.String(close, content=u'Done')
 
         return modal_content
+        """
 
     def createLatex(self, token, parent):
         pass

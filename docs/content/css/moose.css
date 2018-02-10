@@ -63,6 +63,10 @@ html {
   color: red;
 }
 
+.modal.bottom-sheet{
+    max-height:85%;
+}
+
 div.moose-code-compare pre
 {
   font-size: 85%;

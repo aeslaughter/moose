@@ -18,6 +18,7 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.include',
                       'moosedown.extensions.floats',
                       'moosedown.extensions.media',
+                      'moosedown.extensions.listing',
                       'moosedown.extensions.table',
                       'moosedown.extensions.autolink',
                       'moosedown.extensions.devel',
@@ -26,7 +27,7 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
 
 def load_config(filename):
     """
-    Read the config.hit file and create the Translator object.
+    Read the config.hit file andb create the Translator object.
     """
     node = mooseutils.hit_load(filename)
 

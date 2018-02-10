@@ -115,8 +115,11 @@ class CommandBase(components.TokenComponent):
         try:
             obj = self.translator.__EXTENSION_COMMANDS__[cmd]
         except KeyError:
-            msg = "The following command combination is unknown: '{} {}'."
-            raise common.exceptions.TokenizeException(msg.format(*cmd))
+            try:
+                obj = self.translator.__EXTENSION_COMMANDS__[(cmd[0], '*')]
+            except KeyError:
+                msg = "The following command combination is unknown: '{} {}'."
+                raise common.exceptions.TokenizeException(msg.format(*cmd))
 
         # Build the token
         settings, _ = common.parse_settings(obj.defaultSettings(), settings)

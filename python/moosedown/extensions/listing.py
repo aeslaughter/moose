@@ -2,6 +2,7 @@
 import os
 import re
 import copy
+import codecs
 
 import anytree
 
@@ -13,59 +14,55 @@ from moosedown.tree import tokens, html
 from moosedown.tree.base import Property
 
 def make_extension(**kwargs):
-    return MediaExtension(**kwargs)
+    return ListingExtension(**kwargs)
 
-class Image(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + [Property('src', required=True, ptype=unicode)]
-
-class Video(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + [Property('src', required=True, ptype=unicode),
-                                            Property('controls', default=True, ptype=bool),
-                                            Property('autoplay', default=True, ptype=bool),
-                                            Property('loop', default=True, ptype=bool)]
-
-class MediaExtension(command.CommandExtension):
+class ListingExtension(command.CommandExtension):
 
     @staticmethod
     def defaultConfig():
         config = components.Extension.defaultConfig()
-        config['prefix'] = (u'Figure', "The caption prefix (e.g., Fig.).")
+        config['prefix'] = (u'Listing', "The caption prefix (e.g., Fig.).")
+        config['height'] = (u'300px', "The default height for listings.")
         return config
 
     def extend(self, reader, renderer):
 
         self.requires(command, floats)
 
-        self.addCommand(ImageCommand())
-        self.addCommand(VideoCommand())
+        self.addCommand(ListingCommand())
+        #self.addCommand(VideoCommand())
 
-        renderer.add(Image, RenderImage())
-        renderer.add(Video, RenderVideo())
+        #renderer.add(Image, RenderImage())
+        #renderer.add(Video, RenderVideo())
 
+class ListingCommand(command.CommandComponent):
+    COMMAND = 'listing'
+    SUBCOMMAND = '*'
+    #LANGUAGE = dict(py='python'
 
-class MediaCommandBase(command.CommandComponent):
     @staticmethod
     def defaultSettings():
         settings = command.CommandComponent.defaultSettings()
-        settings['caption'] = (None, "The caption to use for the media content.")
+        settings['language'] = (u'text', "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
+        settings['caption'] = (None, "The caption to use for the listing content.")
+        settings['height'] = (u'300px', "The default height for listing content.")
         return settings
-
-    def createMedia(self, parent, src):
-        pass
 
     def createToken(self, info, parent): #pylint: disable=doc-string
 
-        src = info['subcommand']
+        # Read filename
+        filename = os.path.join(moosedown.ROOT_DIR, info['subcommand'])
+        if not os.path.exists(filename):
+            msg = "{} does not exist."
+            raise exceptions.TokenizeException(msg, filename)
 
-        if src.startswith('http') or parent.root.page is None:
-            location = src
-        else:
-            node = parent.root.page.findall(src, maxcount=1, mincount=1, exc=exceptions.TokenizeException)
-            location = unicode(node[0].relative(parent.root.page))
+        with codecs.open(filename, encoding='utf-8') as fid:
+            content = fid.read()
 
-        flt = floats.Float(parent, **self.attributes)
-        self.createMedia(flt, location)
+        # Listing container
+        flt = floats.Float(parent)
 
+        # Captions
         cap = self.settings['caption']
         key = self.settings['id']
         if key:
@@ -76,38 +73,25 @@ class MediaCommandBase(command.CommandComponent):
             caption = floats.Caption(flt)
             self.translator.reader.parse(caption, cap, moosedown.INLINE)
 
+        code = tokens.Code(flt, style="height:{};".format(self.settings['height']),
+                           language=self.settings['language'],
+                           code=self.createContent(content))
+
+
+        # TODO: OPTIONAL
+        #footer = floats.Content(flt, class_='moose-listing-footer')
+        a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
+        modal = floats.Modal(a, bottom=True, title=filename)
+        tokens.Code(modal,
+                           language=self.settings['language'],
+                           code=self.createContent(content))
+
         return parent
 
+    def createContent(self, content):
+        return content
 
-class ImageCommand(MediaCommandBase):
-    """
-    Creates an AutoLink when *.md is detected, otherwise a core.Link token.
-    """
-    COMMAND = 'media'
-    SUBCOMMAND = ('jpg', 'jpeg', 'gif', 'png', 'svg')
-
-    def createMedia(self, parent, src):
-        return Image(parent, src=src)
-
-
-class VideoCommand(MediaCommandBase):
-    COMMAND = 'media'
-    SUBCOMMAND = ('ogg', 'webm', 'mp4')
-
-    @staticmethod
-    def defaultSettings():
-        settings = MediaCommandBase.defaultSettings()
-        settings['controls'] = (True, "Display the video player controls.")
-        settings['loop'] = (False, "Automatically loop the video.")
-        settings['autoplay'] = (False, "Automatically start playing the video.")
-        return settings
-
-    def createMedia(self, parent, src):
-        return Video(parent, src=src, controls=self.settings['controls'],
-                                      loop=self.settings['loop'],
-                                      autoplay=self.settings['autoplay'])
-
-
+"""
 class RenderImage(components.RenderComponent):
 
     def createHTML(self, token, parent): #pylint: disable=doc-string
@@ -141,3 +125,4 @@ class RenderVideo(components.RenderComponent):
             video['autoplay'] = 'autoplay'
         if token.loop:
             video['loop'] = 'loop'
+"""

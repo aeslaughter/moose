@@ -42,7 +42,6 @@ class TestVideoCommandTokenize(testing.MooseDocsTestCase):
 
     def testToken(self):
         ast = self.ast(u'!media inl_blue.png')
-        print ast
         self.assertFalse(True)
 
 class TestImageCommandTokenize(testing.MooseDocsTestCase):
@@ -52,7 +51,6 @@ class TestImageCommandTokenize(testing.MooseDocsTestCase):
 
     def testToken(self):
         ast = self.ast(u'!media inl_blue.png')
-        print ast
         self.assertFalse(True)
 
 # RENDERER TESTS
