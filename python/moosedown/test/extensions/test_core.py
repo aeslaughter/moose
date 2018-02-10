@@ -10,7 +10,7 @@ from moosedown.base import testing, renderers
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
     """Test Token object for <EXTENSION> MooseDocs extension."""
-    # There are no tokens defined in teh core, but in the future thier might. Having this empty
+    # There are no tokens defined in the core, but in the future thier might. Having this empty
     # test will produce a usefull error from the integrety tests.
 
 # TOKENIZE TESTS

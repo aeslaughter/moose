@@ -4,7 +4,7 @@ import uuid
 import collections
 
 from moosedown.base import components
-from moosedown.tree import tokens, html
+from moosedown.tree import tokens, html, latex
 from moosedown.tree.base import Property
 
 def make_extension(**kwargs):
@@ -65,7 +65,7 @@ class KatexBlockEquationComponent(components.TokenComponent):
 
         # Build the token
         is_numbered = not info['cmd'].endswith('*')
-        prefix = unicode(self.extension['prefix']) if is_numbered else None
+        prefix = unicode(self.extension['prefix']) if is_numbered else Nonef
         token = LatexBlockEquation(parent, tex=tex, prefix=prefix, id_=eq_id)
 
         # Add a label
@@ -110,7 +110,7 @@ class RenderLatexEquation(components.RenderComponent):
 
         else:
             # Wrap all equation related items in an outer div
-            div = html.Tag(parent, 'div', class_='moose-katex-block')
+            div = html.Tag(parent, 'div', class_='moose-katex-block-equation')
             display = 'true'
 
             # Create equation content and number (if it is valid)
@@ -128,4 +128,9 @@ class RenderLatexEquation(components.RenderComponent):
         return parent
 
     def createLatex(self, token, parent):
-        pass
+        if isinstance(token, LatexInlineEquation):
+            latex.String(parent, content=u'${}$'.format(token.tex))
+        else:
+            cmd = 'equation' if token.number else 'equation*'
+            latex.Environment(parent, cmd , string=unicode(token.tex))
+        return parent

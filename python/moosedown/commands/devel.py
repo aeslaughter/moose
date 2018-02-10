@@ -1,5 +1,6 @@
 """Developer tools for MooseDocs."""
 import os
+import sys
 import re
 import importlib
 import logging
@@ -49,51 +50,40 @@ def main(options):
     # Exit if file exists
     if os.path.exists(output):
         LOG.error('The test file exists: %s.', output)
-        #sys.exit(1)
+        sys.exit(1)
 
     # Open file for writting
     fid = open(output, 'w')
 
     # Header
-    items = dict(EXTENSION=mod_name, EXTENSIONROOT=ext_dir, EXTENSIONNAME=name)
+    items = dict(MODULE=mod_name, EXTENSIONROOT=ext_dir, EXTENSIONNAME=name)
     func = lambda m: sub_function(m, items)
     fid.write(SUB_RE.sub(func, HEAD))
 
     # Tokens
-    fid.write(TOKEN_HEAD)
+    func = lambda m: sub_function(m, dict(MODULE=mod_name))
+    fid.write(SUB_RE.sub(func, TOKEN_HEAD))
     for obj in token_objects:
-        func = lambda m: sub_function(m, dict(NAME=obj[0], EXTENSION=mod_name))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name))
         fid.write(SUB_RE.sub(func, TOKEN_TEST))
 
     # Tokenize Tests
     fid.write("\n# TOKENIZE TESTS")
     for obj in reader_objects:
-        func = lambda m: sub_function(m, dict(NAME=obj[0], BASE="testing.MooseDocsTestCase"))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, BASE="testing.MooseDocsTestCase"))
         fid.write(SUB_RE.sub(func, TOKENIZE))
 
     # Render Tests
     fid.write("\n# RENDERER TESTS")
     for obj in render_objects:
-        for renderer in RENDERERS:
-            items = dict(NAME=obj[0],
-                         NODE="",
-                         RENDERER=renderer,
-                         SUFFIX=renderer.replace('Renderer', ''))
-            if renderer == 'MaterializeRenderer':
-                items['TEXT'] = ""
-                items['BASE'] = 'Test<NAME>HTML'.replace('<NAME>', obj[0])
+        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, RENDERER="HTMLRenderer"))
+        fid.write(SUB_RE.sub(func, HTML))
 
-            else:
-                items['TEXT'] = "\n    TEXT = u'ENTER TEXT HERE'"
-                items['BASE'] = "testing.MooseDocsTestCase"
+        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, RENDERER="MaterializeRenderer"))
+        fid.write(SUB_RE.sub(func, MATERIALIZE))
 
-            if renderer == 'LatexRenderer':
-                items['NODE'] = LATEX_NODE
-            elif renderer == 'HTMLRenderer':
-                items['NODE'] = HTML_NODE
-
-            func = lambda m: sub_function(m, items)
-            fid.write(SUB_RE.sub(func, RENDER))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, RENDERER="LatexRenderer"))
+        fid.write(SUB_RE.sub(func, LATEX))
 
     # Finish
     fid.write(FOOT)
@@ -103,8 +93,10 @@ def main(options):
 RENDERERS = ['HTMLRenderer', 'MaterializeRenderer', 'LatexRenderer']
 
 HEAD="""#!/usr/bin/env python
-\"\"\"Testing for <EXTENSION> MooseDocs extension.\"\"\"
+\"\"\"Testing for <MODULE> MooseDocs extension.\"\"\"
 import unittest
+
+import moosedown
 from <EXTENSIONROOT> import <EXTENSIONNAME>
 from moosedown.tree import tokens, html, latex
 from moosedown.base import testing, renderers
@@ -113,32 +105,58 @@ from moosedown.base import testing, renderers
 TOKENIZE="""
 class Test<NAME>Tokenize(<BASE>):
     \"\"\"Test tokenization of <NAME>\"\"\"
+
+    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+
     def testToken(self):
-        pass
+        self.assertFalse(True)
 """
 
-RENDER="""
-class Test<NAME><SUFFIX>(<BASE>):
+HTML="""
+class Test<NAME>HTML(testing.MooseDocsTestCase):
     \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
 
-    RENDERER = renderers.<RENDERER><TEXT>
-    <NODE>
+    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+    RENDERER = renderers.<RENDERER>
+    TEXT = u'TEST STRING HERE'
+
+    def node(self):
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
+
     def testTree(self):
         node = self.node()
+        self.assertFalse(True)
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertEqual(node.write(), "GOLD")
 """
 
-HTML_NODE="""
-    def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+MATERIALIZE="""
+class Test<NAME>Materialize(Test<NAME>HTML):
+    \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
+
+    RENDERER = renderers.<RENDERER>
 """
 
-LATEX_NODE="""
+LATEX="""
+class Test<NAME>Latex(testing.MooseDocsTestCase):
+    \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
+
+    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+    RENDERER = renderers.<RENDERER>
+    TEXT = u'TEST STRING HERE'
+
     def node(self):
-        return self.render(self.TEXT).find('document')
+        return self.render(self.TEXT).find('document')(0)
+
+    def testTree(self):
+        node = self.node()
+        self.assertFalse(True)
+
+    def testWrite(self):
+        node = self.node()
+        self.assertEqual(node.write(), "GOLD")
 """
 
 FOOT="""
@@ -149,10 +167,12 @@ if __name__ == '__main__':
 TOKEN_HEAD="""
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
-    \"\"\"Test Token object for <EXTENSION> MooseDocs extension.\"\"\"
+    \"\"\"Test Token object for <MODULE> MooseDocs extension.\"\"\"
+
+    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
 """
 
 TOKEN_TEST="""
     def test<NAME>(self):
-        pass
+        self.assertFalse(True)
 """
