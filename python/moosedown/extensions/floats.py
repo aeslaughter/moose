@@ -37,9 +37,9 @@ class FloatExtension(components.Extension):
         renderer.add(Content, RenderContent())
         renderer.add(Float, RenderFloat())
         renderer.add(Caption, RenderCaption())
-        renderer.add(Modal, RenderModal())
-        renderer.add(Tabs, RenderTabs())
-        renderer.add(Tab, RenderTab())
+        #renderer.add(Modal, RenderModal())
+        #renderer.add(Tabs, RenderTabs())
+        #renderer.add(Tab, RenderTab())
 
         #renderer.add(ShortcutLink, RenderShortcutLink)
 

@@ -26,7 +26,6 @@ class Video(tokens.Token):
 
 
 class MediaExtension(command.CommandExtension):
-    #REQUIRES = [moosedown.extensions.command, moosedown.extensions.floats] #TODO: check this
 
     @staticmethod
     def defaultConfig():
@@ -35,6 +34,8 @@ class MediaExtension(command.CommandExtension):
         return config
 
     def extend(self, reader, renderer):
+
+        self.requires(command, floats)
 
         self.addCommand(ImageCommand())
         self.addCommand(VideoCommand())

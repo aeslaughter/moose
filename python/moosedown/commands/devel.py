@@ -41,8 +41,8 @@ def main(options):
     token_objects = testing.get_parent_objects(mod, tokens.Token)
 
     # Reader
-    reader_objects = testing.get_parent_objects(mod, command.CommandComponent)
-    reader_objects += testing.get_parent_objects(mod, components.TokenComponent)
+    reader_objects = set(testing.get_parent_objects(mod, command.CommandComponent))
+    reader_objects.update(testing.get_parent_objects(mod, components.TokenComponent))
 
     # Render
     render_objects = testing.get_parent_objects(mod, components.RenderComponent)

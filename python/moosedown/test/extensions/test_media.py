@@ -1,139 +1,142 @@
 #!/usr/bin/env python
 """Testing for moosedown.extensions.media MooseDocs extension."""
 import unittest
-from moosedown.extensions import media
-from moosedown.tree import tokens
+
+import moosedown
+from moosedown.extensions import core, command, floats, media
+from moosedown.tree import tokens, html, latex
 from moosedown.base import testing, renderers
 
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
-    """Test Token object for <EXTENSION> MooseDocs extension."""
+    """Test Token object for moosedown.extensions.media MooseDocs extension."""
+
+    EXTENSIONS = [core, command, floats, media]
 
     def testImage(self):
-        pass
+        tok = media.Image(src=u'foo')
+        self.assertEqual(tok.src, u'foo')
 
     def testVideo(self):
-        pass
+        tok = media.Video(src=u'foo')
+        self.assertEqual(tok.src, u'foo')
+        self.assertTrue(tok.controls)
+        self.assertTrue(tok.autoplay)
+        self.assertTrue(tok.loop)
+
+        tok = media.Video(src=u'foo', controls=False, autoplay=False, loop=False)
+        self.assertEqual(tok.src, u'foo')
+        self.assertFalse(tok.controls)
+        self.assertFalse(tok.autoplay)
+        self.assertFalse(tok.loop)
 
 # TOKENIZE TESTS
-class TestImageCommandTokenize(testing.MooseDocsTestCase):
-    """Test tokenization of ImageCommand"""
-    def testToken(self):
-        pass
-
 class TestMediaCommandBaseTokenize(testing.MooseDocsTestCase):
     """Test tokenization of MediaCommandBase"""
-    def testToken(self):
-        pass
+    # Base class, no test needed
 
 class TestVideoCommandTokenize(testing.MooseDocsTestCase):
     """Test tokenization of VideoCommand"""
+
+    EXTENSIONS = [core, command, floats, media]
+
     def testToken(self):
-        pass
+        ast = self.ast(u'!media inl_blue.png')
+        print ast
+        self.assertFalse(True)
 
 class TestImageCommandTokenize(testing.MooseDocsTestCase):
     """Test tokenization of ImageCommand"""
-    def testToken(self):
-        pass
 
-class TestMediaCommandBaseTokenize(testing.MooseDocsTestCase):
-    """Test tokenization of MediaCommandBase"""
-    def testToken(self):
-        pass
+    EXTENSIONS = [core, command, floats, media]
 
-class TestVideoCommandTokenize(testing.MooseDocsTestCase):
-    """Test tokenization of VideoCommand"""
     def testToken(self):
-        pass
+        ast = self.ast(u'!media inl_blue.png')
+        print ast
+        self.assertFalse(True)
 
 # RENDERER TESTS
 class TestRenderImageHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderImage with HTMLRenderer"""
 
+    EXTENSIONS = [core, command, floats, media]
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'TEST STRING HERE'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
+        self.assertFalse(True)
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertEqual(node.write(), "GOLD")
 
 class TestRenderImageMaterialize(TestRenderImageHTML):
     """Test renderering of RenderImage with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderImageLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderImage with LatexRenderer"""
 
+    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.media]
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'TEST STRING HERE'
 
     def node(self):
-        return self.render(self.TEXT).find('document')
+        return self.render(self.TEXT).find('document')(0)
 
     def testTree(self):
         node = self.node()
+        self.assertFalse(True)
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertEqual(node.write(), "GOLD")
 
 class TestRenderVideoHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with HTMLRenderer"""
 
+    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.media]
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'TEST STRING HERE'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
+        self.assertFalse(True)
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertEqual(node.write(), "GOLD")
 
 class TestRenderVideoMaterialize(TestRenderVideoHTML):
     """Test renderering of RenderVideo with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
 
-    def testTree(self):
-        node = self.node()
-
-    def testWrite(self):
-        node = self.node()
-        html = node.write()
-
 class TestRenderVideoLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with LatexRenderer"""
 
+    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.media]
     RENDERER = renderers.LatexRenderer
-    TEXT = u'ENTER TEXT HERE'
+    TEXT = u'TEST STRING HERE'
 
     def node(self):
-        return self.render(self.TEXT).find('document')
+        return self.render(self.TEXT).find('document')(0)
 
     def testTree(self):
         node = self.node()
+        self.assertFalse(True)
 
     def testWrite(self):
         node = self.node()
-        html = node.write()
+        self.assertEqual(node.write(), "GOLD")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

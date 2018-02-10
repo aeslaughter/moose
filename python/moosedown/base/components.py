@@ -24,6 +24,25 @@ class Extension(mixins.ConfigObject, mixins.TranslatorObject):
         """
         pass
 
+    def requires(self, *args):
+        """
+        Require that the supplied extension module exists within the Translator object. This
+        method cannot be called before init().
+        """
+        if self.translator is None:
+            raise exceptions.MooseDocsException("The 'requires' method should be called from " \
+                                                "within the 'extend' method.")
+
+        available = [type(e) for e in self.translator.extensions]
+        messages = []
+        for ext in args:
+            if ext not in available:
+                messages.append("The {} extension is required but not included.".format(ext.__name__))
+
+        if messages:
+            raise exceptions.MooseDocsException('\n'.join(messages))
+
+
 class Component(mixins.TranslatorObject):
     """
     Each extension is made up of components, both for tokenizing and rendering. The compoments

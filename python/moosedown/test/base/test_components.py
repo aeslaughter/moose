@@ -34,6 +34,9 @@ class TestExtension(unittest.TestCase):
         self.assertTrue(ext.called)
         self.assertIs(ext.translator, t)
 
+    def testRequires(self):
+        pass #TODO: add a test
+
 class TestComponent(unittest.TestCase):
     """
     Test Component base class.
