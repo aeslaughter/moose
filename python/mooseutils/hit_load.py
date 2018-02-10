@@ -11,12 +11,12 @@ class HitNode(anytree.NodeMixin):
     TODO: Store parameters as hit.Node and create a new node with __setitem__
     TODO: Remove parameters property
     """
-    def __init__(self, name='', parent=None, line=None, hitnode=None):
+    def __init__(self, parent=None, hitnode=None):
         super(HitNode, self).__init__()
-        self.name = name           # anytree.Node property
+        self.name = hitnode.path() # anytree.Node property
         self.parent = parent       # anytree.Node property
-        self.__parameters = dict() # HitNode property
-        self.__line = line
+        #self.__parameters = dict() # HitNode property
+        self.__line = hitnode.line()
         self.__hitnode = hitnode   # hit.Node object
 
     #@property
@@ -78,14 +78,14 @@ class HitNode(anytree.NodeMixin):
         """
         return self.__hitnode.render()
 
-    def __contains__(self, param):
+    def __contains__(self, name):
         """
         Provides operator in access to the parameters of this node.
 
             if 'foo' in param:
                 ...
         """
-        return param in self.__parameters
+        return self.__hitnode.param(name) is not None
 
     def __iter__(self):
         """
@@ -97,24 +97,24 @@ class HitNode(anytree.NodeMixin):
         for child in self.children:
             yield child
 
-    def __getitem__(self, param):
+    def __getitem__(self, name):
         """
         Provides operator [] access to the parameters of this node.
         """
-        return self.__parameters[param].param()
+        return self.__hitnode.param(name)
 
-    def __setitem__(self, param, value):
+    def __setitem__(self, name, value):
         """
         Provides operator [] access to the parameters of this node.
         """
-        return self.__parameters[param].setVal(value)
+        self.__hitnode.param(name).setVal(value)
 
     def __repr__(self):
         """
         Dislpay the node name and parameters.
         """
-        if self.__parameters:
-            params = {k:v.param() for k,v in self.__parameters.iteritems()}
+        params = {n.path():n.param() for n in self.__hitnode.children(hit.NodeType.Field)}
+        if params:
             return '{}: {}'.format(self.name, repr(params))
         return self.name
 
@@ -159,10 +159,8 @@ def _hit_parse(root, hit_node, filename):
     """
     for hit_child in hit_node.children():
         if hit_child.type() == hit.NodeType.Section:
-            new = HitNode(hit_child.path(), parent=root, line=hit_child.line(), hitnode=hit_child)
+            new = HitNode(parent=root, hitnode=hit_child)
             _hit_parse(new, hit_child, filename)
-        elif hit_child.type() == hit.NodeType.Field:
-            root._HitNode__parameters[hit_child.path()] = hit_child
 
     return root
 

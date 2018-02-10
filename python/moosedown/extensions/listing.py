@@ -24,7 +24,6 @@ class ListingExtension(command.CommandExtension):
     def defaultConfig():
         config = components.Extension.defaultConfig()
         config['prefix'] = (u'Listing', "The caption prefix (e.g., Fig.).")
-        config['height'] = (u'300px', "The default height for listings.")
         return config
 
     def extend(self, reader, renderer):
@@ -42,7 +41,7 @@ class GeneralListingCommand(command.CommandComponent):
         settings = command.CommandComponent.defaultSettings()
         settings['language'] = (u'text', "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
         settings['caption'] = (None, "The caption to use for the listing content.")
-        settings['height'] = (u'350px', "The default height for listing content.")
+        settings['max-height'] = (u'350px', "The default height for listing content.")
         settings['link'] = (True, "Include a link to the filename after the listing.")
         settings['prefix'] = ('', "Text to include prior to the included text.")
         settings['suffix'] = ('', "Text to include after to the included text.")
@@ -103,18 +102,26 @@ class GeneralListingCommand(command.CommandComponent):
             else:
                 self.settings['language'] = 'text'
 
-        code = tokens.Code(flt, style="height:{};".format(self.settings['height']),
+        code = tokens.Code(flt, style="max-height:{};".format(self.settings['max-height']),
                            language=self.settings['language'],
                            code=self.extractContent(filename, self.settings))
 
         # Add bottom modal
         if self.settings['link']:
+            with open(filename, 'r') as fid:
+                content = fid.read()
             a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
             modal = floats.Modal(a, bottom=True, title=filename)
             tokens.Code(modal, language=self.settings['language'],
-                        code=content)
+                        code=self.read(filename))
 
         return parent
+
+    @staticmethod
+    def read(filename):
+        with codecs.open(filename, encoding='utf-8') as fid:
+            content = fid.read()
+        return content
 
     def extractContent(self, filename, settings):
         """
@@ -125,8 +132,7 @@ class GeneralListingCommand(command.CommandComponent):
             settings[dict]: The setting from the createToken method.
         """
 
-        with codecs.open(filename, encoding='utf-8') as fid:
-            content = fid.read()
+        content = self.read(filename)
 
         if settings['re']:
             match = re.search(settings['re'], content, flags=eval(settings['re-flags']))
@@ -245,7 +251,7 @@ class GeneralListingCommand(command.CommandComponent):
 
         return '\n'.join(lines[start_idx:end_idx])
 
-class GeneralListingCommand(GeneralListingCommand):
+class InputListingCommand(GeneralListingCommand):
     """
     Special listing command for MOOSE hit imput files.
     """
@@ -262,7 +268,7 @@ class GeneralListingCommand(GeneralListingCommand):
     def extractContent(self, filename, settings):
 
         if self.settings['block']:
-            return extractInputBlocks(filename, self.settings['block'])
+            return self.extractInputBlocks(filename, self.settings['block'])
 
         return GeneralListingCommand.extractContent(self, filename, settings)
 
@@ -270,6 +276,11 @@ class GeneralListingCommand(GeneralListingCommand):
     def extractInputBlocks(filename, blocks):
 
         hit = mooseutils.hit_load(filename)
-        nodes = [hit.find(block, unique=True) for block in blocks]
-
-        #return '\n'.join([str()
+        out = []
+        for block in blocks.split(' '):
+            node = hit.find(block, fuzzy=False)
+            if node is None:
+                msg = "Unable to find block '{}' in {}."
+                raise exceptions.TokenizeException(msg, block ,filename)
+            out.append(unicode(node.render()))
+        return '\n'.join(out)

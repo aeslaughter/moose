@@ -17,6 +17,10 @@ class TestHitLoad(unittest.TestCase):
 
     def testBasic(self):
         root = mooseutils.hit_load(os.path.join('..', '..', 'test_files', 'test.hit'))
+
+        print root
+        print root.render()
+
         self.assertEqual(root.children[0].name, 'A')
         self.assertEqual(root.children[0]['param'], 'foo')
         self.assertEqual(root.children[0].children[0].name, 'A-1')
