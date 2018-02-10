@@ -52,7 +52,6 @@ class Translator(mixins.ConfigObject):
                 if comp.extension is None:
                     comp.extension = ext
 
-
     @property
     def extensions(self):
         """

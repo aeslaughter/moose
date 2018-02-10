@@ -33,10 +33,10 @@ class Extension(mixins.ConfigObject, mixins.TranslatorObject):
             raise exceptions.MooseDocsException("The 'requires' method should be called from " \
                                                 "within the 'extend' method.")
 
-        available = [type(e) for e in self.translator.extensions]
+        available = [e.__module__ for e in self.translator.extensions]
         messages = []
         for ext in args:
-            if ext not in available:
+            if ext.__name__ not in available:
                 messages.append("The {} extension is required but not included.".format(ext.__name__))
 
         if messages:
