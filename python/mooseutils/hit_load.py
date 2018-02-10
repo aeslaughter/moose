@@ -15,16 +15,8 @@ class HitNode(anytree.NodeMixin):
         super(HitNode, self).__init__()
         self.name = hitnode.path() # anytree.Node property
         self.parent = parent       # anytree.Node property
-        #self.__parameters = dict() # HitNode property
         self.__line = hitnode.line()
         self.__hitnode = hitnode   # hit.Node object
-
-    #@property
-    #def parameters(self):
-    #    """
-    #    Access to the parameters dict() for this node.
-    #    """
-    #    return self.__parameters
 
     @property
     def line(self):
@@ -168,3 +160,4 @@ if __name__ == '__main__':
     filename = '../../test/tests/kernels/simple_diffusion/simple_diffusion.i'
     root = hit_load(filename)
     print root
+    print root.render()

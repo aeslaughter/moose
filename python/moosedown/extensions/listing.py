@@ -53,7 +53,7 @@ class GeneralListingCommand(command.CommandComponent):
         settings['line'] = (None, "A portion of text that unique identifies a single line to "
                                   "include.")
         settings['re'] = (False, "Extract content via a regex, if the 'content' group exists it is used as the desired content, otherwise group 0 is used.")
-        settings['re-flags'] = ('re.MULTILINE|re.DOTALL|re.UNICODE', "Python re flags.")
+        settings['re-flags'] = ('re.M|re.S|re.U', "Python re flags.")
         settings['start'] = (None, "A portion of text that unique identifies the starting "
                                    "location for including text, if not provided the beginning "
                                    "of the file is utilized.")
@@ -223,7 +223,7 @@ class GeneralListingCommand(command.CommandComponent):
         return content
 
     @staticmethod
-    def extractLineRange(content, start, end, include_start, include_end, regex):
+    def extractLineRange(content, start, end, include_start, include_end):
         """
         Function for extracting content between start/end strings.
 

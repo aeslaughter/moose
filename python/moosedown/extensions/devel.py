@@ -135,7 +135,6 @@ class ComponentSettings(command.CommandComponent):
         tbl.parent = content
         return master
 
-
 class RenderExampleToken(components.RenderComponent):
 
     def createMaterialize(self, token, parent):
@@ -143,10 +142,10 @@ class RenderExampleToken(components.RenderComponent):
         div = html.Tag(parent, 'div', class_='row card-content')
 
         # LEFT
-        left = html.Tag(div, 'div', class_='moose-example-code col s12 m12 l6')
+        left = html.Tag(div, 'div', class_='moose-example-code col s12 m12 l12')
         ast = tokens.Code(left, code=token.data)
         self.translator.renderer.process(left, ast)
 
         # RIGHT
-        right = html.Tag(div, 'div', class_='moose-example-rendered col s12 m12 l6')
+        right = html.Tag(div, 'div', class_='moose-example-rendered col s12 m12 l12')
         return right
