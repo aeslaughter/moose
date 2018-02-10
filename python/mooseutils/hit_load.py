@@ -72,39 +72,6 @@ class HitNode(anytree.NodeMixin):
         filter_ = lambda n: (fuzzy and name in n.name) or (not fuzzy and n.name == name)
         return [node for node in anytree.PreOrderIter(self, filter_=filter_)]
 
-    def addParameter(self, *args):
-        """
-        Add a parameter to the node. There are two options for this method.
-
-        addParameter(name, value)
-        addParameter(field)
-
-        Inputs:
-            name[str]: The name for the paramter to add.
-            value[int|float|bool|str]: The value for the parameter.
-
-            field[hit.NodeType]: The hit node to add directly.
-
-        """
-        if len(args) == 1:
-            self.__parameters[args[0].path()] = args[0]
-        elif len(args) == 2:
-            name = args[0]
-            value = args[1]
-            if isinstance(value, int):
-                field_type = hit.FieldKind.Int
-            elif isinstance(value, float):
-                field_type = hit.FieldKind.Float
-            elif isinstance(value, bool):
-                field_type = hit.FieldKind.Bool
-            else:
-                field_type = hit.FieldKind.String
-                value = str(value)
-
-            child = hit.NewField(name, field_type, value)
-            self.__hitnode.addChild(child)
-            self.__parameters[name] = child
-
     def render(self):
         """
         Render the tree with the hit library.
@@ -195,7 +162,8 @@ def _hit_parse(root, hit_node, filename):
             new = HitNode(hit_child.path(), parent=root, line=hit_child.line(), hitnode=hit_child)
             _hit_parse(new, hit_child, filename)
         elif hit_child.type() == hit.NodeType.Field:
-            root.addParameter(hit_child)
+            root._HitNode__parameters[hit_child.path()] = hit_child
+
     return root
 
 if __name__ == '__main__':
