@@ -7,6 +7,14 @@ class TestHitLoad(unittest.TestCase):
     """
     Test the hit_load function.
     """
+
+    def testRender(self):
+        root = mooseutils.hit_load(os.path.join('..', '..', 'test_files', 'test.hit'))
+        out = root.render()
+        self.assertIn('[A]', out)
+        self.assertIn('param = bar', out)
+        self.assertIn('comment', out)
+
     def testBasic(self):
         root = mooseutils.hit_load(os.path.join('..', '..', 'test_files', 'test.hit'))
         self.assertEqual(root.children[0].name, 'A')

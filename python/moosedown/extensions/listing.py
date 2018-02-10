@@ -6,6 +6,8 @@ import codecs
 
 import anytree
 
+import mooseutils
+
 import moosedown
 from moosedown.common import exceptions
 from moosedown.base import components
@@ -15,9 +17,6 @@ from moosedown.tree.base import Property
 
 def make_extension(**kwargs):
     return ListingExtension(**kwargs)
-
-#class ListingToken(tokens.Token):
-#    PROPERTIES = tokens.Token.PROPERTIES + [Property('link', default=True)]
 
 class ListingExtension(command.CommandExtension):
 
@@ -31,17 +30,12 @@ class ListingExtension(command.CommandExtension):
     def extend(self, reader, renderer):
 
         self.requires(command, floats)
+        self.addCommand(GeneralListingCommand())
+        self.addCommand(InputListingCommand())
 
-        self.addCommand(ListingCommand())
-        #self.addCommand(VideoCommand())
-
-        #renderer.add(Image, RenderImage())
-        #renderer.add(Video, RenderVideo())
-
-class ListingCommand(command.CommandComponent):
+class GeneralListingCommand(command.CommandComponent):
     COMMAND = 'listing'
     SUBCOMMAND = '*'
-    #LANGUAGE = dict(py='python'
 
     @staticmethod
     def defaultSettings():
@@ -75,15 +69,15 @@ class ListingCommand(command.CommandComponent):
         return settings
 
     def createToken(self, info, parent): #pylint: disable=doc-string
+        """
+        Build the tokens needed for displaying code listing.
+        """
 
         # Read filename
         filename = os.path.join(moosedown.ROOT_DIR, info['subcommand'])
         if not os.path.exists(filename):
             msg = "{} does not exist."
             raise exceptions.TokenizeException(msg, filename)
-
-        with codecs.open(filename, encoding='utf-8') as fid:
-            content = fid.read()
 
         # Listing container
         flt = floats.Float(parent)
@@ -99,9 +93,19 @@ class ListingCommand(command.CommandComponent):
             caption = floats.Caption(flt)
             self.translator.reader.parse(caption, cap, moosedown.INLINE)
 
+        # Create code token
+        if self.settings['language'] is None:
+            _, ext = os.path.splitext(rel_filename)
+            if ext in ['.C', '.h', '.cpp', '.hpp']:
+                self.settings['language'] = 'cpp'
+            elif ext == '.py':
+                self.settings['language'] = 'python'
+            else:
+                self.settings['language'] = 'text'
+
         code = tokens.Code(flt, style="height:{};".format(self.settings['height']),
                            language=self.settings['language'],
-                           code=self.extractContent(content, self.settings))
+                           code=self.extractContent(filename, self.settings))
 
         # Add bottom modal
         if self.settings['link']:
@@ -112,9 +116,17 @@ class ListingCommand(command.CommandComponent):
 
         return parent
 
+    def extractContent(self, filename, settings):
+        """
+        Extract the desired content from the supplied raw text from a file.
 
-    def extractContent(self, content, settings):
+        Inputs:
+            filename[unicode]: The file to read (known to exist already).
+            settings[dict]: The setting from the createToken method.
+        """
 
+        with codecs.open(filename, encoding='utf-8') as fid:
+            content = fid.read()
 
         if settings['re']:
             match = re.search(settings['re'], content, flags=eval(settings['re-flags']))
@@ -137,10 +149,16 @@ class ListingCommand(command.CommandComponent):
                                             settings['include-start'],
                                             settings['include-end'])
 
-        return self.createContent(content, settings)
+        return self.prepareContent(content, settings)
 
-    def createContent(self, content, settings):
+    def prepareContent(self, content, settings):
+        """
+        Apply the varous filters and adjustment to the supplied text.
 
+        Inputs:
+            content[unicode]: The extracted content.
+            settings[dict]: The setting from the createToken method.
+        """
         # Strip leading/trailing newlines
         content = re.sub(r'^(\n*)', '', content)
         content = re.sub(r'(\n*)$', '', content)
@@ -184,6 +202,7 @@ class ListingCommand(command.CommandComponent):
         Function for returning a single line.
 
         Args:
+          conetnt[str]: The string content to examine.
           desired[str]: The text to look for within the source file.
         """
 
@@ -203,19 +222,13 @@ class ListingCommand(command.CommandComponent):
         Function for extracting content between start/end strings.
 
         Args:
-          filename[str]: The name of the file to examine.
+          conetnt[str]: The string content to examine.
           start[str|None]: The starting line (when None is provided the beginning is used).
           end[str|None]: The ending line (when None is provided the end is used).
           include-start[bool]: If True then the start string is included
           include-end[bool]: If True then the end string is included
         """
         lines = content.split('\n')
-
-        # Read the lines
-        #with open(filename) as fid:
-        #    lines = fid.readlines()
-
-        # The default start/end positions
         start_idx = 0
         end_idx = len(lines)
 
@@ -230,41 +243,33 @@ class ListingCommand(command.CommandComponent):
                     end_idx = i + 1 if include_end else i
                     break
 
-        return ''.join(lines[start_idx:end_idx])
+        return '\n'.join(lines[start_idx:end_idx])
 
+class GeneralListingCommand(GeneralListingCommand):
+    """
+    Special listing command for MOOSE hit imput files.
+    """
 
-"""
-class RenderImage(components.RenderComponent):
+    COMMAND = 'listing'
+    SUBCOMMAND = 'i'
 
-    def createHTML(self, token, parent): #pylint: disable=doc-string
-        return html.Tag(parent, 'img', src=token.src, **token.attributes)
+    @staticmethod
+    def defaultSettings():
+        settings = GeneralListingCommand.defaultSettings()
+        settings['block'] = (None, 'Space separated list of input file block names to include.')
+        return settings
 
-    def createMaterialize(self, token, parent): #pylint: disable=doc-string
-        return html.Tag(parent, 'img', src=token.src,
-                                       class_='materialboxed moose-image center-align',
-                                       **token.attributes)
+    def extractContent(self, filename, settings):
 
-class RenderImage(components.RenderComponent):
+        if self.settings['block']:
+            return extractInputBlocks(filename, self.settings['block'])
 
-    def createHTML(self, token, parent): #pylint: disable=doc-string
-        return html.Tag(parent, 'img', src=token.src, **token.attributes)
+        return GeneralListingCommand.extractContent(self, filename, settings)
 
-    def createMaterialize(self, token, parent): #pylint: disable=doc-string
-        tag = self.createHTML(token, parent)
-        tag['class'] = 'materialboxed moose-image center-align'
-        return tag
+    @staticmethod
+    def extractInputBlocks(filename, blocks):
 
-class RenderVideo(components.RenderComponent):
-    def createHTML(self, token, parent): #pylint: disable=doc-string
-        video = html.Tag(parent, 'video', **token.attributes)
-        _, ext = os.path.splitext(token.src)
-        source = html.Tag(video,'source', src=token.src, type_="video/{}".format(ext[1:]))
+        hit = mooseutils.hit_load(filename)
+        nodes = [hit.find(block, unique=True) for block in blocks]
 
-        video['width'] = '100%'
-        if token.controls:
-            video['controls'] = 'controls'
-        if token.autoplay:
-            video['autoplay'] = 'autoplay'
-        if token.loop:
-            video['loop'] = 'loop'
-"""
+        #return '\n'.join([str()
