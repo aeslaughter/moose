@@ -6,7 +6,7 @@ import importlib
 import logging
 
 import moosedown
-from moosedown.tree import moose_docs_app_syntax
+from moosedown.tree import app_syntax
 
 LOG = logging.getLogger(__name__)
 
@@ -18,6 +18,6 @@ def main(options):
 
     location = os.path.join(moosedown.MOOSE_DIR, 'test')
 
-    root = moose_docs_app_syntax(location)
+    root = app_syntax(location)
 
     print root

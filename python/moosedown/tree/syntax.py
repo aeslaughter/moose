@@ -17,7 +17,7 @@ import anytree
 
 import mooseutils
 
-from .base import NodeBase
+from .base import NodeBase, Property
 
 LOG = logging.getLogger(__name__)
 
@@ -25,29 +25,14 @@ class SyntaxNodeBase(NodeBase):
     """
     Node for MOOSE syntax that serves as the parent for actions/objects.
     """
+    PROPERTIES = NodeBase.PROPERTIES + [Property('hidden', ptype=bool, default=False)]
+
     STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->\n'
 
-    def __init__(self, name, **kwargs):
-        super(SyntaxNodeBase, self).__init__(name, **kwargs)
+    def __init__(self, *args, **kwargs):
+        NodeBase.__init__(self, *args, **kwargs)
         self.__hidden = False
         self.__check_status = None
-
-    @property
-    def hidden(self):
-        """
-        Return the hidden status of the node.
-        """
-        return self.__hidden
-
-    @hidden.setter
-    def hidden(self, value):
-        """
-        Set the hidden status for the node.
-        """
-        if isinstance(value, bool):
-            self.__hidden = value
-        else:
-            raise TypeError("The supplied value must be a boolean.")
 
     @property
     def groups(self):
@@ -59,6 +44,18 @@ class SyntaxNodeBase(NodeBase):
             if isinstance(node, ActionNode):
                 out.update(node.groups)
         return out
+
+    @property
+    def fullpath(self):
+        """
+        Return the node full path.
+        """
+        out = []
+        node = self
+        while (node is not None):
+            out.append(node.name)
+            node = node.parent
+        return '/'.join(out)
 
     def hasGroups(self, groups):
         """
@@ -105,22 +102,22 @@ class SyntaxNodeBase(NodeBase):
         """
         out = None # not checked because it was hidden
         if self.hidden:
-            LOG.debug("Skipping documentation check for %s, it is hidden.", self.full_name)
+            LOG.debug("Skipping documentation check for %s, it is hidden.", self.fullpath)
 
         elif groups and not set(self.groups).intersection(groups):
             LOG.debug("Skipping documentation check for %s (%s), it is not listed in the provided "
-                      "groups: %s.", self.full_name, self.groups.keys(), groups)
+                      "groups: %s.", self.fullpath, self.groups.keys(), groups)
 
         else:
             filename = self.markdown(install)
             if not os.path.isfile(filename):
                 out = False
                 LOG.error("No documentation for %s, documentation for this object should be "
-                          "created in: %s", self.full_name, filename)
+                          "created in: %s", self.fullpath, filename)
                 if generate:
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
-                    LOG.info('Creating stub page for %s %s', self.full_name, filename)
+                    LOG.info('Creating stub page for %s %s', self.fullpath, filename)
                     with open(filename, 'w') as fid:
                         content = self._defaultContent()
                         if not isinstance(content, str):
@@ -155,19 +152,19 @@ class SyntaxNodeBase(NodeBase):
 
         Inputs:
             node_type[NodeCore]: The type of node to consider.
-            syntax: (optional) The syntax that must be within the object 'full_name' property.
+            syntax: (optional) The syntax that must be within the object 'fullpath' property.
             group: (optional) The group to limit the search.
             recursive: When True the search will look through all nodes in the entire tree, when
                        False only the children of the node are considered.
         """
         if recursive:
-            filter_ = lambda node: (syntax in node.full_name) and \
+            filter_ = lambda node: (syntax in node.fullpath) and \
                                    isinstance(node, node_type) and \
                                    (group is None or group in node.groups)
             return self.findall(filter_=filter_)
 
         else:
-            return [node for node in self.children if (syntax in node.full_name) and \
+            return [node for node in self.children if (syntax in node.fullpath) and \
                                                       isinstance(node, node_type) and \
                                                       (group is None or group in node.groups)]
 
@@ -177,7 +174,7 @@ class SyntaxNodeBase(NodeBase):
         """
         oname = self.__class__.__name__[:-4]
         msg = '{}: {} hidden={} groups={}'.format(oname,
-                                                  str(self.full_name),
+                                                  str(self.fullpath),
                                                   self.hidden,
                                                   self.groups.keys())
         return mooseutils.colorText(msg, self.COLOR)
@@ -194,7 +191,7 @@ class SyntaxNode(SyntaxNodeBase):
         """
         Return the expected markdown file name.
         """
-        path = os.path.join(install, self.full_name.strip('/')).split('/')
+        path = os.path.join(install, self.fullpath.strip('/')).split('/')
         path += ['index.md']
         if absolute:
             return os.path.join(self.root_directory, *path)
@@ -207,17 +204,17 @@ class SyntaxNode(SyntaxNodeBase):
         """
         stub = self.STUB_HEADER
         stub += '\n# {} System\n'.format(self.name)
-        stub += '!syntax objects {}\n\n'.format(self.full_name)
-        stub += '!syntax subsystems {}\n\n'.format(self.full_name)
-        stub += '!syntax actions {}\n'.format(self.full_name)
+        stub += '!syntax objects {}\n\n'.format(self.fullpath)
+        stub += '!syntax subsystems {}\n\n'.format(self.fullpath)
+        stub += '!syntax actions {}\n'.format(self.fullpath)
         return stub
 
 class ObjectNode(SyntaxNodeBase): #pylint: disable=abstract-method
     """
     Base class for nodes associated with C++ objects (Action, MooseObjectAction, or MooseObject).
     """
-    def __init__(self, name, item, **kwargs):
-        super(ObjectNode, self).__init__(name, **kwargs)
+    def __init__(self, parent, name, item, **kwargs):
+        SyntaxNodeBase.__init__(self, parent, name, **kwargs)
         self.__description = item['description']
         self.__parameters = item['parameters']
         self.__groups = dict()
@@ -246,7 +243,7 @@ class ObjectNode(SyntaxNodeBase): #pylint: disable=abstract-method
         The expected markdown file.
         """
         folder = self.__groups.keys()[0]
-        path = os.path.join(install, self.full_name.strip('/')).split('/')
+        path = os.path.join(install, self.fullpath.strip('/')).split('/')
         path.insert(-1, folder)
         if absolute:
             return os.path.join(self.root_directory, '/'.join(path) + '.md')
@@ -281,8 +278,8 @@ class MooseObjectNode(ObjectNode):
     """
     COLOR = 'YELLOW'
 
-    def __init__(self, key, item, **kwargs):
-        super(MooseObjectNode, self).__init__(key, item, **kwargs)
+    def __init__(self, parent, key, item, **kwargs):
+        ObjectNode.__init__(self, parent, key, item, **kwargs)
         self.__class_name = item['class'] if 'class' in item else key
 
     @property
@@ -302,7 +299,7 @@ class MooseObjectNode(ObjectNode):
             template_content = fid.read()
 
         template_content = template_content.replace('FullPathCodeClassName',
-                                                    '{}'.format(self.full_name))
+                                                    '{}'.format(self.fullpath))
         template_content = template_content.replace('CodeClassName', '{}'.format(self.name))
         stub = self.STUB_HEADER
         stub += template_content
@@ -332,7 +329,7 @@ class ActionNode(ObjectNode):
             template_content = fid.read()
 
         template_content = template_content.replace('FullPathCodeActionName',
-                                                    '{}'.format(self.full_name))
+                                                    '{}'.format(self.fullpath))
         template_content = template_content.replace('CodeActionName', '{}'.format(self.name))
         stub = self.STUB_HEADER
         stub += template_content

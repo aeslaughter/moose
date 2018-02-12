@@ -21,11 +21,11 @@ from moosedown.tree.syntax import SyntaxNode, MooseObjectNode, ActionNode, Moose
 
 LOG = logging.getLogger(__name__)
 
-def __add_moose_object_helper(name, item, parent):
+def __add_moose_object_helper(parent, name, item):
     """
     Helper to handle the Postprocessor/UserObject and Bounds/AuxKernel special case.
     """
-    node = MooseObjectNode(name, item, parent=parent)
+    node = MooseObjectNode(parent, name, item)
 
     pairs = [('Postprocessor', 'UserObjects/*'), ('AuxKernel', 'Bounds/*')]
     for base, parent_syntax in pairs:
@@ -33,7 +33,7 @@ def __add_moose_object_helper(name, item, parent):
            (item['parent_syntax'] == parent_syntax):
             node.hidden = True
 
-def __syntax_tree_helper(item, parent):
+def __syntax_tree_helper(parent, item):
     """
     Tree builder helper function.
 
@@ -47,28 +47,28 @@ def __syntax_tree_helper(item, parent):
         for key, action in item['actions'].iteritems():
             if ('parameters' in action) and action['parameters'] and \
             ('isObjectAction' in action['parameters']):
-                MooseObjectActionNode(key, action, parent=parent)
+                MooseObjectActionNode(parent, key, action)
             else:
-                ActionNode(key, action, parent=parent)
+                ActionNode(parent, key, action)
 
     if 'star' in item:
-        syntax_tree_helper(item['star'], parent)
+        __syntax_tree_helper(parent, item['star'])
 
     if ('types' in item) and item['types']:
         for key, obj in item['types'].iteritems():
-            __add_moose_object_helper(key, obj, parent)
+            __add_moose_object_helper(parent, key, obj)
 
     if ('subblocks' in item) and item['subblocks']:
         for k, v in item['subblocks'].iteritems():
-            node = SyntaxNode(k, parent=parent)
-            __syntax_tree_helper(v, node)
+            node = SyntaxNode(parent, k)
+            __syntax_tree_helper(node, v)
 
     if ('subblock_types' in item) and item['subblock_types']:
         for k, v in item['subblock_types'].iteritems():
-            __add_moose_object_helper(k, v, parent)
+            __add_moose_object_helper(parent, k, v)
 
 
-def moose_docs_app_syntax(location, hide=None):
+def app_syntax(location, hide=None):
     """
     Creates a tree structure representing the MooseApp syntax for the given executable.
 
@@ -91,10 +91,10 @@ def moose_docs_app_syntax(location, hide=None):
         LOG.error("Failed to execute the MOOSE executable: %s", exe)
         sys.exit(1)
 
-    root = SyntaxNode('')
+    root = SyntaxNode(None, '')
     for key, value in tree['blocks'].iteritems():
-        node = SyntaxNode(key, parent=root)
-        __syntax_tree_helper(value, node)
+        node = SyntaxNode(root, key)
+        __syntax_tree_helper(node, value)
 
     if hide is not None:
         for node in root.findall():
