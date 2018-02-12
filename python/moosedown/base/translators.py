@@ -97,6 +97,8 @@ class Translator(mixins.ConfigObject):
     def render(self, ast):
         return self.__renderer.render(ast)
 
+    #TODO: build() do parallel seld.ast then self.render
+
     """
     def convert(self, content):
         # Convert the supplied content by passing it into the Reader to build an AST. Then, the AST

@@ -29,19 +29,53 @@ class ListingExtension(command.CommandExtension):
     def extend(self, reader, renderer):
 
         self.requires(command, floats)
-        self.addCommand(GeneralListingCommand())
+        self.addCommand(LocalListingCommand())
+        self.addCommand(FileListingCommand())
         self.addCommand(InputListingCommand())
 
-class GeneralListingCommand(command.CommandComponent):
+
+class LocalListingCommand(command.CommandComponent):
+    COMMAND = 'listing'
+    SUBCOMMAND = None
+
+    @staticmethod
+    def defaultSettings():
+        settings = command.CommandComponent.defaultSettings()
+        settings['caption'] = (None, "The caption to use for the listing content.")
+        settings['prefix'] = ('', "Text to include prior to the included text.")
+        settings['max-height'] = (u'350px', "The default height for listing content.")
+        settings['language'] = (u'text', "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
+        return settings
+
+    def createToken(self, info, parent):
+        flt = floats.Float(parent)
+        content = info['inline'] if 'inline' in info else info['block']
+        self.addCaption(flt)
+
+        code = tokens.Code(flt, style="max-height:{};".format(self.settings['max-height']),
+                           language=self.settings['language'], code=content)
+        return parent
+
+    def addCaption(self, flt):
+
+        cap = self.settings['caption']
+        key = self.settings['id']
+        if key:
+            caption = floats.Caption(flt, key=key, prefix=self.extension['prefix'])
+            if cap:
+                self.translator.reader.parse(caption, cap, moosedown.INLINE)
+        elif cap:
+            caption = floats.Caption(flt)
+            self.translator.reader.parse(caption, cap, moosedown.INLINE)
+
+class FileListingCommand(LocalListingCommand):
     COMMAND = 'listing'
     SUBCOMMAND = '*'
 
     @staticmethod
     def defaultSettings():
-        settings = command.CommandComponent.defaultSettings()
-        settings['language'] = (u'text', "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
+        settings = LocalListingCommand.defaultSettings()
         settings['caption'] = (None, "The caption to use for the listing content.")
-        settings['max-height'] = (u'350px', "The default height for listing content.")
         settings['link'] = (True, "Include a link to the filename after the listing.")
         settings['prefix'] = ('', "Text to include prior to the included text.")
         settings['suffix'] = ('', "Text to include after to the included text.")
@@ -64,7 +98,6 @@ class GeneralListingCommand(command.CommandComponent):
                                            "is excluded in the displayed text.")
         settings['include-end'] = (False, "When True the texted captured by the 'end' setting is "
                                           "included in the displayed text.")
-        #TODO: add regex
         return settings
 
     def createToken(self, info, parent): #pylint: disable=doc-string
@@ -80,17 +113,7 @@ class GeneralListingCommand(command.CommandComponent):
 
         # Listing container
         flt = floats.Float(parent)
-
-        # Captions
-        cap = self.settings['caption']
-        key = self.settings['id']
-        if key:
-            caption = floats.Caption(flt, key=key, prefix=self.extension['prefix'])
-            if cap:
-                self.translator.reader.parse(caption, cap, moosedown.INLINE)
-        elif cap:
-            caption = floats.Caption(flt)
-            self.translator.reader.parse(caption, cap, moosedown.INLINE)
+        self.addCaption(flt)
 
         # Create code token
         if self.settings['language'] is None:
@@ -133,9 +156,9 @@ class GeneralListingCommand(command.CommandComponent):
         """
 
         content = self.read(filename)
-
         if settings['re']:
-            match = re.search(settings['re'], content, flags=eval(settings['re-flags']))
+            #match = re.search(settings['re'], content, flags=re.DOTALL|re.MULTILINE|re.UNICODE)#flags=eval(settings['re-flags']))
+            match = re.search(r'Real\sDiffusion::computeQpResidual.*?^}', content, flags=re.DOTALL|re.MULTILINE|re.UNICODE)#flags=eval(settings['re-flags']))
             if match:
                 if 'content' in match.groupdict():
                     content = match.group('content')
@@ -143,7 +166,7 @@ class GeneralListingCommand(command.CommandComponent):
                     content = match.group()
             else:
                 msg = "Failed to match regular expression: {}"
-                raise exceptions.TokenizeException(message, settings['re'])
+                raise exceptions.TokenizeException(msg, settings['re'])
 
         elif settings['line']:
             content = self.extractLine(content, settings["line"])
@@ -251,7 +274,7 @@ class GeneralListingCommand(command.CommandComponent):
 
         return '\n'.join(lines[start_idx:end_idx])
 
-class InputListingCommand(GeneralListingCommand):
+class InputListingCommand(FileListingCommand):
     """
     Special listing command for MOOSE hit imput files.
     """
@@ -261,7 +284,7 @@ class InputListingCommand(GeneralListingCommand):
 
     @staticmethod
     def defaultSettings():
-        settings = GeneralListingCommand.defaultSettings()
+        settings = FileListingCommand.defaultSettings()
         settings['block'] = (None, 'Space separated list of input file block names to include.')
         return settings
 
@@ -270,7 +293,7 @@ class InputListingCommand(GeneralListingCommand):
         if self.settings['block']:
             return self.extractInputBlocks(filename, self.settings['block'])
 
-        return GeneralListingCommand.extractContent(self, filename, settings)
+        return FileListingCommand.extractContent(self, filename, settings)
 
     @staticmethod
     def extractInputBlocks(filename, blocks):

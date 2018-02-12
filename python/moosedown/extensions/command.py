@@ -58,10 +58,10 @@ class CommandExtension(components.Extension):
             if pair in self.translator.__EXTENSION_COMMANDS__:
                 msg = "A CommandComponent object exists with the command '{}' and subcommand '{}'."
                 raise common.exceptions.MooseDocsException(msg, pair[0], pair[1])
-            elif (command.COMMAND, None) in self.translator.__EXTENSION_COMMANDS__:
-                msg = "A CommandComponent object exists with the command '{}' with no subcommand, " \
-                      "you can't add a subcommand."
-                raise common.exceptions.MooseDocsException(msg, command.COMMAND)
+            #elif (command.COMMAND, None) in self.translator.__EXTENSION_COMMANDS__:
+            #    msg = "A CommandComponent object exists with the command '{}' with no subcommand, " \
+            #          "you can't add a subcommand."
+            #    raise common.exceptions.MooseDocsException(msg, command.COMMAND)
 
             self.translator.__EXTENSION_COMMANDS__[pair] = command
 
