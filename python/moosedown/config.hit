@@ -1,7 +1,7 @@
 [Content]
   [framework]
       root_dir = docs/content
-      content = 'utilities/moosedown/listing.md
+      content = 'utilities/moosedown/**
                  media/**
                  contrib/**
                  css/*

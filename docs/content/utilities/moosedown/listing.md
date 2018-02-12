@@ -53,7 +53,7 @@ listing in [example-listing-complete].
 ### Regular Expression Match
 
 Regular expressions can be utilized to extract specific content from files. [example-listing-re]
-uses a regular expression to extract the content of a C++ method.
+uses a regular expression to extract the content of a class method.
 
 !devel! example id=example-listing-re caption=Example listing using the "re" setting.
 !listing framework/src/kernels/Diffusion.C

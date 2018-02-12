@@ -2,7 +2,7 @@
 
 The media extension provides the `!media` markdown command for adding images and videos.
 As used throughout MooseDocs content, the `!media` command can optionally create a numbered
-["float"](float.md) by specifying the "id" setting. A caption may be include by using the "caption"
+[floats.md] by specifying the "id" setting. A caption may be include by using the "caption"
 setting.
 
 The configuration options for the media extension are listed in [config-media-ext].

@@ -44,7 +44,7 @@ class LocalListingCommand(command.CommandComponent):
         settings['caption'] = (None, "The caption to use for the listing content.")
         settings['prefix'] = ('', "Text to include prior to the included text.")
         settings['max-height'] = (u'350px', "The default height for listing content.")
-        settings['language'] = (u'text', "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
+        settings['language'] = (None, "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
         return settings
 
     def createToken(self, info, parent):
@@ -86,7 +86,8 @@ class FileListingCommand(LocalListingCommand):
                                                        "from the included text.")
         settings['line'] = (None, "A portion of text that unique identifies a single line to "
                                   "include.")
-        settings['re'] = (False, "Extract content via a regex, if the 'content' group exists it is used as the desired content, otherwise group 0 is used.")
+        settings['re'] = (False, "Extract content via a regex, if the 'content' group exists it " \
+                                 "is used as the desired content, otherwise group 0 is used.")
         settings['re-flags'] = ('re.M|re.S|re.U', "Python re flags.")
         settings['start'] = (None, "A portion of text that unique identifies the starting "
                                    "location for including text, if not provided the beginning "
@@ -117,13 +118,13 @@ class FileListingCommand(LocalListingCommand):
 
         # Create code token
         if self.settings['language'] is None:
-            _, ext = os.path.splitext(rel_filename)
+            _, ext = os.path.splitext(filename)
             if ext in ['.C', '.h', '.cpp', '.hpp']:
-                self.settings['language'] = 'cpp'
+                self.settings['language'] = u'cpp'
             elif ext == '.py':
-                self.settings['language'] = 'python'
+                self.settings['language'] = u'python'
             else:
-                self.settings['language'] = 'text'
+                self.settings['language'] = u'text'
 
         code = tokens.Code(flt, style="max-height:{};".format(self.settings['max-height']),
                            language=self.settings['language'],
@@ -157,8 +158,7 @@ class FileListingCommand(LocalListingCommand):
 
         content = self.read(filename)
         if settings['re']:
-            #match = re.search(settings['re'], content, flags=re.DOTALL|re.MULTILINE|re.UNICODE)#flags=eval(settings['re-flags']))
-            match = re.search(r'Real\sDiffusion::computeQpResidual.*?^}', content, flags=re.DOTALL|re.MULTILINE|re.UNICODE)#flags=eval(settings['re-flags']))
+            match = re.search(settings['re'], content, flags=eval(settings['re-flags']))
             if match:
                 if 'content' in match.groupdict():
                     content = match.group('content')
