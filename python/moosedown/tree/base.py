@@ -86,6 +86,7 @@ class NodeBase(anytree.NodeMixin):
                           supplied the resulting node will be the root node.
         kwargs: (Optional) Any key, value pairs supplied are stored as properties or attributes.
     """
+    COLOR = 'RESET'
     PROPERTIES = [] # this gets set by the @properties decorator
 
     def __init__(self, parent=None, name=None, **kwargs):
@@ -126,12 +127,15 @@ class NodeBase(anytree.NodeMixin):
             if prop.required and self.__properties[prop.name] is None:
                 raise IOError("The property '{}' is required.".format(prop.name))
 
+    def console(self):
+        return '{}: {}'.format(self.name, repr(self.__properties))
+
     def __repr__(self):
         """
         Prints the name of the token, this works in union with __str__ to print
         the tree structure of any given node.
         """
-        return '{}: {}'.format(self.name, repr(self.__properties))
+        return mooseutils.colorText(self.console(), self.COLOR)
 
     def __str__(self):
         """

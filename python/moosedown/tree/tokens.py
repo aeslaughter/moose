@@ -29,25 +29,6 @@ class Token(NodeBase):
         super(Token, self).__init__(parent, name, **kwargs)
         self.name = self.__class__.__name__
 
-#    def __repr__(self):
-#        return base.NodeBase.__repr__(self) + ' info=' + str(self.__info)
-
-    """
-    @property
-    def page(self):
-        if self.__page is None and node.parent:
-            return node.parent.page
-        return None
-        #node = self
-        #while (node.page is None) and node.parent:
-        #    node = node.parent
-        #return node.page
-
-    @page.setter
-    def page(self, value):
-        self.__page = value
-    """
-
     @property
     def info(self):
         return self.__info

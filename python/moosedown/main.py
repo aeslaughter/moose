@@ -6,7 +6,7 @@ MOOSE run_tests.
 import argparse
 import logging
 
-from commands import build, devel
+from commands import build, devel, check
 
 #TODO: Create colored and counted logging messages.
 logging.basicConfig()
@@ -22,6 +22,7 @@ def command_line_options():
 
     build.command_line_options(subparser)
     devel.command_line_options(subparser)
+    check.command_line_options(subparser)
 
     return parser.parse_args()
 
@@ -34,6 +35,8 @@ def main():
         build.main(options)
     elif options.command == 'devel':
         devel.main(options)
+    elif options.command == 'check':
+        check.main(options)
 
 
 if __name__ == '__main__':
