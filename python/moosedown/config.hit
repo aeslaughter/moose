@@ -8,3 +8,10 @@
                  js/*'
   []
 []
+
+[Extensions]
+  [app_syntax]
+    type = moosedown.extensions.appsyntax
+    executable = ${MOOSE_DIR}/modules/combined
+  []
+[]

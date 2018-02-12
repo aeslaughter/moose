@@ -23,7 +23,8 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.autolink',
                       'moosedown.extensions.devel',
                       'moosedown.extensions.alert',
-                      'moosedown.extensions.katex']
+                      'moosedown.extensions.katex',
+                      'moosedown.extensions.appsyntax']
 
 def load_config(filename):
     """
@@ -108,9 +109,9 @@ def _hit_load_extensions(node, filename):
                 msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter."
                 LOG.error(msg, filename, child.line, child.fullpath)
             else:
-                config = copy.copy(child.parameters)
+                config = {k:v for k, v in child.iterparams()}
                 ext_type = config.pop('type')
-                ext_configs[ext_type] = {k:v.value for k, v in config.iteritems()}
+                ext_configs[ext_type] = config
 
     # Build the Extension objects
     return load_extensions(ext_configs.keys(), ext_configs)
@@ -126,9 +127,8 @@ def _hit_load_object(node, filename, default, *args):
                   "using the default %s."
             LOG.error(msg, filename, node.line, node.fullpath, type(default).__name__)
         else:
-            config = copy.copy(node.parameters)
+            config = {k:v for k, v in node.iterparams()}
             config.pop('type')
-            config = {k:v.value for k, v in config.iteritems()}
             try:
                 return eval(node['type'])(*args, **config)
             except NameError:
