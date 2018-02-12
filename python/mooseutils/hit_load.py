@@ -7,9 +7,6 @@ import message
 class HitNode(anytree.NodeMixin):
     """
     An anytree.Node object for building a hit tree.
-
-    TODO: Store parameters as hit.Node and create a new node with __setitem__
-    TODO: Remove parameters property
     """
     def __init__(self, parent=None, hitnode=None):
         super(HitNode, self).__init__()
@@ -43,9 +40,9 @@ class HitNode(anytree.NodeMixin):
 
         Inputs:
             name[str]: The name to search for within the tree.
-            fuzzy[bool]: When True (the default) a "fuzzy" search is performed, meaning
-                         that the provide name must be in the node name. If
-                         this is set to True the names must match exact.
+            fuzzy[bool]: When True (the default) a "fuzzy" search is performed, meaning that the
+                         provide name must be in the node name. If this is set to False the names
+                         must match exact.
         """
         for node in anytree.PreOrderIter(self):
             if (fuzzy and name in node.name) or (not fuzzy and name == node.name):
@@ -57,9 +54,9 @@ class HitNode(anytree.NodeMixin):
 
         Inputs:
             name[str]: The name to search for within the tree.
-            fuzzy[bool]: When True (the default) a "fuzzy" search is performed, meaning
-                         that the provide name must be in the node name. If
-                         this is set to True the names must match exact.
+            fuzzy[bool]: When True (the default) a "fuzzy" search is performed, meaning that the
+                         provide name must be in the node name. If this is set to False the names
+                         must match exact.
         """
         filter_ = lambda n: (fuzzy and name in n.name) or (not fuzzy and n.name == name)
         return [node for node in anytree.PreOrderIter(self, filter_=filter_)]
@@ -89,23 +86,36 @@ class HitNode(anytree.NodeMixin):
         for child in self.children:
             yield child
 
+    def iterparams(self):
+        """
+        Return key, value for the parameters of this node.
+
+        for k, v in node.iterparams():
+            ...
+        """
+        for child in self.__hitnode.children(hit.NodeType.Field):
+            yield child.path(), child.param()
+
+    def get(self, name, default):
+        """
+        Return a parameter, if it does not exist return the default.
+        """
+        value = self.__hitnode.param(name)
+        if value is None:
+            return default
+        return value
+
     def __getitem__(self, name):
         """
         Provides operator [] access to the parameters of this node.
         """
         return self.__hitnode.param(name)
 
-    def __setitem__(self, name, value):
-        """
-        Provides operator [] access to the parameters of this node.
-        """
-        self.__hitnode.param(name).setVal(value)
-
     def __repr__(self):
         """
         Dislpay the node name and parameters.
         """
-        params = {n.path():n.param() for n in self.__hitnode.children(hit.NodeType.Field)}
+        params = {k:v for k, v in self.iterparams()}
         if params:
             return '{}: {}'.format(self.name, repr(params))
         return self.name
