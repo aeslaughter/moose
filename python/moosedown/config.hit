@@ -1,0 +1,17 @@
+[Content]
+  [framework]
+      root_dir = docs/content
+      content = 'utilities/moosedown/**
+                 media/**
+                 contrib/**
+                 css/*
+                 js/*'
+  []
+[]
+
+[Extensions]
+  [syntax]
+    type = moosedown.extensions.appsyntax
+    executable = ${MOOSE_DIR}/modules/combined
+  []
+[]

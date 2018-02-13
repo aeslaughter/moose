@@ -1,0 +1,6 @@
+[Tests]
+  [example]
+    type = PythonUnitTest
+    input = test_Example.py
+  []
+[]

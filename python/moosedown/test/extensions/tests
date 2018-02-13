@@ -1,0 +1,14 @@
+[Tests]
+  [core]
+    type = PythonUnitTest
+    input = test_core.py
+  []
+  [katex]
+    type = PythonUnitTest
+    input = test_katex.py
+  []
+  [media]
+    type = PythonUnitTest
+    input = test_media.py
+  []
+[]

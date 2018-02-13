@@ -16,11 +16,12 @@ import logging
 import json
 
 import mooseutils
-from nodes import SyntaxNode, MooseObjectNode, ActionNode, MooseObjectActionNode
+
+from moosedown.tree.syntax import SyntaxNode, MooseObjectNode, ActionNode, MooseObjectActionNode
 
 LOG = logging.getLogger(__name__)
 
-def add_moose_object_helper(name, item, parent):
+def __add_moose_object_helper(name, item, parent):
     """
     Helper to handle the Postprocessor/UserObject and Bounds/AuxKernel special case.
     """
@@ -32,7 +33,7 @@ def add_moose_object_helper(name, item, parent):
            (item['parent_syntax'] == parent_syntax):
             node.hidden = True
 
-def syntax_tree_helper(item, parent):
+def __syntax_tree_helper(item, parent):
     """
     Tree builder helper function.
 
@@ -55,16 +56,16 @@ def syntax_tree_helper(item, parent):
 
     if ('types' in item) and item['types']:
         for key, obj in item['types'].iteritems():
-            add_moose_object_helper(key, obj, parent)
+            __add_moose_object_helper(key, obj, parent)
 
     if ('subblocks' in item) and item['subblocks']:
         for k, v in item['subblocks'].iteritems():
             node = SyntaxNode(k, parent=parent)
-            syntax_tree_helper(v, node)
+            __syntax_tree_helper(v, node)
 
     if ('subblock_types' in item) and item['subblock_types']:
         for k, v in item['subblock_types'].iteritems():
-            add_moose_object_helper(k, v, parent)
+            __add_moose_object_helper(k, v, parent)
 
 
 def moose_docs_app_syntax(location, hide=None):
@@ -93,7 +94,7 @@ def moose_docs_app_syntax(location, hide=None):
     root = SyntaxNode('')
     for key, value in tree['blocks'].iteritems():
         node = SyntaxNode(key, parent=root)
-        syntax_tree_helper(value, node)
+        __syntax_tree_helper(value, node)
 
     if hide is not None:
         for node in root.findall():

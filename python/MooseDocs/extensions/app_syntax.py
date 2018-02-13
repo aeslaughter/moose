@@ -87,7 +87,7 @@ class AppSyntaxExtension(MooseMarkdownExtension):
         desc = MooseDescription(markdown_instance=md, **config)
         md.inlinePatterns.add('moose_syntax_description', desc, '_begin')
 
-        child_list = MooseFileList(markdown_instance=md,
+        child_list = MooseFileList(markdown_instance=md,f
                                    database=database.children,
                                    title='Child Objects',
                                    command='children',
@@ -213,7 +213,7 @@ class MooseSyntaxBase(MooseMarkdownCommon, Pattern):
     def clearCache(self):
         """
         Clears the search cache, this is for testing only.
-        """
+        """M
         self.__cache = dict()
 
 class MooseParameters(MooseSyntaxBase):
