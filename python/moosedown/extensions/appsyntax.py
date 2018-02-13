@@ -184,7 +184,6 @@ class RenderSyntaxToken(components.RenderComponent):
     def _addItems(self, parent, items, cls):
 
         for obj in items:
-            print type(obj)
             li = html.Tag(parent, 'li', class_='{} collection-item'.format(cls))
             html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name)) #TODO: add href to html page
             desc = html.Tag(li, 'span', class_='{}-description'.format(cls))#, string=unicode(obj.description))

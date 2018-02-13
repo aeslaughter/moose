@@ -19,7 +19,7 @@ InputParameters
 validParams<PorousFlowEffectiveStressCoupling>()
 {
   InputParameters params = validParams<Kernel>();
-  params.addClassDescription("Adds -BiotCoefficient*effective_porepressure*grad_test[component]");
+  params.addClassDescription("Adds $-Bi \\cdot p_s \\cdot \\nabla \\Psi_c$, where the subscript $c$ is the component.");
   params.addRequiredParam<UserObjectName>(
       "PorousFlowDictator", "The UserObject that holds the list of Porous-Flow variable names.");
   params.addRangeCheckedParam<Real>(
