@@ -10,7 +10,7 @@
 []
 
 [Extensions]
-  [app_syntax]
+  [syntax]
     type = moosedown.extensions.appsyntax
     executable = ${MOOSE_DIR}/modules/combined
   []

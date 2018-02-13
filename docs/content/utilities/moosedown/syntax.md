@@ -1,3 +1,3 @@
 # Syntax Extension
 
-!syntax parameters object=/Kernels/Diffusion
+!syntax parameters /Kernels/Diffusion

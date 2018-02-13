@@ -55,7 +55,7 @@ class SyntaxNodeBase(NodeBase):
         while (node is not None):
             out.append(node.name)
             node = node.parent
-        return '/'.join(out)
+        return '/'.join(reversed(out))
 
     def hasGroups(self, groups):
         """
@@ -197,6 +197,18 @@ class SyntaxNode(SyntaxNodeBase):
             return os.path.join(self.root_directory, *path)
         else:
             return os.path.join(*path)
+
+    @property
+    def parameters(self):
+        """
+        Return the action parameters for the syntax.
+        """
+        parameters = dict()
+        for action in self.actions():
+            if action.parameters is not None:
+                parameters.update(action.parameters)
+        return parameters
+
 
     def _defaultContent(self):
         """

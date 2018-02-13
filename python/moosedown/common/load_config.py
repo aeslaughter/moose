@@ -57,8 +57,7 @@ def load_extensions(ext_list, ext_configs=None):
             msg = "The supplied module {} does not contain the required 'make_extension' function."
             raise exceptions.MooseDocsException(msg, name)
         else:
-            obj = mod.make_extension()
-            obj.update(**ext_configs.get(name, dict()))
+            obj = mod.make_extension(**ext_configs.get(name, dict()))
             extensions.append(obj)
 
     return extensions
@@ -111,7 +110,7 @@ def _hit_load_extensions(node, filename):
             else:
                 config = {k:v for k, v in child.iterparams()}
                 ext_type = config.pop('type')
-                ext_configs[ext_type] = config
+                ext_configs[ext_type].update(config)
 
     # Build the Extension objects
     return load_extensions(ext_configs.keys(), ext_configs)

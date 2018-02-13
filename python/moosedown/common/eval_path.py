@@ -3,6 +3,13 @@
 import os
 import re
 
+def __sub(match):
+    """Substitute function for environment variables."""
+    env = match.group('env')
+    if env in os.environ:
+        return os.environ[env]
+    return match.group()
+
 def eval_path(path):
     """
     Import envirornment variables into paths.
@@ -10,10 +17,4 @@ def eval_path(path):
     Inputs:
         path[str]: Path containing environment variable: e.g., ${MOOSE_DIR}/python
     """
-    def sub(match):
-        env = match.group('env')
-        if env in os.environ:
-            return os.environ[env]
-        return match.group()
-
-    return re.sub(r'\$\{(?P<env>.*?)\}', sub, path)
+    return re.sub(r'\$\{(?P<env>.*?)\}', __sub, path)

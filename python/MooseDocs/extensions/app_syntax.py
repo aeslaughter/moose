@@ -213,7 +213,7 @@ class MooseSyntaxBase(MooseMarkdownCommon, Pattern):
     def clearCache(self):
         """
         Clears the search cache, this is for testing only.
-        """
+        """M
         self.__cache = dict()
 
 class MooseParameters(MooseSyntaxBase):
