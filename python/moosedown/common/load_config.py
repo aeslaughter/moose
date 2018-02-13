@@ -24,7 +24,8 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.devel',
                       'moosedown.extensions.alert',
                       'moosedown.extensions.katex',
-                      'moosedown.extensions.appsyntax']
+                      'moosedown.extensions.appsyntax',
+                      'moosedown.extensions.bibtex']
 
 def load_config(filename):
     """
