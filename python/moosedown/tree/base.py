@@ -4,6 +4,8 @@ Base classes for tree objects in MooseDocs.
 import logging
 import anytree
 
+import mooseutils
+
 LOG = logging.getLogger(__name__)
 
 class Property(object):

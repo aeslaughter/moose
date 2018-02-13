@@ -1,3 +1,3 @@
 # Syntax Extension
 
-!syntax parameters /Kernels/Diffusion
+!syntax parameters /Outputs/Exodus

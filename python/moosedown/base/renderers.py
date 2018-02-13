@@ -302,19 +302,28 @@ class MaterializeRenderer(HTMLRenderer):
         for child in section.children:
             if child.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 level = int(child.name[-1])
-                current = section.get("data_section_level", 0) # get the current section lvel
+                current = section.get("data-section-level", 0) # get the current section lvel
 
                 if level == current:
-                    section = html.Tag(section.parent, 'section', data_section_level=level)
+                    section = html.Tag(section.parent, 'section')
                 elif level > current:
-                    section = html.Tag(section, 'section', data_section_level=level)
+                    section = html.Tag(section, 'section')
                 elif level < current:
-                    section = html.Tag(section.parent.parent, 'section', data_section_level=level)
+                    section = html.Tag(section.parent.parent, 'section')
+
+                section['data-section-level'] = level
+                if 'data-details-open' in child:
+                    section['data-details-open'] = child['data-details-open']
 
             child.parent = section
 
         for node in anytree.PreOrderIter(root, filter_=lambda n: n.name == 'section'):
-            status = collapsible[node['data_section_level']-1]
+
+            if 'data-details-open' in node:
+                status = node['data-details-open']
+            else:
+                status = collapsible[node['data-section-level']-1]
+
             if status:
                 summary = html.Tag(None, 'summary')
                 node(0).parent = summary

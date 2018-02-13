@@ -117,11 +117,18 @@ class RenderInputParametersToken(components.RenderComponent):
             groups[group][name] = param
 
 
+        html.Tag(parent, 'h2', string=unicode('Input Parameters'))
+
         for group, params in groups.iteritems():
 
-            # TODO: title (group)
+            if not params:
+                continue
 
             h = html.Tag(parent, 'h3', string=unicode('{} Parameters'.format(group.title())))
+            if group == 'Required':
+                h['data-details-open'] = 'open'
+            else:
+                h['data-details-open'] = 'close'
 
             ul = html.Tag(parent, 'ul', class_='collapsible')
             ul['data-collapsible'] = "expandable"
@@ -133,21 +140,41 @@ class RenderInputParametersToken(components.RenderComponent):
 
 def _insert_parameter(parent, name, param):
 
+    if param['deprecated']:
+        return
+
     li = html.Tag(parent, 'li')
     header = html.Tag(li, 'div', class_='collapsible-header')
     body = html.Tag(li, 'div', class_='collapsible-body')
 
 
+
     html.Tag(header, 'span', class_='moose-parameter-name', string=name)
-    default = _format_parameter(param, name)
+    default = _format_default(param)
     if default:
         html.Tag(header, 'span', class_='moose-parameter-header-default', string=default)
 
+        p = html.Tag(body, 'p', class_='moose-parameter-description-default')
+        html.Tag(p, 'span', string=u'Default:')
+        html.String(p, content=default)
+
+    cpp_type = param['cpp_type']
+    p = html.Tag(body, 'p', class_='moose-parameter-description-cpptype')
+    html.Tag(p, 'span', string=u'C++ Type:')
+    html.String(p, content=cpp_type)
+
+
+    p = html.Tag(body, 'p', class_='moose-parameter-description')
+
     desc = param['description']
     if desc:
-        html.Tag(body, 'p', class_='moose-parameter-description', string=unicode(desc))
+        html.Tag(header, 'span', class_='moose-parameter-header-description', string=unicode(desc))
+        html.Tag(p, 'span', string=u'Description:')
+        html.String(p, content=unicode(desc))
 
-def _format_parameter(parameter, key, default=''):
+
+
+def _format_default(parameter):
     """
     Convert the supplied parameter into a format suitable for output.
 
@@ -156,29 +183,10 @@ def _format_parameter(parameter, key, default=''):
         key[str]: The current key.
     """
 
-    # Make sure that supplied parameter is a string
     ptype = parameter['cpp_type']
-    param = str(parameter.get(key, default)).strip()
+    param = parameter.get('default', '')
 
-    # The c++ types returned by the yaml dump are raw and contain "allocator" stuff. This script
-    # attempts to present the types in a more readable fashion.
-    if key == 'cpp_type':
-        # Convert std::string
-        string = "std::__1::basic_string<char, std::__1::char_traits<char>, " \
-                 "std::__1::allocator<char> >"
-        param = param.replace(string, 'std::string')
+    if ptype == 'bool':
+        param = repr(param in ['True', '1'])
 
-        # Convert vectors
-        param = re.sub(r'std::__1::vector\<(.*),\sstd::__1::allocator\<(.*)\>\s\>',
-                       r'std::vector<\1>', param)
-        param = '`' + param + '`'
-
-        param = re.sub(r'std::vector\<(.*),\sstd::allocator\<(.*)\>\s\>',
-                       r'std::vector<\1>', param)
-        param = '`' + param + '`'
-
-    elif key == 'default':
-        if ptype == 'bool':
-            param = repr(param in ['True', '1'])
-
-    return param
+    return unicode(param) if param else None

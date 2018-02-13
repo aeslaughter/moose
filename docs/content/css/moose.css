@@ -344,9 +344,29 @@ li{
     color:#757575;
 }
 
-.collapsible-body .moose-parameter-default,
-.collapsible-body .moose-parameter-type{
-    color:#757575;
+.moose-parameter-header-default{
+    white-space:nowrap;
+    padding-left:10px;
+}
+
+.moose-parameter-header-description{
+    padding-left:10px;
+    font-size:85%;
+    font-weight:100;
+}
+
+.moose-parameter-header-default::before{
+    content:"(";
+}
+
+.moose-parameter-header-default::after{
+    content:")";
+}
+
+.moose-parameter-description span,
+.moose-parameter-description-default span,
+.moose-parameter-description-cpptype span{
+    padding-right:10px;
     font-weight:100;
 }
 

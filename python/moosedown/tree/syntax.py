@@ -209,7 +209,6 @@ class SyntaxNode(SyntaxNodeBase):
                 parameters.update(action.parameters)
         return parameters
 
-
     def _defaultContent(self):
         """
         Markdown stub content.

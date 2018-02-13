@@ -19,8 +19,8 @@ class Token(NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
-    PROPERTIES = [Property('recursive', default=True),
-                  Property('page', required=False)] # only exists on root...
+    PROPERTIES = [Property('recursive', default=True), # This can go away
+                  Property('page', required=False)] # only exists on root...make a Root node
                   #base.Property('info')] # change to meta
 
     def __init__(self, parent=None, name=None, **kwargs):
@@ -56,8 +56,6 @@ class CountToken(Token):
         if self.prefix is not None:
             CountToken.COUNTS[self.prefix] += 1
             self.number = CountToken.COUNTS[self.prefix]
-
-
 
 class Section(Token):
     pass
