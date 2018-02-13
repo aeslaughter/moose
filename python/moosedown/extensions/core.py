@@ -239,7 +239,7 @@ class Link(components.TokenComponent):
 
 class ShortcutLink(components.TokenComponent):
     RE = re.compile(r'\['                         # opening [
-                    r'(?P<key>.*?)'               # key
+                    r'(?P<key>.+?)'               # key
                     r'(?:\s+(?P<settings>.*?))?'  # settings
                     r'\]',                        # closing ]
                     flags=re.UNICODE)
@@ -257,7 +257,7 @@ class Space(components.TokenComponent):
         return tokens.Space(parent, count=len(info['space']))
 
 class Punctuation(components.TokenComponent):
-    RE = re.compile(r'([^A-Za-z0-9\s]+)')
+    RE = re.compile(r'(([^A-Za-z0-9\s])\2*)')
     def createToken(self, info, parent):
         return tokens.Punctuation(parent, content=info[0])
 

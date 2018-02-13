@@ -37,7 +37,7 @@ class KatexExtension(components.Extension):
         Add the necessary components for reading and rendering LaTeX.
         """
         reader.addBlock(KatexBlockEquationComponent(), location='>Code')
-        reader.addInline(KatexInlineEquationComponent(), location='>Format')
+        reader.addInline(KatexInlineEquationComponent(), location='<Format')
 
         renderer.add(LatexBlockEquation, RenderLatexEquation())
         renderer.add(LatexInlineEquation, RenderLatexEquation())

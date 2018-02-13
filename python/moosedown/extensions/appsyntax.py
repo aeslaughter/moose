@@ -6,6 +6,7 @@ import collections
 
 import anytree
 
+import moosedown
 from moosedown import common
 from moosedown.base import components
 from moosedown.common import exceptions
@@ -57,6 +58,8 @@ class AppSyntaxExtension(command.CommandExtension):
         return node
 
     def extend(self, reader, renderer):
+
+        self.addCommand(SyntaxDescriptionCommand())
         self.addCommand(SyntaxParametersCommand())
 
         renderer.add(InputParametersToken, RenderInputParametersToken())
@@ -76,15 +79,24 @@ class SyntaxCommandBase(command.CommandComponent):
         if self.settings['syntax'] is None:
             args = info['settings'].split()
             self.settings['syntax'] = args[0]
+        obj = self.extension.find(self.settings['syntax'])
+        return self.createTokenFromSyntax(info, parent, obj)
+
+    def createTokenFromSyntax(self, info, parent, obj):
+        pass
 
 
 class SyntaxParametersCommand(SyntaxCommandBase):
     SUBCOMMAND = 'parameters'
 
-    def createToken(self, info, parent):
-        SyntaxCommandBase.createToken(self, info, parent)
-        obj = self.extension.find(self.settings['syntax'])
+    def createTokenFromSyntax(self, info, parent, obj):
         return InputParametersToken(parent, syntax=obj, **self.attributes)
+
+class SyntaxDescriptionCommand(SyntaxCommandBase):
+    SUBCOMMAND = 'description'
+    def createTokenFromSyntax(self, info, parent, obj):
+        self.translator.reader.parse(parent, obj.description, group=moosedown.INLINE)
+        return parent
 
 class RenderInputParametersToken(components.RenderComponent):
 
@@ -97,7 +109,6 @@ class RenderInputParametersToken(components.RenderComponent):
         groups = collections.OrderedDict()
         groups['Required'] = dict()
         groups['Optional'] = dict()
-
 
         for param in token.syntax.parameters.itervalues() or []:
 

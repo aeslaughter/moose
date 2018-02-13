@@ -308,8 +308,15 @@ class TestPunctuationTokenize(testing.MooseDocsTestCase):
         node = self.ast(u'a-$#%z')(0)
         self.assertIsInstance(node(0), tokens.Word)
         self.assertIsInstance(node(1), tokens.Punctuation)
-        self.assertIsInstance(node(2), tokens.Word)
-        self.assertString(node(1).content, '-$#%')
+        self.assertIsInstance(node(2), tokens.Punctuation)
+        self.assertIsInstance(node(3), tokens.Punctuation)
+        self.assertIsInstance(node(4), tokens.Punctuation)
+        self.assertIsInstance(node(5), tokens.Word)
+
+        self.assertString(node(1).content, '-')
+        self.assertString(node(2).content, '$')
+        self.assertString(node(3).content, '#')
+        self.assertString(node(4).content, '%')
 
     def testCaret(self):
         node = self.ast(u'a^z')(0)
@@ -319,12 +326,21 @@ class TestPunctuationTokenize(testing.MooseDocsTestCase):
         self.assertString(node(1).content, '^')
 
     def testAll(self):
-        node = self.ast(u'Word!@#$%^&*()-=_+{}[]|\":;\'?/>.<,~`   Word')(0)
+        text = u'Word!@#$%^&*()-=_+{}[]|\":;\'?/>.<,~`   Word'
+        node = self.ast(text)(0)
         self.assertIsInstance(node(0), tokens.Word)
+        for i in range(1, 32):
+            self.assertIsInstance(node(i), tokens.Punctuation)
+            self.assertString(node(i).content, text[i+3])
+        self.assertIsInstance(node(32), tokens.Space)
+        self.assertIsInstance(node(33), tokens.Word)
+
+    def testMixedMultiple(self):
+        node = self.ast(u'---$')(0)
+        self.assertIsInstance(node(0), tokens.Punctuation)
         self.assertIsInstance(node(1), tokens.Punctuation)
-        self.assertIsInstance(node(2), tokens.Space)
-        self.assertIsInstance(node(3), tokens.Word)
-        self.assertString(node(1).content, '!@#$%^&*()-=_+{}[]|\":;\'?/>.<,~`')
+        self.assertString(node(0).content, '---') #TODO: use count???
+        self.assertString(node(1).content, '$')
 
 class TestQuoteTokenize(testing.MooseDocsTestCase):
     """Test tokenization of Quote"""
