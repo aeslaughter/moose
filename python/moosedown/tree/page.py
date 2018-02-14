@@ -157,7 +157,7 @@ class MarkdownNode(FileNode):
         dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
         LOG.debug('Writing %s -> %s', self.source, dst)
         #LOG.debug('%s -> %s', self.source, dst)
-        with open(dst, 'w') as fid:
+        with codecs.open(dst, 'w', encoding='utf-8') as fid:
             fid.write(self._html.write())
 
         #return ast, html

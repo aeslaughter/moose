@@ -169,8 +169,20 @@ ul {
      margin-left:1.5rem;
 }
 
+/* BIBTEX */
+.moose-cite-list li,
+.moose-citep-list li{
+    padding-left:1ex;
+    padding:0px;
+    display:inline;
+}
+
+.moose-bibtex-modal pre{
+    line-height:1.25;
+}
+
 blockquote {
-	border-left: 5px solid var(--inl-blue);
+    border-left: 5px solid var(--inl-blue);
 }
 
 .moose-listing-div p.moose--caption

@@ -37,14 +37,18 @@ class AppSyntaxExtension(command.CommandExtension):
     @staticmethod
     def defaultConfig():
         config = command.CommandExtension.defaultConfig()
-        config['executable'] = (None, "The MOOSE executable to use for generating syntax.")
+        config['executable'] = (None, "The MOOSE application executable to use for generating syntax.")
+        config['includes'] = ([], "List of include directories to investigate for class information.")
+        config['inputs'] = ([], "List of directoies to interogate for input files using an object.")
         return config
 
     def __init__(self, *args, **kwargs):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
- #       exe = common.eval_path(self['executable'])
-#        self._app_syntax = app_syntax(exe)
+        exe = common.eval_path(self['executable'])
+        self._app_syntax = app_syntax(exe)
+
+        self._database = common.ClassDatabase(self['includes'], self['inputs'])
 
         self._cache = dict()
 

@@ -7,3 +7,4 @@ from parse_settings import parse_settings
 from box import box
 from load_config import load_config, load_extensions
 from eval_path import eval_path
+from ClassDatabase import ClassDatabase
