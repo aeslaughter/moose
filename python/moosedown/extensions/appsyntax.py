@@ -43,8 +43,8 @@ class AppSyntaxExtension(command.CommandExtension):
     def __init__(self, *args, **kwargs):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
-        exe = common.eval_path(self['executable'])
-        self._app_syntax = app_syntax(exe)
+ #       exe = common.eval_path(self['executable'])
+#        self._app_syntax = app_syntax(exe)
 
         self._cache = dict()
 

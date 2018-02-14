@@ -1,3 +1,3 @@
 # Bibtex Extension
 
-[slaughter2014framework]
+[cite:slaughter2014framework]

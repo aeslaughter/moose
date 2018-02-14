@@ -4,4 +4,7 @@
 
  !syntax parameters /Outputs/Exodus
 
-!syntax list /Kernels subsystems=False objects=True
+ !syntax list /Kernels subsystems=False objects=True
+
+ !syntax inputfiles
+ !syntax children
