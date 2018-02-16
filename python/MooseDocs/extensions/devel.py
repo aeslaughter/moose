@@ -1,294 +1,151 @@
-#pylint: disable=missing-docstring
-#* This file is part of the MOOSE framework
-#* https://www.mooseframework.org
-#*
-#* All rights reserved, see COPYRIGHT for full restrictions
-#* https://github.com/idaholab/moose/blob/master/COPYRIGHT
-#*
-#* Licensed under LGPL 2.1, please see LICENSE for details
-#* https://www.gnu.org/licenses/lgpl-2.1.html
-#pylint: enable=missing-docstring
+"""
+Tools primarily for developers of the MooseDown system.
+"""
+import re
+import copy
+import uuid
+import importlib
+import collections
 
-import os
-import logging
+from moosedown import common
+from moosedown.common import exceptions
+from moosedown.base import components
+from moosedown.extensions import core, floats, command, table
+from moosedown.tree import html, latex, tokens
+from moosedown.tree.base import Property
 
-from markdown.util import etree, AtomicString
-from markdown.inlinepatterns import Pattern
-from markdown.preprocessors import Preprocessor
+def make_extension(**kwargs):
+    return DevelExtension(**kwargs)
 
-import MooseDocs
-from MooseMarkdownExtension import MooseMarkdownExtension
-from MooseMarkdownCommon import MooseMarkdownCommon
-from .. import common
+"""
+class Example(tokens.Token):
+    PROPERTIES = [Property("caption", ptype=unicode, required=True),
+                 # Property("prefix", ptype=unicode, default=u'Example'),
+                  Property("data", ptype=collections.OrderedDict, required=True),
+                  Property("preview")]
+"""
 
-LOG = logging.getLogger(__name__)
+class ExampleToken(tokens.Token):
+   PROPERTIES = tokens.Token.PROPERTIES + [Property("data", ptype=unicode, required=True)]
 
-class DevelExtension(MooseMarkdownExtension):
-    """
-    Extension for adding developer tools to MOOSE flavored markdown.
-    """
+
+class DevelExtension(command.CommandExtension):
     @staticmethod
     def defaultConfig():
-        """Default DevelExtension"""
-        config = MooseMarkdownExtension.defaultConfig()
-        default = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'packages.yml')
-        config['package_file'] = [default, "The 'package.yml' configuration file."]
+        config = command.CommandExtension.defaultConfig()
+        config['preview'] = (True, "Enable/disable the rendered preview.") #TODO: use this
         return config
 
-    def extendMarkdown(self, md, md_globals):
-        """
-        Adds developer tools to MOOSE flavored markdown.
-        """
-        md.registerExtension(self)
-        config = self.getConfigs()
+    def extend(self, reader, renderer):
+        self.addCommand(Example())
+        self.addCommand(ComponentSettings())
 
-        md.inlinePatterns.add('moose_build_status',
-                              BuildStatusPattern(markdown_instance=md, **config),
-                              '_begin')
+        renderer.add(ExampleToken, RenderExampleToken())
 
-        md.inlinePatterns.add('moose_package_parser',
-                              PackagePattern(markdown_instance=md, **config),
-                              '_end')
+class Example(command.CommandComponent):
+    COMMAND = 'devel'
+    SUBCOMMAND = 'example'
 
-        md.inlinePatterns.add('moose_extension_config',
-                              ExtensionConfigPattern(markdown_instance=md, **config),
-                              '_begin')
+    TEX_TRANSLATOR = None
+    HTML_TRANSLATOR = None
 
-        md.inlinePatterns.add('moose_extension_component_settings',
-                              ExtensionSettingsPattern(markdown_instance=md, **config),
-                              '_begin')
+    def __init__(self, *args, **kwargs):
+        command.CommandComponent.__init__(self, *args, **kwargs)
+        #self.__tex_translator = None
+        #self.__html_translator = None
 
-        md.preprocessors.add('moose_deprecated',
-                             DeprecatedPreprocessor(markdown_instance=md),
-                             '_begin')
-
-def makeExtension(*args, **kwargs): #pylint: disable=invalid-name
-    """Create DevelExtension"""
-    return DevelExtension(*args, **kwargs)
-
-
-class BuildStatusPattern(MooseMarkdownCommon, Pattern):
-    """
-    Markdown extension for add Build Status widget.
-
-    Usage:
-     !buildstatus http://civet/buildstatus/site css_attribute=setting
-    """
-
-    # Find !buildstatus url attribute=value
-    RE = r'^!buildstatus\s+(.*?)(?:$|\s+)(.*)'
-
-    def __init__(self, markdown_instance=None, **kwargs):
-        MooseMarkdownCommon.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
-
-    def handleMatch(self, match):
-        """
-        process settings associated with !buildstatus markdown
-        """
-        url = match.group(2)
-
-        # A tuple separating specific MOOSE documentation features from HTML styles
-        settings = self.getSettings(match.group(3))
-
-        # Create parent div, and set any allowed CSS
-        parent_div = self.applyElementSettings(etree.Element('div'), settings)
-        parent_div.set('class', 'moose-buildstatus')
-
-        child_div = etree.SubElement(parent_div, 'div')
-        jquery_script = etree.SubElement(parent_div, 'script')
-        build_status_script = etree.SubElement(parent_div, 'script')
-
-        jquery_script.set('src', 'http://code.jquery.com/jquery-1.11.0.min.js')
-
-        # We need to inform SmartyPants to not format for paragraph use
-        build_status_script.text = \
-            AtomicString('$(document).ready(function(){ $("#buildstatus").load("%s");});' % (url))
-
-        # Set some necessary defaults for our child div
-        child_div.set('id', 'buildstatus')
-
-        # Set any additional allowed CSS
-        return parent_div
-
-
-class PackagePattern(MooseMarkdownCommon, Pattern):
-    """
-    Markdown extension for extracting package arch and version.
-    """
-
-    RE = r'!moosepackage\s*(.*?)!'
+    def init(self, *args, **kwargs):
+        command.CommandComponent.init(self, *args, **kwargs)
+        self.__counts = collections.defaultdict(int)
 
     @staticmethod
     def defaultSettings():
-        """Default settings for PackagePattern"""
-        settings = MooseMarkdownCommon.defaultSettings()
-        settings['arch'] = (None, "The architecture to return (e.g., osx10.12)")
-        settings['return'] = (None, "The information to return ('link' or 'name')")
+        settings = command.CommandComponent.defaultSettings()
+        settings['caption'] = (None, "The caption to use for the code specification example.")
+        settings['prefix'] = (u'Example', "The caption prefix (e.g., Example).")
         return settings
 
-    def __init__(self, markdown_instance=None, **kwargs):
-        MooseMarkdownCommon.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
+    def createToken(self, match, parent):
 
-        # Load the yaml data containing package information
-        self.package = MooseDocs.yaml_load(kwargs.pop('package_file'))
+        master = floats.Float(parent, **self.attributes)
 
-    def handleMatch(self, match):
-        """
-        Returns a tree element package information.
-        """
-        # Update the settings from regex match
-        settings = self.getSettings(match.group(2))
-        if not settings.has_key('arch') or not settings.has_key('return'):
-            el = self.createErrorElement('Invalid MOOSEPACKAGE markdown syntax. '\
-                                         'Requires arch=, return=link|name')
+        caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
+
+        grammer = self.reader.lexer.grammer('inline')
+        self.reader.lexer.tokenize(caption, grammer, unicode(self.settings['caption']), match.line)
+
+        data = match['block'] if 'block' in match else match['inline']
+
+        example = ExampleToken(master, data=data)
+
+        return example
+
+class ComponentSettings(command.CommandComponent):
+    COMMAND = 'devel'
+    SUBCOMMAND = 'settings'
+
+    @staticmethod
+    def defaultSettings():
+        settings = command.CommandComponent.defaultSettings()
+        settings['module'] = (None, "The name of the module containing the object.")
+        settings['object'] = (None, "The name of the object to import from the 'module'.")
+        settings['caption'] = (None, "The caption to use for the settings table created.")
+        settings['prefix'] = (u'Table', "The caption prefix (e.g., Table).")
+
+        return settings
+
+    def createToken(self, match, parent):
+        if self.settings['module'] is None:
+            raise base.TokenizeException()
+        #TODO: error if 'module' and 'object' not provided
+        #TODO: this should raise, but result in an error token
+
+        master = floats.Float(parent, **self.attributes)
+
+        if self.settings['caption']:
+            caption = floats.Caption(master, prefix=self.settings['prefix'], key=self.attributes['id'])
+            grammer = self.reader.lexer.grammer('inline')
+            self.reader.lexer.tokenize(caption, grammer, self.settings['caption'], match.line)#, line=self.line)
+
+        content = floats.Content(master, class_="card-content")
+
+        try:
+            mod = importlib.import_module(self.settings['module'])
+        except ImportError:
+            msg = "Unable to load the '{}' module."
+            raise exceptions.TokenizeException(msg, self.settings['module'])
+
+        try:
+            obj = getattr(mod, self.settings['object'])
+        except AttributeError:
+            msg = "Unable to load the '{}' attribute from the '{}' module."
+            raise exceptions.TokenizeException(msg, self.settings['object'], self.settings['module'])
+
+        if hasattr(obj, 'defaultSettings'):
+            settings = obj.defaultSettings()
+        elif hasattr(obj, 'defaultConfig'):
+            settings = obj.defaultConfig()
         else:
-            if settings['arch'] not in self.package.keys():
-                el = self.createErrorElement('"arch" not found in packages.yml')
-            else:
-                if settings['return'] == 'link':
-                    el = etree.Element('a')
-                    el.set('href', self.package['link'] + self.package[settings['arch']]['name'])
-                    el.text = self.package[settings['arch']]['name']
-                elif settings['return'] == 'name':
-                    el = etree.Element('p')
-                    el.text = self.package[settings['arch']]['name']
-        return el
+            msg = "The '{}' object in the '{}' module does not have a 'defaultSettings' or "\
+                  "'defaultConfig' method."
+            raise exceptions.TokenizeException(msg, mod, obj)
 
+        rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
+        tbl = table.builder(rows, headings=[u'Key', u'Default', u'Description'])
+        tbl.parent = content
+        return master
 
-class ExtensionConfigPattern(MooseMarkdownCommon, Pattern):
-    """
-    Extension for display MarkdownExtension config options in a table.
-    """
-    RE = r'^!extension\s+(.*?)\s*(?:$|\s+)(.*)'
+class RenderExampleToken(components.RenderComponent):
 
-    @staticmethod
-    def defaultSettings():
-        """Default settings for ExtensionConfigPattern"""
-        settings = MooseMarkdownCommon.defaultSettings()
-        settings['id'] = (None, "The id to utilize for the generated table. If not provided, " \
-                                "the command will be used.")
-        settings['caption'] = (None, "The title to place above the generated table. If not " \
-                                     "provided it will be generated using the command.")
-        settings['counter'] = ('table', "The name of the float to associate the generated table.")
-        return settings
+    def createMaterialize(self, token, parent):
 
-    def __init__(self, markdown_instance=None, **kwargs):
-        MooseMarkdownCommon.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
+        div = html.Tag(parent, 'div', class_='row card-content')
 
-    def handleMatch(self, match):
-        """
-        Creates table of extension configuration options.
-        """
-        extensions = [obj.__class__.__name__ for obj in self.markdown.registeredExtensions]
-        name = str(match.group(2))
-        settings = self.getSettings(match.group(3))
-        if settings['id'] is None:
-            settings['id'] = name
-        if settings['caption'] is None:
-            settings['caption'] = 'Extension configuration options for {}.'.format(name)
-        if name not in extensions:
-            return self.createErrorElement('Unknown extension name: {}'.format(name))
+        # LEFT
+        left = html.Tag(div, 'div', class_='moose-example-code col s12 m12 l12')
+        ast = tokens.Code(left, code=token.data)
+        self.translator.renderer.process(left, ast)
 
-        ext = self.markdown.registeredExtensions[extensions.index(name)]
-        table = common.MarkdownTable('Name', 'Default', 'Description')
-        for key, value in ext.defaultConfig().iteritems():
-            if value[0]:
-                table.addRow(key, repr(value[0]), value[1])
-            else:
-                table.addRow(key, '', value[1])
-
-        if table:
-            div = self.createFloatElement(settings)
-            div.append(table.html())
-            return div
-        return etree.Element('div') # return an empty div if no configuration options are available
-
-class ExtensionSettingsPattern(MooseMarkdownCommon, Pattern):
-    """
-    Provides a table for the MooseMarkdownCommon settings.
-    """
-    RE = r'^!extension-settings\s+(.*?)\s*(?:$|\s+)(.*)'
-
-    @staticmethod
-    def defaultSettings():
-        settings = MooseMarkdownCommon.defaultSettings()
-        settings['id'] = (None, "The id to utilize for the generated table. If not provided, " \
-                                "the command will be used.")
-        settings['caption'] = (None, "The title to place above the generated table. If not " \
-                                     "provided it will be generated using the command.")
-        settings['counter'] = ('table', "The name of the float to associate the generated table.")
-        return settings
-
-    def __init__(self, markdown_instance=None, **kwargs):
-        MooseMarkdownCommon.__init__(self, **kwargs)
-        Pattern.__init__(self, self.RE, markdown_instance)
-
-    def handleMatch(self, match):
-        """
-        Creates table of MooseMarkdownCommon settings.
-        """
-        name = str(match.group(2))
-        settings = self.getSettings(match.group(3))
-        if settings['id'] is None:
-            settings['id'] = name
-        if settings['caption'] is None:
-            settings['caption'] = 'Command settings for "{}" extension component.'.format(name)
-
-        obj = self.find(name)
-        if obj is None:
-            return self.createErrorElement('Unknown extension module: {}'.format(name))
-        elif not isinstance(obj, MooseMarkdownCommon):
-            msg = 'The extension module must be a "{}" object, but a "{}" was found.'
-            return self.createErrorElement(msg.format(MooseMarkdownCommon.__name__,
-                                                      type(obj).__name__))
-
-        table = common.MarkdownTable('Name', 'Default', 'Description')
-        for key, value in obj.defaultSettings().iteritems():
-            if value[0]:
-                table.addRow(key, repr(value[0]), value[1])
-            else:
-                table.addRow(key, '', value[1])
-
-        if table:
-            div = self.createFloatElement(settings)
-            div.append(table.html())
-            return div
-        return etree.Element('div') # return an empty div if no settings are available
-
-    def find(self, name):
-        """
-        Locate the extension component with the markdown object.
-        """
-        containers = [self.markdown.preprocessors,
-                      self.markdown.inlinePatterns,
-                      self.markdown.treeprocessors,
-                      self.markdown.postprocessors,
-                      self.markdown.parser.blockprocessors]
-        for container in containers:
-            if name in container:
-                return container[name]
-        return None
-
-class DeprecatedPreprocessor(Preprocessor):
-    """
-    Reports deprecated commands as warning/error on console.
-    """
-    def run(self, lines):
-        for regex, replace in MooseDocs.DEPRECATED_MARKDOWN:
-            for i, line in enumerate(lines):
-                match = regex.search(line)
-                if match:
-                    if isinstance(self.markdown.current, common.nodes.MarkdownFileNodeBase):
-                        msg = "The '{}' command on line {} of {} is deprecated. " \
-                              "It should be replaced with {}" \
-                              .format(match.group('command'), i, self.markdown.current.filename,
-                                      replace)
-                    else:
-                        msg = "The '{}' command on line {} is deprecated. " \
-                              "It should be replaced with {}" \
-                              .format(match.group('command'), i, replace)
-                    LOG.error(msg)
-        return lines
+        # RIGHT
+        right = html.Tag(div, 'div', class_='moose-example-rendered col s12 m12 l12')
+        return right
