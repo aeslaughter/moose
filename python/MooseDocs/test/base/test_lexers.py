@@ -5,7 +5,7 @@ Tests for Lexer and related objects.
 import re
 import unittest
 from MooseDocs.tree import tokens
-from moosedown.base import lexers
+from MooseDocs.base import lexers
 from MooseDocs.common import exceptions
 
 class Proxy(object):

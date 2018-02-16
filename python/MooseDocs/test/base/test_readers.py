@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(level=logging.CRITICAL)
 
 from MooseDocs.common import exceptions
-from moosedown.tree import tokens
+from MooseDocs.tree import tokens
 from MooseDocs.base import readers, lexers, components
 
 class BlockComponent(components.TokenComponent):

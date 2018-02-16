@@ -4,7 +4,7 @@ import uuid
 import collections
 
 from MooseDocs.base import components
-from moosedown.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex
 from MooseDocs.tree.base import Property
 
 def make_extension(**kwargs):

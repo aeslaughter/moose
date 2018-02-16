@@ -4,7 +4,7 @@ Tests for mixin.py module.
 """
 import unittest
 from MooseDocs.common import exceptions
-from moosedown.base import Translator, MarkdownReader, HTMLRenderer
+from MooseDocs.base import Translator, MarkdownReader, HTMLRenderer
 from MooseDocs.common import mixins
 
 class Foo(mixins.ConfigObject):

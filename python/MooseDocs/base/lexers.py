@@ -8,7 +8,7 @@ import types
 import re
 
 from MooseDocs import tree, common
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 
 LOG = logging.getLogger(__name__)
 

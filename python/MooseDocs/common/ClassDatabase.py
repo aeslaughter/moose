@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 
     includes = [os.path.join(MooseDocs.ROOT_DIR)]
-    inputs = [os.path.join(moosedown.ROOT_DIR)]
+    inputs = [os.path.join(MooseDocs.ROOT_DIR)]
 
     db = ClassDatabase(includes, inputs)
 

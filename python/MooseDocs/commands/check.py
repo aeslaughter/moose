@@ -6,7 +6,7 @@ import importlib
 import logging
 
 import MooseDocs
-from moosedown.tree import app_syntax
+from MooseDocs.tree import app_syntax
 
 LOG = logging.getLogger(__name__)
 

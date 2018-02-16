@@ -4,7 +4,7 @@ import re
 import logging
 
 import MooseDocs
-from moosedown.tree import page
+from MooseDocs.tree import page
 
 LOG = logging.getLogger(__name__)
 

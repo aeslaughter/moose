@@ -9,7 +9,7 @@ import mooseutils
 from mooseutils.hit_load import _hit_parse, HitNode
 
 import MooseDocs
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from MooseDocs.common.load_config import _hit_load_extensions, _hit_load_object, DEFAULT_EXTENSIONS
 
 def parse_hit(hit_node):
@@ -58,7 +58,7 @@ class TestLoadExtensions(unittest.TestCase):
 class TestLoadReader(unittest.TestCase):
     def testEmpty(self):
         obj = _hit_load_object(None, 'foo', MooseDocs.base.MarkdownReader)
-        self.assertIsInstance(obj, moosedown.base.MarkdownReader)
+        self.assertIsInstance(obj, MooseDocs.base.MarkdownReader)
 
     @mock.patch('logging.Logger.error')
     def testNode(self, mock):
@@ -75,7 +75,7 @@ class TestLoadReader(unittest.TestCase):
         node = hit.NewSection('Reader')
 
         obj = _hit_load_object(parse_hit(node), 'foo', MooseDocs.base.MarkdownReader)
-        self.assertIsInstance(obj, moosedown.base.MarkdownReader)
+        self.assertIsInstance(obj, MooseDocs.base.MarkdownReader)
 
         mock.assert_called_once()
         args, _ = mock.call_args
@@ -84,7 +84,7 @@ class TestLoadReader(unittest.TestCase):
 class TestLoadRenderer(unittest.TestCase):
     def testEmpty(self):
         obj = _hit_load_object(None, 'foo', MooseDocs.base.MaterializeRenderer)
-        self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
+        self.assertIsInstance(obj, MooseDocs.base.MaterializeRenderer)
 
     @mock.patch('logging.Logger.error')
     def testNode(self, mock):
@@ -100,7 +100,7 @@ class TestLoadRenderer(unittest.TestCase):
         node = hit.NewSection('Renderer')
 
         obj = _hit_load_object(parse_hit(node), 'foo', MooseDocs.base.MaterializeRenderer)
-        self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
+        self.assertIsInstance(obj, MooseDocs.base.MaterializeRenderer)
 
         mock.assert_called_once()
         args, _ = mock.call_args
@@ -112,7 +112,7 @@ class TestLoadRenderer(unittest.TestCase):
         node.addChild(hit.NewField('type', hit.FieldKind.String, 'wrong'))
 
         obj = _hit_load_object(parse_hit(node), 'foo', MooseDocs.base.MaterializeRenderer)
-        self.assertIsInstance(obj, moosedown.base.MaterializeRenderer)
+        self.assertIsInstance(obj, MooseDocs.base.MaterializeRenderer)
 
         mock.assert_called_once()
         args, _ = mock.call_args
@@ -121,7 +121,7 @@ class TestLoadRenderer(unittest.TestCase):
 class TestLoadTranslator(unittest.TestCase):
     def testEmpty(self):
         obj = _hit_load_object(None, 'foo', MooseDocs.base.Translator, MooseDocs.base.MarkdownReader(), MooseDocs.base.MaterializeRenderer())
-        self.assertIsInstance(obj, moosedown.base.Translator)
+        self.assertIsInstance(obj, MooseDocs.base.Translator)
 
     @mock.patch('logging.Logger.error')
     def testNode(self, mock):
@@ -137,7 +137,7 @@ class TestLoadTranslator(unittest.TestCase):
         node = hit.NewSection('Translator')
 
         obj = _hit_load_object(parse_hit(node), 'foo', MooseDocs.base.Translator, MooseDocs.base.MarkdownReader(), MooseDocs.base.MaterializeRenderer())
-        self.assertIsInstance(obj, moosedown.base.Translator)
+        self.assertIsInstance(obj, MooseDocs.base.Translator)
 
         mock.assert_called_once()
         args, _ = mock.call_args

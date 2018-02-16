@@ -6,11 +6,11 @@ import copy
 import anytree
 
 import MooseDocs
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from MooseDocs.base import components
-from moosedown.extensions import command, floats
+from MooseDocs.extensions import command, floats
 from MooseDocs.tree import tokens, html
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
 def make_extension(**kwargs):
     return MediaExtension(**kwargs)

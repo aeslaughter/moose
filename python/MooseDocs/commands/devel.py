@@ -6,9 +6,9 @@ import importlib
 import logging
 
 import MooseDocs
-from moosedown.tree import tokens
+from MooseDocs.tree import tokens
 from MooseDocs.base import components, renderers, testing
-from moosedown.extensions import command
+from MooseDocs.extensions import command
 
 LOG = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ import unittest
 import MooseDocs
 from <EXTENSIONROOT> import <EXTENSIONNAME>
 from MooseDocs.tree import tokens, html, latex
-from moosedown.base import testing, renderers
+from MooseDocs.base import testing, renderers
 """
 
 TOKENIZE="""

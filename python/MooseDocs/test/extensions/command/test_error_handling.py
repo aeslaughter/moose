@@ -5,7 +5,7 @@ import mock
 import tempfile
 
 import MooseDocs
-from moosedown.tree import page
+from MooseDocs.tree import page
 from MooseDocs.base import testing
 
 class TestErrorHandling(testing.MooseDocsTestCase):

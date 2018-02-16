@@ -4,7 +4,7 @@ import logging
 import mock
 
 from MooseDocs import tree
-from moosedown.base import testing, MaterializeRenderer, LatexRenderer
+from MooseDocs.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestExampleTokenize(testing.MooseDocsTestCase):
     def testBasic(self):

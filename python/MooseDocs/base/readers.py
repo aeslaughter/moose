@@ -7,9 +7,9 @@ import logging
 import anytree
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.common import mixins
-from moosedown.tree import tokens, page
+from MooseDocs.tree import tokens, page
 from lexers import RecursiveLexer
 
 LOG = logging.getLogger(__name__)

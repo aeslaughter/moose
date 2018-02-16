@@ -1,9 +1,9 @@
 import re
 
 from MooseDocs import common
-from moosedown.base import components
+from MooseDocs.base import components
 from MooseDocs.extensions import core
-from moosedown.tree import html, latex, tokens
+from MooseDocs.tree import html, latex, tokens
 from MooseDocs.tree.base import Property
 
 #from MooseDocs.extensions import floats

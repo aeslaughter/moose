@@ -4,10 +4,10 @@ Extension for floats such as figures, tables, and code listings
 import collections
 import uuid
 
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.extensions import core, table
 from MooseDocs.tree import tokens, html
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
 def make_extension():
     return FloatExtension()

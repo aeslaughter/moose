@@ -8,9 +8,9 @@ import traceback
 import anytree
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.common import exceptions, mixins
-from moosedown.tree import html, latex, base, tokens, page
+from MooseDocs.tree import html, latex, base, tokens, page
 
 LOG = logging.getLogger(__name__)
 

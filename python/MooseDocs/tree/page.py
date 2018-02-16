@@ -11,7 +11,7 @@ import anytree
 import mooseutils
 
 import MooseDocs
-from moosedown.tree import base
+from MooseDocs.tree import base
 from MooseDocs.common import exceptions, mixins
 
 LOG = logging.getLogger(__name__)

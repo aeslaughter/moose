@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import unittest
 from MooseDocs import common
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 
 class TestParseSettings(unittest.TestCase):
     def testBasic(self):

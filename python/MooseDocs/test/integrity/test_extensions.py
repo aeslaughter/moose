@@ -6,7 +6,7 @@ import inspect
 import importlib
 
 import MooseDocs
-from moosedown.base import testing, components
+from MooseDocs.base import testing, components
 from MooseDocs.tree import tokens
 
 class TestExtensions(testing.MooseDocsTestCase):

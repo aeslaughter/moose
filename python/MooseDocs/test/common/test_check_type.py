@@ -2,7 +2,7 @@
 import types
 import unittest
 from MooseDocs import common
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 
 class TestCheckType(unittest.TestCase):
     def testCallable(self):

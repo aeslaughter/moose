@@ -3,9 +3,9 @@
 import unittest
 import mock
 import MooseDocs
-from moosedown.extensions import core
+from MooseDocs.extensions import core
 from MooseDocs.tree import tokens, html, latex
-from moosedown.base import testing, renderers
+from MooseDocs.base import testing, renderers
 
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):

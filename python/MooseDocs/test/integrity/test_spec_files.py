@@ -9,7 +9,7 @@ import glob
 import mooseutils
 
 import MooseDocs
-from moosedown import extensions
+from MooseDocs import extensions
 from MooseDocs.base import testing
 
 import hit

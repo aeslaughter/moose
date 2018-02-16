@@ -11,11 +11,11 @@ import anytree
 import mooseutils
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.base import components
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from MooseDocs.extensions import command, alert, floats, core, autolink
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 
 def make_extension(**kwargs):
     return SQAExtension(**kwargs)

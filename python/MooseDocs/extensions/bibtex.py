@@ -11,9 +11,9 @@ from pybtex.plugin import find_plugin, PluginNotFound
 from pybtex.database import BibliographyData, parse_file
 
 import MooseDocs
-from moosedown.base import components
+from MooseDocs.base import components
 from MooseDocs.tree import tokens, html
-from moosedown.extensions import command
+from MooseDocs.extensions import command
 
 def make_extension(**kwargs):
     return BibtexExtension(**kwargs)

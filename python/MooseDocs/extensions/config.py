@@ -4,7 +4,7 @@ Extension for changing configure options within the page.
 import re
 import collections
 from MooseDocs.common import exceptions
-from moosedown import base
+from MooseDocs import base
 from MooseDocs.extensions import command
 
 def make_extension(**kwargs):

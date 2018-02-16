@@ -6,9 +6,9 @@ between the reading and rendering content.
 import logging
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.common import mixins
-from moosedown.tree import tokens, page
+from MooseDocs.tree import tokens, page
 from readers import Reader
 from renderers import Renderer
 

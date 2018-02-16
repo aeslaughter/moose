@@ -7,9 +7,9 @@ import collections
 import copy
 
 from MooseDocs import common
-from moosedown.base import components
+from MooseDocs.base import components
 from MooseDocs.extensions import core, command, floats
-from moosedown.tree import html, latex, tokens, page
+from MooseDocs.tree import html, latex, tokens, page
 from MooseDocs.tree.base import Property
 
 class IncludeToken(tokens.Token):

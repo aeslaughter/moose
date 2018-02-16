@@ -5,7 +5,7 @@ Testing for Translator object.
 import unittest
 
 from MooseDocs.base import Translator, MarkdownReader, HTMLRenderer
-from moosedown.extensions import core
+from MooseDocs.extensions import core
 from MooseDocs.common import exceptions
 
 class TestTranslator(unittest.TestCase):

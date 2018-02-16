@@ -11,9 +11,9 @@ import shutil
 import anytree
 
 import MooseDocs
-from moosedown import ROOT_DIR
+from MooseDocs import ROOT_DIR
 from MooseDocs.tree import page, tokens
-from moosedown.extensions import include
+from MooseDocs.extensions import include
 from MooseDocs.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestIncludeTokenize(testing.MooseDocsTestCase):

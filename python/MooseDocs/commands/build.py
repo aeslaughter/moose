@@ -13,7 +13,7 @@ import livereload
 import mooseutils
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 
 logging.basicConfig(level=logging.DEBUG) #TODO: need to get this into config
 LOG = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ def main(options):
 
     if False:
         from MooseDocs.tree import page
-        #filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/autolink.md'
+        #filename = '/Users/slauae/projects/MooseDocs/docs/content/utilities/MooseDocs/autolink.md'
         filename = '/Users/slauae/projects/MooseDocs/docs/content/documentation/sqa/moose_sdd.md'
         node = page.MarkdownNode(source=filename)
         node.init(translator)

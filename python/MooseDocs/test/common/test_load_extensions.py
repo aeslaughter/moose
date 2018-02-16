@@ -3,9 +3,9 @@ import unittest
 import mock
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.common import exceptions
-from moosedown import base
+from MooseDocs import base
 
 class TestLoadExtensions(unittest.TestCase):
     def testLoadFromModule(self):
@@ -15,7 +15,7 @@ class TestLoadExtensions(unittest.TestCase):
 
     def testLoadFromModuleWithConfig(self):
         ext = common.load_extensions([MooseDocs.extensions.devel],
-                                     {'moosedown.extensions.devel':{'preview':False}})
+                                     {'MooseDocs.extensions.devel':{'preview':False}})
         self.assertFalse(ext[0]['preview'])
 
     def testLoadFromStr(self):
@@ -25,7 +25,7 @@ class TestLoadExtensions(unittest.TestCase):
 
     def testLoadFromStrWithConfig(self):
         ext = common.load_extensions(['MooseDocs.extensions.devel'],
-                                     {'moosedown.extensions.devel':{'preview':False}})
+                                     {'MooseDocs.extensions.devel':{'preview':False}})
         self.assertFalse(ext[0]['preview'])
 
     def testMissingMakeExtension(self):

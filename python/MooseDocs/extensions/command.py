@@ -7,9 +7,9 @@ import importlib
 import collections
 
 from MooseDocs import common
-from moosedown.base import components
+from MooseDocs.base import components
 from MooseDocs.extensions import core, floats
-from moosedown.tree import html, latex, tokens
+from MooseDocs.tree import html, latex, tokens
 from MooseDocs.tree.base import Property
 
 def make_extension():

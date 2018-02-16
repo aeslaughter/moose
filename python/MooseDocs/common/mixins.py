@@ -3,7 +3,7 @@ Contains base classes intended to be used internal to this module.
 """
 import uuid
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.common import exceptions
 
 #: A value for allowing ConfigObject.get method to work with a default of None

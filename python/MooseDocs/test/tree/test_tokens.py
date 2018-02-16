@@ -6,7 +6,7 @@ import inspect
 import mock
 
 from MooseDocs.tree import tokens
-from moosedown.base import lexers
+from MooseDocs.base import lexers
 
 class TestTokens(unittest.TestCase):
 

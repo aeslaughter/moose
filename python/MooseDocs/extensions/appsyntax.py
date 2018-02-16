@@ -9,9 +9,9 @@ import anytree
 import mooseutils
 
 import MooseDocs
-from moosedown import common
+from MooseDocs import common
 from MooseDocs.base import components
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from MooseDocs.tree import html, tokens, syntax, app_syntax
 
 

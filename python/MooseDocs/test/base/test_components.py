@@ -7,9 +7,9 @@ import mock
 import inspect
 
 from MooseDocs.tree import tokens
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from MooseDocs.base.components import Component, TokenComponent, RenderComponent, Extension
-from moosedown.base.lexers import RecursiveLexer, LexerInformation
+from MooseDocs.base.lexers import RecursiveLexer, LexerInformation
 from MooseDocs.base import Translator, Reader, Renderer
 
 class TestExtension(unittest.TestCase):

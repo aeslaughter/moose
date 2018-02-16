@@ -1,8 +1,8 @@
 import os
 from MooseDocs.base import components
-from moosedown.extensions import command
+from MooseDocs.extensions import command
 from MooseDocs.tree import tokens, html
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
 def make_extension(**kwargs):
     return AlertExtension(**kwargs)

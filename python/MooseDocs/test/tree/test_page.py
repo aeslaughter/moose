@@ -3,7 +3,7 @@ import unittest
 import os
 
 from MooseDocs import ROOT_DIR
-from moosedown.tree import page
+from MooseDocs.tree import page
 
 
 class TestPage(unittest.TestCase):

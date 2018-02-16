@@ -5,9 +5,9 @@ Tests for the Renderer objects.
 import unittest
 import logging
 from MooseDocs.common import exceptions
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 from MooseDocs.base import renderers
-from moosedown.base import components
+from MooseDocs.base import components
 
 logging.basicConfig(level=logging.CRITICAL)
 

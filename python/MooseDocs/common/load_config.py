@@ -7,25 +7,25 @@ import logging
 
 import mooseutils
 import MooseDocs
-from moosedown.common import check_type, exceptions
+from MooseDocs.common import check_type, exceptions
 
 LOG = logging.getLogger(__name__)
 
 # Set of extenions to load by default
 DEFAULT_EXTENSIONS = ['MooseDocs.extensions.core',
-                      'moosedown.extensions.config',
+                      'MooseDocs.extensions.config',
                       'MooseDocs.extensions.command',
-                      'moosedown.extensions.include',
+                      'MooseDocs.extensions.include',
                       'MooseDocs.extensions.floats',
-                      'moosedown.extensions.media',
+                      'MooseDocs.extensions.media',
                       'MooseDocs.extensions.listing',
-                      'moosedown.extensions.table',
+                      'MooseDocs.extensions.table',
                       'MooseDocs.extensions.autolink',
-                      'moosedown.extensions.devel',
+                      'MooseDocs.extensions.devel',
                       'MooseDocs.extensions.alert',
-                      'moosedown.extensions.katex',
+                      'MooseDocs.extensions.katex',
                       'MooseDocs.extensions.appsyntax',
-                      'moosedown.extensions.bibtex',
+                      'MooseDocs.extensions.bibtex',
                       'MooseDocs.extensions.sqa']
 
 def load_config(filename):
@@ -36,7 +36,7 @@ def load_config(filename):
 
     extensions = _hit_load_extensions(node.find('Extensions'), filename)
     reader = _hit_load_object(node.find('Reader'), filename, MooseDocs.base.MarkdownReader)
-    renderer = _hit_load_object(node.find('Renderer'), filename, moosedown.base.MaterializeRenderer)
+    renderer = _hit_load_object(node.find('Renderer'), filename, MooseDocs.base.MaterializeRenderer)
     translator = _hit_load_object(node.find('Translator'), filename, MooseDocs.base.Translator,
                              reader, renderer, extensions)
     content = _hit_load_content(node.find('Content'), filename)
