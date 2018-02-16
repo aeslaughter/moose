@@ -7,7 +7,7 @@ style linkes (see [/core.md#shortcut-link]) heading content will also be include
 The following table lists the available configuration options for the AutoLink extension.
 
 !devel settings id=autolink-config caption=Configuration options for the AutoLink extension.
-                module=moosedown.extensions.autolink object=AutoLinkExtension
+                module=MooseDocs.extensions.autolink object=AutoLinkExtension
 
 ## Automatic Links
 

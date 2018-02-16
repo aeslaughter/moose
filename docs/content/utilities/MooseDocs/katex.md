@@ -4,7 +4,7 @@ Rendering math is enabled using [KaTeX]. The extension adds the ability
 to create numbered equations as well as reference the equations with traditional shortcut syntax:
 e.g., `[eq-heat]`.
 
-!devel settings module=moosedown.extensions.katex
+!devel settings module=MooseDocs.extensions.katex
                 object=KatexExtension
                 id=katex-extension-config
                 caption=Available configure options for th KatexExtension object.

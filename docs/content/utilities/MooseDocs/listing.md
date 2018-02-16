@@ -9,7 +9,7 @@ The extension provides the `!listing` command (see [command.md]), which allows f
 to be applied, the [floats.md] provides additional details. The following table list the avaible
 configure options for the extension.
 
-!devel settings module=moosedown.extensions.listing object=ListingExtension
+!devel settings module=MooseDocs.extensions.listing object=ListingExtension
 
 The `!listing` command has the capability to include text from local content and arbitrary files
 (such as source code).  files. There is a wide range of settings that are available to specialize how
@@ -30,7 +30,7 @@ y += 42;
 return y;
 !devel-end!
 
-!devel settings module=moosedown.extensions.listing
+!devel settings module=MooseDocs.extensions.listing
                 object=LocalListingCommand
                 id=listing-local-settings
                 caption=Settings available when creating a listing from local content.
@@ -40,7 +40,7 @@ return y;
 You can include complete files from the repository. For example, the following creates the code
 listing in [example-listing-complete].
 
-!devel settings module=moosedown.extensions.listing
+!devel settings module=MooseDocs.extensions.listing
                 object=FileListingCommand
                 id=moose-listing
                 caption=Settings available when capturing text from a file with the `listing` command.
@@ -94,6 +94,6 @@ approximate; however, if it is not unique only the first match will appear.
          caption=Code listing of [MOOSE] input file block.
 !devel-end!
 
-!devel settings module=moosedown.extensions.listing object=InputListingCommand
+!devel settings module=MooseDocs.extensions.listing object=InputListingCommand
 
 [MOOSE]: www.mooseframework.org

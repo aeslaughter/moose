@@ -9,7 +9,7 @@ The configuration options for the media extension are listed in [config-media-ex
 
 !devel settings id=config-media-ext
                 caption=Configuration options for the media extension.
-                module=moosedown.extensions.media
+                module=MooseDocs.extensions.media
                 object=MediaExtension
 
 ## Images
@@ -24,7 +24,7 @@ and svg. Images are added using the !media command followed by the filename, as 
        caption=The Idaho National Laboratory logo.
 !devel-end!
 
-!devel settings module=moosedown.extensions.media object=ImageCommand
+!devel settings module=MooseDocs.extensions.media object=ImageCommand
 
 
 ## Videos
@@ -37,4 +37,4 @@ below.
        id=big_buck_bunny
        caption=["Big Buck Bunny"](https://en.wikipedia.org/wiki/Big_Buck_Bunny) is an open-source animated short.
 
-!devel settings module=moosedown.extensions.media object=VideoCommand
+!devel settings module=MooseDocs.extensions.media object=VideoCommand

@@ -1,18 +1,24 @@
 [Content]
-  [framework]
-      root_dir = docs/content
-      content = 'utilities/moosedown/**
+  [MooseDocs]
+      root_dir = 'docs/content'
+      content = 'utilities/MooseDocs/**
                  documentation/sqa/**
                  media/**
                  contrib/**
                  css/*
                  js/*'
   []
+  [framework]
+      root_dir = 'framework/doc/content'
+      content = '**'
+  []
 []
 
 [Extensions]
   [syntax]
-    type = moosedown.extensions.appsyntax
+    type = MooseDocs.extensions.appsyntax
     executable = ${MOOSE_DIR}/modules/combined
+    includes = '${MOOSE_DIR}/framework/include'
+    inputs = '${MOOSE_DIR}/test/tests'
   []
 []

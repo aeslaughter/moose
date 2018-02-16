@@ -99,9 +99,8 @@ def _hit_load_extensions(node, filename):
     # populated from the hit nodes and applied to the object via the make_extension method.
     ext_configs = collections.OrderedDict()
     if (node is None) or ('disable_defaults' not in node):
-        ext_configs = collections.OrderedDict()
-        for key in DEFAULT_EXTENSIONS:
-            ext_configs[key] = dict()
+        for ext in DEFAULT_EXTENSIONS:
+            ext_configs[ext] = dict()
 
     # Process the [Extensions] block of the hit input, if it exists
     if node:
@@ -112,6 +111,8 @@ def _hit_load_extensions(node, filename):
             else:
                 config = {k:v for k, v in child.iterparams()}
                 ext_type = config.pop('type')
+                if ext_type not in ext_configs:
+                    ext_configs[ext_type] = dict()
                 ext_configs[ext_type].update(config)
 
     # Build the Extension objects

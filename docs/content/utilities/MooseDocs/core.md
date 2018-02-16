@@ -61,7 +61,7 @@ Settings for code blocks are defined by key-value pairings that follow the back-
 export METHOD=opt
 ```
 
-!devel settings module=moosedown.extensions.core object=Code id=code-settings caption=Available settings for fenced code blocks.
+!devel settings module=MooseDocs.extensions.core object=Code id=code-settings caption=Available settings for fenced code blocks.
 
 ### Quotations
 
@@ -123,7 +123,7 @@ Multiple Lines (this is useful if they are really long)
    style=font-size:15pt
    id=level-two
 
-!devel settings module=moosedown.extensions.core object=HeadingHash caption=Available settings for headings. id=heading-settings
+!devel settings module=MooseDocs.extensions.core object=HeadingHash caption=Available settings for headings. id=heading-settings
 
 ### Unordered List id=unordered
 
@@ -283,7 +283,7 @@ MooseDocs uses traditional [markdown] syntax for links; however, it also support
 the link (see [settings-example]). The settings are the expected key-value pairings common to much of the MooseDocs
 syntax. The available settings for links is include in [link-settings].
 
-!devel settings module=moosedown.extensions.core id=link-settings object=Link caption=Available settings for links.
+!devel settings module=MooseDocs.extensions.core id=link-settings object=Link caption=Available settings for links.
 
 ### Shortcut links id=shortcut-link
 

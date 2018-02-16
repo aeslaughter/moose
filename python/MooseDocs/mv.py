@@ -1,44 +1,41 @@
 import os
 import subprocess
-import shutil
-import logging
+
+import anytree
 
 import MooseDocs
-from MooseDocs.MooseMarkdown import MooseMarkdown
-from MooseDocs.extensions.app_syntax import AppSyntaxExtension
+from MooseDocs.tree import syntax, app_syntax
 
-app = 'framework'
-source_root = '/Users/slauae/projects/MooseDocs/docs/content/documentation/systems'
+exe = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'combined')
+root = app_syntax(exe)
 
-logging.basicConfig()
-config = MooseDocs.load_config('/Users/slauae/projects/MooseDocs/docs/website.yml')
-parser = MooseMarkdown(config)
-ext = parser.getExtension(AppSyntaxExtension)
-syntax = ext.getMooseAppSyntax()
+group = 'Framework'
+prefix = 'documentation/systems'
+
+old_dir = 'docs/content'
+new_dir = '{}/doc/content'.format(group.lower())
 
 
-for node in syntax.findall():
-    src = os.path.join(source_root, node.markdown('', absolute=False))
 
-    group = node.groups.keys()[0]
-    if group == 'framework':
-        destination_root = '/Users/slauae/projects/MooseDocs/{}/doc/content/documentation/systems'
-    else:
-        destination_root = '/Users/slauae/projects/MooseDocs/modules/{}/doc/content/documentation/systems'
+markers = anytree.search.find(root, filter_=lambda n: n.fullpath == '/Adaptivity/Markers')
+print markers
 
-    if os.path.isfile(src):
-        dst = node.markdown('', absolute=False).replace('/{}/'.format(group), '/')
-        dst = os.path.join(destination_root.format(group), dst)
-        cmd = ['git', 'mv', src, dst]
+for child in markers:
+    new = None; old = None
+    if group in child.groups:
+        md = child.markdown(prefix)
+        new = os.path.join(MooseDocs.MOOSE_DIR, new_dir, md)
+        if isinstance(child, syntax.SyntaxNode):
+            old = os.path.join(MooseDocs.MOOSE_DIR, old_dir, md)
 
-        if os.path.isfile(dst):
-            os.remove(dst)
-        elif os.path.isdir(dst):
-            shutil.rmtree(dst)
+        elif isinstance(child, syntax.ObjectNode):
+            x = md.split('/')
+            x.insert(-1, group.lower())
+            old = os.path.join(MooseDocs.MOOSE_DIR, old_dir, *x)
 
-        dst_dir = os.path.dirname(dst)
-        if not os.path.isdir(dst_dir):
-            os.makedirs(dst_dir)
-
-        #print ' '.join(cmd)
-        subprocess.call(cmd)
+        loc = os.path.dirname(new)
+        if not os.path.exists(loc):
+            os.makedirs(loc)
+        print "{}:\n    OLD: {}\n    NEW: {}\n".format(child.name, old, new)
+        #subprocess.call(['git', 'mv', old, new])
+        subprocess.call(['cp', old, new])

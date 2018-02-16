@@ -191,16 +191,19 @@ class SyntaxNode(SyntaxNodeBase):
     """
     COLOR = 'GREEN'
 
-    def markdown(self, install, absolute=True):
+    def markdown(self, prefix=''):
         """
         Return the expected markdown file name.
         """
-        path = os.path.join(install, self.fullpath.strip('/')).split('/')
-        path += ['index.md']
-        if absolute:
-            return os.path.join(self.root_directory, *path)
-        else:
-            return os.path.join(*path)
+        return os.path.join(prefix, self.fullpath.strip('/'), 'index.md')
+
+
+        #path = os.path.join(install, self.fullpath.strip('/')).split('/')
+        #path += ['index.md']
+        #if absolute:
+        #    return os.path.join(self.root_directory, *path)
+        #else:
+        #    return os.path.join(*path)
 
     @property
     def parameters(self):
@@ -252,17 +255,19 @@ class ObjectNode(SyntaxNodeBase): #pylint: disable=abstract-method
         """
         return self.__parameters
 
-    def markdown(self, install, absolute=True):
+    def markdown(self, prefix=''):
         """
         The expected markdown file.
         """
-        folder = self.__groups.keys()[0]
-        path = os.path.join(install, self.fullpath.strip('/')).split('/')
-        path.insert(-1, folder)
-        if absolute:
-            return os.path.join(self.root_directory, '/'.join(path) + '.md')
-        else:
-            return os.path.join(*path) + '.md'
+        return os.path.join(prefix, self.fullpath.strip('/') + '.md')
+
+        # folder = self.__groups.keys()[0]
+        # path = os.path.join(install, self.fullpath.strip('/')).split('/')
+        # path.insert(-1, folder)
+        # if absolute:
+        #     return os.path.join(self.root_directory, '/'.join(path) + '.md')
+        # else:
+        #     return os.path.join(*path) + '.md'
 
     def _locateGroupNames(self, item):
         """

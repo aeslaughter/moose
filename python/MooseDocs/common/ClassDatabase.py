@@ -51,6 +51,7 @@ class ClassDatabase(object):
 
         out = set()
         for location in directories:
+            print location
             for base, _, files in os.walk(location):
                 for fname in files:
                     full_file = os.path.join(base, fname)

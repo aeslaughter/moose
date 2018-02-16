@@ -25,7 +25,7 @@ class Token(NodeBase):
     #base.Property('info')] # change to meta
 
     def __init__(self, parent=None, name=None, **kwargs):
-        self.__info = kwargs.pop('info', None)
+        self._info = kwargs.pop('info', None)
         #self.__page = kwargs.pop('page', None)
         super(Token, self).__init__(parent, name, **kwargs)
         self.name = self.__class__.__name__
@@ -34,12 +34,14 @@ class Token(NodeBase):
 
     @property
     def info(self):
-        return self.__info
+        node = self
+        while node._info is None:
+            node = node.parent
+        return node._info
 
     @info.setter
     def info(self, value):
-        if value is not None:
-            self.__info = value
+        self._info = value
             #for child in self.children:
             #    child.info = value
 

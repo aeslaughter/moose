@@ -27,6 +27,7 @@ class CoreExtension(components.Extension):
         """
         Add the extension components.
         """
+
         # Block tokenize components
         reader.addBlock(Code())
         reader.addBlock(Quote())

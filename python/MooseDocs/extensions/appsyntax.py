@@ -45,16 +45,25 @@ class AppSyntaxExtension(command.CommandExtension):
     def __init__(self, *args, **kwargs):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
-       # exe = common.eval_path(self['executable'])
-       # self._app_syntax = app_syntax(exe)
+        exe = common.eval_path(self['executable'])
+        self._app_syntax = app_syntax(exe)
 
-        self._database = common.ClassDatabase(self['includes'], self['inputs'])
+
+        includes = [common.eval_path(x) for x in self['includes'].split()]
+        inputs = [common.eval_path(x) for x in self['inputs'].split()]
+
+        self._database = common.ClassDatabase(includes, inputs)
 
         self._cache = dict()
 
     @property
     def syntax(self):
         return self._app_syntax
+
+    @property
+    def database(self):
+        return self._database
+
 
     def find(self, name, exc=exceptions.TokenizeException):
 
@@ -76,6 +85,8 @@ class AppSyntaxExtension(command.CommandExtension):
         self.addCommand(SyntaxDescriptionCommand())
         self.addCommand(SyntaxParametersCommand())
         self.addCommand(SyntaxCompleteCommand())
+        self.addCommand(SyntaxInputsCommand())
+        self.addCommand(SyntaxChildrenCommand())
 
         renderer.add(InputParametersToken, RenderInputParametersToken())
         renderer.add(SyntaxToken, RenderSyntaxToken())
@@ -118,8 +129,20 @@ class SyntaxDescriptionCommand(SyntaxCommandBase):
         self.translator.reader.parse(parent, obj.description, group=MooseDocs.INLINE)
         return parent
 
-class SyntaxCompleteCommand(SyntaxCommandBase):
+class SyntaxChildrenCommand(SyntaxCommandBase):
+    SUBCOMMAND = 'children'
 
+    def createTokenFromSyntax(self, info, parent, obj):
+        pass
+
+class SyntaxInputsCommand(SyntaxCommandBase):
+    SUBCOMMAND = 'inputs'
+
+    def createTokenFromSyntax(self, info, parent, obj):
+        item = self.extension.database[obj.name]
+        print item
+
+class SyntaxCompleteCommand(SyntaxCommandBase):
     SUBCOMMAND = 'list'
 
     @staticmethod

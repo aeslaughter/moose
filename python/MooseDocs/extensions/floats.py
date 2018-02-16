@@ -5,7 +5,7 @@ import collections
 import uuid
 
 from MooseDocs.base import components
-from moosedown.extensions import core, table
+from MooseDocs.extensions import core, table
 from MooseDocs.tree import tokens, html
 from MooseDocs.tree.base import Property
 
