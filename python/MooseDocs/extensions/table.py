@@ -1,12 +1,12 @@
 import re
 
-from moosedown import common
+from MooseDocs import common
 from moosedown.base import components
-from moosedown.extensions import core
+from MooseDocs.extensions import core
 from moosedown.tree import html, latex, tokens
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
-#from moosedown.extensions import floats
+#from MooseDocs.extensions import floats
 
 def make_extension(**kwargs):
     return TableExtension(**kwargs)
@@ -65,7 +65,7 @@ def builder(rows, headings=None):
 
 class TableExtension(components.Extension): #TODO:  CommandMarkdownExtension
     def extend(self, reader, renderer):
-        #reader.addBlock(TableComponent(), "<moosedown.extensions.core.Paragraph")
+        #reader.addBlock(TableComponent(), "<MooseDocs.extensions.core.Paragraph")
         reader.addBlock(TableComponent(), "<Paragraph")
 
         #print 'TableExtension::extend' #TODO: The devel Example extension calls this way too many times...

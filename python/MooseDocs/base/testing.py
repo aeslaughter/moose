@@ -5,7 +5,7 @@ import unittest
 import inspect
 import logging
 
-from moosedown import base, common, tree
+from MooseDocs import base, common, tree
 from mooseutils import text_diff
 
 logging.basicConfig()
@@ -14,7 +14,7 @@ class MooseDocsTestCase(unittest.TestCase):
     """
     TestCase object for converting markdown to AST, HTML, and LaTeX.
     """
-    EXTENSIONS = ['moosedown.extensions.core']
+    EXTENSIONS = ['MooseDocs.extensions.core']
     EXTENSIONS_CONFIG = dict()
     READER = base.MarkdownReader
     RENDERER = base.HTMLRenderer

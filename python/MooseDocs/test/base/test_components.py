@@ -6,11 +6,11 @@ import unittest
 import mock
 import inspect
 
-from moosedown.tree import tokens
+from MooseDocs.tree import tokens
 from moosedown.common import exceptions
-from moosedown.base.components import Component, TokenComponent, RenderComponent, Extension
+from MooseDocs.base.components import Component, TokenComponent, RenderComponent, Extension
 from moosedown.base.lexers import RecursiveLexer, LexerInformation
-from moosedown.base import Translator, Reader, Renderer
+from MooseDocs.base import Translator, Reader, Renderer
 
 class TestExtension(unittest.TestCase):
     """

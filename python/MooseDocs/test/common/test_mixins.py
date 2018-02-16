@@ -3,9 +3,9 @@
 Tests for mixin.py module.
 """
 import unittest
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from moosedown.base import Translator, MarkdownReader, HTMLRenderer
-from moosedown.common import mixins
+from MooseDocs.common import mixins
 
 class Foo(mixins.ConfigObject):
     """Testing instance of ConfigObject."""

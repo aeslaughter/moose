@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 
 class TestExceptions(unittest.TestCase):
     def testMooseDocsException(self):

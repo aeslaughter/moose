@@ -5,7 +5,7 @@ import re
 import importlib
 import logging
 
-import moosedown
+import MooseDocs
 from moosedown.tree import app_syntax
 
 LOG = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ def command_line_options(subparser):
 
 def main(options):
 
-    location = os.path.join(moosedown.MOOSE_DIR, 'test')
+    location = os.path.join(MooseDocs.MOOSE_DIR, 'test')
 
     root = app_syntax(location)
 

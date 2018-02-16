@@ -3,7 +3,7 @@ import unittest
 import logging
 import mock
 
-from moosedown import tree
+from MooseDocs import tree
 from moosedown.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestExampleTokenize(testing.MooseDocsTestCase):

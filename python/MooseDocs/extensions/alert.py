@@ -1,7 +1,7 @@
 import os
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.extensions import command
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 from moosedown.tree.base import Property
 
 def make_extension(**kwargs):

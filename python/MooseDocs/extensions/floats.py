@@ -6,7 +6,7 @@ import uuid
 
 from moosedown.base import components
 from moosedown.extensions import core, table
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 from moosedown.tree.base import Property
 
 def make_extension():

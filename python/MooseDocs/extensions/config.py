@@ -3,9 +3,9 @@ Extension for changing configure options within the page.
 """
 import re
 import collections
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from moosedown import base
-from moosedown.extensions import command
+from MooseDocs.extensions import command
 
 def make_extension(**kwargs):
     return ConfigExtension(**kwargs)

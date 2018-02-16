@@ -3,7 +3,7 @@ import unittest
 import logging
 import mock
 
-from moosedown.tree import html
+from MooseDocs.tree import html
 
 
 class TestHTML(unittest.TestCase):

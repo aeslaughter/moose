@@ -5,7 +5,7 @@ import logging
 import inspect
 import mock
 
-from moosedown.tree import tokens
+from MooseDocs.tree import tokens
 from moosedown.base import lexers
 
 class TestTokens(unittest.TestCase):

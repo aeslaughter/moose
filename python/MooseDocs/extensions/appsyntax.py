@@ -8,14 +8,14 @@ import anytree
 
 import mooseutils
 
-import moosedown
+import MooseDocs
 from moosedown import common
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.common import exceptions
-from moosedown.tree import html, tokens, syntax, app_syntax
+from MooseDocs.tree import html, tokens, syntax, app_syntax
 
 
-from moosedown.extensions import command
+from MooseDocs.extensions import command
 
 def make_extension(**kwargs):
     return AppSyntaxExtension(**kwargs)
@@ -115,7 +115,7 @@ class SyntaxParametersCommand(SyntaxCommandBase):
 class SyntaxDescriptionCommand(SyntaxCommandBase):
     SUBCOMMAND = 'description'
     def createTokenFromSyntax(self, info, parent, obj):
-        self.translator.reader.parse(parent, obj.description, group=moosedown.INLINE)
+        self.translator.reader.parse(parent, obj.description, group=MooseDocs.INLINE)
         return parent
 
 class SyntaxCompleteCommand(SyntaxCommandBase):
@@ -193,7 +193,7 @@ class RenderSyntaxToken(components.RenderComponent):
             desc = html.Tag(li, 'span', class_='{}-description'.format(cls))#, string=unicode(obj.description))
 
             ast = tokens.Token(None)
-            self.translator.reader.parse(ast, unicode(obj.description), group=moosedown.INLINE)
+            self.translator.reader.parse(ast, unicode(obj.description), group=MooseDocs.INLINE)
             self.translator.renderer.process(desc, ast)
 
 

@@ -1,7 +1,7 @@
 """
 Component objects are used for defining extensions for translating from markdown to HTML/LaTeX.
 """
-from moosedown.common import exceptions, parse_settings, mixins
+from MooseDocs.common import exceptions, parse_settings, mixins
 
 class Extension(mixins.ConfigObject, mixins.TranslatorObject):
     """

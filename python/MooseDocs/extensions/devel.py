@@ -7,11 +7,11 @@ import uuid
 import importlib
 import collections
 
-from moosedown import common
+from MooseDocs import common
 from moosedown.common import exceptions
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.extensions import core, floats, command, table
-from moosedown.tree import html, latex, tokens
+from MooseDocs.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
 def make_extension(**kwargs):

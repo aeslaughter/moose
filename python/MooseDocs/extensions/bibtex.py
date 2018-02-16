@@ -10,9 +10,9 @@ import uuid
 from pybtex.plugin import find_plugin, PluginNotFound
 from pybtex.database import BibliographyData, parse_file
 
-import moosedown
+import MooseDocs
 from moosedown.base import components
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 from moosedown.extensions import command
 
 def make_extension(**kwargs):
@@ -35,7 +35,7 @@ class BibtexExtension(command.CommandExtension):
         # TODO: Do this only if used
         bib_files = []
         for pattern in self['bib_files'].split():
-            bib_files += glob.glob(os.path.join(moosedown.ROOT_DIR, pattern))
+            bib_files += glob.glob(os.path.join(MooseDocs.ROOT_DIR, pattern))
 
         for bfile in bib_files:
             db = parse_file(bfile)

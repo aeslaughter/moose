@@ -6,11 +6,11 @@ import uuid
 import importlib
 import collections
 
-from moosedown import common
+from MooseDocs import common
 from moosedown.base import components
-from moosedown.extensions import core, floats
+from MooseDocs.extensions import core, floats
 from moosedown.tree import html, latex, tokens
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
 def make_extension():
     return CommandExtension()

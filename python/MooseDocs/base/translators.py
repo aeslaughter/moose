@@ -5,9 +5,9 @@ between the reading and rendering content.
 """
 import logging
 
-import moosedown
+import MooseDocs
 from moosedown import common
-from moosedown.common import mixins
+from MooseDocs.common import mixins
 from moosedown.tree import tokens, page
 from readers import Reader
 from renderers import Renderer
@@ -42,7 +42,7 @@ class Translator(mixins.ConfigObject):
         self.__renderer.init(self)
 
         for ext in self.__extensions:
-            common.check_type('extensions', ext, moosedown.base.components.Extension)
+            common.check_type('extensions', ext, MooseDocs.base.components.Extension)
             ext.init(self)
             ext.extend(reader, renderer)
             for comp in self.__reader.components:

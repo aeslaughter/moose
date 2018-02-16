@@ -3,7 +3,7 @@ import os
 import re
 import logging
 
-import moosedown
+import MooseDocs
 from moosedown.tree import page
 
 LOG = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ def doc_import(root_dir, content=None):
         return None
 
     # Check root_dir
-    root_dir = os.path.join(moosedown.ROOT_DIR, root_dir)
+    root_dir = os.path.join(MooseDocs.ROOT_DIR, root_dir)
     if not os.path.isdir(root_dir):
         LOG.error('The "root_dir" must be a valid directory.')
         return None
@@ -135,7 +135,7 @@ def doc_tree(items):
             LOG.error('The suplied items must be a list of dict items, each with a "root_dir" and '
                       '"content" entry.')
 
-        root = os.path.join(moosedown.ROOT_DIR, value['root_dir'])
+        root = os.path.join(MooseDocs.ROOT_DIR, value['root_dir'])
         files = doc_import(root, content=value['content'])
 
         for filename in files:

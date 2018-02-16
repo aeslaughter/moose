@@ -5,11 +5,11 @@ import copy
 
 import anytree
 
-import moosedown
+import MooseDocs
 from moosedown.common import exceptions
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.extensions import command, floats
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 from moosedown.tree.base import Property
 
 def make_extension(**kwargs):
@@ -71,10 +71,10 @@ class MediaCommandBase(command.CommandComponent):
         if key:
             caption = floats.Caption(flt, key=key, prefix=self.extension['prefix'])
             if cap:
-                self.translator.reader.parse(caption, cap, moosedown.INLINE)
+                self.translator.reader.parse(caption, cap, MooseDocs.INLINE)
         elif cap:
             caption = floats.Caption(flt)
-            self.translator.reader.parse(caption, cap, moosedown.INLINE)
+            self.translator.reader.parse(caption, cap, MooseDocs.INLINE)
 
         return parent
 

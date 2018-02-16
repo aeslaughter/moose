@@ -10,11 +10,11 @@ import anytree
 
 import mooseutils
 
-import moosedown
+import MooseDocs
 from moosedown import common
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.common import exceptions
-from moosedown.extensions import command, alert, floats, core, autolink
+from MooseDocs.extensions import command, alert, floats, core, autolink
 from moosedown.tree import tokens, html
 
 def make_extension(**kwargs):
@@ -24,7 +24,7 @@ Requirement = collections.namedtuple('Requirement', "name path filename requirem
 
 
 def get_requirements():
-    directories = [os.path.join(moosedown.ROOT_DIR, 'test', 'tests')]
+    directories = [os.path.join(MooseDocs.ROOT_DIR, 'test', 'tests')]
     spec = 'tests'
    # ext = (".i", ".hit")
     #system = 'Tests'
@@ -152,7 +152,7 @@ class SQATemplateLoadCommand(command.CommandComponent):
     def createToken(self, info, parent):
 
         #TODO: make root path a config item in extension
-        location = os.path.join(moosedown.ROOT_DIR, 'docs', 'templates', 'sqa', self.settings['template'])
+        location = os.path.join(MooseDocs.ROOT_DIR, 'docs', 'templates', 'sqa', self.settings['template'])
 
         if not os.path.exists(location):
             msg = "The template file does not exist: {}."

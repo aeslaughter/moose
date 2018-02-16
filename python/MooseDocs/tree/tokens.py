@@ -6,7 +6,7 @@ import re
 import collections
 import logging
 
-from moosedown.tree.base import Property, NodeBase
+from MooseDocs.tree.base import Property, NodeBase
 #from moosedown.base.lexers import LexerInformation
 
 LOG = logging.getLogger(__name__)

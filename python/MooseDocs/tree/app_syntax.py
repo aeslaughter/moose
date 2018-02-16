@@ -17,7 +17,7 @@ import json
 
 import mooseutils
 
-from moosedown.tree.syntax import SyntaxNode, MooseObjectNode, ActionNode, MooseObjectActionNode
+from MooseDocs.tree.syntax import SyntaxNode, MooseObjectNode, ActionNode, MooseObjectActionNode
 
 LOG = logging.getLogger(__name__)
 

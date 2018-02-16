@@ -7,9 +7,9 @@ import re
 import logging
 logging.basicConfig(level=logging.CRITICAL)
 
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 from moosedown.tree import tokens
-from moosedown.base import readers, lexers, components
+from MooseDocs.base import readers, lexers, components
 
 class BlockComponent(components.TokenComponent):
     """Class for testing MarkdownReader"""

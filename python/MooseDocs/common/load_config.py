@@ -6,27 +6,27 @@ import importlib
 import logging
 
 import mooseutils
-import moosedown
+import MooseDocs
 from moosedown.common import check_type, exceptions
 
 LOG = logging.getLogger(__name__)
 
 # Set of extenions to load by default
-DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
+DEFAULT_EXTENSIONS = ['MooseDocs.extensions.core',
                       'moosedown.extensions.config',
-                      'moosedown.extensions.command',
+                      'MooseDocs.extensions.command',
                       'moosedown.extensions.include',
-                      'moosedown.extensions.floats',
+                      'MooseDocs.extensions.floats',
                       'moosedown.extensions.media',
-                      'moosedown.extensions.listing',
+                      'MooseDocs.extensions.listing',
                       'moosedown.extensions.table',
-                      'moosedown.extensions.autolink',
+                      'MooseDocs.extensions.autolink',
                       'moosedown.extensions.devel',
-                      'moosedown.extensions.alert',
+                      'MooseDocs.extensions.alert',
                       'moosedown.extensions.katex',
-                      'moosedown.extensions.appsyntax',
+                      'MooseDocs.extensions.appsyntax',
                       'moosedown.extensions.bibtex',
-                      'moosedown.extensions.sqa']
+                      'MooseDocs.extensions.sqa']
 
 def load_config(filename):
     """
@@ -35,9 +35,9 @@ def load_config(filename):
     node = mooseutils.hit_load(filename)
 
     extensions = _hit_load_extensions(node.find('Extensions'), filename)
-    reader = _hit_load_object(node.find('Reader'), filename, moosedown.base.MarkdownReader)
+    reader = _hit_load_object(node.find('Reader'), filename, MooseDocs.base.MarkdownReader)
     renderer = _hit_load_object(node.find('Renderer'), filename, moosedown.base.MaterializeRenderer)
-    translator = _hit_load_object(node.find('Translator'), filename, moosedown.base.Translator,
+    translator = _hit_load_object(node.find('Translator'), filename, MooseDocs.base.Translator,
                              reader, renderer, extensions)
     content = _hit_load_content(node.find('Content'), filename)
 
@@ -119,7 +119,7 @@ def _hit_load_extensions(node, filename):
 
 def _hit_load_object(node, filename, default, *args):
     """
-    Helper for loading moosedown objects: Reader, Renderer, Translator
+    Helper for loading MooseDocs objects: Reader, Renderer, Translator
     """
 
     if node:
@@ -153,4 +153,4 @@ def _hit_load_content(node, filename):
         content = child['content'].split() if 'content' in child else []
         items.append(dict(root_dir=child['root_dir'], content=content))
 
-    return moosedown.tree.build_page_tree.doc_tree(items)
+    return MooseDocs.tree.build_page_tree.doc_tree(items)

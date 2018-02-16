@@ -10,14 +10,14 @@ import shutil
 
 import anytree
 
-import moosedown
+import MooseDocs
 from moosedown import ROOT_DIR
-from moosedown.tree import page, tokens
+from MooseDocs.tree import page, tokens
 from moosedown.extensions import include
-from moosedown.base import testing, MaterializeRenderer, LatexRenderer
+from MooseDocs.base import testing, MaterializeRenderer, LatexRenderer
 
 class TestIncludeTokenize(testing.MooseDocsTestCase):
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.command, moosedown.extensions.include]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.command, MooseDocs.extensions.include]
     def setUp(self):
         testing.MooseDocsTestCase.setUp(self)
 

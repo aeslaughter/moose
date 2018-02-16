@@ -15,7 +15,7 @@
 ####################################################################################################
 
 import unittest
-from moosedown import common
+from MooseDocs import common
 
 class TestStorage(unittest.TestCase):
     """

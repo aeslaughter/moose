@@ -8,11 +8,11 @@ import anytree
 
 import mooseutils
 
-import moosedown
+import MooseDocs
 from moosedown.common import exceptions
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.extensions import command, floats
-from moosedown.tree import tokens, html
+from MooseDocs.tree import tokens, html
 from moosedown.tree.base import Property
 
 def make_extension(**kwargs):
@@ -63,10 +63,10 @@ class LocalListingCommand(command.CommandComponent):
         if key:
             caption = floats.Caption(flt, key=key, prefix=self.extension['prefix'])
             if cap:
-                self.translator.reader.parse(caption, cap, moosedown.INLINE)
+                self.translator.reader.parse(caption, cap, MooseDocs.INLINE)
         elif cap:
             caption = floats.Caption(flt)
-            self.translator.reader.parse(caption, cap, moosedown.INLINE)
+            self.translator.reader.parse(caption, cap, MooseDocs.INLINE)
 
 class FileListingCommand(LocalListingCommand):
     COMMAND = 'listing'
@@ -107,7 +107,7 @@ class FileListingCommand(LocalListingCommand):
         """
 
         # Read filename
-        filename = os.path.join(moosedown.ROOT_DIR, info['subcommand'])
+        filename = os.path.join(MooseDocs.ROOT_DIR, info['subcommand'])
         if not os.path.exists(filename):
             msg = "{} does not exist."
             raise exceptions.TokenizeException(msg, filename)

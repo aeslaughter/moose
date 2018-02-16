@@ -5,7 +5,7 @@ import multiprocessing
 
 import mooseutils
 
-import moosedown
+import MooseDocs
 
 
 class DatabaseItem(object):
@@ -91,7 +91,7 @@ class ClassDatabase(object):
 if __name__ == '__main__':
 
 
-    includes = [os.path.join(moosedown.ROOT_DIR)]
+    includes = [os.path.join(MooseDocs.ROOT_DIR)]
     inputs = [os.path.join(moosedown.ROOT_DIR)]
 
     db = ClassDatabase(includes, inputs)

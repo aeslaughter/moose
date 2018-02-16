@@ -12,7 +12,7 @@ import livereload
 
 import mooseutils
 
-import moosedown
+import MooseDocs
 from moosedown import common
 
 logging.basicConfig(level=logging.DEBUG) #TODO: need to get this into config
@@ -49,9 +49,9 @@ def main(options):
                 print '  ', pattern
 
     if False:
-        from moosedown.tree import page
+        from MooseDocs.tree import page
         #filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/autolink.md'
-        filename = '/Users/slauae/projects/moosedown/docs/content/documentation/sqa/moose_sdd.md'
+        filename = '/Users/slauae/projects/MooseDocs/docs/content/documentation/sqa/moose_sdd.md'
         node = page.MarkdownNode(source=filename)
         node.init(translator)
         node.read()
@@ -76,12 +76,12 @@ def main(options):
         # when rendering (see autolink.py)
         LOG.info("Building AST...")
         for node in anytree.PreOrderIter(root):
-            if isinstance(node, moosedown.tree.page.MarkdownNode):
+            if isinstance(node, MooseDocs.tree.page.MarkdownNode):
                 node.ast()
 
         LOG.info("Rendering AST...")
         for node in anytree.PreOrderIter(root):
-            if isinstance(node, moosedown.tree.page.MarkdownNode):
+            if isinstance(node, MooseDocs.tree.page.MarkdownNode):
                 node.render()
 
 

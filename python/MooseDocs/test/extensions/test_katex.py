@@ -1,17 +1,17 @@
 #!/usr/bin/env python
-"""Testing for moosedown.extensions.katex MooseDocs extension."""
+"""Testing for MooseDocs.extensions.katex MooseDocs extension."""
 import unittest
 
-import moosedown
+import MooseDocs
 from moosedown.extensions import katex
-from moosedown.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex
 from moosedown.base import testing, renderers
 
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
-    """Test Token object for moosedown.extensions.katex MooseDocs extension."""
+    """Test Token object for MooseDocs.extensions.katex MooseDocs extension."""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.katex]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.katex]
 
     def testLatexBlockEquation(self):
         token = katex.LatexBlockEquation(tex='y')
@@ -26,7 +26,7 @@ class TestTokens(unittest.TestCase):
 class TestKatexBlockEquationComponentTokenize(testing.MooseDocsTestCase):
     """Test tokenization of KatexBlockEquationComponent"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.katex]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.katex]
 
     def testToken(self):
         ast = self.ast(u'\\begin{equation}\nfoo\n\\end{equation}')
@@ -35,7 +35,7 @@ class TestKatexBlockEquationComponentTokenize(testing.MooseDocsTestCase):
 class TestKatexInlineEquationComponentTokenize(testing.MooseDocsTestCase):
     """Test tokenization of KatexInlineEquationComponent"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.katex]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.katex]
 
     def testToken(self):
         ast = self.ast(u'$foo$')
@@ -45,7 +45,7 @@ class TestKatexInlineEquationComponentTokenize(testing.MooseDocsTestCase):
 class TestRenderLatexEquationHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderLatexEquation with HTMLRenderer"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.katex]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.katex]
     RENDERER = renderers.HTMLRenderer
     TEXT = u'$ax+b$\n\n\\begin{equation}\nE=mc^2\n\\end{equation}'
 
@@ -105,7 +105,7 @@ class TestRenderLatexEquationMaterialize(TestRenderLatexEquationHTML):
 class TestRenderLatexEquationLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderLatexEquation with LatexRenderer"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.katex]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.katex]
     RENDERER = renderers.LatexRenderer
     TEXT = u'$ax+b$\n\n\\begin{equation}\nE=mc^2\n\\end{equation}'
 

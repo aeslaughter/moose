@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-"""Testing for moosedown.extensions.core MooseDocs extension."""
+"""Testing for MooseDocs.extensions.core MooseDocs extension."""
 import unittest
 import mock
-import moosedown
+import MooseDocs
 from moosedown.extensions import core
-from moosedown.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex
 from moosedown.base import testing, renderers
 
 # TOKEN OBJECTS TESTS
@@ -596,7 +596,7 @@ class TestRenderEmphasisLatex(testing.MooseDocsTestCase):
 
 class TestRenderExceptionHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderException with HTMLRenderer"""
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.command]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.command]
     RENDERER = renderers.HTMLRenderer
     TEXT = u'!unknown command'
 

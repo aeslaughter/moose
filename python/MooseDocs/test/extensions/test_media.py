@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-"""Testing for moosedown.extensions.media MooseDocs extension."""
+"""Testing for MooseDocs.extensions.media MooseDocs extension."""
 import unittest
 
-import moosedown
+import MooseDocs
 from moosedown.extensions import core, command, floats, media
-from moosedown.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex
 from moosedown.base import testing, renderers
 
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
-    """Test Token object for moosedown.extensions.media MooseDocs extension."""
+    """Test Token object for MooseDocs.extensions.media MooseDocs extension."""
 
     EXTENSIONS = [core, command, floats, media]
 
@@ -80,7 +80,7 @@ class TestRenderImageMaterialize(TestRenderImageHTML):
 class TestRenderImageLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderImage with LatexRenderer"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.media]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.media]
     RENDERER = renderers.LatexRenderer
     TEXT = u'TEST STRING HERE'
 
@@ -98,7 +98,7 @@ class TestRenderImageLatex(testing.MooseDocsTestCase):
 class TestRenderVideoHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with HTMLRenderer"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.media]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.media]
     RENDERER = renderers.HTMLRenderer
     TEXT = u'TEST STRING HERE'
 
@@ -121,7 +121,7 @@ class TestRenderVideoMaterialize(TestRenderVideoHTML):
 class TestRenderVideoLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with LatexRenderer"""
 
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.media]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.media]
     RENDERER = renderers.LatexRenderer
     TEXT = u'TEST STRING HERE'
 

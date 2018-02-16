@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-from moosedown import common
+from MooseDocs import common
 
 class TestBox(unittest.TestCase):
     def testBasic(self):

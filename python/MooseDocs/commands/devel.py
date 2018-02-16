@@ -5,9 +5,9 @@ import re
 import importlib
 import logging
 
-import moosedown
+import MooseDocs
 from moosedown.tree import tokens
-from moosedown.base import components, renderers, testing
+from MooseDocs.base import components, renderers, testing
 from moosedown.extensions import command
 
 LOG = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ def command_line_options(subparser):
     devel_parser = subparser.add_parser('devel', help='Developer tools for MooseDocs.')
     devel_parser.add_argument('--generate-extension-tests', type=str,
                               help='Generate the test files for the supplied extension.')
-    devel_parser.add_argument('--extension-dir', type=str, default='moosedown.extensions',
+    devel_parser.add_argument('--extension-dir', type=str, default='MooseDocs.extensions',
                               help='Directory containing the extension')
 
 
@@ -96,9 +96,9 @@ HEAD="""#!/usr/bin/env python
 \"\"\"Testing for <MODULE> MooseDocs extension.\"\"\"
 import unittest
 
-import moosedown
+import MooseDocs
 from <EXTENSIONROOT> import <EXTENSIONNAME>
-from moosedown.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex
 from moosedown.base import testing, renderers
 """
 
@@ -106,7 +106,7 @@ TOKENIZE="""
 class Test<NAME>Tokenize(<BASE>):
     \"\"\"Test tokenization of <NAME>\"\"\"
 
-    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
 
     def testToken(self):
         self.assertFalse(True)
@@ -116,7 +116,7 @@ HTML="""
 class Test<NAME>HTML(testing.MooseDocsTestCase):
     \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
 
-    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
     RENDERER = renderers.<RENDERER>
     TEXT = u'TEST STRING HERE'
 
@@ -143,7 +143,7 @@ LATEX="""
 class Test<NAME>Latex(testing.MooseDocsTestCase):
     \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
 
-    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
     RENDERER = renderers.<RENDERER>
     TEXT = u'TEST STRING HERE'
 
@@ -169,7 +169,7 @@ TOKEN_HEAD="""
 class TestTokens(unittest.TestCase):
     \"\"\"Test Token object for <MODULE> MooseDocs extension.\"\"\"
 
-    EXTENSIONS = [moosedown.extensions.core, <MODULE>]
+    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
 """
 
 TOKEN_TEST="""

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import types
 import unittest
-from moosedown import common
+from MooseDocs import common
 from moosedown.common import exceptions
 
 class TestCheckType(unittest.TestCase):

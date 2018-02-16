@@ -3,7 +3,7 @@ import unittest
 import logging
 import mock
 
-from moosedown.tree import base
+from MooseDocs.tree import base
 
 
 class TestNodeBase(unittest.TestCase):

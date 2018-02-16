@@ -7,9 +7,9 @@ import logging
 
 import anytree
 
-from moosedown.base import components, renderers
+from MooseDocs.base import components, renderers
 from moosedown.common import exceptions
-from moosedown.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex
 
 LOG = logging.getLogger(__name__)
 

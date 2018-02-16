@@ -2,7 +2,7 @@
 import unittest
 import os
 
-from moosedown import ROOT_DIR
+from MooseDocs import ROOT_DIR
 from moosedown.tree import page
 
 
@@ -38,7 +38,7 @@ class TestPage(unittest.TestCase):
         self.assertEqual(node.COLOR, 'CYAN')
 
     def testFileNode(self):
-        source = os.path.join(ROOT_DIR, 'docs', 'content', 'utilities', 'moosedown', 'index.md')
+        source = os.path.join(ROOT_DIR, 'docs', 'content', 'utilities', 'MooseDocs', 'index.md')
         node = page.FileNode(source=source)
         self.assertEqual(node.source, source)
 

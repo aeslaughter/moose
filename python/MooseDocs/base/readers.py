@@ -6,9 +6,9 @@ import logging
 
 import anytree
 
-import moosedown
+import MooseDocs
 from moosedown import common
-from moosedown.common import mixins
+from MooseDocs.common import mixins
 from moosedown.tree import tokens, page
 from lexers import RecursiveLexer
 
@@ -85,7 +85,7 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
             location[str|int]: The location to insert this component (see Grammer.py)
         """
         common.check_type("group", group, str)
-        common.check_type("component", component, moosedown.base.components.TokenComponent)
+        common.check_type("component", component, MooseDocs.base.components.TokenComponent)
         common.check_type("location", location, (str, int))
 
         # Define the name of the component being added (for sorting within Grammer)
@@ -122,7 +122,7 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
                                    u"processing the following content." \
                                    .format(token.info.line, token.info.pattern.name), n)
 
-        box = moosedown.common.box(token.info[0], line=token.info.line, width=n)
+        box = MooseDocs.common.box(token.info[0], line=token.info.line, width=n)
         LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)
 
 class MarkdownReader(Reader):
@@ -131,17 +131,17 @@ class MarkdownReader(Reader):
     """
     def __init__(self, **kwargs):
         Reader.__init__(self,
-                        lexer=RecursiveLexer(moosedown.BLOCK, moosedown.INLINE),
+                        lexer=RecursiveLexer(MooseDocs.BLOCK, MooseDocs.INLINE),
                         **kwargs)
 
     def addBlock(self, component, location='_end'):
         """
         Add a component to the 'block' grammer.
         """
-        Reader.add(self, moosedown.BLOCK, component, location)
+        Reader.add(self, MooseDocs.BLOCK, component, location)
 
     def addInline(self, component, location='_end'):
         """
         Add an inline component to the 'inline' grammer.
         """
-        Reader.add(self, moosedown.INLINE, component, location)
+        Reader.add(self, MooseDocs.INLINE, component, location)

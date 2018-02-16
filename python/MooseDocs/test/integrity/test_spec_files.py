@@ -8,9 +8,9 @@ import glob
 
 import mooseutils
 
-import moosedown
+import MooseDocs
 from moosedown import extensions
-from moosedown.base import testing
+from MooseDocs.base import testing
 
 import hit
 
@@ -53,7 +53,7 @@ class TestSpecFiles(unittest.TestCase):
 
     def testSpec(self):
         messages = []
-        location = os.path.join(os.path.dirname(moosedown.__file__), 'test')
+        location = os.path.join(os.path.dirname(MooseDocs.__file__), 'test')
         for root, dirs, _ in os.walk(location):
             for d in dirs:
                 messages += self.check(os.path.join(root, d))

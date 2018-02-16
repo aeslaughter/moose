@@ -2,9 +2,9 @@
 Contains base classes intended to be used internal to this module.
 """
 import uuid
-import moosedown
+import MooseDocs
 from moosedown import common
-from moosedown.common import exceptions
+from MooseDocs.common import exceptions
 
 #: A value for allowing ConfigObject.get method to work with a default of None
 UNSET = uuid.uuid4()
@@ -86,9 +86,9 @@ class TranslatorObject(object):
         if self.initialized():
             msg = "The {} object has already been initialized, this method should not " \
                   "be called twice."
-            raise moosedown.common.exceptions.MooseDocsException(msg, type(self))
+            raise MooseDocs.common.exceptions.MooseDocsException(msg, type(self))
 
-        common.check_type('translator', translator, moosedown.base.translators.Translator)
+        common.check_type('translator', translator, MooseDocs.base.translators.Translator)
         self.__translator = translator
 
     def initialized(self):
@@ -105,7 +105,7 @@ class TranslatorObject(object):
         if self.__translator is None:
             msg = "The init() method of the {} object must be called prior to accessing this " \
                   "property."
-            raise moosedown.common.exceptions.MooseDocsException(msg, type(self))
+            raise MooseDocs.common.exceptions.MooseDocsException(msg, type(self))
         return self.__translator
 
     def reinit(self):
@@ -133,5 +133,5 @@ class ComponentObject(object):
         """
         Add a Component object.
         """
-        common.check_type("component", comp, moosedown.base.components.Component)
+        common.check_type("component", comp, MooseDocs.base.components.Component)
         self.__components.append(comp)

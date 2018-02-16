@@ -3,11 +3,11 @@ import os
 import unittest
 import mock
 
-from moosedown import ROOT_DIR
+from MooseDocs import ROOT_DIR
 from moosedown.tree.build_page_tree import build_regex
-from moosedown.tree.build_page_tree import find_files
+from MooseDocs.tree.build_page_tree import find_files
 from moosedown.tree.build_page_tree import doc_import
-from moosedown.tree.build_page_tree import doc_tree
+from MooseDocs.tree.build_page_tree import doc_tree
 from moosedown.tree import page
 
 class TestBuildRegex(unittest.TestCase):

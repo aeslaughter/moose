@@ -7,7 +7,7 @@ import traceback
 import types
 import re
 
-from moosedown import tree, common
+from MooseDocs import tree, common
 from moosedown.common import exceptions
 
 LOG = logging.getLogger(__name__)

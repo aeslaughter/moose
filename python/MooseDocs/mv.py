@@ -8,10 +8,10 @@ from MooseDocs.MooseMarkdown import MooseMarkdown
 from MooseDocs.extensions.app_syntax import AppSyntaxExtension
 
 app = 'framework'
-source_root = '/Users/slauae/projects/moosedown/docs/content/documentation/systems'
+source_root = '/Users/slauae/projects/MooseDocs/docs/content/documentation/systems'
 
 logging.basicConfig()
-config = MooseDocs.load_config('/Users/slauae/projects/moosedown/docs/website.yml')
+config = MooseDocs.load_config('/Users/slauae/projects/MooseDocs/docs/website.yml')
 parser = MooseMarkdown(config)
 ext = parser.getExtension(AppSyntaxExtension)
 syntax = ext.getMooseAppSyntax()
@@ -22,9 +22,9 @@ for node in syntax.findall():
 
     group = node.groups.keys()[0]
     if group == 'framework':
-        destination_root = '/Users/slauae/projects/moosedown/{}/doc/content/documentation/systems'
+        destination_root = '/Users/slauae/projects/MooseDocs/{}/doc/content/documentation/systems'
     else:
-        destination_root = '/Users/slauae/projects/moosedown/modules/{}/doc/content/documentation/systems'
+        destination_root = '/Users/slauae/projects/MooseDocs/modules/{}/doc/content/documentation/systems'
 
     if os.path.isfile(src):
         dst = node.markdown('', absolute=False).replace('/{}/'.format(group), '/')

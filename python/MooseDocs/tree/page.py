@@ -10,9 +10,9 @@ import types
 import anytree
 import mooseutils
 
-import moosedown
+import MooseDocs
 from moosedown.tree import base
-from moosedown.common import exceptions, mixins
+from MooseDocs.common import exceptions, mixins
 
 LOG = logging.getLogger(__name__)
 

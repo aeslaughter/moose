@@ -3,7 +3,7 @@ import unittest
 import logging
 import mock
 
-from moosedown.tree import latex
+from MooseDocs.tree import latex
 
 
 class TestLatex(unittest.TestCase):

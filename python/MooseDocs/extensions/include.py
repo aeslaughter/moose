@@ -6,11 +6,11 @@ import importlib
 import collections
 import copy
 
-from moosedown import common
+from MooseDocs import common
 from moosedown.base import components
-from moosedown.extensions import core, command, floats
+from MooseDocs.extensions import core, command, floats
 from moosedown.tree import html, latex, tokens, page
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
 class IncludeToken(tokens.Token):
     PROPERTIES = tokens.Token.PROPERTIES + \

@@ -5,23 +5,23 @@ import unittest
 import inspect
 import importlib
 
-import moosedown
+import MooseDocs
 from moosedown.base import testing, components
-from moosedown.tree import tokens
+from MooseDocs.tree import tokens
 
 class TestExtensions(testing.MooseDocsTestCase):
     """
     Tests that Extension objects have the
 
     """
-    EXTENSIONS = [moosedown.extensions.core]
+    EXTENSIONS = [MooseDocs.extensions.core]
 
     REQUIRED_TOKENIZE = set(['Test{}Tokenize'])
     REQUIRED_RENDERER = set(['Test{}HTML', 'Test{}Materialize', 'Test{}Latex'])
 
     @classmethod
     def setUpClass(cls):
-        ext = os.path.join(moosedown.MOOSE_DIR, 'python', 'moosedown', 'test', 'extensions')
+        ext = os.path.join(MooseDocs.MOOSE_DIR, 'python', 'MooseDocs', 'test', 'extensions')
         sys.path.append(ext)
 
     def testTokenComponents(self):

@@ -3,9 +3,9 @@ import re
 import uuid
 import collections
 
-from moosedown.base import components
+from MooseDocs.base import components
 from moosedown.tree import tokens, html, latex
-from moosedown.tree.base import Property
+from MooseDocs.tree.base import Property
 
 def make_extension(**kwargs):
     """Create an instance of the Extension object."""

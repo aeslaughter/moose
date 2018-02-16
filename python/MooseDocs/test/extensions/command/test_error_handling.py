@@ -4,12 +4,12 @@ import unittest
 import mock
 import tempfile
 
-import moosedown
+import MooseDocs
 from moosedown.tree import page
-from moosedown.base import testing
+from MooseDocs.base import testing
 
 class TestErrorHandling(testing.MooseDocsTestCase):
-    EXTENSIONS = [moosedown.extensions.core, moosedown.extensions.command]
+    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.command]
 
     def content(self):
         return u'This is some text that contains a command\n\n!unkown command\n, it should error ' \

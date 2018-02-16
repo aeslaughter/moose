@@ -7,9 +7,9 @@ import logging
 import traceback
 import anytree
 
-import moosedown
+import MooseDocs
 from moosedown import common
-from moosedown.common import exceptions, mixins
+from MooseDocs.common import exceptions, mixins
 from moosedown.tree import html, latex, base, tokens, page
 
 LOG = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
             compoment[RenderComponent]: The component to execute with the associated token type.
         """
         common.check_type("token", token, type)
-        common.check_type("component", component, moosedown.base.components.RenderComponent)
+        common.check_type("component", component, MooseDocs.base.components.RenderComponent)
         if self.initialized(): # allow use without Translator object
             component.init(self.translator)
         self.addComponent(component)
@@ -95,7 +95,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
                    "to execute the {} function on the {} token.".format(self.METHOD, type(token))
 
             if token.info:
-                LOG.error(moosedown.common.box(token.info[0], title=msg, line=token.info.line))
+                LOG.error(MooseDocs.common.box(token.info[0], title=msg, line=token.info.line))
             else:
                 LOG.error(msg)
 
