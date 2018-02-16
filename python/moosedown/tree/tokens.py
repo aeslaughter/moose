@@ -20,14 +20,17 @@ class Token(NodeBase):
                         settings property and may be retrieved via the various access methods.
     """
     PROPERTIES = [Property('recursive', default=True), # This can go away
-                  Property('page', required=False)] # only exists on root...make a Root node
-                  #base.Property('info')] # change to meta
+                  Property('page', required=False), # only exists on root...make a Root node
+                  Property('string', ptype=unicode)]
+    #base.Property('info')] # change to meta
 
     def __init__(self, parent=None, name=None, **kwargs):
         self.__info = kwargs.pop('info', None)
         #self.__page = kwargs.pop('page', None)
         super(Token, self).__init__(parent, name, **kwargs)
         self.name = self.__class__.__name__
+        if self.string is not None: #pylint: disable=no-member
+            String(self, content=self.string) #pylint: disable=no-member
 
     @property
     def info(self):
@@ -159,7 +162,8 @@ class Link(Token):
     """
     Token for urls.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('url', required=True, ptype=unicode)]
+    PROPERTIES = Token.PROPERTIES + [Property('url', required=True, ptype=unicode),
+                                     Property('tooltip', default=True)]
 
 class Shortcut(Token):
     """

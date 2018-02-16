@@ -14,8 +14,8 @@ from moosedown.extensions import core, floats, command, table
 from moosedown.tree import html, latex, tokens
 from moosedown.tree.base import Property
 
-def make_extension():
-    return DevelExtension()
+def make_extension(**kwargs):
+    return DevelExtension(**kwargs)
 
 """
 class Example(tokens.Token):

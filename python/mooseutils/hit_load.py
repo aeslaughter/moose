@@ -10,17 +10,16 @@ class HitNode(anytree.NodeMixin):
     """
     def __init__(self, parent=None, hitnode=None):
         super(HitNode, self).__init__()
-        self.name = hitnode.path() # anytree.Node property
-        self.parent = parent       # anytree.Node property
-        self.__line = hitnode.line()
-        self.__hitnode = hitnode   # hit.Node object
+        self.name = hitnode.path()   # anytree.Node property
+        self.parent = parent         # anytree.Node property
+        self.__hitnode = hitnode     # hit.Node object
 
     @property
     def line(self):
         """
         Access to the line number.
         """
-        return self.__line
+        return self.__hitnode.line()
 
     @property
     def fullpath(self):

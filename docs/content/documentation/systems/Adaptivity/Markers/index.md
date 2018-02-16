@@ -10,6 +10,7 @@ refinement engine will then use this field to refine and coarsen the
 mesh in a consistent manner, as detailed in the [Adaptivity system](systems/Adaptivity/index.md).
 
 ## Marker Values
+
 The four possible `MarkerValue` states are defined in `Marker.h` as
 follows:
 
@@ -26,6 +27,7 @@ following table.
 | REFINE | Marks and element to be refined, if possible. |
 
 ## Example Syntax
+
 !listing test/tests/markers/combo_marker/combo_marker_test.i block=Adaptivity
 
 !syntax objects /Adaptivity/Markers title=Available Marker Objects

@@ -25,7 +25,8 @@ DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
                       'moosedown.extensions.alert',
                       'moosedown.extensions.katex',
                       'moosedown.extensions.appsyntax',
-                      'moosedown.extensions.bibtex']
+                      'moosedown.extensions.bibtex',
+                      'moosedown.extensions.sqa']
 
 def load_config(filename):
     """
@@ -92,7 +93,7 @@ def _hit_load_extensions(node, filename):
         node[HitNode|None]: The [Extensions] section of the hit file.
     """
 
-    #TODO: handle common options from top level [Extennsions]
+    #TODO: handle common options from top level [Extensions]
 
     # The key is the extension module name, value is a dict() of configuration options, which is
     # populated from the hit nodes and applied to the object via the make_extension method.

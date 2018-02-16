@@ -8,7 +8,7 @@ def make_extension(**kwargs):
     return AlertExtension(**kwargs)
 
 class Alert(tokens.Token):
-    PROPERTIES = [Property('brand', ptype=str, required=True)]
+    PROPERTIES = tokens.Token.PROPERTIES + [Property('brand', ptype=str, required=True)]
 
 class AlertTitle(tokens.Token):
     pass

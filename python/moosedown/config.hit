@@ -2,6 +2,7 @@
   [framework]
       root_dir = docs/content
       content = 'utilities/moosedown/**
+                 documentation/sqa/**
                  media/**
                  contrib/**
                  css/*

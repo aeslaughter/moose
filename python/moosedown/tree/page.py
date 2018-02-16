@@ -65,13 +65,13 @@ class LocationNodeBase(PageNodeBase):
             self.__cache[name] = nodes
 
         if maxcount and len(nodes) > maxcount:
-            msg = "The 'maxcount' was set to {} but {} nodes were found.".format(maxcount, len(nodes))
+            msg = "The 'maxcount' was set to {} but {} nodes were found for the name '{}'.".format(maxcount, len(nodes), name)
             for node in nodes:
                 msg += '\n  {} (source: {})'.format(node.local, node.source)
             raise exc(msg)
 
         elif mincount and len(nodes) < mincount:
-            msg = "The 'mincount' was set to {} but {} nodes were found.".format(mincount, len(nodes))
+            msg = "The 'mincount' was set to {} but {} nodes were found for the name '{}'.".format(mincount, len(nodes), name)
             for node in nodes:
                 msg += '\n  {} (source: {})'.format(node.local, node.source)
             raise exc(msg)

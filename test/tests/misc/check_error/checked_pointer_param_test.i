@@ -1,6 +1,6 @@
 # The extra 'x' before the Mesh section below is intentional.
 # We want to catch this type of error.
-x[Mesh]
+[Mesh]
   file = square.e
 []
 

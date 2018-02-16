@@ -132,8 +132,8 @@ class FileListingCommand(LocalListingCommand):
 
         # Add bottom modal
         if self.settings['link']:
-            with open(filename, 'r') as fid:
-                content = fid.read()
+            #with open(filename, 'r') as fid:
+            #    content = fid.read()
             a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
             modal = floats.Modal(a, bottom=True, title=filename)
             tokens.Code(modal, language=self.settings['language'],

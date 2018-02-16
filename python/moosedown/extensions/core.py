@@ -275,8 +275,13 @@ class Format(components.TokenComponent):
     RE = re.compile(r'(?P<token>[\_\^\=\*\+~`])(?=\S)(?P<inline>.*?)(?<=\S)(?:\1)',
                     flags=re.MULTILINE|re.DOTALL|re.DOTALL)
 
-    def createToken(self, match, parent):
-        tok = match['token']
+    def createToken(self, info, parent):
+        #if parent.children and not isinstance(parent.children[-1], (tokens.Space, tokens.Punctuation)):
+        if parent.children and isinstance(parent.children[-1], tokens.Word):
+            return None
+
+
+        tok = info['token']
         if tok == '_':
             return tokens.Subscript(parent)
         elif tok == '^':
@@ -290,7 +295,7 @@ class Format(components.TokenComponent):
         elif tok == '~':
             return tokens.Strikethrough(parent)
         elif tok == '`':
-            return tokens.Monospace(parent, code=match['inline'], recursive=False)
+            return tokens.Monospace(parent, code=info['inline'], recursive=False)
 
 ####################################################################################################
 # Rendering.
@@ -402,9 +407,10 @@ class RenderLink(components.RenderComponent):
 
     def createMaterialize(self, token, parent):
         tag = self.createHTML(token, parent)
-        tag['class'] = 'tooltipped'
-        tag['data-tooltip'] = tag['href']
-        tag['data-position'] = 'top'
+        if token.tooltip:
+            tag['class'] = 'tooltipped'
+            tag['data-tooltip'] = tag['href']
+            tag['data-position'] = 'top'
         return tag
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument

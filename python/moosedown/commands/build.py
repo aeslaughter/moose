@@ -18,17 +18,6 @@ from moosedown import common
 logging.basicConfig(level=logging.DEBUG) #TODO: need to get this into config
 LOG = logging.getLogger(__name__)
 
-# Set of extenions to load by default
-DEFAULT_EXTENSIONS = ['moosedown.extensions.core',
-                      'moosedown.extensions.config',
-                      'moosedown.extensions.command',
-                      'moosedown.extensions.include',
-                      'moosedown.extensions.floats',
-                      'moosedown.extensions.table',
-                      'moosedown.extensions.autolink',
-                      'moosedown.extensions.devel',
-                      'moosedown.extensions.alert',
-                      'moosedown.extensions.katex']
 
 def command_line_options(subparser):
     """
@@ -61,14 +50,15 @@ def main(options):
 
     if False:
         from moosedown.tree import page
-        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/autolink.md'
+        #filename = '/Users/slauae/projects/moosedown/docs/content/utilities/moosedown/autolink.md'
+        filename = '/Users/slauae/projects/moosedown/docs/content/documentation/sqa/moose_sdd.md'
         node = page.MarkdownNode(source=filename)
         node.init(translator)
         node.read()
         ast = node.ast()
         html = node.render()
-        print ast
-        print html
+       # print ast
+        #print html
 
 
     else:
