@@ -27,4 +27,8 @@
     type = PythonUnitTest
     input = test_load_extensions.py
   []
+  [class_database]
+    type = PythonUnitTest
+    input = test_database.py
+  []
 []

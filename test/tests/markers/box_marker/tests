@@ -4,6 +4,8 @@
     input = 'box_marker_test.i'
     exodiff = 'box_marker_test_out.e'
     scale_refine = 2
+    requirement = "The system shall include a means to mark elements for refinement within a rectangular region."
+    design = "/Markers/index.md /BoxMarker.md"
   [../]
 
   [./adapt_test]
@@ -11,5 +13,7 @@
     input = 'box_marker_adapt_test.i'
     exodiff = 'box_marker_adapt_test_out.e-s002'
     scale_refine = 2
+    requirement = "The system shall include a means to mark elements for refinement and perform the refinement within a rectangular region."
+    design = "/Markers/index.md /BoxMarker.md"
   [../]
 []
