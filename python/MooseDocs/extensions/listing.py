@@ -9,6 +9,7 @@ import anytree
 import mooseutils
 
 import MooseDocs
+from MooseDocs import common
 from MooseDocs.common import exceptions
 from MooseDocs.base import components
 from MooseDocs.extensions import command, floats
@@ -137,15 +138,10 @@ class FileListingCommand(LocalListingCommand):
             a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
             modal = floats.Modal(a, bottom=True, title=filename)
             tokens.Code(modal, language=self.settings['language'],
-                        code=self.read(filename))
+                        code=common.read(filename))
 
         return parent
 
-    @staticmethod
-    def read(filename):
-        with codecs.open(filename, encoding='utf-8') as fid:
-            content = fid.read()
-        return content
 
     def extractContent(self, filename, settings):
         """
@@ -156,7 +152,7 @@ class FileListingCommand(LocalListingCommand):
             settings[dict]: The setting from the createToken method.
         """
 
-        content = self.read(filename)
+        content = common.read(filename)
         if settings['re']:
             match = re.search(settings['re'], content, flags=eval(settings['re-flags']))
             if match:

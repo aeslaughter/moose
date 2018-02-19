@@ -1,6 +1,7 @@
 """
 Extension for changing configure options within the page.
 """
+import os
 import re
 import collections
 
@@ -13,7 +14,7 @@ from MooseDocs import common
 from MooseDocs.base import components
 from MooseDocs.common import exceptions
 from MooseDocs.tree import html, tokens, syntax, app_syntax
-
+from MooseDocs.extensions import floats
 
 from MooseDocs.extensions import command
 
@@ -48,11 +49,7 @@ class AppSyntaxExtension(command.CommandExtension):
         exe = common.eval_path(self['executable'])
         self._app_syntax = app_syntax(exe)
 
-
-        includes = [common.eval_path(x) for x in self['includes'].split()]
-        inputs = [common.eval_path(x) for x in self['inputs'].split()]
-
-        self._database = common.ClassDatabase(includes, inputs)
+        self._database = common.build_class_database(self['includes'], self['inputs'])
 
         self._cache = dict()
 
@@ -81,6 +78,8 @@ class AppSyntaxExtension(command.CommandExtension):
         return node
 
     def extend(self, reader, renderer):
+
+        self.requires(floats)
 
         self.addCommand(SyntaxDescriptionCommand())
         self.addCommand(SyntaxParametersCommand())
@@ -129,18 +128,49 @@ class SyntaxDescriptionCommand(SyntaxCommandBase):
         self.translator.reader.parse(parent, obj.description, group=MooseDocs.INLINE)
         return parent
 
+
 class SyntaxChildrenCommand(SyntaxCommandBase):
     SUBCOMMAND = 'children'
 
-    def createTokenFromSyntax(self, info, parent, obj):
-        pass
+    @staticmethod
+    def defaultSettings():
+        settings = SyntaxCommandBase.defaultSettings()
+        settings['title'] = (u"Child Objects", "The heading to include for the file sections.")
+        settings['level'] = (2, "Heading level for section title.")
+        return settings
 
-class SyntaxInputsCommand(SyntaxCommandBase):
+    def createTokenFromSyntax(self, info, parent, obj):
+
+        h = tokens.Heading(parent, level=self.settings['level'])
+        self.translator.reader.parse(h, self.settings['title'], group=MooseDocs.INLINE)
+
+        item = self.extension.database.get(obj.name, None)
+        attr = getattr(item, self.SUBCOMMAND)
+        if item and attr:
+            ul = tokens.UnorderedList(parent)
+            for filename in attr:
+                filename = unicode(filename)
+                _, ext = os.path.splitext(filename)
+                li = tokens.ListItem(ul)
+                a = tokens.Link(li, url=filename, string=filename)
+                modal = floats.Modal(a, bottom=True, title=filename)
+
+                language = u'text' if ext == '.i' else u'cpp'
+                tokens.Code(modal, language=language, code=common.read(os.path.join(MooseDocs.ROOT_DIR, filename)))
+
+        else:
+            pass
+
+        return parent
+
+class SyntaxInputsCommand(SyntaxChildrenCommand):
     SUBCOMMAND = 'inputs'
+    @staticmethod
+    def defaultSettings():
+        settings = SyntaxChildrenCommand.defaultSettings()
+        settings['title'] = (u"Input Files", settings['title'][1])
+        return settings
 
-    def createTokenFromSyntax(self, info, parent, obj):
-        item = self.extension.database[obj.name]
-        print item
 
 class SyntaxCompleteCommand(SyntaxCommandBase):
     SUBCOMMAND = 'list'

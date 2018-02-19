@@ -50,14 +50,15 @@ def main(options):
 
     if False:
         from MooseDocs.tree import page
-        filename = '/Users/slauae/projects/moosedown/docs/content/utilities/MooseDocs/autolink.md'
+        #filename = '/Users/slauae/projects/moosedown/docs/content/utilities/MooseDocs/autolink.md'
         #filename = '/Users/slauae/projects/MooseDocs/docs/content/documentation/sqa/moose_sdd.md'
+        filename = '/Users/slauae/projects/moosedown/framework/doc/content/documentation/systems/Adaptivity/Markers/ValueRangeMarker.md'
         node = page.MarkdownNode(source=filename)
         node.init(translator)
         node.read()
         ast = node.ast()
         html = node.render()
-       # print ast
+        print ast
         #print html
 
 
