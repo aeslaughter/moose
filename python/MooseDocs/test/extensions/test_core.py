@@ -1387,19 +1387,17 @@ class TestRenderSubscriptHTML(testing.MooseDocsTestCase):
     TEXT = u'foo_content_'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
-        self.assertIsInstance(node, html.Tag)
-        self.assertIsInstance(node(1), html.String)
-
-        self.assertString(node.name, 'sub')
-        self.assertString(node(1).content, 'content')
+        self.assertIsInstance(node(0), html.String)
+        self.assertString(node(1).name, 'sub')
+        self.assertString(node(1)(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        self.assertString(node.write(), 'foo<sub>content</sub>')
+        self.assertString(node.write(), '<p>foo<sub>content</sub></p>')
 
 class TestRenderSubscriptMaterialize(TestRenderSubscriptHTML):
     """Test renderering of RenderSubscript with MaterializeRenderer"""
@@ -1437,19 +1435,17 @@ class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
     TEXT = u'foo^content^'
 
     def node(self):
-        return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
+        return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
-        self.assertIsInstance(node, html.Tag)
-        self.assertIsInstance(node(1), html.String)
-
-        self.assertString(node.name, 'sup')
-        self.assertString(node(1).content, 'content')
+        self.assertIsInstance(node(0), html.String)
+        self.assertString(node(1).name, 'sup')
+        self.assertString(node(1)(0).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        self.assertString(node.write(), 'foo<sup>content</sup>')
+        self.assertString(node.write(), '<p>foo<sup>content</sup></p>')
 
 class TestRenderSuperscriptMaterialize(TestRenderSuperscriptHTML):
     """Test renderering of RenderSuperscript with MaterializeRenderer"""
