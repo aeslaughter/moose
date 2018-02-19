@@ -168,8 +168,6 @@ TOKEN_HEAD="""
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
     \"\"\"Test Token object for <MODULE> MooseDocs extension.\"\"\"
-
-    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
 """
 
 TOKEN_TEST="""

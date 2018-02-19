@@ -22,7 +22,10 @@ def make_extension(**kwargs):
 class IncludeExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
+        self.requires(command)
+
         self.addCommand(Include())
+
         renderer.add(IncludeToken, RenderInclude())
 
 class Include(command.CommandComponent):
@@ -36,8 +39,9 @@ class Include(command.CommandComponent):
 
     def createToken(self, info, parent):
 
+
         master_page = parent.root.page
-        include_page = master_page.findall(info['filename'], maxcount=1)[0]
+        include_page = master_page.findall(info['subcommand'], maxcount=1)[0]
 
         #if not include_page.master:
         include_page.master.add(master_page)
@@ -46,13 +50,14 @@ class Include(command.CommandComponent):
         return parent
 
 class RenderInclude(components.RenderComponent):
-    def createHTML(self, token, parent):
+
+    def create(self, token, parent):
         ast = token.include.ast()
         for child in ast:
             self.translator.renderer.process(parent, child)
 
-    def createMaterialize(self, token, parent):
-        return self.createHTML(token, parent)
+    def createHTML(self, token, parent):
+        return self.create(token, parent)
 
     def createLatex(self, token, parent):
-        pass
+        return self.create(token, parent)

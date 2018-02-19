@@ -1,23 +1,20 @@
 #!/usr/bin/env python
+"""Testing for MooseDocs.extensions.include MooseDocs extension."""
 import os
 import unittest
-import logging
-import mock
-import glob
 import tempfile
-import time
 import shutil
 
 import anytree
 
 import MooseDocs
-from MooseDocs import ROOT_DIR
-from MooseDocs.tree import page, tokens
-from MooseDocs.extensions import include
-from MooseDocs.base import testing, MaterializeRenderer, LatexRenderer
+from MooseDocs.extensions import core, include, command
+from MooseDocs.tree import tokens, html, latex, page
+from MooseDocs.base import testing, renderers
 
-class TestIncludeTokenize(testing.MooseDocsTestCase):
-    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.command, MooseDocs.extensions.include]
+class TestIncludeBase(testing.MooseDocsTestCase):
+
+    EXTENSIONS = [core, command, include]
     def setUp(self):
         testing.MooseDocsTestCase.setUp(self)
 
@@ -52,7 +49,19 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
     def tearDown(self):
         shutil.rmtree(self.loc)
 
-    def testAST(self):
+# TOKEN OBJECTS TESTS
+class TestTokens(TestIncludeBase):
+    """Test Token object for MooseDocs.extensions.include MooseDocs extension."""
+
+    def testIncludeToken(self):
+        token = include.IncludeToken(include=self.root(0))
+        self.assertIs(token.include, self.root(0))
+
+# TOKENIZE TESTS
+class TestIncludeTokenize(TestIncludeBase):
+    """Test tokenization of Include"""
+
+    def testToken(self):
         self.build()
         for i in range(4):
             ast = self.root(i).ast()
@@ -84,6 +93,63 @@ class TestIncludeTokenize(testing.MooseDocsTestCase):
         self.assertEqual(self.root(1).master, set([self.root(0)]))
         self.assertEqual(self.root(2).master, set([self.root(1), self.root(3)]))
         self.assertEqual(self.root(3).master, set())
+
+
+# RENDERER TESTS
+class TestRenderIncludeHTML(TestIncludeBase):
+    """Test renderering of RenderInclude with HTMLRenderer"""
+
+    RENDERER = renderers.HTMLRenderer
+    def node(self):
+        return self.root(0).render().find('moose-content', attr='class')
+
+    def testTree(self):
+        node = self.node()
+        for i in range(3):
+            self.assertIsInstance(node(i), html.Tag)
+            self.assertIsInstance(node(i)(0), html.String)
+            self.assertEqual(node(i)(0).content, u'File')
+
+            self.assertIsInstance(node(i)(1), html.String)
+            self.assertEqual(node(i)(1).content, u' ')
+
+            self.assertIsInstance(node(i)(2), html.String)
+            self.assertEqual(node(i)(2).content, unicode(i))
+
+
+    def testWrite(self):
+        node = self.node()
+        for i in range(3):
+            self.assertEqual(node(i).write(), u'<p>File {}</p>'.format(i))
+
+class TestRenderIncludeMaterialize(TestRenderIncludeHTML):
+    """Test renderering of RenderInclude with MaterializeRenderer"""
+
+    RENDERER = renderers.MaterializeRenderer
+
+class TestRenderIncludeLatex(TestIncludeBase):
+    """Test renderering of RenderInclude with LatexRenderer"""
+
+    RENDERER = renderers.LatexRenderer
+    def node(self):
+        return self.root(0).render().find('document')
+
+    def testTree(self):
+        node = self.node()
+        for i in range(0, 3, 4):
+            self.assertIsInstance(node(i), latex.Command)
+            self.assertIsInstance(node(i+1), latex.String)
+            self.assertEqual(node(i+1).content, u'File')
+
+            self.assertIsInstance(node(i+2), latex.String)
+            self.assertEqual(node(i+2).content, u' ')
+
+            self.assertIsInstance(node(i+3), latex.String)
+            self.assertEqual(node(i+3).content, unicode(i))
+
+    def testWrite(self):
+        node = self.node()
+        self.assertEqual(node.write(), u'\n\\begin{document}\n\n\\par\nFile 0\n\\par\nFile 1\n\\par\nFile 2\n\\end{document}\n')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
