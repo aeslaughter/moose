@@ -129,9 +129,9 @@ class CommandBase(components.TokenComponent):
 
 
 class InlineCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)(?: |$)(?P<subcommand>\S+)? *(?P<settings>.*?)(?P<inline>^\S.*?)?(?=\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)(?: |$)(?P<subcommand>\S+)? *(?P<settings>.*?)(?P<inline>^\S.*?)?(?=\n*\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class BlockCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)!(?: +(?P<subcommand>\w+))? *(?P<settings>.*?)\n+(?P<block>.*?)(^!\1-end!)(?=\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)!(?: |$)(?P<subcommand>\w+)? *(?P<settings>.*?)(?P<block>^\S.*?)(^!\1-end!)(?=\n*\Z|\n{2,})',
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)

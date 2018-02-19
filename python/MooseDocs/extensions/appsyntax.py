@@ -4,6 +4,7 @@ Extension for changing configure options within the page.
 import os
 import re
 import collections
+import logging
 
 import anytree
 
@@ -17,6 +18,8 @@ from MooseDocs.tree import html, tokens, syntax, app_syntax
 from MooseDocs.extensions import floats
 
 from MooseDocs.extensions import command
+
+LOG = logging.getLogger(__name__)
 
 def make_extension(**kwargs):
     return AppSyntaxExtension(**kwargs)
@@ -46,9 +49,11 @@ class AppSyntaxExtension(command.CommandExtension):
     def __init__(self, *args, **kwargs):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
+        LOG.info("Reading MOOSE application syntax.")
         exe = common.eval_path(self['executable'])
         self._app_syntax = app_syntax(exe)
 
+        LOG.info("Building MOOSE class database.")
         self._database = common.build_class_database(self['includes'], self['inputs'])
 
         self._cache = dict()

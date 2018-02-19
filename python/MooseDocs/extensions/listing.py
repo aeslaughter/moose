@@ -154,15 +154,7 @@ class FileListingCommand(LocalListingCommand):
 
         content = common.read(filename)
         if settings['re']:
-            match = re.search(settings['re'], content, flags=eval(settings['re-flags']))
-            if match:
-                if 'content' in match.groupdict():
-                    content = match.group('content')
-                else:
-                    content = match.group()
-            else:
-                msg = "Failed to match regular expression: {}"
-                raise exceptions.TokenizeException(msg, settings['re'])
+            content = common.regex(self.settings['re'], content, eval(self.settings['re-flags']))
 
         elif settings['line']:
             content = self.extractLine(content, settings["line"])

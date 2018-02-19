@@ -65,7 +65,7 @@ class KatexBlockEquationComponent(components.TokenComponent):
 
         # Build the token
         is_numbered = not info['cmd'].endswith('*')
-        prefix = unicode(self.extension['prefix']) if is_numbered else Nonef
+        prefix = unicode(self.extension['prefix']) if is_numbered else None
         token = LatexBlockEquation(parent, tex=tex, prefix=prefix, id_=eq_id)
 
         # Add a label

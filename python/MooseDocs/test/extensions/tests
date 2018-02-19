@@ -7,6 +7,10 @@
     type = PythonUnitTest
     input = test_katex.py
   []
+  [include]
+    type = PythonUnitTest
+    input = test_include.py
+  []
   [media]
     type = PythonUnitTest
     input = test_media.py

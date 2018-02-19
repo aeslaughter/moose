@@ -9,3 +9,4 @@ from load_config import load_config, load_extensions
 from eval_path import eval_path
 from build_class_database import build_class_database
 from read import read
+from regex import regex
