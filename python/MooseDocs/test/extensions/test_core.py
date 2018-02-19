@@ -1384,7 +1384,7 @@ class TestRenderSubscriptHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderSubscript with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'_content_'
+    TEXT = u'foo_content_'
 
     def node(self):
         return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
@@ -1392,14 +1392,14 @@ class TestRenderSubscriptHTML(testing.MooseDocsTestCase):
     def testTree(self):
         node = self.node()
         self.assertIsInstance(node, html.Tag)
-        self.assertIsInstance(node(0), html.String)
+        self.assertIsInstance(node(1), html.String)
 
         self.assertString(node.name, 'sub')
-        self.assertString(node(0).content, 'content')
+        self.assertString(node(1).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        self.assertString(node.write(), '<sub>content</sub>')
+        self.assertString(node.write(), 'foo<sub>content</sub>')
 
 class TestRenderSubscriptMaterialize(TestRenderSubscriptHTML):
     """Test renderering of RenderSubscript with MaterializeRenderer"""
@@ -1434,7 +1434,7 @@ class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderSuperscript with HTMLRenderer"""
 
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'^content^'
+    TEXT = u'foo^content^'
 
     def node(self):
         return self.render(self.TEXT).find('moose-content', attr='class')(0)(0)
@@ -1442,14 +1442,14 @@ class TestRenderSuperscriptHTML(testing.MooseDocsTestCase):
     def testTree(self):
         node = self.node()
         self.assertIsInstance(node, html.Tag)
-        self.assertIsInstance(node(0), html.String)
+        self.assertIsInstance(node(1), html.String)
 
         self.assertString(node.name, 'sup')
-        self.assertString(node(0).content, 'content')
+        self.assertString(node(1).content, 'content')
 
     def testWrite(self):
         node = self.node()
-        self.assertString(node.write(), '<sup>content</sup>')
+        self.assertString(node.write(), 'foo<sup>content</sup>')
 
 class TestRenderSuperscriptMaterialize(TestRenderSuperscriptHTML):
     """Test renderering of RenderSuperscript with MaterializeRenderer"""

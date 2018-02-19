@@ -135,18 +135,20 @@ class SyntaxChildrenCommand(SyntaxCommandBase):
     @staticmethod
     def defaultSettings():
         settings = SyntaxCommandBase.defaultSettings()
-        settings['title'] = (u"Child Objects", "The heading to include for the file sections.")
+        settings['title'] = (u"Child Objects", "The heading to include for the file sections, use 'None' to remove the title.")
         settings['level'] = (2, "Heading level for section title.")
         return settings
 
     def createTokenFromSyntax(self, info, parent, obj):
 
-        h = tokens.Heading(parent, level=self.settings['level'])
-        self.translator.reader.parse(h, self.settings['title'], group=MooseDocs.INLINE)
-
         item = self.extension.database.get(obj.name, None)
         attr = getattr(item, self.SUBCOMMAND)
         if item and attr:
+
+            if self.settings['title'].lower() != 'none':
+                h = tokens.Heading(parent, level=self.settings['level'])
+                self.translator.reader.parse(h, self.settings['title'], group=MooseDocs.INLINE)
+
             ul = tokens.UnorderedList(parent)
             for filename in attr:
                 filename = unicode(filename)
@@ -157,9 +159,6 @@ class SyntaxChildrenCommand(SyntaxCommandBase):
 
                 language = u'text' if ext == '.i' else u'cpp'
                 tokens.Code(modal, language=language, code=common.read(os.path.join(MooseDocs.ROOT_DIR, filename)))
-
-        else:
-            pass
 
         return parent
 

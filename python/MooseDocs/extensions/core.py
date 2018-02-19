@@ -277,25 +277,28 @@ class Format(components.TokenComponent):
                     flags=re.MULTILINE|re.DOTALL|re.DOTALL)
 
     def createToken(self, info, parent):
-        #if parent.children and not isinstance(parent.children[-1], (tokens.Space, tokens.Punctuation)):
-        if parent.children and isinstance(parent.children[-1], tokens.Word):
+        tok = info['token']
+
+        # Sub/super script must have word before the rest cannot
+        if (tok == '^') or (tok == '_'):
+            if not parent.children or not isinstance(parent.children[-1], tokens.Word):
+                return None
+        elif parent.children and isinstance(parent.children[-1], tokens.Word):
             return None
 
-
-        tok = info['token']
-        if tok == '_':
+        if tok == u'_':
             return tokens.Subscript(parent)
-        elif tok == '^':
+        elif tok == u'^':
             return tokens.Superscript(parent)
-        elif tok == '=':
+        elif tok == u'=':
             return tokens.Underline(parent)
-        elif tok == '*':
+        elif tok == u'*':
             return tokens.Emphasis(parent)
-        elif tok == '+':
+        elif tok == u'+':
             return tokens.Strong(parent)
-        elif tok == '~':
+        elif tok == u'~':
             return tokens.Strikethrough(parent)
-        elif tok == '`':
+        elif tok == u'`':
             return tokens.Monospace(parent, code=info['inline'], recursive=False)
 
 ####################################################################################################

@@ -11,8 +11,6 @@ from MooseDocs.base import testing, renderers
 class TestTokens(unittest.TestCase):
     """Test Token object for MooseDocs.extensions.media MooseDocs extension."""
 
-    EXTENSIONS = [core, command, floats, media]
-
     def testImage(self):
         tok = media.Image(src=u'foo')
         self.assertEqual(tok.src, u'foo')
@@ -80,7 +78,7 @@ class TestRenderImageMaterialize(TestRenderImageHTML):
 class TestRenderImageLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderImage with LatexRenderer"""
 
-    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.media]
+    EXTENSIONS = [core, command, floats, media]
     RENDERER = renderers.LatexRenderer
     TEXT = u'TEST STRING HERE'
 
@@ -98,7 +96,7 @@ class TestRenderImageLatex(testing.MooseDocsTestCase):
 class TestRenderVideoHTML(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with HTMLRenderer"""
 
-    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.media]
+    EXTENSIONS = [core, command, floats, media]
     RENDERER = renderers.HTMLRenderer
     TEXT = u'TEST STRING HERE'
 
@@ -121,7 +119,7 @@ class TestRenderVideoMaterialize(TestRenderVideoHTML):
 class TestRenderVideoLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with LatexRenderer"""
 
-    EXTENSIONS = [MooseDocs.extensions.core, MooseDocs.extensions.media]
+    EXTENSIONS = [core, command, floats, media]
     RENDERER = renderers.LatexRenderer
     TEXT = u'TEST STRING HERE'
 
