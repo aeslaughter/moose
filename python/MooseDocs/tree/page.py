@@ -137,8 +137,9 @@ class MarkdownNode(FileNode):
 
     def build(self, reset=True):
         LOG.info('Building %s', self.source)
-        #for node in self.master: # This needs to get fixed...
-        #    node.build()
+
+        for node in self.master:
+            node.build(reset=reset)
 
         #mod = os.path.getmtime(self._filename)
         #if (self._ast is None) or (self._html is None) or (mod > self._modified_time):
