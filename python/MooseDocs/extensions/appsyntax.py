@@ -43,7 +43,7 @@ class AppSyntaxExtension(command.CommandExtension):
         config = command.CommandExtension.defaultConfig()
         config['executable'] = (None, "The MOOSE application executable to use for generating syntax.")
         config['includes'] = ([], "List of include directories to investigate for class information.")
-        config['inputs'] = ([], "List of directoies to interogate for input files using an object.")
+        config['inputs'] = ([], "List of directories to interrogate for input files using an object.")
         return config
 
     def __init__(self, *args, **kwargs):
@@ -80,7 +80,7 @@ class AppSyntaxExtension(command.CommandExtension):
         node = anytree.search.find(self.syntax, filter_=lambda n: n.fullpath == name)
 
         if node is None:
-            msg = "'{}' syntax was not recongnized."
+            msg = "'{}' syntax was not recognized."
             raise exc(msg, name)
 
         return node
@@ -92,7 +92,7 @@ class AppSyntaxExtension(command.CommandExtension):
 
             self.addCommand(SyntaxDescriptionCommand())
             self.addCommand(SyntaxParametersCommand())
-            self.addCommand(SyntaxCompleteCommand())
+            self.addCommand(SyntaxListCommand())
             self.addCommand(SyntaxInputsCommand())
             self.addCommand(SyntaxChildrenCommand())
 
@@ -180,7 +180,7 @@ class SyntaxInputsCommand(SyntaxChildrenCommand):
         return settings
 
 
-class SyntaxCompleteCommand(SyntaxCommandBase):
+class SyntaxListCommand(SyntaxCommandBase):
     SUBCOMMAND = 'list'
 
     @staticmethod
@@ -235,27 +235,27 @@ class RenderSyntaxToken(components.RenderComponent):
                 self._addItems(collection, syntax.actions(group=group), 'moose-syntax-actions')
             if objects:
                 self._addItems(collection, syntax.objects(group=group), 'moose-syntax-objects')
+            if subsystems:
+                self._addItems(collection, syntax.syntax(group=group), 'moose-syntax-subsystems')
+
             if len(collection.children) == count:
                 li.parent = None
 
             if collection.children:
                 collection.parent=parent
 
-        if subsystems:
-            for child in self.syntax():
-                self._addSyntax(parent, child, active_groups, actions, objects, subsystems, level+1)
-
-
     def _addItems(self, parent, items, cls):
 
         for obj in items:
             li = html.Tag(parent, 'li', class_='{} collection-item'.format(cls))
             html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name)) #TODO: add href to html page
-            desc = html.Tag(li, 'span', class_='{}-description'.format(cls))#, string=unicode(obj.description))
 
-            ast = tokens.Token(None)
-            self.translator.reader.parse(ast, unicode(obj.description), group=MooseDocs.INLINE)
-            self.translator.renderer.process(desc, ast)
+            if isinstance(obj, syntax.ObjectNode):
+                desc = html.Tag(li, 'span', class_='{}-description'.format(cls))#, string=unicode(obj.description))
+
+                ast = tokens.Token(None)
+                self.translator.reader.parse(ast, unicode(obj.description), group=MooseDocs.INLINE)
+                self.translator.renderer.process(desc, ast)
 
 
 

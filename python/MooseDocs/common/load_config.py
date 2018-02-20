@@ -98,7 +98,6 @@ def _hit_load_extensions(node, filename):
     # The key is the extension module name, value is a dict() of configuration options, which is
     # populated from the hit nodes and applied to the object via the make_extension method.
     ext_configs = collections.OrderedDict()
-    print 'NODE:', type(node)
     if (node is None) or ('disable_defaults' not in node):
         for ext in DEFAULT_EXTENSIONS:
             ext_configs[ext] = dict()

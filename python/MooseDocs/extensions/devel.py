@@ -96,9 +96,10 @@ class ComponentSettings(command.CommandComponent):
 
     def createToken(self, match, parent):
         if self.settings['module'] is None:
-            raise base.TokenizeException()
-        #TODO: error if 'module' and 'object' not provided
-        #TODO: this should raise, but result in an error token
+            raise exceptions.TokenizeException("The 'module' setting is required.")
+
+        if self.settings['object'] is None:
+            raise exceptions.TokenizeException("The 'object' setting is required.")
 
         master = floats.Float(parent, **self.attributes)
 
