@@ -13,7 +13,7 @@ from MooseDocs.common import exceptions
 from MooseDocs.common.load_config import _hit_load_extensions, _hit_load_object, DEFAULT_EXTENSIONS
 
 def parse_hit(hit_node):
-    root = HitNode(None, hit.NewSection(''))
+    root = HitNode(None, hitnode=hit_node)
     _hit_parse(root, hit_node, '')
     return root
 

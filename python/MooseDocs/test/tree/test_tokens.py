@@ -210,5 +210,17 @@ class TestTokens(unittest.TestCase):
         pattern = lexers.Grammer.Pattern(name='foo', regex=re.compile('\S'), function=func)
         token = tokens.Exception(pattern=pattern, traceback='foo')
 
+    def testCountToken(self):
+        foo1 = tokens.CountToken(None, prefix=u'Foo')
+        bar1 = tokens.CountToken(None, prefix=u'Bar')
+
+        foo2 = tokens.CountToken(None, prefix=u'Foo')
+        bar2 = tokens.CountToken(None, prefix=u'Bar')
+
+        self.assertEqual(foo1.number, 1)
+        self.assertEqual(foo2.number, 2)
+        self.assertEqual(bar1.number, 1)
+        self.assertEqual(bar2.number, 2)
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

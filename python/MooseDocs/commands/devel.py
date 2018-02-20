@@ -12,9 +12,11 @@ from MooseDocs.extensions import command
 
 LOG = logging.getLogger(__name__)
 
-def command_line_options(subparser):
+def command_line_options(subparser, parent):
     """Define the 'devel' command."""
-    devel_parser = subparser.add_parser('devel', help='Developer tools for MooseDocs.')
+    devel_parser = subparser.add_parser('devel',
+                                        parents=[parent],
+                                        help='Developer tools for MooseDocs.')
     devel_parser.add_argument('--generate-extension-tests', type=str,
                               help='Generate the test files for the supplied extension.')
     devel_parser.add_argument('--extension-dir', type=str, default='MooseDocs.extensions',

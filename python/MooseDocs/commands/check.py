@@ -10,9 +10,11 @@ from MooseDocs.tree import app_syntax
 
 LOG = logging.getLogger(__name__)
 
-def command_line_options(subparser):
+def command_line_options(subparser, parent):
     """Define the 'check' command."""
-    devel_parser = subparser.add_parser('check', help='Syntax checking tools for MooseDocs.')
+    devel_parser = subparser.add_parser('check',
+                                        parents=[parent],
+                                        help='Syntax checking tools for MooseDocs.')
 
 def main(options):
 

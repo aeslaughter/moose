@@ -99,7 +99,7 @@ class FileNode(LocationNodeBase):
     def read(self):
         if os.path.exists(self.source):
             with codecs.open(self.source, encoding='utf-8') as fid:
-                LOG.debug('READ: {}'.format(self.source))
+                LOG.debug('Reading {}'.format(self.source))
                 self.content = fid.read()
 
         #TODO: error if not exist

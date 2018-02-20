@@ -8,8 +8,6 @@ import logging
 from MooseDocs import base, common, tree
 from mooseutils import text_diff
 
-logging.basicConfig()
-
 class MooseDocsTestCase(unittest.TestCase):
     """
     TestCase object for converting markdown to AST, HTML, and LaTeX.

@@ -4,7 +4,7 @@ import os
 
 from MooseDocs import ROOT_DIR
 from MooseDocs.tree import page
-
+from MooseDocs.common import exceptions
 
 class TestPage(unittest.TestCase):
     """
@@ -76,11 +76,11 @@ class TestFindall(unittest.TestCase):
         sub = page.DirectoryNode(root, source='docs/sub')
         core2 = page.FileNode(root, source='docs/sub/core.md')
 
-        with self.assertRaises(TypeError) as e:
+        with self.assertRaises(exceptions.MooseDocsException) as e:
             root.findall('foo', maxcount=2.2)
         self.assertIn("The 'maxcount' input must be an integer", str(e.exception))
 
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(exceptions.MooseDocsException) as e:
             nodes = root.findall('core.md', maxcount=1)
         self.assertIn("The 'maxcount' was set to 1 but 2", str(e.exception))
 

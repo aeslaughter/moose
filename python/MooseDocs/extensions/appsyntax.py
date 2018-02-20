@@ -50,8 +50,11 @@ class AppSyntaxExtension(command.CommandExtension):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
         LOG.info("Reading MOOSE application syntax.")
-        exe = common.eval_path(self['executable'])
-        self._app_syntax = app_syntax(exe)
+
+        self._app_syntax = None
+        if self['executable']:
+            exe = common.eval_path(self['executable'])
+            self._app_syntax = app_syntax(exe)
 
         LOG.info("Building MOOSE class database.")
         self._database = common.build_class_database(self['includes'], self['inputs'])
@@ -84,16 +87,17 @@ class AppSyntaxExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
 
-        self.requires(floats)
+        if self._app_syntax:
+            self.requires(floats)
 
-        self.addCommand(SyntaxDescriptionCommand())
-        self.addCommand(SyntaxParametersCommand())
-        self.addCommand(SyntaxCompleteCommand())
-        self.addCommand(SyntaxInputsCommand())
-        self.addCommand(SyntaxChildrenCommand())
+            self.addCommand(SyntaxDescriptionCommand())
+            self.addCommand(SyntaxParametersCommand())
+            self.addCommand(SyntaxCompleteCommand())
+            self.addCommand(SyntaxInputsCommand())
+            self.addCommand(SyntaxChildrenCommand())
 
-        renderer.add(InputParametersToken, RenderInputParametersToken())
-        renderer.add(SyntaxToken, RenderSyntaxToken())
+            renderer.add(InputParametersToken, RenderInputParametersToken())
+            renderer.add(SyntaxToken, RenderSyntaxToken())
 
 class SyntaxCommandBase(command.CommandComponent):
     COMMAND = 'syntax'

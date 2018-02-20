@@ -15,25 +15,28 @@ import mooseutils
 import MooseDocs
 from MooseDocs import common
 
-logging.basicConfig(level=logging.DEBUG) #TODO: need to get this into config
 LOG = logging.getLogger(__name__)
 
 
-def command_line_options(subparser):
+def command_line_options(subparser, parent):
     """
     Define the command line options for the build command.
     """
-    build_parser = subparser.add_parser('build', help='Convert markdown into HTML or LaTeX.')
+    build_parser = subparser.add_parser('build',
+                                        parents=[parent],
+                                        help='Convert markdown into HTML or LaTeX.')
     build_parser.add_argument('--grammer', action='store_true',
                               help='Show the lexer components in order.')
+    return build_parser
 
 def main(options):
     """
     Main function for the build command.
     """
+    LOG = logging.getLogger(__name__)
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
     config_file = 'config.hit'
 
     # TODO: add this to config.hit and command line
@@ -70,7 +73,6 @@ def main(options):
 
             if node.source and os.path.isfile(node.source):
                 server.watch(node.source, node.build)
-
 
         # TODO: make these steps parallel, print progress (in parallel)
         # Breaking this up allows for the complete AST for all pages to be available to others

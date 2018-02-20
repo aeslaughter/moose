@@ -124,7 +124,7 @@ class Heading(Token):
     """
     Section headings.
     """
-    PROPERTIES = [Property('level', ptype=int)]
+    PROPERTIES = Token.PROPERTIES + [Property('level', ptype=int)]
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
 
