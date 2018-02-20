@@ -28,6 +28,10 @@ class InputParametersToken(tokens.Token):
     PROPERTIES = tokens.Token.PROPERTIES + \
                  [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True)]
 
+class AppSyntaxDisabledToken(tokens.Token):
+    pass
+
+
 class SyntaxToken(tokens.Token):
     PROPERTIES = tokens.Token.PROPERTIES + \
                  [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True),
@@ -44,17 +48,22 @@ class AppSyntaxExtension(command.CommandExtension):
         config['executable'] = (None, "The MOOSE application executable to use for generating syntax.")
         config['includes'] = ([], "List of include directories to investigate for class information.")
         config['inputs'] = ([], "List of directories to interrogate for input files using an object.")
+        config['disable'] = (False, "Disable running the MOOSE application executable and simply use place holder text.")
         return config
 
     def __init__(self, *args, **kwargs):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
-        LOG.info("Reading MOOSE application syntax.")
-
         self._app_syntax = None
-        if self['executable']:
-            exe = common.eval_path(self['executable'])
-            self._app_syntax = app_syntax(exe)
+        if not self['disable']:
+            LOG.info("Reading MOOSE application syntax.")
+            try:
+                exe = common.eval_path(self['executable'])
+                self._app_syntax = app_syntax(exe)
+            except:
+                msg = "Failed to load application executable from '%s', " \
+                      "application syntax is being disabled."
+                LOG.error(msg, self['executable'])
 
         LOG.info("Building MOOSE class database.")
         self._database = common.build_class_database(self['includes'], self['inputs'])
@@ -87,17 +96,17 @@ class AppSyntaxExtension(command.CommandExtension):
 
     def extend(self, reader, renderer):
 
-        if self._app_syntax:
-            self.requires(floats)
+        self.requires(floats)
 
-            self.addCommand(SyntaxDescriptionCommand())
-            self.addCommand(SyntaxParametersCommand())
-            self.addCommand(SyntaxListCommand())
-            self.addCommand(SyntaxInputsCommand())
-            self.addCommand(SyntaxChildrenCommand())
+        self.addCommand(SyntaxDescriptionCommand())
+        self.addCommand(SyntaxParametersCommand())
+        self.addCommand(SyntaxListCommand())
+        self.addCommand(SyntaxInputsCommand())
+        self.addCommand(SyntaxChildrenCommand())
 
-            renderer.add(InputParametersToken, RenderInputParametersToken())
-            renderer.add(SyntaxToken, RenderSyntaxToken())
+        renderer.add(InputParametersToken, RenderInputParametersToken())
+        renderer.add(SyntaxToken, RenderSyntaxToken())
+        renderer.add(AppSyntaxDisabledToken, RenderAppSyntaxDisabledToken())
 
 class SyntaxCommandBase(command.CommandComponent):
     COMMAND = 'syntax'
@@ -111,6 +120,10 @@ class SyntaxCommandBase(command.CommandComponent):
         return settings
 
     def createToken(self, info, parent):
+        if self.extension.syntax is None:
+            AppSyntaxDisabledToken(parent, string=info[0])
+            return parent
+
         if self.settings['syntax'] is None:
             args = info['settings'].split()
             if args and ('=' not in args[0]):
@@ -258,6 +271,12 @@ class RenderSyntaxToken(components.RenderComponent):
                 self.translator.renderer.process(desc, ast)
 
 
+class RenderAppSyntaxDisabledToken(components.RenderComponent):
+    def createHTML(self, token, parent):
+        return html.Tag(parent, 'span', class_='moose-disabled')
+
+    def createLatex(self, token, parent):
+        pass
 
 class RenderInputParametersToken(components.RenderComponent):
 

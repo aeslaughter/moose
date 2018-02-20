@@ -122,8 +122,9 @@ class CommandBase(components.TokenComponent):
                 raise common.exceptions.TokenizeException(msg.format(*cmd))
 
         # Build the token
-        settings, _ = common.parse_settings(obj.defaultSettings(), settings)
-        obj.setSettings(settings)
+        if obj.PARSE_SETTINGS:
+            settings, _ = common.parse_settings(obj.defaultSettings(), settings)
+            obj.setSettings(settings)
         token = obj.createToken(info, parent)
         return token
 

@@ -72,6 +72,10 @@ div.moose-code-compare pre
   font-size: 85%;
 }
 
+.moose-disabled{
+    color:darkviolet;
+}
+
 div.moose-modal-button {
     position: absolute;
     top: -10px;

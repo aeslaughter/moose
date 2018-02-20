@@ -35,6 +35,7 @@ used and promotes uniformity among the MooseDown files.
 | [alert](alert.md) | Creates alert boxes to draw attention to content. |
 | [katex](katex.md) | Enables use of KaTeX rendered equations. |
 | [appsyntax](appsyntax.md) | Enables the use of MOOSE application syntax within markdown files. |
+| [/config.md] | Enables configuration items to be controlled within a markdown file. |
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 

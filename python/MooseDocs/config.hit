@@ -2,21 +2,25 @@
   [MooseDocs]
       root_dir = 'docs/content'
       content = 'utilities/MooseDocs/**
-                 documentation/sqa/**
                  media/**
                  contrib/**
                  css/*
                  js/*'
   []
-  [framework]
-      root_dir = 'framework/doc/content'
-      content = '**'
-  []
+  #[sqa]
+  #  root_dir = 'docs/content'
+  #  content =
+  # []
+  #[framework]
+  #    root_dir = 'framework/doc/content'
+  #    content = '**'
+  #[]
 []
 
 [Extensions]
-  [syntax]
+  [appsyntax]
     type = MooseDocs.extensions.appsyntax
+    disable = True
     executable = ${MOOSE_DIR}/modules/combined
     includes = '${MOOSE_DIR}/framework/include'
     inputs = '${MOOSE_DIR}/test/tests'

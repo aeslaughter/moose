@@ -31,6 +31,37 @@ DEFAULT_EXTENSIONS = ['MooseDocs.extensions.core',
 def load_config(filename):
     """
     Read the config.hit file andb create the Translator object.
+
+    [Content]
+      [framework]
+      ...
+      []
+      [tensor_mechanics]
+      ...
+      []
+    []
+
+    [Extensions]
+      [appsyntax]
+      ...
+      []
+      [core]
+      ...
+      []
+    []
+
+    [Reader]
+    ...
+    []
+
+    [Renderer]
+    ...
+    []
+
+    [Translator]
+    ...
+    []
+
     """
     node = mooseutils.hit_load(filename)
 
