@@ -132,23 +132,58 @@ class TestRenderVideoHTML(testing.MooseDocsTestCase):
 
     EXTENSIONS = [core, command, floats, media]
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'TEST STRING HERE'
+    TEXT = u'!media http://foo.webm loop=True autoplay=True'
 
     def node(self):
         return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
-        self.assertFalse(True)
+        self.assertIsInstance(node, html.Tag)
+        self.assertEqual(node.name, 'div')
+        self.assertIn('moose-float-div', node['class'])
+        self.assertIsInstance(node(0), html.Tag)
+        self.assertEqual(node(0).name, 'video')
+        self.assertEqual(node(0)['controls'], 'controls')
+        self.assertEqual(node(0)['loop'], 'loop')
+        self.assertEqual(node(0)['autoplay'], 'autoplay')
+        self.assertIsInstance(node(0)(0), html.Tag)
+        self.assertEqual(node(0)(0).name, 'source')
+        self.assertEqual(node(0)(0)['src'], 'http://foo.webm')
 
     def testWrite(self):
         node = self.node()
-        self.assertEqual(node.write(), "GOLD")
+        content = node.write()
+        self.assertIn('<div class="moose-float-div">', content)
+        self.assertIn('<video width="100%" loop="loop" controls="controls"', content)
+        self.assertIn('<source src="http://foo.webm', content)
 
 class TestRenderVideoMaterialize(TestRenderVideoHTML):
     """Test renderering of RenderVideo with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
+
+    def testTree(self):
+        node = self.node()(0)
+        self.assertIsInstance(node, html.Tag)
+        self.assertEqual(node.name, 'div')
+        self.assertIn('card', node['class'])
+        self.assertIsInstance(node(0), html.Tag)
+        self.assertEqual(node(0).name, 'video')
+        self.assertEqual(node(0)['controls'], 'controls')
+        self.assertEqual(node(0)['loop'], 'loop')
+        self.assertEqual(node(0)['autoplay'], 'autoplay')
+        self.assertIsInstance(node(0)(0), html.Tag)
+        self.assertEqual(node(0)(0).name, 'source')
+        self.assertEqual(node(0)(0)['src'], 'http://foo.webm')
+
+    def testWrite(self):
+        node = self.node()
+        content = node.write()
+        self.assertIn('<div class="card">', content)
+        self.assertIn('<div class="card-content">', content)
+        self.assertIn('<source src="http://foo.webm', content)
+
 
 class TestRenderVideoLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with LatexRenderer"""
