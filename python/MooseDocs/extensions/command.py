@@ -121,7 +121,7 @@ class InlineCommand(CommandBase):
 class BlockCommand(CommandBase):
     RE = re.compile(r'(?:\A|\n{2,})^'            # block begin with empty line
                     r'!(?P<command>\w+)!(?: |$)' # command followed by space or end of line
-                    r'(?P<subcommand>\S+)?'     # optional subcommand
+                    r'(?P<subcommand>\S+)?'       # optional subcommand
                     r' *(?P<settings>.*?)'       # optional settings, which can span lines
                     r'(?P<block>^\S.*?)'         # content begins when line starts with a character
                     r'(^!\1-end!)'               # content ends with the "end" command

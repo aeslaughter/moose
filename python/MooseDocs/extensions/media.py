@@ -12,6 +12,9 @@ from MooseDocs.extensions import command, floats
 from MooseDocs.tree import tokens, html
 from MooseDocs.tree.base import Property
 
+# Documenting all of the following classes is excessive
+#pylint: disable=doc-string
+
 def make_extension(**kwargs):
     return MediaExtension(**kwargs)
 
@@ -24,10 +27,7 @@ class Video(tokens.Token):
                                             Property('autoplay', default=True, ptype=bool),
                                             Property('loop', default=True, ptype=bool)]
 
-#pylint: disable=doc-string
-
 class MediaExtension(command.CommandExtension):
-
     @staticmethod
     def defaultConfig():
         config = components.Extension.defaultConfig()
@@ -35,7 +35,6 @@ class MediaExtension(command.CommandExtension):
         return config
 
     def extend(self, reader, renderer):
-
         self.requires(command, floats)
 
         self.addCommand(ImageCommand())
@@ -43,7 +42,6 @@ class MediaExtension(command.CommandExtension):
 
         renderer.add(Image, RenderImage())
         renderer.add(Video, RenderVideo())
-
 
 class MediaCommandBase(command.CommandComponent):
     @staticmethod
@@ -53,21 +51,23 @@ class MediaCommandBase(command.CommandComponent):
         return settings
 
     def createMedia(self, parent, src):
-        pass
+        pass # a required method for base classes
 
     def createToken(self, info, parent):
 
+        # Determine the location of the media
         src = info['subcommand']
-
         if src.startswith('http') or parent.root.page is None:
             location = src
         else:
             node = parent.root.page.findall(src, maxcount=1, mincount=1, exc=exceptions.TokenizeException)
             location = unicode(node[0].relative(parent.root.page))
 
+        # Create the float and insert the media content
         flt = floats.Float(parent, **self.attributes)
         self.createMedia(flt, location)
 
+        # Add caption
         cap = self.settings['caption']
         key = self.settings['id']
         if key:
@@ -80,11 +80,7 @@ class MediaCommandBase(command.CommandComponent):
 
         return parent
 
-
 class ImageCommand(MediaCommandBase):
-    """
-    Creates an AutoLink when *.md is detected, otherwise a core.Link token.
-    """
     COMMAND = 'media'
     SUBCOMMAND = ('jpg', 'jpeg', 'gif', 'png', 'svg')
 

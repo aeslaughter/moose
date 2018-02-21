@@ -222,7 +222,7 @@ class Paragraph(components.TokenComponent):
         return tokens.Paragraph(parent)
 
 class EndOfFile(components.TokenComponent):
-    RE = re.compile(r'\s+', flags=re.UNICODE|re.MULTILINE)
+    RE = re.compile(r'.*', flags=re.UNICODE|re.MULTILINE|re.DOTALL)
     def createToken(self, info, parent):
         return parent
 

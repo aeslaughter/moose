@@ -5,6 +5,8 @@ from MooseDocs.extensions import command
 from MooseDocs.tree import tokens, html
 from MooseDocs.tree.base import Property
 
+#pylint: disable=doc-string
+
 def make_extension(**kwargs):
     return AlertExtension(**kwargs)
 
@@ -18,15 +20,18 @@ class AlertExtension(command.CommandExtension):
     @staticmethod
     def defaultConfig():
         config = command.CommandExtension.defaultConfig()
-        config['use-title-prefix'] = (True, "Enable/disable including the brand (e.g., ERROR) as prefix for the alert title.")
+        config['use-title-prefix'] = (True, "Enable/disable including the brand (e.g., ERROR) as " \
+                                            "prefix for the alert title.")
         return config
 
     def extend(self, reader, renderer):
+        self.requires(command)
         self.addCommand(AlertCommand())
         renderer.add(AlertToken, RenderAlertToken())
 
-class AlertCommandBase(command.CommandComponent):
+class AlertCommand(command.CommandComponent):
     COMMAND = 'alert'
+    SUBCOMMAND = ('error', 'warning', 'note')
 
     @staticmethod
     def defaultSettings():
@@ -52,11 +57,6 @@ class AlertCommandBase(command.CommandComponent):
 
         return AlertToken(parent, brand=brand, prefix=prefix, title=title_root)
 
-class AlertCommand(AlertCommandBase):
-    SUBCOMMAND = ('error', 'warning', 'note')
-
-
-
 class RenderAlertToken(components.RenderComponent):
 
     def createTitle(self, parent, token):
@@ -65,10 +65,10 @@ class RenderAlertToken(components.RenderComponent):
         if token.prefix or token.title:
             title = html.Tag(parent, 'div', class_='moose-alert-title')
 
+            prefix = None
             if token.prefix:
-                prefix = html.Tag(title, 'span', string=token.brand, class_='moose-alert-title-brand')
-            else:
-                prefix = None
+                prefix = html.Tag(title, 'span', string=token.brand,
+                                  class_='moose-alert-title-brand')
 
             if token.title:
                 if prefix:
@@ -79,17 +79,17 @@ class RenderAlertToken(components.RenderComponent):
 
     def createHTML(self, token, parent):
         div = html.Tag(parent, 'div', class_='moose-alert moose-alert-{}'.format(token.brand))
-        content = html.Tag(div, 'div', class_='moose-alert-content')
         self.createTitle(div, token)
-
+        content = html.Tag(div, 'div', class_='moose-alert-content')
         return content
 
     def createMaterialize(self, token, parent):
         card = html.Tag(parent, 'div', class_='card moose-alert moose-alert-{}'.format(token.brand))
         card_content = html.Tag(card, 'div', class_='card-content')
-        self.createTitle(card_content, token)
-
-        content = html.Tag(card, 'div', class_='moose-alert-content')
+        title = self.createTitle(card_content, token)
+        if title:
+            title['class'] = 'card-title'
+        content = html.Tag(card_content, 'div', class_='moose-alert-content')
         return content
 
     def createLatex(self, token, parent):

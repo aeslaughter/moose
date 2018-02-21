@@ -17,9 +17,9 @@ def command_line_options(subparser, parent):
     devel_parser = subparser.add_parser('devel',
                                         parents=[parent],
                                         help='Developer tools for MooseDocs.')
-    devel_parser.add_argument('--generate-extension-tests', type=str,
+    devel_parser.add_argument('--gen-ext-test', type=str,
                               help='Generate the test files for the supplied extension.')
-    devel_parser.add_argument('--extension-dir', type=str, default='MooseDocs.extensions',
+    devel_parser.add_argument('--ext-dir', type=str, default='MooseDocs.extensions',
                               help='Directory containing the extension')
 
 
@@ -31,8 +31,8 @@ def sub_function(match, values):
 def main(options):
 
     # Module
-    name = options.generate_extension_tests
-    ext_dir = options.extension_dir
+    name = options.gen_ext_test
+    ext_dir = options.ext_dir
     mod_name = '{}.{}'.format(ext_dir, name)
     mod = importlib.import_module(mod_name)
 

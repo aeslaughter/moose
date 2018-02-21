@@ -19,4 +19,8 @@
     type = PythonUnitTest
     input = test_command.py
   []
+  [alert]
+    type = PythonUnitTest
+    input = test_alert.py
+  []
 []

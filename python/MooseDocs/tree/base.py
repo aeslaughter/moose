@@ -130,7 +130,8 @@ class NodeBase(anytree.NodeMixin):
                 raise IOError("The property '{}' is required.".format(prop.name))
 
     def console(self):
-        return '{}: {}'.format(self.name, repr(self.__properties))
+        return '{}: Properties: {}, Attributes: {}'. \
+            format(self.name, repr(self.__properties), repr(self.__attributes))
 
     def __repr__(self):
         """

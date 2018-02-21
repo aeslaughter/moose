@@ -108,7 +108,7 @@ class TestRenderImageMaterialize(TestRenderImageHTML):
         self.assertIn('<div class="card-content">', content)
         self.assertIn('<img src="inl_blue.png"', content)
 
-
+@unittest.skip('LaTeX WIP')
 class TestRenderImageLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderImage with LatexRenderer"""
 
@@ -184,7 +184,7 @@ class TestRenderVideoMaterialize(TestRenderVideoHTML):
         self.assertIn('<div class="card-content">', content)
         self.assertIn('<source src="http://foo.webm', content)
 
-
+@unittest.skip('LaTeX WIP')
 class TestRenderVideoLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderVideo with LatexRenderer"""
 

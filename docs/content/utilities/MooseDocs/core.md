@@ -1,7 +1,3 @@
-!config
-Renderer/collapsible-sections=[None, 'open', 'open', None, None, None]
-Renderer/breadcrumbs=True
-
 # Core Extension
 
 The core extension is the portion of the MooseDocs language that is designed to mimic [markdown]
