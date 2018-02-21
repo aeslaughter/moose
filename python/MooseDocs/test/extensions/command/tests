@@ -1,6 +1,0 @@
-[Tests]
-  [./error_handling]
-    type = PythonUnitTest
-    input = test_error_handling.py
-  [../]
-[]

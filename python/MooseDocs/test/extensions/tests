@@ -15,4 +15,8 @@
     type = PythonUnitTest
     input = test_media.py
   []
+  [command]
+    type = PythonUnitTest
+    input = test_command.py
+  []
 []

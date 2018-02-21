@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 """Testing for MooseDocs.extensions.command MooseDocs extension."""
+import os
 import unittest
+import mock
+import tempfile
 
 import MooseDocs
 from MooseDocs.extensions import command, core, listing, floats
-from MooseDocs.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex, page
 from MooseDocs.base import testing, renderers
 
 # TOKEN OBJECTS TESTS
@@ -74,6 +77,53 @@ class TestCommandComponentTokenize(testing.MooseDocsTestCase):
     """Test tokenization of CommandComponent"""
     pass # base class
 
-# RENDERER TESTS
+class TestErrorHandling(testing.MooseDocsTestCase):
+    EXTENSIONS = [core, command]
+
+    def content(self):
+        return u'This is some text that contains a command\n\n!unkown command\n, it should error ' \
+               u'during tokenize.\n\n!this too\n\n'
+
+    @mock.patch('logging.Logger.error')
+    def testFromText(self, mock):
+        ast = self.ast(self.content())
+
+        self.assertEqual(mock.call_count, 2)
+
+        calls = mock.call_args_list
+        args, kwargs = calls[0]
+        msg = '\n'.join(args)
+        self.assertIn("An error occurred on line 1 while tokenizing", msg)
+        self.assertIn("The following command combination is unknown: 'unkown command'", msg)
+
+        args, kwargs = calls[1]
+        msg = '\n'.join(args)
+        self.assertIn("An error occurred on line 4 while tokenizing", msg)
+        self.assertIn("The following command combination is unknown: 'this too'", msg)
+
+    @mock.patch('logging.Logger.error')
+    def testFromFile(self, mock):
+        filename = tempfile.mkstemp('.md')[-1]
+        with open(filename, 'w') as fid:
+            fid.write(self.content())
+
+        node = page.MarkdownNode(None, source=filename)
+        node.read()
+        ast = self.ast(node)
+
+        self.assertEqual(mock.call_count, 2)
+
+        calls = mock.call_args_list
+        args, kwargs = calls[0]
+        msg = '\n'.join(args)
+        self.assertIn("The following command combination is unknown: 'unkown command'", msg)
+
+        args, kwargs = calls[1]
+        msg = '\n'.join(args)
+        self.assertIn("The following command combination is unknown: 'this too'", msg)
+
+        if os.path.exists(filename):
+            os.remove(filename)
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
