@@ -2,15 +2,12 @@
 Extension for adding commands to Markdown syntax.
 """
 import re
-import uuid
-import importlib
-import collections
 
 from MooseDocs import common
 from MooseDocs.base import components
-from MooseDocs.extensions import core, floats
-from MooseDocs.tree import html, latex, tokens
-from MooseDocs.tree.base import Property
+
+# Documenting all these classes is far to repetitive and useless.
+#pylint: disable=missing-docstring
 
 def make_extension():
     return CommandExtension()
@@ -18,8 +15,6 @@ def make_extension():
 class CommandExtension(components.Extension):
 
     def init(self, translator):
-        """
-        """
         components.Extension.init(self, translator)
 
         # Create a location to store the commands. I have tried this a few different ways, but
@@ -33,9 +28,6 @@ class CommandExtension(components.Extension):
             setattr(self.translator, '__EXTENSION_COMMANDS__', dict())
 
     def addCommand(self, command):
-        """
-        Adds a new CommandComponent to the list of available commands.
-        """
 
         # Type checking
         common.check_type('command', command, CommandComponent)
@@ -58,25 +50,14 @@ class CommandExtension(components.Extension):
             if pair in self.translator.__EXTENSION_COMMANDS__:
                 msg = "A CommandComponent object exists with the command '{}' and subcommand '{}'."
                 raise common.exceptions.MooseDocsException(msg, pair[0], pair[1])
-            #elif (command.COMMAND, None) in self.translator.__EXTENSION_COMMANDS__:
-            #    msg = "A CommandComponent object exists with the command '{}' with no subcommand, " \
-            #          "you can't add a subcommand."
-            #    raise common.exceptions.MooseDocsException(msg, command.COMMAND)
 
             self.translator.__EXTENSION_COMMANDS__[pair] = command
 
     def extend(self, reader, renderer):
-        """
-        Adds the various commmand components to the reader.
-        """
         reader.addBlock(BlockCommand(), location='_begin')
         reader.addBlock(InlineCommand(), location='<BlockCommand')
 
-
-class CommandComponent(components.TokenComponent):
-    """
-    Base component for creating commands.
-    """
+class CommandComponent(components.TokenComponent): #pylint: disable=abstract-method
     COMMAND = None
     SUBCOMMAND = None
 
@@ -128,11 +109,21 @@ class CommandBase(components.TokenComponent):
         token = obj.createToken(info, parent)
         return token
 
-
 class InlineCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)(?: |$)(?P<subcommand>\S+)? *(?P<settings>.*?)(?P<inline>^\S.*?)?(?=\n*\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^'           # block begin with empty line
+                    r'!(?P<command>\w+)(?: |$)' # command followed by space or end of line
+                    r'(?P<subcommand>\S+)?'     # optional subcommand
+                    r' *(?P<settings>.*?)'      # optional settings, which can span lines
+                    r'(?P<inline>^\S.*?)?'      # content begins when line starts with a character
+                    r'(?=\n*\Z|\n{2,})',        # ends with empty line or end of string
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class BlockCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^!(?P<command>\w+)!(?: |$)(?P<subcommand>\w+)? *(?P<settings>.*?)(?P<block>^\S.*?)(^!\1-end!)(?=\n*\Z|\n{2,})',
+    RE = re.compile(r'(?:\A|\n{2,})^'            # block begin with empty line
+                    r'!(?P<command>\w+)!(?: |$)' # command followed by space or end of line
+                    r'(?P<subcommand>\w+)? '     # optional subcommand
+                    r'*(?P<settings>.*?)'        # optional settings, which can span lines
+                    r'(?P<block>^\S.*?)'         # content begins when line starts with a character
+                    r'(^!\1-end!)'               # content ends with the "end" command
+                    r'(?=\n*\Z|\n{2,})',         # ends with empty line or end of string
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)

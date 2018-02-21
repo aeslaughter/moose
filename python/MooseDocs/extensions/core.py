@@ -79,7 +79,7 @@ class CoreExtension(components.Extension):
             renderer.addPackage(u'hyperref')
             renderer.addPackage(u'ulem')
 
-# Documenting all these classes is far to repeative and useless.
+# Documenting all these classes is far to repetitive and useless.
 #pylint: disable=missing-docstring
 
 #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
@@ -87,30 +87,27 @@ class Code(components.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})^'         # start of string or empty line
                     r'`{3}(?P<settings>.*?)$' # start of code with key=value settings
                     r'(?P<code>.*?)^`{3}'     # code and end of fenced block
-                    r'(?=\Z|\n{2,})',         # end of string or empty line
+                    r'(?=\n*\Z|\n{2,})',         # end of string or empty line
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
     @staticmethod
     def defaultSettings():
         settings = components.TokenComponent.defaultSettings()
         settings['language'] = (u'text', "The code language to use for highlighting.")
-        settings['caption'] = (None, "The caption text for the code listing.")
-        settings['label'] = ('Listing', "The numbered caption prefix.")
         return settings
 
     def createToken(self, info, parent):
-        if self.settings['caption']:
-            flt = tokens.Float(parent, label=self.settings['label'],
-                               caption=self.settings['caption'], **self.attributes)
-            return tokens.Code(flt, code=info['code'], language=self.settings['language'])
-        else:
-            return tokens.Code(parent, code=info['code'], language=self.settings['language'],
-                               **self.attributes)
+        args = info['settings'].split()
+        if args and ('=' not in args[0]):
+            self.settings['language'] = args[0]
+
+        return tokens.Code(parent, code=info['code'], language=self.settings['language'],
+                           **self.attributes)
 
 class Quote(components.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})'         # start of string or empty line
                     r'(?P<quote>^>[ $].*?)'  # quote content
-                    r'(?=\Z|\n{2,})',        # end of string or empty line
+                    r'(?=\n*\Z|\n{2,})',        # end of string or empty line
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, info, parent):
@@ -139,7 +136,7 @@ class HeadingHash(components.TokenComponent):
                     r'^(?P<level>#{1,6}) '       # match 1 to 6 #'s at the beginning of line
                     r'(?P<inline>.*?) *'         # heading text that will be inline parsed
                     r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
-                    r'(?=\Z|\n{2,})',            # match up to end of string or newline(s)
+                    r'(?=\n*\Z|\n{2,})',            # match up to end of string or newline(s)
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, info, parent):
@@ -176,7 +173,7 @@ class List(components.TokenComponent):
 class UnorderedList(List):
     RE = re.compile(r'(?:\A|\n{2,})'                   # start of string or empty line
                     r'(?P<items>(?P<marker>^- ).*?)'   # all items
-                    r'(?=\n{3,}|\Z|\n{2}^[^-\s])',     # stop with 2 empty or 1 not with marker
+                    r'(?=\n{3,}|\n*\Z|\n{2}^[^-\s])',  # stop with 2 empty or 1 not with marker
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     TOKEN = tokens.UnorderedList
@@ -185,7 +182,7 @@ class OrderedList(List):
     """Ordered lists."""
     RE = re.compile(r'(?:\A|\n{2,})'                        # start of string or empty line
                     r'(?P<items>(?P<marker>^[0-9]+\. ).*?)' # all items
-                    r'(?=\n{3,}|\Z|\n{2}^[^[0-9\s])',       # stop with 2 empty or 1 not with marker
+                    r'(?=\n{3,}|\n*\Z|\n{2}^[^[0-9\s])',    # stop with 2 empty or 1 not with marker
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )',
                          flags=re.MULTILINE|re.DOTALL|re.UNICODE)

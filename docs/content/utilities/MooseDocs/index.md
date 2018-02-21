@@ -30,12 +30,12 @@ used and promotes uniformity among the MooseDown files.
 
 | Extension | Description |
 | :- | :- |
-| [core](core.md) | Basic markdown syntax such as code blocks, lists, and bold text. |
-| [include](include.md) | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
-| [alert](alert.md) | Creates alert boxes to draw attention to content. |
-| [katex](katex.md) | Enables use of KaTeX rendered equations. |
-| [appsyntax](appsyntax.md) | Enables the use of MOOSE application syntax within markdown files. |
-| [/config.md] | Enables configuration items to be controlled within a markdown file. |
+| [/core.md] | Basic markdown syntax such as code blocks, lists, and bold text. |
+| [/command.md] | Basis for creating extensions that rely on commands (e.g., `!syntax list`). |
+| [/include.md] | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
+| [/alert.md] | Creates alert boxes to draw attention to content. |
+| [/katex.md] | Enables use of KaTeX rendered equations. |
+| [/appsyntax.md] | Enables the use of MOOSE application syntax within markdown files. |
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 
