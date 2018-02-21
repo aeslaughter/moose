@@ -72,19 +72,19 @@ def main(options):
     # Tokenize Tests
     fid.write("\n# TOKENIZE TESTS")
     for obj in reader_objects:
-        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, BASE="testing.MooseDocsTestCase"))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], EXTENSIONNAME=name, MODULE=mod_name, BASE="testing.MooseDocsTestCase"))
         fid.write(SUB_RE.sub(func, TOKENIZE))
 
     # Render Tests
     fid.write("\n# RENDERER TESTS")
     for obj in render_objects:
-        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, RENDERER="HTMLRenderer"))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], EXTENSIONNAME=name, MODULE=mod_name, RENDERER="HTMLRenderer"))
         fid.write(SUB_RE.sub(func, HTML))
 
-        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, RENDERER="MaterializeRenderer"))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], EXTENSIONNAME=name, MODULE=mod_name, RENDERER="MaterializeRenderer"))
         fid.write(SUB_RE.sub(func, MATERIALIZE))
 
-        func = lambda m: sub_function(m, dict(NAME=obj[0], MODULE=mod_name, RENDERER="LatexRenderer"))
+        func = lambda m: sub_function(m, dict(NAME=obj[0], EXTENSIONNAME=name, MODULE=mod_name, RENDERER="LatexRenderer"))
         fid.write(SUB_RE.sub(func, LATEX))
 
     # Finish

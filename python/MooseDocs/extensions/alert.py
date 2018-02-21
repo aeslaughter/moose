@@ -1,4 +1,5 @@
 import os
+import MooseDocs
 from MooseDocs.base import components
 from MooseDocs.extensions import command
 from MooseDocs.tree import tokens, html
@@ -7,26 +8,22 @@ from MooseDocs.tree.base import Property
 def make_extension(**kwargs):
     return AlertExtension(**kwargs)
 
-class Alert(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + [Property('brand', ptype=str, required=True)]
-
-class AlertTitle(tokens.Token):
-    pass
-#    PROPERTIES = [Property('brand', ptype=str, required=True)]
-
-class AlertContent(tokens.Token):
-    pass
+class AlertToken(tokens.Token):
+    PROPERTIES = tokens.Token.PROPERTIES + [Property('brand', ptype=unicode, required=True),
+                                            Property('prefix', default=True, ptype=bool),
+                                            Property('title', ptype=tokens.Token)]
 
 class AlertExtension(command.CommandExtension):
 
-    def extend(self, reader, renderer):
-        self.addCommand(ErrorAlertCommand())
-        self.addCommand(WarningAlertCommand())
-        self.addCommand(NoteAlertCommand())
+    @staticmethod
+    def defaultConfig():
+        config = command.CommandExtension.defaultConfig()
+        config['use-title-prefix'] = (True, "Enable/disable including the brand (e.g., ERROR) as prefix for the alert title.")
+        return config
 
-        renderer.add(Alert, RenderAlert())
-        renderer.add(AlertTitle, RenderAlertTitle())
-        renderer.add(AlertContent, RenderAlertContent())
+    def extend(self, reader, renderer):
+        self.addCommand(AlertCommand())
+        renderer.add(AlertToken, RenderAlertToken())
 
 class AlertCommandBase(command.CommandComponent):
     COMMAND = 'alert'
@@ -35,51 +32,65 @@ class AlertCommandBase(command.CommandComponent):
     def defaultSettings():
         settings = command.CommandComponent.defaultSettings()
         settings['title'] = (None, "The optional alert title.")
+        settings['prefix'] = (None, "Enable/disable the title being prefixed with the alert brand.")
         return settings
 
-    def createToken(self, match, parent):
+    def createToken(self, info, parent):
         title = self.settings.pop('title', None)
-        alert = Alert(parent, brand=self.SUBCOMMAND, **self.settings)
+        brand = info['subcommand']
 
-        title_token = AlertTitle(alert)
         if title:
-            grammer = self.reader.lexer.grammer('inline')
-            self.reader.lexer.tokenize(title_token, grammer, title, match.line)
+            title_root = tokens.Token(None)
+            self.reader.parse(title_root, title, MooseDocs.INLINE)
+        else:
+            title_root = None
 
-        content = AlertContent(alert)
-        #grammer = self.reader.lexer.grammer('block')
-        #self.reader.lexer.tokenize(content, grammer, match['content'], match.line)
+        if self.settings['prefix'] is not None:
+            prefix = self.settings['prefix']
+        else:
+            prefix = self.extension['use-title-prefix']
+
+        return AlertToken(parent, brand=brand, prefix=prefix, title=title_root)
+
+class AlertCommand(AlertCommandBase):
+    SUBCOMMAND = ('error', 'warning', 'note')
+
+
+
+class RenderAlertToken(components.RenderComponent):
+
+    def createTitle(self, parent, token):
+
+        title = None
+        if token.prefix or token.title:
+            title = html.Tag(parent, 'div', class_='moose-alert-title')
+
+            if token.prefix:
+                prefix = html.Tag(title, 'span', string=token.brand, class_='moose-alert-title-brand')
+            else:
+                prefix = None
+
+            if token.title:
+                if prefix:
+                    prefix(0).content += u':'
+
+                self.translator.renderer.process(title, token.title)
+        return title
+
+    def createHTML(self, token, parent):
+        div = html.Tag(parent, 'div', class_='moose-alert moose-alert-{}'.format(token.brand))
+        content = html.Tag(div, 'div', class_='moose-alert-content')
+        self.createTitle(div, token)
 
         return content
 
-class ErrorAlertCommand(AlertCommandBase):
-    SUBCOMMAND = 'error'
-
-class WarningAlertCommand(AlertCommandBase):
-    SUBCOMMAND = 'warning'
-
-class NoteAlertCommand(AlertCommandBase):
-    SUBCOMMAND = 'note'
-
-
-class RenderAlert(components.RenderComponent):
     def createMaterialize(self, token, parent):
         card = html.Tag(parent, 'div', class_='card moose-alert moose-alert-{}'.format(token.brand))
-        return html.Tag(card, 'div', class_='card-content'.format(token.brand))
-    def createLatex(self, token, parent):
-        pass
+        card_content = html.Tag(card, 'div', class_='card-content')
+        self.createTitle(card_content, token)
 
-class RenderAlertTitle(components.RenderComponent):
-    def createMaterialize(self, token, parent):
-        div = html.Tag(parent, 'div', class_='card-title moose-alert-title')
-        brand = html.Tag(div, 'span', class_='moose-alert-title-brand')
-        html.String(brand, content=unicode(token.parent.brand))
-        return div
-    def createLatex(self, token, parent):
-        pass
+        content = html.Tag(card, 'div', class_='moose-alert-content')
+        return content
 
-class RenderAlertContent(components.RenderComponent):
-    def createMaterialize(self, token, parent):
-        return html.Tag(parent, 'div', class_='moose-alert-content')
     def createLatex(self, token, parent):
         pass

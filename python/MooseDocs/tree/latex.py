@@ -79,7 +79,8 @@ class Command(NodeBase):
     """
     PROPERTIES = [Property('string', ptype=unicode),
                   Property('start', ptype=str, default=''),
-                  Property('end', ptype=str, default='')]
+                  Property('end', ptype=str, default=''),
+                  Property('options', ptype=dict, default=dict())]
 
     def __init__(self, parent, name, *args, **kwargs):
         NodeBase.__init__(self, name=name, parent=parent, *args, **kwargs)

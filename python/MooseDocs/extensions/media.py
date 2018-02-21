@@ -24,6 +24,8 @@ class Video(tokens.Token):
                                             Property('autoplay', default=True, ptype=bool),
                                             Property('loop', default=True, ptype=bool)]
 
+#pylint: disable=doc-string
+
 class MediaExtension(command.CommandExtension):
 
     @staticmethod
@@ -53,7 +55,7 @@ class MediaCommandBase(command.CommandComponent):
     def createMedia(self, parent, src):
         pass
 
-    def createToken(self, info, parent): #pylint: disable=doc-string
+    def createToken(self, info, parent):
 
         src = info['subcommand']
 
@@ -110,26 +112,19 @@ class VideoCommand(MediaCommandBase):
 
 class RenderImage(components.RenderComponent):
 
-    def createHTML(self, token, parent): #pylint: disable=doc-string
+    def createHTML(self, token, parent):
         return html.Tag(parent, 'img', src=token.src, **token.attributes)
 
-    def createMaterialize(self, token, parent): #pylint: disable=doc-string
-        return html.Tag(parent, 'img', src=token.src,
-                                       class_='materialboxed moose-image center-align',
-                                       **token.attributes)
-
-class RenderImage(components.RenderComponent):
-
-    def createHTML(self, token, parent): #pylint: disable=doc-string
-        return html.Tag(parent, 'img', src=token.src, **token.attributes)
-
-    def createMaterialize(self, token, parent): #pylint: disable=doc-string
-        tag = self.createHTML(token, parent)
+    def createMaterialize(self, token, parent):
+        tag = self.createHTML(token, parent, **token.attributes)
         tag['class'] = 'materialboxed moose-image center-align'
         return tag
 
+    def createLatex(self, token, parent):
+        pass
+
 class RenderVideo(components.RenderComponent):
-    def createHTML(self, token, parent): #pylint: disable=doc-string
+    def createHTML(self, token, parent):
         video = html.Tag(parent, 'video', **token.attributes)
         _, ext = os.path.splitext(token.src)
         source = html.Tag(video,'source', src=token.src, type_="video/{}".format(ext[1:]))
@@ -141,3 +136,6 @@ class RenderVideo(components.RenderComponent):
             video['autoplay'] = 'autoplay'
         if token.loop:
             video['loop'] = 'loop'
+
+    def createLatex(self, token, parent):
+        pass
