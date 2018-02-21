@@ -43,7 +43,7 @@ class LocalListingCommand(command.CommandComponent):
     def defaultSettings():
         settings = command.CommandComponent.defaultSettings()
         settings['caption'] = (None, "The caption to use for the listing content.")
-        settings['prefix'] = ('', "Text to include prior to the included text.")
+        settings['prefix'] = (None, "Text to include prior to the included text.")
         settings['max-height'] = (u'350px', "The default height for listing content.")
         settings['language'] = (None, "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
         return settings
@@ -62,7 +62,11 @@ class LocalListingCommand(command.CommandComponent):
         cap = self.settings['caption']
         key = self.settings['id']
         if key:
-            caption = floats.Caption(flt, key=key, prefix=self.extension['prefix'])
+            if self.settings['prefix'] is not None:
+                prefix = self.settings['prefix']
+            else:
+                prefix = self.extension['prefix']
+            caption = floats.Caption(flt, key=key, prefix=prefix)
             if cap:
                 self.translator.reader.parse(caption, cap, MooseDocs.INLINE)
         elif cap:
@@ -78,8 +82,8 @@ class FileListingCommand(LocalListingCommand):
         settings = LocalListingCommand.defaultSettings()
         settings['caption'] = (None, "The caption to use for the listing content.")
         settings['link'] = (True, "Include a link to the filename after the listing.")
-        settings['prefix'] = ('', "Text to include prior to the included text.")
-        settings['suffix'] = ('', "Text to include after to the included text.")
+        settings['header'] = (None, "Text to include prior to the included text.")
+        settings['footer'] = ('', "Text to include after to the included text.")
         settings['indent'] = (0, "The level of indenting to apply to the included text.")
         settings['strip-header'] = (True, "When True the MOOSE header is removed for display.")
         settings['strip-extra-newlines'] = (True, "Removes extraneous new lines from the text.")
@@ -195,20 +199,13 @@ class FileListingCommand(LocalListingCommand):
         # Add indent
         if settings['indent'] > 0:
             content = re.sub(r'^(.*?)$', '{}\1'.format(' '*int(settings['indent']), content))
-            """
-            lines = content.split('\n')
-            c = []
-            for line in lines:
-                c.append('{}{}'.format(' '*int(settings['indent']), line))
-            content = '\n'.join(c)
-            """
 
-        # Prefix/suffix
-        if settings['prefix']:
-            content = re.sub(r'^(.*?)$', '\1{}'.format(settings['prefix']), content)
+            # Prefix/suffix
+        if settings['header']:
+            content = re.sub(r'^(.*?)$', '\1{}'.format(settings['header']), content)
             #content = '{}\n{}'.format(settings['prefix'], content)
-        if settings['suffix']:
-            content = re.sub(r'^(.*?)$', '{}\1'.format(settings['suffix']), content)
+        if settings['footer']:
+            content = re.sub(r'^(.*?)$', '{}\1'.format(settings['footer']), content)
             #content = '{}\n{}'.format(content, settings['suffix'])
 
         return content

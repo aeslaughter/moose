@@ -15,7 +15,6 @@ until the first empty line.
 
 ## Block Command Format
 
-
 ```markdown
 !command! subcommand key=value key2=value with space
                      key3=value3

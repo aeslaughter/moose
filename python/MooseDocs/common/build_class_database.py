@@ -20,9 +20,6 @@ class DatabaseItem(object):
         self.inputs = set()
         self.children = set()
 
-    def __str__(self):
-        return '{} {} {}'.format(self.name, self.children, self.inputs)
-
 def build_class_database(include_dirs, input_dirs):
 
     if isinstance(include_dirs, str):
@@ -83,8 +80,10 @@ def _matchInput(objects, filename, match):
         objects[key].inputs.add(filename)
 
 if __name__ == '__main__':
-
     includes = [os.path.join(MooseDocs.ROOT_DIR)]
     inputs = [os.path.join(MooseDocs.ROOT_DIR)]
     db = build_class_database(includes, inputs)
-    print db['Diffusion']
+    print db['Diffusion'].source
+    print db['Diffusion'].header
+    print db['Diffusion'].children
+    print db['Diffusion'].inputs

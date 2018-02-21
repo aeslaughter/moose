@@ -68,25 +68,8 @@ class Modal(tokens.Token):
 
 class RenderFloat(components.RenderComponent):
     def createHTML(self, token, parent):
-        attrs = token.attributes
-    #    print 'ATTRS:', attrs
-
-        if attrs['class'] is not None:
-            attrs['class'] = 'moose-float-div'
-
-        div = html.Tag(parent, 'div', **attrs)
-
-        """
-        if token.caption:
-            self._count[token.label] += 1
-            caption = html.Tag(div, 'p', class_="moose-caption")
-            heading = html.Tag(caption, 'span', class_="moose-caption-heading")
-            html.String(heading, content=u'{} {}: '.format(token.label.title(), self._count[token.label]))
-            text = html.Tag(caption, 'span', class_="moose-caption-text")
-            #html.String(text, content=unicode(token.caption))
-        """
-
-        return div
+        div = html.Tag(parent, 'div', **token.attributes)
+        div['class'] = 'moose-float-div'
 
     def createMaterialize(self, token, parent):
         div = html.Tag(parent, 'div', **token.attributes)
