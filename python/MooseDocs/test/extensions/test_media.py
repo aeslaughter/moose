@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 """Testing for MooseDocs.extensions.media MooseDocs extension."""
 import unittest
+import logging
 
 import MooseDocs
 from MooseDocs.extensions import core, command, floats, media
 from MooseDocs.tree import tokens, html, latex
 from MooseDocs.base import testing, renderers
+
+logging.basicConfig()
 
 # TOKEN OBJECTS TESTS
 class TestTokens(unittest.TestCase):
@@ -39,8 +42,10 @@ class TestVideoCommandTokenize(testing.MooseDocsTestCase):
     EXTENSIONS = [core, command, floats, media]
 
     def testToken(self):
-        ast = self.ast(u'!media inl_blue.png')
-        self.assertFalse(True)
+        ast = self.ast(u'!media http://link_to_movie.webm')
+        self.assertIsInstance(ast(0), floats.Float)
+        self.assertIsInstance(ast(0)(0), media.Video)
+        self.assertEqual(ast(0)(0).src, 'http://link_to_movie.webm')
 
 class TestImageCommandTokenize(testing.MooseDocsTestCase):
     """Test tokenization of ImageCommand"""
@@ -49,7 +54,9 @@ class TestImageCommandTokenize(testing.MooseDocsTestCase):
 
     def testToken(self):
         ast = self.ast(u'!media inl_blue.png')
-        self.assertFalse(True)
+        self.assertIsInstance(ast(0), floats.Float)
+        self.assertIsInstance(ast(0)(0), media.Image)
+        self.assertEqual(ast(0)(0).src, 'inl_blue.png')
 
 # RENDERER TESTS
 class TestRenderImageHTML(testing.MooseDocsTestCase):
@@ -57,23 +64,50 @@ class TestRenderImageHTML(testing.MooseDocsTestCase):
 
     EXTENSIONS = [core, command, floats, media]
     RENDERER = renderers.HTMLRenderer
-    TEXT = u'TEST STRING HERE'
+    TEXT = u'!media inl_blue.png'
 
     def node(self):
         return self.render(self.TEXT).find('moose-content', attr='class')(0)
 
     def testTree(self):
         node = self.node()
-        self.assertFalse(True)
+        self.assertIsInstance(node, html.Tag)
+        self.assertEqual(node.name, 'div')
+        self.assertIn('moose-float-div', node['class'])
+        self.assertIsInstance(node(0), html.Tag)
+        self.assertEqual(node(0).name, 'img')
+        self.assertEqual(node(0)['src'], 'inl_blue.png')
 
     def testWrite(self):
         node = self.node()
-        self.assertEqual(node.write(), "GOLD")
+        content = node.write()
+        self.assertIn('<div class="moose-float-div">', content)
+        self.assertIn('<img src="inl_blue.png"></img></div>', content)
 
 class TestRenderImageMaterialize(TestRenderImageHTML):
     """Test renderering of RenderImage with MaterializeRenderer"""
 
     RENDERER = renderers.MaterializeRenderer
+
+    def testTree(self):
+        node = self.node()
+        self.assertIsInstance(node, html.Tag)
+        self.assertEqual(node.name, 'div')
+        self.assertIn('card', node['class'])
+        self.assertIsInstance(node(0), html.Tag)
+        self.assertEqual(node(0).name, 'div')
+        self.assertIn('card-content', node(0)['class'])
+        self.assertIsInstance(node(0)(0), html.Tag)
+        self.assertEqual(node(0)(0).name, 'img')
+        self.assertEqual(node(0)(0)['src'], 'inl_blue.png')
+
+    def testWrite(self):
+        node = self.node()
+        content = node.write()
+        self.assertIn('<div class="card">', content)
+        self.assertIn('<div class="card-content">', content)
+        self.assertIn('<img src="inl_blue.png"', content)
+
 
 class TestRenderImageLatex(testing.MooseDocsTestCase):
     """Test renderering of RenderImage with LatexRenderer"""

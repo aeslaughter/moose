@@ -21,6 +21,8 @@ and svg. Images are added using the !media command followed by the filename, as 
 !devel! example id=example-image caption=Example image with caption and numbered prefix.
 !media media/inl_blue.png
        id=inl-logo
+       style=width:50%;
+       class=center
        caption=The Idaho National Laboratory logo.
 !devel-end!
 

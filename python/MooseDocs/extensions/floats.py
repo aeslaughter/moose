@@ -70,6 +70,7 @@ class RenderFloat(components.RenderComponent):
     def createHTML(self, token, parent):
         div = html.Tag(parent, 'div', **token.attributes)
         div['class'] = 'moose-float-div'
+        return div
 
     def createMaterialize(self, token, parent):
         div = html.Tag(parent, 'div', **token.attributes)
