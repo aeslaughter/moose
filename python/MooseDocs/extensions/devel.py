@@ -37,6 +37,8 @@ class DevelExtension(command.CommandExtension):
         return config
 
     def extend(self, reader, renderer):
+        self.requires(floats)
+
         self.addCommand(Example())
         self.addCommand(ComponentSettings())
 
@@ -137,6 +139,13 @@ class ComponentSettings(command.CommandComponent):
         return master
 
 class RenderExampleToken(components.RenderComponent):
+
+    def createHTML(self, token, parent):
+        left = html.Tag(div, 'div', class_='moose-example-code')
+        ast = tokens.Code(left, code=token.data)
+        self.translator.renderer.process(left, ast)
+        right = html.Tag(div, 'div', class_='moose-example-rendered')
+
 
     def createMaterialize(self, token, parent):
 

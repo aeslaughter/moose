@@ -7,8 +7,8 @@ follow the same basic structure and automatically have two forms and inline and 
 ## Inline Command Format
 
 ```markdown
-!command subcommand key=value
-                     key2=value2
+!command subcommand key=value key2=value with spaces
+                    key3=value3
 Some content that is optional, but if used continues
 until the first empty line.
 ```
@@ -17,8 +17,8 @@ until the first empty line.
 
 
 ```markdown
-!command! subcommand key=value
-                     key2=value2
+!command! subcommand key=value key2=value with space
+                     key3=value3
 Content that is optional, but if used
 can include empty lines.
 

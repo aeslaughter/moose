@@ -99,7 +99,7 @@ HEAD="""#!/usr/bin/env python
 import unittest
 
 import MooseDocs
-from <EXTENSIONROOT> import <EXTENSIONNAME>
+from <EXTENSIONROOT> import core, <EXTENSIONNAME>
 from MooseDocs.tree import tokens, html, latex
 from MooseDocs.base import testing, renderers
 """
@@ -108,7 +108,7 @@ TOKENIZE="""
 class Test<NAME>Tokenize(<BASE>):
     \"\"\"Test tokenization of <NAME>\"\"\"
 
-    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
+    EXTENSIONS = [core, <EXTENSIONNAME>]
 
     def testToken(self):
         self.assertFalse(True)
@@ -118,7 +118,7 @@ HTML="""
 class Test<NAME>HTML(testing.MooseDocsTestCase):
     \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
 
-    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
+    EXTENSIONS = [core, <EXTENSIONNAME>]
     RENDERER = renderers.<RENDERER>
     TEXT = u'TEST STRING HERE'
 
@@ -145,7 +145,7 @@ LATEX="""
 class Test<NAME>Latex(testing.MooseDocsTestCase):
     \"\"\"Test renderering of <NAME> with <RENDERER>\"\"\"
 
-    EXTENSIONS = [MooseDocs.extensions.core, <MODULE>]
+    EXTENSIONS = [core, <EXTENSIONNAME>]
     RENDERER = renderers.<RENDERER>
     TEXT = u'TEST STRING HERE'
 
