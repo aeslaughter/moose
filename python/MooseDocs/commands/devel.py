@@ -10,8 +10,6 @@ from MooseDocs.tree import tokens
 from MooseDocs.base import components, renderers, testing
 from MooseDocs.extensions import command
 
-LOG = logging.getLogger(__name__)
-
 def command_line_options(subparser, parent):
     """Define the 'devel' command."""
     devel_parser = subparser.add_parser('devel',
@@ -29,6 +27,9 @@ def sub_function(match, values):
     return values[key]
 
 def main(options):
+
+    LOG = logging.getLogger(__name__)
+
 
     # Module
     name = options.gen_ext_test

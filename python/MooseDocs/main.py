@@ -9,8 +9,6 @@ import logging
 from commands import build, devel, check
 from common import log
 
-LOG = log.init_logging()
-
 def command_line_options():
     """
     The main command line parser, this creates the main parser and calls the
@@ -39,11 +37,8 @@ def main():
     Parse the command line options and run the correct command.
     """
 
-
     options = command_line_options()
-
-    LOG.setLevel(getattr(logging, options.level))
-
+    log.init_logging(getattr(logging, options.level))
 
     if options.command == 'build':
         build.main(options)

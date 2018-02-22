@@ -25,7 +25,19 @@ def make_extension(**kwargs):
     return AppSyntaxExtension(**kwargs)
 
 class InputParametersToken(tokens.Token):
-    PROPERTIES = [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True)]
+    PROPERTIES = [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True),
+                  tokens.Property('heading', ptype=tokens.Token),
+                  tokens.Property('level', default=2, ptype=int),
+                  tokens.Property('groups', ptype=list),
+                  tokens.Property('hide', ptype=set),
+                  tokens.Property('show', ptype=set)]
+
+    def __init__(self, *args, **kwargs):
+        tokens.Token.__init__(self, *args, **kwargs)
+
+        if self.show and self.hide:
+            msg = "The 'show' and 'hide' properties cannot both be set."
+            raise exceptions.TokenizeException(msg)
 
 class AppSyntaxDisabledToken(tokens.Token):
     pass
@@ -103,6 +115,7 @@ class AppSyntaxExtension(command.CommandExtension):
         self.addCommand(SyntaxChildrenCommand())
 
         renderer.add(InputParametersToken, RenderInputParametersToken())
+
         renderer.add(SyntaxToken, RenderSyntaxToken())
         renderer.add(AppSyntaxDisabledToken, RenderAppSyntaxDisabledToken())
 
@@ -135,12 +148,50 @@ class SyntaxCommandBase(command.CommandComponent):
     def createTokenFromSyntax(self, info, parent, obj):
         pass
 
+class SyntaxCommandHeadingBase(SyntaxCommandBase):
+    @staticmethod
+    def defaultSettings():
+        settings = SyntaxCommandBase.defaultSettings()
+        settings['heading'] = (u'Input Parameters', "The heading title for the input parameters table, use 'None' to remove the heading.")
+        settings['heading-level'] = (2, "Heading level for section title.")
+        return settings
 
-class SyntaxParametersCommand(SyntaxCommandBase):
+    def createHeading(self, token):
+
+        heading = self.settings['heading']
+        if heading:
+            h = tokens.Heading(None, level=int(self.settings['heading-level']))
+            self.translator.reader.parse(h, heading, group=MooseDocs.INLINE)
+            token.heading = h
+            token.level = int(self.settings['heading-level'])
+
+class SyntaxParametersCommand(SyntaxCommandHeadingBase):
     SUBCOMMAND = 'parameters'
 
+    @staticmethod
+    def defaultSettings():
+        settings = SyntaxCommandHeadingBase.defaultSettings()
+        settings['groups'] = (None, "Space separated list of groups, in the desired display order, to output.")
+        settings['hide'] = (None, "Space separated list of parameters to remove from output.")
+        settings['show'] = (None, "Space separated list of parameters to display in output.")
+        return settings
+
     def createTokenFromSyntax(self, info, parent, obj):
-        return InputParametersToken(parent, syntax=obj, **self.attributes)
+
+        token = InputParametersToken(parent,
+                                     syntax=obj,
+                                     **self.attributes)
+        if self.settings['groups']:
+            token.groups = [group.strip() for group in self.settings['groups'].split(' ')]
+
+        if self.settings['hide']:
+            token.hide = set([param.strip() for param in self.settings['hide'].split(' ')])
+
+        if self.settings['show']:
+            token.show = set([param.strip() for param in self.settings['show'].split(' ')])
+
+        self.createHeading(token)
+        return parent
 
 class SyntaxDescriptionCommand(SyntaxCommandBase):
     SUBCOMMAND = 'description'
@@ -149,14 +200,13 @@ class SyntaxDescriptionCommand(SyntaxCommandBase):
         return parent
 
 
-class SyntaxChildrenCommand(SyntaxCommandBase):
+class SyntaxChildrenCommand(SyntaxCommandHeadingBase):
     SUBCOMMAND = 'children'
 
     @staticmethod
     def defaultSettings():
-        settings = SyntaxCommandBase.defaultSettings()
-        settings['title'] = (u"Child Objects", "The heading to include for the file sections, use 'None' to remove the title.")
-        settings['level'] = (2, "Heading level for section title.")
+        settings = SyntaxCommandHeadingBase.defaultSettings()
+        settings['heading'] = (u"Child Objects", "The heading to include for the file sections, use 'None' to remove the title.")
         return settings
 
     def createTokenFromSyntax(self, info, parent, obj):
@@ -165,9 +215,7 @@ class SyntaxChildrenCommand(SyntaxCommandBase):
         attr = getattr(item, self.SUBCOMMAND)
         if item and attr:
 
-            if self.settings['title'].lower() != 'none':
-                h = tokens.Heading(parent, level=self.settings['level'])
-                self.translator.reader.parse(h, self.settings['title'], group=MooseDocs.INLINE)
+            self.createHeading(parent)
 
             ul = tokens.UnorderedList(parent)
             for filename in attr:
@@ -187,7 +235,7 @@ class SyntaxInputsCommand(SyntaxChildrenCommand):
     @staticmethod
     def defaultSettings():
         settings = SyntaxChildrenCommand.defaultSettings()
-        settings['title'] = (u"Input Files", settings['title'][1])
+        settings['heading'] = (u"Input Files", settings['heading'][1])
         return settings
 
 
@@ -283,41 +331,51 @@ class RenderInputParametersToken(components.RenderComponent):
 
     def createMaterialize(self, token, parent):
 
-        # Parameters dict()
+        # Build the list of groups to display
         groups = collections.OrderedDict()
-        groups['Required'] = dict()
-        groups['Optional'] = dict()
+        if token.groups:
+            for group in token.groups:
+                groups[group] = dict()
+
+        else:
+            groups['Required'] = dict()
+            groups['Optional'] = dict()
+            for param in token.syntax.parameters.itervalues():
+                group = param['group_name']
+                if group and group not in groups:
+                    groups[group] = dict()
 
         for param in token.syntax.parameters.itervalues() or []:
 
-            group = param['group_name']
             name = param['name']
 
-            if name == 'type':
+            if (name == 'type') or (token.hide and name in token.hide) or (token.show and name not in token.show):
                 continue
 
+            group = param['group_name']
             if not group and param['required']:
                 group = 'Required'
             elif not group and not param['required']:
                 group = 'Optional'
 
-            if group not in groups:
-                groups[group] = dict()
-            groups[group][name] = param
+            if group in groups:
+                groups[group][name] = param
 
-
-        html.Tag(parent, 'h2', string=unicode('Input Parameters'))
+        if token.heading:
+            self.translator.renderer.process(parent, token.heading)
 
         for group, params in groups.iteritems():
 
             if not params:
                 continue
 
-            h = html.Tag(parent, 'h3', string=unicode('{} Parameters'.format(group.title())))
-            if group == 'Required':
-                h['data-details-open'] = 'open'
-            else:
-                h['data-details-open'] = 'close'
+            if len(groups) > 1: # only create a sub-section if more than one exists
+                h = html.Tag(parent, 'h{}'.format(token.level + 1),
+                             string=unicode('{} Parameters'.format(group.title())))
+                if group == 'Required':
+                    h['data-details-open'] = 'open'
+                else:
+                    h['data-details-open'] = 'close'
 
             ul = html.Tag(parent, 'ul', class_='collapsible')
             ul['data-collapsible'] = "expandable"

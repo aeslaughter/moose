@@ -7,7 +7,9 @@ import traceback
 import types
 import re
 
-from MooseDocs import tree, common
+import MooseDocs
+from MooseDocs import common
+from MooseDocs.tree import tokens
 from MooseDocs.common import exceptions
 
 LOG = logging.getLogger(__name__)
@@ -197,9 +199,9 @@ class Lexer(object):
                     try:
                         obj = self.buildObject(parent, info)
                     except exceptions.TokenizeException:
-                        obj = tree.tokens.Exception(parent,
-                                                    info=info,
-                                                    traceback=traceback.format_exc())
+                        obj = tokens.Exception(parent,
+                                               info=info,
+                                               traceback=traceback.format_exc())
                     if obj is not None:
                         obj.info = info #TODO: set ptype on base Token, change to info
                         line += match.group(0).count('\n')
@@ -220,7 +222,11 @@ class Lexer(object):
         """
         Return a token object for the given lexer information.
         """
-        return info.pattern.function(info, parent)
+        obj = info.pattern.function(info, parent)
+        if MooseDocs.LOG_LEVEL == logging.DEBUG:
+            common.check_type('obj', obj, (tokens.Token, type(None)),
+                              exc=exceptions.TokenizeException)
+        return obj
 
 class RecursiveLexer(Lexer):
     """
@@ -270,7 +276,12 @@ class RecursiveLexer(Lexer):
         """
         Override the Lexer.buildObject method to recursively tokenize base on group names.
         """
+        if MooseDocs.LOG_LEVEL == logging.DEBUG:
+            common.check_type('parent', parent, tokens.Token, exc=exceptions.TokenizeException)
+            common.check_type('info', info, LexerInformation, exc=exceptions.TokenizeException)
+
         obj = super(RecursiveLexer, self).buildObject(parent, info)
+
         if (obj is not None) and (obj is not parent) and obj.recursive:
             for key, grammer in self._grammers.iteritems():
                 if key in info.keys():

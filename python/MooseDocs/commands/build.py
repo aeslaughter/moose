@@ -15,7 +15,6 @@ import mooseutils
 import MooseDocs
 from MooseDocs import common
 
-LOG = logging.getLogger(__name__)
 
 
 def command_line_options(subparser, parent):

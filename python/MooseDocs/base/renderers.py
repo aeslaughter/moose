@@ -91,7 +91,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
             if token.root.page and token.info:
                 msg += "{}:{}".format(token.root.page.source, token.info.line)
 
-            msg += "\nAn error occured while rendering, the error occured when attempting\n"\
+            msg += "\nAn error occurred while rendering, the error occured when attempting\n"\
                    "to execute the {} function on the {} token.".format(self.METHOD, type(token))
 
             if token.info:
@@ -170,6 +170,7 @@ class MaterializeRenderer(HTMLRenderer):
                                           "should be collapsible, if so should it be open or " \
                                           "closed initially. The 'sections' setting must be " \
                                           "True for this to operate.")
+        config['navigation'] = (None, '...')
         return config
 
     def update(self, **kwargs):

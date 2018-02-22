@@ -3,6 +3,8 @@ import multiprocessing
 
 import mooseutils
 
+import MooseDocs
+
 class MooseDocsFormatter(logging.Formatter):
     """
     A formatter that is aware of the class hierarchy of the MooseDocs library.
@@ -44,6 +46,8 @@ def init_logging(level=logging.INFO):
     log.addHandler(handler)
     #log.addHandler(logging.NullHandler())
 
+    log.setLevel(level)
+    MooseDocs.LOG_LEVEL = level
     return log
-#    log.setLevel(level)
+
 #    return formatter

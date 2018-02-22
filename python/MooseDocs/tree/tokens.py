@@ -6,6 +6,7 @@ import re
 import collections
 import logging
 
+import MooseDocs
 from MooseDocs.tree.base import Property, NodeBase
 #from MooseDocs.base.lexers import LexerInformation
 

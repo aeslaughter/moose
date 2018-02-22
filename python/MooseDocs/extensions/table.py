@@ -1,5 +1,6 @@
 import re
 
+import MooseDocs
 from MooseDocs import common
 from MooseDocs.base import components
 from MooseDocs.extensions import core
@@ -29,7 +30,7 @@ class TableItem(tokens.Token):
 class TableHeaderItem(TableItem):
     pass
 
-"""
+
 def builder(rows, headings=None):
     node = Table()
     if headings:
@@ -47,7 +48,6 @@ def builder(rows, headings=None):
             tokens.String(tr, content=unicode(d))
 
     return node
-"""
 
 class TableExtension(components.Extension): #TODO:  CommandMarkdownExtension
     def extend(self, reader, renderer):

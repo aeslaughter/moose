@@ -1,11 +1,14 @@
 import os
 import subprocess
+import logging
 
 import base
 import extensions
 
 BLOCK = 'block'
 INLINE = 'inline'
+
+LOG_LEVEL = logging.NOTSET
 
 ROOT_DIR = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
                                    cwd=os.getcwd(),

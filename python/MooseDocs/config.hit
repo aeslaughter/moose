@@ -20,7 +20,7 @@
 [Extensions]
   [appsyntax]
     type = MooseDocs.extensions.appsyntax
-    disable = True
+#    disable = True
     executable = ${MOOSE_DIR}/modules/combined
     includes = '${MOOSE_DIR}/framework/include'
     inputs = '${MOOSE_DIR}/test/tests'
