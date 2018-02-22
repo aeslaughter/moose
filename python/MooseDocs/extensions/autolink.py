@@ -109,11 +109,9 @@ class AutoShortcutLink(tokens.ShortcutLink):
     """ShortcutLink token for linking across pages."""
     PROPERTIES = tokens.ShortcutLink.PROPERTIES + [Property('header', default=False),
                                                    Property('bookmark', ptype=unicode)]
-
 class AutoLink(tokens.Link):
     """Link token for linking across pages."""
     PROPERTIES = tokens.Link.PROPERTIES + [Property('bookmark', ptype=unicode)]
-
 
 class AutoShortcutLinkComponent(core.ShortcutLink):
     """
@@ -130,7 +128,6 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
 
         return core.ShortcutLink.createToken(self, info, parent)
 
-
 class AutoLinkComponent(core.Link):
     """
     Creates an AutoLink when *.md is detected, otherwise a core.Link token.
@@ -142,7 +139,6 @@ class AutoLinkComponent(core.Link):
             return AutoLink(parent, url=match.group('filename'), bookmark=match.group('bookmark'))
         else:
             return core.Link.createToken(self, info, parent)
-
 
 class RenderAutoLink(AutoLinkMixin, core.RenderLink):
     """Render the AutoLink token."""

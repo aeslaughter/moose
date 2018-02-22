@@ -122,7 +122,7 @@ class SQARequirementsCommand(command.CommandComponent):
 
             with codecs.open(req.filename, encoding='utf-8') as fid:
                 content = fid.read()
-            modal = floats.Modal(a, bottom=True, title=unicode(req.filename))
+            modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=unicode(req.filename)))
             tokens.Code(modal, language=u'text', code=content)
 
             #TODO: Make option
@@ -264,26 +264,3 @@ class RenderSQARequirementMatrix(core.RenderUnorderedList):
 class RenderSQARequirementMatrixItem(core.RenderListItem):
     def createMaterialize(self, token, parent):
         return html.Tag(parent, 'li', class_="collection-item")
-
-
-    """
-    def createHTML(self, token, parent):
-        pass
-
-    def createMaterialize(self, token, parent):
-
-        ul = html.Tag(parent, 'ul', class_="collection")
-        for req in token.requirements:
-            li = html.Tag(ul, 'li', class_="collection-item")
-            html.String(li, content=unicode(req.requirement))
-            p = html.Tag(li, 'p')
-            html.String(p, content=u'Specification: ')
-            html.Tag(p, 'a', href="#", string=u"{}:{}".format(req.path, req.name))
-
-            with open(filename, 'r') as fid:
-                content = fid.read()
-            a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
-            modal = floats.Modal(a, bottom=True, title=filename)
-            tokens.Code(modal, language=self.settings['language'],
-                        code=self.read(filename))
-    """

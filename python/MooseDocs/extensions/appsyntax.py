@@ -177,7 +177,7 @@ class SyntaxChildrenCommand(SyntaxCommandBase):
                 _, ext = os.path.splitext(filename)
                 li = tokens.ListItem(ul)
                 a = tokens.Link(li, url=filename, string=filename)
-                modal = floats.Modal(a, bottom=True, title=filename)
+                modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=filename))
 
                 language = u'text' if ext == '.i' else u'cpp'
                 tokens.Code(modal, language=language, code=common.read(os.path.join(MooseDocs.ROOT_DIR, filename)))

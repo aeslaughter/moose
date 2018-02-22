@@ -140,7 +140,7 @@ class FileListingCommand(LocalListingCommand):
             #with open(filename, 'r') as fid:
             #    content = fid.read()
             a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
-            modal = floats.Modal(a, bottom=True, title=filename)
+            modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=filename))
             tokens.Code(modal, language=self.settings['language'],
                         code=common.read(filename))
 

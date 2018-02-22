@@ -17,14 +17,6 @@ from MooseDocs.tree.base import Property
 def make_extension(**kwargs):
     return DevelExtension(**kwargs)
 
-"""
-class Example(tokens.Token):
-    PROPERTIES = [Property("caption", ptype=unicode, required=True),
-                 # Property("prefix", ptype=unicode, default=u'Example'),
-                  Property("data", ptype=collections.OrderedDict, required=True),
-                  Property("preview")]
-"""
-
 class ExampleToken(tokens.Token):
    PROPERTIES = tokens.Token.PROPERTIES + [Property("data", ptype=unicode, required=True)]
 
@@ -48,13 +40,8 @@ class Example(command.CommandComponent):
     COMMAND = 'devel'
     SUBCOMMAND = 'example'
 
-    TEX_TRANSLATOR = None
-    HTML_TRANSLATOR = None
-
     def __init__(self, *args, **kwargs):
         command.CommandComponent.__init__(self, *args, **kwargs)
-        #self.__tex_translator = None
-        #self.__html_translator = None
 
     def init(self, *args, **kwargs):
         command.CommandComponent.init(self, *args, **kwargs)
@@ -110,8 +97,6 @@ class ComponentSettings(command.CommandComponent):
             grammer = self.reader.lexer.grammer('inline')
             self.reader.lexer.tokenize(caption, grammer, self.settings['caption'], match.line)#, line=self.line)
 
-        content = floats.Content(master, class_="card-content")
-
         try:
             mod = importlib.import_module(self.settings['module'])
         except ImportError:
@@ -135,7 +120,7 @@ class ComponentSettings(command.CommandComponent):
 
         rows = [[key, value[0], value[1]] for key, value in settings.iteritems()]
         tbl = table.builder(rows, headings=[u'Key', u'Default', u'Description'])
-        tbl.parent = content
+        tbl.parent = master
         return master
 
 class RenderExampleToken(components.RenderComponent):
