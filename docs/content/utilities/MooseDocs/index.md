@@ -31,6 +31,7 @@ used and promotes uniformity among the MooseDown files.
 | Extension | Description |
 | :- | :- |
 | [/core.md] | Basic markdown syntax such as code blocks, lists, and bold text. |
+| [/autolink.md] | Automatic linking across pages within markdown. |
 | [/command.md] | Basis for creating extensions that rely on commands (e.g., `!syntax list`). |
 | [/katex.md] | Enables use of KaTeX rendered equations. |
 | [/include.md] | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
