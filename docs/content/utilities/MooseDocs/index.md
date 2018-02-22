@@ -32,12 +32,19 @@ used and promotes uniformity among the MooseDown files.
 | :- | :- |
 | [/core.md] | Basic markdown syntax such as code blocks, lists, and bold text. |
 | [/autolink.md] | Automatic linking across pages within markdown. |
-| [/command.md] | Basis for creating extensions that rely on commands (e.g., `!syntax list`). |
 | [/katex.md] | Enables use of KaTeX rendered equations. |
+| [/listing.md] | Provides commands for including source code directly from the repository. |
 | [/include.md] | Allows for markdown files to be included, in similar fashion to the Latex \include command. |
 | [/alert.md] | Creates alert boxes to draw attention to content. |
 | [/media.md] | Extension for including images and movies. |
 | [/appsyntax.md] | Enables the use of MOOSE application syntax within markdown files. |
+
+| Extension | Description |
+| :- | :- |
+| [/command.md] | Basis for creating extensions that rely on commands (see [/appsyntax.md]). |
+| [/floats.md] | Tools for creating numbered and/or captioned content (see [/media.md]). |
+| [/devel.md] | Tools for documenting MooseDocs extensions. |
+
 
 [AST]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 
