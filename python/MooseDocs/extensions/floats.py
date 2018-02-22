@@ -17,7 +17,7 @@ class Float(tokens.Token):
     pass
 
 class Caption(tokens.CountToken):
-    PROPERTIES = tokens.CountToken.PROPERTIES + [Property("key", ptype=unicode)]
+    PROPERTIES = [Property("key", ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         tokens.CountToken.__init__(self, *args, **kwargs)
@@ -28,8 +28,8 @@ class Caption(tokens.CountToken):
                                        content=u'{} {}'.format(self.prefix.title(), self.number))
 
 class Modal(tokens.Token):
-    PROPERTIES =  tokens.Token.PROPERTIES + [Property("title", ptype=tokens.Token, required=True),
-                                             Property("bottom", ptype=bool, default=False)]
+    PROPERTIES = [Property("title", ptype=tokens.Token, required=True),
+                  Property("bottom", ptype=bool, default=False)]
 
 class FloatExtension(components.Extension):
 

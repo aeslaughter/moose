@@ -11,9 +11,9 @@ def make_extension(**kwargs):
     return AlertExtension(**kwargs)
 
 class AlertToken(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + [Property('brand', ptype=unicode, required=True),
-                                            Property('prefix', default=True, ptype=bool),
-                                            Property('title', ptype=tokens.Token)]
+    PROPERTIES = [Property('brand', ptype=unicode, required=True),
+                  Property('prefix', default=True, ptype=bool),
+                  Property('title', ptype=tokens.Token)]
 
 class AlertExtension(command.CommandExtension):
 

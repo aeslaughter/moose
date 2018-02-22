@@ -19,13 +19,13 @@ def make_extension(**kwargs):
     return MediaExtension(**kwargs)
 
 class Image(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + [Property('src', required=True, ptype=unicode)]
+    PROPERTIES = [Property('src', required=True, ptype=unicode)]
 
 class Video(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + [Property('src', required=True, ptype=unicode),
-                                            Property('controls', default=True, ptype=bool),
-                                            Property('autoplay', default=True, ptype=bool),
-                                            Property('loop', default=True, ptype=bool)]
+    PROPERTIES = [Property('src', required=True, ptype=unicode),
+                  Property('controls', default=True, ptype=bool),
+                  Property('autoplay', default=True, ptype=bool),
+                  Property('loop', default=True, ptype=bool)]
 
 class MediaExtension(command.CommandExtension):
     @staticmethod

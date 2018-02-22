@@ -50,6 +50,7 @@ class TestTokens(unittest.TestCase):
         token = tokens.Space()
         self.assertEqual(token.content, ' ')
         self.assertEqual(token.count, 1)
+        self.assertEqual(token.recursive, True) # tests token inheritance
 
         token = tokens.Space(count=42)
         self.assertEqual(token.content, ' ')

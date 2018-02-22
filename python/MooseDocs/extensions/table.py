@@ -6,26 +6,10 @@ from MooseDocs.extensions import core
 from MooseDocs.tree import html, latex, tokens
 from MooseDocs.tree.base import Property
 
-#from MooseDocs.extensions import floats
+#pylint: disable=doc-string
 
 def make_extension(**kwargs):
     return TableExtension(**kwargs)
-
-#class Table(object):
-#    def __init__
-
-
-class TableToken(tokens.Token):
-    PROPERTIES = [Property('headings', ptype=list),
-                  Property('rows', required=True, ptype=list),
-                  Property('format', ptype=list)]
-    def __init__(self, *args, **kwargs):
-        tokens.Token.__init__(self, *args, **kwargs)
-        #TODO: error check headings, data, and format
-
-        if self.format is None:
-            self.format = [self.LEFT] * len(self.rows[0])
-
 
 class Table(tokens.Token):
     pass
@@ -45,6 +29,7 @@ class TableItem(tokens.Token):
 class TableHeaderItem(TableItem):
     pass
 
+"""
 def builder(rows, headings=None):
     node = Table()
     if headings:
@@ -62,20 +47,18 @@ def builder(rows, headings=None):
             tokens.String(tr, content=unicode(d))
 
     return node
+"""
 
 class TableExtension(components.Extension): #TODO:  CommandMarkdownExtension
     def extend(self, reader, renderer):
-        #reader.addBlock(TableComponent(), "<MooseDocs.extensions.core.Paragraph")
         reader.addBlock(TableComponent(), "<Paragraph")
 
-        #print 'TableExtension::extend' #TODO: The devel Example extension calls this way too many times...
         renderer.add(Table, RenderTable())
         renderer.add(TableHead, RenderTag('thead'))
         renderer.add(TableBody, RenderTag('tbody'))
         renderer.add(TableRow, RenderTag('tr'))
         renderer.add(TableHeaderItem, RenderTag('th'))
         renderer.add(TableItem, RenderTag('td'))
-
 
 class TableComponent(components.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})^(?P<table>\|.*?)(?=\Z|\n{2,})', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
@@ -89,9 +72,6 @@ class TableComponent(components.TokenComponent):
 
         content = match['table']
         table = Table(parent)
-
-
-
         head = None
         body = None
         form = None
@@ -116,11 +96,10 @@ class TableComponent(components.TokenComponent):
                 #print string, form[i]
 
         if head:
-
             row = TableRow(TableHead(table))
             for i, h in enumerate(head):
                 item = TableHeaderItem(row, format=form[i])
-                self.reader.lexer.tokenize(item, grammer, h, match.line) #TODO: add line number
+                self.reader.parse(item, h, MooseDocs.INLINE)
 
 
         for line in body.splitlines():
@@ -128,7 +107,7 @@ class TableComponent(components.TokenComponent):
                 row = TableRow(TableBody(table))
                 for i, content in enumerate([item.strip() for item in line.split('|') if item]):
                     item = TableItem(row, format=form[i])
-                    self.reader.lexer.tokenize(item, grammer, content, match.line) #TODO: add line number
+                    self.reader.parse(item, content, MooseDocs.INLINE)
 
 
 

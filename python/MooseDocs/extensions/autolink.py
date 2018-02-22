@@ -106,18 +106,13 @@ class AutoLinkMixin(object):
                     return node
 
 class AutoShortcutLink(tokens.ShortcutLink):
-    """ShortcutLink token for linking across pages."""
-    PROPERTIES = tokens.ShortcutLink.PROPERTIES + [Property('header', default=False),
-                                                   Property('bookmark', ptype=unicode)]
+    PROPERTIES = [Property('header', default=False),
+                  Property('bookmark', ptype=unicode)]
+
 class AutoLink(tokens.Link):
-    """Link token for linking across pages."""
-    PROPERTIES = tokens.Link.PROPERTIES + [Property('bookmark', ptype=unicode)]
+    PROPERTIES = [Property('bookmark', ptype=unicode)]
 
 class AutoShortcutLinkComponent(core.ShortcutLink):
-    """
-    Creates an AutoShortcutLink when *.md is detected, otherwise a core.ShortcutLink token.
-    """
-
     def createToken(self, info, parent): #pylint: disable=doc-string
         match = LINK_RE.search(info['key'])
         if match and (parent.root.page is not None):

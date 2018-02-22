@@ -18,7 +18,7 @@ def make_extension(**kwargs):
     return DevelExtension(**kwargs)
 
 class ExampleToken(tokens.Token):
-   PROPERTIES = tokens.Token.PROPERTIES + [Property("data", ptype=unicode, required=True)]
+   PROPERTIES = [Property("data", ptype=unicode, required=True)]
 
 
 class DevelExtension(command.CommandExtension):

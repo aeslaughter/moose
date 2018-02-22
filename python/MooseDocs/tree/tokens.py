@@ -26,7 +26,6 @@ class Token(NodeBase):
 
     def __init__(self, parent=None, name=None, **kwargs):
         self._info = kwargs.pop('info', None)
-        #self.__page = kwargs.pop('page', None)
         super(Token, self).__init__(parent, name, **kwargs)
         self.name = self.__class__.__name__
         if self.string is not None: #pylint: disable=no-member
@@ -46,14 +45,14 @@ class Token(NodeBase):
             #    child.info = value
 
 #TODO: create class Root that requies page
-#TODO: info should be a Property
+#TODO: info should be a Property, base should check if property/setter exists before it creates one
 
 class CountToken(Token):
     """
     Token that maintains counts based on prefix, the Translator clears the counts prior to building.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('prefix', ptype=unicode),
-                                     Property('number', ptype=int)]
+    PROPERTIES = [Property('prefix', ptype=unicode),
+                  Property('number', ptype=int)]
     COUNTS = collections.defaultdict(int)
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
@@ -69,13 +68,13 @@ class String(Token):
     """
     Base class for all tokens meant to contain characters.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('content', ptype=unicode)]
+    PROPERTIES = [Property('content', ptype=unicode)]
 
 class Exception(Token):
     """
     When the lexer object fails create a token, an error token will be created.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('traceback', required=False, ptype=str)]
+    PROPERTIES = [Property('traceback', required=False, ptype=str)]
 
 class Word(String):
     """
@@ -87,7 +86,7 @@ class Space(String):
     """
     Space token that can define the number of space via count property.
     """
-    PROPERTIES = String.PROPERTIES + [Property('count', ptype=int, default=1)]
+    PROPERTIES = [Property('count', ptype=int, default=1)]
     def __init__(self, *args, **kwargs):
         super(Space, self).__init__(*args, **kwargs)
         self.content = u' '
@@ -116,15 +115,15 @@ class Code(Token):
     """
     Code content (i.e., Monospace content)
     """
-    PROPERTIES = Token.PROPERTIES + [Property('code', ptype=unicode, required=True),
-                                     Property('language', ptype=unicode, default=u'text'),
-                                     Property('escape', ptype=bool, default=True)]
+    PROPERTIES = [Property('code', ptype=unicode, required=True),
+                  Property('language', ptype=unicode, default=u'text'),
+                  Property('escape', ptype=bool, default=True)]
 
 class Heading(Token):
     """
     Section headings.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('level', ptype=int)]
+    PROPERTIES = [Property('level', ptype=int)]
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
 
@@ -149,7 +148,7 @@ class OrderedList(Token):
     """
     Token for a numbered list.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('start', default=1, ptype=int)]
+    PROPERTIES = [Property('start', default=1, ptype=int)]
 
 class ListItem(Token):
     """
@@ -164,8 +163,8 @@ class Link(Token):
     """
     Token for urls.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('url', required=True, ptype=unicode),
-                                     Property('tooltip', default=True)]
+    PROPERTIES = [Property('url', required=True, ptype=unicode),
+                  Property('tooltip', default=True)]
 
 class Shortcut(Token):
     """
@@ -187,10 +186,10 @@ class Shortcut(Token):
         tokens[tuple]: (Optional) When present the tokens provided are rendered and used for the
                        link text, this option may not be used with 'content'.
     """
-    PROPERTIES = Token.PROPERTIES + [Property('key', required=True, ptype=unicode),
-                                     Property('link', required=True, ptype=unicode),
-                                     Property('content', required=False, ptype=unicode),
-                                     Property('token', required=False, ptype=Token)]
+    PROPERTIES = [Property('key', required=True, ptype=unicode),
+                  Property('link', required=True, ptype=unicode),
+                  Property('content', required=False, ptype=unicode),
+                  Property('token', required=False, ptype=Token)]
 
     def __init__(self, *args, **kwargs):
         Token.__init__(self, *args, **kwargs)
@@ -199,10 +198,10 @@ class Shortcut(Token):
             raise ValueError("Both the 'content' and 'token' properties may not be set.")
 
 class ShortcutLink(Token):
-    PROPERTIES = Token.PROPERTIES + [Property('key', ptype=unicode, required=True)]
+    PROPERTIES = [Property('key', ptype=unicode, required=True)]
 
 class Monospace(Token):
-    PROPERTIES = Token.PROPERTIES + [Property('code', ptype=unicode, required=True)]
+    PROPERTIES = [Property('code', ptype=unicode, required=True)]
 
 class Strong(Token):
     pass
@@ -226,9 +225,9 @@ class Subscript(Token):
     pass
 
 class Label(Token):
-    PROPERTIES = Token.PROPERTIES + [Property('text', required=True, ptype=unicode)]
+    PROPERTIES = [Property('text', required=True, ptype=unicode)]
 
 class Float(Token):
-    PROPERTIES = Token.PROPERTIES + [Property('id', ptype=str),
-                                     Property('caption', ptype=unicode),
-                                     Property('label', ptype=str, required=True)]
+    PROPERTIES = [Property('id', ptype=str),
+                  Property('caption', ptype=unicode),
+                  Property('label', ptype=str, required=True)]

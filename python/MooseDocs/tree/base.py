@@ -1,7 +1,9 @@
 """
 Base classes for tree objects in MooseDocs.
 """
+import inspect
 import logging
+
 import anytree
 
 import mooseutils
@@ -67,13 +69,15 @@ class NodeBase(anytree.NodeMixin):
     """
     Base class for tree nodes that accepts defined properties and arbitrary attributes.
 
-    Well defined properties may be created using the class PROPERTIES variable. For example,
+    Properties, in the python sense, may be created using the class PROPERTIES variable. For example,
 
         class ExampleNode(NodeBase):
             PROPERTIES = Property('foo', required=True)
 
         node = ExampleNode(foo=42)
         node.foo = 43
+
+    The PROPERTIES from all parent classes are automatically retrieved.
 
     Additionally, arbitrary attributes can be stored on creation or by using the dict() style
     set/get methods. By convention any leading or trailing underscores used in defining the
@@ -89,10 +93,15 @@ class NodeBase(anytree.NodeMixin):
         kwargs: (Optional) Any key, value pairs supplied are stored as properties or attributes.
     """
     COLOR = 'RESET'
-    PROPERTIES = [] # this gets set by the @properties decorator
+    PROPERTIES = []
 
     def __init__(self, parent=None, name=None, **kwargs):
         anytree.NodeMixin.__init__(self)
+
+        # Create a set of unique properties from all classes in the inheritance chain
+        properties = set()
+        for cls in inspect.getmro(type(self)):
+            properties.update(getattr(cls, 'PROPERTIES', []))
 
         # anytree.NodeMixin properties
         self.parent = parent
@@ -107,7 +116,7 @@ class NodeBase(anytree.NodeMixin):
             raise TypeError("The class attribute 'PROPERTIES' must be a list.")
 
         # Apply the default values
-        for prop in self.PROPERTIES:
+        for prop in properties:
             if not isinstance(prop, Property):
                 msg = "The supplied property must be a Property object, but {} provided."
                 raise TypeError(msg.format(type(prop).__name__))
@@ -125,7 +134,7 @@ class NodeBase(anytree.NodeMixin):
                 self.__attributes[key.strip('_')] = value
 
         # Check required
-        for prop in self.PROPERTIES:
+        for prop in properties:
             if prop.required and self.__properties[prop.name] is None:
                 raise IOError("The property '{}' is required.".format(prop.name))
 

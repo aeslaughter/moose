@@ -13,8 +13,7 @@ from MooseDocs.tree.base import Property
 #pylint: disable=missing-docstring,unused-variable
 
 class IncludeToken(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + \
-                 [Property("include", ptype=page.MarkdownNode, required=True)]
+    PROPERTIES = [Property("include", ptype=page.MarkdownNode, required=True)]
 
 def make_extension(**kwargs):
     return IncludeExtension(**kwargs)

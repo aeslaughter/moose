@@ -83,8 +83,7 @@ class SQAExtension(command.CommandExtension):
 
 
 class SQADocumentItem(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + \
-                 [tokens.Property('key', ptype=unicode, required=True)] # TODO: create single list of properties automatically
+    PROPERTIES = [tokens.Property('key', ptype=unicode, required=True)]
 
 class SQATemplateItem(tokens.Token):
     PROPERTIES = [tokens.Property('key', ptype=unicode, required=True),

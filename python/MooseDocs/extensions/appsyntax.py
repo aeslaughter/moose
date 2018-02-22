@@ -25,16 +25,14 @@ def make_extension(**kwargs):
     return AppSyntaxExtension(**kwargs)
 
 class InputParametersToken(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + \
-                 [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True)]
+    PROPERTIES = [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True)]
 
 class AppSyntaxDisabledToken(tokens.Token):
     pass
 
 
 class SyntaxToken(tokens.Token):
-    PROPERTIES = tokens.Token.PROPERTIES + \
-                 [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True),
+    PROPERTIES = [tokens.Property('syntax', ptype=syntax.SyntaxNodeBase, required=True),
                   tokens.Property('actions', default=True, ptype=bool),
                   tokens.Property('objects', default=True, ptype=bool),
                   tokens.Property('subsystems', default=True, ptype=bool),

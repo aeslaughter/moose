@@ -15,7 +15,7 @@ class LatexBlockEquation(tokens.CountToken):
     """
     Token for LaTeX block level equations (e.g., \begin{equation} ... \end{equation}.
     """
-    PROPERTIES = tokens.CountToken.PROPERTIES + [Property('tex', required=True, ptype=str)]
+    PROPERTIES = [Property('tex', required=True, ptype=str)]
 
 class LatexInlineEquation(LatexBlockEquation):
     """Token for inline equations."""
