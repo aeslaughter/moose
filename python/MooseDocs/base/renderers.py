@@ -249,7 +249,7 @@ class MaterializeRenderer(HTMLRenderer):
         container = html.Tag(main, 'div', class_="container")
 
         if self['navigation'] and root.page:
-            self.addNavigation(header, root.page)
+            self.addNavigation(self.getConfig(), header, root.page)
 
         # Breadcrumbs
         if self['breadcrumbs'] and root.page:
@@ -267,14 +267,13 @@ class MaterializeRenderer(HTMLRenderer):
 
         return root
 
-    def addNavigation(self, header, root):
+    @staticmethod
+    def addNavigation(config, header, root):
         """
 
         """
 
-        config = self.getConfig()
         navigation = config['navigation']
-
 
         nav = html.Tag(header, 'nav')
         div = html.Tag(nav, 'div', class_='nav-wrapper container')
@@ -316,12 +315,6 @@ class MaterializeRenderer(HTMLRenderer):
             elif 'gitlab' in repo:
                 img = root.findall('gitlab-logo.png')
                 html.Tag(a, 'img', src=img[0].relative(root), class_='gitlab-logo')
-
-
-
-
-
-
 
     @staticmethod
     def addBreadcrumbs(root):
