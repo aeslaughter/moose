@@ -33,29 +33,26 @@ DEFAULT_TRANSLATOR = 'MooseDocs.base.Translator'
 
 def load_config(filename):
     """
-    Read the config.hit file andb create the Translator object.
+    Read the config.yml file and create the Translator object.
     """
     config = mooseutils.yaml_load(filename)
 
     extensions = _yaml_load_extensions(config)
     reader = _yaml_load_object('Reader', config, DEFAULT_READER)
-    print extensions
-
-
-    """
-    node = mooseutils.hit_load(filename)
-    extensions = _hit_load_extensions(node.find('Extensions'), filename)
-    reader = _hit_load_object(node.find('Reader'), filename, MooseDocs.base.MarkdownReader)
-    renderer = _hit_load_object(node.find('Renderer'), filename, MooseDocs.base.MaterializeRenderer)
-    translator = _hit_load_object(node.find('Translator'), filename, MooseDocs.base.Translator,
-                             reader, renderer, extensions)
-    content = _hit_load_content(node.find('Content'), filename)
-
+    renderer = _yaml_load_object('Renderer', config, DEFAULT_RENDERER)
+    translator = _yaml_load_object('Translator', config, DEFAULT_TRANSLATOR,
+                                   reader, renderer, extensions)
+    content = _yaml_load_content(config)
     return translator, content
-    """
+
 def load_extensions(ext_list, ext_configs=None):
     """
     Convert the supplied list into MooseDocs extension objects by calling the make_extension method.
+
+    Inputs:
+        ext_list[list]: List of extension modules or module names.
+        ext_configs[dict]: A dict() connecting configurations to the module, the key is the
+                           complete module name.
     """
     if ext_configs is None:
         ext_configs = dict()
@@ -75,9 +72,8 @@ def load_extensions(ext_list, ext_configs=None):
     return extensions
 
 def _get_module(ext):
-    """
-    Helper for loading a module.
-    """
+    """Helper for loading a module."""
+
     if isinstance(ext, types.ModuleType):
         name = ext.__name__
     elif isinstance(ext, str):
@@ -95,12 +91,7 @@ def _get_module(ext):
     return name, ext
 
 def _yaml_load_extensions(config):
-    """
-    Load extensions from the Extensions block of the YAML configuration file.
-
-    Inputs:
-        config[dict]: Complete YAML dict() object.
-    """
+    """Load extensions from the Extensions block of the YAML configuration file."""
 
     # Extensions block
     options = config.get('Extensions', dict())
@@ -113,10 +104,10 @@ def _yaml_load_extensions(config):
             ext_configs[ext] = dict()
 
     # Get configuration items from configuration
-    for key, config in options.iteritems():
-        if 'type' in config:
-            ext_type = config.pop('type')
-            ext_configs[ext_type].update(config)
+    for key, value in options.iteritems():
+        if 'type' in value:
+            ext_type = value.pop('type')
+            ext_configs[ext_type].update(value)
             options.pop(key)
 
     # Update configure with common parameters TODO: make this work
@@ -125,72 +116,28 @@ def _yaml_load_extensions(config):
 
     return load_extensions(ext_configs.keys(), ext_configs)
 
-def _yaml_load_object(node, filename, default, *args):
-    """
-    Helper for loading MooseDocs objects: Reader, Renderer, Translator
-    """
+def _yaml_load_object(name, config, default, *args):
+    """Helper for loading MooseDocs objects: Reader, Renderer, Translator"""
 
-    if node:
-        if 'type' not in node:
-            msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter, " \
-                  "using the default %s."
-            LOG.error(msg, filename, node.line, node.fullpath, type(default).__name__)
-        else:
-            config = {k:v for k, v in node.iterparams()}
-            config.pop('type')
-            try:
-                return eval(node['type'])(*args, **config)
-            except NameError:
-                msg = "ERROR\n%s:%s\nThe parameter '%s' must contain a valid object name, using " \
-                      "the default %s."
-                LOG.error(msg, filename, node.line, node.fullpath)
+    options = config.get(name, dict())
+    obj_type = options.pop('type', default)
+    try:
+        return eval(obj_type)(*args, **options)
+    except NameError:
+        msg = "ERROR: The %s block must contain a valid object name."
+        LOG.error(msg, name)
 
-    return default(*args)
+def _yaml_load_content(config):
+    """Load the 'Content' section."""
 
-
-
-def _hit_load_object(node, filename, default, *args):
-    """
-    Helper for loading MooseDocs objects: Reader, Renderer, Translator
-    """
-
-    if node:
-        if 'type' not in node:
-            msg = "ERROR\n%s:%s\nThe section '%s' must contain a 'type' parameter, " \
-                  "using the default %s."
-            LOG.error(msg, filename, node.line, node.fullpath, type(default).__name__)
-        else:
-            config = {k:v for k, v in node.iterparams()}
-            config.pop('type')
-            try:
-                return eval(node['type'])(*args, **config)
-            except NameError:
-                msg = "ERROR\n%s:%s\nThe parameter '%s' must contain a valid object name, using " \
-                      "the default %s."
-                LOG.error(msg, filename, node.line, node.fullpath)
-
-    return default(*args)
-
-def _hit_load_content(node, filename):
-    """
-    Load the [Content] block from the config.hit file.
-    """
-    if not node:
-        msg = "The [Content] section is required within the configure file {}."
-        raise KeyError(msg.format(filename))
+    options = config.get('Content', None)
+    if options is None:
+        msg = "The 'Content' section is required."
+        raise exceptions.MooseDocsException(msg)
 
     items = []
-    for child in node:
-        content = child['content'].split() if 'content' in child else []
-        items.append(dict(root_dir=child['root_dir'], content=content))
+    for key, value in options.iteritems():
+        content = value.get('content', [])
+        items.append(dict(root_dir=value['root_dir'], content=content))
 
     return MooseDocs.tree.build_page_tree.doc_tree(items)
-
-if __name__ == '__main__':
-    logging.basicConfig()
-    filename = 'config.yml'
-    load_config(filename)
-    #out = mooseutils.yaml_load(filename)
-
-    #print out['Renderer']['navigation'].keys()
-    #translator, content = load_config(filename)

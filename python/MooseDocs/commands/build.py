@@ -36,7 +36,7 @@ def main(options):
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
     #logging.basicConfig(level=logging.DEBUG)
-    config_file = 'config.hit'
+    config_file = 'config.yml'
 
     # TODO: add this to config.hit and command line
     #LOG.setLevel(logging.DEBUG)
@@ -86,9 +86,7 @@ def main(options):
             if isinstance(node, MooseDocs.tree.page.MarkdownNode):
                 node.render()
 
-
         for node in anytree.PreOrderIter(root):
             node.build(reset=False) #TODO: This probably should just be write()
-
 
         server.serve(root=destination, port=8000)

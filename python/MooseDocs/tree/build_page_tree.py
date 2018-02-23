@@ -132,7 +132,7 @@ def doc_tree(items):
     for value in items:
 
         if ('root_dir' not in value) or ('content' not in value):
-            LOG.error('The suplied items must be a list of dict items, each with a "root_dir" and '
+            LOG.error('The supplied items must be a list of dict items, each with a "root_dir" and '
                       '"content" entry.')
 
         root = os.path.join(MooseDocs.ROOT_DIR, value['root_dir'])

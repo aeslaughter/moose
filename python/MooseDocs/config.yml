@@ -1,7 +1,7 @@
 Content:
     framework:
         root_dir: docs/content
-        include:
+        content:
             - utilities/MooseDocs/**
             - media/**
             - contrib/**
@@ -12,6 +12,9 @@ Reader:
 
 Renderer:
     type: MooseDocs.base.MaterializeRenderer
+    repo: https://github.com/idaholab/moose
+    name: MOOSE
+    home: http://mooseframework.org/moose
     navigation:
         Getting Started:
             Mac OS: docs/content/getting_started/installation/mac_os.md

@@ -5,6 +5,8 @@ import os
 import re
 import logging
 import traceback
+import uuid
+
 import anytree
 
 import MooseDocs
@@ -171,6 +173,9 @@ class MaterializeRenderer(HTMLRenderer):
                                           "closed initially. The 'sections' setting must be " \
                                           "True for this to operate.")
         config['navigation'] = (None, "Top bar website navigation items.")
+        config['repo'] = (None, "The source code repository.")
+        config['name'] = (None, "The name of the website (e.g., MOOSE)")
+        config['home'] = (None, "The homepage for the website.")
         return config
 
     def update(self, **kwargs):
@@ -235,7 +240,16 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src="/js/init.js")
 
         body = html.Tag(root, 'body')
-        container = html.Tag(body, 'div', class_="container")
+        wrap = html.Tag(body, 'div', class_='page-wrap')
+
+        header = html.Tag(wrap, 'header')
+        main = html.Tag(wrap, 'main', class_='main')
+        footer = html.Tag(wrap, 'footer')
+
+        container = html.Tag(main, 'div', class_="container")
+
+        if self['navigation'] and root.page:
+            self.addNavigation(header, root.page)
 
         # Breadcrumbs
         if self['breadcrumbs'] and root.page:
@@ -243,7 +257,7 @@ class MaterializeRenderer(HTMLRenderer):
 
         # Content
         row = html.Tag(container, 'div', class_="row")
-        #TODO add scroll spy (scoll-name=False) at top of index.mdg
+        #TODO add scroll spy (scoll-name=False) at top of index.md
         col = html.Tag(row, 'div', class_="moose-content col s12 m12 l10")
         HTMLRenderer.process(self, col, ast)
 
@@ -253,10 +267,66 @@ class MaterializeRenderer(HTMLRenderer):
 
         return root
 
+    def addNavigation(self, header, root):
+        """
+
+        """
+
+        config = self.getConfig()
+        navigation = config['navigation']
+
+
+        nav = html.Tag(header, 'nav')
+        div = html.Tag(nav, 'div', class_='nav-wrapper container')
+
+        name = config.get('name', None)
+        if name:
+            logo = html.Tag(div, 'a',
+                            href=unicode(config.get('home', '#!')),
+                            string=unicode(config['name']))
+
+        top_ul = html.Tag(div, 'ul', id="nav-mobile", class_="right hide-on-med-and-down")
+        for key1, value1 in navigation.iteritems():
+            id_ = uuid.uuid4()
+
+            top_li = html.Tag(top_ul, 'li')
+            a = html.Tag(top_li, 'a', class_="dropdown-button", href="#!", string=unicode(key1))
+            a['data-activates'] = id_
+            i = html.Tag(a, "i", class_='material-icons right', string=u'arrow_drop_down')
+
+
+            bot_ul = html.Tag(nav, 'ul', id_=id_, class_='dropdown-content')
+            for key2, value2 in value1.iteritems():
+                bot_li = html.Tag(bot_ul, 'li')
+                a = html.Tag(bot_li, 'a', href="#!", string=unicode(key2))
+
+        repo = config.get('repo', None)
+        if repo:
+
+            li = html.Tag(top_ul, 'li')
+            a = html.Tag(li, 'a', href=repo)
+
+            if 'github' in repo:
+                img0 = root.findall('github-logo.png')
+                img1 = root.findall('github-mark.png')
+
+                html.Tag(a, 'img', src=img0[0].relative(root), class_='github-mark')
+                html.Tag(a, 'img', src=img1[0].relative(root), class_='github-logo')
+
+            elif 'gitlab' in repo:
+                img = root.findall('gitlab-logo.png')
+                html.Tag(a, 'img', src=img[0].relative(root), class_='gitlab-logo')
+
+
+
+
+
+
+
     @staticmethod
     def addBreadcrumbs(root):
         """
-        Inserts breacrumb links at the top of the page.
+        Inserts breadcrumb links at the top of the page.
 
         Inputs:
             root[tree.html.Tag]: The tag to which the breadcrumbs should be inserted.

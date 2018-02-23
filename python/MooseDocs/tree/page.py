@@ -79,6 +79,7 @@ class LocationNodeBase(PageNodeBase):
         return nodes
 
     def relative(self, other):
+        """ Location of this page related to the other page."""
         return os.path.relpath(self.local, os.path.dirname(other.local))
 
     def console(self):
