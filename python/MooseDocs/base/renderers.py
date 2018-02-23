@@ -297,7 +297,9 @@ class MaterializeRenderer(HTMLRenderer):
             bot_ul = html.Tag(nav, 'ul', id_=id_, class_='dropdown-content')
             for key2, value2 in value1.iteritems():
                 bot_li = html.Tag(bot_ul, 'li')
-                a = html.Tag(bot_li, 'a', href="#!", string=unicode(key2))
+                node = root.findall(value2)
+                href = node[0].relative(root) if node else '#!' #TODO: ADD ERROR
+                a = html.Tag(bot_li, 'a', href=href, string=unicode(key2))
 
         repo = config.get('repo', None)
         if repo:

@@ -51,6 +51,10 @@ class LocationNodeBase(PageNodeBase):
         path = os.path.join(self.parent.local, self.name) if self.parent else self.name
         return path
 
+   # @property
+   # def destination(self):
+   #     return self.local
+
     def findall(self, name, maxcount=None, mincount=None, exc=exceptions.MooseDocsException):
 
         if maxcount and not isinstance(maxcount, int):
@@ -155,11 +159,16 @@ class MarkdownNode(FileNode):
         #self._html = self.translator.render(self._ast)
         #self._modified_time = mode
 
+    @property
+    def destination(self):
+        return os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
+
+    def relative(self, other):
+        """ Location of this page related to the other page."""
+        return os.path.relpath(self.destination, os.path.dirname(other.destination))
+
     def write(self):
-        dst = os.path.join(self.base, self.local).replace('.md', '.html')  #TODO: MD/HTML should be set from Renderer
+        dst = self.destination
         LOG.debug('Writing %s -> %s', self.source, dst)
-        #LOG.debug('%s -> %s', self.source, dst)
         with codecs.open(dst, 'w', encoding='utf-8') as fid:
             fid.write(self._html.write())
-
-        #return ast, html
