@@ -17,6 +17,18 @@
   #[]
 []
 
+[Reader]
+  type = MooseDocs.base.MarkdownReader
+[]
+
+[Renderer]
+  type = MooseDocs.base.MaterializeRenderer
+  [Navigation]
+    page = Getting Started/Mac OS/mac_os.md
+
+  []
+[]
+
 [Extensions]
   [appsyntax]
     type = MooseDocs.extensions.appsyntax

@@ -14,20 +14,21 @@
 ####################################################################################################
 #pylint: enable=missing-docstring
 import os
+import collections
 import yaml
 
-class IncludeLoader(yaml.Loader):
+class Loader(yaml.Loader):
     """
-    A custom loader that handles nested includes. The nested includes should use absolute paths
-    from the origin yaml file.
+    A custom loader that handles nested includes. The nested includes should use absolute paths from
+    the origin yaml file.
 
     http://stackoverflow.com/questions/528281/how-can-i-include-an-yaml-file-inside-another
     """
     def __init__(self, stream):
         self._filename = stream.name
         self._root = os.path.dirname(self._filename)
-        self.add_constructor('!include', IncludeLoader.include)
-        super(IncludeLoader, self).__init__(stream)
+        self.add_constructor('!include', Loader.include)
+        super(Loader, self).__init__(stream)
 
     def include(self, node):
         """
@@ -52,9 +53,24 @@ class IncludeLoader(yaml.Loader):
          node.line = line + 1
          return node
 
-def yaml_load(filename, loader=IncludeLoader):
+"""
+Use OrderedDict for storing data.
+https://stackoverflow.com/a/21048064/1088076
+"""
+def dict_representer(dumper, data):
+    return dumper.represent_dict(data.iteritems())
+
+def dict_constructor(loader, node):
+    return collections.OrderedDict(loader.construct_pairs(node))
+
+_mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+yaml.add_representer(collections.OrderedDict, dict_representer)
+yaml.add_constructor(_mapping_tag, dict_constructor)
+
+def yaml_load(filename, loader=Loader):
     """
-    Load a YAML file capable of including other YAML files.
+    Load a YAML file capable of including other YAML files and uses OrderedDict.
 
     Args:
       filename[str]: The name to the file to load, relative to the git root directory

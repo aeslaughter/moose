@@ -345,13 +345,17 @@ class RenderInputParametersToken(components.RenderComponent):
                 if group and group not in groups:
                     groups[group] = dict()
 
+        # Populate the parameter lists by group
         for param in token.syntax.parameters.itervalues() or []:
 
+            # Do nothing if the parameter is hidden or not shown
             name = param['name']
-
-            if (name == 'type') or (token.hide and name in token.hide) or (token.show and name not in token.show):
+            if (name == 'type') or \
+               (token.hide and name in token.hide) or \
+               (token.show and name not in token.show):
                 continue
 
+            # Handle the 'ungroup' parameters
             group = param['group_name']
             if not group and param['required']:
                 group = 'Required'
@@ -361,9 +365,11 @@ class RenderInputParametersToken(components.RenderComponent):
             if group in groups:
                 groups[group][name] = param
 
+        # Add the heading
         if token.heading:
             self.translator.renderer.process(parent, token.heading)
 
+        # Build the lists
         for group, params in groups.iteritems():
 
             if not params:
@@ -394,8 +400,6 @@ def _insert_parameter(parent, name, param):
     header = html.Tag(li, 'div', class_='collapsible-header')
     body = html.Tag(li, 'div', class_='collapsible-body')
 
-
-
     html.Tag(header, 'span', class_='moose-parameter-name', string=name)
     default = _format_default(param)
     if default:
@@ -410,7 +414,6 @@ def _insert_parameter(parent, name, param):
     html.Tag(p, 'span', string=u'C++ Type:')
     html.String(p, content=cpp_type)
 
-
     p = html.Tag(body, 'p', class_='moose-parameter-description')
 
     desc = param['description']
@@ -418,8 +421,6 @@ def _insert_parameter(parent, name, param):
         html.Tag(header, 'span', class_='moose-parameter-header-description', string=unicode(desc))
         html.Tag(p, 'span', string=u'Description:')
         html.String(p, content=unicode(desc))
-
-
 
 def _format_default(parameter):
     """

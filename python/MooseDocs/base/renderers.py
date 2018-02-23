@@ -170,7 +170,7 @@ class MaterializeRenderer(HTMLRenderer):
                                           "should be collapsible, if so should it be open or " \
                                           "closed initially. The 'sections' setting must be " \
                                           "True for this to operate.")
-        config['navigation'] = (None, '...')
+        config['navigation'] = (None, "Top bar website navigation items.")
         return config
 
     def update(self, **kwargs):

@@ -28,6 +28,12 @@ class ConfigObject(object):
             raise exceptions.MooseDocsException(msg, type(self.__config))
         self.update(**kwargs)
 
+    def hitUpdate(self, hitnode):
+        """
+        Given a mooseutils HitNode object, update the configuration.
+        """
+        pass
+
     def update(self, **kwargs):
         """
         Update the configuration with the supplied key-value pairs.
