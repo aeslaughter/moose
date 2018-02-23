@@ -301,11 +301,12 @@ class MaterializeRenderer(HTMLRenderer):
                 href = node[0].relative(root) if node else '#!' #TODO: ADD ERROR
                 a = html.Tag(bot_li, 'a', href=href, string=unicode(key2))
 
+
         repo = config.get('repo', None)
         if repo:
 
-            li = html.Tag(top_ul, 'li')
-            a = html.Tag(li, 'a', href=repo)
+            #li = html.Tag(top_ul, 'li')
+            a = html.Tag(div, 'a', href=repo)
 
             if 'github' in repo:
                 img0 = root.findall('github-logo.png')
