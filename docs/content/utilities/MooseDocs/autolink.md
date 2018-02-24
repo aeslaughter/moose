@@ -45,3 +45,8 @@ optionally the page heading, see [example-shortcut-bookmark-link].
                caption=Example of a shortcut linke that contains a markdown file including an html
                        style bookmark.
 [core.md#shortcut-link]
+
+
+[/Diffusion.C]
+
+[Foo](/Diffusion.C)

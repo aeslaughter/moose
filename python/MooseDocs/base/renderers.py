@@ -220,11 +220,43 @@ class MaterializeRenderer(HTMLRenderer):
         root.page = ast.page #meta data
         html.Tag(root, 'html')
 
-        # <head>
         head = html.Tag(root, 'head')
+        body = html.Tag(root, 'body')
+        wrap = html.Tag(body, 'div', class_='page-wrap')
+
+        header = html.Tag(wrap, 'header')
+        nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
+
+        main = html.Tag(wrap, 'main', class_='main')
+        footer = html.Tag(wrap, 'footer')
+
+        container = html.Tag(main, 'div', class_="container")
+
+        # <head> content
+        self.addHead(head, root.page)
+        self.addRepo(nav, root.page)
+        self.addName(nav, root.page)
+        self.addNavigation(nav, root.page)
+        self.addBreadcrumbs(container, root.page)
+
+        # Content
+        row = html.Tag(container, 'div', class_="row")
+        #TODO add scroll spy (scoll-name=False) at top of index.md
+        col = html.Tag(row, 'div', class_="moose-content col s12 m12 l10")
+        HTMLRenderer.process(self, col, ast)
+
+        # Sections
+        self.addSections(col, root.page)
+
+        return root
+
+    def addHead(self, head, root_page):
+        """Add content to <head> element with the required CSS/JS for materialize."""
+
         html.Tag(head, 'meta', close=False, charset="UTF-8")
         html.Tag(head, 'link', ref="https://fonts.googleapis.com/icon?family=Material+Icons",
-                 rel="stylesheet")
+                 rel="stylesheet") #TODO: Get local versions again...
+
         html.Tag(head, 'link', href="/contrib/materialize/materialize.min.css", type="text/css",
                  rel="stylesheet", media="screen,projection")
         html.Tag(head, 'link', href="/contrib/katex/katex.min.css", type="text/css", rel="stylesheet")
@@ -234,57 +266,43 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src="/contrib/jquery/jquery.min.js")
         html.Tag(head, 'script', type="text/javascript",
                  src="/contrib/materialize/materialize.min.js")
+
         html.Tag(head, 'script', type="text/javascript", src="/contrib/clipboard/clipboard.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/prism/prism.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/js/init.js")
 
-        body = html.Tag(root, 'body')
-        wrap = html.Tag(body, 'div', class_='page-wrap')
 
-        header = html.Tag(wrap, 'header')
-        main = html.Tag(wrap, 'main', class_='main')
-        footer = html.Tag(wrap, 'footer')
+    def addRepo(self, nav, root_page):
 
-        container = html.Tag(main, 'div', class_="container")
+        repo = self.get('repo', None)
+        if (repo is None) or (root_page is None):
+            return
 
-        if self['navigation'] and root.page:
-            self.addNavigation(self.getConfig(), header, root.page)
+        a = html.Tag(nav, 'a', href=repo, class_='right')
 
-        # Breadcrumbs
-        if self['breadcrumbs'] and root.page:
-            self.addBreadcrumbs(container)
+        if 'github' in repo:
+            img0 = root_page.findall('github-logo.png')
+            img1 = root_page.findall('github-mark.png')
 
-        # Content
-        row = html.Tag(container, 'div', class_="row")
-        #TODO add scroll spy (scoll-name=False) at top of index.md
-        col = html.Tag(row, 'div', class_="moose-content col s12 m12 l10")
-        HTMLRenderer.process(self, col, ast)
+            html.Tag(a, 'img', src=img0[0].relative(root_page), class_='github-mark')
+            html.Tag(a, 'img', src=img1[0].relative(root_page), class_='github-logo')
 
-        # Sections
-        if self['sections']:
-            self.addSections(col, self['collapsible-sections'])
+        elif 'gitlab' in repo:
+            img = root.findall('gitlab-logo.png')
+            html.Tag(a, 'img', src=img[0].relative(root_page), class_='gitlab-logo')
 
-        return root
-
-    @staticmethod
-    def addNavigation(config, header, root):
+    def addNavigation(self, nav, root_page):
         """
 
         """
 
-        navigation = config['navigation']
+        navigation = self.get('navigation', None)
+        if (navigation is None) or (root_page is None):
+            return
 
-        nav = html.Tag(header, 'nav')
-        div = html.Tag(nav, 'div', class_='nav-wrapper container')
 
-        name = config.get('name', None)
-        if name:
-            logo = html.Tag(div, 'a',
-                            href=unicode(config.get('home', '#!')),
-                            string=unicode(config['name']))
-
-        top_ul = html.Tag(div, 'ul', id="nav-mobile", class_="right hide-on-med-and-down")
+        top_ul = html.Tag(nav, 'ul', id="nav-mobile", class_="right hide-on-med-and-down")
         for key1, value1 in navigation.iteritems():
             id_ = uuid.uuid4()
 
@@ -297,30 +315,21 @@ class MaterializeRenderer(HTMLRenderer):
             bot_ul = html.Tag(nav, 'ul', id_=id_, class_='dropdown-content')
             for key2, value2 in value1.iteritems():
                 bot_li = html.Tag(bot_ul, 'li')
-                node = root.findall(value2)
-                href = node[0].relative(root) if node else '#!' #TODO: ADD ERROR
+                node = root_page.findall(value2)
+                href = node[0].relative(root_page) if node else '#!' #TODO: ADD ERROR
                 a = html.Tag(bot_li, 'a', href=href, string=unicode(key2))
 
 
-        repo = config.get('repo', None)
-        if repo:
+    def addName(self, nav, root_page):
 
-            #li = html.Tag(top_ul, 'li')
-            a = html.Tag(div, 'a', href=repo)
+        name = self.get('name', None)
+        if name:
+            logo = html.Tag(nav, 'a',
+                            class_='left',
+                            href=unicode(self.get('home', '#!')),
+                            string=unicode(name))
 
-            if 'github' in repo:
-                img0 = root.findall('github-logo.png')
-                img1 = root.findall('github-mark.png')
-
-                html.Tag(a, 'img', src=img0[0].relative(root), class_='github-mark')
-                html.Tag(a, 'img', src=img1[0].relative(root), class_='github-logo')
-
-            elif 'gitlab' in repo:
-                img = root.findall('gitlab-logo.png')
-                html.Tag(a, 'img', src=img[0].relative(root), class_='gitlab-logo')
-
-    @staticmethod
-    def addBreadcrumbs(root):
+    def addBreadcrumbs(self, container, root_page):
         """
         Inserts breadcrumb links at the top of the page.
 
@@ -329,12 +338,17 @@ class MaterializeRenderer(HTMLRenderer):
 
         TODO: This is relying on hard-coded .md/.html extensions, that should not be the case.
         """
-        row = html.Tag(root, 'div', class_="row")
+
+        if not (self.get('breadcrumbs', None) and root_page):
+            return
+
+
+        row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="col hide-on-med-and-down l12")
         nav = html.Tag(col, 'nav', class_="breadcrumb-nav")
         div = html.Tag(nav, 'div', class_="nav-wrapper")
 
-        node = root.root.page
+        node = root_page
         for n in node.path:
             if not n.local:
                 continue
@@ -355,8 +369,7 @@ class MaterializeRenderer(HTMLRenderer):
                 a = html.Tag(div, 'a', href=url, class_="breadcrumb")
                 html.String(a, content=unicode(os.path.splitext(n.name)[0]))
 
-    @staticmethod
-    def addSections(root, collapsible):
+    def addSections(self, container, root_page):
         """
         Group content into <section> tags based on the heading tag.
 
@@ -365,7 +378,13 @@ class MaterializeRenderer(HTMLRenderer):
             collapsible[list]: A list with six entries indicating the sections to create as
                                collapsible.
         """
-        section = root
+        if not self.get('sections', False):
+            return
+
+
+        collapsible = self.get('collapsible-sections', False)
+
+        section = container
         for child in section.children:
             if child.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 level = int(child.name[-1])
@@ -384,7 +403,7 @@ class MaterializeRenderer(HTMLRenderer):
 
             child.parent = section
 
-        for node in anytree.PreOrderIter(root, filter_=lambda n: n.name == 'section'):
+        for node in anytree.PreOrderIter(container, filter_=lambda n: n.name == 'section'):
 
             if 'data-details-open' in node:
                 status = node['data-details-open']

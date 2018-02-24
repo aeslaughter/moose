@@ -2,13 +2,15 @@
 import os
 import re
 import copy
+import subprocess
 
 import anytree
 
 import MooseDocs
+from MooseDocs import common
 from MooseDocs.common import exceptions
 from MooseDocs.base import components
-from MooseDocs.extensions import core, table
+from MooseDocs.extensions import core, floats
 from MooseDocs.tree import tokens, html
 from MooseDocs.tree.base import Property
 
@@ -30,8 +32,16 @@ class AutoLinkExtension(components.Extension):
                                          "shortcut linkes.")
         return config
 
+    def __init__(self, *args, **kwargs):
+        components.Extension.__init__(self, *args, **kwargs)
+
+        out = subprocess.check_output(['git', 'ls-files'], cwd=MooseDocs.ROOT_DIR)
+        self._source = out.split('\n')
+
     def extend(self, reader, renderer):
         """Replace default core link components on reader and provide auto link rendering."""
+
+        self.requires(core, floats)
 
         reader.addInline(AutoLinkComponent(), location='=Link')
         reader.addInline(AutoShortcutLinkComponent(), location='=ShortcutLink')
@@ -112,8 +122,24 @@ class AutoShortcutLink(tokens.ShortcutLink):
 class AutoLink(tokens.Link):
     PROPERTIES = [Property('bookmark', ptype=unicode)]
 
+def _source_token(parent, info, source_list):
+    """Helper for source code fallback."""
+
+    key = info.get('key', None)
+    if key:
+        source = [x for x in source_list if x.endswith(info.get('key', None))]
+        if len(source) == 1:
+            src = unicode(source[0])
+            a = tokens.Link(parent, url=src, string=info['key'])
+            modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=src))
+            tokens.Code(modal, language=u'cpp', code=common.read(os.path.join(MooseDocs.ROOT_DIR, src)))
+            return True
+    return False
+
 class AutoShortcutLinkComponent(core.ShortcutLink):
     def createToken(self, info, parent): #pylint: disable=doc-string
+
+        # Markdown files
         match = LINK_RE.search(info['key'])
         if match and (parent.root.page is not None):
             return AutoShortcutLink(parent,
@@ -121,7 +147,12 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
                                     bookmark=match.group('bookmark'),
                                     header=self.extension['include-page-header'])
 
+        if _source_token(parent, info, self.extension._source):
+            return parent
+
+
         return core.ShortcutLink.createToken(self, info, parent)
+
 
 class AutoLinkComponent(core.Link):
     """
@@ -132,6 +163,8 @@ class AutoLinkComponent(core.Link):
         match = LINK_RE.search(info['url'])
         if match and (parent.root.page is not None):
             return AutoLink(parent, url=match.group('filename'), bookmark=match.group('bookmark'))
+        elif _source_token(parent, info, self.extension._source):
+            return parent
         else:
             return core.Link.createToken(self, info, parent)
 

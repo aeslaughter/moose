@@ -129,6 +129,12 @@ class LexerInformation(object):
         """
         return self.__match.group(value)
 
+    def get(self, name, default):
+        """
+        Return the group or the supplied default.
+        """
+        return self.__match.groupdict().get(name, default)
+
     def keys(self):
         """
         List of named regex groups.
