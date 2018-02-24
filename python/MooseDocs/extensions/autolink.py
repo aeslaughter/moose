@@ -122,6 +122,8 @@ class AutoShortcutLink(tokens.ShortcutLink):
 class AutoLink(tokens.Link):
     PROPERTIES = [Property('bookmark', ptype=unicode)]
 
+# TODO: This needs to get smarter: Modal also needs to cache content so that same stuff isn't include a billion times.
+# This also is not working for both types of links
 def _source_token(parent, info, source_list):
     """Helper for source code fallback."""
 
@@ -133,8 +135,8 @@ def _source_token(parent, info, source_list):
             a = tokens.Link(parent, url=src, string=info['key'])
             modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=src))
             tokens.Code(modal, language=u'cpp', code=common.read(os.path.join(MooseDocs.ROOT_DIR, src)))
-            return True
-    return False
+            return a
+    return None
 
 class AutoShortcutLinkComponent(core.ShortcutLink):
     def createToken(self, info, parent): #pylint: disable=doc-string
@@ -147,7 +149,7 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
                                     bookmark=match.group('bookmark'),
                                     header=self.extension['include-page-header'])
 
-        if _source_token(parent, info, self.extension._source):
+        if _source_token(parent, info, self.extension._source) is not None:
             return parent
 
 
@@ -163,10 +165,12 @@ class AutoLinkComponent(core.Link):
         match = LINK_RE.search(info['url'])
         if match and (parent.root.page is not None):
             return AutoLink(parent, url=match.group('filename'), bookmark=match.group('bookmark'))
-        elif _source_token(parent, info, self.extension._source):
-            return parent
         else:
-            return core.Link.createToken(self, info, parent)
+            link = _source_token(parent, info, self.extension._source)
+            if link:
+                return link
+
+        return core.Link.createToken(self, info, parent)
 
 class RenderAutoLink(AutoLinkMixin, core.RenderLink):
     """Render the AutoLink token."""
