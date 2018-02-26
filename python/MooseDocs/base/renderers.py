@@ -284,7 +284,8 @@ class MaterializeRenderer(HTMLRenderer):
 
     def addContents(self, toc, content, root_page):
 
-        ul = html.Tag(toc, 'ul', class_='section table-of-contents')
+        div = html.Tag(toc, 'div', class_='toc-wrapper pin-top')
+        ul = html.Tag(div, 'ul', class_='section table-of-contents')
         for node in anytree.PreOrderIter(content):
             if node.name == 'section' and node['data-section-level'] == 2:
                 li = html.Tag(ul, 'li')
