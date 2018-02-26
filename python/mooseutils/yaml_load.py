@@ -37,7 +37,7 @@ class Loader(yaml.Loader):
         filename = os.path.join(self._root, self.construct_scalar(node))
         if os.path.exists(filename):
             with open(filename, 'r') as f:
-                return yaml.load(f, IncludeLoader)
+                return yaml.load(f, Loader)
         else:
             print node.line
             msg = "Unknown include file '{}' on line {} of {}"

@@ -45,7 +45,7 @@ class LocalListingCommand(command.CommandComponent):
         settings['caption'] = (None, "The caption to use for the listing content.")
         settings['prefix'] = (None, "Text to include prior to the included text.")
         settings['max-height'] = (u'350px', "The default height for listing content.")
-        settings['language'] = (None, "The language to use for highlighting, if not supplied it will be infered from the extension (if possible).")
+        settings['language'] = (None, "The language to use for highlighting, if not supplied it will be inferred from the extension (if possible).")
         return settings
 
     def createToken(self, info, parent):

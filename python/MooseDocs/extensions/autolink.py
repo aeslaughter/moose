@@ -32,12 +32,6 @@ class AutoLinkExtension(components.Extension):
                                          "shortcut linkes.")
         return config
 
-    def __init__(self, *args, **kwargs):
-        components.Extension.__init__(self, *args, **kwargs)
-
-        out = subprocess.check_output(['git', 'ls-files'], cwd=MooseDocs.ROOT_DIR)
-        self._source = out.split('\n')
-
     def extend(self, reader, renderer):
         """Replace default core link components on reader and provide auto link rendering."""
 
@@ -124,10 +118,10 @@ class AutoLink(tokens.Link):
 
 # TODO: This needs to get smarter: Modal also needs to cache content so that same stuff isn't include a billion times.
 # This also is not working for both types of links
-def _source_token(parent, key, info, source_list):
+def _source_token(parent, key, info):
     """Helper for source code fallback."""
 
-    source = [x for x in source_list if x.endswith(key)]
+    source = common.project_find(key)
     if len(source) == 1:
         src = unicode(source[0])
         code = tokens.Code(None,
@@ -148,7 +142,7 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
                                     bookmark=match.group('bookmark'),
                                     header=self.extension['include-page-header'])
 
-        link = _source_token(parent, info['key'], info, self.extension._source)
+        link = _source_token(parent, info['key'], info)
         if link:
             tokens.String(link, content=os.path.basename(info['key']))
             return link
@@ -165,7 +159,7 @@ class AutoLinkComponent(core.Link):
         if match and (parent.root.page is not None):
             return AutoLink(parent, url=match.group('filename'), bookmark=match.group('bookmark'))
         else:
-            link = _source_token(parent, info['url'], info, self.extension._source)
+            link = _source_token(parent, info['url'], info)
             if link:
                 return link
 

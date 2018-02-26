@@ -4,6 +4,7 @@ Renderer objects. The Translator objects exist as a place to import extensions a
 between the reading and rendering content.
 """
 import logging
+import multiprocessing
 
 import MooseDocs
 from MooseDocs import common
@@ -33,6 +34,8 @@ class Translator(mixins.ConfigObject):
         common.check_type('reader', reader, Reader)
         common.check_type('renderer', renderer, Renderer)
         common.check_type('extensions', extensions, list)
+
+        self.__lock = multiprocessing.Lock()
 
         self.__extensions = extensions
         self.__reader = reader
@@ -73,6 +76,10 @@ class Translator(mixins.ConfigObject):
         """
         return self.__renderer
 
+    @property
+    def lock(self):
+        return self.__lock
+
     def reinit(self):
         """
         Reinitializes the Reader, Renderer, and all Extension objects.
@@ -92,6 +99,10 @@ class Translator(mixins.ConfigObject):
             self.__reader.parse(ast, node.content)
         else:
             self.__reader.parse(ast, content)
+
+        for ext in self.__extensions:
+            ext.postTokenize(ast)
+
         return ast
 
     def render(self, ast):

@@ -25,6 +25,7 @@ DEFAULT_EXTENSIONS = ['MooseDocs.extensions.core',
                       'MooseDocs.extensions.katex',
                       'MooseDocs.extensions.appsyntax',
                       'MooseDocs.extensions.bibtex',
+                      'MooseDocs.extensions.global',
                       'MooseDocs.extensions.sqa']
 
 DEFAULT_READER = 'MooseDocs.base.MarkdownReader'

@@ -6,6 +6,7 @@ import copy
 import logging
 import importlib
 import collections
+import multiprocessing
 
 import anytree
 import livereload
@@ -76,17 +77,55 @@ def main(options):
         # TODO: make these steps parallel, print progress (in parallel)
         # Breaking this up allows for the complete AST for all pages to be available to others
         # when rendering (see autolink.py)
+        num_threads=multiprocessing.cpu_count()
         LOG.info("Building AST...")
-        for node in anytree.PreOrderIter(root):
-            if isinstance(node, MooseDocs.tree.page.MarkdownNode):
-                node.ast()
+
+        # TODO: move to translator ???
+        jobs = []
+        nodes = [node for node in anytree.PreOrderIter(root) if isinstance(node, MooseDocs.tree.page.MarkdownNode)]
+        for chunk in mooseutils.make_chunks(nodes, num_threads):
+            p = multiprocessing.Process(target=build_ast, args=(chunk,))
+            p.start()
+            jobs.append(p)
+
+        for job in jobs:
+            job.join()
+
+        #TODO: move translator
+        #for ext in translator.extensions:
+        #    ext.postTokenize(nodes)
+
 
         LOG.info("Rendering AST...")
-        for node in anytree.PreOrderIter(root):
-            if isinstance(node, MooseDocs.tree.page.MarkdownNode):
-                node.render()
+        jobs = []
+        for chunk in mooseutils.make_chunks(nodes, num_threads):
+            p = multiprocessing.Process(target=build_render, args=(chunk,))
+            p.start()
+            jobs.append(p)
 
-        for node in anytree.PreOrderIter(root):
-            node.build(reset=False) #TODO: This probably should just be write()
+        for job in jobs:
+            job.join()
 
-        server.serve(root=destination, port=8000)
+
+
+
+        #for node in anytree.PreOrderIter(root):
+        #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
+        #        node.ast()
+
+        #for node in anytree.PreOrderIter(root):
+        #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
+        #        node.render()
+
+        #for node in anytree.PreOrderIter(root):
+        #    node.build(reset=False) #TODO: This probably should just be write()
+
+        #server.serve(root=destination, port=8000)
+
+def build_ast(nodes):
+    for node in nodes:
+        node.ast()
+
+def build_render(nodes):
+    for node in nodes:
+        node.render()

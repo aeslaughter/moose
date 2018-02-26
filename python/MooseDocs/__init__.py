@@ -2,9 +2,6 @@ import os
 import subprocess
 import logging
 
-import base
-import extensions
-
 BLOCK = 'block'
 INLINE = 'inline'
 
@@ -20,3 +17,8 @@ if not os.path.exists(MOOSE_DIR):
 
 os.environ['MOOSE_DIR'] = MOOSE_DIR
 os.environ['ROOT_DIR'] = ROOT_DIR
+
+PROJECT_FILES = subprocess.check_output(['git', 'ls-files'], cwd=ROOT_DIR).split('\n')
+
+import base
+import extensions

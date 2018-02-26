@@ -1,5 +1,5 @@
 Content:
-    framework:
+    general:
         root_dir: docs/content
         content:
             - utilities/MooseDocs/**
@@ -7,6 +7,11 @@ Content:
             - contrib/**
             - css/*
             - js/*
+    framework:
+        root_dir: framework/doc/content
+        content:
+            - documentation/systems/**
+
 Reader:
     type: MooseDocs.base.MarkdownReader
 
@@ -47,3 +52,6 @@ Extensions:
     appsyntax:
         type: MooseDocs.extensions.appsyntax
         disable: True
+    globals:
+        type: MooseDocs.extensions.global
+        shortcuts: !include ../../docs/globals.yml

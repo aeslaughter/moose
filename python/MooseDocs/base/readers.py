@@ -101,8 +101,7 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         # Update the lexer
         self.__lexer.add(group, name, component.RE, component, location)
 
-    @staticmethod
-    def _exceptionHandler(token):
+    def _exceptionHandler(self, token):
         """
         The Lexer converts all TokenizeException caught during tokenization into tokens.Exception
         tokens. This allows the tokenization to report all errors at once and allow for the AST and
@@ -123,7 +122,8 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
                                    .format(token.info.line, token.info.pattern.name), n)
 
         box = MooseDocs.common.box(token.info[0], line=token.info.line, width=n)
-        LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)
+        with self.translator.lock:
+            LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)
 
 class MarkdownReader(Reader):
     """

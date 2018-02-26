@@ -47,7 +47,6 @@ def main():
     elif options.command == 'check':
         check.main(options)
 
-
     critical = log.MooseDocsFormatter.COUNTS['CRITICAL'].value
     errors = log.MooseDocsFormatter.COUNTS['ERROR'].value
     warnings = log.MooseDocsFormatter.COUNTS['WARNING'].value

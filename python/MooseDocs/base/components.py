@@ -42,6 +42,9 @@ class Extension(mixins.ConfigObject, mixins.TranslatorObject):
         if messages:
             raise exceptions.MooseDocsException('\n'.join(messages))
 
+    def postTokenize(self, ast):
+        pass
+
 
 class Component(mixins.TranslatorObject):
     """
@@ -62,17 +65,17 @@ class TokenComponent(Component):
     object in the Extension:extend method. The purpose of a TokenComponent is to define a regular
     expresion, that when match returns a token that is added to the AST.
 
-    The codebase of MooseDocs (Translator, Reader, Renderer) is certiainly capable of tokenizing
+    The codebase of MooseDocs (Translator, Reader, Renderer) is certainly capable of tokenizing
     arbitrary formats. However, the primary use case is for creating HTML so there are a certain
     features for this class that are setup with that application in mind.
 
     ## RE Class Member
-    The RE class member variable is used for convience to
+    The RE class member variable is used for convenience to
     allow for derived classes to avoid creating an __init__ method. As shown in core.py the purpose
     of this class is to be able to add parser syntax for tokenizing with a minimal amount code, the
     following static member variables aid in the design goal.
 
-    RE must be defined as a compile re expresion that captures the content to be converted to a
+    RE must be defined as a compile re expressions that captures the content to be converted to a
     token within the createToken method.  - TOKEN: The token type (not instance) that will be
     created
 
@@ -91,8 +94,8 @@ class TokenComponent(Component):
     @staticmethod
     def defaultSettings():
         """
-        Default settings for the compomenent. Child classes should define a similar method to create
-        the default settings for the compoment, see core.py for examples.
+        Default settings for the component. Child classes should define a similar method to create
+        the default settings for the component, see core.py for examples.
         """
         settings = dict()
         settings['style'] = (u'', u"The style settings that are passed to rendered HTML tag.")
