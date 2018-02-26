@@ -27,8 +27,9 @@ class Caption(tokens.CountToken):
                                        link=u'#{}'.format(self.key),
                                        content=u'{} {}'.format(self.prefix.title(), self.number))
 
-class Modal(tokens.Token):
+class ModalLink(tokens.Link):
     PROPERTIES = [Property("title", ptype=tokens.Token, required=True),
+                  Property("content", ptype=tokens.Token, required=True),
                   Property("bottom", ptype=bool, default=False)]
 
 class FloatExtension(components.Extension):
@@ -36,7 +37,7 @@ class FloatExtension(components.Extension):
     def extend(self, reader, renderer):
         renderer.add(Float, RenderFloat())
         renderer.add(Caption, RenderCaption())
-        renderer.add(Modal, RenderModal())
+        renderer.add(ModalLink, RenderModalLink())
 
     def reinit(self):
         Caption.COUNTS.clear()
@@ -70,29 +71,22 @@ class RenderCaption(components.RenderComponent):
     def createLatex(self, token, parent):
         pass
 
-class RenderModal(components.RenderComponent):
-
-    def createHTML(self, token, parent):
-        pass
+class RenderModalLink(core.RenderLink):
 
     def createMaterialize(self, token, parent):
+        link = core.RenderLink.createMaterialize(self, token, parent)
+
         tag = uuid.uuid4()
-
-        #if parent.name != 'a':
-        #    msg = "The Modal token must be attached to a link (e.g., and <a> tag), but a {} is " \
-        #          "being used."
-        #    raise exceptions.RenderException(msg, parent.name)
-
-        parent['class'] = 'modal-trigger'
-        parent['href'] = u'#{}'.format(tag)
+        link['class'] = 'modal-trigger'
+        link['href'] = u'#{}'.format(tag)
 
         cls = "modal bottom-sheet" if token.bottom else "modal"
-        modal = html.Tag(parent.parent, 'div', class_=cls, id_=tag)
+        modal = html.Tag(link.parent, 'div', class_=cls, id_=tag)
         modal_content = html.Tag(modal, 'div', class_="modal-content")
+
         title = html.Tag(modal_content, 'h4')
         self.translator.renderer.process(title, token.title)
 
-        return modal_content
+        self.translator.renderer.process(modal_content, token.content)
 
-    def createLatex(self, token, parent):
-        pass
+        return link

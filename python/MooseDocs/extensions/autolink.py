@@ -124,19 +124,18 @@ class AutoLink(tokens.Link):
 
 # TODO: This needs to get smarter: Modal also needs to cache content so that same stuff isn't include a billion times.
 # This also is not working for both types of links
-def _source_token(parent, info, source_list):
+def _source_token(parent, key, info, source_list):
     """Helper for source code fallback."""
 
-    key = info.get('key', None)
-    if key:
-        source = [x for x in source_list if x.endswith(info.get('key', None))]
-        if len(source) == 1:
-            src = unicode(source[0])
-            a = tokens.Link(parent, url=src, string=info['key'])
-            modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=src))
-            tokens.Code(modal, language=u'cpp', code=common.read(os.path.join(MooseDocs.ROOT_DIR, src)))
-            return a
-    return None
+    source = [x for x in source_list if x.endswith(key)]
+    if len(source) == 1:
+        src = unicode(source[0])
+        code = tokens.Code(None,
+                           language=common.get_language(src),
+                           code=common.read(os.path.join(MooseDocs.ROOT_DIR, src)))
+        link = floats.ModalLink(parent, url=src, content=code,
+                                bottom=True, title=tokens.String(None, content=src))
+        return link
 
 class AutoShortcutLinkComponent(core.ShortcutLink):
     def createToken(self, info, parent): #pylint: disable=doc-string
@@ -149,12 +148,12 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
                                     bookmark=match.group('bookmark'),
                                     header=self.extension['include-page-header'])
 
-        if _source_token(parent, info, self.extension._source) is not None:
-            return parent
-
+        link = _source_token(parent, info['key'], info, self.extension._source)
+        if link:
+            tokens.String(link, content=os.path.basename(info['key']))
+            return link
 
         return core.ShortcutLink.createToken(self, info, parent)
-
 
 class AutoLinkComponent(core.Link):
     """
@@ -166,7 +165,7 @@ class AutoLinkComponent(core.Link):
         if match and (parent.root.page is not None):
             return AutoLink(parent, url=match.group('filename'), bookmark=match.group('bookmark'))
         else:
-            link = _source_token(parent, info, self.extension._source)
+            link = _source_token(parent, info['url'], info, self.extension._source)
             if link:
                 return link
 

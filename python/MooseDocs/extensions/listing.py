@@ -122,27 +122,17 @@ class FileListingCommand(LocalListingCommand):
         self.addCaption(flt)
 
         # Create code token
-        if self.settings['language'] is None:
-            _, ext = os.path.splitext(filename)
-            if ext in ['.C', '.h', '.cpp', '.hpp']:
-                self.settings['language'] = u'cpp'
-            elif ext == '.py':
-                self.settings['language'] = u'python'
-            else:
-                self.settings['language'] = u'text'
-
-        code = tokens.Code(flt, style="max-height:{};".format(self.settings['max-height']),
-                           language=self.settings['language'],
-                           code=self.extractContent(filename, self.settings))
+        lang = self.settings.get('language', common.get_language(filename))
+        tokens.Code(flt, style="max-height:{};".format(self.settings['max-height']),
+                    code=self.extractContent(filename, self.settings),
+                    language=lang)
 
         # Add bottom modal
         if self.settings['link']:
-            #with open(filename, 'r') as fid:
-            #    content = fid.read()
-            a = tokens.Link(flt, url=filename, string=u'({})'.format(filename))
-            modal = floats.Modal(a, bottom=True, title=tokens.String(None, content=filename))
-            tokens.Code(modal, language=self.settings['language'],
-                        code=common.read(filename))
+            code = tokens.Code(None, language=lang, code=common.read(filename))
+            floats.ModalLink(flt, url=filename, bottom=True, content=code,
+                             string=u'({})'.format(filename),
+                             title=tokens.String(None, content=filename))
 
         return parent
 

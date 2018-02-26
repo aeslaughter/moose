@@ -46,7 +46,15 @@ optionally the page heading, see [example-shortcut-bookmark-link].
                        style bookmark.
 [core.md#shortcut-link]
 
+## Automatic Source Content
 
+If a filename is used within a link or shortcut link and the file is contained in the git repository
+a bottom extending modal window will be created that displays the complete text, as shown in
+[example-file-link].
+
+!devel! example id=example-file-link
+                caption=Example showing source code links to modal windows with complete source code.
 [/Diffusion.C]
 
-[Foo](/Diffusion.C)
+[Diffusion Kernel](/Diffusion.C)
+!devel-end!
