@@ -1,5 +1,6 @@
 """Nodes for building an HTML tree structure."""
 import cgi
+import anytree
 from base import NodeBase, Property
 
 class Tag(NodeBase):
@@ -65,6 +66,15 @@ class Tag(NodeBase):
         if self.close: #pylint: disable=no-member
             out += '</{}>'.format(self.name)
         return out
+
+    def text(self):
+
+        strings = []
+        for node in anytree.PreOrderIter(self):
+            if isinstance(node, String):
+                strings.append(node.content)
+        return u' '.join(strings)
+
 
 class String(NodeBase):
     """

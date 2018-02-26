@@ -176,6 +176,7 @@ class MaterializeRenderer(HTMLRenderer):
         config['repo'] = (None, "The source code repository.")
         config['name'] = (None, "The name of the website (e.g., MOOSE)")
         config['home'] = (None, "The homepage for the website.")
+        config['scrollspy'] = (True, "Enable/disable the scrolling table of contents.")
         return config
 
     def update(self, **kwargs):
@@ -241,14 +242,22 @@ class MaterializeRenderer(HTMLRenderer):
 
         # Content
         row = html.Tag(container, 'div', class_="row")
-        #TODO add scroll spy (scoll-name=False) at top of index.md
-        col = html.Tag(row, 'div', class_="moose-content col s12 m12 l10")
+        col = html.Tag(row, 'div', class_="moose-content")
         HTMLRenderer.process(self, col, ast)
 
         # Sections
         self.addSections(col, root.page)
 
+
+        if self['scrollspy']:
+            col['class'] = 'col s12 m12 l10'
+            toc = html.Tag(row, 'div', class_="col hide-on-med-and-down l2")
+            self.addContents(toc, col, root.page)
+        else:
+            col['class'] = 'col s12 m12 l12'
+
         return root
+
 
     def addHead(self, head, root_page):
         """Add content to <head> element with the required CSS/JS for materialize."""
@@ -271,6 +280,15 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src="/contrib/prism/prism.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/contrib/katex/katex.min.js")
         html.Tag(head, 'script', type="text/javascript", src="/js/init.js")
+
+
+    def addContents(self, toc, content, root_page):
+
+        ul = html.Tag(toc, 'ul', class_='section table-of-contents')
+        for node in anytree.PreOrderIter(content):
+            if node.name == 'section' and node['data-section-level'] == 2:
+                li = html.Tag(ul, 'li')
+                html.Tag(li, 'a', href='#{}'.format(node['id']), string=node['data-section-text'])
 
 
     def addRepo(self, nav, root_page):
@@ -398,6 +416,8 @@ class MaterializeRenderer(HTMLRenderer):
                     section = html.Tag(section.parent.parent, 'section')
 
                 section['data-section-level'] = level
+                section['data-section-text'] = child.text()
+                section['id'] = uuid.uuid4()
                 if 'data-details-open' in child:
                     section['data-details-open'] = child['data-details-open']
 
