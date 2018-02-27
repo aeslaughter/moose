@@ -212,8 +212,8 @@ class SyntaxChildrenCommand(SyntaxCommandHeadingBase):
     def createTokenFromSyntax(self, info, parent, obj):
 
         item = self.extension.database.get(obj.name, None)
-        attr = getattr(item, self.SUBCOMMAND)
-        if item and attr:
+        if item and hasattr(item, self.SUBCOMMAND):
+            attr = getattr(item, self.SUBCOMMAND)
 
             self.createHeading(parent)
 
@@ -252,6 +252,10 @@ class SyntaxListCommand(SyntaxCommandBase):
         return settings
 
     def createTokenFromSyntax(self, info, parent, obj):
+
+        if not isinstance(self.settings['subsystems'], bool):
+            print info.match.groups()
+
         return SyntaxToken(parent,
                            syntax=obj,
                            actions=self.settings['actions'],
@@ -337,7 +341,7 @@ class RenderInputParametersToken(components.RenderComponent):
             for group in token.groups:
                 groups[group] = dict()
 
-        else:
+        elif token.syntax:
             groups['Required'] = dict()
             groups['Optional'] = dict()
             for param in token.syntax.parameters.itervalues():

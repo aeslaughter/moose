@@ -4,10 +4,10 @@
 ## Description
 
 The `FunctionPresetBC` takes the same inputs as
-[FunctionDirichletBC](/BCs/framework/FunctionDirichletBC.md) and also acts as a
+[FunctionDirichletBC](/BCs/FunctionDirichletBC.md) and also acts as a
 Dirichlet boundary condition.  However, the implementation is slightly different.
 `FunctionPresetBC` causes the value of the boundary condition to be applied before the
-solve begins where [FunctionDirichletBC](/BCs/framework/FunctionDirichletBC.md)
+solve begins where [FunctionDirichletBC](/BCs/FunctionDirichletBC.md)
 enforces the boundary condition as the solve
 progresses.  In certain situations, one is better than another.
 

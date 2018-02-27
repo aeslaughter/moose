@@ -35,7 +35,7 @@ class Translator(mixins.ConfigObject):
         common.check_type('renderer', renderer, Renderer)
         common.check_type('extensions', extensions, list)
 
-        self.__lock = multiprocessing.Lock()
+        #self.__lock = multiprocessing.Lock()
 
         self.__extensions = extensions
         self.__reader = reader
@@ -76,9 +76,9 @@ class Translator(mixins.ConfigObject):
         """
         return self.__renderer
 
-    @property
-    def lock(self):
-        return self.__lock
+   # @property
+   # def lock(self):
+   #     return self.__lock
 
     def reinit(self):
         """

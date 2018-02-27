@@ -5,7 +5,7 @@ terms in the weak form of a partial differential equation.  With all terms on
 the left-hand-side, their sum is referred to as the "residual". The residual
 is evaluated at several integration quadrature points over the problem
 domain. To implement your own physics in MOOSE, you create your own
-kernel by subclassing the MOOSE `Kernel` class.  
+kernel by subclassing the MOOSE `Kernel` class.
 
 In a `Kernel` subclass the `computeQpResidual()` function **must** be overridden.  This is where you
 implement your PDE weak form terms.  The following member functions can
@@ -24,15 +24,15 @@ values in the above mentioned functions:
 * `_u`, `_grad_u`: value and gradient of the variable this Kernel operates on;
   indexed by `_qp` (i.e. `_u[_qp]`).
 * `_test`, `_grad_test`: value ($\psi$) and gradient ($\nabla \psi$) of the
-  test functions at the q-points; indexed by `_i` and then `_qp` (i.e., ``_test[_i][_qp]``).
+  test functions at the q-points; indexed by `_i` and then `_qp` (i.e., `_test[_i][_qp]`).
 * `_phi`, `_grad_phi`: value ($\phi$) and gradient ($\nabla \phi$) of the
-    trial functions at the q-points; indexed by `_j` and then `_qp` (i.e., ``_phi[_j][_qp]``).
+    trial functions at the q-points; indexed by `_j` and then `_qp` (i.e., `_phi[_j][_qp]`).
 * `_q_point`: XYZ coordinates of the current quadrature point.
 * `_current_elem`: pointer to the current element being operated on.
 
 ## Custom Kernel Creation
 
-To create a custom kernel, you can follow the pattern of the [`Diffusion`](framework/Diffusion.md)
+To create a custom kernel, you can follow the pattern of the [`Diffusion`](/Diffusion.md)
 kernel implemented and included in the MOOSE framework.  Additionally, [Example 2](examples/custom_kernel.md) provides a step-by-step overview of creating your own custom kernel.
 
 The strong-form of the diffusion equations is defined on a 3-D domain $\Omega$ as: find $u$ such

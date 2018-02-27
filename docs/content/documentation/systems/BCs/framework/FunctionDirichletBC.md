@@ -3,7 +3,7 @@
 !syntax description /BCs/FunctionDirichletBC
 
 ## Description
-`FunctionDirichletBC` is a generalization of [`DirichletBC`](/framework/DirichletBC.md) which
+`FunctionDirichletBC` is a generalization of [`DirichletBC`](/DirichletBC.md) which
 imposes a possibly temporally- and spatially-dependent value defined
 by a MOOSE [`Function`](/Functions/index.md) object on a particular set of degrees of freedom
 (DOFs) defined by the `boundary` parameter. That is, for a

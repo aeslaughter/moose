@@ -5,7 +5,7 @@ In general, MOOSE is not designed for generating finite element meshes. Generall
 from [Sandia National Laboratories](http://www.sandia.gov/) is recommended for creating meshes, especially complex geometries,
 for use in MOOSE. CUBIT can be licensed from CSimSoft for a fee depending that varies based on the type of organization
 and work being performed. Other mesh generators can work as long as they output a file format that is supported by
-the [FileMesh](framework/FileMesh.md) object.
+the [FileMesh](/FileMesh.md) object.
 
 ## Example Syntax and Mesh Objects
 Mesh settings are applied with the `[Mesh]` of the input files, for example the basic input file syntax for reading

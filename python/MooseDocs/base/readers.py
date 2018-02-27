@@ -122,8 +122,7 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
                                    .format(token.info.line, token.info.pattern.name), n)
 
         box = MooseDocs.common.box(token.info[0], line=token.info.line, width=n)
-        with self.translator.lock:
-            LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)
+        LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)
 
 class MarkdownReader(Reader):
     """

@@ -34,8 +34,7 @@ advection-diffusion-reaction, etc. A kernel block demonstrating the
 `AnistropicDiffusion` syntax in a steady-state anistropic
 diffusion problem can be found below:
 
-!listing test/tests/kernels/anisotropic_diffusion/aniso_diffusion.i
- block=Kernels label=False
+!listing test/tests/kernels/anisotropic_diffusion/aniso_diffusion.i block=Kernels
 
 !!!note
     The anistropic diffusion coefficient $\widetilde{k}$ is a

@@ -3,11 +3,11 @@
 
 ## Description
 
-The `PresetBC` takes the same inputs as [DirichletBC](/BCs/framework/DirichletBC.md)
+The `PresetBC` takes the same inputs as [DirichletBC](/BCs/DirichletBC.md)
 and also acts as a Dirichlet
 boundary condition.  However, the implementation is slightly different.  `PresetBC` causes
 the value of the boundary condition to be applied before the solve begins where
-[DirichletBC](/BCs/framework/DirichletBC.md) enforces the boundary
+[DirichletBC](/BCs/DirichletBC.md) enforces the boundary
 condition as the solve progresses.  In certain
 situations, one is better than another.
 

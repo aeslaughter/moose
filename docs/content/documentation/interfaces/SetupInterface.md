@@ -17,13 +17,13 @@ LINEAR | Prior do each linear iteration during the solve.
 TIMESTEP_END | After the solve for each time step.
 SUBDOMAIN | Executes when the subdomain (i.e., "blocks") change during calculations.
 
-The "execute_on" parameter can be set to a single flag or multiple flags. For example, it may be desirable to only execute an object initially because the state of the auxiliary computation does not vary. In the input file snippet below, the [ElementLengthAux](framework/ElementLengthAux.md)
+The "execute_on" parameter can be set to a single flag or multiple flags. For example, it may be desirable to only execute an object initially because the state of the auxiliary computation does not vary. In the input file snippet below, the [ElementLengthAux](/ElementLengthAux.md)
 computation only needs to be computed initially, thus the "exeucte_on" parameter is set as such.
 
 !listing test/tests/auxkernels/element_length/element_length.i block=AuxKernels
 
 Alternatively, it is often desirable to run a computation with multiple execute flags. For example,
-in the input file snippet below a [TimePeriod](framework/TimePeriod.md) control object that is
+in the input file snippet below a [TimePeriod](/TimePeriod.md) control object that is
 responsible for enabling in [Damper](/Dampers/index.md) object needs to be run initially
 and prior to each timestep to guarantee that the damper is enabled when desired.
 

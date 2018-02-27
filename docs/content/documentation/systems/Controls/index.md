@@ -56,7 +56,7 @@ Please refer to the source code for a complete list.
 ## Controls Block
 `Control` objects are defined in the input file in the Controls block, similar to other systems
 in [MOOSE]. For example, the following input file snippet shows the use of the
-[RealFunctionControl](framework/RealFunctionControl.md) object.
+[RealFunctionControl](/RealFunctionControl.md) object.
 
 !listing test/tests/controls/real_function_control/real_function_control.i block=Controls id=controls_example caption=Example of a Control object used in a [MOOSE] input file.
 
@@ -75,7 +75,7 @@ As shown in \ref{controls_example} an asterisk ("*") can be substituted for any 
 "names", doing so allows multiple parameters to match and be controlled simultaneously.
 
 In similar fashion, object names can be defined (e.g., as in the
-[`TimePeriod`](framework/TimePeriod.md)) object. In this case, the general name scheme is the same
+[`TimePeriod`](/TimePeriod.md)) object. In this case, the general name scheme is the same
 as above but the parameter name is not included.
 
 In both cases there is an alternative form for defining an object and parameter names:

@@ -168,7 +168,8 @@ class MarkdownNode(FileNode):
         return os.path.relpath(self.destination, os.path.dirname(other.destination))
 
     def write(self):
-        dst = self.destination
-        LOG.debug('Writing %s -> %s', self.source, dst)
-        with codecs.open(dst, 'w', encoding='utf-8') as fid:
-            fid.write(self._html.write())
+        if self._html:
+            dst = self.destination
+            LOG.debug('Writing %s -> %s', self.source, dst)
+            with codecs.open(dst, 'w', encoding='utf-8') as fid:
+                fid.write(self._html.write())

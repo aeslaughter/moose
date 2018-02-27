@@ -51,7 +51,8 @@ Extensions:
     disable_defaults: True
     appsyntax:
         type: MooseDocs.extensions.appsyntax
-        disable: True
+        executable: ${MOOSE_DIR}/modules/combined
+       # disable: False
     globals:
         type: MooseDocs.extensions.global
         shortcuts: !include ../../docs/globals.yml

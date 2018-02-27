@@ -4,7 +4,7 @@
 
 ## Description
 `PenaltyDirichletBC` is a `NodalBC` used for enforcing Dirichlet boundary conditions
-which differs from the [`DirichletBC`](/framework/DirichletBC.md) class in the way in which it handles the enforcement.
+which differs from the [`DirichletBC`](/DirichletBC.md) class in the way in which it handles the enforcement.
 It is appropriate for partial differential equations (PDEs) in the form
 
 $$
@@ -40,17 +40,21 @@ maintaining the symmetry (if any) of the original problem, and
 avoiding the need to zero out contributions from other rows in a
 special post-assembly step. Integrating by parts "in reverse"
 from \eqref{weakform}, one obtains
+
 \begin{equation}
   \label{weakform2}
   \int_{\Omega} \left( -\nabla^2 u  - f \right) v \,\text{d}x
   +\int_{\partial \Omega_N} \left( \frac{\partial u}{\partial n} - h \right) v \,\text{d}s
   +\int_{\partial \Omega_D} \left[ \frac{\partial u}{\partial n} + \frac{1}{\epsilon} (u-g) \right] v \,\text{d}s = 0
 \end{equation}
+
 We therefore recover a "perturbed" version of the original problem with the flux
 boundary condition
+
 \begin{equation}
   \frac{\partial u}{\partial n} = -\frac{1}{\epsilon} (u-g) \, \in \partial \Omega_D
 \end{equation}
+
 replacing the original Dirichlet boundary condition. It has been shown
 \cite{juntunen2009nitsche} that in order for the solution to this perturbed
 problem to converge to the solution of the original problem in the

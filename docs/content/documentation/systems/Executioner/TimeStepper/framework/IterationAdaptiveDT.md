@@ -48,7 +48,7 @@ conditions applied to the model over a step. In addition to that limit, the bool
 `force_step_every_function_point` can be set to `true` to force a time step at every point in a
 `PiecewiseLinear` function.
 
-!media media/executioner/adaptive_dt_criteria.png width=70% id=fig:adaptive_dt_criteria caption=Criteria used to determine adaptive time step size
+!media media/executioner/adaptive_dt_criteria.png style=width:70%; id=fig:adaptive_dt_criteria caption=Criteria used to determine adaptive time step size
 
 ## Example Input Syntax
 !listing test/tests/time_steppers/iteration_adaptive/adapt_tstep_shrink_init_dt.i block=Executioner

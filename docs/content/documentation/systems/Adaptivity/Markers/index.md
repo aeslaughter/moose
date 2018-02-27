@@ -30,6 +30,6 @@ following table.
 
 !listing test/tests/markers/combo_marker/combo_marker_test.i block=Adaptivity
 
-!syntax objects /Adaptivity/Markers title=Available Marker Objects
+!syntax objects /Adaptivity/Markers
 
-!syntax actions /Adaptivity/Markers title=Available Marker Actions
+!syntax actions /Adaptivity/Markers

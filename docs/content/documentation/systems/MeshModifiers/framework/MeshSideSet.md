@@ -23,6 +23,6 @@ adjacent edges van be found. Use at your own risk.
 
 !syntax parameters /MeshModifiers/MeshSideSet
 
-!syntax input /MeshModifiers/MeshSideSet
+!syntax inputs /MeshModifiers/MeshSideSet
 
 !syntax children /MeshModifiers/MeshSideSet

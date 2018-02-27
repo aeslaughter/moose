@@ -150,7 +150,7 @@ of kinetic reaction
 The `Kernels` above require several material properties to be defined using the
 following names: porosity, diffusivity and conductivity. These can be defined using
 one of the `Materials` available in the framework. For example, constant properties
-can be implemented using a [`GenericConstantMaterial`](/framework/GenericConstantMaterial.md)
+can be implemented using a [`GenericConstantMaterial`](/GenericConstantMaterial.md)
 with the following:
 
 !listing modules/chemical_reactions/test/tests/aqueous_equilibrium/1species.i block=Materials caption=Required material properties

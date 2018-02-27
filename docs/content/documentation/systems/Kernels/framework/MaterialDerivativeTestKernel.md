@@ -11,10 +11,10 @@ variables. `MaterialDerivativeTestKernel` inherits from
 `getMaterialPropertyDerivative` and `mapJvarToCvar`, explained below:
 
 - `getMaterialPropertyDerivative` takes a material property name
-(let's call it "p") and a variable name (let's call it "u") and returns a
-`MaterialProperty` equal to the derivative of the supplied material property
-with respect to the supplied variable, e.g. $\frac{\partial p}{\partial
-u}$.
+  (let's call it "p") and a variable name (let's call it "u") and returns a
+  `MaterialProperty` equal to the derivative of the supplied material property
+  with respect to the supplied variable, e.g. $\frac{\partial p}{\partial
+  u}$.
 - `mapJvarToCvar` maps the global variable number to the kernel's coupled variable number.
 
 This interface allows for easy and elegant construction of correct Jacobians for
@@ -27,13 +27,11 @@ The `Kernel` and `Material` blocks below demonstrate how to utilize the
 
 - Kernel block
 
-!listing test/tests/kernels/material_derivatives/material_derivatives_test.i
- block=Kernels label=false
+!listing test/tests/kernels/material_derivatives/material_derivatives_test.i block=Kernels
 
- - Material block
+- Material block
 
-!listing test/tests/kernels/material_derivatives/material_derivatives_test.i
- block=Materials label=false
+!listing test/tests/kernels/material_derivatives/material_derivatives_test.i block=Materials
 
 `MaterialDerivativeTestMaterial` takes two variables, `var1` and `var2` as input
 parameters. It declares a material property with the name

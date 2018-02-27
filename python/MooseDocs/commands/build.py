@@ -33,7 +33,7 @@ def main(options):
     """
     Main function for the build command.
     """
-    LOG = logging.getLogger(__name__)
+    LOG = logging.getLogger('MooseDocs.build')
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
     #logging.basicConfig(level=logging.DEBUG)
@@ -81,8 +81,13 @@ def main(options):
         LOG.info("Building AST...")
 
         # TODO: move to translator ???
-        jobs = []
         nodes = [node for node in anytree.PreOrderIter(root) if isinstance(node, MooseDocs.tree.page.MarkdownNode)]
+
+
+       #for node in nodes:
+        #    node.ast()
+
+        jobs = []
         for chunk in mooseutils.make_chunks(nodes, num_threads):
             p = multiprocessing.Process(target=build_ast, args=(chunk,))
             p.start()
@@ -91,12 +96,11 @@ def main(options):
         for job in jobs:
             job.join()
 
-        #TODO: move translator
-        #for ext in translator.extensions:
-        #    ext.postTokenize(nodes)
-
-
         LOG.info("Rendering AST...")
+
+        #for node in nodes:
+        #    node.render()
+
         jobs = []
         for chunk in mooseutils.make_chunks(nodes, num_threads):
             p = multiprocessing.Process(target=build_render, args=(chunk,))
@@ -107,8 +111,6 @@ def main(options):
             job.join()
 
 
-
-
         #for node in anytree.PreOrderIter(root):
         #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
         #        node.ast()
@@ -117,10 +119,10 @@ def main(options):
         #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
         #        node.render()
 
-        #for node in anytree.PreOrderIter(root):
-        #    node.build(reset=False) #TODO: This probably should just be write()
+        for node in anytree.PreOrderIter(root):
+            node.write()#reset=False) #TODO: This probably should just be write()
 
-        #server.serve(root=destination, port=8000)
+        server.serve(root=destination, port=8000)
 
 def build_ast(nodes):
     for node in nodes:

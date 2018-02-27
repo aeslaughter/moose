@@ -31,6 +31,27 @@ class MooseDocsFormatter(logging.Formatter):
 
         return msg
 
+class MultiprocessingHandler(logging.StreamHandler):
+    """A simple handler that locks when writing with multiprocessing."""
+
+    def flush(self):
+        if self._lock:
+            with self._lock:
+                super(MultiprocessingHandler, self).flush()
+        else:
+            super(MultiprocessingHandler, self).flush()
+
+    def createLock(self):
+        self.lock = None
+        self._lock = multiprocessing.Lock()
+
+    def aquire(self):
+        pass
+
+    def release(self):
+        pass
+
+
 def init_logging(level=logging.INFO):
     """
     Call this function to initialize the MooseDocs logging formatter.
@@ -38,7 +59,7 @@ def init_logging(level=logging.INFO):
 
     # Custom format that colors and counts errors/warnings
     formatter = MooseDocsFormatter()
-    handler = logging.StreamHandler()
+    handler = MultiprocessingHandler()
     handler.setFormatter(formatter)
 
     # Setup the custom formatter

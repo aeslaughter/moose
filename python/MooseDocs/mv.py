@@ -15,9 +15,9 @@ def update_content(filename):
         content = fid.read()
 
     content = re.sub(r'^(#+.*?)$', r'\1\n', content, flags=re.MULTILINE)
-    content = re.sub(r'^!syntax objects (\S+)', r'!syntax list objects=True actions=False subsystems=False \1', content, flags=re.MULTILINE)
-    content = re.sub(r'^!syntax actions (\S+)', r'!syntax list objects=False actions=True subsystems=False \1', content, flags=re.MULTILINE)
-    content = re.sub(r'^!syntax subsystems (\S+)', r'!syntax list objects=False actions=False subsystems=True \1', content, flags=re.MULTILINE)
+    content = re.sub(r'^!syntax objects (\S+)', r'!syntax list \1 objects=True actions=False subsystems=False', content, flags=re.MULTILINE)
+    content = re.sub(r'^!syntax actions (\S+)', r'!syntax list \1 objects=False actions=True subsystems=False', content, flags=re.MULTILINE)
+    content = re.sub(r'^!syntax subsystems (\S+)', r'!syntax list \1 objects=False actions=False subsystems=True', content, flags=re.MULTILINE)
     content = re.sub(r'^!syntax complete', r'!syntax list', content, flags=re.MULTILINE)
     content = re.sub(r'^!listing\s*(.*?) *label=\w+ *(.*?)$', r'!listing \1 \2', content, flags=re.MULTILINE)
     content = re.sub(r'^!syntax list\s*(.*?) *title=\w+ *(.*?)$', r'!syntax list \1 \2', content, flags=re.MULTILINE)

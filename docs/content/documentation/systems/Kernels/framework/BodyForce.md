@@ -39,8 +39,7 @@ parameter is equivalent to setting its value to unity.
 The case below demonstrates the use of `BodyForce` where the force term is
 supplied solely through the constant value $c$ (denoted by `value`):
 
-!listing test/tests/restart/restart_diffusion/restart_diffusion_transient_from_steady.i
- block=Kernels label=false
+!listing test/tests/restart/restart_diffusion/restart_diffusion_transient_from_steady.i block=Kernels label=false
 
 !syntax parameters /Kernels/BodyForce
 

@@ -33,7 +33,7 @@ by the [MOOSE] input file syntax for the object as follows.
 
 The `parameters` sub-command provides a means for displaying the default input file syntax for an
 object. For example, considering the [FileMesh] object, the complete list of input syntax can be
-provided using the following markdown command, the results of which are shown on the [Input Parameters](framework/FileMesh.md#input-parameters) section of the [FileMesh] page.
+provided using the following markdown command, the results of which are shown on the [Input Parameters](/FileMesh.md#input-parameters) section of the [FileMesh] page.
 
 ```markdown
 !syntax parameters /Mesh/FileMesh
@@ -48,7 +48,7 @@ In many cases it is useful to know where in the examples, tutorials, or tests an
 in an input file. Therefore, `inputs` sub-command is defined.
 
 For example, the following markdown is included on the [Diffusion] page to create the
-[Input Files](framework/Diffusion.md#input-files)  sections, respectively.
+[Input Files](/Diffusion.md#input-files)  sections, respectively.
 
 
 ```markdown
@@ -63,7 +63,7 @@ For example, the following markdown is included on the [Diffusion] page to creat
 [MOOSE] is designed on the idea of [inheritance](https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming), as such it
 is often useful to understand which classes inherit from another. The `children` sub-command creates
 a list of all child classes of the given object. Again, the Diffusion object is used, the following
-markdown creates the content in the [Child Objects](framework/Diffusion.md#child-objects) section
+markdown creates the content in the [Child Objects](/Diffusion.md#child-objects) section
 of the [Diffusion](framework/Diffusion.md) page.
 
 ```markdown
@@ -92,7 +92,7 @@ The markdown below creates a list of objects available for the [Markers] system.
 #### `!syntax actions`
 
 [MOOSE] includes an "actions" system for defining custom input file syntax and multiple actions
-may be associated with a single system. For example, the [Markers] system contains the [AddElementalFieldAction](Markers/framework/AddElementalFieldAction.md) and the [AddMarkerAction](framework/AddMarkerAction.md). To list these in
+may be associated with a single system. For example, the [Markers] system contains the [AddElementalFieldAction](Markers/AddElementalFieldAction.md) and the [AddMarkerAction](/AddMarkerAction.md). To list these in
 similar fashion as object, the `actions` sub-command is used. Again, for [Markers] the following
 may be used.
 
@@ -122,5 +122,5 @@ Systems](documentation/systems/index.md) pages.
 
 !extension-settings moose_complete_syntax caption=Command settings for `!syntax complete` command.
 
-[FileMesh]: /framework/FileMesh.md
-[Diffusion]: /framework/Diffusion.md
+[FileMesh]: /FileMesh.md
+[Diffusion]: //Diffusion.md

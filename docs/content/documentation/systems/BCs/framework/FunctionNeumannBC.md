@@ -3,7 +3,7 @@
 !syntax description /BCs/FunctionNeumannBC
 
 ## Description
-`FunctionNeumannBC` is a generalization of [`NeumannBC`](/framework/NeumannBC.md) which is used
+`FunctionNeumannBC` is a generalization of [`NeumannBC`](/NeumannBC.md) which is used
 for imposing flux boundary conditions on systems of partial
 differential equations (PDEs) where the flux is represented by a
 spatially- and temporally-varying MOOSE [`Function`](/Functions/index.md).  That is, for a

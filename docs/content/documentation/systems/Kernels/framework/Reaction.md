@@ -14,8 +14,7 @@ equations.
 The syntax for `Reaction` is simple, only taking the `type` and `variable`
 parameters. An example block is shown below for a diffusion-reaction equation:
 
-!listing test/tests/dgkernels/2d_diffusion_dg/2d_diffusion_dg_test.i
- block=Kernels label = false
+!listing test/tests/dgkernels/2d_diffusion_dg/2d_diffusion_dg_test.i block=Kernels
 
 !syntax parameters /Kernels/Reaction
 

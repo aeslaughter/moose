@@ -38,7 +38,7 @@ accomplished within MOOSE.
 
 ### Kernels
 The level set equation (see [Theory](level_set/theory.md)) may be defined in MOOSE using two [Kernel](systems/Kernels/index.md)
-objects: [TimeDerivative](framework/TimeDerivative.md) and [LevelSetAdvection](level_set/LevelSetAdvection.md).
+objects: [TimeDerivative](/TimeDerivative.md) and [LevelSetAdvection](level_set/LevelSetAdvection.md).
 
 Notice, that the [LevelSetAdvection](level_set/LevelSetAdvection.md) requires that the unknown to be solved for ("phi")
 to be assigned in the "variable" parameters as well as the two velocity variables in the "velocity_x" and "velocity_y"
@@ -53,9 +53,9 @@ timestep that should be used when executing the solve of this equation, as discu
 !listing modules/level_set/examples/circle/circle_16.i block=Postprocessors label=False
 
 ### Execution
-This example is a transient problem, hence the [Transient](framework/Transient.md) execution is used. The other
+This example is a transient problem, hence the [Transient](/Transient.md) execution is used. The other
 important aspect to illustrate in the [Executioner](/Executioner/index.md) block is the use of the
-[PostprocessorDT](framework/PostprocessorDT.md) time stepper, which allows for the
+[PostprocessorDT](/PostprocessorDT.md) time stepper, which allows for the
 [LevelSetCFLCondition](level_set/LevelSetCFLCondition.md) postprocessor to govern the timestepping for this problem.
 
 !listing modules/level_set/examples/circle/circle_16.i block=Executioner label=False

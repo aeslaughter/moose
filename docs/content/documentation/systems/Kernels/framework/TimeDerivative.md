@@ -33,9 +33,7 @@ Time derivative terms are ubiquitous in any transient simulation. The kernel
 block for a transient advection-diffusion-reaction problem that demonstrates the
 `TimeDerivative` syntax is shown below:
 
-!listing
- test/tests/kernels/adv_diff_reaction_transient/adv_diff_reaction_transient_test.i
- block=Kernels label=False
+!listing test/tests/kernels/adv_diff_reaction_transient/adv_diff_reaction_transient_test.i block=Kernels label=False
 
 !syntax parameters /Kernels/TimeDerivative
 
