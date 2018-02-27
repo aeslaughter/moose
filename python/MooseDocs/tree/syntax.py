@@ -45,8 +45,6 @@ class SyntaxNodeBase(NodeBase):
         out = copy.copy(self._groups)
         for node in self.descendants:
             out.update(node.groups)
-        #    if isinstance(node, ActionNode):
-         #       out.update(node.groups)
         return out
 
     @property
@@ -60,15 +58,6 @@ class SyntaxNodeBase(NodeBase):
             out.append(node.name)
             node = node.parent
         return '/'.join(reversed(out))
-
-   # def hasGroups(self, groups):
-   #     """
-   #     Return True if ANY of the supplied groups exist in this object or children of this object.
-   #     """
-   #     all_groups = set()
-   #     for node in self.descendants:
-   #         all_groups.update(node.groups.keys())
-   #     return len(all_groups.intersection(groups)) > 0
 
     def syntax(self, *args, **kwargs):
         """
@@ -88,7 +77,7 @@ class SyntaxNodeBase(NodeBase):
         """
         return self.__nodeFinder(ActionNode, *args, **kwargs)
 
-    def markdown(self, install, absolute=True):
+    def markdown(self, *args, **kwargs):
         """
         Return the expected markdown file name.
         """

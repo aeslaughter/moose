@@ -104,3 +104,7 @@ settings for this command are included in [appsyntax-list-settings].
 !devel! example id=appsyntax-list-example
 !syntax list /Adaptivity
 !devel-end!
+
+## Complete Syntax List
+
+!syntax complete level=3

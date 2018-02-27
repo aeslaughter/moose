@@ -130,13 +130,16 @@ class MarkdownNode(FileNode):
 
     def ast(self, reset=False):
         if reset or self._ast is None:
+            LOG.debug("Tokenize %s", self.source)
             self._ast = self.translator.ast(self)
         #TODO: error if none, this could be an attribute
         return self._ast
 
     def render(self, reset=False):
         if reset or self._html is None:
+            LOG.debug("Render %s", self.source)
             self._html = self.translator.render(self.ast(reset))
+
         #TODO: error if none
         return self._html #TODO change name of _html to something better
 
@@ -168,7 +171,7 @@ class MarkdownNode(FileNode):
         return os.path.relpath(self.destination, os.path.dirname(other.destination))
 
     def write(self):
-        if self._html:
+        if self._html is not None:
             dst = self.destination
             LOG.debug('Writing %s -> %s', self.source, dst)
             with codecs.open(dst, 'w', encoding='utf-8') as fid:

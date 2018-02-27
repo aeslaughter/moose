@@ -65,7 +65,7 @@ class AppSyntaxExtension(command.CommandExtension):
         command.CommandExtension.__init__(self, *args, **kwargs)
 
         self._app_syntax = None
-        if not self['disable']:
+        if not self['disable']:#self['disable'] != False:
             LOG.info("Reading MOOSE application syntax.")
             try:
                 exe = common.eval_path(self['executable'])
@@ -111,6 +111,7 @@ class AppSyntaxExtension(command.CommandExtension):
         self.addCommand(SyntaxDescriptionCommand())
         self.addCommand(SyntaxParametersCommand())
         self.addCommand(SyntaxListCommand())
+        self.addCommand(SyntaxCompleteCommand())
         self.addCommand(SyntaxInputsCommand())
         self.addCommand(SyntaxChildrenCommand())
 
@@ -139,10 +140,12 @@ class SyntaxCommandBase(command.CommandComponent):
             args = info['settings'].split()
             if args and ('=' not in args[0]):
                 self.settings['syntax'] = args[0]
+
         if self.settings['syntax']:
             obj = self.extension.find(self.settings['syntax'])
         else:
             obj = self.extension.syntax
+
         return self.createTokenFromSyntax(info, parent, obj)
 
     def createTokenFromSyntax(self, info, parent, obj):
@@ -252,10 +255,6 @@ class SyntaxListCommand(SyntaxCommandBase):
         return settings
 
     def createTokenFromSyntax(self, info, parent, obj):
-
-        if not isinstance(self.settings['subsystems'], bool):
-            print info.match.groups()
-
         return SyntaxToken(parent,
                            syntax=obj,
                            actions=self.settings['actions'],
@@ -264,6 +263,40 @@ class SyntaxListCommand(SyntaxCommandBase):
                            groups=self.settings['groups'].split() if self.settings['groups'] else [],
                            **self.attributes)
 
+class SyntaxCompleteCommand(SyntaxCommandBase):
+    SUBCOMMAND = 'complete'
+
+    @staticmethod
+    def defaultSettings():
+        settings = SyntaxCommandBase.defaultSettings()
+        settings['group'] = (None, "The group (app) to limit the complete syntax list.")
+        settings['actions'] = (True, "Include a list of Action objects in syntax.")
+        settings['level'] = (2, "Beginning heading level.")
+        #settings['objects'] = (True, "Include a list of MooseObject objects in syntax.")
+        #settings['subsystems'] = (True, "Include a list of sub system syntax in the output.")
+        return settings
+
+    def _addList(self, parent, obj, actions, group, level):
+
+        for child in obj.syntax(group=group):
+            h = tokens.Heading(parent, string=unicode(child.fullpath), level=level)
+            SyntaxToken(parent,
+                        syntax=child,
+                        actions=actions,
+                        objects=True,
+                        subsystems=False,
+                        groups=[group] if group else [],
+                        level=level)
+            self._addList(parent, child, actions, group, level + 1)
+
+
+    def createTokenFromSyntax(self, info, parent, obj):
+
+        self._addList(parent, obj,
+                      self.settings['actions'],
+                      self.settings['group'],
+                      int(self.settings['level']))
+
 
 class RenderSyntaxToken(components.RenderComponent):
     def createHTML(self, token, parent):
@@ -271,17 +304,15 @@ class RenderSyntaxToken(components.RenderComponent):
 
     def createMaterialize(self, token, parent):
 
+        root_page = token.root.page
         active_groups = [group.lower() for group in token.groups]
-        self._addSyntax(parent, token.syntax, active_groups, token.actions, token.objects, token.subsystems, 2)
 
-    def _addSyntax(self, parent, syntax, active_groups, actions, objects, subsystems, level):
-
-        groups = list(syntax.groups)
+        groups = list(token.syntax.groups)
         if 'Framework' in groups:
             groups.remove('Framework')
             groups.insert(0, 'Framework')
 
-        h = html.Tag(parent, 'h{}'.format(level), string=unicode(syntax.fullpath))
+        #h = html.Tag(parent, 'h{}'.format(level), string=unicode(syntax.fullpath))
 
         collection = html.Tag(None, 'ul', class_='collection with-header')
         for group in groups:
@@ -294,12 +325,12 @@ class RenderSyntaxToken(components.RenderComponent):
                           string=unicode(mooseutils.camel_to_space(group)))
 
             count = len(collection.children)
-            if actions:
-                self._addItems(collection, syntax.actions(group=group), 'moose-syntax-actions')
-            if objects:
-                self._addItems(collection, syntax.objects(group=group), 'moose-syntax-objects')
-            if subsystems:
-                self._addItems(collection, syntax.syntax(group=group), 'moose-syntax-subsystems')
+            if token.actions:
+                self._addItems(collection, token, token.syntax.actions(group=group), 'moose-syntax-actions')
+            if token.objects:
+                self._addItems(collection, token, token.syntax.objects(group=group), 'moose-syntax-objects')
+            if token.subsystems:
+                self._addItems(collection, token, token.syntax.syntax(group=group), 'moose-syntax-subsystems')
 
             if len(collection.children) == count:
                 li.parent = None
@@ -307,11 +338,21 @@ class RenderSyntaxToken(components.RenderComponent):
             if collection.children:
                 collection.parent=parent
 
-    def _addItems(self, parent, items, cls):
+    def _addItems(self, parent, token, items, cls):
+
+        root_page = token.root.page
 
         for obj in items:
             li = html.Tag(parent, 'li', class_='{} collection-item'.format(cls))
-            html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name)) #TODO: add href to html page
+
+            nodes = root_page.findall(obj.markdown())
+            if nodes:
+                href = nodes[0].relative(root_page)
+            else:
+                href = None
+
+
+            html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name), href=href) #TODO: add href to html page
 
             if isinstance(obj, syntax.ObjectNode):
                 desc = html.Tag(li, 'span', class_='{}-description'.format(cls))#, string=unicode(obj.description))
@@ -334,6 +375,9 @@ class RenderInputParametersToken(components.RenderComponent):
         pass
 
     def createMaterialize(self, token, parent):
+
+        if token.syntax.parameters is None:
+            return
 
         # Build the list of groups to display
         groups = collections.OrderedDict()

@@ -7,6 +7,7 @@ import logging
 import importlib
 import collections
 import multiprocessing
+import shutil
 
 import anytree
 import livereload
@@ -36,6 +37,10 @@ def main(options):
     LOG = logging.getLogger('MooseDocs.build')
 
     destination = os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site')
+
+    if os.path.exists(destination):
+        shutil.rmtree(destination)
+
     #logging.basicConfig(level=logging.DEBUG)
     config_file = 'config.yml'
 
@@ -43,6 +48,7 @@ def main(options):
     #LOG.setLevel(logging.DEBUG)
 
     translator, root = common.load_config(config_file)
+    print root
 
     #TODO: clean this up with better format and make it a function
     if options.grammer:
@@ -83,10 +89,11 @@ def main(options):
         # TODO: move to translator ???
         nodes = [node for node in anytree.PreOrderIter(root) if isinstance(node, MooseDocs.tree.page.MarkdownNode)]
 
+        for node in nodes:
+            node.ast()
 
-       #for node in nodes:
-        #    node.ast()
 
+        """
         jobs = []
         for chunk in mooseutils.make_chunks(nodes, num_threads):
             p = multiprocessing.Process(target=build_ast, args=(chunk,))
@@ -95,12 +102,14 @@ def main(options):
 
         for job in jobs:
             job.join()
+        """
 
         LOG.info("Rendering AST...")
 
-        #for node in nodes:
-        #    node.render()
+        for node in nodes:
+            node.render()
 
+        """
         jobs = []
         for chunk in mooseutils.make_chunks(nodes, num_threads):
             p = multiprocessing.Process(target=build_render, args=(chunk,))
@@ -109,7 +118,7 @@ def main(options):
 
         for job in jobs:
             job.join()
-
+        """
 
         #for node in anytree.PreOrderIter(root):
         #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
