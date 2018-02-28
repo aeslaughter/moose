@@ -554,7 +554,7 @@ class RenderException(components.RenderComponent):
 
         msg = u"An exception occurred while tokenizing, the exception was " \
               u"raised when executing the {} object while processing the " \
-              u"following content.".format(token.info.pattern.name)
+              u"following content.".format(token.info.pattern)
         html.String(p, content=msg)
         html.Tag(p, 'br', close=False)
 

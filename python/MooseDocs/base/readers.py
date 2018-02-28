@@ -105,21 +105,21 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         """
         The Lexer converts all TokenizeException caught during tokenization into tokens.Exception
         tokens. This allows the tokenization to report all errors at once and allow for the AST and
-        rendering to be performed. This method is simply a convience function for reporting the
+        rendering to be performed. This method is simply a convenience function for reporting the
         exceptions to the logging system.
         """
         n = 100
         title = []
-        if (token.root is not None) and isinstance(token.root.page, page.LocationNodeBase):
+        if isinstance(self.translator.current, page.LocationNodeBase):
             title += textwrap.wrap(u"An error occurred while tokenizing, the exception was " \
                                    u"raised when executing the {} object while processing the " \
-                                   u"following content.".format(token.info.pattern.name), n)
-            title += [u"{}:{}".format(token.root.page.source, token.info.line)]
+                                   u"following content.".format(token.info.pattern), n)
+            title += [u"{}:{}".format(self.translator.current, token.info.line)]
         else:
             title += textwrap.wrap(u"An error occurred on line {} while tokenizing, the " \
                                    u"exception was raised when executing the {} object while " \
                                    u"processing the following content." \
-                                   .format(token.info.line, token.info.pattern.name), n)
+                                   .format(token.info.line, token.info.pattern), n)
 
         box = MooseDocs.common.box(token.info[0], line=token.info.line, width=n)
         LOG.error(u'\n%s\n%s\n%s\n\n', u'\n'.join(title), box, token.traceback)

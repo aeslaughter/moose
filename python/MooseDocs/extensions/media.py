@@ -57,11 +57,13 @@ class MediaCommandBase(command.CommandComponent):
 
         # Determine the location of the media
         src = info['subcommand']
-        if src.startswith('http') or parent.root.page is None:
+#        if src.startswith('http') or parent.root.page is None:
+        if src.startswith('http') or self.translator.current is None:
             location = src
         else:
-            node = parent.root.page.findall(src, maxcount=1, mincount=1, exc=exceptions.TokenizeException)
-            location = unicode(node[0].relative(parent.root.page))
+            #node = parent.root.page.findall(src, maxcount=1, mincount=1, exc=exceptions.TokenizeException)
+            node = self.translator.current.findall(src, exc=exceptions.TokenizeException)
+            location = unicode(node.relative(self.translator.current))
 
         # Create the float and insert the media content
         flt = floats.Float(parent, **self.attributes)

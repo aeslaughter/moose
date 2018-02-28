@@ -14,6 +14,17 @@ from MooseDocs.common import exceptions
 
 LOG = logging.getLogger(__name__)
 
+class Pattern(object):
+    def __init__(self, name, regex, function):
+        # Perform input type checking
+        common.check_type('name', name, str)
+        common.check_type('regex', regex, type(re.compile('')))
+        common.check_type('function', function, types.FunctionType)
+
+        self.name = name
+        self.regex = regex
+        self.function = function
+
 class Grammer(object):
     """
     Defines a generic Grammer that contains the Token objects necessary to build an
@@ -23,10 +34,10 @@ class Grammer(object):
     """
 
     #: Container for information required for creating a Token object.
-    Pattern = collections.namedtuple('Pattern', 'name regex function')
+   # Pattern = collections.namedtuple('Pattern', 'name regex function')
 
     def __init__(self):
-        self.__patterns = common.Storage(Grammer.Pattern)
+        self.__patterns = common.Storage(Pattern)
 
     def add(self, name, regex, function, location='_end'):
         """
@@ -54,17 +65,9 @@ class Grammer(object):
                                         '>foo': Insert the new definition after the definition
                                                 named 'foo'.
         """
-
-        # Perform input type checking
-        common.check_type('name', name, str)
-        common.check_type('regex', regex, type(re.compile('')))
-        common.check_type('function', function, types.FunctionType)
-        common.check_type('location', location, (int, str))
-
         # Add the supplied information to the storage.
-        self.__patterns.add(name,
-                            Grammer.Pattern(name=name, regex=regex, function=function),
-                            location)
+        common.check_type('location', location, (int, str))
+        self.__patterns.add(name, Pattern(name, regex, function), location)
 
     def __contains__(self, key):
         """
@@ -95,9 +98,14 @@ class LexerInformation(object):
         line[int]: Current line number in supplied parsed text.
     """
     def __init__(self, match=None, pattern=None, line=None):
-        self.__match = match
-        self.__pattern = pattern
+        self.__match = dict()
+        self.__pattern = pattern.name
         self.__line = line
+
+        for i, group in enumerate(match.groups()):
+            self.__match[i] = group
+        for key, value in match.groupdict().iteritems():
+            self.__match[key] = value
 
     @property
     def line(self):
@@ -127,36 +135,36 @@ class LexerInformation(object):
         Inputs:
             value[int|str]: The regex group index or name.
         """
-        return self.__match.group(value)
+        return self.__match[value]
 
     def get(self, name, default):
         """
         Return the group or the supplied default.
         """
-        return self.__match.groupdict().get(name, default)
+        return self.__match.get(name, default)
 
     def keys(self):
         """
         List of named regex groups.
         """
-        return self.__match.groupdict().keys()
+        return self.__match.keys()
 
     def iteritems(self):
         """
         Iterate over the named groups.
         """
-        for key, value in self.__match.groupdict().iteritems():
+        for key, value in self.__match.iteritems():
             yield key, value
 
     def __contains__(self, value):
         """
         Check if a named group exists in the regex match.
         """
-        return value in self.__match.groupdict()
+        return value in self.__match
 
     def __str__(self):
         """
-        Return a resonable string for debugging.
+        Return a reasonable string for debugging.
         """
         return 'line:{} match:{} pattern:{}'.format(self.__line, self.__match, self.__pattern)
 
@@ -203,7 +211,7 @@ class Lexer(object):
                 if match:
                     info = LexerInformation(match, pattern, line)
                     try:
-                        obj = self.buildObject(parent, info)
+                        obj = self.buildObject(parent, pattern, info)
                     except exceptions.TokenizeException:
                         obj = tokens.Exception(parent,
                                                info=info,
@@ -224,11 +232,11 @@ class Lexer(object):
             msg = u'Unprocessed text exists:\n{}'.format(common.box(text[pos:], line=line))
             LOG.error(msg)
 
-    def buildObject(self, parent, info): #pylint: disable=no-self-use
+    def buildObject(self, parent, pattern, info): #pylint: disable=no-self-use
         """
         Return a token object for the given lexer information.
         """
-        obj = info.pattern.function(info, parent)
+        obj = pattern.function(info, parent)
         if MooseDocs.LOG_LEVEL == logging.DEBUG:
             common.check_type('obj', obj, (tokens.Token, type(None)),
                               exc=exceptions.TokenizeException)
@@ -278,7 +286,7 @@ class RecursiveLexer(Lexer):
         """
         self.grammer(group).add(*args)
 
-    def buildObject(self, parent, info):
+    def buildObject(self, parent, pattern, info):
         """
         Override the Lexer.buildObject method to recursively tokenize base on group names.
         """
@@ -286,7 +294,7 @@ class RecursiveLexer(Lexer):
             common.check_type('parent', parent, tokens.Token, exc=exceptions.TokenizeException)
             common.check_type('info', info, LexerInformation, exc=exceptions.TokenizeException)
 
-        obj = super(RecursiveLexer, self).buildObject(parent, info)
+        obj = super(RecursiveLexer, self).buildObject(parent, pattern, info)
 
         if (obj is not None) and (obj is not parent) and obj.recursive:
             for key, grammer in self._grammers.iteritems():

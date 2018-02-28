@@ -40,6 +40,7 @@ class Translator(mixins.ConfigObject):
         self.__extensions = extensions
         self.__reader = reader
         self.__renderer = renderer
+        self._current = None
 
         self.__reader.init(self)
         self.__renderer.init(self)
@@ -76,13 +77,17 @@ class Translator(mixins.ConfigObject):
         """
         return self.__renderer
 
+    @property
+    def current(self):
+        return self._current
+
    # @property
    # def lock(self):
    #     return self.__lock
 
     def reinit(self):
         """
-        Reinitializes the Reader, Renderer, and all Extension objects.
+        Reinitialize the Reader, Renderer, and all Extension objects.
         """
         tokens.CountToken.COUNTS.clear()
         self.reader.reinit()
@@ -92,7 +97,8 @@ class Translator(mixins.ConfigObject):
 
     def ast(self, content):
         node = content if isinstance(content, page.PageNodeBase) else None
-        ast = tokens.Token(None, page=node) # root node
+        self._current = node
+        ast = tokens.Token(None)#, page=node) # root node
         self.reinit()
         if node:
             node.read()
@@ -103,6 +109,7 @@ class Translator(mixins.ConfigObject):
         for ext in self.__extensions:
             ext.postTokenize(ast)
 
+        self._current = None
         return ast
 
     def render(self, ast):

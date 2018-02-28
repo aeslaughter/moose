@@ -15,6 +15,7 @@ from MooseDocs.tree import base
 from MooseDocs.common import exceptions, mixins
 
 LOG = logging.getLogger(__name__)
+CACHE = dict()
 
 class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
     PROPERTIES = [base.Property('content', ptype=unicode),
@@ -39,35 +40,45 @@ class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
         pass
 
 class LocationNodeBase(PageNodeBase):
-    PROPERTIES = PageNodeBase.PROPERTIES + [base.Property('base', ptype=str, default='')]
+    PROPERTIES = [base.Property('base', ptype=str, default='')]
 
     def __init__(self, *args, **kwargs):
         PageNodeBase.__init__(self, *args, **kwargs)
         self.name = os.path.basename(self.source)
-        self.__cache = dict()
+        self.fullpath = os.path.join(self.parent.fullpath, self.name) if self.parent else self.name
+
+        CACHE[self.fullpath] = self
 
     @property
     def local(self):
-        path = os.path.join(self.parent.local, self.name) if self.parent else self.name
-        return path
+        return self.fullpath
 
    # @property
    # def destination(self):
    #     return self.local
 
-    def findall(self, name, maxcount=None, mincount=None, exc=exceptions.MooseDocsException):
+    def findall(self, name, exc=exceptions.MooseDocsException):
 
-        if maxcount and not isinstance(maxcount, int):
-            raise exc("The 'maxcount' input must be an integer, but '{}' was provided.",
-                      type(maxcount).__name__)
+        if MooseDocs.LOG_LEVEL == logging.DEBUG:
+            common.check_type('name', name, (str, unicode))
+            common.check_type('exc', exc, type)
 
         try:
-            nodes = self.__cache[name]
-        except KeyError:
-            func = lambda n: n.local.endswith(name)
-            nodes = anytree.search.findall(self.root, filter_=func)
-            self.__cache[name] = nodes
+            return CACHE[name]
 
+        except KeyError:
+            pass
+
+        nodes = set()
+        for key in CACHE.keys():
+            if key.endswith(name):
+                nodes.add(CACHE[key])
+        #func = lambda n: n.local.endswith(name)
+        #nodes = anytree.search.findall(self.root, filter_=func)
+        #self.__cache[name] = nodes
+
+        maxcount = 1
+        mincount = 1
         if maxcount and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found for the name '{}'.".format(maxcount, len(nodes), name)
             for node in nodes:
@@ -80,7 +91,9 @@ class LocationNodeBase(PageNodeBase):
                 msg += '\n  {} (source: {})'.format(node.local, node.source)
             raise exc(msg)
 
-        return nodes
+        node = list(nodes)[0]
+        CACHE[name] = node
+        return node
 
     def relative(self, other):
         """ Location of this page related to the other page."""
@@ -117,7 +130,7 @@ class FileNode(LocationNodeBase):
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
-    PROPERTIES = FileNode.PROPERTIES + [base.Property('master', ptype=set)]
+    PROPERTIES = [base.Property('master', ptype=set)]
 
     def __init__(self, *args, **kwargs):
         FileNode.__init__(self, *args, **kwargs)

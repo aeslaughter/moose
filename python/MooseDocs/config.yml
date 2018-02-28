@@ -10,7 +10,7 @@ Content:
     framework:
         root_dir: framework/doc/content
         content:
-            - documentation/systems/Adaptivity/Markers/**
+            - documentation/systems/**
 
 Reader:
     type: MooseDocs.base.MarkdownReader

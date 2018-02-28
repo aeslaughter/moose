@@ -64,8 +64,7 @@ class AutoLinkMixin(object):
         tag['data-position'] = 'top'
         return tag
 
-    @staticmethod
-    def createHTMLHelper(token, parent, attr):
+    def createHTMLHelper(self, token, parent, attr):
         """Create the html.Tag and other information needed by RenderComponent objects."""
 
         # The HTML link tag
@@ -73,17 +72,15 @@ class AutoLinkMixin(object):
 
         # Locate the desired page
         exc = lambda msg: exceptions.RenderException(token.info, msg)
-        page = token.root.page.findall(getattr(token, attr), maxcount=1, mincount=1, exc=exc)
+        page = self.translator.current.findall(getattr(token, attr), exc=exc)
 
         # Get the relative path to the page being referenced
-        out = os.path.dirname(token.root.page.local)
-        href = os.path.relpath(page[0].local, out).replace('.md', '.html')
+        out = os.path.dirname(self.translator.current.local)
+        href = os.path.relpath(page.local, out).replace('.md', '.html')
 
-        return page[0], tag, href
+        return page, tag, href
 
-
-    @staticmethod
-    def findToken(ast, token):
+    def findToken(self, ast, token):
 
         # Load the token from the cache or locate it
         try:
@@ -96,7 +93,7 @@ class AutoLinkMixin(object):
 
         # If you get here the id does not exist
         msg = "Failed to locate a token with id '{}' in '{}'."
-        raise exceptions.RenderException(token.info, msg, token.bookmark[1:], ast.root.page.source)
+        raise exceptions.RenderException(token.info, msg, token.bookmark[1:], self.translator.current.source)
 
     @staticmethod
     def findHeading(root):
@@ -136,7 +133,8 @@ class AutoShortcutLinkComponent(core.ShortcutLink):
 
         # Markdown files
         match = LINK_RE.search(info['key'])
-        if match and (parent.root.page is not None):
+#        if match and (parent.root.page is not None):
+        if match and (self.translator.current is not None):
             return AutoShortcutLink(parent,
                                     key=match.group('filename'),
                                     bookmark=match.group('bookmark'),
@@ -156,7 +154,8 @@ class AutoLinkComponent(core.Link):
 
     def createToken(self, info, parent): #pylint: disable=doc-string
         match = LINK_RE.search(info['url'])
-        if match and (parent.root.page is not None):
+#        if match and (parent.root.page is not None):
+        if match and (self.translator.current is not None):
             return AutoLink(parent, url=match.group('filename'), bookmark=match.group('bookmark'))
         else:
             link = _source_token(parent, info['url'], info)

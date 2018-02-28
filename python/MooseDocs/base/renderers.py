@@ -90,8 +90,8 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
         except exceptions.RenderException as e:
             el = None
             msg = '\n' + e.message + '\n'
-            if token.root.page and token.info:
-                msg += "{}:{}".format(token.root.page.source, token.info.line)
+            if self.translator.current and token.info:
+                msg += "{}:{}".format(self.translator.current.source, token.info.line)
 
             msg += "\nAn error occurred while rendering, the error occured when attempting\n"\
                    "to execute the {} function on the {} token.".format(self.METHOD, type(token))
@@ -218,7 +218,7 @@ class MaterializeRenderer(HTMLRenderer):
         Renderer.render(self, ast) # calls reinit()
 
         root = html.Tag(None, '!DOCTYPE html', close=False)
-        root.page = ast.page #meta data
+        #root.page = ast.page #meta data
         html.Tag(root, 'html')
 
         head = html.Tag(root, 'head')
@@ -234,11 +234,11 @@ class MaterializeRenderer(HTMLRenderer):
         container = html.Tag(main, 'div', class_="container")
 
         # <head> content
-        self.addHead(head, root.page)
-        self.addRepo(nav, root.page)
-        self.addName(nav, root.page)
-        self.addNavigation(nav, root.page)
-        self.addBreadcrumbs(container, root.page)
+        self.addHead(head, self.translator.current)
+        self.addRepo(nav, self.translator.current)
+        self.addName(nav, self.translator.current)
+       # self.addNavigation(nav, self.translator.current)
+        self.addBreadcrumbs(container, self.translator.current)
 
         # Content
         row = html.Tag(container, 'div', class_="row")
@@ -246,13 +246,13 @@ class MaterializeRenderer(HTMLRenderer):
         HTMLRenderer.process(self, col, ast)
 
         # Sections
-        self.addSections(col, root.page)
+        self.addSections(col, self.translator.current)
 
 
         if self['scrollspy']:
             col['class'] = 'col s12 m12 l10'
             toc = html.Tag(row, 'div', class_="col hide-on-med-and-down l2")
-            self.addContents(toc, col, root.page)
+            self.addContents(toc, col, self.translator.current)
         else:
             col['class'] = 'col s12 m12 l12'
 
@@ -304,12 +304,12 @@ class MaterializeRenderer(HTMLRenderer):
             img0 = root_page.findall('github-logo.png')
             img1 = root_page.findall('github-mark.png')
 
-            html.Tag(a, 'img', src=img0[0].relative(root_page), class_='github-mark')
-            html.Tag(a, 'img', src=img1[0].relative(root_page), class_='github-logo')
+            html.Tag(a, 'img', src=img0.relative(root_page), class_='github-mark')
+            html.Tag(a, 'img', src=img1.relative(root_page), class_='github-logo')
 
         elif 'gitlab' in repo:
             img = root.findall('gitlab-logo.png')
-            html.Tag(a, 'img', src=img[0].relative(root_page), class_='gitlab-logo')
+            html.Tag(a, 'img', src=img.relative(root_page), class_='gitlab-logo')
 
     def addNavigation(self, nav, root_page):
         """
@@ -393,7 +393,7 @@ class MaterializeRenderer(HTMLRenderer):
         Group content into <section> tags based on the heading tag.
 
         Inputs:
-            root[tree.html.Tag]: The root tree.html node tree to add sections.
+            root[tree.html.Tag]: The root tree.html node tree to add sections.read
             collapsible[list]: A list with six entries indicating the sections to create as
                                collapsible.
         """

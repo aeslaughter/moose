@@ -78,7 +78,10 @@ class AppSyntaxExtension(command.CommandExtension):
         LOG.info("Building MOOSE class database.")
         self._database = common.build_class_database(self['includes'], self['inputs'])
 
+        # Cache the syntax entries, search the tree is very slow
         self._cache = dict()
+        for node in anytree.PreOrderIter(self._app_syntax):
+            self._cache[node.fullpath] = node
 
     @property
     def syntax(self):
@@ -94,15 +97,8 @@ class AppSyntaxExtension(command.CommandExtension):
         try:
             return self._cache[name]
         except KeyError:
-            pass
-
-        node = anytree.search.find(self.syntax, filter_=lambda n: n.fullpath == name)
-
-        if node is None:
             msg = "'{}' syntax was not recognized."
             raise exc(msg, name)
-
-        return node
 
     def extend(self, reader, renderer):
 
@@ -304,7 +300,7 @@ class RenderSyntaxToken(components.RenderComponent):
 
     def createMaterialize(self, token, parent):
 
-        root_page = token.root.page
+        root_page = self.translator.current#token.root.page
         active_groups = [group.lower() for group in token.groups]
 
         groups = list(token.syntax.groups)
@@ -340,26 +336,26 @@ class RenderSyntaxToken(components.RenderComponent):
 
     def _addItems(self, parent, token, items, cls):
 
-        root_page = token.root.page
+        root_page = self.translator.current# token.root.page
 
         for obj in items:
             li = html.Tag(parent, 'li', class_='{} collection-item'.format(cls))
 
-            nodes = root_page.findall(obj.markdown())
-            if nodes:
-                href = nodes[0].relative(root_page)
-            else:
-                href = None
+            href = None
 
+            """TODO: Get this working...
+            node = root_page.findall(obj.markdown())
+            href = node.relative(root_page) # allow error
+            """
 
-            html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name), href=href) #TODO: add href to html page
+            html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name), href=href)
 
             if isinstance(obj, syntax.ObjectNode):
-                desc = html.Tag(li, 'span', class_='{}-description'.format(cls))#, string=unicode(obj.description))
+                desc = html.Tag(li, 'span', class_='{}-description'.format(cls), string=unicode(obj.description))
 
-                ast = tokens.Token(None)
-                self.translator.reader.parse(ast, unicode(obj.description), group=MooseDocs.INLINE)
-                self.translator.renderer.process(desc, ast)
+                #ast = tokens.Token(None)
+                #self.translator.reader.parse(ast, unicode(obj.description), group=MooseDocs.INLINE)
+                #self.translator.renderer.process(desc, ast)
 
 
 class RenderAppSyntaxDisabledToken(components.RenderComponent):

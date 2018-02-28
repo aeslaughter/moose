@@ -154,6 +154,7 @@ class TokenComponent(Component):
             return {'style':self.settings['style'].strip(),
                     'id':self.settings['id'].strip(),
                     'class':self.settings['class'].strip()}
+        return dict()
 
     @property
     def settings(self):

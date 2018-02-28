@@ -24,6 +24,7 @@ def update_content(filename):
     content = re.sub(r'suffix=(\S+)', 'footer=\1', content)
     content = re.sub(r'include_end=(\S+)', 'include-end=\1', content)
     content = re.sub(r'\\(cite|citet|citep)\{(.*?)\}', r'[\1:\2]', content)
+    content = re.sub(r'\\ref\{(.*?)\}', r'[\2]', content)
 
     with open(filename, 'w') as fid:
         content = fid.write(content)

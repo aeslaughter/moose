@@ -5,8 +5,9 @@ of time. Nearly all objects (e.g., [Kernels],
 [BCs], etc.) may be enabled/disabled according to the simulation time using
 the `TimePeriod` control.
 
-For example, consider a simulation that contains two [Kernels] "diff0" and "diff1". Initially, "diff0" is active and after time 0.49 "diff1" becomes active and "diff0" is disable. The following code snippet demonstrates how this switching of kernels is achieve with
-the `TimePeriod` object.
+For example, consider a simulation that contains two [Kernels] "diff0" and "diff1". Initially,
+"diff0" is active and after time 0.49 "diff1" becomes active and "diff0" is disable. The following
+code snippet demonstrates how this switching of kernels is achieve with the `TimePeriod` object.
 
 !listing test/tests/controls/time_periods/kernels/kernels.i block=Controls
 

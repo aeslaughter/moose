@@ -60,7 +60,7 @@ in [MOOSE]. For example, the following input file snippet shows the use of the
 
 !listing test/tests/controls/real_function_control/real_function_control.i block=Controls id=controls_example caption=Example of a Control object used in a [MOOSE] input file.
 
-## Object and Parameter Names
+## Object and Parameter Names id=object-and-parameter-names
 
 Notice that in \ref{controls_example} the syntax for specifying a parameter is shown. In general,
 the syntax for a parameter name is specified as: `block/object/name`.

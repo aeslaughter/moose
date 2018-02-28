@@ -12,17 +12,20 @@ from MooseDocs.tree.base import Property
 # Documenting all these classes is far to repeative and useless.
 #pylint: disable=missing-docstring,unused-variable
 
-class IncludeToken(tokens.Token):
-    PROPERTIES = [Property("include", ptype=page.MarkdownNode, required=True)]
+#class IncludeToken(tokens.Token):
+    #PROPERTIES = [Property("include", ptype=page.MarkdownNode, required=True)]
+ #   PROPERTIES = [Property('include', ptype=unicode, require=True)
 
 def make_extension(**kwargs):
     return IncludeExtension(**kwargs)
 
 class IncludeExtension(command.CommandExtension):
+
+
     def extend(self, reader, renderer):
         self.requires(command)
         self.addCommand(IncludeCommand())
-        renderer.add(IncludeToken, RenderInclude())
+        #renderer.add(IncludeToken, RenderInclude())
 
 class IncludeCommand(command.CommandComponent):
     COMMAND = 'include'
@@ -37,29 +40,26 @@ class IncludeCommand(command.CommandComponent):
         return settings
 
     def createToken(self, info, parent):
-        master_page = parent.root.page
-        include_page = master_page.findall(info['subcommand'], maxcount=1)[0]
+        master_page = self.translator.current #parent.root.page
+        include_page = master_page.findall(info['subcommand'])
 
+        content = common.read(include_page.source) #TODO: copy existing tokens
         if self.settings['re']:
-            content = common.read(include_page.source)
             content = common.regex(self.settings['re'], content, eval(self.settings['re-flags']))
-            self.translator.reader.parse(parent, content)
-        else:
-            token = IncludeToken(parent, include=include_page)
 
-        include_page.master.add(master_page)
+        self.translator.reader.parse(parent, content)
         return parent
 
-class RenderInclude(components.RenderComponent):
-    """Render the included content."""
-
-    def create(self, token, parent):
-        ast = token.include.ast()
-        for child in ast:
-            self.translator.renderer.process(parent, child)
-
-    def createHTML(self, token, parent):
-        return self.create(token, parent)
-
-    def createLatex(self, token, parent):
-        return self.create(token, parent)
+#class RenderInclude(components.RenderComponent):
+#    """Render the included content."""
+#
+#    def create(self, token, parent):
+#        ast = token.include.ast()
+#        for child in ast:
+#            self.translator.renderer.process(parent, child)
+#
+#    def createHTML(self, token, parent):
+#        return self.create(token, parent)
+#
+#    def createLatex(self, token, parent):
+#        return self.create(token, parent)

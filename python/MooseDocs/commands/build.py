@@ -13,6 +13,7 @@ import anytree
 import livereload
 
 import mooseutils
+import scheduler
 
 import MooseDocs
 from MooseDocs import common
@@ -48,7 +49,7 @@ def main(options):
     #LOG.setLevel(logging.DEBUG)
 
     translator, root = common.load_config(config_file)
-    print root
+    #print root
 
     #TODO: clean this up with better format and make it a function
     if options.grammer:
@@ -84,19 +85,63 @@ def main(options):
         # Breaking this up allows for the complete AST for all pages to be available to others
         # when rendering (see autolink.py)
         num_threads=multiprocessing.cpu_count()
-        LOG.info("Building AST...")
 
         # TODO: move to translator ???
         nodes = [node for node in anytree.PreOrderIter(root) if isinstance(node, MooseDocs.tree.page.MarkdownNode)]
 
+        LOG.info("Building AST...")
         for node in nodes:
-            node.ast()
+            ast = node.ast()
+
+        #import cProfile, pstats, StringIO
+        #pr = cProfile.Profile()
+        #pr.enable()
+
+        LOG.info("Rendering AST...")
+        for node in nodes:
+            translator._current = node #TODO: figure out how to do this better
+            node.render()
+            translator._current = None
+
+        #pr.disable()
+        #s = StringIO.StringIO()
+        #sortby = 'cumulative'
+        #ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        #ps.print_stats()
+        #print s.getvalue()
+
+
+        #manager = multiprocessing.Manager()
+        #d = manager.dict()
+        #q = multiprocessing.Queue()
+
+        #import pickle
+        #for node in nodes:
+        #    ast = node.ast()
+        #    print node.name
+        #    pickle.dumps(ast)
+
+
+
+
+
+        #import time
+        #start = time.time()
+        #for node in nodes:
+        #    node.ast()
+        #stop = time.time()
+        #print 'AST: ', stop - start
+
+        #runner = scheduler.Scheduler(num_threads=num_threads)
+        #for node in nodes:
+        #    runner.schedule(node.ast)
+        #runner.waitFinish()
 
 
         """
         jobs = []
         for chunk in mooseutils.make_chunks(nodes, num_threads):
-            p = multiprocessing.Process(target=build_ast, args=(chunk,))
+            p = multiprocessing.Process(target=build_ast, args=(d, chunk))
             p.start()
             jobs.append(p)
 
@@ -104,10 +149,16 @@ def main(options):
             job.join()
         """
 
-        LOG.info("Rendering AST...")
 
-        for node in nodes:
-            node.render()
+        #start = time.time()
+
+        #for node in nodes:
+        #    node.render()
+
+        #runner = scheduler.Scheduler(num_threads=num_threads)
+        #for node in nodes:
+        #    runner.schedule(node.render)
+        #runner.waitFinish()
 
         """
         jobs = []
@@ -120,6 +171,10 @@ def main(options):
             job.join()
         """
 
+       # stop = time.time()
+       # print 'RENDER: ', stop - start
+
+
         #for node in anytree.PreOrderIter(root):
         #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
         #        node.ast()
@@ -128,14 +183,15 @@ def main(options):
         #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
         #        node.render()
 
-        for node in anytree.PreOrderIter(root):
-            node.write()#reset=False) #TODO: This probably should just be write()
+        #for node in anytree.PreOrderIter(root):
+        #    node.write()#reset=False) #TODO: This probably should just be write()
 
-        server.serve(root=destination, port=8000)
+        #server.serve(root=destination, port=8000)
 
-def build_ast(nodes):
+def build_ast(d, nodes):
     for node in nodes:
-        node.ast()
+        ast = node.ast()
+        #d[node.name] = ast
 
 def build_render(nodes):
     for node in nodes:

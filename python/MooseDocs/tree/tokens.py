@@ -20,10 +20,9 @@ class Token(NodeBase):
         *args, **kwarg: (Optional) All arguments and key, value pairs supplied are stored in the
                         settings property and may be retrieved via the various access methods.
     """
-    PROPERTIES = [Property('recursive', default=True), # This can go away
-                  Property('page', required=False), # only exists on root...make a Root node
+    PROPERTIES = [Property('recursive', default=True), # TODO: Can this go away
                   Property('string', ptype=unicode)]
-    #base.Property('info')] # change to meta
+    #base.Property('info')] # TODO: use property???
 
     def __init__(self, parent=None, name=None, **kwargs):
         self._info = kwargs.pop('info', None)
