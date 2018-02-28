@@ -35,7 +35,7 @@ def update(node, group, prefix, old_dir, new_dir):
     if group in node.groups:
         md = node.markdown(prefix)
 
-        if md.endswith('index.md') and group != 'Framework' and 'Framework' in node.groups:
+        if md.endswith('index.md'):
             return
 
         new = os.path.join(MooseDocs.MOOSE_DIR, new_dir, md)
