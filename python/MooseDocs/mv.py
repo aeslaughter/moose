@@ -47,12 +47,13 @@ def update(node, group, prefix, old_dir, new_dir):
             x.insert(-1, group.lower())
             old = os.path.join(MooseDocs.MOOSE_DIR, old_dir, *x)
 
-        loc = os.path.dirname(new)
-        if not os.path.exists(loc):
-            os.makedirs(loc)
-        print "{}:\n    OLD: {}\n    NEW: {}\n".format(node.name, old, new)
+        if os.path.exists(old):
+            loc = os.path.dirname(new)
+            if not os.path.exists(loc):
+                os.makedirs(loc)
+            print "{}:\n    OLD: {}\n    NEW: {}\n".format(node.name, old, new)
 
-        #subprocess.call(['git', 'mv', old, new])
+            subprocess.call(['git', 'mv', old, new])
         #subprocess.call(['cp', old, new])
 
         #if os.path.exists(old):
@@ -72,11 +73,11 @@ if __name__ == '__main__':
     locations['TensorMechanics'] = 'modules/tensor_mechanics/doc/content'
     locations['PhaseField'] = 'modules/phase_field/doc/content'
     locations['Rdg'] = 'modules/rdg/doc/content'
-    locations['Contact'] = 'modules/contect/doc/content'
+    locations['Contact'] = 'modules/contact/doc/content'
     locations['SolidMechanics'] = 'modules/solid_mechanics/doc/content'
     locations['HeatConduction'] = 'modules/heat_conduction/doc/content'
     locations['Framework'] = 'framework/doc/content'
-    locations['StochasticTools'] = 'modules/stocastic_tools/doc/content'
+    locations['StochasticTools'] = 'modules/stochastic_tools/doc/content'
     locations['Misc'] = 'modules/misc/doc/content'
     locations['FluidProperties'] = 'modules/fluid_properties/doc/content'
     locations['ChemicalReactions'] = 'modules/chemical_reactions/doc/content'
