@@ -19,18 +19,12 @@ LOG = logging.getLogger(__name__)
 CACHE = dict()
 
 class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
-    PROPERTIES = [base.Property('content', ptype=unicode),
-                  base.Property('source', ptype=str)]
+    PROPERTIES = [base.Property('source', ptype=str)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
         mixins.TranslatorObject.__init__(self)
         base.NodeBase.__init__(self, *args, **kwargs)
-
-    #def init(self, translator):
-    #    mixins.TranslatorObject.init(self, translator)
-    #    for child in self.children:
-    #        child.init(translator)
 
     def reinit(self):
         pass
@@ -63,7 +57,7 @@ class LocationNodeBase(PageNodeBase):
 
         if MooseDocs.LOG_LEVEL == logging.DEBUG:
             common.check_type('name', name, (str, unicode))
-            common.check_type('exc', exc, type)
+            common.check_type('exc', exc, (type, types.LambdaType))
 
         try:
             return CACHE[name]
@@ -120,57 +114,17 @@ class FileNode(LocationNodeBase):
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
-    PROPERTIES = [base.Property('master', ptype=set)]
+    PROPERTIES = [base.Property('content', ptype=unicode),
+                  base.Property('master', ptype=set)]
 
     def __init__(self, *args, **kwargs):
         FileNode.__init__(self, *args, **kwargs)
-        #self._ast = None
-        #self._html = None
-        #self._filename = os.path.join(self.base, self.local)
-        #self._modified_time = os.path.getmtime(self._filename) #TODO: get this working
-
         self.master = set() # FIX This...
 
     def reinit(self):
         if os.path.exists(self.source):
             LOG.debug('Reading {}'.format(self.source))
             self.content = common.read(self.source)
-
-
-    """
-    def ast(self, reset=False):
-        if reset or self._ast is None:
-            LOG.debug("Tokenize %s", self.source)
-            self._ast = self.translator.render(self)
-        #TODO: error if none, this could be an attribute
-        return self._ast
-
-    def render(self, reset=False):
-        if reset or self._html is None:
-            LOG.debug("Render %s", self.source)
-            self._html = self.translator.render(self.ast(reset))
-
-        #TODO: error if none
-        return self._html #TODO change name of _html to something better
-    """
-    def build(self, reset=True):
-        LOG.info('Building %s', self.source)
-
-        for node in self.master:
-            node.build(reset=reset)
-
-        #mod = os.path.getmtime(self._filename)
-        #if (self._ast is None) or (self._html is None) or (mod > self._modified_time):
-        #self.read()
-        #self._ast, self._html = self.translator.convert(self) #TODO: build cache of body within Translator
-        #self.ast(reset=True)
-
-        #self.render(reset=reset)
-
-        #self.write()
-        #self._ast = self.translator.ast(self)
-        #self._html = self.translator.render(self._ast)
-        #self._modified_time = mode
 
     @property
     def destination(self):
@@ -179,6 +133,10 @@ class MarkdownNode(FileNode):
     def relative(self, other):
         """ Location of this page related to the other page."""
         return os.path.relpath(self.destination, os.path.dirname(other.destination))
+
+    def build(self):
+        self.translator.build(node)
+        self.write()
 
     def write(self):
         if self._html is not None:

@@ -62,13 +62,15 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         """
 
         # Type checking
-        common.check_type('root', root, tokens.Token)
-        common.check_type('content', content, (unicode, page.PageNodeBase))
-        node = page.PageNodeBase(content=content) if isinstance(content, unicode) else content
+        if MooseDocs.LOG_LEVEL == logging.DEBUG:
+            common.check_type('root', root, tokens.Token)
+            common.check_type('content', content, unicode)
+        #common.check_type('content', content, (unicode, page.PageNodeBase))
+        #node = page.PageNodeBase(content=content) if isinstance(content, unicode) else content
 
         # Tokenize
         self.reinit()
-        self.__lexer.tokenize(root, self.__lexer.grammer(group), node.content)
+        self.__lexer.tokenize(root, self.__lexer.grammer(group), content)
 
         # Report errors
         for token in anytree.PreOrderIter(root):
@@ -84,9 +86,10 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
             component[components.TokenComponent]: The tokenize component to add.
             location[str|int]: The location to insert this component (see Grammer.py)
         """
-        common.check_type("group", group, str)
-        common.check_type("component", component, MooseDocs.base.components.TokenComponent)
-        common.check_type("location", location, (str, int))
+        if MooseDocs.LOG_LEVEL == logging.DEBUG:
+            common.check_type("group", group, str)
+            common.check_type("component", component, MooseDocs.base.components.TokenComponent)
+            common.check_type("location", location, (str, int))
 
         # Define the name of the component being added (for sorting within Grammer)
         #name = '{}.{}'.format(component.__module__, component.__class__.__name__)

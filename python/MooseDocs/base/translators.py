@@ -116,10 +116,8 @@ class Translator(mixins.ConfigObject):
         for ext in self.__extensions:
             ext.reinit()
 
-
     def ast(self, node):
         return self.__ast_cache[node]
-
 
     def tokenize(self):
         """Build AST for all pages."""
@@ -129,13 +127,7 @@ class Translator(mixins.ConfigObject):
         self.reinit()
         for node in self.__nodes:
             LOG.debug("Tokenize %s", node.source)
-            self.__current = node
-            ast = tokens.Token(None)
-            self.reader.parse(ast, node.content)
-            for ext in self.__extensions:
-                ext.postTokenize(ast)
-
-            self.__ast_cache[node] = ast
+            self.__tokenize(node)
             self.__current = None
 
     def render(self):
@@ -147,15 +139,26 @@ class Translator(mixins.ConfigObject):
             self.renderer.render(self.__ast_cache[node])
             self.__current = None
 
-    #TODO: build() do parallel seld.ast then self.render
+    def build(self, node):
+        LOG.info("Building %s", node.source)
+        if MooseDocs.LOG_LEVEL == logging.DEBUG:
+            common.check_type('node', node, page.MarkdownNode)
 
-    """
-    def convert(self, content):
-        # Convert the supplied content by passing it into the Reader to build an AST. Then, the AST
-        #is passed to the Renderer to create the desired output format.
-        node = content if isinstance(content, page.PageNodeBase) else None
-        ast = tokens.Token(None, page=node) # root node
-        self.reinit()
-        self.__reader.parse(ast, content)
-        return ast, self.__renderer.render(ast)
-    """
+        self.__tokenize(node)
+        self.__render(node)
+
+
+    def __tokenize(self, node):
+        self.__current = node
+        ast = tokens.Token(None)
+        self.reader.parse(ast, node.content)
+        for ext in self.__extensions:
+            ext.postTokenize(ast)
+        self.__current = None
+        self.__ast_cache[node] = ast
+
+
+    def __render(self, node):
+        self.__current = node
+        self.renderer.render(self.__ast_cache[node])
+        self.__current = None
