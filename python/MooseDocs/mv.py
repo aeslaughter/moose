@@ -14,7 +14,7 @@ def update_content(filename):
     with open(filename, 'r') as fid:
         content = fid.read()
 
-    content = re.sub(r'^(#+.*?)$', r'\1\n', content, flags=re.MULTILINE)
+    content = re.sub(r'^(#+.*?)$(?=\n^\S)', r'\1\n', content, flags=re.MULTILINE)
     content = re.sub(r'^!syntax objects (\S+)', r'!syntax list \1 objects=True actions=False subsystems=False', content, flags=re.MULTILINE)
     content = re.sub(r'^!syntax actions (\S+)', r'!syntax list \1 objects=False actions=True subsystems=False', content, flags=re.MULTILINE)
     content = re.sub(r'^!syntax subsystems (\S+)', r'!syntax list \1 objects=False actions=False subsystems=True', content, flags=re.MULTILINE)
