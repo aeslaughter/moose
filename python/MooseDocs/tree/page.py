@@ -16,7 +16,7 @@ from MooseDocs.common import exceptions, mixins
 from MooseDocs.tree import base
 
 LOG = logging.getLogger(__name__)
-CACHE = dict()
+CACHE = dict() # Create a global cache for faster searching, anytree search is very slow
 
 class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
     PROPERTIES = [base.Property('source', ptype=str)]
@@ -114,12 +114,12 @@ class FileNode(LocationNodeBase):
         shutil.copyfile(self.source, dst)
 
 class MarkdownNode(FileNode):
-    PROPERTIES = [base.Property('content', ptype=unicode),
-                  base.Property('master', ptype=set)]
+    PROPERTIES = [base.Property('content', ptype=unicode)]#,
+                  #base.Property('master', ptype=set)]
 
     def __init__(self, *args, **kwargs):
         FileNode.__init__(self, *args, **kwargs)
-        self.master = set() # FIX This...
+        #self.master = set() # FIX This...
 
     def reinit(self):
         if os.path.exists(self.source):
@@ -139,8 +139,9 @@ class MarkdownNode(FileNode):
         self.write()
 
     def write(self):
-        if self._html is not None:
-            dst = self.destination
-            LOG.debug('Writing %s -> %s', self.source, dst)
-            with codecs.open(dst, 'w', encoding='utf-8') as fid:
-                fid.write(self._html.write())
+        self.translator.write(node)
+        #if self._html is not None:
+        #    dst = self.destination
+        #    LOG.debug('Writing %s -> %s', self.source, dst)
+        #    with codecs.open(dst, 'w', encoding='utf-8') as fid:
+        #        fid.write(self._html.write())

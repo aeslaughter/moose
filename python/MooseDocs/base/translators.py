@@ -5,8 +5,11 @@ between the reading and rendering content.
 """
 import logging
 import multiprocessing
+import codecs
 
 import anytree
+
+import mooseutils
 
 import MooseDocs
 from MooseDocs import common
@@ -117,9 +120,9 @@ class Translator(mixins.ConfigObject):
             ext.reinit()
 
     def ast(self, node):
-        return self.__ast_cache[node]
+        return self.__ast_cache[node.source]
 
-    def tokenize(self):
+    def tokenize(self, num_threads=1):
         """Build AST for all pages."""
 
         LOG.info("Building AST...")
@@ -130,14 +133,29 @@ class Translator(mixins.ConfigObject):
             self.__tokenize(node)
             self.__current = None
 
-    def render(self):
+    def render(self, num_threads=1):
         """Convert all pages to HTML."""
         LOG.info("Rendering AST...")
-        for node in self.__nodes:
-            LOG.debug("Render %s", node.source)
-            self.__current = node
-            self.renderer.render(self.__ast_cache[node])
-            self.__current = None
+
+        def target(nodes):
+            for node in nodes:
+                self.__render(node)
+
+        jobs = []
+        for chunk in mooseutils.make_chunks(self.__nodes, num_threads):
+            p = multiprocessing.Process(target=target, args=(chunk,))
+            p.start()
+            jobs.append(p)
+
+        for job in jobs:
+            job.join()
+
+
+        #for node in self.__nodes:
+        #    LOG.debug("Render %s", node.source)
+        #    self.__current = node
+        #    self.renderer.render(self.__ast_cache[node])
+        #    self.__current = None
 
     def build(self, node):
         LOG.info("Building %s", node.source)
@@ -147,7 +165,6 @@ class Translator(mixins.ConfigObject):
         self.__tokenize(node)
         self.__render(node)
 
-
     def __tokenize(self, node):
         self.__current = node
         ast = tokens.Token(None)
@@ -155,10 +172,17 @@ class Translator(mixins.ConfigObject):
         for ext in self.__extensions:
             ext.postTokenize(ast)
         self.__current = None
-        self.__ast_cache[node] = ast
-
+        self.__ast_cache[node.source] = ast
 
     def __render(self, node):
         self.__current = node
-        self.renderer.render(self.__ast_cache[node])
+        html = self.renderer.render(self.__ast_cache[node.source])
+
+        #TODO: this should be separate write method, but need to get html pickling
+        dst = node.destination
+        LOG.debug('Writing %s -> %s', node.source, dst)
+        with codecs.open(dst, 'w', encoding='utf-8') as fid:
+            fid.write(html.write())
+
+
         self.__current = None

@@ -17,7 +17,7 @@ import scheduler
 
 import MooseDocs
 from MooseDocs import common
-
+from MooseDocs.tree import page
 
 
 def command_line_options(subparser, parent):
@@ -59,7 +59,7 @@ def main(options):
                 print '  ', pattern
 
     if False:
-        from MooseDocs.tree import page
+        #from MooseDocs.tree import page
         #filename = '/Users/slauae/projects/moosedown/docs/content/utilities/MooseDocs/autolink.md'
         #filename = '/Users/slauae/projects/MooseDocs/docs/content/documentation/sqa/moose_sdd.md'
         filename = '/Users/slauae/projects/moosedown/framework/doc/content/documentation/systems/Adaptivity/Markers/ValueRangeMarker.md'
@@ -76,8 +76,6 @@ def main(options):
         server = livereload.Server()
         for node in anytree.PreOrderIter(root):
             node.base = destination
-        #    node.init(translator)# = translator
-
             if node.source and os.path.isfile(node.source):
                 server.watch(node.source, node.build)
 
@@ -87,105 +85,18 @@ def main(options):
         num_threads=multiprocessing.cpu_count()
 
         translator.init(root)
-        translator.tokenize()
-        translator.render()
-        #for node in nodes:
-        #    ast = node.ast()
+        translator.tokenize(num_threads=num_threads)
 
-        #import cProfile, pstats, StringIO
-        #pr = cProfile.Profile()
-        #pr.enable()
+        # TODO: this should be part of translator.write() but can't until I get
+        # multiprocessing data working, when that happens this will need a lock
+        for node in anytree.PreOrderIter(root):
+            if not isinstance(node, page.MarkdownNode):
+                node.write()
 
-        #LOG.info("Rendering AST...")
-        #for node in nodes:
-        #    translator._current = node #TODO: figure out how to do this better
-        #    node.render()
-        #    translator._current = None
+        translator.render(num_threads=num_threads)
+        #translator.write(num_threads=num_threads) #TODO: get this working
 
-        #pr.disable()
-        #s = StringIO.StringIO()
-        #sortby = 'cumulative'
-        #ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        #ps.print_stats()
-        #print s.getvalue()
-
-
-        #manager = multiprocessing.Manager()
-        #d = manager.dict()
-        #q = multiprocessing.Queue()
-
-        #import pickle
-        #for node in nodes:
-        #    ast = node.ast()
-        #    print node.name
-        #    pickle.dumps(ast)
-
-
-
-
-
-        #import time
-        #start = time.time()
-        #for node in nodes:
-        #    node.ast()
-        #stop = time.time()
-        #print 'AST: ', stop - start
-
-        #runner = scheduler.Scheduler(num_threads=num_threads)
-        #for node in nodes:
-        #    runner.schedule(node.ast)
-        #runner.waitFinish()
-
-
-        """
-        jobs = []
-        for chunk in mooseutils.make_chunks(nodes, num_threads):
-            p = multiprocessing.Process(target=build_ast, args=(d, chunk))
-            p.start()
-            jobs.append(p)
-
-        for job in jobs:
-            job.join()
-        """
-
-
-        #start = time.time()
-
-        #for node in nodes:
-        #    node.render()
-
-        #runner = scheduler.Scheduler(num_threads=num_threads)
-        #for node in nodes:
-        #    runner.schedule(node.render)
-        #runner.waitFinish()
-
-        """
-        jobs = []
-        for chunk in mooseutils.make_chunks(nodes, num_threads):
-            p = multiprocessing.Process(target=build_render, args=(chunk,))
-            p.start()
-            jobs.append(p)
-
-        for job in jobs:
-            job.join()
-        """
-
-       # stop = time.time()
-       # print 'RENDER: ', stop - start
-
-
-        #for node in anytree.PreOrderIter(root):
-        #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
-        #        node.ast()
-
-        #for node in anytree.PreOrderIter(root):
-        #    if isinstance(node, MooseDocs.tree.page.MarkdownNode):
-        #        node.render()
-
-        #for node in anytree.PreOrderIter(root):
-        #    node.write()#reset=False) #TODO: This probably should just be write()
-
-        #server.serve(root=destination, port=8000)
+        server.serve(root=destination, port=8000)
 
 def build_ast(d, nodes):
     for node in nodes:
