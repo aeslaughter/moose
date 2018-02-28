@@ -18,7 +18,7 @@ def command_line_options(subparser, parent):
 
 def main(options):
 
-    location = os.path.join(MooseDocs.MOOSE_DIR, 'test')
+    location = os.path.abspath(os.path.join(os.getcwd(), '..'))
 
     root = app_syntax(location)
 

@@ -29,13 +29,13 @@ def update_content(filename):
     with open(filename, 'w') as fid:
         content = fid.write(content)
 
-def update(node, group, prefix, old_dir, new_dir):
+def update(node, group, group_dir_name, prefix, old_dir, new_dir):
 
     new = None; old = None
     if group in node.groups:
         md = node.markdown(prefix)
 
-        if md.endswith('index.md'):
+        if md.endswith('index.md') and (group != 'Framework') and ('Framework' in node.groups):
             return
 
         new = os.path.join(MooseDocs.MOOSE_DIR, new_dir, md)
@@ -44,7 +44,7 @@ def update(node, group, prefix, old_dir, new_dir):
 
         elif isinstance(node, syntax.ObjectNode):
             x = md.split('/')
-            x.insert(-1, group.lower())
+            x.insert(-1, group_dir_name)
             old = os.path.join(MooseDocs.MOOSE_DIR, old_dir, *x)
 
         if os.path.exists(old):
@@ -68,23 +68,24 @@ if __name__ == '__main__':
     old_dir = 'docs/content'
 
     locations = dict()
-    locations['XFEM'] = 'modules/xfem/doc/content'
-    locations['NavierStokes'] = 'modules/navier_stokes/doc/content'
-    locations['TensorMechanics'] = 'modules/tensor_mechanics/doc/content'
-    locations['PhaseField'] = 'modules/phase_field/doc/content'
-    locations['Rdg'] = 'modules/rdg/doc/content'
-    locations['Contact'] = 'modules/contact/doc/content'
-    locations['SolidMechanics'] = 'modules/solid_mechanics/doc/content'
-    locations['HeatConduction'] = 'modules/heat_conduction/doc/content'
-    locations['Framework'] = 'framework/doc/content'
-    locations['StochasticTools'] = 'modules/stochastic_tools/doc/content'
-    locations['Misc'] = 'modules/misc/doc/content'
-    locations['FluidProperties'] = 'modules/fluid_properties/doc/content'
-    locations['ChemicalReactions'] = 'modules/chemical_reactions/doc/content'
-    locations['LevelSet'] = 'modules/level_set/doc/content'
-    locations['PorousFlow'] = 'modules/porous_flow/doc/content'
-    locations['Richards'] = 'modules/richards/doc/content'
+    locations['XFEM'] = ('xfem', 'modules/xfem/doc/content')
+    locations['NavierStokes'] = ('navier_stokes', 'modules/navier_stokes/doc/content')
+    locations['TensorMechanics'] = ('tensor_mechanics', 'modules/tensor_mechanics/doc/content')
+    locations['PhaseField'] = ('phase_field', 'modules/phase_field/doc/content')
+    locations['Rdg'] = ('rdg', 'modules/rdg/doc/content')
+    locations['Contact'] = ('contact', 'modules/contact/doc/content')
+    locations['SolidMechanics'] = ('solid_mechanics', 'modules/solid_mechanics/doc/content')
+    locations['HeatConduction'] = ('heat_conduction', 'modules/heat_conduction/doc/content')
+    locations['Framework'] = ('framework', 'framework/doc/content')
+    locations['StochasticTools'] = ('stochastic_tools', 'modules/stochastic_tools/doc/content')
+    locations['Misc'] = ('misc', 'modules/misc/doc/content')
+    locations['FluidProperties'] = ('fluid_properties', 'modules/fluid_properties/doc/content')
+    locations['ChemicalReactions'] = ('chemical_reactions', 'modules/chemical_reactions/doc/content')
+    locations['LevelSet'] = ('level_set', 'modules/level_set/doc/content')
+    locations['PorousFlow'] = ('porous_flow', 'modules/porous_flow/doc/content')
+    locations['Richards'] = ('richards', 'modules/richards/doc/content')
     for group in root.groups:
-        new_dir = locations[group]
+        new_dir = locations[group][1]
+        group_dir_name = locations[group][0]
         for node in anytree.PreOrderIter(root):
-            update(node, group, prefix, old_dir, new_dir)
+            update(node, group, group_dir_name, prefix, old_dir, new_dir)
