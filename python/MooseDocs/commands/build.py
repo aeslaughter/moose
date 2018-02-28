@@ -49,7 +49,7 @@ def main(options):
     #LOG.setLevel(logging.DEBUG)
 
     translator, root = common.load_config(config_file)
-    #print root
+    print root
 
     #TODO: clean this up with better format and make it a function
     if options.grammer:

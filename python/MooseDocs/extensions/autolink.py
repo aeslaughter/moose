@@ -72,7 +72,7 @@ class AutoLinkMixin(object):
 
         # Locate the desired page
         exc = lambda msg: exceptions.RenderException(token.info, msg)
-        page = self.translator.current.findall(getattr(token, attr), exc=exc)
+        page = self.translator.current.findall(getattr(token, attr), exc=exc)[0]
 
         # Get the relative path to the page being referenced
         out = os.path.dirname(self.translator.current.local)

@@ -301,14 +301,14 @@ class MaterializeRenderer(HTMLRenderer):
         a = html.Tag(nav, 'a', href=repo, class_='right')
 
         if 'github' in repo:
-            img0 = root_page.findall('github-logo.png')
-            img1 = root_page.findall('github-mark.png')
+            img0 = root_page.findall('github-logo.png')[0]
+            img1 = root_page.findall('github-mark.png')[0]
 
             html.Tag(a, 'img', src=img0.relative(root_page), class_='github-mark')
             html.Tag(a, 'img', src=img1.relative(root_page), class_='github-logo')
 
         elif 'gitlab' in repo:
-            img = root.findall('gitlab-logo.png')
+            img = root.findall('gitlab-logo.png')[0]
             html.Tag(a, 'img', src=img.relative(root_page), class_='gitlab-logo')
 
     def addNavigation(self, nav, root_page):
@@ -334,7 +334,7 @@ class MaterializeRenderer(HTMLRenderer):
             bot_ul = html.Tag(nav, 'ul', id_=id_, class_='dropdown-content')
             for key2, value2 in value1.iteritems():
                 bot_li = html.Tag(bot_ul, 'li')
-                node = root_page.findall(value2)
+                node = root_page.findall(value2)[0]
                 href = node[0].relative(root_page) if node else '#!' #TODO: ADD ERROR
                 a = html.Tag(bot_li, 'a', href=href, string=unicode(key2))
 

@@ -4,6 +4,7 @@ Create !include command for importing content.
 import re
 
 from MooseDocs import common
+from MooseDocs.common import exceptions
 from MooseDocs.base import components
 from MooseDocs.extensions import command
 from MooseDocs.tree import tokens, page
@@ -41,7 +42,7 @@ class IncludeCommand(command.CommandComponent):
 
     def createToken(self, info, parent):
         master_page = self.translator.current #parent.root.page
-        include_page = master_page.findall(info['subcommand'])
+        include_page = master_page.findall(info['subcommand'], exc=exceptions.TokenizeException)[0]
 
         content = common.read(include_page.source) #TODO: copy existing tokens
         if self.settings['re']:

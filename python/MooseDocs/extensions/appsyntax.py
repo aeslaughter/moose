@@ -343,10 +343,17 @@ class RenderSyntaxToken(components.RenderComponent):
 
             href = None
 
-            """TODO: Get this working...
-            node = root_page.findall(obj.markdown())
-            href = node.relative(root_page) # allow error
-            """
+            nodes = root_page.findall(obj.markdown(), exc=None)
+            if len(nodes) > 1:
+                msg = "Located multiple pages with the given filename:"
+                for n in nodes:
+                    msg += '\n    {}'.format(n.fullpath)
+                LOG.error(msg)
+            elif len(nodes) == 0:
+                msg = "Unable to a pages with the given filename: %s"
+                LOG.error(msg, obj.markdown())
+            else:
+                href = nodes[0].relative(root_page) # allow error
 
             html.Tag(li, 'a', class_='{}-name'.format(cls), string=unicode(obj.name), href=href)
 

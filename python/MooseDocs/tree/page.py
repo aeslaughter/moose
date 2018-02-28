@@ -38,10 +38,13 @@ class LocationNodeBase(PageNodeBase):
 
     def __init__(self, *args, **kwargs):
         PageNodeBase.__init__(self, *args, **kwargs)
+        _, self.extension = os.path.splitext(self.source)
         self.name = os.path.basename(self.source)
-        self.fullpath = os.path.join(self.parent.fullpath, self.name) if self.parent else self.name
 
-        CACHE[self.fullpath] = self
+        self.fullpath = os.path.join(self.parent.fullpath, self.name) if self.parent else self.name
+        #self.fullpath += self.extension
+
+        CACHE[self.fullpath] = set([self])
 
     @property
     def local(self):
@@ -51,14 +54,14 @@ class LocationNodeBase(PageNodeBase):
    # def destination(self):
    #     return self.local
 
-    def findall(self, name, exc=exceptions.MooseDocsException):
+    def findall(self, name, maxcount=1, mincount=1, exc=exceptions.MooseDocsException):
 
         if MooseDocs.LOG_LEVEL == logging.DEBUG:
             common.check_type('name', name, (str, unicode))
-            common.check_type('exc', exc, (type, types.LambdaType))
+            common.check_type('exc', exc, (type, types.LambdaType, type(None)))
 
         try:
-            return CACHE[name]
+            return list(CACHE[name])
 
         except KeyError:
             pass
@@ -66,35 +69,32 @@ class LocationNodeBase(PageNodeBase):
         nodes = set()
         for key in CACHE.keys():
             if key.endswith(name):
-                nodes.add(CACHE[key])
+                nodes.update(CACHE[key])
         #func = lambda n: n.local.endswith(name)
         #nodes = anytree.search.findall(self.root, filter_=func)
         #self.__cache[name] = nodes
 
-        maxcount = 1
-        mincount = 1
-        if maxcount and len(nodes) > maxcount:
+        if maxcount and exc and len(nodes) > maxcount:
             msg = "The 'maxcount' was set to {} but {} nodes were found for the name '{}'.".format(maxcount, len(nodes), name)
             for node in nodes:
                 msg += '\n  {} (source: {})'.format(node.local, node.source)
             raise exc(msg)
 
-        elif mincount and len(nodes) < mincount:
+        elif mincount and exc and len(nodes) < mincount:
             msg = "The 'mincount' was set to {} but {} nodes were found for the name '{}'.".format(mincount, len(nodes), name)
             for node in nodes:
                 msg += '\n  {} (source: {})'.format(node.local, node.source)
             raise exc(msg)
 
-        node = list(nodes)[0]
-        CACHE[name] = node
-        return node
+        CACHE[name] = nodes
+        return list(nodes)
 
     def relative(self, other):
         """ Location of this page related to the other page."""
         return os.path.relpath(self.local, os.path.dirname(other.local))
 
     def console(self):
-        return '{} ({}): {}'.format(self.name, self.__class__.__name__, self.source)
+        return '{} ({}): {}'.format(self.name, self.__class__.__name__, self.local)
 
 class DirectoryNode(LocationNodeBase):
     COLOR = 'CYAN'
