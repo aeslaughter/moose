@@ -59,6 +59,14 @@ class SyntaxNodeBase(NodeBase):
             node = node.parent
         return '/'.join(reversed(out))
 
+    def findfull(self, name, maxlevel=None):
+        """
+        Search for a node, by full name.
+        """
+        for node in anytree.PreOrderIter(self, maxlevel=maxlevel):
+            if node.fullpath == name:
+                return node
+
     def syntax(self, *args, **kwargs):
         """
         Return SyntaxNode nodes (see __nodeFinder).

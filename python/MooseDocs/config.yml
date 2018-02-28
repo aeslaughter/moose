@@ -52,7 +52,15 @@ Extensions:
     appsyntax:
         type: MooseDocs.extensions.appsyntax
         executable: ${MOOSE_DIR}/modules/combined
-       # disable: False
+        includes:
+            - framework/include
+        remove-syntax:
+            - /Variables/InitialCondition/*
+            - \!/Variables/InitialCondition/AddICAction
+            - /AuxVariables/InitialCondition/*
+            - \!/AuxVariables/InitialCondition/AddICAction
+            - /Bounds/*
+            # disable: False
     globals:
         type: MooseDocs.extensions.global
         shortcuts: !include ../../docs/globals.yml

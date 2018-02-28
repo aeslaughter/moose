@@ -8,15 +8,18 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 #pylint: enable=missing-docstring
-
+import os
 import sys
 import collections
-
 import logging
+
+import anytree
 import json
 
 import mooseutils
 
+
+from build_page_tree import build_regex, find_files
 from MooseDocs.tree.syntax import SyntaxNode, MooseObjectNode, ActionNode, MooseObjectActionNode
 
 LOG = logging.getLogger(__name__)
@@ -68,7 +71,7 @@ def __syntax_tree_helper(parent, item):
             __add_moose_object_helper(parent, k, v)
 
 
-def app_syntax(location, hide=None):
+def app_syntax(location, remove=None, remove_test_apps=True, hide=None):
     """
     Creates a tree structure representing the MooseApp syntax for the given executable.
 
@@ -96,6 +99,44 @@ def app_syntax(location, hide=None):
         node = SyntaxNode(root, key)
         __syntax_tree_helper(node, value)
 
+
+    if remove is not None:
+        exclude = []
+        include = []
+        for item in remove:
+            if item.startswith('!'):
+                include.append(item)
+            else:
+                exclude.append(item)
+
+        complete = set()
+        for node in anytree.PreOrderIter(root):
+            complete.add(node.fullpath)
+
+        # Create the complete set of files
+        output = set()
+        for pattern in exclude:
+            output.update(find_files(complete, pattern))
+
+        for pattern in include:
+            output -= find_files(output, pattern)
+
+        complete -= output
+
+        for node in anytree.PreOrderIter(root):
+            if node.fullpath not in complete:
+                node.parent = None
+
+    if remove_test_apps:
+        for node in anytree.PreOrderIter(root):
+            if all([group.endswith('Test') for group in node.groups]):
+                node.parent = None
+
+    #if remove is not None:
+    #    for node in root.findall():
+    #       if node.
+
+    """
     if hide is not None:
         for node in root.findall():
             if ('all' in hide) and (node.full_name in hide['all']):
@@ -103,4 +144,5 @@ def app_syntax(location, hide=None):
             for group in node.groups:
                 if (group in hide) and (node.full_name in hide[group]):
                     node.hidden = True
+    """
     return root

@@ -34,6 +34,10 @@ def update(node, group, prefix, old_dir, new_dir):
     new = None; old = None
     if group in node.groups:
         md = node.markdown(prefix)
+
+        if md.endswith('index.md'):
+            return
+
         new = os.path.join(MooseDocs.MOOSE_DIR, new_dir, md)
         if isinstance(node, syntax.SyntaxNode):
             old = os.path.join(MooseDocs.MOOSE_DIR, old_dir, md)
@@ -49,24 +53,37 @@ def update(node, group, prefix, old_dir, new_dir):
         print "{}:\n    OLD: {}\n    NEW: {}\n".format(node.name, old, new)
 
         #subprocess.call(['git', 'mv', old, new])
-        subprocess.call(['cp', old, new])
+        #subprocess.call(['cp', old, new])
 
-        if os.path.exists(old):
-            update_content(new)
+        #if os.path.exists(old):
+        #    update_content(new)
 
 if __name__ == '__main__':
 
     exe = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'combined')
     root = app_syntax(exe)
 
-    group = 'Framework'
     prefix = 'documentation/systems'
-
     old_dir = 'docs/content'
-    new_dir = '{}/doc/content'.format(group.lower())
 
-    for node in anytree.PreOrderIter(root):
-        update(node, group, prefix, old_dir, new_dir)
-
-#    markers = anytree.search.find(root, filter_=lambda n: n.fullpath == '/Adaptivity/Markers')
-#    update(markers)
+    locations = dict()
+    locations['XFEM'] = 'modules/xfem/doc/content'
+    locations['NavierStokes'] = 'modules/navier_stokes/doc/content'
+    locations['TensorMechanics'] = 'modules/tensor_mechanics/doc/content'
+    locations['PhaseField'] = 'modules/phase_field/doc/content'
+    locations['Rdg'] = 'modules/rdg/doc/content'
+    locations['Contact'] = 'modules/contect/doc/content'
+    locations['SolidMechanics'] = 'modules/solid_mechanics/doc/content'
+    locations['HeatConduction'] = 'modules/heat_conduction/doc/content'
+    locations['Framework'] = 'framework/doc/content'
+    locations['StochasticTools'] = 'modules/stocastic_tools/doc/content'
+    locations['Misc'] = 'modules/misc/doc/content'
+    locations['FluidProperties'] = 'modules/fluid_properties/doc/content'
+    locations['ChemicalReactions'] = 'modules/chemical_reactions/doc/content'
+    locations['LevelSet'] = 'modules/level_set/doc/content'
+    locations['PorousFlow'] = 'modules/porous_flow/doc/content'
+    locations['Richards'] = 'modules/richards/doc/content'
+    for group in root.groups:
+        new_dir = locations[group]
+        for node in anytree.PreOrderIter(root):
+            update(node, group, prefix, old_dir, new_dir)

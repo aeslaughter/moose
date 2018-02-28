@@ -59,6 +59,7 @@ class AppSyntaxExtension(command.CommandExtension):
         config['includes'] = ([], "List of include directories to investigate for class information.")
         config['inputs'] = ([], "List of directories to interrogate for input files using an object.")
         config['disable'] = (False, "Disable running the MOOSE application executable and simply use place holder text.")
+        config['remove-syntax'] = ([], "List of syntax to remove, using git style glob. For example, use '/foo/*' to remove all syntax in the foo block and '!/foo/bar' to keep the bar block only.")
         return config
 
     def __init__(self, *args, **kwargs):
@@ -69,7 +70,7 @@ class AppSyntaxExtension(command.CommandExtension):
             LOG.info("Reading MOOSE application syntax.")
             try:
                 exe = common.eval_path(self['executable'])
-                self._app_syntax = app_syntax(exe)
+                self._app_syntax = app_syntax(exe, remove=self['remove-syntax'])
             except:
                 msg = "Failed to load application executable from '%s', " \
                       "application syntax is being disabled."
@@ -79,9 +80,10 @@ class AppSyntaxExtension(command.CommandExtension):
         self._database = common.build_class_database(self['includes'], self['inputs'])
 
         # Cache the syntax entries, search the tree is very slow
-        self._cache = dict()
-        for node in anytree.PreOrderIter(self._app_syntax):
-            self._cache[node.fullpath] = node
+        if self._app_syntax:
+            self._cache = dict()
+            for node in anytree.PreOrderIter(self._app_syntax):
+                self._cache[node.fullpath] = node
 
     @property
     def syntax(self):
@@ -292,6 +294,7 @@ class SyntaxCompleteCommand(SyntaxCommandBase):
                       self.settings['actions'],
                       self.settings['group'],
                       int(self.settings['level']))
+        return parent
 
 
 class RenderSyntaxToken(components.RenderComponent):
@@ -307,8 +310,6 @@ class RenderSyntaxToken(components.RenderComponent):
         if 'Framework' in groups:
             groups.remove('Framework')
             groups.insert(0, 'Framework')
-
-        #h = html.Tag(parent, 'h{}'.format(level), string=unicode(syntax.fullpath))
 
         collection = html.Tag(None, 'ul', class_='collection with-header')
         for group in groups:
@@ -342,7 +343,6 @@ class RenderSyntaxToken(components.RenderComponent):
             li = html.Tag(parent, 'li', class_='{} collection-item'.format(cls))
 
             href = None
-
             nodes = root_page.findall(obj.markdown(), exc=None)
             if len(nodes) > 1:
                 msg = "Located multiple pages with the given filename:"
@@ -350,8 +350,8 @@ class RenderSyntaxToken(components.RenderComponent):
                     msg += '\n    {}'.format(n.fullpath)
                 LOG.error(msg)
             elif len(nodes) == 0:
-                msg = "Unable to a pages with the given filename: %s"
-                LOG.error(msg, obj.markdown())
+                msg = "%s:%s\nUnable to find a page with the given filename %s"
+                LOG.error(msg, self.translator.current.source, token.info.line, obj.markdown())
             else:
                 href = nodes[0].relative(root_page) # allow error
 
