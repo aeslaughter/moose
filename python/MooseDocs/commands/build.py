@@ -76,7 +76,7 @@ def main(options):
         server = livereload.Server()
         for node in anytree.PreOrderIter(root):
             node.base = destination
-            node.init(translator)# = translator
+        #    node.init(translator)# = translator
 
             if node.source and os.path.isfile(node.source):
                 server.watch(node.source, node.build)
@@ -86,22 +86,21 @@ def main(options):
         # when rendering (see autolink.py)
         num_threads=multiprocessing.cpu_count()
 
-        # TODO: move to translator ???
-        nodes = [node for node in anytree.PreOrderIter(root) if isinstance(node, MooseDocs.tree.page.MarkdownNode)]
-
-        LOG.info("Building AST...")
-        for node in nodes:
-            ast = node.ast()
+        translator.init(root)
+        translator.tokenize()
+        translator.render()
+        #for node in nodes:
+        #    ast = node.ast()
 
         #import cProfile, pstats, StringIO
         #pr = cProfile.Profile()
         #pr.enable()
 
-        LOG.info("Rendering AST...")
-        for node in nodes:
-            translator._current = node #TODO: figure out how to do this better
-            node.render()
-            translator._current = None
+        #LOG.info("Rendering AST...")
+        #for node in nodes:
+        #    translator._current = node #TODO: figure out how to do this better
+        #    node.render()
+        #    translator._current = None
 
         #pr.disable()
         #s = StringIO.StringIO()

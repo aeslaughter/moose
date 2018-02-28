@@ -6,6 +6,8 @@ between the reading and rendering content.
 import logging
 import multiprocessing
 
+import anytree
+
 import MooseDocs
 from MooseDocs import common
 from MooseDocs.common import mixins
@@ -40,7 +42,11 @@ class Translator(mixins.ConfigObject):
         self.__extensions = extensions
         self.__reader = reader
         self.__renderer = renderer
-        self._current = None
+
+        self.__root = None
+        self.__nodes = None
+        self.__current = None
+        self.__ast_cache = dict()
 
         self.__reader.init(self)
         self.__renderer.init(self)
@@ -79,16 +85,22 @@ class Translator(mixins.ConfigObject):
 
     @property
     def current(self):
-        return self._current
+        return self.__current
 
    # @property
    # def lock(self):
    #     return self.__lock
 
 
-    #def init(self, pages): set the content...this cal call node.init(self)
-    #    pass
+    def init(self, pages):
+        common.check_type('pages', pages, page.PageNodeBase)
+        self.__root = pages
 
+        self.__nodes = []
+        for node in anytree.PreOrderIter(self.__root):
+            if isinstance(node, page.MarkdownNode):
+                node.init(self)
+                self.__nodes.append(node)
 
     def reinit(self):
         """
@@ -97,36 +109,43 @@ class Translator(mixins.ConfigObject):
         tokens.CountToken.COUNTS.clear()
         self.reader.reinit()
         self.renderer.reinit()
+
+        for node in self.__nodes:
+            node.reinit()
+
         for ext in self.__extensions:
             ext.reinit()
 
-    def ast(self, content):
-        # TODO: content should loop over all nodes, in parallel...
+
+    def ast(self, node):
+        return self.__ast_cache[node]
 
 
-        node = content if isinstance(content, page.PageNodeBase) else None
-        self._current = node
-        ast = tokens.Token(None)#, page=node) # root node
+    def tokenize(self):
+        """Build AST for all pages."""
+
+        LOG.info("Building AST...")
+
         self.reinit()
-        if node:
-            node.read()
-            self.__reader.parse(ast, node.content)
-        else:
-            self.__reader.parse(ast, content)
+        for node in self.__nodes:
+            LOG.debug("Tokenize %s", node.source)
+            self.__current = node
+            ast = tokens.Token(None)
+            self.reader.parse(ast, node.content)
+            for ext in self.__extensions:
+                ext.postTokenize(ast)
 
-        for ext in self.__extensions:
-            ext.postTokenize(ast)
+            self.__ast_cache[node] = ast
+            self.__current = None
 
-        self._current = None
-
-        # TODO: cache current with ast as key
-
-        return ast
-
-    def render(self, ast):
-        # TODO: content should loop over all nodes, in parallel...
-
-        return self.__renderer.render(ast)
+    def render(self):
+        """Convert all pages to HTML."""
+        LOG.info("Rendering AST...")
+        for node in self.__nodes:
+            LOG.debug("Render %s", node.source)
+            self.__current = node
+            self.renderer.render(self.__ast_cache[node])
+            self.__current = None
 
     #TODO: build() do parallel seld.ast then self.render
 

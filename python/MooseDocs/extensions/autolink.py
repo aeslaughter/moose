@@ -171,7 +171,7 @@ class RenderAutoLink(AutoLinkMixin, core.RenderLink):
         page, tag, href = self.createHTMLHelper(token, parent, 'url')
 
         if token.bookmark:
-            self.findToken(page.ast(), token) # error check
+            self.findToken(self.translator.ast(page), token) # error check
             href += token.bookmark
 
         tag['href'] = href
@@ -184,18 +184,18 @@ class RenderAutoShortcutLink(AutoLinkMixin, components.RenderComponent):
 
         page, tag, href = self.createHTMLHelper(token, parent, 'key')
         if token.bookmark is not None:
-            tok = self.findToken(page.ast(), token)
+            tok = self.findToken(self.translator.ast(page), token)
             href += token.bookmark
 
             # Optionally include page header as prefix
             if token.header:
-                h = self.findHeading(page.ast())
+                h = self.findHeading(self.translator.ast(page))
                 if h:
                     for n in h.children:
                         self.translator.renderer.process(tag, n)
                     html.String(tag, content=u':')
         else:
-            tok = self.findHeading(page.ast())
+            tok = self.findHeading(self.translator.ast(page))
 
         tag['href'] = href
         for n in tok.children:

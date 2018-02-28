@@ -11,8 +11,9 @@ import anytree
 import mooseutils
 
 import MooseDocs
-from MooseDocs.tree import base
+from MooseDocs import common
 from MooseDocs.common import exceptions, mixins
+from MooseDocs.tree import base
 
 LOG = logging.getLogger(__name__)
 CACHE = dict()
@@ -31,10 +32,11 @@ class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
     #    for child in self.children:
     #        child.init(translator)
 
+    def reinit(self):
+        pass
+
     def build(self, *args, **kwargs):
         self.write()
-        #TODO: error check translator
-        #translator.convert(self.content)
 
     def write(self):
         pass
@@ -113,18 +115,6 @@ class DirectoryNode(LocationNodeBase):
 class FileNode(LocationNodeBase):
     COLOR = 'MAGENTA'
 
-    #TODO: convert to content property that opens the file if needed
-    def read(self):
-        if os.path.exists(self.source):
-            with codecs.open(self.source, encoding='utf-8') as fid:
-                LOG.debug('Reading {}'.format(self.source))
-                self.content = fid.read()
-
-        #TODO: error if not exist
-
-   # def build(self):
-    #    self.write()
-
     def write(self):
         dst = os.path.join(self.base, self.local)
         shutil.copyfile(self.source, dst)
@@ -134,17 +124,24 @@ class MarkdownNode(FileNode):
 
     def __init__(self, *args, **kwargs):
         FileNode.__init__(self, *args, **kwargs)
-        self._ast = None
-        self._html = None
+        #self._ast = None
+        #self._html = None
         #self._filename = os.path.join(self.base, self.local)
         #self._modified_time = os.path.getmtime(self._filename) #TODO: get this working
 
-        self.master = set()
+        self.master = set() # FIX This...
 
+    def reinit(self):
+        if os.path.exists(self.source):
+            LOG.debug('Reading {}'.format(self.source))
+            self.content = common.read(self.source)
+
+
+    """
     def ast(self, reset=False):
         if reset or self._ast is None:
             LOG.debug("Tokenize %s", self.source)
-            self._ast = self.translator.ast(self)
+            self._ast = self.translator.render(self)
         #TODO: error if none, this could be an attribute
         return self._ast
 
@@ -155,7 +152,7 @@ class MarkdownNode(FileNode):
 
         #TODO: error if none
         return self._html #TODO change name of _html to something better
-
+    """
     def build(self, reset=True):
         LOG.info('Building %s', self.source)
 
@@ -164,13 +161,13 @@ class MarkdownNode(FileNode):
 
         #mod = os.path.getmtime(self._filename)
         #if (self._ast is None) or (self._html is None) or (mod > self._modified_time):
-        self.read()
+        #self.read()
         #self._ast, self._html = self.translator.convert(self) #TODO: build cache of body within Translator
         #self.ast(reset=True)
 
-        self.render(reset=reset)
+        #self.render(reset=reset)
 
-        self.write()
+        #self.write()
         #self._ast = self.translator.ast(self)
         #self._html = self.translator.render(self._ast)
         #self._modified_time = mode
