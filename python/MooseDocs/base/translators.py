@@ -85,6 +85,11 @@ class Translator(mixins.ConfigObject):
    # def lock(self):
    #     return self.__lock
 
+
+    #def init(self, pages): set the content...this cal call node.init(self)
+    #    pass
+
+
     def reinit(self):
         """
         Reinitialize the Reader, Renderer, and all Extension objects.
@@ -96,6 +101,9 @@ class Translator(mixins.ConfigObject):
             ext.reinit()
 
     def ast(self, content):
+        # TODO: content should loop over all nodes, in parallel...
+
+
         node = content if isinstance(content, page.PageNodeBase) else None
         self._current = node
         ast = tokens.Token(None)#, page=node) # root node
@@ -110,9 +118,14 @@ class Translator(mixins.ConfigObject):
             ext.postTokenize(ast)
 
         self._current = None
+
+        # TODO: cache current with ast as key
+
         return ast
 
     def render(self, ast):
+        # TODO: content should loop over all nodes, in parallel...
+
         return self.__renderer.render(ast)
 
     #TODO: build() do parallel seld.ast then self.render

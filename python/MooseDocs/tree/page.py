@@ -137,7 +137,7 @@ class MarkdownNode(FileNode):
         self._ast = None
         self._html = None
         #self._filename = os.path.join(self.base, self.local)
-        #self._modified_time = os.path.getmtime(self._filename)
+        #self._modified_time = os.path.getmtime(self._filename) #TODO: get this working
 
         self.master = set()
 
