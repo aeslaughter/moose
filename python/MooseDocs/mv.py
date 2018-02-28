@@ -61,6 +61,7 @@ def update(node, group, prefix, old_dir, new_dir):
 
 if __name__ == '__main__':
 
+    """
     exe = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'combined')
     root = app_syntax(exe)
 
@@ -88,3 +89,4 @@ if __name__ == '__main__':
         new_dir = locations[group]
         for node in anytree.PreOrderIter(root):
             update(node, group, prefix, old_dir, new_dir)
+    """

@@ -32,7 +32,7 @@ def command_line_options():
 
     return parser.parse_args()
 
-def main():
+def run():
     """
     Parse the command line options and run the correct command.
     """
@@ -57,4 +57,4 @@ def main():
     return 0;
 
 if __name__ == '__main__':
-    main()
+    run()
