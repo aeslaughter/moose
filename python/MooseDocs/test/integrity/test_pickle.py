@@ -3,7 +3,7 @@ import re
 import os
 import unittest
 import tempfile
-import pickle
+import pickle, cPickle
 
 import MooseDocs
 from MooseDocs import common
@@ -11,8 +11,20 @@ from MooseDocs.tree import base, tokens
 from MooseDocs.base import lexers, components, testing
 
 def do_pickle(obj):
-    s = pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
-    p = pickle.loads(s)
+    tmp = tempfile.mkstemp(prefix='tmp', suffix='.pickle')[1]
+    with open(tmp, 'w') as fid:
+        pickle.dump(obj, fid, pickle.HIGHEST_PROTOCOL)
+    with open(tmp, 'r') as fid:
+        p = pickle.load(fid)
+    os.remove(tmp)
+    return p
+
+def do_c_pickle(obj):
+    tmp = tempfile.mkstemp(prefix='tmp', suffix='.pickle')[1]
+    with open(tmp, 'w') as fid:
+        cPickle.dump(obj, fid, pickle.HIGHEST_PROTOCOL)
+    with open(tmp, 'r') as fid:
+        p = cPickle.load(fid)
     return p
 
 
@@ -94,8 +106,20 @@ class TestPickleAST(testing.MooseDocsTestCase):
     def testAlert(self):
         filename = os.path.join(MooseDocs.MOOSE_DIR, 'docs', 'content', 'utilities', 'MooseDocs', 'alert.md')
         content = common.read(filename)
-        ast = self.ast(content)
+        ast = tokens.Token(None)
+        self._reader.parse(ast, content)
+
+        import time
+        start = time.time()
         pick = do_pickle(ast)
+        end = time.time()
+        print end - start
+
+        start = time.time()
+        pick = do_c_pickle(ast)
+        end = time.time()
+        print end - start
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

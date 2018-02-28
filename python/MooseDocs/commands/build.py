@@ -79,30 +79,17 @@ def main(options):
             if node.source and os.path.isfile(node.source):
                 server.watch(node.source, node.build)
 
-        # TODO: make these steps parallel, print progress (in parallel)
-        # Breaking this up allows for the complete AST for all pages to be available to others
-        # when rendering (see autolink.py)
         num_threads=multiprocessing.cpu_count()
+
+        # TODO: Talk about multiprocessing limitations
 
         translator.init(root)
         translator.tokenize(num_threads=num_threads)
 
-        # TODO: this should be part of translator.write() but can't until I get
-        # multiprocessing data working, when that happens this will need a lock
-        for node in anytree.PreOrderIter(root):
-            if not isinstance(node, page.MarkdownNode):
-                node.write()
+        # "write" all nodes, this creates the directories
+        translator.write(num_threads=num_threads)
 
         translator.render(num_threads=num_threads)
-        #translator.write(num_threads=num_threads) #TODO: get this working
+
 
         server.serve(root=destination, port=8000)
-
-def build_ast(d, nodes):
-    for node in nodes:
-        ast = node.ast()
-        #d[node.name] = ast
-
-def build_render(nodes):
-    for node in nodes:
-        node.render()

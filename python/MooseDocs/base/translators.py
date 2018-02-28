@@ -5,6 +5,7 @@ between the reading and rendering content.
 """
 import logging
 import multiprocessing
+from pathos.pools import ProcessPool, ThreadPool
 import codecs
 
 import anytree
@@ -105,7 +106,7 @@ class Translator(mixins.ConfigObject):
                 node.init(self)
                 self.__nodes.append(node)
 
-    def reinit(self):
+    def reinit(self, num_threads=1):
         """
         Reinitialize the Reader, Renderer, and all Extension objects.
         """
@@ -113,21 +114,49 @@ class Translator(mixins.ConfigObject):
         self.reader.reinit()
         self.renderer.reinit()
 
-        for node in self.__nodes:
-            node.reinit()
-
         for ext in self.__extensions:
             ext.reinit()
 
     def ast(self, node):
         return self.__ast_cache[node.source]
 
+    def __target(self, d, nodes):
+        for node in nodes:
+            ast = self.__tokenize(node)
+            d[node.source] = ast
+
     def tokenize(self, num_threads=1):
         """Build AST for all pages."""
 
         LOG.info("Building AST...")
-
         self.reinit()
+
+        #pool = ThreadPool(num_threads)
+        #pool.map(self.__tokenize, self.__nodes)
+
+        """
+        pool = multiprocessing.Pool(processes=num_threads)
+        #result = pool.apply_async(self.__tokenize, (self.__nodes,))
+
+        print pool.map(self.__tokenize, self.__nodes)          # prints "[0, 1, 4,..., 81]"
+        """
+
+        """
+        manager = multiprocessing.Manager()
+        data = manager.dict()
+
+        jobs = []
+        for chunk in mooseutils.make_chunks(self.__nodes, num_threads):
+            p = multiprocessing.Process(target=self.__target, args=(data, chunk))
+            p.start()
+            jobs.append(p)
+
+        for job in jobs:
+            job.join()
+
+        print data
+        """
+
         for node in self.__nodes:
             LOG.debug("Tokenize %s", node.source)
             self.__tokenize(node)
@@ -150,12 +179,16 @@ class Translator(mixins.ConfigObject):
         for job in jobs:
             job.join()
 
-
         #for node in self.__nodes:
         #    LOG.debug("Render %s", node.source)
         #    self.__current = node
         #    self.renderer.render(self.__ast_cache[node])
         #    self.__current = None
+
+    def write(self, num_threads):
+        for node in anytree.PreOrderIter(self.__root):
+            node.write()
+
 
     def build(self, node):
         LOG.info("Building %s", node.source)
@@ -167,12 +200,14 @@ class Translator(mixins.ConfigObject):
 
     def __tokenize(self, node):
         self.__current = node
+        node.read()
         ast = tokens.Token(None)
         self.reader.parse(ast, node.content)
         for ext in self.__extensions:
             ext.postTokenize(ast)
         self.__current = None
         self.__ast_cache[node.source] = ast
+        return ast
 
     def __render(self, node):
         self.__current = node
@@ -183,6 +218,5 @@ class Translator(mixins.ConfigObject):
         LOG.debug('Writing %s -> %s', node.source, dst)
         with codecs.open(dst, 'w', encoding='utf-8') as fid:
             fid.write(html.write())
-
 
         self.__current = None

@@ -19,15 +19,13 @@ LOG = logging.getLogger(__name__)
 CACHE = dict() # Create a global cache for faster searching, anytree search is very slow
 
 class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
+
     PROPERTIES = [base.Property('source', ptype=str)]
     COLOR = None
 
     def __init__(self, *args, **kwargs):
         mixins.TranslatorObject.__init__(self)
         base.NodeBase.__init__(self, *args, **kwargs)
-
-    def reinit(self):
-        pass
 
     def build(self, *args, **kwargs):
         self.write()
@@ -121,7 +119,7 @@ class MarkdownNode(FileNode):
         FileNode.__init__(self, *args, **kwargs)
         #self.master = set() # FIX This...
 
-    def reinit(self):
+    def read(self):
         if os.path.exists(self.source):
             LOG.debug('Reading {}'.format(self.source))
             self.content = common.read(self.source)
@@ -136,10 +134,9 @@ class MarkdownNode(FileNode):
 
     def build(self):
         self.translator.build(node)
-        self.write()
 
     def write(self):
-        self.translator.write(node)
+        pass
         #if self._html is not None:
         #    dst = self.destination
         #    LOG.debug('Writing %s -> %s', self.source, dst)
