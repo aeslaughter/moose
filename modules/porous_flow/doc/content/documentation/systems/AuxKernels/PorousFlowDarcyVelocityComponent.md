@@ -1,4 +1,5 @@
 # PorousFlowDarcyVelocityComponent
+
 !syntax description /AuxKernels/PorousFlowDarcyVelocityComponent
 
 This `AuxKernel` calculates the *x*, *y*, or *z* component of the Darcy velocity

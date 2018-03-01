@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MeshModifiers System
-!syntax objects /MeshModifiers
 
-!syntax subsystems /MeshModifiers
+!syntax list /MeshModifiers objects=True actions=False subsystems=False
 
-!syntax actions /MeshModifiers
+!syntax list /MeshModifiers objects=False actions=False subsystems=True
+
+!syntax list /MeshModifiers objects=False actions=True subsystems=False

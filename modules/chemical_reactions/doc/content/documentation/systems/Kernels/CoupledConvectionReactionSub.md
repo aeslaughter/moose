@@ -1,4 +1,5 @@
 # CoupledConvectionReactionSub
+
 !syntax description /Kernels/CoupledConvectionReactionSub
 
 Convective flux of concentration of the $j^{\mathrm{th}}$ primary species present in the

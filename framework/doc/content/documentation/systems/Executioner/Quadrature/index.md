@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Quadrature System
-!syntax objects /Executioner/Quadrature
 
-!syntax subsystems /Executioner/Quadrature
+!syntax list /Executioner/Quadrature objects=True actions=False subsystems=False
 
-!syntax actions /Executioner/Quadrature
+!syntax list /Executioner/Quadrature objects=False actions=False subsystems=True
+
+!syntax list /Executioner/Quadrature objects=False actions=True subsystems=False

@@ -1,4 +1,5 @@
 # VanDerWaalsFreeEnergy
+
 !syntax description /Materials/VanDerWaalsFreeEnergy
 
 This material defines the Helmholtz free energy density $f$ of a Van der Waals gas.

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TestDistributionPostprocessor
+
 !syntax description /Postprocessors/TestDistributionPostprocessor
 
 !syntax parameters /Postprocessors/TestDistributionPostprocessor

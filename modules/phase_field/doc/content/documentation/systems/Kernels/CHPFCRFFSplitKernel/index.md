@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHPFCRFFSplitKernel System
-!syntax objects /Kernels/CHPFCRFFSplitKernel
 
-!syntax subsystems /Kernels/CHPFCRFFSplitKernel
+!syntax list /Kernels/CHPFCRFFSplitKernel objects=True actions=False subsystems=False
 
-!syntax actions /Kernels/CHPFCRFFSplitKernel
+!syntax list /Kernels/CHPFCRFFSplitKernel objects=False actions=False subsystems=True
+
+!syntax list /Kernels/CHPFCRFFSplitKernel objects=False actions=True subsystems=False

@@ -1,7 +1,9 @@
 # Cylindrical Rank Two Aux
+
 !syntax description /AuxKernels/CylindricalRankTwoAux
 
 ## Description
+
 The AuxKernel `CylindricalRankTwoAux` transforms a Rank-2 tensor, $T$, into cylinderical coordinates, where the cylindrical rotation axis is along the Cartesian $\hat{z}$ axis and the user-defined center point lies within the Cartesian $\hat{x}$-$\hat{y}$ plane, as shown in Eq \eqref{eq:cylindrical_rank_two_aux}.
 The AuxKernel will save the component of the tranformed Rank-2 tensor, $T^R$, as defined by the arguments for the `index_i` and `index_j` parameters.
 \begin{equation}
@@ -20,6 +22,7 @@ The rotation tensor $R$ is defined as
 where $P^{qp}$ is the location of the current quadrature point being evaluated and $P^c$ is the center point defined by the user with the parameter `center_point` in the input file.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/CylindricalRankTwoAux/test.i block=AuxKernels/stress_tt
 
 and an AuxVariable is required to store the AuxKernel information. Note that the name of the AuxVariable is used as the argument for the `variable` input parameter in the `CylindricalRankTwoAux` block.

@@ -1,13 +1,16 @@
 # HPC Cluster Setup
+
 The following document aims at setting up a baseline multi-user environment for building MOOSE based applications in a job scheduling capable environment.
 
 ## Prerequisites
+
 Both of these pre-reqs are in the hands of the admins of the cluster.
 
 * Modules. If not already installed. ['Modules Environment'](http://modules.sourceforge.net/) (Or some kind of environment management software)
 * Whatever compiler you choose to use on your cluster (GCC/Clang/Intel, MPICH/OpenMPI/MVAPICH), the minimum requirement, is that it must be C++11 compatible. If you are unsure, please consult with your system admins for your cluster on which compiler to use (and how to use it).
 
 ## Environment Setup
+
 * Begin by creating an area for which to build.
 
 ```bash
@@ -20,6 +23,7 @@ cd $CLUSTER_TEMP
 
 
 #### Set your umask
+
 * Some systems have a secure umask set. We need to adjust our umask so that everything we are about to perform, is readable/executable by _<b>everyone</b>_ on your cluster:
 
 ```bash
@@ -28,6 +32,7 @@ umask 0022
 
 
 #### Choose a base path
+
 * Export a base path variable which will be the home location for the compiler stack. All files related to MOOSE will be stored in this location (so choose carefully now):
 
 ```bash
@@ -38,6 +43,7 @@ export PACKAGES_DIR=/opt/moose-compilers
     You can change this path to whatever you want. The only exception, is this path must reside in a location where all your compute nodes have access (nfs|panfs share)
 
 #### Setup Modules
+
 Even if you're not using Modules, the following step should give you an idea of what is needed in the users environment for MOOSE developement.
 
 * Create a MOOSE module
@@ -53,6 +59,7 @@ sudo vi $PACKAGES_DIR/modulefiles/moose-dev-gcc
 #%Module1.0#####################################################################
 ##
 ## MOOSE module
+
 ##
 set base_path   INSERT PACKAGES_DIR HERE
 
@@ -109,6 +116,7 @@ me@some_machine#>
 
 
 ## Building PETSc
+
 * Now that we have our environment ready, we will load it up as a user would. This will ensure that everything we did above is going to work for our end-users.
 
 ```bash
@@ -132,6 +140,7 @@ cd petsc-!include docs/content/getting_started/petsc_default_version.md
 During the configure/build process, you will be prompted to enter proper make commands. This can be different from system to system, so I leave that task to the reader.
 
 ## Clean Up
+
 * Clean all the temporary stuff:
 
 ```bash

@@ -1,5 +1,6 @@
 
 # DiscreteNucleationInserter
+
 !syntax description /UserObjects/DiscreteNucleationInserter
 
 The inserter manages the global list of currently active nucleus stabilization sites. This user object takes two parameters

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaterialVectorPostprocessor
+
 !syntax description /VectorPostprocessors/MaterialVectorPostprocessor
 
 !syntax parameters /VectorPostprocessors/MaterialVectorPostprocessor

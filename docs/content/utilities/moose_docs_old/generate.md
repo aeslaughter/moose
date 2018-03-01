@@ -8,6 +8,7 @@ The created file must be stored in a file named according to the registered MOOS
 Developers who modify existing classes should update the corresponding markdown documentation file.
 
 ## Generating Templates for New MooseObjects
+
 If you are writing a documentation for a new class with MOOSE or the modules, you can use the MooseDocs executable to build a documentation stub for your new class; the stub includes a markdown documentation template.
 The markdown documentation template stub adheres to the documentation page standards described in the [Standards for Documentation Pages](moose_docs/docs_standards.md) and includes examples of common MooseDocs extensions, including equations and references.
 
@@ -37,5 +38,6 @@ This generate command needs to be run only when you edit source code of your app
 
 
 ## Standards for Documentation Pages
+
 Once created these documentation stub files should be modified with additional details, following the [Standards for Documentation Pages](moose_docs/docs_standards.md) guidelines.
 The completed markdown documentation pages are then available for use when generating a [web-site](utilities/moose_docs/website.md), [presentations](utilities/moose_docs/presentation.md), or [PDFs](utilities/moose_docs/pdf.md).

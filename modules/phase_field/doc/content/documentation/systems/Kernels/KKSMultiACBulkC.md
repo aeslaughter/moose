@@ -1,4 +1,5 @@
 # KKSMultiACBulkC
+
 !syntax description /Kernels/KKSMultiACBulkC
 
 ### Residual
@@ -9,11 +10,12 @@ R = -\frac{\partial F_1}{\partial c_1} \left( \frac{\partial h_1}{\partial \eta_
 $$
 
 where $c_i$ is the phase concentration for phase $i$ and $h_i$ is the interpolation
-function for phase $i$ defined in \cite{Folch05} (referred to as $g_i$ there, but we use $h_i$ to maintain consistency with other interpolation functions in MOOSE). Since in the KKS model, chemical potentials are constrained to be equal at each position, $\frac{\partial F_1}{\partial c_1} = \frac{\partial F_2}{\partial c_2} = \frac{\partial F_3}{\partial c_3}$.
+function for phase $i$ defined in [cite:Folch05] (referred to as $g_i$ there, but we use $h_i$ to maintain consistency with other interpolation functions in MOOSE). Since in the KKS model, chemical potentials are constrained to be equal at each position, $\frac{\partial F_1}{\partial c_1} = \frac{\partial F_2}{\partial c_2} = \frac{\partial F_3}{\partial c_3}$.
 
 ### Jacobian
 
 #### On-diagonal
+
 If the non-linear variable is $\eta_1$, the on-diagonal Jacobian is
 
 $$
@@ -24,6 +26,7 @@ J &=& \phi_j \frac{\partial R}{\partial \eta_1} \\
 $$
 
 #### Off-diagonal: Phase Concentrations
+
 Since $\frac{\partial F_1}{\partial c_1}$ appears in the residual, the off-diagonal Jacobian for $c_1$ is a little more complicated than for $c_2$ or $c_3$.
 $$
 \begin{eqnarray*}

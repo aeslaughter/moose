@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputePlasticHeatEnergy
+
 !syntax description /Materials/ComputePlasticHeatEnergy
 
 !syntax parameters /Materials/ComputePlasticHeatEnergy

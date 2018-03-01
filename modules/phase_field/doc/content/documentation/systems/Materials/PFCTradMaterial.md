@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFCTradMaterial
+
 !syntax description /Materials/PFCTradMaterial
 
 !syntax parameters /Materials/PFCTradMaterial

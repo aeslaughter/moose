@@ -1,4 +1,5 @@
 # PrimaryConvection
+
 !syntax description /Kernels/PrimaryConvection
 
 Convective flux of concentration of the $j^{\mathrm{th}}$ primary species.

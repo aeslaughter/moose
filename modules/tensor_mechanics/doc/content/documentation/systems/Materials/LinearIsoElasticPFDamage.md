@@ -1,7 +1,9 @@
 # Linear IsoElastic Phase Field Damage
+
 !syntax description /Materials/LinearIsoElasticPFDamage
 
 ## Description
+
 This material, `LinearIsoElasticPFDamage`, defines the positive part of strain energy and positive part of stress
 that drive the crack propagation, and total stress is represented as a function
 of damage parameter $c$, tensile part and compressive part of stress. The basic
@@ -35,6 +37,7 @@ The material provides the following material properties:
 * `dG0_pos_dstrain` Tensile stress, which is the derivative of positive part of strain energy wrt strain tensor.
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/phase_field_fracture/crack2d.i block=Materials/elastic
 
 !syntax parameters /Materials/LinearIsoElasticPFDamage

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsRelPermMonomial
+
 !syntax description /UserObjects/RichardsRelPermMonomial
 
 !syntax parameters /UserObjects/RichardsRelPermMonomial

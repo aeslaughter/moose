@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaskedBodyForce
+
 !syntax description /Kernels/MaskedBodyForce
 
 !syntax parameters /Kernels/MaskedBodyForce

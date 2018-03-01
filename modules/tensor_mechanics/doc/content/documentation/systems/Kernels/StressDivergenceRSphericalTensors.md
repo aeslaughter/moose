@@ -11,6 +11,7 @@ The `StressDivergenceRSphericalTensors` kernel can be automatically created with
 For a detailed explanation of the settings for _use_displaced_mesh_ in mechanics problems and the TensorMechanics Master Action usage, see the [Introduction/StressDivergence](auto::/introduction/StressDivergence) page.
 
 ## Residual Calculation
+
 !include docs/content/documentation/modules/tensor_mechanics/common/supplementalStressDivergenceKernels.md
 
 The stress divergence in spherical coordinates includes contributions from the normal polar and azimuthal stresses even in the 1D case.  After simplifying for the 1D case, the spherical stress divergence reduces to
@@ -25,6 +26,7 @@ In deriving the weak form of this equation, the second term in Eq \eqref{eqn:str
 \end{equation}
 
 ## Example Input File syntax
+
 Using the tensor mechanics master action, as shown
 !listing modules/tensor_mechanics/test/tests/1D_spherical/finiteStrain_1DSphere_hollow.i block=Modules/TensorMechanics/Master
 

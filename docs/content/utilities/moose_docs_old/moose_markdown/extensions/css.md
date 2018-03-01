@@ -1,4 +1,5 @@
 # CSS Options
+
 To increase the flexibility of markdown content it is possible to inject [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets)
 directly into sections of text using the `!css` command.
 
@@ -38,8 +39,9 @@ The extra CSS settings 'float's the content to the right, which should allow thi
 
 
 ## Block CSS Options
+
 You can apply a style sheet to a markdown paragraph through the use of `!css` command. For example,
-the markdown in \ref{css-markdown-example} is included in this document below.
+the markdown in [css-markdown-example] is included in this document below.
 
 !listing id=css-markdown-example caption=Example markdown with CSS modifications.
 ```markdown

@@ -5,6 +5,7 @@ given simulation. That is, solve a single problem and vary parameters within thi
 with a random set of perturbed parameters.
 
 ## Problem Statement
+
 The first step is to define the simulation to perform, in this case the simulation considered is
 a 1D transient diffusion equation with Dirichlet boundary conditions on each end of the domain: find $u$ such that
 
@@ -14,17 +15,19 @@ a 1D transient diffusion equation with Dirichlet boundary conditions on each end
 where $u(0) = U(0, 0.5)$, $u(1) = U(1,2)$, and $U(a,b)$ defines a [continuous uniform distribution](https://en.wikipedia.org/wiki/Uniform_distribution_%28continuous%29) with $a$ and $b$ defining the lower and upper limits of the distribution, respectively.
 
 ## Sub-Application Input
+
 The problem defined above, with respect to the [MultiApps] system, is a sub-application. The
-complete input file for the problem is provided in \ref{monte-carlo-sub}. The only item required
+complete input file for the problem is provided in [monte-carlo-sub]. The only item required
 to enable the stochastic analysis is the [Controls] block, which contains a [SamplerReceiver](stochastic_tools/SamplerReceiver.md) object, the use of which will be explained
 in the following section.
 
 !listing modules/stochastic_tools/test/tests/transfers/sub.i id=monte-carlo-sub caption=Complete input file for executing the transient diffusion problem.
 
 ## Master Input
+
 The master application, with respect to the [MultiApps] system, is the driver of the stochastic
 simulations, by itself it does not perform a solve. The complete input file for the master
-application is shown in \ref{monte-carlo-master}, but the import sections will be detailed
+application is shown in [monte-carlo-master], but the import sections will be detailed
 individually.
 
 First, [Distributions] for each of the two stochastic boundary conditions are defined.

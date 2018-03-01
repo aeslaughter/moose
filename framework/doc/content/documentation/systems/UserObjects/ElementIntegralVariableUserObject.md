@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementIntegralVariableUserObject
+
 !syntax description /UserObjects/ElementIntegralVariableUserObject
 
 !syntax parameters /UserObjects/ElementIntegralVariableUserObject

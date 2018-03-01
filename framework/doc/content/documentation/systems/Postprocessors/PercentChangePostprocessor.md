@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PercentChangePostprocessor
+
 !syntax description /Postprocessors/PercentChangePostprocessor
 
 !syntax parameters /Postprocessors/PercentChangePostprocessor

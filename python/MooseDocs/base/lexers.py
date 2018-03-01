@@ -102,8 +102,9 @@ class LexerInformation(object):
         self.__pattern = pattern.name
         self.__line = line
 
+        self.__match[0] = match.group(0)
         for i, group in enumerate(match.groups()):
-            self.__match[i] = group
+            self.__match[i+1] = group
         for key, value in match.groupdict().iteritems():
             self.__match[key] = value
 

@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Indicators System
-!syntax objects /Adaptivity/Indicators
 
-!syntax subsystems /Adaptivity/Indicators
+!syntax list /Adaptivity/Indicators objects=True actions=False subsystems=False
 
-!syntax actions /Adaptivity/Indicators
+!syntax list /Adaptivity/Indicators objects=False actions=False subsystems=True
+
+!syntax list /Adaptivity/Indicators objects=False actions=True subsystems=False

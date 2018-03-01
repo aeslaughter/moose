@@ -1,4 +1,5 @@
 # LevelSetAdvection
+
 The level set equation is typically defined as below. As shown in this equation, the `LevelSetAdvection` kernel
 implements the advection portion of the equation.
 
@@ -15,10 +16,11 @@ The weak form of this portion of the equation is defined as: find $u_h$ such tha
 \end{equation}
 
 ## Example Syntax
+
 This kernel is utilized from within the [`[Kernels]`](systems/Kernels/index.md) block in conjunction with a time derivative
 kernel ([TimeDerivative](/TimeDerivative.md)).
 
-!listing modules/level_set/test/tests/reinitialization/master.i block=Kernels label=False
+!listing modules/level_set/test/tests/reinitialization/master.i block=Kernels 
 
 !syntax parameters /Kernels/LevelSetAdvection
 

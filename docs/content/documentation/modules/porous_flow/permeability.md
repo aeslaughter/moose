@@ -4,6 +4,7 @@ A porous material's insitu permeability tensor can take one of several forms. It
 can be constant, spatially varying, or depend on porosity.
 
 ## Constant
+
 [`PorousFlowPermeabilityConst`](/porous_flow/PorousFlowPermeabilityConst.md)
 
 The simplest case where the permeability tensor is a constant value.
@@ -26,7 +27,7 @@ where $\phi$ is the porosity, and $a$ is a user-defined constant.
 ##Kozeny-Carman
 [`PorousFlowPermeabilityKozenyCarman`](/porous_flow/PorousFlowPermeabilityKozenyCarman.md)
 
-Permeability is calculated from porosity using the Kozeny-Carman relationship \citep{oelkers1996}
+Permeability is calculated from porosity using the Kozeny-Carman relationship [citep:oelkers1996]
 \begin{equation}
 k_{ij} = k_{ij}^{0} \frac{\phi^{n}}{(1 - \phi)^{m}},
 \end{equation}

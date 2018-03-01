@@ -1,4 +1,5 @@
 # ACInterface
+
 !syntax description /Kernels/ACInterface
 
 Implements the Allen-Cahn term for the $\frac{\kappa_i}2|\nabla \eta_i|^2$ gradient

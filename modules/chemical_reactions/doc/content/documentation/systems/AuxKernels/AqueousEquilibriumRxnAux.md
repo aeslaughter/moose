@@ -1,4 +1,5 @@
 # AqueousEquilibriumRxnAux
+
 !syntax description /AuxKernels/AqueousEquilibriumRxnAux
 
 Calculates the concentration of the $i^{\mathrm{th}}$ secondary species, $C_i$ in terms of

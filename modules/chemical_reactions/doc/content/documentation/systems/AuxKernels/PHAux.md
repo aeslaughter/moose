@@ -1,4 +1,5 @@
 # PHAux
+
 !syntax description /AuxKernels/PHAux
 
 Calculates the pH of the solution, defined as

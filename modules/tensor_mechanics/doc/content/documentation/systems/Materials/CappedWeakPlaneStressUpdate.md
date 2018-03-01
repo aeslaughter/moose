@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CappedWeakPlaneStressUpdate
+
 !syntax description /Materials/CappedWeakPlaneStressUpdate
 
 !syntax parameters /Materials/CappedWeakPlaneStressUpdate

@@ -1,6 +1,7 @@
 #Stresses in Tensor Mechanics
 
 ## Some Identities involving the Stress Tensor
+
 Denote the stress tensor by $\sigma_{ij}$.  Assume it is symmetric.  A useful quantity, called the "mean stress", is
 \begin{equation}
 \sigma_{m} = Tr\left( \sigma/3 \right) = \sigma_{ii}/3 \ .
@@ -36,6 +37,7 @@ s_{ij}s_{jk}s_{kl}s_{li} = 2J_{2}^{2}
 \end{equation}
 
 ## Elasticity
+
 Elastic materials do not experience permanent deformation, and all elastic strain and elastic stress is recoverable.  Elastic stress is related to elastic strain through the elasticity tensor
 \begin{equation}
 \sigma_{ij} = C_{ijkl} \epsilon_{kl}
@@ -47,9 +49,11 @@ The two simplified elastic stress materials in Tensor Mechanics are
 2. [ComputeFiniteStrainElasticStress](/ComputeFiniteStrainElasticStress.md) for incremental and finite strain formulations.
 
 ## Plasticity with User Objects
+
 This approach to modeling plasticity problems uses as stress material to call several `UserObjects`, where each user object calculates and returns a specific materials property, e.g. a crystal plasticity lip system strength.  The stress material then calculates the current stress state based on the returned material properties.
 
 ### MultiSurface Plasticity
+
 In MOOSE, multi-surface plasticity is implemented through the [ComputeMultiPlasticityStress](/ComputeMultiPlasticityStress.md) Material. This assumes that there is exactly one internal parameter per single-surface plasticity model, and that the functions for single-surface plasticity model depend only on its internal parameter: there must not be 2 or more internal parameters per single-surface plasticity model.)  In this case
 \begin{equation}
 \begin{array}{rcll}
@@ -71,6 +75,7 @@ The Newton-Raphson procedure attempts to solve three types of equation:
 In addition to these constraints, the Kuhn-Tucker and consistency conditions must also be satisfied.  If the above constraints are satisfied, then these last conditions amount to: if $f_{\alpha}=0$ (up to a tolerance), then $\gamma^{\alpha}\geq 0$; otherwise $\gamma^{\alpha}=0$.
 
 ### Crystal Plasticity
+
 The `UserObject` based crystal plasticity system is designed to facilitate the implementation of different constitutive laws in a modular way. Both **phenomenological** constitutive models and **dislocation-based** constitutive models can be implemented through this system. This system consists of one material class [FiniteStrainUObasedCP](/FiniteStrainUObasedCP.md) and four userobject classes:
 
 * [CrystalPlasticitySlipRate](/CrystalPlasticitySlipRateGSS.md)
@@ -79,6 +84,7 @@ The `UserObject` based crystal plasticity system is designed to facilitate the i
 * [CrystalPlasticityStateVariable](/CrystalPlasticityStateVariable.md)
 
 ### Hyperelastic Viscoplastic
+
 The Hyperelastic Viscoplastic model is based on the multiplicative decomposition of the total deformation ($\underline{F}$) gradient into an elastic ($\underline{F}^e$) and viscoplastic ($\underline{F}^{vp}$) component. The viscoplastic component of deformation is evolved in the intermediate configuration following
 \begin{equation}
 \dot{\underline{F}}^{vp}\underline{F}^{vp-1} = \sum_{i=1}^{N} \dot{\lambda^i}\underline{r}^i

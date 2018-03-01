@@ -1,4 +1,5 @@
 # CoupledSusceptibilityTimeDerivative
+
 !syntax description /Kernels/CoupledSusceptibilityTimeDerivative
 
 Implements

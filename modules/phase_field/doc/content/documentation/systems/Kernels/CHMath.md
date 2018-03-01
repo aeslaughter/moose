@@ -1,4 +1,5 @@
 # CHMath
+
 !syntax description /Kernels/CHMath
 
 Cahn-Hilliard bulk kernel with a hardcoded free energy density $f$

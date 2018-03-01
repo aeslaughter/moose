@@ -1,4 +1,5 @@
 # PorousFlowDictator
+
 !syntax description /UserObjects/PorousFlowDictator
 
 The `PorousFlowDictator` provides information about the valid PorousFlow

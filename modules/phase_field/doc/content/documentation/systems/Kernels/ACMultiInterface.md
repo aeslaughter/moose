@@ -1,4 +1,5 @@
 # ACMultiInterface
+
 !syntax description /Kernels/ACMultiInterface
 
 Implements Allen-Cahn interface terms for a multiphase system. This includes
@@ -14,7 +15,8 @@ are the gradient energy coefficents, and $L_i$ (`mob_name`) is the scalar (isotr
 mobility associated with the $\eta_i$ order parameter.
 
 ## Derivation
-The interfacial free energy density $f_{int}$ is implemented following \cite{Nest98} equations
+
+The interfacial free energy density $f_{int}$ is implemented following [cite:Nest98] equations
  (7) and (8) (also see footnote 1)
 
 $$

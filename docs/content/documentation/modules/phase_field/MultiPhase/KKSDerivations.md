@@ -14,7 +14,7 @@ $$
 
 # Materials
 
-The KKS system (\cite{kim_phase-field_1999}) uses multiple MOOSE materials to provide
+The KKS system ([cite:kim_phase-field_1999]) uses multiple MOOSE materials to provide
 values for free energy  functions, the switching function $h(\eta)$, and the double
 well function $g(\eta)$. Providing these as materials allows the functions to be
 bundled in a single place, while being used by multiple kernels. Furthermore the
@@ -25,6 +25,7 @@ in material properties and follow a naming scheme that is defined in `KKSBaseMat
 # Cahn-Hilliard Kernels
 
 ## KKSSplitCHCRes
+
 [`KKSSplitCHCRes`](/KKSSplitCHCRes.md) is the split version. In this kernel, we calculate the chemical potential
 $\mu$ from $\frac{\partial F}{\partial c}$. The non-linear variable for this Kernel
 is the concentration $c$. To calculate $\frac{\partial c}{\partial t}$ and
@@ -72,6 +73,7 @@ J &=& \phi_j \frac{\partial}{\partial \mu} \left( \frac{\partial F}{\partial c_a
 $$
 
 ## KKSCHBulk
+
 [`KKSCHBulk`](/KKSCHBulk.md) is the non-split version, which is **not fully implemented**.
 The non-linear variable for this Kernel is the concentration $c$.
 

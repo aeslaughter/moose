@@ -1,4 +1,5 @@
 # MooseDocs Google Chart Extension
+
 The "gchart" extension adds limited support for [Google Charts](https://developers.google.com/chart/)
 via the `!chart` markdown command. The following sections detail the various charts currently
 available.
@@ -10,17 +11,19 @@ available.
 !extension GoogleChartExtension
 
 ## Line Charts
+
 [Google Line](https://google-developers.appspot.com/chart/interactive/docs/gallery/linechart#fullhtml)
 charts provide the simple method to chart data where the first column represents the independent
 x-axis data and any additional columns are associated with dependent y-axis data. To create a line
 chart the `line` sub-command (e.g., `!chart line`). The complete set
-of options for line charts are given in \ref{moose-line-chart}.
+of options for line charts are given in [moose-line-chart].
 
 !chart line id=line-chart caption=An example line chart. columns=time, precip_accum_set_1, air_temp_set_1 csv=python/peacock/tests/input/white_elephant_jan_2016.csv title=Precipitation and Air Temperature at White Elephant SNOTEL Station subtitle=January 2016 column_names=Time (days), Total Precip. (in), Air Temp. (F)
 
 !extension-settings moose-line-chart
 
 ## Scatter Charts
+
 [Google Scatter](https://google-developers.appspot.com/chart/interactive/docs/gallery/scatterchart#fullhtml)
 provide additional functionality to what is available with line plots.
 
@@ -29,6 +32,7 @@ provide additional functionality to what is available with line plots.
 !extension-settings moose-scatter-chart
 
 ## Diff Scatter Charts
+
 [Google Diff Charts](https://developers.google.com/chart/interactive/docs/gallery/diffchart)
 provides the ability to display the difference between two data sets, the 'diffscatter' command
 builds a scatter chart for two data sets.

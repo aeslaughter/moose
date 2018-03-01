@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MultiSmoothSuperellipsoidIC
+
 !syntax description /ICs/MultiSmoothSuperellipsoidIC
 
 !syntax parameters /ICs/MultiSmoothSuperellipsoidIC

@@ -1,8 +1,10 @@
 
 # ValueRangeMarker
+
 !syntax description /Adaptivity/Markers/ValueRangeMarker
 
 ## Description
+
 The `ValueRangeMarker` utilizes an
 [Indicator](/Indicators/index.md) as en estimate of error. Elements
 with error estimates inside and outside of an allowable range can then

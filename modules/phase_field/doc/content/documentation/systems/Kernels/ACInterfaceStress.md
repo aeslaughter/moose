@@ -1,4 +1,5 @@
 # ACInterfaceStress
+
 !syntax description /Kernels/ACInterfaceStress
 
 Implements the Allen-Cahn term for the $-L_i\nabla\frac{\partial E_{el}}{\partial \nabla \eta_i}$

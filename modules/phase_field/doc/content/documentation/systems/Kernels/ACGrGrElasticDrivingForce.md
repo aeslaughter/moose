@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ACGrGrElasticDrivingForce
+
 !syntax description /Kernels/ACGrGrElasticDrivingForce
 
 !syntax parameters /Kernels/ACGrGrElasticDrivingForce

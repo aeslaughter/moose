@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CrystalPlasticitySlipResistanceGSS
+
 !syntax description /UserObjects/CrystalPlasticitySlipResistanceGSS
 
 !syntax parameters /UserObjects/CrystalPlasticitySlipResistanceGSS

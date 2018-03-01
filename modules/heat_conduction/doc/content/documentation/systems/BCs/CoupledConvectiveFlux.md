@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CoupledConvectiveFlux
+
 !syntax description /BCs/CoupledConvectiveFlux
 
 !syntax parameters /BCs/CoupledConvectiveFlux

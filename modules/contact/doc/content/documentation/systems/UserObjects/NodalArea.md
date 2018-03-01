@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalArea
+
 !syntax description /UserObjects/NodalArea
 
 !syntax parameters /UserObjects/NodalArea

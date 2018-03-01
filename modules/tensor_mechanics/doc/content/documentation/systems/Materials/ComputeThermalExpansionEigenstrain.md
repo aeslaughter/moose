@@ -1,7 +1,9 @@
 # Compute Thermal Expansion Eigenstrain
+
 !syntax description /Materials/ComputeThermalExpansionEigenstrain
 
 ## Description
+
 This model computes the eigenstrain tensor resulting from isotropic thermal expansion where the constant thermal expansion is defined by a user-supplied scalar coefficient, $\alpha$.
 The thermal expansion eigenstrain is then computed as
 \begin{equation}
@@ -10,6 +12,7 @@ The thermal expansion eigenstrain is then computed as
 where $T$ is the current temperature, $T_{stress\_free}$ is the stress free temperature, and $\mathbf{I}$ is the identity matrix.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/thermal_expansion/constant_expansion_stress_free_temp.i block=Materials/thermal_expansion_strain
 
 The `eigenstrain_name` parameter value must also be set for the strain calculator, and an example parameter setting is shown below:

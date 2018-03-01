@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaterialTensorIntegralSM
+
 !syntax description /Postprocessors/MaterialTensorIntegralSM
 
 !syntax parameters /Postprocessors/MaterialTensorIntegralSM

@@ -11,6 +11,7 @@ xcode-select --install
 If you do not have CLT installed, you will be presented with a dialog box allowing you to install CLT.
 
 ##### (2) XQuartz 2.7.9: [XQuartz-2.7.9.dmg](https://dl.bintray.com/xquartz/downloads/XQuartz-2.7.9.dmg)
+
 <p></p>
 
 ##### (3) MOOSE Environment package (choose one):

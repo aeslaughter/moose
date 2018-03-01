@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputeMultipleInelasticStress
+
 !syntax description /Materials/ComputeMultipleInelasticStress
 
 !syntax parameters /Materials/ComputeMultipleInelasticStress

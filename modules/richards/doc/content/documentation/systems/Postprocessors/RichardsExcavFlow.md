@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsExcavFlow
+
 !syntax description /Postprocessors/RichardsExcavFlow
 
 !syntax parameters /Postprocessors/RichardsExcavFlow

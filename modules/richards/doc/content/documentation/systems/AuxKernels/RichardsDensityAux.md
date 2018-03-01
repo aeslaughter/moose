@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsDensityAux
+
 !syntax description /AuxKernels/RichardsDensityAux
 
 !syntax parameters /AuxKernels/RichardsDensityAux

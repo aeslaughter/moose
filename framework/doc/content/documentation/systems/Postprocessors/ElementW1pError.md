@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementW1pError
+
 !syntax description /Postprocessors/ElementW1pError
 
 !syntax parameters /Postprocessors/ElementW1pError

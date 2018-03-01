@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GBWidthAnisotropy
+
 !syntax description /Materials/GBWidthAnisotropy
 
 !syntax parameters /Materials/GBWidthAnisotropy

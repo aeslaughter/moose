@@ -1,4 +1,5 @@
 # PorousFlowSink
+
 !syntax description /BCs/PorousFlowSink
 
 This sink is

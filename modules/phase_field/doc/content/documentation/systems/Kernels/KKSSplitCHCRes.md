@@ -1,4 +1,5 @@
 # KKSSplitCHCRes
+
 !syntax description /Kernels/KKSSplitCHCRes
 
 [`KKSSplitCHCRes`](/KKSSplitCHCRes.md) is the split version. In this kernel, we calculate the chemical potential

@@ -6,6 +6,7 @@
     when compiling libMesh.
 
 ## Description
+
 The lognormal distribution object defines a [lognormal distribution](https://en.wikipedia.org/wiki/Log-normal_distribution) function with the provided `location` and `scale` parameters. The location parameter is equal to the median of the underlying normal distribution (equal to ${\ln}\theta$, where $\theta$ is the median of the lognormal distribution) and the scale parameter is equal to the standard deviation of the underlying normal distribution. The probability density function (PDF) of the lognormal distribution is given by the equation
 
 \begin{equation}
@@ -18,6 +19,7 @@ f(x \; | \; m, s) =
 where $m$ is the location parameter and $s$ is the scale parameter ($s > 0$).
 
 ## Example Input Syntax
+
 The following input file defines a lognormal distribution with the location parameter -0.371 and the scale parameter 0.52.
 
 !listing /modules/stochastic_tools/test/tests/distributions/lognormal.i block=Distributions

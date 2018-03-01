@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalColoringIC
+
 !syntax description /ICs/PolycrystalColoringIC
 
 !syntax parameters /ICs/PolycrystalColoringIC

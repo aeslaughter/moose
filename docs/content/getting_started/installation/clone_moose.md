@@ -1,4 +1,5 @@
 ## Install MOOSE
+
 MOOSE is hosted on [GitHub](https://github.com/idaholab/moose) and should be cloned directly from there using [git](https://git-scm.com/). We recommend creating a directory named projects to put all of your MOOSE related work.
 
 To install MOOSE run the following commands in a terminal.

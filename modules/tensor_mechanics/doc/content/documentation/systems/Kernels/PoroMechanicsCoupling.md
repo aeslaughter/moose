@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PoroMechanicsCoupling
+
 !syntax description /Kernels/PoroMechanicsCoupling
 
 !syntax parameters /Kernels/PoroMechanicsCoupling

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementExtremeValue
+
 !syntax description /Postprocessors/ElementExtremeValue
 
 !syntax parameters /Postprocessors/ElementExtremeValue

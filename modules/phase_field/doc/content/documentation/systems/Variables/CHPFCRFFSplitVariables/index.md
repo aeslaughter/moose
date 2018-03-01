@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHPFCRFFSplitVariables System
-!syntax objects /Variables/CHPFCRFFSplitVariables
 
-!syntax subsystems /Variables/CHPFCRFFSplitVariables
+!syntax list /Variables/CHPFCRFFSplitVariables objects=True actions=False subsystems=False
 
-!syntax actions /Variables/CHPFCRFFSplitVariables
+!syntax list /Variables/CHPFCRFFSplitVariables objects=False actions=False subsystems=True
+
+!syntax list /Variables/CHPFCRFFSplitVariables objects=False actions=True subsystems=False

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AccumulateAux
+
 !syntax description /AuxKernels/AccumulateAux
 
 !syntax parameters /AuxKernels/AccumulateAux

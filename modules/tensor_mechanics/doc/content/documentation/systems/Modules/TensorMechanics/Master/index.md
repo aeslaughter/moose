@@ -46,11 +46,11 @@ can be used.
 Parameters supplied at the `[Modules/TensorMechanics/Master]` level act as
 defaults for the Master action subblocks.
 
-!syntax objects /Modules/TensorMechanics/Master
+!syntax list /Modules/TensorMechanics/Master objects=True actions=False subsystems=False
 
-!syntax subsystems /Modules/TensorMechanics/Master
+!syntax list /Modules/TensorMechanics/Master objects=False actions=False subsystems=True
 
-!syntax actions /Modules/TensorMechanics/Master
+!syntax list /Modules/TensorMechanics/Master objects=False actions=True subsystems=False
 
 <!--
 This syntax is not yet supported by the doc system:

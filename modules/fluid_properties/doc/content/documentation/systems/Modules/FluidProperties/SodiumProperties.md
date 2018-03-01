@@ -1,4 +1,5 @@
 # Sodium Fluid Properties
+
 !syntax description /Modules/FluidProperties/SodiumProperties
 
 SodiumProperties inherits from the base class FluidProperties and provides the needed functionality for determining sodium

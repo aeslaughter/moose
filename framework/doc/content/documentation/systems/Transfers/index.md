@@ -1,4 +1,5 @@
 # Transfers System
+
 When running simulations that contain [MultiApps]---simulations running other sub-simulations---it
 is often required to move data to and from the sub-applications. Transfer objects in [MOOSE] are designed for this purpose.
 
@@ -7,13 +8,15 @@ is often required to move data to and from the sub-applications. Transfer object
     please refer to the [MultiApps] documentation for additional information.
 
 ## Example Transfer
+
 Assuming that the concept of [MultiApps] is understood, Transfers are best understood via an
 example problem. First, consider a "master" simulation that is solving the transient diffusion
 equation. This master simulation also includes two "sub" applications that rely on the average
 value of the unknown from the master application.
 
 ### The "master" Simulation
-\ref{transfers-master-multiapps} is an input file snippet showing the [MultiApps] block
+
+[transfers-master-multiapps] is an input file snippet showing the [MultiApps] block
 that includes a [TransientMultiApp](/TransientMultiApp.md), this sub-application will
 execute along with the master (at the end of each timestep) as time progresses.
 
@@ -23,13 +26,14 @@ For this example, the sub-applications require that the average from the master 
 scalar AuxVariable, see the [AuxVariables] documentation for further information. Therefore the
 master will transfer the average value (computed via the
 [ElementAverageValue](/ElementAverageValue.md) Postprocessor) to a scalar AuxVariable
-on each sub-application. As shown in \ref{transfers-master-transfers}, the
+on each sub-application. As shown in [transfers-master-transfers], the
 [MultiAppPostprocessorToAuxScalarTransfer](/MultiAppPostprocessorToAuxScalarTransfer.md)
 is provided for this purpose.
 
 !listing test/tests/transfers/multiapp_postprocessor_to_scalar/master.i block=Transfers id=transfers-master-transfers caption=The Transfers block of the "master" application that contains a Transfer of a Postprocessor to a scalar AuxVariable on sub-applications.
 
 ### The "sub" Simulations
+
 For this simple example the sub-application must contain an appropriate AuxVariable to receiving
 the Postprocessor value from the master application.
 
@@ -41,11 +45,12 @@ approach allows the sub-application input file to run in union of independent fr
 without modification, which is useful for development and testing.
 
 ## Available Transfer Objects
+
 The following is a complete list of the available Transfer objects, each links to a page with
 further details.
 
-!syntax objects /Transfers title=none
+!syntax list /Transfers objects=True actions=False subsystems=False 
 
-!syntax subsystems /Transfers
+!syntax list /Transfers objects=False actions=False subsystems=True
 
-!syntax actions /Transfers
+!syntax list /Transfers objects=False actions=True subsystems=False

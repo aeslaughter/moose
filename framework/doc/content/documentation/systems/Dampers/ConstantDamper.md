@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ConstantDamper
+
 !syntax description /Dampers/ConstantDamper
 
 !syntax parameters /Dampers/ConstantDamper

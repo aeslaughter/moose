@@ -1,4 +1,5 @@
 # CSVTimeSequenceStepper
+
 Imports a time sequence from a CSV file, or similar delimited text files. 
 The CSVTimeSequenceStepper uses a DelimitedFileReader to read the CSV file 
 (see MooseUtils/index.md for more details).

@@ -44,6 +44,7 @@ Use the same notation to read tensor components.
 A wide array of mathematical operators exist for the tensors in TensorMechanics.
 
 ### RankTwoTensor
+
 The following operators are available for RankTwoTensor, with the values in parentheses indicating what the type of the other object to be subject to the operation.
 
     =
@@ -89,6 +90,7 @@ These methods are thoroughly tested using CPPUNIT.
 
 
 ### RankFourTensor
+
 The following operators are available for RankFourTensor, with the values in parentheses indicating what the type of the other object to be subject to the operation.
 
     =

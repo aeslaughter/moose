@@ -1,4 +1,5 @@
 # CHInterfaceAniso
+
 !syntax description /Kernels/CHInterfaceAniso
 
 Implements the Cahn-Hilliard term for the $\frac{\kappa_i}2|\nabla c_i|^2$ gradient

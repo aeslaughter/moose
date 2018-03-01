@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElasticModel
+
 !syntax description /Materials/ElasticModel
 
 !syntax parameters /Materials/ElasticModel

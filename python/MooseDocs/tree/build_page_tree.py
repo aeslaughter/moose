@@ -56,15 +56,6 @@ def doc_import(root_dir, content=None):
                        beginning with '!' are excluded.
     """
 
-    # Define the include/exclude/extensions lists
-    if content is None:
-        content = []
-
-    # Check types
-    if not isinstance(content, list) or any(not isinstance(x, str) for x in content):
-        LOG.error('The "content" must be a list of str items.')
-        return None
-
     # Check root_dir
     root_dir = os.path.join(MooseDocs.ROOT_DIR, root_dir)
     if not os.path.isdir(root_dir):
@@ -79,12 +70,21 @@ def doc_import(root_dir, content=None):
             if os.path.isfile(full_name):
                 filenames.add(full_name)
 
+    # Return the complete list if content is empty
+    if content is None:
+        return sorted(filenames)
+
+    # Check content type
+    if not isinstance(content, list) or any(not isinstance(x, str) for x in content):
+        LOG.error('The "content" must be a list of str items.')
+        return None
+
     # Build include/exclude lists
     include = []
     exclude = []
     for item in content:
         if item.startswith('!'):
-            exclude.append(item)
+            exclude.append(item[1:])
         else:
             include.append(item)
 
@@ -118,8 +118,8 @@ def doc_tree(items):
     """
     # Error checking
     if not isinstance(items, list) or any(not isinstance(x, dict) for x in items):
-        LOG.error('The suplied items must be a list of dict items, each with a "root_dir" and '
-                  '"content" entry.')
+        LOG.error('The supplied items must be a list of dict items, each with a "root_dir" and '
+                  'optionally a "content" entry.')
         return None
 
     # Define a dict for storing nodes by path
@@ -131,12 +131,12 @@ def doc_tree(items):
     # Create the file tree
     for value in items:
 
-        if ('root_dir' not in value) or ('content' not in value):
+        if ('root_dir' not in value):# or ('content' not in value):
             LOG.error('The supplied items must be a list of dict items, each with a "root_dir" and '
-                      '"content" entry.')
+                      'optionally a "content" entry.')
 
         root = os.path.join(MooseDocs.ROOT_DIR, value['root_dir'])
-        files = doc_import(root, content=value['content'])
+        files = doc_import(root, content=value.get('content', None))
 
         for filename in files:
             key = tuple(filename.replace(root, '').strip('/').split('/'))

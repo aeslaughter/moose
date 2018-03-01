@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CrossIC
+
 !syntax description /AuxVariables/InitialCondition/CrossIC
 
 !syntax parameters /AuxVariables/InitialCondition/CrossIC

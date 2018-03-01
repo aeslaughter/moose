@@ -1,7 +1,9 @@
 # ReferenceResidualProblem
+
 !syntax description /Problem/ReferenceResidualProblem
 
 ## Description
+
 By default, MOOSE checks convergence using relative and absolute criteria. Once
 the residual drops below either an absolute tolerance, or the residual divided
 by the initial residual for the current time step drops below a relative
@@ -38,6 +40,7 @@ vary by the problem. The code user must evaluate the behavior of their model to
 ensure that appropriate tolerances are being used.
 
 ## Example Input syntax
+
 !listing /modules/combined/test/tests/reference_residual/reference_residual.i block=Problem
 
 where additional AuxVariables for the displacements (e.g. x, y, and z) and temperature must be created, as shown below

@@ -1,16 +1,19 @@
 # KKSMultiPhaseConcentration
+
 !syntax description /Kernels/KKSMultiPhaseConcentration
 
 ### Residual
+
 For a KKS model with $n$ phases, the residual of the phase concentration constraint equation is
 $$
 R = \left( h_1 c_1 + h_2 c_2 + h_3 c_3 + \dots + h_n c_n - c  \right)
 $$
-where $c_i$ is the phase concentration for phase $i$, $c$ is the physical solute concentration, and $h_i$ is the interpolation function for phase $i$ defined in \cite{Folch05} (referred to as $g_i$ there, but we use $h_i$ to maintain consistency with other interpolation functions in MOOSE).
+where $c_i$ is the phase concentration for phase $i$, $c$ is the physical solute concentration, and $h_i$ is the interpolation function for phase $i$ defined in [cite:Folch05] (referred to as $g_i$ there, but we use $h_i$ to maintain consistency with other interpolation functions in MOOSE).
 
 ### Jacobian
 
 #### On-diagonal
+
 Since the non-linear variable for this kernel is $c_n$, the on-diagonal Jacobian is
 $$
 \begin{eqnarray*}
@@ -20,6 +23,7 @@ J &=& \phi_j \frac{\partial R}{\partial c_n} \\
 $$
 
 #### Off-diagonal
+
 For the physical concentration $c$, the off-diagonal Jacobian is
 $$
 \begin{eqnarray*}

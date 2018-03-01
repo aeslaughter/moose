@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FullSolveMultiApp
+
 !syntax description /MultiApps/FullSolveMultiApp
 
 !syntax parameters /MultiApps/FullSolveMultiApp

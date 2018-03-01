@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PorousFlowFluidStateBrineCO2
+
 !syntax description /Materials/PorousFlowFluidStateBrineCO2
 
 !syntax parameters /Materials/PorousFlowFluidStateBrineCO2

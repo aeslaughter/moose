@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsRelPermVG
+
 !syntax description /UserObjects/RichardsRelPermVG
 
 !syntax parameters /UserObjects/RichardsRelPermVG

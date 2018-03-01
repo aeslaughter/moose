@@ -3,6 +3,7 @@
 !syntax description /BCs/GapHeatTransfer
 
 ## Description
+
 GapHeatTransfer calculates the amount of heat transferred across unmeshed gaps between two different blocks.
 
 The `quadrature` option is generally recommended for most models. With this
@@ -16,6 +17,7 @@ It is also important to use the appropriate `gap_geometry_type` parameter
 
 
 ## Example Input syntax
+
 !listing /modules/heat_conduction/test/tests/heat_conduction/2d_quadrature_gap_heat_transfer/nonmatching.i block=ThermalContact
 
 !syntax parameters /BCs/GapHeatTransfer

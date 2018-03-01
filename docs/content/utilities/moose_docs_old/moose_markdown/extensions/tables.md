@@ -4,7 +4,7 @@ The TableExtension provides the ability to place captions about traditional mark
 the `!tables` command. Additionally, this command enables tables to be numbered as detailed
 in the [Numbered Floats](extensions/numbered_floats.md) page.
 
-To create a captioned table, as in \ref{testing}, utilize the `!table` command on the
+To create a captioned table, as in [testing], utilize the `!table` command on the
 line above the markdown table content, as shown in below.
 
 ```markdown
@@ -19,6 +19,6 @@ line above the markdown table content, as shown in below.
 |---|---|---|---|----|
 | 2 | 4 | 6 | 8 | 10 |
 
-The available settings for the `!tables` command are included in \ref{moose_table}.
+The available settings for the `!tables` command are included in [moose_table].
 
 !extension-settings moose_table caption=Command settings for `!table` command.

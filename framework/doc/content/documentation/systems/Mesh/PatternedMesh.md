@@ -1,4 +1,5 @@
 # PatternedMesh
+
 !syntax description /Mesh/PatternedMesh
 
 The `PatternedMesh` object is similar to [TiledMesh](/TiledMesh.md) but restricted to two dimensions but

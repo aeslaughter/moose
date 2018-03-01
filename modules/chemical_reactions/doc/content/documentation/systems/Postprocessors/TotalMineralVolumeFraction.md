@@ -1,4 +1,5 @@
 # TotalMineralVolumeFraction
+
 !syntax description /Postprocessors/TotalMineralVolumeFraction
 
 Calculates the total volume fraction of the coupled mineral species

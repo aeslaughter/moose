@@ -59,7 +59,6 @@ class AppSyntaxExtension(command.CommandExtension):
         config['includes'] = ([], "List of include directories to investigate for class information.")
         config['inputs'] = ([], "List of directories to interrogate for input files using an object.")
         config['disable'] = (False, "Disable running the MOOSE application executable and simply use place holder text.")
-        config['remove-syntax'] = ([], "List of syntax to remove, using git style glob. For example, use '/foo/*' to remove all syntax in the foo block and '!/foo/bar' to keep the bar block only.")
         return config
 
     def __init__(self, *args, **kwargs):
@@ -68,9 +67,13 @@ class AppSyntaxExtension(command.CommandExtension):
         self._app_syntax = None
         if not self['disable']:#self['disable'] != False:
             LOG.info("Reading MOOSE application syntax.")
+            exe = common.eval_path(self['executable'])
+            exe = mooseutils.find_moose_executable(exe, show_error=False)
+            if exe is None:
+                LOG.error("Failed to locate a valid executable in %s.", self['executable'])
+
             try:
-                exe = common.eval_path(self['executable'])
-                self._app_syntax = app_syntax(exe, remove=self['remove-syntax'])
+                self._app_syntax = app_syntax(exe)
             except:
                 msg = "Failed to load application executable from '%s', " \
                       "application syntax is being disabled."

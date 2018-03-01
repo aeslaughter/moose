@@ -1,8 +1,9 @@
 # SplitPFFractureBulkRate
+
 !syntax description /Kernels/SplitPFFractureBulkRate
 
 The kernel implements second equation substituted into the third equation in (63)
-from \cite{Miehe10} in a split form
+from [cite:Miehe10] in a split form
 
 $$
 - \frac1\eta \langle l \cdot \beta + 2 (1-c) \frac{\psi^+_0}{g_c} - \frac cl \rangle_+,

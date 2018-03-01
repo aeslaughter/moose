@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # VariableInnerProduct
+
 !syntax description /Postprocessors/VariableInnerProduct
 
 !syntax parameters /Postprocessors/VariableInnerProduct

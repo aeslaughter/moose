@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LangmuirMaterial
+
 !syntax description /Materials/LangmuirMaterial
 
 !syntax parameters /Materials/LangmuirMaterial

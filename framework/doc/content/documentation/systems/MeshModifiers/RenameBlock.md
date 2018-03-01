@@ -1,4 +1,5 @@
 # RenameBlock
+
 !syntax description /MeshModifiers/RenameBlock
 
 `RenameBlock` is usually used to provide meaningful names to blocks so

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GapConductance
+
 !syntax description /Materials/GapConductance
 
 !syntax parameters /Materials/GapConductance

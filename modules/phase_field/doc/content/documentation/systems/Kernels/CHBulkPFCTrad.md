@@ -1,4 +1,5 @@
 # CHBulkPFCTrad
+
 !syntax description /Kernels/CHBulkPFCTrad
 
 Cahn-Hilliard kernel implementing the free energy density

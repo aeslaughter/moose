@@ -1,4 +1,5 @@
 # SolutionUserObject
+
 !syntax description /UserObjects/SolutionUserObject
 
 ## Description
@@ -12,6 +13,7 @@ space the data from the `SolutionUserObject`.  Finally, the `Function` is requir
 will query the function and write the value into the `AuxVariable`.
 
 ## Example Input Syntax
+
 !listing test/tests/auxkernels/solution_aux/solution_aux_exodus_interp.i block=UserObjects
 
 !syntax parameters /UserObjects/SolutionUserObject

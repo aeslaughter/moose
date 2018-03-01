@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RandomEulerAngleProvider
+
 !syntax description /UserObjects/RandomEulerAngleProvider
 
 !syntax parameters /UserObjects/RandomEulerAngleProvider

@@ -2,8 +2,8 @@
 
 The `DomainIntegral` Action sets up the required objects to perform fracture integrals.
 
-!syntax objects /DomainIntegral
+!syntax list /DomainIntegral objects=True actions=False subsystems=False
 
-!syntax subsystems /DomainIntegral
+!syntax list /DomainIntegral objects=False actions=False subsystems=True
 
-!syntax actions /DomainIntegral
+!syntax list /DomainIntegral objects=False actions=True subsystems=False

@@ -83,7 +83,7 @@ Similarly, if 'end' is omitted the snippet will include the remainder of the fil
 ## Input File Content
 
 Like for C++ files, [MOOSE] input files also have additional capability, mainly the "block" setting
-(see \ref{moose-input-listing} for a complete list). Including the block name the included content
+(see [moose-input-listing] for a complete list). Including the block name the included content
 will be limited to the content matching the supplied name. Notice that the supplied name may be
 approximate; however, if it is not unique only the first match will appear.
 

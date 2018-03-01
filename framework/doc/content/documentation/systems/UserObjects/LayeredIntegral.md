@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LayeredIntegral
+
 !syntax description /UserObjects/LayeredIntegral
 
 !syntax parameters /UserObjects/LayeredIntegral

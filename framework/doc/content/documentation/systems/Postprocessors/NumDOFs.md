@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumDOFs
+
 !syntax description /Postprocessors/NumDOFs
 
 !syntax parameters /Postprocessors/NumDOFs

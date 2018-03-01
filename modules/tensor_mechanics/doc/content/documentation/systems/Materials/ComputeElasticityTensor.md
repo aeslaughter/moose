@@ -1,7 +1,9 @@
 # Compute Elasticity Tensor
+
 !syntax description /Materials/ComputeElasticityTensor
 
 ## Description
+
 The material `ComputeElasticityTensor` builds the elasticity (stiffness) tensor with various user-selected material symmetry options.
 `ComputeElasticityTensor` also rotates the elasticity tensor during the initial time step only; this class does not rotate the elasticity tensor during the simulation.
 The initial rotation is only performed if the user provides arguments to the three Euler angle parameters; the Bunge Euler angles provided in this class are used to perform passive (from the sample to the crystal) rotations.
@@ -41,7 +43,8 @@ Nonetheless, the full Rank-4 tensor with all 81 components is created by `Comput
 There are several different material symmetry options that a user can apply to build the elasticity tensor for a mechanics simulation that are discussed below.
 
 ## General Symmetry
-The fill method `symmetric21` is used to create the elasticity tensor for a linear hyperelastic material with 21 independent components: the symmetries shown in Eq \eqref{eq:symmetric21_cijkl_cases} are used to determine the independent components \cite{slaughter2012linearized}.
+
+The fill method `symmetric21` is used to create the elasticity tensor for a linear hyperelastic material with 21 independent components: the symmetries shown in Eq \eqref{eq:symmetric21_cijkl_cases} are used to determine the independent components [cite:slaughter2012linearized].
 \begin{equation}
 \label{eq:symmetric21_cijkl_cases}
   \begin{aligned}
@@ -52,12 +55,14 @@ The fill method `symmetric21` is used to create the elasticity tensor for a line
 \end{equation}
 
 ### Example Input File Syntax
+
 !listing modules/combined/test/tests/linear_elasticity/tensor.i block=Materials/elasticity_tensor
 
 which shows the expected order of the elasticity tensor components in the input argument string.
 
 ## Orthotropic Symmetry
-The fill method `symmetric9` is appropriate for materials with three orthotropic planes of symmetry \cite{malvern1969introduction}, and is often used for simulations of anistropic materials such as cubic crystals.
+
+The fill method `symmetric9` is appropriate for materials with three orthotropic planes of symmetry [cite:malvern1969introduction], and is often used for simulations of anistropic materials such as cubic crystals.
 The enginering elasticity tensor notation, Eq \eqref{eq:rank4tensor_aux_indices}, for an orthotropic material is given in Eq \eqref{eq:symmetric9_fill_method}
 \begin{equation}
 \label{eq:symmetric9_fill_method}
@@ -72,11 +77,13 @@ C_{ijkl}^{orthotropic} = \begin{bmatrix}
 \end{equation}
 
 ### Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/finite_strain_elastic/finite_strain_elastic_new_test.i block=Materials/elasticity_tensor
 
 In the Einstein index notation shown in Eq \eqref{eq:rank4tensor_aux_indices}, the parameter `C_ijkl` expects the elasticity components in the order `C_ijkl = '1111 1122 1133 2222 2233 3333 2323 3131 1212'` for the `symmetric9` fill method option.
 
 ## Linear Isotropic Symmetry
+
 The two constant istropic symmetry fill methods `symmetric_isotropic` and `symmetric_isotropic_E_nu` are used in the dedicated isotropic elasticity tensor [ComputeIsotropicElasticityTensor](/ComputeIsotropicElasticityTensor.md).
 These two fill methods use the symmetries shown in Eq \eqref{eq:symmetric_isotropic_fill_method} to build the elasticity tensor.
 \begin{equation}
@@ -86,6 +93,7 @@ C_{ijkl} = C_{klij} = C_{jikl} = C_{jilk}
 Please see the documentation page for [ComputeIsotropicElasticityTensor](/ComputeIsotropicElasticityTensor.md) for details and examples of the input file syntax for linear elastic isotropic elasticity tensors.
 
 ## Antisymmetric Isotropic Symmetry
+
 The fill method `antisymmetric_isotropic` is used for an antisymmetric isotropic material in a shear case.
 The elasticity tensor is built using the symmetries shown in Eq \eqref{eq:antisymmetric_isotropic_fill_method}
 \begin{equation}
@@ -95,7 +103,8 @@ C_{ijkl}^{antisymmetric-isotropic} = \kappa e_{ijm} e_{klm}
 where $e$ is the permutation tensor and $m$ is the summation index.
 
 ## Transverse Isotropic (Axisymmetric)
-The fill method `axisymmetric_rz` is used for materials which are isotropic with respect to an axis of symmetry, such as a material composed of fibers which are parallel to the axis of symmetry \cite{slaughter2012linearized}.
+
+The fill method `axisymmetric_rz` is used for materials which are isotropic with respect to an axis of symmetry, such as a material composed of fibers which are parallel to the axis of symmetry [cite:slaughter2012linearized].
 The engineering notation matrix in this case is shown by Eq \eqref{eq:axisymmetric_rz_fill_method}.
 \begin{equation}
 \label{eq:axisymmetric_rz_fill_method}
@@ -110,11 +119,13 @@ C_{ijkl}^{axisymmetric} = \begin{bmatrix}
 \end{equation}
 
 ### Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/isotropic_elasticity_tensor/2D-axisymmetric_rz_test.i block=Materials/elasticity_tensor
 
 In the Einstein index notation shown in Eq \eqref{eq:rank4tensor_aux_indices}, the parameter `C_ijkl` expects the elasticity components in the order `C_ijkl = '1111, 1122, 1133, 3333, 2323'` for the `axisymmetric_rz` fill method option.
 
 ## Principal Directions for Stress and Strain
+
 The fill method `principal` is appropriate for the case when the principal directions of strain and stress align.
 The engineering notation representation of the elasticity tensor is shown in Eq \eqref{eq:principal_fill_method}.
 \begin{equation}
@@ -133,9 +144,11 @@ In the Einstein index notation shown in Eq \eqref{eq:rank4tensor_aux_indices}, t
 
 
 ## Cosserat Elasticity Specific Fill Methods
+
 The following fill methods are available within `ComputeElasticityTensor`, but the use cases for these methods fall within the Cosserat applications which do not preserve the equilibruim of angular momentum.
 
 ### General Isotropic Symmetry
+
 The fill method `general_isotropic` is used for the case of three independent components of an elasticity tensor, Eq \eqref{eq:general_isotropic_cijkl}.
 \begin{equation}
 \label{eq:general_isotropic_cijkl}
@@ -145,6 +158,7 @@ C_{ijkl}^{isotropic} = \lambda \delta_{ij} \delta_{kl} + \mu \delta_{ik} \delta_
 This fill method case is used in the child class [ComputeCosseratElasticityTensor](/ComputeCosseratElasticityTensor.md); please see the documentation for [ComputeCosseratElasticityTensor](/ComputeCosseratElasticityTensor.md) for details and examples of the input file syntax.
 
 ### General Antisymmetric
+
 The fill method `antisymmetric` builds an antisymmetric elasticity tensor for a shear-only case.
 The symmetries shown in Eq \eqref{eq:antisymmetric_symmetries} are used to create the complete tensor
 \begin{equation}
@@ -167,6 +181,7 @@ C_{ijkl}^{antisymmetric} = \begin{bmatrix}
 This fill method case is used in the child class [ComputeCosseratElasticityTensor](/ComputeCosseratElasticityTensor.md); please see the documentation for [ComputeCosseratElasticityTensor](/ComputeCosseratElasticityTensor.md) for details and examples of the input file syntax.
 
 ### No Symmetry
+
 The `general` fill method for the Compute Elasticity Tensor class does not make any assumptions about symmetry for the elasticity tensor and requires all 81 components of the stiffness tensor as an input string.
 This fill method case is used in the child class [ComputeCosseratElasticityTensor](/ComputeCosseratElasticityTensor.md); please see the documentation for [ComputeCosseratElasticityTensor](/ComputeCosseratElasticityTensor.md) for details and examples of the input file syntax.
 
@@ -178,5 +193,6 @@ This fill method case is used in the child class [ComputeCosseratElasticityTenso
 !syntax children /Materials/ComputeElasticityTensor
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{tensor_mechanics.bib}

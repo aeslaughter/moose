@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CrystalPlasticityStateVarRateComponentGSS
+
 !syntax description /UserObjects/CrystalPlasticityStateVarRateComponentGSS
 
 !syntax parameters /UserObjects/CrystalPlasticityStateVarRateComponentGSS

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CrystalPlasticityStateVariable
+
 !syntax description /UserObjects/CrystalPlasticityStateVariable
 
 !syntax parameters /UserObjects/CrystalPlasticityStateVariable

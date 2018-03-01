@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PointValue
+
 !syntax description /Postprocessors/PointValue
 
 !syntax parameters /Postprocessors/PointValue

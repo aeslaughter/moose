@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SimpleSplitCHWRes
+
 !syntax description /Kernels/SimpleSplitCHWRes
 
 !syntax parameters /Kernels/SimpleSplitCHWRes

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # HeatSource
+
 !syntax description /Kernels/HeatSource
 
 !syntax parameters /Kernels/HeatSource

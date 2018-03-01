@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ContactPressureAux
+
 !syntax description /AuxKernels/ContactPressureAux
 
 !syntax parameters /AuxKernels/ContactPressureAux

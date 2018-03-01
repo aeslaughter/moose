@@ -1,7 +1,9 @@
 # Composite Elasticity Tensor
+
 !syntax description /Materials/CompositeElasticityTensor
 
 ## Description
+
 `CompositeElasticityTensor` calculates a simple Rank-4 tensor that can be used as an Elasticity tensor in a mechanics simulation.
 This tensor is computed as a weighted sum of base elasticity tensors, as shown in \eqref{eq:weighted_rank_four}, where each weight can be a scalar material property that may depend on simulation variables.
 \begin{equation}
@@ -11,6 +13,7 @@ This tensor is computed as a weighted sum of base elasticity tensors, as shown i
 where $\boldsymbol{T}$ is a Rank-4 tensor and $w$ is the weighting factor for each Rank-4 tensor.
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/elasticitytensor/composite.i block=Materials/C
 
 !syntax parameters /Materials/CompositeElasticityTensor

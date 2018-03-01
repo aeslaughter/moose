@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # BimodalSuperellipsoidsIC
+
 !syntax description /ICs/BimodalSuperellipsoidsIC
 
 !syntax parameters /ICs/BimodalSuperellipsoidsIC

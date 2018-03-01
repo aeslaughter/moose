@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ThermalConductivity
+
 !syntax description /Postprocessors/ThermalConductivity
 
 !syntax parameters /Postprocessors/ThermalConductivity

@@ -1,7 +1,9 @@
 # IterationAdaptiveDT
+
 !syntax description /Executioner/TimeStepper/IterationAdaptiveDT
 
 ## Description
+
 The `IterationAdaptiveDT` Time Stepper provides a means to adapt the time step
 size based on the difficulty of the solution.
 
@@ -13,7 +15,7 @@ may be too large, resulting in undue solution difficulty, while if fewer iterati
 may be possible to take larger time steps to obtain a solution more quickly.
 
 A second parameter, `iteration_window`, is used to control the size of the region in which
-the time step is held constant. As shown in \ref{fig:adaptive_dt_criteria}, if the number of nonlinear iterations
+the time step is held constant. As shown in [fig:adaptive_dt_criteria], if the number of nonlinear iterations
 for convergence is lower than (`optimal_iterations-iteration_window`), the time step is
 increased, while if more than (`optimal_iterations+iteration_window`), iterations are required,
 the time step is decreased. The `iteration_window` parameter is optional. If it is not
@@ -51,6 +53,7 @@ conditions applied to the model over a step. In addition to that limit, the bool
 !media media/executioner/adaptive_dt_criteria.png style=width:70%; id=fig:adaptive_dt_criteria caption=Criteria used to determine adaptive time step size
 
 ## Example Input Syntax
+
 !listing test/tests/time_steppers/iteration_adaptive/adapt_tstep_shrink_init_dt.i block=Executioner
 
 !syntax parameters /Executioner/TimeStepper/IterationAdaptiveDT

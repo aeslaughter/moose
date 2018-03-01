@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AbaqusUmatMaterial
+
 !syntax description /Materials/AbaqusUmatMaterial
 
 !syntax parameters /Materials/AbaqusUmatMaterial

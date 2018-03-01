@@ -30,13 +30,13 @@ markdown table syntax. Floats generated with this command, by default, are numbe
 !media http://lorempixel.com/200/200/nature/ id=nature caption=A random nature image. style=width:200px;float:right;margin-left:20px
 
 To enable the numbering of a float, simply supply the "id" setting as shown below, which is
-the markdown used to produce \ref{nature}. Additionally, the "caption" setting should also be utilized, although it is not required.
+the markdown used to produce [nature]. Additionally, the "caption" setting should also be utilized, although it is not required.
 
 ```
 !media http://lorempixel.com/200/200/nature/ id=nature caption=A random nature image. style=width:200px;float:right;margin-left:20px
 ```
 
-This figure can then be reference anywhere in the markdown file using a LaTeX style reference command. For, example the markdown `\ref{nature}` produces the following link and automatically adds the "Figure" prefix: \ref{nature}. The `\ref` command is defined by the ["refs"](extensions/refs.md) extension.
+This figure can then be reference anywhere in the markdown file using a LaTeX style reference command. For, example the markdown `[nature]` produces the following link and automatically adds the "Figure" prefix: [nature]. The `\ref` command is defined by the ["refs"](extensions/refs.md) extension.
 
 !media http://lorempixel.com/200/200/sports/ id=sports caption=A random sports image. style=width:200px;float:right;margin-left:20px
 
@@ -44,7 +44,7 @@ This figure can then be reference anywhere in the markdown file using a LaTeX st
 
 Adding new figures continues the numbering, but only if the "id" settings is applied. For example,
 the random food image omits the "id", thus it is not numbered and cannot be referenced, while the
-"sports" image is available: \ref{sports}.
+"sports" image is available: [sports].
 
 !!!note
     The `\ref` commands require the [refs](extensions/refs.md) extension be loaded.
@@ -63,12 +63,13 @@ mistakes.
 
 !media http://lorempixel.com/800/300/cats/ id=big_cat counter=cats rule caption=A big random cat image. style=width:800px;margin-left:auto;margin-right:auto
 
-The numbering is preserved based on this counter. Thus, as in \ref{sports2}, the "Figure" prefix
+The numbering is preserved based on this counter. Thus, as in [sports2], the "Figure" prefix
 will continue to increment in the proper order by not including the cat images.
 
 !media http://lorempixel.com/800/300/sports/ id=sports2 caption=A big random sports image. style=width:800px;margin-left:auto;margin-right:auto
 
 ## Tables
+
 The [tables](extensions/tables.md) extension adds the ability to place captions about traditional
 markdown tables. This command also works with the float numbering, simply supply the "id" setting
 and optionally the "caption" setting as detailed in the previous section.
@@ -78,19 +79,20 @@ and optionally the "caption" setting as detailed in the previous section.
 |---|---|---|---|----|
 | 2 | 4 | 6 | 8 | 10 |
 
-Similar to media items, tables can be referenced: Table \ref{testing}.
+Similar to media items, tables can be referenced: Table [testing].
 
 ## Listings
+
 The [listings](extensions/listings.md) extension adds the ability to create code listings from
 files, snippets, or inline. Again, the "float" numbering works with all the versions of the
-`!listings` command. For example, \ref{diffusion} shows a complete C file, \ref{kernels}
-provides an input file block, and \ref{inline} is an inline fenced code block.
+`!listings` command. For example, [diffusion] shows a complete C file, [kernels]
+provides an input file block, and [inline] is an inline fenced code block.
 
 !listing framework/src/kernels/Diffusion.C id=diffusion caption=Diffusion Kernel in a scrolling code listing.
 
 !listing test/tests/kernels/simple_diffusion/simple_diffusion.i id=kernels caption=The `Kernels` block. block=Kernels
 
-!listing id=inline caption=An inline code snippet showing the markdown for producing a scrolling code block as in \ref{diffusion}.
+!listing id=inline caption=An inline code snippet showing the markdown for producing a scrolling code block as in [diffusion].
 ```
 !listing framework/src/kernels/Diffusion.C id=diffusion caption=Diffusion Kernel in a scrolling code listing.
 ```

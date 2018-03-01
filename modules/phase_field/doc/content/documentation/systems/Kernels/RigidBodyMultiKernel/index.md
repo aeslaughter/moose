@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RigidBodyMultiKernel System
-!syntax objects /Kernels/RigidBodyMultiKernel
 
-!syntax subsystems /Kernels/RigidBodyMultiKernel
+!syntax list /Kernels/RigidBodyMultiKernel objects=True actions=False subsystems=False
 
-!syntax actions /Kernels/RigidBodyMultiKernel
+!syntax list /Kernels/RigidBodyMultiKernel objects=False actions=False subsystems=True
+
+!syntax list /Kernels/RigidBodyMultiKernel objects=False actions=True subsystems=False

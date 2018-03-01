@@ -1,4 +1,5 @@
 # CoupledAllenCahn
+
 !syntax description /Kernels/CoupledAllenCahn
 
 Implements the term

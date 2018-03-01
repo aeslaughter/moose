@@ -1,4 +1,5 @@
 # PorousFlowDarcyVelocityComponentLowerDimensional
+
 !syntax description /AuxKernels/PorousFlowDarcyVelocityComponentLowerDimensional
 
 This `AuxKernel` records the Darcy velocity within a lower-dimensional element living in a higher-dimensional mesh.  For instance, to study flow within a fractured material, you might have created a 3D mesh with its own 3D subdomains (blocks of elements representing different aquifers and aquitards, for example) and within that 3D mesh you might have included 2D elements to represent the fractures.  Those 2D elements must share nodes with the 3D elements for the MOOSE model to make sense.  The 2D elements belong to a different set of subdomains, and those subdomains typically have different Material properties assigned to them (for example, high permeability and porosity).  If you want to measure Darcy velocity within those lower-dimensional subdomains, then use this `AuxKernel`.

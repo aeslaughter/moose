@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Preconditioning System
-!syntax objects /Preconditioning
 
-!syntax subsystems /Preconditioning
+!syntax list /Preconditioning objects=True actions=False subsystems=False
 
-!syntax actions /Preconditioning
+!syntax list /Preconditioning objects=False actions=False subsystems=True
+
+!syntax list /Preconditioning objects=False actions=True subsystems=False

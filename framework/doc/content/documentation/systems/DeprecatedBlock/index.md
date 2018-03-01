@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DeprecatedBlock System
-!syntax objects /DeprecatedBlock
 
-!syntax subsystems /DeprecatedBlock
+!syntax list /DeprecatedBlock objects=True actions=False subsystems=False
 
-!syntax actions /DeprecatedBlock
+!syntax list /DeprecatedBlock objects=False actions=False subsystems=True
+
+!syntax list /DeprecatedBlock objects=False actions=True subsystems=False

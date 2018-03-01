@@ -1,4 +1,5 @@
 # PorousFlowEffectiveStressCoupling
+
 !syntax description /Kernels/PorousFlowEffectiveStressCoupling
 
 !syntax parameters /Kernels/PorousFlowEffectiveStressCoupling

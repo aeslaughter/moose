@@ -1,5 +1,6 @@
 
 # ElasticEnergyMaterial
+
 !syntax description /Materials/ElasticEnergyMaterial
 
 This material generates an elastic free energy contribution consistent with the TensorMechanics stress divergence kernels. This allows for proper coupling of the phase field problem and the mechanics problem. The contribution of the `ElasticEnergyMaterial` and the chemical free energy (possibly defined using a `DerivativeParsedMaterial`) are then summed up using a `DerivativeSumMaterial` to form a _total free energy_ which is passed to the phase field kernels.

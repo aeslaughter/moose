@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # HeatConductionBC
+
 !syntax description /BCs/HeatConductionBC
 
 !syntax parameters /BCs/HeatConductionBC

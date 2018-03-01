@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Debug System
-!syntax objects /Debug
 
-!syntax subsystems /Debug
+!syntax list /Debug objects=True actions=False subsystems=False
 
-!syntax actions /Debug
+!syntax list /Debug objects=False actions=False subsystems=True
+
+!syntax list /Debug objects=False actions=True subsystems=False

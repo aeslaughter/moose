@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AuxScalarKernels System
-!syntax objects /AuxScalarKernels
 
-!syntax subsystems /AuxScalarKernels
+!syntax list /AuxScalarKernels objects=True actions=False subsystems=False
 
-!syntax actions /AuxScalarKernels
+!syntax list /AuxScalarKernels objects=False actions=False subsystems=True
+
+!syntax list /AuxScalarKernels objects=False actions=True subsystems=False

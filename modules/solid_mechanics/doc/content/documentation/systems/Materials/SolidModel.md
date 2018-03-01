@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SolidModel
+
 !syntax description /Materials/SolidModel
 
 !syntax parameters /Materials/SolidModel

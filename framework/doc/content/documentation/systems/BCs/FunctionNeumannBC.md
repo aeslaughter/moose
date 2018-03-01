@@ -1,8 +1,10 @@
 
 # FunctionNeumannBC
+
 !syntax description /BCs/FunctionNeumannBC
 
 ## Description
+
 `FunctionNeumannBC` is a generalization of [`NeumannBC`](/NeumannBC.md) which is used
 for imposing flux boundary conditions on systems of partial
 differential equations (PDEs) where the flux is represented by a
@@ -26,6 +28,7 @@ corresponding to the boundary subset $\partial \Omega_N$ via the
 `boundary` parameter.
 
 ## Example Input Syntax
+
 !listing test/tests/controls/time_periods/bcs/bcs_integrated.i start=[./right2] end=[../] include-end=true
 
 !syntax parameters /BCs/FunctionNeumannBC

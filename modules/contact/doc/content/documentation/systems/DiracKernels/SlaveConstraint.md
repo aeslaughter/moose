@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SlaveConstraint
+
 !syntax description /DiracKernels/SlaveConstraint
 
 !syntax parameters /DiracKernels/SlaveConstraint

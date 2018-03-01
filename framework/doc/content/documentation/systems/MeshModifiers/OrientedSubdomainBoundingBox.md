@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # OrientedSubdomainBoundingBox
+
 !syntax description /MeshModifiers/OrientedSubdomainBoundingBox
 
 !syntax parameters /MeshModifiers/OrientedSubdomainBoundingBox

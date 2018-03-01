@@ -1,4 +1,5 @@
 # MeshSideSet
+
 !syntax description /MeshModifiers/MeshSideSet
 
 Element sides are not explicitly meshed in MOOSE/libmesh, i.e. no shape functions

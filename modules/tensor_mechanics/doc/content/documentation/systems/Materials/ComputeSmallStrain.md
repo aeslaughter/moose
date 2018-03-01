@@ -1,7 +1,9 @@
 # Compute Small Strain
+
 !syntax description /Materials/ComputeSmallStrain
 
 ## Description
+
 The material `ComputeSmallStrain` is designed for linear elasticity problems, which calculates the small, total strain.
 This material is useful for verifying material models with hand calculations because of the simplified strain calculations.
 
@@ -14,6 +16,7 @@ For more details on the linearized small strain assumption and derivation, see a
 Total strain theories are path independent: in MOOSE, path independence means that the total strain, from the beginning of the entire simulation, is used to calculate stress and other material properties.  Incremental theories, on the other hand, use the increment of strain at timestep to calculate stress.  Because the total strain formulation `ComputeSmallStrain` is path independent, no old values of strain or stress from the previous timestep are stored in MOOSE.  For a comparison of total strain vs incremental strain theories with experimental data, see [Shammamy and Sidebottom (1966)](http://link.springer.com/article/10.1007/BF02326324).
 
 ## Example Input File Syntax
+
 The small strain calculator can be activated in the input file through the use of the TensorMechanics Master Action, as shown below.
 !listing modules/tensor_mechanics/tutorials/basics/part_1.1.i block=Modules/TensorMechanics/Master
 
@@ -31,5 +34,6 @@ Although not recommended, it is possible to directly use the `ComputeSmallStrain
 !syntax children /Materials/ComputeSmallStrain
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{tensor_mechanics.bib}

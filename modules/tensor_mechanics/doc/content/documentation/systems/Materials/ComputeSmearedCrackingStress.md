@@ -1,7 +1,9 @@
 # Compute Smeared Cracking Stress
+
 !syntax description /Materials/ComputeSmearedCrackingStress
 
 ## Description
+
 This class implements a fixed smeared cracking model, which represents cracking as a softening stress-strain law at the material points as opposed to introducing topographic changes to the mesh, as would be the case with a discrete cracking model.
 
 In this model, principal stresses are compared to a critical stress.  If one of the principal stresses exceeds the critical stress, the material point is considered cracked in that direction, and the model transitions to an orthotropic model, in which the stress in the cracked direction is decreased according to a softening law. Material behavior in the cracking direction is affected in two ways: reduction of the stiffness in that direction, and adjusting the stress to follow the softening curve.
@@ -46,6 +48,7 @@ $\mathbf{T}$ is useful for transforming uncracked tensors in the global frame to
 When many material points have multiple cracks, the solution becomes difficult to obtain numerically.  For this reason, controls are available to limit the number and direction of cracks that are allowed. Also, there are options to control the amount of shear retention and amount of stress correction during softening, both of which can significantly affect convergence.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/smeared_cracking/cracking.i block=Materials/elastic_stress
 
 !syntax parameters /Materials/ComputeSmearedCrackingStress

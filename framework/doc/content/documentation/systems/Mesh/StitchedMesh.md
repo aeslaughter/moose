@@ -1,7 +1,9 @@
 # StitchedMesh
+
 !syntax description /Mesh/StitchedMesh
 
 ## Overview
+
 The `StitchedMesh` object allows for multiple mesh files to be "stitched" together to form a single mesh for use
 in a simulation. For example, consider the following three meshes.
 

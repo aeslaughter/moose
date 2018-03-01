@@ -1,4 +1,5 @@
 # Compute Isotropic Linear Elastic Phase Field Fracture Stress
+
 !syntax description /Materials/ComputeIsotropicLinearElasticPFFractureStress
 
 ##Description
@@ -80,6 +81,7 @@ where $ L = (g_c \eta)^{-1}$ and $\kappa = g_c l$.
 This equation follows the standard Allen-Cahn and thus can be implemented in MOOSE using the standard Allen-Cahn kernels, [TimeDerivative](/TimeDerivative.md), [AllenCahn](/AllenCahn), and [ACInterface](/ACInterface). There is now an action that automatically generates these kernels: NonconservedAction.
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/phase_field_fracture/void2d_iso.i block=Materials/pf_elastic_energy
 
 !syntax parameters /Materials/ComputeIsotropicLinearElasticPFFractureStress

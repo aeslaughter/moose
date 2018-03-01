@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # BimodalSuperellipsoidsIC
+
 !syntax description /AuxVariables/InitialCondition/BimodalSuperellipsoidsIC
 
 !syntax parameters /AuxVariables/InitialCondition/BimodalSuperellipsoidsIC

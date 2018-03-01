@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalColoringIC System
-!syntax objects /ICs/PolycrystalICs/PolycrystalColoringIC
 
-!syntax subsystems /ICs/PolycrystalICs/PolycrystalColoringIC
+!syntax list /ICs/PolycrystalICs/PolycrystalColoringIC objects=True actions=False subsystems=False
 
-!syntax actions /ICs/PolycrystalICs/PolycrystalColoringIC
+!syntax list /ICs/PolycrystalICs/PolycrystalColoringIC objects=False actions=False subsystems=True
+
+!syntax list /ICs/PolycrystalICs/PolycrystalColoringIC objects=False actions=True subsystems=False

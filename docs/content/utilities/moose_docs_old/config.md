@@ -1,4 +1,5 @@
 ## MooseDocs Configuration File
+
 Before discussing the required configuration file, it is important to understand how the MooseDocs
 system operates. The system relies heavily on the [python-markdown] package, which is a tool written
 in [python] to convert from [markdown] syntax to [html]. For websites, the MooseDocs system simply

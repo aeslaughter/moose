@@ -1,7 +1,9 @@
 # Density
+
 !syntax description /Materials/Density
 
 ## Description
+
 The `Density` model creates a material property named density.  If coupled to displacement
 variables, the model adjusts density based on deformation.
 

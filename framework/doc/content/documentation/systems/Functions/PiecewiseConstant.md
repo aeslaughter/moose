@@ -1,4 +1,5 @@
 # PiecewiseConstant
+
 !syntax description /Functions/PiecewiseConstant
 
 ## Description
@@ -10,6 +11,7 @@ parameter controls whether the function takes the value of the abscissa of the
 user-provided point to the right or left of the value at which the function is evaluated.
 
 ## Example Input Syntax
+
 !listing test/tests/functions/piecewise_constant/piecewise_constant.i block=Functions
 
 !syntax parameters /Functions/PiecewiseConstant

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsMultiphaseProblem
+
 !syntax description /Problem/RichardsMultiphaseProblem
 
 !syntax parameters /Problem/RichardsMultiphaseProblem

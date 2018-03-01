@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CSV
+
 !syntax description /Outputs/CSV
 
 !syntax parameters /Outputs/CSV

@@ -77,6 +77,7 @@ def find_moose_executable(loc, **kwargs):
     Kwargs:
         methods[list]: (Default: ['opt', 'oprof', 'dbg', 'devel']) The list of build types to consider.
         name[str]: (Default: opt.path.basename(loc)) The name of the executable to locate.
+        show_error[bool]: (Default: True) Display error messages.
     """
 
     # Set the methods and name local variables
@@ -86,6 +87,7 @@ def find_moose_executable(loc, **kwargs):
         methods = ['opt', 'oprof', 'dbg', 'devel']
     methods = kwargs.pop('methods', methods)
     name = kwargs.pop('name', os.path.basename(loc))
+    show_error = kwargs.pop('show_error', True)
 
     # Handle 'combined' and 'tests'
     if os.path.isdir(loc):
@@ -93,21 +95,23 @@ def find_moose_executable(loc, **kwargs):
             name = 'moose_test'
 
     # Check that the location exists and that it is a directory
+    exe = None
     loc = os.path.abspath(loc)
     if not os.path.isdir(loc):
-        print('ERROR: The supplied path must be a valid directory:', loc)
-        return errno.ENOTDIR
+        if show_error:
+            print('ERROR: The supplied path must be a valid directory:', loc)
 
     # Search for executable with the given name
-    exe = errno.ENOENT
-    for method in methods:
-        exe = os.path.join(loc, name + '-' + method)
-        if os.path.isfile(exe):
+    else:
+        for method in methods:
+            exe_name = os.path.join(loc, name + '-' + method)
+            if os.path.isfile(exe_name):
+                exe = exe_name
             break
 
     # Returns the executable or error code
-    if not errno.ENOENT:
-        print('ERROR: Unable to locate a valid MOOSE executable in directory')
+    if (exe is None) and show_error:
+        print('ERROR: Unable to locate a valid MOOSE executable in directory:', loc)
     return exe
 
 def runExe(app_path, args):

@@ -1,4 +1,5 @@
 # ACInterfaceKobayashi1
+
 !syntax description /Kernels/ACInterfaceKobayashi1
 
 Kernel 1 of 2 for interfacial energy anisotropy in the Allen-Cahn equation as

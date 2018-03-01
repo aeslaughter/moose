@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DesorptionFromMatrix
+
 !syntax description /Kernels/DesorptionFromMatrix
 
 !syntax parameters /Kernels/DesorptionFromMatrix

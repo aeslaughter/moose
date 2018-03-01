@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Q2PBorehole
+
 !syntax description /DiracKernels/Q2PBorehole
 
 !syntax parameters /DiracKernels/Q2PBorehole

@@ -1,4 +1,5 @@
 # ConsistentHeatCapacityTimeDerivative
+
 !syntax description /Kernels/ConsistentHeatCapacityTimeDerivative
 
 This kernel is similar to HeatCapacityConductionTimeDerivative. The heat capacity $C_p = \rho c_p$ is

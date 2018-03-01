@@ -1,12 +1,14 @@
 # Compute Elasticity Tensor CP
+
 !syntax description /Materials/ComputeElasticityTensorCP
 
 ## Description
+
 The material `ComputeElasticityTensorCP` is used to create an elasticity tensor for crystal plasticity simulations.
 This material builds an orthotropic elasticity tensor using the fill_method `symmetric9` from [ComputeElasticityTensor](/ComputeElasticityTensor.md).
 `ComputeElasticityTensorCP` rotates the elasticity tensor both during the initial setup step, if Euler angles are provided, and at the start of each timestep as the crystal lattice rotates during plastic deformation.
 
-The fill method `symmetric9` is appropriate for materials with three orthotropic planes of symmetry \cite{malvern1969introduction}, and is used for simulations of anistropic materials such as cubic crystals.
+The fill method `symmetric9` is appropriate for materials with three orthotropic planes of symmetry [cite:malvern1969introduction], and is used for simulations of anistropic materials such as cubic crystals.
 The enginering elasticity tensor notation for an orthotropic material is given in Eq \eqref{eq:symmetric9_fill_method}:
 \begin{equation}
 \label{eq:symmetric9_fill_method}
@@ -21,6 +23,7 @@ C_{ijkl} = \begin{bmatrix}
 \end{equation}
 
 ## Rotation Tensor Conventions
+
 The [Euler angle convention](http://mathworld.wolfram.com/EulerAngles.html) used in `ComputeElasticityTensorCP` is the $z$-$x'$-$z'$ (3-1-3) convention.
 The Euler angles arguments are expected in degrees, not radians, and are denoted as $\phi_1$, $\Phi$, and $\phi_2$, corresponding to the axis rotations.
 The rotation tensor, $R$, is calculated from the current Euler angles at each timestep as shown in Eq \eqref{eq:rotation_tensor}.
@@ -50,6 +53,7 @@ The rotation matrix used in this class, `ComputeElasticityTensorCP`, is the tran
     The crystal plasticity materials, including `ComputeElasticityTensorCP` employ an active rotation: the crystal system is rotated into the sample (loading) coordinate system. Generally the Bunge Euler angles are used to describe a passive rotation: rotating the sample coordinate system into the crystal coordinate system. As a result, the rotation tensor applied is the transpose of the rotation tensor given in \eqref{eq:rotation_tensor}.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/cp_user_object/crysp.i block=Materials/elasticity_tensor
 
 
@@ -60,5 +64,6 @@ The rotation matrix used in this class, `ComputeElasticityTensorCP`, is the tran
 !syntax children /Materials/ComputeElasticityTensorCP
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{tensor_mechanics.bib}

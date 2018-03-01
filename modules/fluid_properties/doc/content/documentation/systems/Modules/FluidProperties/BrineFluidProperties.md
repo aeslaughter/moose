@@ -1,4 +1,5 @@
 # BrineFluidProperties
+
 !syntax description /Modules/FluidProperties/BrineFluidProperties
 
 
@@ -6,13 +7,13 @@ A high-precision and consistent formulation for fluid properties for binary salt
 mixtures at pressures and temperatures of interest.
 
 Density, enthalpy, internal energy and specific heat capacity are
-calculated using the formulations provided in \citet{driesner2007a} and \citet{driesner2007b}.
+calculated using the formulations provided in [citet:driesner2007a] and [citet:driesner2007b].
 
-Viscosity and thermal conductivity of brine are calculated using the formulation of \citet{phillips1981}.
+Viscosity and thermal conductivity of brine are calculated using the formulation of [citet:phillips1981].
 
-Brine vapor pressure is calculated using the formulation presented in \citet{haas1976}.
+Brine vapor pressure is calculated using the formulation presented in [citet:haas1976].
 
-Solubility of solid salt (halite) in water is given by \citet{potter1977}.
+Solubility of solid salt (halite) in water is given by [citet:potter1977].
 
 ##Range of validity
 The BrineFluidProperties UserObject is valid for:
@@ -28,5 +29,6 @@ The BrineFluidProperties UserObject is valid for:
 !syntax children /Modules/FluidProperties/BrineFluidProperties
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{fluid_properties.bib}

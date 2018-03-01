@@ -1,4 +1,5 @@
 # LevelSetOlssonTerminator
+
 This object is utilized to terminate a level set reinitialization solve, when steady-state for $U_h$ (see [LevelSetOlssonReinitialization](level_set/LevelSetOlssonReinitialization.md)) is detected:
 
 \begin{equation}
@@ -12,6 +13,7 @@ equal to the re-initialized solution $U_h$, and the entire process
 is repeated at time $t+\Delta t$.
 
 ## Example Syntax
+
 !listing modules/level_set/test/tests/reinitialization/reinit.i block=UserObjects
 
 !syntax parameters /UserObjects/LevelSetOlssonTerminator

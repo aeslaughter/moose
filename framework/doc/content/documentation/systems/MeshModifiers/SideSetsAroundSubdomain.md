@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SideSetsAroundSubdomain
+
 !syntax description /MeshModifiers/SideSetsAroundSubdomain
 
 !syntax parameters /MeshModifiers/SideSetsAroundSubdomain

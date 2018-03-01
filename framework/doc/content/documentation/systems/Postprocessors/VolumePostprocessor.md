@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # VolumePostprocessor
+
 !syntax description /Postprocessors/VolumePostprocessor
 
 !syntax parameters /Postprocessors/VolumePostprocessor

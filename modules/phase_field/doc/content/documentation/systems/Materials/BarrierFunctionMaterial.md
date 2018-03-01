@@ -1,5 +1,6 @@
 
 # BarrierFunctionMaterial
+
 !syntax description /Materials/BarrierFunctionMaterial
 
 Two phase free energy phase transformation barrier term.

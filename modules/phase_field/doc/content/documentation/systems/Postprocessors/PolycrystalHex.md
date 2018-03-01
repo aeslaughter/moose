@@ -11,6 +11,7 @@ The PolycrystalHex object generates a set of points in 2D or 3D space such that 
 See [Polycrystal Initial Conditions](ICs/PolycrystalICs.md) for more information.
 
 ## Typical usage in an input file:
+
 !listing modules/phase_field/examples/grain_growth/grain_growth_2D_graintracker.i block=UserObjects link=false pre-style=max-height:450px
 
 !listing modules/phase_field/examples/grain_growth/grain_growth_2D_graintracker.i block=ICs
@@ -19,6 +20,7 @@ See [Polycrystal Initial Conditions](ICs/PolycrystalICs.md) for more information
 ## Description and Syntax
 
 # PolycrystalHex
+
 !syntax description /Postprocessors/PolycrystalHex
 
 !syntax parameters /Postprocessors/PolycrystalHex

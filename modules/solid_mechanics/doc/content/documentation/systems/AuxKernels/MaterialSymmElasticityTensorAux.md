@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaterialSymmElasticityTensorAux
+
 !syntax description /AuxKernels/MaterialSymmElasticityTensorAux
 
 !syntax parameters /AuxKernels/MaterialSymmElasticityTensorAux

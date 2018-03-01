@@ -1,4 +1,5 @@
 # KKSCHBulk
+
 !syntax description /Kernels/KKSCHBulk
 
 Non-split KKS Cahn-Hilliard bulk kernel, which is **not fully implemented**.

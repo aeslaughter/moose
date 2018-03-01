@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NearestPointLayeredAverage
+
 !syntax description /UserObjects/NearestPointLayeredAverage
 
 !syntax parameters /UserObjects/NearestPointLayeredAverage

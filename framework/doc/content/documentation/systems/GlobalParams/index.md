@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GlobalParams System
-!syntax objects /GlobalParams
 
-!syntax subsystems /GlobalParams
+!syntax list /GlobalParams objects=True actions=False subsystems=False
 
-!syntax actions /GlobalParams
+!syntax list /GlobalParams objects=False actions=False subsystems=True
+
+!syntax list /GlobalParams objects=False actions=True subsystems=False

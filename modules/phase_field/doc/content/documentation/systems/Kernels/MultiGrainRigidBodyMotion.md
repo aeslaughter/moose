@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MultiGrainRigidBodyMotion
+
 !syntax description /Kernels/MultiGrainRigidBodyMotion
 
 !syntax parameters /Kernels/MultiGrainRigidBodyMotion

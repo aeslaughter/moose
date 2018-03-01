@@ -1,6 +1,8 @@
 # Level Set Module Theory
+
 ## Introduction
-The level set method is commonly used for front tracking problems \cite{osher2006level}. It
+
+The level set method is commonly used for front tracking problems [cite:osher2006level]. It
 is modeled with the multi-dimensional advection equation
 \begin{equation}
   \label{eqn:pure_advection}
@@ -48,7 +50,7 @@ equation with the Galerkin finite element method requires numerical
 stabilization if node-to-node oscillations are to be avoided and
 standard solution accuracy is to be maintained.  The level set module also
 includes kernels which implement the Streamline Upwind/Petrov-Galerkin
-(SUPG) stabilization method \cite{brooks1982streamline,donea2003finite}
+(SUPG) stabilization method [cite:brooks1982streamline,donea2003finite]
 for \eqref{eqn:pure_advection_weak}, which is given by
 \begin{equation}
   \label{eqn:supg}
@@ -104,5 +106,6 @@ equal to the re-initialized solution $U_h$, and the entire process
 is repeated at time $t+\Delta t$.
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{level_set.bib}

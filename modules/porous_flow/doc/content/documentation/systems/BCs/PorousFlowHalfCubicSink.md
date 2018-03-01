@@ -1,4 +1,5 @@
 # PorousFlowHalfCubicSink
+
 !syntax description /BCs/PorousFlowHalfCubicSink
 
 The basic sink $f(x,t)$ is scaled by a cubic flux multiplier of the pressure

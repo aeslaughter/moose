@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ThermalContact System
-!syntax objects /ThermalContact
 
-!syntax subsystems /ThermalContact
+!syntax list /ThermalContact objects=True actions=False subsystems=False
 
-!syntax actions /ThermalContact
+!syntax list /ThermalContact objects=False actions=False subsystems=True
+
+!syntax list /ThermalContact objects=False actions=True subsystems=False

@@ -1,4 +1,5 @@
 # KKSPhaseChemicalPotential
+
 !syntax description /Kernels/KKSPhaseChemicalPotential
 
 Enforces the point wise

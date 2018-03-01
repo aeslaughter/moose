@@ -1,5 +1,6 @@
 
 # MultiBarrierFunctionMaterial
+
 !syntax description /Materials/MultiBarrierFunctionMaterial
 
 The material provides a function $g(\vec\eta)$ that is parameterized by all

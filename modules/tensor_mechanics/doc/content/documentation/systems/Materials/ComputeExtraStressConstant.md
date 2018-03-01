@@ -1,7 +1,9 @@
 # Compute Extra Stress Constant
+
 !syntax description /Materials/ComputeExtraStressConstant
 
 ## Description
+
 The class `ComputeExtraStressConstant` adds an additional stress term, ($\boldsymbol{\sigma}_0$), to the residual calculation after the constitutive model calculation of the stress, as shown in \eqref{eq:extra_stress_addition}.
 An extra stress may be a residual stress, such as in large civil engineering simulations.
 
@@ -15,6 +17,7 @@ where the value of $\boldsymbol{\sigma}^{extra}$ is constant across the entire m
 `ComputeExtraStressConstant` creates a symmetric stress tensor, and expects the values of the stress tensor components in the specific order specified in the input parameter description below.
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/linear_elasticity/extra_stress.i block=Materials/const_stress
 
 !syntax parameters /Materials/ComputeExtraStressConstant

@@ -18,7 +18,7 @@ from MooseDocs.tree import tokens, page
 from readers import Reader
 from renderers import Renderer
 
-LOG = logging.getLogger('Translator')
+LOG = logging.getLogger('MooseDocs.Translator')
 
 class Translator(mixins.ConfigObject):
     """

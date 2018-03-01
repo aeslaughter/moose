@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsSeff2waterRSC
+
 !syntax description /UserObjects/RichardsSeff2waterRSC
 
 !syntax parameters /UserObjects/RichardsSeff2waterRSC

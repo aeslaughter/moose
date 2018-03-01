@@ -1,7 +1,9 @@
 # Composite Eigenstrain
+
 !syntax description /Materials/CompositeEigenstrain
 
 ## Description
+
 The material `CompositeEigenstrain` calculates a Rank-2 tensor that can be used as an Eigenstrain tensor in a mechanics simulation.
 This tensor is computed as a weighted sum of base Eigenstrain tensors, as shown in \eqref{eq:weighted_rank_two}, where each weight can be a scalar material property that may depend on simulation variables.
 \begin{equation}
@@ -11,6 +13,7 @@ This tensor is computed as a weighted sum of base Eigenstrain tensors, as shown 
 where $\boldsymbol{T}$ is a Rank-2 tensor and $w$ is the weighting factor for each Rank-2 tensor.
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/eigenstrain/composite.i block=Materials/eigenstrain
 
 The `eigenstrain_name` parameter value must also be set for the strain calculator, and an example parameter setting is shown below:

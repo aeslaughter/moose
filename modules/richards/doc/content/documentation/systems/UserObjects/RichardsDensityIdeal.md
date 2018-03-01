@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsDensityIdeal
+
 !syntax description /UserObjects/RichardsDensityIdeal
 
 !syntax parameters /UserObjects/RichardsDensityIdeal

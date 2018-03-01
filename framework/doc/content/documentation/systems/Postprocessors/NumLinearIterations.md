@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NumLinearIterations
+
 !syntax description /Postprocessors/NumLinearIterations
 
 !syntax parameters /Postprocessors/NumLinearIterations

@@ -19,14 +19,14 @@ PorousFlow, everything in the time derivative is evaluated at the nodes.
 Specifically, $M^{\kappa}$ at a node depends only on the independent variables
 at that node.  It has been shown in many studies that this lumping is
 advantageous for mass conservation and reduces spurious oscillations of the
-pressure around sharp fronts \citep{celia1990}.
+pressure around sharp fronts [citep:celia1990].
 
 The cause of oscillations around sharp fronts, and how mass lumping removes the
 oscillations, can be illustrated through a simple example.
 
 !media media/porous_flow/mass_lumping.png width=60% margin-left=10px caption=Two elements of length $L$.  Linear Lagrange shape/test functions for each node are shown in red ($S_{0}$ for node 0, $S_{1}$ for node 1, and $S_{2}$ for node 2).  Gravity acts in the direction $-z$.  Gauss points are shown in green. id=fig:mass_lumping
 
-Consider the situation in \ref{fig:mass_lumping}, and suppose that Node 2 has
+Consider the situation in [fig:mass_lumping], and suppose that Node 2 has
 high potential, and that Nodes 0 and 1 are at residual saturation where the
 relative permeability is zero.  Then fluid will flow from Node 2 to Node 1 (and
 then to Node 0 in the next time step).  For simplicity, imagine that the fluid

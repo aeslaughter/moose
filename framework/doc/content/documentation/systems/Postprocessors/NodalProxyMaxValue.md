@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalProxyMaxValue
+
 !syntax description /Postprocessors/NodalProxyMaxValue
 
 !syntax parameters /Postprocessors/NodalProxyMaxValue

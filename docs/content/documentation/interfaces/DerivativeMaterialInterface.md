@@ -18,6 +18,7 @@ The  can be used from Materials (to declare and get material property derivative
 ## Use in a Material class
 
 ### Header
+
 ```c++
 #include "DerivativeMaterialInterface.h"
 #include "Material.h"
@@ -40,6 +41,7 @@ private:
 Note that it is possible to template the interface on arbitrary classes, including classes derived from ```Material``` or ```Kernel```.
 
 ### Implementation
+
 ```c++
 #include "MyMaterial.h"
 
@@ -64,6 +66,7 @@ Material property derivatives do _not_ need to be declared or computed in the sa
 ## Use in a Kernel class
 
 ### Header
+
 ```c++
 #include "DerivativeMaterialInterface.h"
 #include "Kernel.h"
@@ -85,6 +88,7 @@ protected:
 Note that material property derivatives that are fetched (and _not_ declared) in a class need to be stored in ```const``` references. It is recommended to use constant references for regular material properties as well, if they are not written to.
 
 ### Implementation
+
 ```c++
 #include "MyKernel.h"
 

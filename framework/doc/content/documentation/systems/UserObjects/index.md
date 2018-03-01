@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # UserObjects System
-!syntax objects /UserObjects
 
-!syntax subsystems /UserObjects
+!syntax list /UserObjects objects=True actions=False subsystems=False
 
-!syntax actions /UserObjects
+!syntax list /UserObjects objects=False actions=False subsystems=True
+
+!syntax list /UserObjects objects=False actions=True subsystems=False

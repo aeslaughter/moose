@@ -55,7 +55,7 @@ occur when a feature splits or when a new feature is created.
 Grain remapping is implemented using a recursive backtracking algorithm capable of performing several variable swaps to transform the
 improperly colored grain graph into a proper one. This backtracking algorithm runs only on the root process which is the
 only processor that contains the complete global grain graph.
-When a pair of grains are located that are in close proximity \ref{remap_red_conflict} and \ref{remap_red_halo},
+When a pair of grains are located that are in close proximity [remap_red_conflict] and [remap_red_halo],
 one of them is arbitrarily chosen and designated as the ``target'' grain indicating that we seek to remap its defining
 variable values to a different
 solution variable. Depending on the number of neighbors a graph has and the variables representing each of those neighbors, it
@@ -88,7 +88,7 @@ sorted in reverse order putting the grains furthest away near the front and leav
 | C        | -1.0     |
 | D        | -3.0     |
 
-A case with all negative distances is illustrated in \ref{large_red}. In this example, the target grain is
+A case with all negative distances is illustrated in [large_red]. In this example, the target grain is
 chosen as the large grain labeled $A$, centered on the right side of the image. All of the other colors have at least one
 bounding box that overlaps the large $A$ grain: 2 for $B$, 1 for $C$, and 3 for $D$.
 The empty list ($\varnothing$) is used for the variable represented by the target grain to ensure that the same variable

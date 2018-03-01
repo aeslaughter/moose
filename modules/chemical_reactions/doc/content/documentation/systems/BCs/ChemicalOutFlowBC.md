@@ -1,4 +1,5 @@
 # ChemicalOutFlowBC
+
 !syntax description /BCs/ChemicalOutFlowBC
 
 Integrated boundary condition to specify $\nabla u$ on the boundary, which arises

@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Postprocessors System
-!syntax objects /Postprocessors
 
-!syntax subsystems /Postprocessors
+!syntax list /Postprocessors objects=True actions=False subsystems=False
 
-!syntax actions /Postprocessors
+!syntax list /Postprocessors objects=False actions=False subsystems=True
+
+!syntax list /Postprocessors objects=False actions=True subsystems=False

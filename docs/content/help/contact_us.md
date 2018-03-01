@@ -13,4 +13,5 @@ GMail Users: Just click the "Join group" button, everyone else must send an emai
   * [mailto:moose-announce+subscribe@googlegroups.com](mailto:moose-announce+subscribe@googlegroups.com)
 
 ## Twitter
+
 If you use twitter you can use [#mooseframework](https://twitter.com/search?q=%23mooseframework&lang=en) to tell us about your work.

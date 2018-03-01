@@ -1,7 +1,9 @@
 # Compute Eigenstrain
+
 !syntax description /Materials/ComputeEigenstrain
 
 ## Description
+
 The class `ComputeEigenstrain` allows the user to specify a constant value of an eigenstrain for a simulation.
 The eigenstrain is added to the mechanical strain, which can be elastic or inelastic, before computing the corresponding stress measure:
 \begin{equation}
@@ -16,6 +18,7 @@ The term eigenstrain was introduced by [T. Mura in 1982](http://link.springer.co
 Based on the number and values of constants provided as the argument to the `eigen_base` parameter, `ComputeEigenstrain` will build an isotropic, symmetric, or skew-symmetric Rank-2 eigenstrain tensor.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/visco/gen_kv_driving.i block=Materials/eigen
 
 !syntax parameters /Materials/ComputeEigenstrain

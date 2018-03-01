@@ -5,15 +5,18 @@ using [markdown](https://en.wikipedia.org/wiki/Markdown) syntax, including a cus
 process: [Moose Flavored Markdown](moose_markdown/index.md).
 
 ## Dependencies
+
 If you are using a current [MOOSE package](getting_started/installation/index.md) then the setup is
 complete.
 
 ## Configuration
+
 If you are adding documentation to an existing project then you will need to add a few files to
 configure the documentation system to work properly for your application.
 
 
 ###### (1) Create "docs" Location
+
 Create a "docs" directory, where your documentation-related files will be stored.
 
 !!!info
@@ -21,6 +24,7 @@ Create a "docs" directory, where your documentation-related files will be stored
     location can be created. The location and name of this directory is arbitrary.
 
 ###### (2) Add MooseDocs Executable
+
 To use MooseDocs, an executable is required -- this main executable is simply copied from the
 executable within [MOOSE]:
 
@@ -45,6 +49,7 @@ of documentation that MooseDocs is capable of producing:
 
 
 ## Manual Setup
+
 If you are not using a MOOSE package, then the following packages must be installed, which can
 be done using [pip](https://pip.pypa.io/en/stable/).
 

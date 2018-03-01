@@ -1,4 +1,5 @@
 # MaxIncrement
+
 !syntax description /Dampers/MaxIncrement
 
 The `MaxIncrement` damper limits the change of a variable from one nonlinear

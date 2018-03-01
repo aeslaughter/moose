@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementPropertyReadFile
+
 !syntax description /UserObjects/ElementPropertyReadFile
 
 !syntax parameters /UserObjects/ElementPropertyReadFile

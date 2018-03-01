@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # EqualGradientLagrangeInterface
+
 !syntax description /InterfaceKernels/EqualGradientLagrangeInterface
 
 !syntax parameters /InterfaceKernels/EqualGradientLagrangeInterface

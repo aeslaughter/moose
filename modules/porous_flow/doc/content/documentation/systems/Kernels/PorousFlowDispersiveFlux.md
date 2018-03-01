@@ -1,4 +1,5 @@
 # PorousFlowDispersiveFlux
+
 !syntax description /Kernels/PorousFlowDispersiveFlux
 
 This `Kernel` implements the weak form of

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MultiBoundingBoxIC
+
 !syntax description /Variables/InitialCondition/MultiBoundingBoxIC
 
 !syntax parameters /Variables/InitialCondition/MultiBoundingBoxIC

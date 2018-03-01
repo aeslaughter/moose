@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ClosePackIC
+
 !syntax description /AuxVariables/InitialCondition/ClosePackIC
 
 !syntax parameters /AuxVariables/InitialCondition/ClosePackIC

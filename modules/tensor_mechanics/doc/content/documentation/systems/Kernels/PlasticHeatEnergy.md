@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PlasticHeatEnergy
+
 !syntax description /Kernels/PlasticHeatEnergy
 
 !syntax parameters /Kernels/PlasticHeatEnergy

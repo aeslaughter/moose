@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CLSHPlasticModel
+
 !syntax description /Materials/CLSHPlasticModel
 
 !syntax parameters /Materials/CLSHPlasticModel

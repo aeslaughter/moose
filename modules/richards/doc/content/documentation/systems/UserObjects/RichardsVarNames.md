@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsVarNames
+
 !syntax description /UserObjects/RichardsVarNames
 
 !syntax parameters /UserObjects/RichardsVarNames

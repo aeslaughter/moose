@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RadialDisplacementCylinderAux
+
 !syntax description /AuxKernels/RadialDisplacementCylinderAux
 
 !syntax parameters /AuxKernels/RadialDisplacementCylinderAux

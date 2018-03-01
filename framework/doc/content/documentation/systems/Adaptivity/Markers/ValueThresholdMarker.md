@@ -1,8 +1,10 @@
 
 # ValueThresholdMarker
+
 !syntax description /Adaptivity/Markers/ValueThresholdMarker
 
 ## Description
+
 The `ValueThresholdMarker` requires an estimate of error
 be provided from an [Indicator](/Indicators/index.md). Using this
 indicator an element is marked for refinement or coarsening if the
@@ -22,6 +24,7 @@ region is used to define a region of elements that are marked with
 adjacent to elements marked for refinement.
 
 ## Example Input Syntax
+
 !listing test/tests/markers/value_threshold_marker/value_threshold_marker_test.i block=Adaptivity
 
 !syntax parameters /Adaptivity/Markers/ValueThresholdMarker

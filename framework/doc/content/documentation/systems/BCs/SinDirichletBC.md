@@ -1,8 +1,10 @@
 
 # SinDirichletBC
+
 !syntax description /BCs/SinDirichletBC
 
 ## Description
+
 `SinDirichletBC` is a `NodalBC` which imposes a time-varying boundary value of the form
 \begin{equation}
   g(t) = \left\{
@@ -32,6 +34,7 @@ iterations, as well as preventing the solver from converging to
 non-physical solutions in nonlinear PDEs.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/sin_bc/sin_dirichlet_test.i block=BCs
 
 !syntax parameters /BCs/SinDirichletBC

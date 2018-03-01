@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FunctionPenaltyDirichletBC
+
 !syntax description /BCs/FunctionPenaltyDirichletBC
 
 !syntax parameters /BCs/FunctionPenaltyDirichletBC

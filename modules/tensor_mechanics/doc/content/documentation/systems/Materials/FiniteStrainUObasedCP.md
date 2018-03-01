@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FiniteStrainUObasedCP
+
 !syntax description /Materials/FiniteStrainUObasedCP
 
 !syntax parameters /Materials/FiniteStrainUObasedCP

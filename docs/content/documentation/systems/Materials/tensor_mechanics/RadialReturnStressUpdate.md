@@ -5,7 +5,7 @@ Base class which calculates the effective inelastic strain increment required to
 ###Algorithm References
 The radial return mapping method, introduced by Simo and Taylor (1985), uses a von Mises yield surface to determine the increment of plastic strain necessary to return the stress state to the yield surface after a trial stress increment takes the computed stress state across the yield surface.  Because the von Mises yield surface in the deviatoric stress space has the shape of a circle, the _plastic correction stress_ is always directed towards the center of the yield surface circle.
 
-In addition to the Sumo and Hughes textbook \cite{simo2006computational}, _Introduction to Computational Plasticity_ by Dunnu and Petrinic (2004) is an excellent reference for users working with the Radial Return Stress Update materials; several of the isotropic plasticity and creep effective plastic strain increment algorithms are taken from \cite{dunne2005introduction}.
+In addition to the Sumo and Hughes textbook [cite:simo2006computational], _Introduction to Computational Plasticity_ by Dunnu and Petrinic (2004) is an excellent reference for users working with the Radial Return Stress Update materials; several of the isotropic plasticity and creep effective plastic strain increment algorithms are taken from [cite:dunne2005introduction].
 
 ###The Radial Return Stress Update Description
 The stress update materials are not called by MOOSE directly but instead only by other materials using the `computeProperties` method.  For the `RadialReturnStressUpdate` materials, this calling material is [ComputeMultipleInelasticStress](ComputeMultipleInelasticStress.md).  Separating the call to the stress update materials from MOOSE allows us to iteratively call the stress update materials as is required to achieve convergence.
@@ -61,5 +61,6 @@ Additionally, new radial return methods must also overwrite a single method from
 More details on how to write the equivalent yield surface equation for a creep model are given in Dunne and Petrinic.
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{tensor_mechanics.bib}

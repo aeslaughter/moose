@@ -1,8 +1,10 @@
 
 # WeakGradientBC
+
 !syntax description /BCs/WeakGradientBC
 
 ## Description
+
 `WeakGradientBC` is an `IntegratedBC` which is appropriate for use with the
 boundary terms arising from the [`Diffusion`](/Diffusion.md) [`Kernel`](/Kernels/index.md). `WeakGradientBC`
 does not "enforce" a boundary condition per-se (see,
@@ -16,6 +18,7 @@ This class computes a residual contribution identical to that of the
 that class' documentation for more detailed information.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/misc_bcs/weak_gradient_bc_test.i start=[./top] end=[../] include-end=true
 
 !syntax parameters /BCs/WeakGradientBC

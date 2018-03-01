@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaterialRealDenseMatrixAux
+
 !syntax description /AuxKernels/MaterialRealDenseMatrixAux
 
 !syntax parameters /AuxKernels/MaterialRealDenseMatrixAux

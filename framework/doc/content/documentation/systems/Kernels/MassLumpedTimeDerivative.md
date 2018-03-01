@@ -54,7 +54,7 @@ which the kernel block is taken, demonstrates a case where the concentration of
 $u$ would become negative in a non-lumped scheme for sufficiently small time
 steps.
 
-!listing test/tests/kernels/mass_lumping/mass_lumping.i block=Kernels label=false
+!listing test/tests/kernels/mass_lumping/mass_lumping.i block=Kernels 
 
 !syntax parameters /Kernels/MassLumpedTimeDerivative
 

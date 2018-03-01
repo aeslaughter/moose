@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsHalfGaussianSink
+
 !syntax description /BCs/RichardsHalfGaussianSink
 
 !syntax parameters /BCs/RichardsHalfGaussianSink

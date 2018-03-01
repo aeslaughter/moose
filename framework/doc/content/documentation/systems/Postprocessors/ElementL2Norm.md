@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementL2Norm
+
 !syntax description /Postprocessors/ElementL2Norm
 
 !syntax parameters /Postprocessors/ElementL2Norm

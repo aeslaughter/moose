@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputeConcentrationDependentElasticityTensor
+
 !syntax description /Materials/ComputeConcentrationDependentElasticityTensor
 
 !syntax parameters /Materials/ComputeConcentrationDependentElasticityTensor

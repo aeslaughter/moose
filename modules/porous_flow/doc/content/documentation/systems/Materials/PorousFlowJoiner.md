@@ -1,4 +1,5 @@
 # PorousFlowJoiner
+
 !syntax description /Materials/PorousFlowJoiner
 
 !syntax parameters /Materials/PorousFlowJoiner

@@ -5,9 +5,9 @@ NaCl fluid properties as a function of pressure (Pa) and temperature (K).
 !!! note
     Only solid state (halite) properties are currently implemented to use in brine formulation
 
-Properties for halite given by \citet{Driesner2007b}, apart from thermal conductivity,
-which is calculated using the data of \citet{urqhart2015}. Critical values are taken
-from \citet{Anderko1992}.
+Properties for halite given by [citet:Driesner2007b], apart from thermal conductivity,
+which is calculated using the data of [citet:urqhart2015]. Critical values are taken
+from [citet:Anderko1992].
 
 ##Properties of NaCl
 
@@ -33,5 +33,6 @@ The NaClFluidProperties UserObject is valid for the solid phase region only
 !syntax children /Modules/FluidProperties/NaClFluidProperties
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{fluid_properties.bib}

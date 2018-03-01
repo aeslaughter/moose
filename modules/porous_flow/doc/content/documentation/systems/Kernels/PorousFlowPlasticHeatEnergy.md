@@ -1,4 +1,5 @@
 # PorousFlowPlasticHeatEnergy
+
 !syntax description /Kernels/PorousFlowPlasticHeatEnergy
 
 This `Kernel` implements the weak form of

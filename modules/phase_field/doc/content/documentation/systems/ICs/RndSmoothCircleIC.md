@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RndSmoothCircleIC
+
 !syntax description /ICs/RndSmoothCircleIC
 
 !syntax parameters /ICs/RndSmoothCircleIC

@@ -1,7 +1,9 @@
 # ConstantDT
+
 !syntax description /Executioner/TimeStepper/ConstantDT
 
 ## Description
+
 The `ConstantDT` TimeStepper simply takes a constant time step size
 throughout the analysis, unless the solver fails to converge on an iteration.
 

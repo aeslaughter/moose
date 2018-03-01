@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GapHeatPointSourceMaster
+
 !syntax description /DiracKernels/GapHeatPointSourceMaster
 
 !syntax parameters /DiracKernels/GapHeatPointSourceMaster

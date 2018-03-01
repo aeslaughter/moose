@@ -83,6 +83,7 @@ In `ComputeFiniteStrain`, $\hat{\mathbf{F}}$ is calculated in the computeStrain 
 where $\mathrm{av}_{el}()$ is the average value for the entire element. The strain increment and the rotation increment are calculated in `computeQpStrain()`. Once the strain increment is calculated, it is added to the total strain from $t_n$. The total strain from $t_{n+1}$ must then be rotated using the rotation increment.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/volumetric_deform_grad/elastic_stress.i block=Materials/strain
 
 !syntax parameters /Materials/ComputeFiniteStrain

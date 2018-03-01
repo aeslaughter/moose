@@ -1,4 +1,5 @@
 # KineticDisPreConcAux
+
 !syntax description /AuxKernels/KineticDisPreConcAux
 
 Calculates the concentration of mineral using the kinetic reaction rate $I_m$

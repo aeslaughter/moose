@@ -23,35 +23,60 @@ should have the following format:
 
 ```
 # Header:    Marmot Input File
+
 # Date:      19-Jul-2013 00:23:55
+
 #
 # Column 1:  Euler angle "phi1" (in radians)
+
 # Column 2:  Euler angle "PHI" (in radians)
+
 # Column 3:  Euler angle "phi2" (in radians)
+
 # Column 4:  x-coordinate (in microns)
+
 # Column 5:  y-coordinate (in microns)
+
 # Column 6:  z-coordinate (in microns)
+
 # Column 7:  grain number (integer)
+
 # Column 8:  phase number (integer)
+
 # Column 9:  symmetry class (from TSL)
+
 #
 # Phase 1:   Nickel (symmetry class = 43)
+
 # Number of Grains in Phase 1:  111
+
 #
 # X_Min:      0.000000
+
 # X_Max:      32.000000
+
 # X_step:     0.250000
+
 # X_Dim:      128
+
 #
 # Y_Min:      0.000000
+
 # Y_Max:      32.000000
+
 # Y_step:     0.250000
+
 # Y_Dim:      128
+
 #
 # Z_Min:      0.000000
+
 # Z_Max:      0.000000
+
 # Z_step:     0.000000
+
 # Z_Dim:      0
+
 #
 2.48663 1.84098 5.50548 0.12500 0.12500 0.00000 0 1 43
 2.48663 1.84098 5.50548 0.12500 0.37500 0.00000 0 1 43

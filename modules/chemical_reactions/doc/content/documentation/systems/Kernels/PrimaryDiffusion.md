@@ -1,4 +1,5 @@
 # PrimaryDiffusion
+
 !syntax description /Kernels/PrimaryDiffusion
 
 Diffusive flux of the $j^{\mathrm{th}}$ primary species. Implements the weak form of

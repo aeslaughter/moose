@@ -2,7 +2,7 @@
 
 The chemical reactions module provides a set of tools for the calculation of
 multicomponent aqueous reactive transport in porous media, originally developed as
-the [MOOSE] application RAT \citep{guo2013}.
+the [MOOSE] application RAT [citep:guo2013].
 
 ## Theory
 
@@ -11,7 +11,7 @@ The first part of defining the chemistry of a problem is to choose a set of inde
 in terms of. Other chemical species that can be expressed as combinations of primary
 species are termed *secondary* species.
 
-Following \citet{lichtner1996}, the mass conservation equation is formulated in
+Following [citet:lichtner1996], the mass conservation equation is formulated in
 terms of the total concentration of a primary species $j$, $\Psi_j$, and has the form
 \begin{equation}
 \frac{\partial}{\partial t} \left(\phi \Psi_j \right) + \nabla \cdot \left(\mathbf{q}
@@ -37,6 +37,7 @@ of the $i^{\mathrm{th}}$ secondary species, $N_s$ is the total number of seconda
 and $\nu_{ji}$ are the stoichiometric coefficients.
 
 ### Aqueous equilibrium reactions
+
 The concentration of the $i^{\mathrm{th}}$ secondary species, $C_i$, is calculated from mass
 action equations corresponding to equilibrium reactions
 \begin{equation}
@@ -50,6 +51,7 @@ where $K_i$ is equilibrium constant, $\gamma_i$ is the activity coefficient, and
 $N_c$ is the number of primary species.
 
 ### Solid kinetic reactions
+
 Mineral precipitation/dissolution is possible via kinetic reactions of the form
 \begin{equation}
 \sum_j \nu_{ji} \mathcal{A}_j \rightleftharpoons \mathcal{M}_m,
@@ -110,6 +112,7 @@ such as permeability.
 The physics described above is implemented in a number of `Kernels` and `AuxKernels`
 
 ### Kernels
+
 The transport of each primary species is calculated using the following `Kernels`:
 
 - [`PrimaryTimeDerivative`](/chemical_reactions/PrimaryTimeDerivative.md) Rate of change of
@@ -137,6 +140,7 @@ The Darcy flux is calculated using
 - [`DarcyFluxPressure`](/chemical_reactions/DarcyFluxPressure.md) Darcy flux
 
 ### AuxKernels
+
 The following `AuxKernels` are used to calculate secondary species and mineral
 concentrations.
 
@@ -147,6 +151,7 @@ of kinetic reaction
 - [`KineticDisPreConcAux`](/chemical_reactions/KineticDisPreConcAux.md) The concentration of mineral species
 
 ### Material properties
+
 The `Kernels` above require several material properties to be defined using the
 following names: porosity, diffusivity and conductivity. These can be defined using
 one of the `Materials` available in the framework. For example, constant properties
@@ -158,10 +163,12 @@ with the following:
 More complicated formulations can be added by creating new `Materials` as required.
 
 ### Boundary condition
+
 A flux boundary condition, [`ChemicalOutFlowBC`](/chemical_reactions/ChemicalOutFlowBC.md) is
 provided to define $\nabla u$ on a boundary.
 
 ### Postprocessors
+
 The total volume fraction of a given mineral species can be calculated using a [`TotalMineralVolumeFraction`](/chemical_reactions/TotalMineralVolumeFraction.md) postprocessor.
 
 ## Reaction network parser
@@ -193,7 +200,7 @@ The syntax for solid kinetic reactions is similar, except that no equilibrium co
 is entered in the reactions block.
 
 To demonstrate the use of the reaction network parser, consider the geochemical model
-used in \citet{guo2013}, which features aqueous equilibrium reactions as well as kinetic
+used in [citet:guo2013], which features aqueous equilibrium reactions as well as kinetic
 mineral dissolution and precipitation.
 
 Equilibrium reactions:

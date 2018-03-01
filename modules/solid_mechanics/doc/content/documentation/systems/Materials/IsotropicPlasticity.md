@@ -1,4 +1,5 @@
 # IsotropicPlasticity
+
 !syntax description /Materials/IsotropicPlasticity
 
 ## Description

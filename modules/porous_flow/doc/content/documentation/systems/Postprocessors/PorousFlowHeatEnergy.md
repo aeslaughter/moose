@@ -1,4 +1,5 @@
 # PorousFlowHeatEnergy
+
 !syntax description /Postprocessors/PorousFlowHeatEnergy
 
 This `Postprocessor` calculates the heat energy of fluid phase(s) $\beta$ using

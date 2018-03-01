@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MaterialPropertyDebugOutput
+
 !syntax description /Outputs/MaterialPropertyDebugOutput
 
 !syntax parameters /Outputs/MaterialPropertyDebugOutput

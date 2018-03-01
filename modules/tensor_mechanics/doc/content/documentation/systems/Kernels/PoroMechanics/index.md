@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PoroMechanics System
-!syntax objects /Kernels/PoroMechanics
 
-!syntax subsystems /Kernels/PoroMechanics
+!syntax list /Kernels/PoroMechanics objects=True actions=False subsystems=False
 
-!syntax actions /Kernels/PoroMechanics
+!syntax list /Kernels/PoroMechanics objects=False actions=False subsystems=True
+
+!syntax list /Kernels/PoroMechanics objects=False actions=True subsystems=False

@@ -1,4 +1,5 @@
 # PorousFlowMassRadioactiveDecay
+
 !syntax description /Kernels/PorousFlowMassRadioactiveDecay
 
 This `Kernel` implements the weak form of

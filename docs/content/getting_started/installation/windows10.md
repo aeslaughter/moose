@@ -24,6 +24,7 @@ DESKTOP-L7BGA7L
 ```
 
 ##### (2) Update Ubuntu on WSL
+
 It is also required to update Ubuntu to latest version.
 
 ```bash
@@ -32,6 +33,7 @@ sudo apt-get upgrade
 ```
 
 ##### (3) Setup Xming
+
 Allow your Bash session to connect to Xming.
 
 ```bash

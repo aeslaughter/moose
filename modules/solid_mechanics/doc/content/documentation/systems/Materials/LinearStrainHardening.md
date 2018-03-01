@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LinearStrainHardening
+
 !syntax description /Materials/LinearStrainHardening
 
 !syntax parameters /Materials/LinearStrainHardening

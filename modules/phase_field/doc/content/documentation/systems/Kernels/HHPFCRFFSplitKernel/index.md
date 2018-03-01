@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # HHPFCRFFSplitKernel System
-!syntax objects /Kernels/HHPFCRFFSplitKernel
 
-!syntax subsystems /Kernels/HHPFCRFFSplitKernel
+!syntax list /Kernels/HHPFCRFFSplitKernel objects=True actions=False subsystems=False
 
-!syntax actions /Kernels/HHPFCRFFSplitKernel
+!syntax list /Kernels/HHPFCRFFSplitKernel objects=False actions=False subsystems=True
+
+!syntax list /Kernels/HHPFCRFFSplitKernel objects=False actions=True subsystems=False

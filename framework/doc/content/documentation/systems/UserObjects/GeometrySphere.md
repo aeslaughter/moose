@@ -1,4 +1,5 @@
 # GeometrySphere
+
 !syntax description /UserObjects/GeometrySphere
 
 Whenever the mesh changes all nodes on the supplied `boundary` are snapped to the

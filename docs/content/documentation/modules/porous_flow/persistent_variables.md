@@ -8,7 +8,7 @@ pressure of one phase, saturation of one phase, and temperature. If one phase di
 (for instance, due to dissolution of the gas fluid component into the liquid fluid phase),
 then phase saturation is no longer present in the governing equations, and is therefore
 not an appropriate primary variable. In this case, the mass fraction of a fluid component
-in the remaining phase is a suitable choice of primary variables. This is summarised in \ref{variables}:
+in the remaining phase is a suitable choice of primary variables. This is summarised in [variables]:
 
 !table id=variables caption=Primary variables
 | Phase state | Variable 1 | Variable 2 | Variable 3 |
@@ -23,10 +23,10 @@ using a persistent set of primary variables.
 
 In this approach, the primary variables are switched depending on the phase state of the
 model. For example, if only a single fluid phase is present, the primary variables used might
-be the pressure, temperature and mass fraction of a component in the phase, see \ref{variables}. If the phase state changes to a two-phase model, then the mass fraction
+be the pressure, temperature and mass fraction of a component in the phase, see [variables]. If the phase state changes to a two-phase model, then the mass fraction
 variable is *switched* to now represent the saturation of one of the fluid phases.
 
-This approach has been used in several flow simulators, for example TOUGH2 \citep{pruess1999}
+This approach has been used in several flow simulators, for example TOUGH2 [citep:pruess1999]
 
 ## Persistent set of primary variables
 

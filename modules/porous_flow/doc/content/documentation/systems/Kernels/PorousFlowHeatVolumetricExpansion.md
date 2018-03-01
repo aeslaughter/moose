@@ -1,4 +1,5 @@
 # PorousFlowHeatVolumetricExpansion
+
 !syntax description /Kernels/PorousFlowHeatVolumetricExpansion
 
 This `Kernel` implements the weak form of

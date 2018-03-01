@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ReconPhaseVarIC
+
 !syntax description /AuxVariables/InitialCondition/ReconPhaseVarIC
 
 !syntax parameters /AuxVariables/InitialCondition/ReconPhaseVarIC

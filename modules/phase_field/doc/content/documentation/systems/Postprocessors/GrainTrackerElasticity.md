@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GrainTrackerElasticity
+
 !syntax description /Postprocessors/GrainTrackerElasticity
 
 !syntax parameters /Postprocessors/GrainTrackerElasticity

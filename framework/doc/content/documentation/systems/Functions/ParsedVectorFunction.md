@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ParsedVectorFunction
+
 !syntax description /Functions/ParsedVectorFunction
 
 !syntax parameters /Functions/ParsedVectorFunction

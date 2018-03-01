@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ThermoDiffusion
+
 !syntax description /Kernels/ThermoDiffusion
 
 !syntax parameters /Kernels/ThermoDiffusion

@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalKernels System
-!syntax objects /NodalKernels
 
-!syntax subsystems /NodalKernels
+!syntax list /NodalKernels objects=True actions=False subsystems=False
 
-!syntax actions /NodalKernels
+!syntax list /NodalKernels objects=False actions=False subsystems=True
+
+!syntax list /NodalKernels objects=False actions=True subsystems=False

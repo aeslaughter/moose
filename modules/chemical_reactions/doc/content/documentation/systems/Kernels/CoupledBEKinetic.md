@@ -1,4 +1,5 @@
 # CoupledBEKinetic
+
 !syntax description /Kernels/CoupledBEKinetic
 
 Derivative of concentration of $j^{\mathrm{th}}$ primary species present in the

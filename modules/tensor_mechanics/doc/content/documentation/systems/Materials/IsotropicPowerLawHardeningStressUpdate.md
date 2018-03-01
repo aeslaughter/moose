@@ -2,6 +2,7 @@
 !syntax description /Materials/IsotropicPowerLawHardeningStressUpdate
 
 ## Description
+
 !include docs/content/documentation/modules/tensor_mechanics/common/supplementalRadialReturnStressUpdate.md
 
 This class models power law hardening by using the relation
@@ -18,6 +19,7 @@ where $\epsilon_y$ is the total strain at the yield point and the stress $\sigma
 \end{equation}
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/power_law_hardening/PowerLawHardening-TM.i block=Materials/power_law_hardening
 
 `IsotropicPowerLawHardeningStressUpdate` must be run in conjunction with the inelastic strain return mapping stress calculator as shown below:

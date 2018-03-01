@@ -5,7 +5,7 @@ arbitrary [jinja2](http://jinja.pocoo.org/) template. This extension is utilized
 website by warping the relatively basic html provided by the markdown into a template, using
 [materialize](http://materializecss.com/).
 
-The configuration options for this extension are included in \ref{TemplateExtension}. The most critical of the provided options is the "template" options. This specifies the the template to
+The configuration options for this extension are included in [TemplateExtension]. The most critical of the provided options is the "template" options. This specifies the the template to
 utilize. If creating a new template the file must reside in the "templates" directory next to the
 "moosedocs.py" executable.
 

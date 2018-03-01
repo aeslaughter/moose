@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TensorMechanicsHardeningCutExponential
+
 !syntax description /UserObjects/TensorMechanicsHardeningCutExponential
 
 !syntax parameters /UserObjects/TensorMechanicsHardeningCutExponential

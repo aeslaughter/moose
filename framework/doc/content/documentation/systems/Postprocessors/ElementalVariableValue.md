@@ -1,4 +1,5 @@
 # ElementalVariableValue
+
 !syntax description /Postprocessors/ElementalVariableValue
 
 ## Description
@@ -8,6 +9,7 @@ at a particular location in the model.  This is accomplished by using the
 `ElementalVariableValue` postprocessor.
 
 ## Example Input Syntax
+
 !listing test/tests/outputs/postprocessor/output_pps_hidden_shown_check.i block=Postprocessors
 
 !syntax parameters /Postprocessors/ElementalVariableValue

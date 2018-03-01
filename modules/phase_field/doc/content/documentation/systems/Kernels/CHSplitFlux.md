@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CHSplitFlux
+
 !syntax description /Kernels/CHSplitFlux
 
 !syntax parameters /Kernels/CHSplitFlux

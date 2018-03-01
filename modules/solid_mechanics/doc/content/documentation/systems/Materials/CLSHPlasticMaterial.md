@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CLSHPlasticMaterial
+
 !syntax description /Materials/CLSHPlasticMaterial
 
 !syntax parameters /Materials/CLSHPlasticMaterial

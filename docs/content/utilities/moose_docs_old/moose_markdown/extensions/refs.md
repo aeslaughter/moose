@@ -5,7 +5,7 @@ The RefsExtension is used in conjunction with other extensions to enable referee
 
 ## Equations
 
-When [mdx_math](https://github.com/mitya57/python-markdown-math) is utilized and the `\label{eqn:test}` was placed within the latex, as shown in \ref{eqref-example}, then it is possible to link to the equation using traditional latex syntax (`\eqref{eqn:test}`): Equation \eqref{eqn:test}.
+When [mdx_math](https://github.com/mitya57/python-markdown-math) is utilized and the `\label{eqn:test}` was placed within the latex, as shown in [eqref-example], then it is possible to link to the equation using traditional latex syntax (`\eqref{eqn:test}`): Equation \eqref{eqn:test}.
 
 \begin{equation}
 \label{eqn:test}
@@ -24,8 +24,8 @@ x=\frac{1+y}{1+2z^2}.
 
 As detailed in [Numbered Floats](extensions/numbered_floats.md) it is possible to create numbered
 figures, listings, and tables as well as arbitrarily named floats. When the the "id" is supplied
-to the command, as shown in \ref{media-example}, the `\refs{}` command can be used within the
-the markdown to create label link to the float: \ref{cat}.
+to the command, as shown in [media-example], the `\refs{}` command can be used within the
+the markdown to create label link to the float: [cat].
 
 !media http://lorempixel.com/400/200/cats/ id=cat caption=A random cat image. style=width:100%;float:right
 

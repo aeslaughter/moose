@@ -1,7 +1,9 @@
 # Compute Finite Strain Elastic Stress
+
 !syntax description /Materials/ComputeFiniteStrainElasticStress
 
 ## Description
+
 This material, `ComputeFiniteStrainElasticStress` computes the elastic stress for an incremental formulation, both incremental small ([ComputeIncrementalSmallStrain](/ComputeIncrementalSmallStrain.md) type) and incremental finite ([ComputeFiniteStrain](/ComputeFiniteStrain.md) type) strain formulations.
 This stress class is compatible with both Cartesian and non-Cartesian strain calculators, including [Axisymmetric](/ComputeAxisymmetricRZFiniteStrain.md) and [RSpherical](/ComputeRSphericalFiniteStrain.md).
 
@@ -14,6 +16,7 @@ where $\Delta \boldsymbol{\epsilon}$ is the strain increment; this strain measur
 $\boldsymbol{\sigma}^{old}$ is the stress calculated at the previous timestep.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/finite_strain_elastic/finite_strain_elastic_new_test.i block=Materials/stress
 
 !syntax parameters /Materials/ComputeFiniteStrainElasticStress

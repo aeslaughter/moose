@@ -85,10 +85,7 @@ def main(options):
         translator.init(root)
         translator.tokenize(num_threads=num_threads)
 
-        # "write" all nodes, this creates the directories
-        translator.write(num_threads=num_threads)
-
+        translator.write(num_threads=num_threads) # "write" all nodes, this creates the directories
         translator.render(num_threads=num_threads)
-
 
         server.serve(root=destination, port=8000)

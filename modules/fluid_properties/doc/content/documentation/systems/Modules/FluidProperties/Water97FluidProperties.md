@@ -7,17 +7,17 @@ properties of water and steam using pressure and temperature as inputs. The IAPW
 formulation is split into five different regions in the phase diagram.
 
 All five regions are implemented in the Fluid Properties module. To avoid iteration
-in region 3 of the IAPWS-IF97 formulation, the backwards equations from \citet{iapws1997region3}
+in region 3 of the IAPWS-IF97 formulation, the backwards equations from [citet:iapws1997region3]
 are implemented.
 
-Viscosity is calculated using the IAPWS 2008 formulation \citep{iapws2008}. Note that the critical
+Viscosity is calculated using the IAPWS 2008 formulation [citep:iapws2008]. Note that the critical
 enhancement has not been implemented.
 
-Thermal conductivity is calculated using the IAPS 1985 formulation \citep{iaps1985}. Although there
-is a newer formulation available \citep{iapws2011}, it is significantly more complicated, so has not
+Thermal conductivity is calculated using the IAPS 1985 formulation [citep:iaps1985]. Although there
+is a newer formulation available [citep:iapws2011], it is significantly more complicated, so has not
 been implemented yet.
 
-Dissolution of a dilute gas into water is calculated using Henry's law \citep{iapws2004}.
+Dissolution of a dilute gas into water is calculated using Henry's law [citep:iapws2004].
 
 ##Properties of water
 
@@ -44,5 +44,6 @@ The Water97FluidProperties UserObject is valid for:
 !syntax children /Modules/FluidProperties/Water97FluidProperties
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{fluid_properties.bib}

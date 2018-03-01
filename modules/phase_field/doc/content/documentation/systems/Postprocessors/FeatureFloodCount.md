@@ -11,7 +11,7 @@ The FeatureFloodCount object is a utility that inspects solution fields looking 
 !media media/phase_field/unstructured_4.png id=unstructured4 style=width:360px;margin-left:380px caption=Halo extension complete.
 
 <br/>
-The algorithm for identifying portions of connected components begins by running a [Flood Fill](https://en.wikipedia.org/wiki/Flood_fill) algorthim on each processor that recursively visits neighboring elements on the unstructured mesh while the connecting criteria is met. \ref{unstructured1} illustrates the identification of a new region on a processor. The dark shaded element represents an element that was identified whose variable value exceeds a given threshold. The lightly shaded elements surronding the dark element represent the current "halo" markings of the region. These halo markings always extend one neighbor beyond the currently shaded region. They are used for both the connected component algorithm and for identifying potential collisions among disjoint regions.
+The algorithm for identifying portions of connected components begins by running a [Flood Fill](https://en.wikipedia.org/wiki/Flood_fill) algorthim on each processor that recursively visits neighboring elements on the unstructured mesh while the connecting criteria is met. [unstructured1] illustrates the identification of a new region on a processor. The dark shaded element represents an element that was identified whose variable value exceeds a given threshold. The lightly shaded elements surronding the dark element represent the current "halo" markings of the region. These halo markings always extend one neighbor beyond the currently shaded region. They are used for both the connected component algorithm and for identifying potential collisions among disjoint regions.
 
 
 !media media/phase_field/grain_stitching_small_split.svg id=grain_stitch_split style=width:400px;float:left;margin-left:20px caption=Regular grid with 6 features partitioned 3 ways.
@@ -20,7 +20,7 @@ The algorithm for identifying portions of connected components begins by running
 
 
 <br/>
-Several pieces of information are recorded on each processor including all of the marked elements, a minimum ID for a partition independent stable ordering and "overlapping elements" for stitching. \ref{grain_stitch_split} shows a regular mesh partitioned among three processors with several regions of interest. The alpha characters represent a possible local ordering of the features. The subscript represents the processor ID. Portions of the feature data structure is serialized and sent to the rank 0 process where connection information is used to discover the global picture \ref{grain_stitch}.
+Several pieces of information are recorded on each processor including all of the marked elements, a minimum ID for a partition independent stable ordering and "overlapping elements" for stitching. [grain_stitch_split] shows a regular mesh partitioned among three processors with several regions of interest. The alpha characters represent a possible local ordering of the features. The subscript represents the processor ID. Portions of the feature data structure is serialized and sent to the rank 0 process where connection information is used to discover the global picture [grain_stitch].
 
 
 !syntax description /Postprocessors/FeatureFloodCount

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FluidPropertiesMaterial
+
 !syntax description /Materials/FluidPropertiesMaterial
 
 !syntax parameters /Materials/FluidPropertiesMaterial

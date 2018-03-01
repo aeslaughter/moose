@@ -1,4 +1,5 @@
 # MatGradSquareCoupled
+
 !syntax description /Kernels/MatGradSquareCoupled
 
 Implements the term

@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalRandomIC System
-!syntax objects /ICs/PolycrystalICs/PolycrystalRandomIC
 
-!syntax subsystems /ICs/PolycrystalICs/PolycrystalRandomIC
+!syntax list /ICs/PolycrystalICs/PolycrystalRandomIC objects=True actions=False subsystems=False
 
-!syntax actions /ICs/PolycrystalICs/PolycrystalRandomIC
+!syntax list /ICs/PolycrystalICs/PolycrystalRandomIC objects=False actions=False subsystems=True
+
+!syntax list /ICs/PolycrystalICs/PolycrystalRandomIC objects=False actions=True subsystems=False

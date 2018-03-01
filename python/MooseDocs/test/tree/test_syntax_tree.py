@@ -8,21 +8,22 @@ from MooseDocs.common import exceptions
 from MooseDocs.tree import app_syntax
 
 
-class TestDocTree(unittest.TestCase):
+class TestSyntaxTree(unittest.TestCase):
 
 
-    def testBasic(self):
+    def testRemoveDisable(self):
         location = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'combined')
-        root = app_syntax(location)
+        root = app_syntax(location, remove=[])
         node = root.findfull('/Variables/InitialCondition/BoundingBoxIC')
         self.assertEqual(node.name, 'BoundingBoxIC')
 
 
-    def testExclude(self):
+    def testRemove(self):
         location = os.path.join(MooseDocs.MOOSE_DIR, 'modules', 'combined')
-        exclude = ['/Variables/InitialCondition/*',
-                   '!/Variables/InitialCondition/AddICAction']
-        root = app_syntax(location, exclude)
+        root = app_syntax(location)
+
+        node = root.findfull('/Variables/InitialCondition/AddICAction')
+        self.assertEqual(node.name, 'AddICAction')
 
         node = root.findfull('/Variables/InitialCondition/BoundingBoxIC')
         self.assertIsNone(node)

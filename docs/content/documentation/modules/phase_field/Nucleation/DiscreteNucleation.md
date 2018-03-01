@@ -11,9 +11,11 @@ The comprises two user objects and a material class:
 * [`DiscreteNucleation`](Materials/phase_field/DiscreteNucleation.md)  - a material that calculates a local free energy penalty based on the difference of a set of given concentration variables and their target concentrations (using the data from the DiscreteNucleationMap).
 
 ## Discussion
+
 The nucleation free energy penalty is added to the physical free energy contributions of the system using a [`DerivativeSumMaterial`](/DerivativeSumMaterial.md)
 
 ## Example
+
 An example input file is located at
 
 !listing modules/phase_field/examples/nucleation/cahn_hilliard.i

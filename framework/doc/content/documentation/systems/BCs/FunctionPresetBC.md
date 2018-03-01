@@ -1,4 +1,5 @@
 # FunctionPresetBC
+
 !syntax description /BCs/FunctionPresetBC
 
 ## Description
@@ -12,6 +13,7 @@ enforces the boundary condition as the solve
 progresses.  In certain situations, one is better than another.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/bc_preset_nodal/bc_function_preset.i block=BCs
 
 !syntax parameters /BCs/FunctionPresetBC

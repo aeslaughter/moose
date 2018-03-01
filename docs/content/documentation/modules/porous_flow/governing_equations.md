@@ -167,7 +167,7 @@ saturated vapour pressure of the bulk aqueous (liquid water) phase.
 
 Diffusion and dispersion are proportional to the gradient of
 $\chi_{\beta}^{\kappa}$.  A detailed discussion of multiphase diffusion and
-dispersion is contained in Appendix D of the TOUGH2 manual \citep{Pruess1999}.
+dispersion is contained in Appendix D of the TOUGH2 manual [citep:Pruess1999].
 Here we use the common expression
 \begin{equation}
 \mathbf{F}^{\kappa}_{\mathrm{diffusion+dispersion}} =
@@ -233,7 +233,7 @@ permeability described in [porosity](/porous_flow/porosity.md) and
 [permeability](/porous_flow/permeability.md). Coupling to the fluid flow and
 chemical reactions is via the equations of state used within the terms of Eq.
 \eqref{eq:heat_cons}, as well as the source term $q^{T}$.  Joule-Thompson
-effects (See for instance Eq. (1) of \citet{mathias2010}) may be included via
+effects (See for instance Eq. (1) of [citet:mathias2010]) may be included via
 the fluid properties.
 
 Here it is assumed the liquids and solid are in local thermal equilibrium i.e.

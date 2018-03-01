@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Materials System
-!syntax objects /Materials
 
-!syntax subsystems /Materials
+!syntax list /Materials objects=True actions=False subsystems=False
 
-!syntax actions /Materials
+!syntax list /Materials objects=False actions=False subsystems=True
+
+!syntax list /Materials objects=False actions=True subsystems=False

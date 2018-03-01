@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TensorMechanicsPlasticMeanCap
+
 !syntax description /UserObjects/TensorMechanicsPlasticMeanCap
 
 !syntax parameters /UserObjects/TensorMechanicsPlasticMeanCap

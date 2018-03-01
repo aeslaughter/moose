@@ -1,8 +1,10 @@
 
 # VectorNeumannBC
+
 !syntax description /BCs/VectorNeumannBC
 
 ## Description
+
 `VectorNeumannBC` is an `IntegratedBC` which weakly imposes the flux boundary
 condition $\frac{\partial u}{\partial n} = \vec{V}\cdot\hat{n}$, where the user
 specifies the vector $\vec{V}$ and the unit normal vector $\hat{n}$ is
@@ -30,6 +32,7 @@ dot it with the appropriate outward normals as necessary.
 
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/misc_bcs/vector_neumann_bc_test.i start=[./top] end=[../] include-end=true
 
 !syntax parameters /BCs/VectorNeumannBC

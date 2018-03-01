@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ElementVariablesDifferenceMax
+
 !syntax description /VectorPostprocessors/ElementVariablesDifferenceMax
 
 !syntax parameters /VectorPostprocessors/ElementVariablesDifferenceMax

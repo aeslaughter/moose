@@ -1,8 +1,10 @@
 
 # DirichletBC
+
 !syntax description /BCs/DirichletBC
 
 ## Description
+
 `DirichletBC` is the simplest type of `NodalBC`, and is used for
 imposing so-called "essential" boundary conditions on systems of
 partial differential equations (PDEs).  Such boundary conditions force
@@ -24,6 +26,7 @@ on the subset of the boundary denoted by $\partial \Omega_D$. In this case, the
 or more sidesets corresponding to the boundary subset $\partial \Omega_D$.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/matched_value_bc/matched_value_bc_test.i start=[./right_v] end=[../] include-end=true
 
 !syntax parameters /BCs/DirichletBC

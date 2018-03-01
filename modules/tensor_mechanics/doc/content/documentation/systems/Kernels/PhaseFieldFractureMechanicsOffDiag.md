@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PhaseFieldFractureMechanicsOffDiag
+
 !syntax description /Kernels/PhaseFieldFractureMechanicsOffDiag
 
 !syntax parameters /Kernels/PhaseFieldFractureMechanicsOffDiag

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsSeffPrimePrimeAux
+
 !syntax description /AuxKernels/RichardsSeffPrimePrimeAux
 
 !syntax parameters /AuxKernels/RichardsSeffPrimePrimeAux

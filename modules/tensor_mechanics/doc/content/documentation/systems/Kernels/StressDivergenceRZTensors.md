@@ -12,6 +12,7 @@ The `StressDivergenceRZTensors` kernel can be automatically created with the [Te
 For a detailed explanation of the settings for _use_displaced_mesh_ in mechanics problems and the TensorMechanics Master Action usage, see the [Introduction/StressDivergence](auto::/introduction/StressDivergence) page.
 
 ## Residual Calculation
+
 !include docs/content/documentation/modules/tensor_mechanics/common/supplementalStressDivergenceKernels.md
 
 As in the Stress Divergence kernel for Cartesian coordinates, [StressDivergenceTensors](/StressDivergenceTensors.md), the stress divergence kernel for the Axisymmetric simulations includes the stress divergence calculation for the residual and the calculation of the Jacobian matrix.
@@ -31,6 +32,7 @@ In cylindrical coordinates, the [divergence of a rank-2 tensor](https://en.wikip
 The calculation of the Jacobian is similarly complex, requiring up to four terms in the calculation of the diagonal entries.
 
 ## Example Input File syntax
+
 Using the tensor mechanics master action, as shown
 !listing modules/tensor_mechanics/test/tests/2D_geometries/2D-RZ_finiteStrain_test.i block=Modules/TensorMechanics/Master
 

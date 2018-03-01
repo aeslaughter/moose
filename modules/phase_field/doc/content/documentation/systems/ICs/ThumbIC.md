@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ThumbIC
+
 !syntax description /ICs/ThumbIC
 
 !syntax parameters /ICs/ThumbIC

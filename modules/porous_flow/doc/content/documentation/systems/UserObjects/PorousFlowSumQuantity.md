@@ -1,4 +1,5 @@
 # PorousFlowSumQuantity
+
 !syntax description /UserObjects/PorousFlowSumQuantity
 
 !syntax parameters /UserObjects/PorousFlowSumQuantity

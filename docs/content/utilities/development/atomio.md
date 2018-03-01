@@ -5,9 +5,11 @@
 [Atom](http://atom.io) is a text editor developed by GitHub with a flexible plugin structure. Several plugins are available to customize Atom for MOOSE development, some specifically developed for MOOSE.
 
 ## Setting up Atom
+
 Installation packages can be downloaded for Mac, Linux, and Windows operating systems from the [Atom website](http://atom.io). The editor has an automatic update system for both the core editor as well as the installed plugins.
 
 ### First Steps
+
 - **Start Atom** for the first time and select _Atom->Install Shell Commands_. This activates the ```atom``` and ```apm``` shell commands for use from a terminal.
 - **Close Atom**. From now on we will only start it from our MOOSE project directories using ```atom .``` ensuring that Atom sees the full MOOSE build environment.
 
@@ -19,6 +21,7 @@ Installation packages can be downloaded for Mac, Linux, and Windows operating sy
 * **Cmd-T** opens a file anywhere in the current project tree (i.e. below the directory in which you issued the `atom .` command. No need to know the precise path or even the precise spelling of the filename!
 
 ## Plugins
+
 Tip: To install a plugin, use the "apm" command on your terminal:
 
 ```bash
@@ -38,6 +41,7 @@ The following plugins should be installed to effectively develop MOOSE based cod
 * [atomic-rtags](http://atom.io/packages/atomic-rtags) - uses the rtags demon (live indexing of the C++ symbols in your source tree) to provide a _jump to declaration_ feature. See below how to set-up rtags with MOOSE
 
 ### Recommended settings
+
 * In the _whitespace_ core package (Settings->Packages search for 'whitespace') deactivate _Ignore Whitespace On Current Line_.
 
 ## Source navigation with [rtags](https://github.com/Andersbakken/rtags)
@@ -74,6 +78,7 @@ This will cause make to transmit a list of all compile commands to the rtags dem
 You can now press `alt+,` in Atom with the cursor on any symbol (even macros) to jump to its declaration courtesy of the _atomic-rtags_ package.
 
 ### Using Atom behind a proxy
+
 To enable update checking and plugin installation proxy information must be entered in a configuration file at ```~/.atom/.apmrc``` (create the file as needed) as
 
 ```text

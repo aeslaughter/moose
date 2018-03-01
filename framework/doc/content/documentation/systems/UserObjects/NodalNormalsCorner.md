@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalNormalsCorner
+
 !syntax description /UserObjects/NodalNormalsCorner
 
 !syntax parameters /UserObjects/NodalNormalsCorner

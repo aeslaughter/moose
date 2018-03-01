@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsSumQuantity
+
 !syntax description /UserObjects/RichardsSumQuantity
 
 !syntax parameters /UserObjects/RichardsSumQuantity

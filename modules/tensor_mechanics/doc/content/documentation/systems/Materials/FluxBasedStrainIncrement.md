@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FluxBasedStrainIncrement
+
 !syntax description /Materials/FluxBasedStrainIncrement
 
 !syntax parameters /Materials/FluxBasedStrainIncrement

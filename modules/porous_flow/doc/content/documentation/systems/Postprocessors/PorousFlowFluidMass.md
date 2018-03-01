@@ -1,4 +1,5 @@
 # PorousFlowFluidMass
+
 !syntax description /Postprocessors/PorousFlowFluidMass
 
 This `Postprocessor` calculates the mass of a fluid component $\kappa$ using

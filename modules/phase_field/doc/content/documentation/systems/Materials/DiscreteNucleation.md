@@ -1,5 +1,6 @@
 
 # DiscreteNucleation
+
 !syntax description /Materials/DiscreteNucleation
 
 The nucleation material computes a local free energy density contribution

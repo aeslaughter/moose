@@ -1,4 +1,5 @@
 # NodalVariableValue
+
 !syntax description /Postprocessors/NodalVariableValue
 
 ## Description
@@ -9,6 +10,7 @@ this postprocessor is useful for obtaining the centerline temperature at the loc
 thermocouple to compare against experimental data.
 
 ## Example Input Syntax
+
 !listing test/tests/misc/check_error/nodal_value_off_block.i block=Postprocessors
 
 !syntax parameters /Postprocessors/NodalVariableValue

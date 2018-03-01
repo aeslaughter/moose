@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GrainBoundaryArea
+
 !syntax description /Postprocessors/GrainBoundaryArea
 
 !syntax parameters /Postprocessors/GrainBoundaryArea

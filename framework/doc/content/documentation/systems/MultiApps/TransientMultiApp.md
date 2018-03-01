@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TransientMultiApp
+
 !syntax description /MultiApps/TransientMultiApp
 
 !syntax parameters /MultiApps/TransientMultiApp

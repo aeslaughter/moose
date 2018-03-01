@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CoupledODETimeDerivative
+
 !syntax description /ScalarKernels/CoupledODETimeDerivative
 
 !syntax parameters /ScalarKernels/CoupledODETimeDerivative

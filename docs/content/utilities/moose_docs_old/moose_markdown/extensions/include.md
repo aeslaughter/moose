@@ -3,7 +3,7 @@
 The main driver behind developing the MooseDocs documentation system was to create a single source
 for all documentation and allow the same piece of text to be reused in multiple locations and in
 multiple formats. Therefore, it is possible to include markdown within markdown using the
-`!include` command. For example, \ref{include-example} provides the include command that is used
+`!include` command. For example, [include-example] provides the include command that is used
 below to capture text from the [global](extensions/global.md) extension.
 
 !listing id=include-example caption=An example `!include` command for retrieving markdown from another file.

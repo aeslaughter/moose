@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ConservedLangevinNoise
+
 !syntax description /Kernels/ConservedLangevinNoise
 
 !syntax parameters /Kernels/ConservedLangevinNoise

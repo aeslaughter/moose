@@ -1,4 +1,5 @@
 # GeneratedMesh
+
 !syntax description /Mesh/GeneratedMesh
 
 ## Description

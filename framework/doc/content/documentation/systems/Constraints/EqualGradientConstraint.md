@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # EqualGradientConstraint
+
 !syntax description /Constraints/EqualGradientConstraint
 
 !syntax parameters /Constraints/EqualGradientConstraint

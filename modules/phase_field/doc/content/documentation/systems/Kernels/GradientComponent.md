@@ -1,4 +1,5 @@
 # GradientComponent
+
 !syntax description /Kernels/GradientComponent
 
 Implements

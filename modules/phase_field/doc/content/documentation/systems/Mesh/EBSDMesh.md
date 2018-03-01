@@ -1,4 +1,5 @@
 # EBSDMesh
+
 !syntax description /Mesh/EBSDMesh
 
 The mesh is generated from the EBSD information, to get an optimal reconstruction

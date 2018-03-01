@@ -1,7 +1,9 @@
 # CombinedCreepPlasticity
+
 !syntax description /Materials/CombinedCreepPlasticity
 
 ## Description
+
 `CombinedCreepPlasticity` models the deformation under both creep and instantaneous
 plasticity. Submodels need
 to be specified in the input to model creep and instantaneous plasticity of Zry cladding.

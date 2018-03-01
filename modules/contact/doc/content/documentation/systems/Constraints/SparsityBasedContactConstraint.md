@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SparsityBasedContactConstraint
+
 !syntax description /Constraints/SparsityBasedContactConstraint
 
 !syntax parameters /Constraints/SparsityBasedContactConstraint

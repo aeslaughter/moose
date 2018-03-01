@@ -1,8 +1,10 @@
 
 # PenaltyDirichletBC
+
 !syntax description /BCs/PenaltyDirichletBC
 
 ## Description
+
 `PenaltyDirichletBC` is a `NodalBC` used for enforcing Dirichlet boundary conditions
 which differs from the [`DirichletBC`](/DirichletBC.md) class in the way in which it handles the enforcement.
 It is appropriate for partial differential equations (PDEs) in the form
@@ -56,12 +58,12 @@ boundary condition
 \end{equation}
 
 replacing the original Dirichlet boundary condition. It has been shown
-\cite{juntunen2009nitsche} that in order for the solution to this perturbed
+[cite:juntunen2009nitsche] that in order for the solution to this perturbed
 problem to converge to the solution of the original problem in the
 limit as $\epsilon \rightarrow 0$, the penalty parameter must depend
 on the mesh size, and that as we refine the mesh, the problem becomes
 increasingly ill-conditioned.  A related method for imposing Dirichlet boundary
-conditions, known as Nitsche's method \cite{juntunen2009nitsche}, does not
+conditions, known as Nitsche's method [cite:juntunen2009nitsche], does not
 suffer from the same ill-conditioning issues, and is slated for inclusion
 in MOOSE some time in the future.
 
@@ -72,6 +74,7 @@ in MOOSE some time in the future.
 
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/penalty_dirichlet_bc/penalty_dirichlet_bc_test.i block=BCs
 
 !syntax parameters /BCs/PenaltyDirichletBC

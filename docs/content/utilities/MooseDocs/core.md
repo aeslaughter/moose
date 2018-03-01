@@ -108,6 +108,7 @@ Settings, as listed in [heading-settings], are be applied after the heading titl
 ##### Level Five
 
 ###### Level Six
+
 !devel-end!
 
 !devel example caption=Use of settings within heading. id=heading-settings
@@ -115,6 +116,7 @@ Settings, as listed in [heading-settings], are be applied after the heading titl
 
 !devel example caption=Use of settings within heading. id=heading-multiline
 ## A Heading May Span
+
 Multiple Lines (this is useful if they are really long)
    style=font-size:15pt
    id=level-two
@@ -295,6 +297,7 @@ the heading text directly replaces the shortcut link and a link to the heading i
 Using shortcut link syntax, it is possible to link to [heading].
 
 # A Heading with Link id=heading
+
 !devel-end!
 
 ### Punctuation

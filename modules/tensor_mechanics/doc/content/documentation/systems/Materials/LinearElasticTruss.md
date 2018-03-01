@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LinearElasticTruss
+
 !syntax description /Materials/LinearElasticTruss
 
 !syntax parameters /Materials/LinearElasticTruss

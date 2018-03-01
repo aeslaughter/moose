@@ -26,7 +26,7 @@ module test for the Lagrange multiplier $\lambda$, which without the Jacobian
 fill provided by the `NullKernel` would have a zero diagonal. The test is
 reproduced below:
 
-!listing modules/phase_field/test/tests/misc/equal_gradient_lagrange.i label=false
+!listing modules/phase_field/test/tests/misc/equal_gradient_lagrange.i 
 
 !syntax parameters /Kernels/NullKernel
 

@@ -1,7 +1,9 @@
 # PorousFlowExponentialDecay
+
 `!syntax description /Kernels/PorousFlowExponentialDecay`
 
 ## Description
+
 The residual computed by `PorousFlowExponentialDecay` is
 \begin{equation}
 \mathrm{residual} = r(u - u_{\mathrm{ref}})

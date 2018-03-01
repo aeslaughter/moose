@@ -5,6 +5,7 @@ The augmented Lagrangian contact algorithm involves a nested solution strategy. 
 The AugmentedLagrangianContactProblem manages the nested solution procedure described above, repeating the solution until convergence has been achieved, checking for convergence, and updating the Lagrangian multipliers.
 
 # AugmentedLagrangianContactProblem
+
 !syntax description /Problem/AugmentedLagrangianContactProblem
 
 !syntax parameters /Problem/AugmentedLagrangianContactProblem

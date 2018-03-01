@@ -1,7 +1,9 @@
 # FunctionDT
+
 !syntax description /Executioner/TimeStepper/FunctionDT
 
 ## Description
+
 The `FunctionDT` type of TimeStepper takes time steps that vary over time
 according to a user-defined function.
 
@@ -17,6 +19,7 @@ The same procedure that is used with
 the time step from the user-specified value if a failed solution occurs.
 
 ## Example Input Syntax
+
 !listing test/tests/time_steppers/function_dt/function_dt_min.i block=Executioner
 
 !syntax parameters /Executioner/TimeStepper/FunctionDT

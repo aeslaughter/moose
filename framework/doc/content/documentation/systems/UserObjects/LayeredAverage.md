@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LayeredAverage
+
 !syntax description /UserObjects/LayeredAverage
 
 !syntax parameters /UserObjects/LayeredAverage

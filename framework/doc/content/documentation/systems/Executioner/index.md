@@ -11,8 +11,8 @@ Executioner block. Please see the online
 [PETSc documentation](http://www.mcs.anl.gov/petsc/documentation/index.html) for
 detailed information about these options.
 
-!syntax objects /Executioner
+!syntax list /Executioner objects=True actions=False subsystems=False
 
-!syntax subsystems /Executioner
+!syntax list /Executioner objects=False actions=False subsystems=True
 
-!syntax actions /Executioner
+!syntax list /Executioner objects=False actions=True subsystems=False

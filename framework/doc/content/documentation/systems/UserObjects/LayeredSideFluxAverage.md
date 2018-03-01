@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LayeredSideFluxAverage
+
 !syntax description /UserObjects/LayeredSideFluxAverage
 
 !syntax parameters /UserObjects/LayeredSideFluxAverage

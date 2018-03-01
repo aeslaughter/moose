@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # StressDivergenceRSpherical
+
 !syntax description /Kernels/StressDivergenceRSpherical
 
 !syntax parameters /Kernels/StressDivergenceRSpherical

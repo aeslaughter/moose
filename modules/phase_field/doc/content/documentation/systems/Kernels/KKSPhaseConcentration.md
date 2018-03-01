@@ -1,4 +1,5 @@
 # KKSPhaseConcentration
+
 !syntax description /Kernels/KKSPhaseConcentration
 
 Enforces the split of the

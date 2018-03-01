@@ -24,17 +24,25 @@ from MooseDocs.tree.syntax import SyntaxNode, MooseObjectNode, ActionNode, Moose
 
 LOG = logging.getLogger(__name__)
 
+
+REGISTER_PAIRS = [('Postprocessor', 'UserObjects/*'),
+                  ('AuxKernel', 'Bounds/*')]
+
+REMOVE = ['/Variables/InitialCondition/*',
+          '/AuxVariables/InitialCondition/*',
+          '/Bounds',
+          '/Bounds/*']
+
 def __add_moose_object_helper(parent, name, item):
     """
     Helper to handle the Postprocessor/UserObject and Bounds/AuxKernel special case.
     """
     node = MooseObjectNode(parent, name, item)
 
-    pairs = [('Postprocessor', 'UserObjects/*'), ('AuxKernel', 'Bounds/*')]
-    for base, parent_syntax in pairs:
+    for base, parent_syntax in REGISTER_PAIRS:
         if ('moose_base' in item) and (item['moose_base'] == base) and \
            (item['parent_syntax'] == parent_syntax):
-            node.hidden = True
+            node.parent = None
 
 def __syntax_tree_helper(parent, item):
     """
@@ -71,7 +79,7 @@ def __syntax_tree_helper(parent, item):
             __add_moose_object_helper(parent, k, v)
 
 
-def app_syntax(location, remove=None, remove_test_apps=True, hide=None):
+def app_syntax(exe, remove=None, remove_test_apps=True, hide=None):
     """
     Creates a tree structure representing the MooseApp syntax for the given executable.
 
@@ -79,12 +87,6 @@ def app_syntax(location, remove=None, remove_test_apps=True, hide=None):
         location[str]: The folder to locate Moose executable.
         hide[dict]: Items to consider "hidden".
     """
-
-    exe = mooseutils.find_moose_executable(location)
-    if isinstance(exe, int):
-        LOG.error("Unable to locate an executable in the supplied location: %s", location)
-        sys.exit(1)
-
     try:
         raw = mooseutils.runExe(exe, ['--json', '--allow-test-objects'])
         raw = raw.split('**START JSON DATA**\n')[1]
@@ -99,13 +101,14 @@ def app_syntax(location, remove=None, remove_test_apps=True, hide=None):
         node = SyntaxNode(root, key)
         __syntax_tree_helper(node, value)
 
-
+    if remove is None:
+        remove = REMOVE
     if remove is not None:
         exclude = []
         include = []
         for item in remove:
             if item.startswith('!'):
-                include.append(item)
+                include.append(item[1:])
             else:
                 exclude.append(item)
 

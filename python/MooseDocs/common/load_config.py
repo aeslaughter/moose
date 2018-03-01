@@ -100,7 +100,7 @@ def _yaml_load_extensions(config):
     # Load default configuration
     ext_configs = collections.OrderedDict()
     disable_defaults = options.pop('disable_defaults', False)
-    if disable_defaults:
+    if not disable_defaults:
         for ext in DEFAULT_EXTENSIONS:
             ext_configs[ext] = dict()
 
@@ -138,7 +138,7 @@ def _yaml_load_content(config):
 
     items = []
     for key, value in options.iteritems():
-        content = value.get('content', [])
+        content = value.get('content', None)
         items.append(dict(root_dir=value['root_dir'], content=content))
 
     return MooseDocs.tree.build_page_tree.doc_tree(items)

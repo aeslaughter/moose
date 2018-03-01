@@ -6,6 +6,7 @@
     when compiling libMesh.
 
 ## Description
+
 As the name suggests, the WeibullDistribution object defines a Weibull distribution which
 has a probability density function (PDF) defined as
 

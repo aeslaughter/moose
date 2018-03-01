@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SwitchingFunctionMaterial
+
 !syntax description /Materials/SwitchingFunctionMaterial
 
 !syntax parameters /Materials/SwitchingFunctionMaterial

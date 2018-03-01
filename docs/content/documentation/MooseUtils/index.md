@@ -1,10 +1,12 @@
 # MooseUtils Namespace
+
 [MOOSE] includes a number of C++ utility classes and functions that may be useful for developing
 applications. These utilities are within the MooseUtils C++ namespace. The following summarized
 some of the available items.
 
 
 ## DelimitedFileReader
+
 It is often necessary to read data from files during a simulation and often this data is in
 a delimited format such as [CSV](https://en.wikipedia.org/wiki/Comma-separated_values). The
 DelimitedFileReader is designed for reading this data into application objects.
@@ -25,7 +27,7 @@ is instantiated and read method is called, as shown in the unit test snippet bel
 
 This class is required to include the filename upon construction. Optionally, a second argument
 providing a pointer to a [libMesh] Communicator object may be provided. This argument should be
-used when the reader is used within a MooseObject. For example, as shown in \ref{csv_reader_ctor},
+used when the reader is used within a MooseObject. For example, as shown in [csv_reader_ctor],
 the CSVReader object passes a Communicator object to the reader. If not provided the reader will
 read the data on all processors. If provided it will only read on single processor and broadcast
 the data to the others.

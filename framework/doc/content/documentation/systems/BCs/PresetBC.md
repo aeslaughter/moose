@@ -1,4 +1,5 @@
 # PresetBC
+
 !syntax description /BCs/PresetBC
 
 ## Description
@@ -12,6 +13,7 @@ condition as the solve progresses.  In certain
 situations, one is better than another.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/bc_preset_nodal/bc_preset_nodal.i block=BCs
 
 !syntax parameters /BCs/PresetBC

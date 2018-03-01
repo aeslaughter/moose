@@ -1,4 +1,5 @@
 ## Create an Application
+
 MOOSE is designed for building custom applications, therefore if you plan on working with MOOSE
 then you should create an application.
 

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # KKSGlobalFreeEnergy
+
 !syntax description /AuxKernels/KKSGlobalFreeEnergy
 
 !syntax parameters /AuxKernels/KKSGlobalFreeEnergy

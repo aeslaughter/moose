@@ -1,4 +1,5 @@
 # ParsedFunction
+
 !syntax description /Functions/ParsedFunction
 
 ## Description
@@ -15,6 +16,7 @@ Further information can be found at the
 [function parser site](http://warp.povusers.org/FunctionParser/).
 
 ## Example Input Syntax
+
 !listing examples/ex04_bcs/trapezoid.i block=Functions
 
 !syntax parameters /Functions/ParsedFunction

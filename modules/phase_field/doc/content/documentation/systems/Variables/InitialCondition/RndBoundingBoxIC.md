@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RndBoundingBoxIC
+
 !syntax description /Variables/InitialCondition/RndBoundingBoxIC
 
 !syntax parameters /Variables/InitialCondition/RndBoundingBoxIC

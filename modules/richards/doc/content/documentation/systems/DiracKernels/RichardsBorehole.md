@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsBorehole
+
 !syntax description /DiracKernels/RichardsBorehole
 
 !syntax parameters /DiracKernels/RichardsBorehole

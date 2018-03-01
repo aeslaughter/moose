@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFFracBulkRateMaterial
+
 !syntax description /Materials/PFFracBulkRateMaterial
 
 !syntax parameters /Materials/PFFracBulkRateMaterial

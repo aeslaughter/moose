@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SolidMechanics System
-!syntax objects /SolidMechanics
 
-!syntax subsystems /SolidMechanics
+!syntax list /SolidMechanics objects=True actions=False subsystems=False
 
-!syntax actions /SolidMechanics
+!syntax list /SolidMechanics objects=False actions=False subsystems=True
+
+!syntax list /SolidMechanics objects=False actions=True subsystems=False

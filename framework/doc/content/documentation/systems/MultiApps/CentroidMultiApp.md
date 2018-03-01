@@ -1,4 +1,5 @@
 # CentroidMultiApp
+
 !syntax description /MultiApps/CentroidMultiApp
 
 Creates a sub-app at the centroid of every element in the master app.  Extremely useful for doing multiscale solves

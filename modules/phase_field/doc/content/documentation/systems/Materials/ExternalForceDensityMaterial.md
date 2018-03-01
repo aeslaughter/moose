@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ExternalForceDensityMaterial
+
 !syntax description /Materials/ExternalForceDensityMaterial
 
 !syntax parameters /Materials/ExternalForceDensityMaterial

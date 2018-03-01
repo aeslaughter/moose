@@ -1,6 +1,7 @@
 # UniformDistribution
 
 ## Description
+
 The uniform distribution is a probability distribution that has constant probability.
 This is a continuous uniform distribution with the probability density function:
 

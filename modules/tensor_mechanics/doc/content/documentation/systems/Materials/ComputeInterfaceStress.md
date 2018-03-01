@@ -1,7 +1,9 @@
 # Compute Interface Stress
+
 !syntax description /Materials/ComputeInterfaceStress
 
 ## Description
+
 The resulting stress tensor has the property of having one Eigenvector in the
 direction of the order parameter gradient, with an Eigenvalue of zero, and two
 Eigenvectors perpendicular to that direction, with an Eigenvalue $\sigma_i\cdot|\nabla\eta|$,
@@ -45,6 +47,7 @@ to evaluate the same value, regardless of interfacial width (provided the order 
 range is well defined - commonly 0 and 1 on the two sides of the interface).
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/interface_stress/test.i block=Materials/interface
 
 !syntax parameters /Materials/ComputeInterfaceStress

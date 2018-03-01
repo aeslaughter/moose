@@ -21,4 +21,4 @@ reverse, children are deleted and the "parent" element is reactivated. The origi
 refinement level 0. Each time an element is split, the children are assigned a refinement level one
 higher than their parents.
 
-!syntax subsystems /Adaptivity
+!syntax list /Adaptivity objects=False actions=False subsystems=True

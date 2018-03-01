@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ParsedAux
+
 !syntax description /AuxKernels/ParsedAux
 
 !syntax parameters /AuxKernels/ParsedAux

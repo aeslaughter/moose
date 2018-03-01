@@ -1,5 +1,6 @@
 # LevelSetOlssonBubbleFunction
-\citet{olsson2005conservative} define a level set function ($\Phi$) that differs from the traditional signed distance function. They define a level set function ranging from 0 to 1 with a defined thickness ($\epsilon$), which is a commonly referred to as a smeared Heaviside function ($H_{sm}(\Phi)$):
+
+[citet:olsson2005conservative] define a level set function ($\Phi$) that differs from the traditional signed distance function. They define a level set function ranging from 0 to 1 with a defined thickness ($\epsilon$), which is a commonly referred to as a smeared Heaviside function ($H_{sm}(\Phi)$):
 
 $$ \begin{equation} H_{sm}(\Phi) = \begin{cases} 0, & \Phi < -\epsilon, \ \frac{1}{2} + \frac{\Phi}{2\epsilon} + \frac{1}{2\pi}\sin(\frac{\pi\Phi}{\epsilon}), & -\epsilon \le \Phi \le \epsilon,\ 1, & \Phi > \epsilon. \end{cases} \end{equation} $$
 

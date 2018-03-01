@@ -1,8 +1,10 @@
 
 # DiffusionFluxBC
+
 !syntax description /BCs/DiffusionFluxBC
 
 ## Description
+
 `DiffusionFluxBC` is a `FluxBC` which is appropriate for use with the
 boundary terms arising from the [`Diffusion`](/Diffusion.md) [`Kernel`](/Kernels/index.md). `DiffusionFluxBC`
 does not "enforce" a boundary condition per-se (see,
@@ -16,7 +18,7 @@ integration by parts on the [`Diffusion`](/Diffusion.md) [`Kernel`](/Kernels/ind
     conditions on all parts of the boundary, so "implicitly" computing a residual contribution
     in this manner (instead of replacing it with the correct "data") falls outside of this
     theory. That said, there are instances where such an approach gives reasonable results
-    in practice, see, for example, the paper by \cite{griffiths1997noboundary}.
+    in practice, see, for example, the paper by [cite:griffiths1997noboundary].
 
 As an example, consider the Poisson problem with mixed
 boundary conditions:
@@ -49,6 +51,7 @@ class would then be used to compute the last term in \eqref{weakform}.
 \bibliography{moose.bib}
 
 ## Example Input Syntax
+
 !listing test/tests/mortar/2d/equalgradient.i start=[./all] end=[../] include-end=true
 
 !syntax parameters /BCs/DiffusionFluxBC

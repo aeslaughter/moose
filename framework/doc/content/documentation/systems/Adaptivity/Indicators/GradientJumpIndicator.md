@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GradientJumpIndicator
+
 !syntax description /Adaptivity/Indicators/GradientJumpIndicator
 
 !syntax parameters /Adaptivity/Indicators/GradientJumpIndicator

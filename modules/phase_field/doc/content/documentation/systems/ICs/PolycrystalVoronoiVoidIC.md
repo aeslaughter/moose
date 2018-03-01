@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalVoronoiVoidIC
+
 !syntax description /ICs/PolycrystalVoronoiVoidIC
 
 !syntax parameters /ICs/PolycrystalVoronoiVoidIC

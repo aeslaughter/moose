@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DarcyFlux
+
 !syntax description /Kernels/DarcyFlux
 
 !syntax parameters /Kernels/DarcyFlux

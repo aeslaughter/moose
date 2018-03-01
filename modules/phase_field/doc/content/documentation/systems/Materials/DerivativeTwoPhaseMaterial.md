@@ -1,5 +1,6 @@
 
 # DerivativeTwoPhaseMaterial
+
 !syntax description /Materials/DerivativeTwoPhaseMaterial
 
 The simplified **two-phase model** uses a single order parameter to switch between the two phases. A global free energy is constructed using a meta material class that combines the phase free energies.

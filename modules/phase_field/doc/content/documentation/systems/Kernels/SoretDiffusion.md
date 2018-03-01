@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SoretDiffusion
+
 !syntax description /Kernels/SoretDiffusion
 
 !syntax parameters /Kernels/SoretDiffusion

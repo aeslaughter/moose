@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PostprocessorNeumannBC
+
 !syntax description /BCs/PostprocessorNeumannBC
 
 !syntax parameters /BCs/PostprocessorNeumannBC

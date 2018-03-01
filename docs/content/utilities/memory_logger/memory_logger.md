@@ -1,7 +1,9 @@
 # Memory Logger
+
 Memory Logger is a simple tool for gathering information about a running process. Such things as memory usage, stdout and stack traces can be sampled, either on a single process or on multiple nodes in a job scheduling environment. Currently PBS is the only job scheduling system supported.
 
 ## Basic usage
+
 In its simplest use case scenario, you encapsulate the command you would normally run with out Memory Logger as an argument to Memory Logger:
 ```text
 memory_logger.py --run "mpiexec -n 2 /absolute/path/to/moose_test-opt -i simple_diffusion.i -r 5"
@@ -26,6 +28,7 @@ memory_logger.py  --repeat-rate .01 \
 Okay... A bit too accurate, as several samples remained unchanged during tracking. However sometimes more is desirable, though just not printed in this fashion. For data dumps like this, using Matplotlib is far more efficient.
 
 ## Using Matplotlib
+
 !media media/memory_logger-plot_multi.png width=300 float=right caption=Figure 1
 
 We can visualize the results by plotting the data with Matplotlib (Figure 1):
@@ -35,6 +38,7 @@ memory_logger.py --plot simple_diffusion-r4_memory.log simple_diffusion-r6_repea
 We can render multiple logs simultaneously to allow an easy comparison.
 
 ## Tracking PBS jobs
+
 Memory Logger has the ability to track your processes across multiple nodes. In order for this to work correctly, we must launch an interactive job (qsub -I). The reason for this, is we can not have PBS launch a bunch of memory_loggers all in the same fashion... Instead we need one memory_logger, acting as the server, while a bunch of others acting as agents gathering data. The only thing we need to do is provide the --pbs argument.
 
 ```text
@@ -47,6 +51,7 @@ When Memory Logger encounters a --pbs argument, it will look at the contents of 
 
 
 ## Stack Traces, Dark Mode and other cool things
+
 Obtaining stack traces while tracking memory usage on a single machine or across PBS nodes is the key feature of this tool. In order to do so we need to supply an additional two arguments; `--pstack` and `--debugger gdb|lldb`. Memory Logger supports two debuggers for the purpose of obtaining a stack trace (gdb or lldb).
 ```text
 memory_logger.py --pstack --debugger gdb \

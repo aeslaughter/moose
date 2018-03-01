@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MultiApps System
-!syntax objects /MultiApps
 
-!syntax subsystems /MultiApps
+!syntax list /MultiApps objects=True actions=False subsystems=False
 
-!syntax actions /MultiApps
+!syntax list /MultiApps objects=False actions=False subsystems=True
+
+!syntax list /MultiApps objects=False actions=True subsystems=False

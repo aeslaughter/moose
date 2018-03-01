@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalEqualValueConstraint
+
 !syntax description /ScalarKernels/NodalEqualValueConstraint
 
 !syntax parameters /ScalarKernels/NodalEqualValueConstraint

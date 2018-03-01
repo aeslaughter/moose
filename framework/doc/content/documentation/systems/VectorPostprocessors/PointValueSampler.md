@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PointValueSampler
+
 !syntax description /VectorPostprocessors/PointValueSampler
 
 !syntax parameters /VectorPostprocessors/PointValueSampler

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsRelPermPower
+
 !syntax description /UserObjects/RichardsRelPermPower
 
 !syntax parameters /UserObjects/RichardsRelPermPower

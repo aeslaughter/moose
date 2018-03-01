@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ExodusTimeSequenceStepper
+
 !syntax description /Executioner/TimeStepper/ExodusTimeSequenceStepper
 
 !syntax parameters /Executioner/TimeStepper/ExodusTimeSequenceStepper

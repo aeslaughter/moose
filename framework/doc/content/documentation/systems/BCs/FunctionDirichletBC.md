@@ -1,8 +1,10 @@
 
 # FunctionDirichletBC
+
 !syntax description /BCs/FunctionDirichletBC
 
 ## Description
+
 `FunctionDirichletBC` is a generalization of [`DirichletBC`](/DirichletBC.md) which
 imposes a possibly temporally- and spatially-dependent value defined
 by a MOOSE [`Function`](/Functions/index.md) object on a particular set of degrees of freedom
@@ -26,6 +28,7 @@ corresponding to the boundary subset $\partial \Omega_D$ via the
 `boundary` parameter.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/function_dirichlet_bc/function_dirichlet_bc_test.i block=BCs
 
 !syntax parameters /BCs/FunctionDirichletBC

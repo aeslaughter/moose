@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ConstantRate
+
 !syntax description /NodalKernels/ConstantRate
 
 !syntax parameters /NodalKernels/ConstantRate

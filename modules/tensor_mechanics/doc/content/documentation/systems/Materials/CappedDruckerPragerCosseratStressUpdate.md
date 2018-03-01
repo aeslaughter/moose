@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CappedDruckerPragerCosseratStressUpdate
+
 !syntax description /Materials/CappedDruckerPragerCosseratStressUpdate
 
 !syntax parameters /Materials/CappedDruckerPragerCosseratStressUpdate

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AddExtraNodeset
+
 !syntax description /MeshModifiers/AddExtraNodeset
 
 !syntax parameters /MeshModifiers/AddExtraNodeset

@@ -1,4 +1,5 @@
 # Rotating Circle
+
 The second example is a typical benchmark problem for the level set equation: a rotating
 bubble. The problem involves initializing $u_h$ (see [Theory](level_set/theory.md)) with a "bubble" of
 radius 0.15 at $(0.0, 0.5)$ for $\Omega = [-1,1]^2$.  This bubble is
@@ -8,11 +9,11 @@ $t=\pi/2$, the bubble should return to its original position.
 
 ## Level Set Equation
 
-\ref{circle_rotate_out} show the results of solving the rotating bubble problem with the level set equation
+[circle_rotate_out] show the results of solving the rotating bubble problem with the level set equation
 alone, which initially behaves in a consistent manner. However, near the end of the simulation node-to-node
-oscillations appear in the solution, which is evident in the contour lines shown in \ref{circle_rotate_out}.
+oscillations appear in the solution, which is evident in the contour lines shown in [circle_rotate_out].
 As aspected, these oscillations influence the area of the region encapsulated by the 0.5 level set contour as
-shown in \ref{area_comparison} and discussed in the [Area Comparison](#area_comparison) section.
+shown in [area_comparison] and discussed in the [Area Comparison](#area_comparison) section.
 
 The complete input file for running this portion of the example is included below and it may be executed as follows.
 
@@ -24,17 +25,19 @@ cd ~/projects/moose/module/level_set/examples/rotating_circle
 !listing modules/level_set/examples/rotating_circle/circle_rotate.i
 
 ## Level Set Equation with SUPG
+
 Adding SUPG stabilization---set the [theory](level_set/theory.md) for details---mitigates the oscillations present in
-the first step, as shown in \ref{circle_rotate_supg_out}. Adding the SUPG stabilization is trivial simply add
+the first step, as shown in [circle_rotate_supg_out]. Adding the SUPG stabilization is trivial simply add
 the time and advection SUPG kernels to the input file ([circle_rotate_supg.i](https://github.com/idaholab/moose/tree/devel/modules/level_set/examples/rotating_circle/circle_rotate_supg.i)) shown previously, the kernels block will then appear as:
 
-!listing modules/level_set/examples/rotating_circle/circle_rotate_supg.i block=Kernels label=False
+!listing modules/level_set/examples/rotating_circle/circle_rotate_supg.i block=Kernels 
 
 Adding the stabilization improve the numerical solution but it suffers from a loss of conservation of the phase field
-variable, as discussed in the [Area Comparison](#area_comparison) section and shown in \ref{area_comparison}.
+variable, as discussed in the [Area Comparison](#area_comparison) section and shown in [area_comparison].
 
 ## Level Set Equation with Reinitialization
-Adding reinitializtion, in this case the scheme proposed by \cite{olsson2007conservative}, requires the use of the
+
+Adding reinitializtion, in this case the scheme proposed by [cite:olsson2007conservative], requires the use of the
 MOOSE [MultiApp](/MultiApps/index.md). The enable reinitialization two input files are required: a master and sub-application.
 
 The master input file must add the necessary [MultiApps](/MultiApps/index.md) and [Transfers](/Transfers/index.md)
@@ -46,14 +49,14 @@ include the SUPG kernels).
 Next, the sub-application input file must be created, which is shown below. This input file mimics the master input
 file closely, with three notable exceptions. First, the [Kernels](/Kernels/index.md) block utilize the time
 derivative and a new object, [LevelSetOlssonReinitialization](level_set/LevelSetOlssonReinitialization.md), that
-implements the reinitialization scheme of \cite{olsson2007conservative}. Second, the [Problem](/Problem/index.md)
+implements the reinitialization scheme of [cite:olsson2007conservative]. Second, the [Problem](/Problem/index.md)
 is set to use the [LevelSetReinitializationProblem](level_set/LevelSetReinitializationProblem.md). Finally, the
 [UserObjects](/UserObjects/index.md) block includes a terminator, [LevelSetOlssonTerminator](level_set/LevelSetOlssonTerminator.md), which is responsible for stopping the reinitialization
-solve when steady-state is achieved according to the criteria defined by \citet{olsson2007conservative}.
+solve when steady-state is achieved according to the criteria defined by [citet:olsson2007conservative].
 
 !listing modules/level_set/examples/rotating_circle/circle_rotate_sub.i
 
-\ref{circle_rotate_master_out} shows the results of the bubble problem with reinitialization, the result looks
+[circle_rotate_master_out] shows the results of the bubble problem with reinitialization, the result looks
 similar to the SUPG result. However, if you consider the area conservation discussed in the [Area Comparison](#area_comparison) section, the reinitialization scheme yields the superior solution for this problem.
 
 !media media/level_set/circle_rotate_out.gif id=circle_rotate_out width=32% margin-right=2% float=left caption=Results from solving the rotating circle problem with the level set equation alone.
@@ -64,11 +67,11 @@ similar to the SUPG result. However, if you consider the area conservation discu
 
 ## Area Comparison
 
-\ref{area_comparison} is a plot of the area of
+[area_comparison] is a plot of the area of
 the circle during the three simulations. Note that in the
 unstabilized, un-reinitialized level set equation, both area
 conservation and stability issues are readily apparent. The
-instabilities are especially obvious in \ref{area_comparison}, where the drastic
+instabilities are especially obvious in [area_comparison], where the drastic
 area changes are due to numerical oscillations in the solution
 field. Adding SUPG stabilization helps ameliorate the stability
 concern but it suffers from loss of area conservation. The
@@ -87,5 +90,6 @@ can no doubt be tuned to the needs of specific applications in terms
 of conservation and computational cost requirements.
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{level_set.bib}

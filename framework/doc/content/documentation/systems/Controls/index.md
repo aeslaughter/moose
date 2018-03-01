@@ -8,6 +8,7 @@ of a MOOSE-based simulation.**
 The input parameters of objects you which to be controlled must:
 
 ### Store Parameter as a `const` Reference
+
 In your *.h files, declare storage for the parameters as follows.
 
 !listing framework/include/bcs/DirichletBC.h line=_value
@@ -54,6 +55,7 @@ but the the two listed above are generally what is needed.
 Please refer to the source code for a complete list.
 
 ## Controls Block
+
 `Control` objects are defined in the input file in the Controls block, similar to other systems
 in [MOOSE]. For example, the following input file snippet shows the use of the
 [RealFunctionControl](/RealFunctionControl.md) object.
@@ -62,16 +64,16 @@ in [MOOSE]. For example, the following input file snippet shows the use of the
 
 ## Object and Parameter Names id=object-and-parameter-names
 
-Notice that in \ref{controls_example} the syntax for specifying a parameter is shown. In general,
+Notice that in [controls_example] the syntax for specifying a parameter is shown. In general,
 the syntax for a parameter name is specified as: `block/object/name`.
 
 * **`block`**: specifies the input file block name (e.g., "[Kernels]", "[BCs]").
-* **`object`**: specifies the input file sub-block name (e.g., "diff" in \ref{controls_example2}).
-* **`name`**: specifies the parameter name (e.g., "coef" in \ref{controls_example2}).
+* **`object`**: specifies the input file sub-block name (e.g., "diff" in [controls_example2]).
+* **`name`**: specifies the parameter name (e.g., "coef" in [controls_example2]).
 
 !listing test/tests/controls/real_function_control/real_function_control.i block=Kernels id=controls_example2 caption=Example of a "Kernel" block that contains a parameter that is controlled via a [MOOSE] Control object.
 
-As shown in \ref{controls_example} an asterisk ("*") can be substituted for any one of these three
+As shown in [controls_example] an asterisk ("*") can be substituted for any one of these three
 "names", doing so allows multiple parameters to match and be controlled simultaneously.
 
 In similar fashion, object names can be defined (e.g., as in the
@@ -82,6 +84,6 @@ In both cases there is an alternative form for defining an object and parameter 
 `base::object/name`. In this case "base" is the [MOOSE] base system that the object is derived from.
 For example, `Kernel::diff/coef`.
 
-!syntax objects /Controls
+!syntax list /Controls objects=True actions=False subsystems=False
 
-!syntax actions /Controls
+!syntax list /Controls objects=False actions=True subsystems=False

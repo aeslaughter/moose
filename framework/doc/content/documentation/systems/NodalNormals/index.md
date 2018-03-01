@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalNormals System
-!syntax objects /NodalNormals
 
-!syntax subsystems /NodalNormals
+!syntax list /NodalNormals objects=True actions=False subsystems=False
 
-!syntax actions /NodalNormals
+!syntax list /NodalNormals objects=False actions=False subsystems=True
+
+!syntax list /NodalNormals objects=False actions=True subsystems=False

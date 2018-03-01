@@ -1,7 +1,9 @@
 # Rank Two Aux
+
 !syntax description /AuxKernels/RankTwoAux
 
 ## Description
+
 The AuxKernel `RankTwoAux` is used to save single components of Rank-2 tensors into an AuxVariable for visualization and/or post-processing purposes. An antisymmetric Rank-2 tensor would require nine separate `RankTwoAux` AuxKernel-AuxVariable pairs to store all of the components of the antisymmetric Rank-2 tensor; six separate AuxKernel-AuxVariable pairs are required to print out all the unique components of a symmetric Rank-2 tensor.
 Quantities commonly examined with `RankTwoAux` are stress ($\boldsymbol{\sigma}$) and strain ($\boldsymbol{\epsilon}$).
 
@@ -19,6 +21,7 @@ Eq \eqref{eq:rank2tensor_aux_indices} shows the index values for each Rank-2 ten
 If desired, `RankTwoAux` can be restricted to save data from a Rank-2 tensor at a single specified quadrature point per element. This option is generally used for debugging purposes.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/elastic_patch/elastic_patch.i block=AuxKernels/stress_xy
 
 An AuxVariable is required to store the `RankTwoAux` AuxKernel information. Note that the name of the AuxVariable is used as the argument for the `variable` input parameter in the `RankTwoAux` block.

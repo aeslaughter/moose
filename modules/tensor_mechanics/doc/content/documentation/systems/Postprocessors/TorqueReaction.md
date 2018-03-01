@@ -1,7 +1,9 @@
 # Torque Reaction
+
 !syntax description /Postprocessors/TorqueReaction
 
 ## Description
+
 The postprocessor `TorqueReaction` calculates the applied torque from the reation forces, coupled as AuxVariables, about a user specified axis of rotation.
 
 TorqueReaction takes a scalar approach to calculating the sum of the acting torques by projecting both the reaction force vector and the position vector (the coordinates of the node upon which the force is applied) onto the axis of rotation and applying the Pythagorean theorem, as in a statics course.
@@ -24,6 +26,7 @@ The component of the torque acting along the user specified axis of rotation vec
 where $\boldsymbol{\tau}$ is the torque vector calculated in \eqref{eq:calculate_torque_vector} and $d$ is the axis of rotation direction vector.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/torque_reaction/torque_reaction_tm.i block=Postprocessors/torque
 
 A list of the AuxVariables which save the reaction forces must be provided to the `TorqueReaction` block.

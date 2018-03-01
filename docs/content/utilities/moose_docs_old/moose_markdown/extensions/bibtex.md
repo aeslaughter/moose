@@ -6,9 +6,9 @@ citations and bibliographies aids in rapid development of documentation.
 
 The [BibTeX] extension makes it possible to include citations using LaTeX commands. The following commands are supported within the markdown.
 
-* `\cite{slaughter2015continuous}`: \cite{slaughter2015continuous}
-* `\citet{wang2014diffusion}`: \citet{wang2014diffusion}
-* `\citep{gaston2015physics}`: \citep{gaston2015physics}
+* `[cite:slaughter2015continuous]`: [cite:slaughter2015continuous]
+* `[citet:wang2014diffusion]`: [citet:wang2014diffusion]
+* `[citep:gaston2015physics]`: [citep:gaston2015physics]
 
 The bibliography style may be set within a page using the latex command
 `\bibliographystyle{unsrt}`. Three styles are currently available: 'unsrt', 'plain', 'alpha', and 'unsrtalpha'.

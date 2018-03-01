@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # XFEM System
-!syntax objects /XFEM
 
-!syntax subsystems /XFEM
+!syntax list /XFEM objects=True actions=False subsystems=False
 
-!syntax actions /XFEM
+!syntax list /XFEM objects=False actions=False subsystems=True
+
+!syntax list /XFEM objects=False actions=True subsystems=False

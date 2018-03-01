@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # AverageNodalVariableValue
+
 !syntax description /Postprocessors/AverageNodalVariableValue
 
 !syntax parameters /Postprocessors/AverageNodalVariableValue

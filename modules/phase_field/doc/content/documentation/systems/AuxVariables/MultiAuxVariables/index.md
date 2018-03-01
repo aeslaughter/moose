@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MultiAuxVariables System
-!syntax objects /AuxVariables/MultiAuxVariables
 
-!syntax subsystems /AuxVariables/MultiAuxVariables
+!syntax list /AuxVariables/MultiAuxVariables objects=True actions=False subsystems=False
 
-!syntax actions /AuxVariables/MultiAuxVariables
+!syntax list /AuxVariables/MultiAuxVariables objects=False actions=False subsystems=True
+
+!syntax list /AuxVariables/MultiAuxVariables objects=False actions=True subsystems=False

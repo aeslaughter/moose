@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LineMaterialSymmTensorSampler
+
 !syntax description /VectorPostprocessors/LineMaterialSymmTensorSampler
 
 !syntax parameters /VectorPostprocessors/LineMaterialSymmTensorSampler

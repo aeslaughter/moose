@@ -1,4 +1,5 @@
 # IdealGasFreeEnergy
+
 !syntax description /Materials/IdealGasFreeEnergy
 
 This material defines the Helmholtz free energy density $f$ of an ideal Boltzmann gas.

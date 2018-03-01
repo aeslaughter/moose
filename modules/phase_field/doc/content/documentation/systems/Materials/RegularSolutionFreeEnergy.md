@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RegularSolutionFreeEnergy
+
 !syntax description /Materials/RegularSolutionFreeEnergy
 
 !syntax parameters /Materials/RegularSolutionFreeEnergy

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SolutionTimeAdaptiveDT
+
 !syntax description /Executioner/TimeStepper/SolutionTimeAdaptiveDT
 
 !syntax parameters /Executioner/TimeStepper/SolutionTimeAdaptiveDT

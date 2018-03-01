@@ -100,7 +100,7 @@ of $L$ are used in groundwater models.
 ##Peaceman Boreholes
 [`PorousFlowPeacemanBorehole`](/porous_flow/PorousFlowPeacemanBorehole.md)
 
-Wellbores are implemented using the method first described by \citet{peaceman1983}.  Here $f$ is a
+Wellbores are implemented using the method first described by [citet:peaceman1983].  Here $f$ is a
 special function (measured in kg.s$^{-1}$ in standard units) defined in terms of the pressure at a
 point at the wall of the wellbore (which is an input parameter)
 \begin{equation}
@@ -149,7 +149,7 @@ $(x,y)$ plane; $L_{z}$ is the length of the borehole, $r_{\mathrm{bh}}$ is the
 borehole radius (an input parameter, which is encoded in the plaintext file of
 points: see Eq. \eqref{eq:bh_plaintext_format}); and, $r_{e}$ is the effective
 borehole radius.  For a cell-centred finite-difference approach,
-\citet{peaceman1983} found that
+[citet:peaceman1983] found that
 
 \begin{equation}
 r_{e} = 0.28 \frac{\sqrt{\sqrt{\kappa_{xx}/\kappa_{yy}}L_{x}^{2} +
@@ -162,7 +162,7 @@ r_{e} = 0.28 \frac{\sqrt{\sqrt{\kappa_{xx}/\kappa_{yy}}L_{x}^{2} +
 Here $L_{x}$ and $L_{y}$ are the finite-difference spatial sizes.
 
 Other authors have generalised Peaceman's approach to writing $W$ for different
-geometrical situations.  Some of these are contained in \citet{chen2009}, where
+geometrical situations.  Some of these are contained in [citet:chen2009], where
 they show that for a finite element situation with square elements of size $L$,
 the borehole at a nodal position, and isotropic permeability
 

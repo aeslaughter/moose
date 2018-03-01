@@ -49,6 +49,7 @@ of order parameters. The required blocks are
 !listing modules/phase_field/test/tests/reconstruction/1phase_reconstruction.i start=Mesh end=ENDDOC
 
 ### Case 2: Initialize a variable from a specific phase number in the EBSD data, ignoring the grain numbers
+
 Here, the value for a single variable is initialized from the EBSD data corresponding
 to a single phase number. The required blocks are
 

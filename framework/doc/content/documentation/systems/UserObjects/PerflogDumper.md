@@ -1,5 +1,6 @@
 
 # PerflogDumper
+
 !syntax description /UserObjects/PerflogDumper
 
 ## Description

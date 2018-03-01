@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalKernel System
-!syntax objects /Kernels/PolycrystalKernel
 
-!syntax subsystems /Kernels/PolycrystalKernel
+!syntax list /Kernels/PolycrystalKernel objects=True actions=False subsystems=False
 
-!syntax actions /Kernels/PolycrystalKernel
+!syntax list /Kernels/PolycrystalKernel objects=False actions=False subsystems=True
+
+!syntax list /Kernels/PolycrystalKernel objects=False actions=True subsystems=False

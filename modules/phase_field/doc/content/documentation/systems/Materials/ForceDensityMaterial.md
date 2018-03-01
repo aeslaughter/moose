@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ForceDensityMaterial
+
 !syntax description /Materials/ForceDensityMaterial
 
 !syntax parameters /Materials/ForceDensityMaterial

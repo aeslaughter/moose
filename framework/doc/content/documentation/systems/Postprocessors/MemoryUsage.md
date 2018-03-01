@@ -1,4 +1,5 @@
 # MemoryUsage
+
 !syntax description /Postprocessors/MemoryUsage
 
 This postprocessor collects various memory usage metrics:

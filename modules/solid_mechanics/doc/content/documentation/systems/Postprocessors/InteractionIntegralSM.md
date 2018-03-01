@@ -1,4 +1,5 @@
 # InteractionIntegralSM
+
 !syntax description /Postprocessors/InteractionIntegralSM
 
 ## Description

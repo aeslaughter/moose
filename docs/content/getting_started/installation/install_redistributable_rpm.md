@@ -3,12 +3,15 @@
     * The on-screen instructions will ask you to append the following to your ~/.bashrc:
 ```bash
 # Uncomment to enable pretty prompt:
+
 # export MOOSE_PROMPT=true
 
 # Uncomment to enable autojump:
+
 # export MOOSE_JUMP=true
 
 # Source MOOSE profile
+
 if [ -f /opt/moose/environments/moose_profile ]; then
   . /opt/moose/environments/moose_profile
 fi

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # JouleHeatingSource
+
 !syntax description /Kernels/JouleHeatingSource
 
 !syntax parameters /Kernels/JouleHeatingSource

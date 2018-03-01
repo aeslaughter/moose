@@ -1,4 +1,5 @@
 # InteractionIntegralBenchmarkBC
+
 !syntax description /BCs/InteractionIntegralBenchmarkBC
 
 ## Description

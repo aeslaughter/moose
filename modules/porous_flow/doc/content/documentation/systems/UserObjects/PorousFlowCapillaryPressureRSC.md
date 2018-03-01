@@ -1,7 +1,8 @@
 # PorousFlowCapillaryPressureRSC
+
 !syntax description /UserObjects/PorousFlowCapillaryPressureRSC
 
-The Rogers-Stallybrass-Clements capillary relationship is \citep{rsc1983}
+The Rogers-Stallybrass-Clements capillary relationship is [citep:rsc1983]
 \begin{equation}
 S_{\mathrm{eff}} = \frac{1}{\sqrt{1 + \exp((P_{c} - A)/B)}} \ ,
 \label{eqn.rsc.seff}

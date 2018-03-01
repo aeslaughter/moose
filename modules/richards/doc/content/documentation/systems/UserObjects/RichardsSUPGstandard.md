@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsSUPGstandard
+
 !syntax description /UserObjects/RichardsSUPGstandard
 
 !syntax parameters /UserObjects/RichardsSUPGstandard

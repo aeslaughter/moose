@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GeneralizedPlaneStrainUserObject
+
 !syntax description /UserObjects/GeneralizedPlaneStrainUserObject
 
 !syntax parameters /UserObjects/GeneralizedPlaneStrainUserObject

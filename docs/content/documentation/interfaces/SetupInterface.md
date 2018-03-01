@@ -35,6 +35,7 @@ of execution flags is provided by MOOSE are listed in the "registerExecFlags" fu
 !listing framework/src/base/MooseApp.C start=MooseApp::registerExecFlags() end=void
 
 ## Modifying Execute On
+
 When creating objects that inherit from SetupInterface it is possible to set, add, or remove available execute flags by retrieving and then modifying the `ExecFlagEnum` parameter. For
 example, consider the snippet below (see [Output.C](/framework/src/outputs/Output.C)).
 
@@ -75,6 +76,7 @@ execute for the corresponding execute flag.
 
 
 ## Creating Custom Execute Flags
+
 It is possible to create custom execute flags for an application. To create at utilize a custom
 execute flag the following steps should be followed.
 
@@ -92,6 +94,7 @@ defining the new flags with a name and optionally an integer value.
 !listing modules/level_set/src/base/LevelSetTypes.C
 
 ### 2. Register the Execute Flag
+
 After the new flag(s) are declared and defined, it must be registered with MOOSE. This is
 accomplished in similar fashion as object registration, simply add the newly created flag by calling
 `registerExecFlag` with the `registerExecFlags` function of your application.
@@ -104,6 +107,7 @@ accomplished in similar fashion as object registration, simply add the newly cre
     scripts directory within MOOSE.
 
 ### 3. Add the Execute Flag to InputParameters
+
 After a flag is registered, it must be made available to the object(s) in which are desired to be
 executed with the custom flag. This is done by adding this new flag to an existing objects valid
 parameters. For example, the following adds the `EXEC_ADAPT_MESH` flag to a `Transfer` object.
@@ -112,6 +116,7 @@ parameters. For example, the following adds the `EXEC_ADAPT_MESH` flag to a `Tra
 
 
 ### 4. Use the Execute Flag
+
 Depending on what type of custom computation is desired, various MOOSE execution calls accept
 execution flags, which will spawn calculations. For example, the `LevelSetProblem` contains
 a custom method that uses the `EXEC_ADAPT_MESH` flag to preform

@@ -1,4 +1,5 @@
 # AllenCahn
+
 !syntax description /Kernels/AllenCahn
 
 Implements the term

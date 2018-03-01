@@ -10,7 +10,7 @@ where $P$ is the internal pressure, $n$ is the moles of gas, $R$ is the ideal ga
 
 The moles of gas, the temperature, and the cavity volume in \eqref{eq:ideal_gas_law} are free to change with time.  The moles of gas $n$ at any time is the original amount of gas (computed based on original pressure, temperature, and volume) plus the amount in the cavity due to any gas injected during the simulation.
 
-The Cavity Pressure Action system consists of three separate actions, listed in \ref{cavity_pressure_action_table}, which are all created within the same block.
+The Cavity Pressure Action system consists of three separate actions, listed in [cavity_pressure_action_table], which are all created within the same block.
 
 !table id=cavity_pressure_action_table caption=Correspondence Among Action Functionality and MooseObjects
 | Functionality     | Replaced Classes   | Specific Action   | Associated Parameters   |
@@ -25,8 +25,8 @@ The Cavity Pressure Action system consists of three separate actions, listed in 
 |  |  |  | `displacements` : a string of the displacement variables to which the Pressure BC should be applied |
 
 
-!syntax objects /BCs/CavityPressure
+!syntax list /BCs/CavityPressure objects=True actions=False subsystems=False
 
-!syntax subsystems /BCs/CavityPressure
+!syntax list /BCs/CavityPressure objects=False actions=False subsystems=True
 
-!syntax actions /BCs/CavityPressure
+!syntax list /BCs/CavityPressure objects=False actions=True subsystems=False

@@ -1,4 +1,5 @@
 # LaplacianSplit
+
 !syntax description /Kernels/LaplacianSplit
 
 Sets the kernel variable $u$ to the Laplacian of a chosen variable $c$ (`c`).

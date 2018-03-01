@@ -1,4 +1,5 @@
 # ConvectiveFluxFunction
+
 !syntax description /BCs/ConvectiveFluxFunction
 
 ## Description

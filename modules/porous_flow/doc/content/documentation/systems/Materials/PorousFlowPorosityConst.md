@@ -1,4 +1,5 @@
 # PorousFlowPorosityConst
+
 !syntax description /Materials/PorousFlowPorosityConst
 
 A single value of porosity can be specified in the input file, or a spatially

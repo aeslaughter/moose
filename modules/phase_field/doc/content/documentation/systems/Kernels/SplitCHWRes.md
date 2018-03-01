@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SplitCHWRes
+
 !syntax description /Kernels/SplitCHWRes
 
 !syntax parameters /Kernels/SplitCHWRes

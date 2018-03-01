@@ -1,8 +1,10 @@
 
 # SinNeumannBC
+
 !syntax description /BCs/SinNeumannBC
 
 ## Description
+
 `SinNeumannBC` is an `IntegratedBC` which imposes a time-varying flux of the form
 \begin{equation}
   g(t) = \left\{
@@ -33,6 +35,7 @@ non-physical solutions in nonlinear PDEs.
 
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/sin_bc/sin_neumann_test.i start=[./right] end=[../] include-end=true
 
 !syntax parameters /BCs/SinNeumannBC

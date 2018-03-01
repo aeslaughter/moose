@@ -1,7 +1,9 @@
 # Compute R-Spherical Small Strain
+
 !syntax description /Materials/ComputeRSphericalSmallStrain
 
 ## Description
+
 The material `ComputeRSphericalSmallStrain` calculates the small total strain for 1D R-Spherical systems.
 
 The 1D RSpherical materials and kernel are designed to model sphere geometries with 1D models.
@@ -34,6 +36,7 @@ The RSpherical specific `ComputeRSphericalSmallStrain` class calculates the radi
 while the calculation of the total strain components $\epsilon_{\theta \theta}$ and $\epsilon_{\phi \phi}$ are found with \eqref{eq:polar_azimuthal_rspherical_strains}.
 
 ## Example Input File Syntax
+
 The small R-spherical strain calculator can be activated in the input file through the use of the TensorMechanics Master Action, as shown below.
 !listing modules/tensor_mechanics/test/tests/1D_spherical/smallStrain_1DSphere.i block=Modules/TensorMechanics/Master
 

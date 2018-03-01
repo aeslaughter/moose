@@ -99,7 +99,7 @@ fluid is rapidly removed or added to the system by the environment to
 ensure $P=P_{\mathrm{e}}$).  If $L\sim\infty$ the boundary flux is
 almost zero and does nothing.
 
-Eq \eqref{eq:fix.pp.bc} (`Eq` `\eqref{eq:fix.pp.bc}`)Eqn~(\ref{}) may
+Eq \eqref{eq:fix.pp.bc} (`Eq` `\eqref{eq:fix.pp.bc}`)Eqn~([]) may
 be implemented in a number of ways.  A
 [`PorousFlowPiecewiseLinearSink`](/porous_flow/PorousFlowPiecewiseLinearSink.md)
 may be constructed that models \begin{equation} f = C (P -

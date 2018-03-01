@@ -2,4 +2,4 @@
 
 Test material property derivaties.
 
-!syntax actions /Debug/MaterialDerivativeTest
+!syntax list /Debug/MaterialDerivativeTest objects=False actions=True subsystems=False

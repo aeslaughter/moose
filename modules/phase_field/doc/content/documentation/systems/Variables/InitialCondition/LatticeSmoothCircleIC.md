@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # LatticeSmoothCircleIC
+
 !syntax description /Variables/InitialCondition/LatticeSmoothCircleIC
 
 !syntax parameters /Variables/InitialCondition/LatticeSmoothCircleIC

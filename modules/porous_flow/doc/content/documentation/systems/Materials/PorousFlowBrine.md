@@ -1,4 +1,5 @@
 # PorousFlowBrine
+
 !syntax description /Materials/PorousFlowBrine
 
 !syntax parameters /Materials/PorousFlowBrine

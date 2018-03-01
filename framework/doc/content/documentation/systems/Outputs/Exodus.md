@@ -3,6 +3,7 @@
 !syntax description /Outputs/Exodus
 
 ## Overview
+
 The Exodus output object is the preferred way to write out simulation results.  It creates ExodusII formatted files that are easily read by Peacock, Paraview, Visit and other postprocessing applications.
 
 ExodusII has many benefits over other formats.  It is a binary format based on NetCDF so the files are compact.  It also can store multiple timesteps worth of information within one file, reducing output file clutter and storage for simulation results.  Only if the mesh changes (adaptivity, movement if outputing the displaced mesh) will a new file need to be written.

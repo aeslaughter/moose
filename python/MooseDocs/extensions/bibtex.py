@@ -11,6 +11,7 @@ from pybtex.plugin import find_plugin, PluginNotFound
 from pybtex.database import BibliographyData, parse_file
 
 import MooseDocs
+from MooseDocs.common import exceptions
 from MooseDocs.base import components
 from MooseDocs.tree import tokens, html
 from MooseDocs.extensions import command
@@ -43,7 +44,7 @@ class BibtexExtension(command.CommandExtension):
                 self.__database.add_entry(key, db.entries[key])
 
         #print self._database
-        #TODO: reinit should re-build database if the files have changed
+        #TODO: reinit should re-build database if the files have changedf
 
     def reinit(self):
         command.CommandExtension.reinit(self)

@@ -1,4 +1,5 @@
 # PorousFlowAdvectiveFlux
+
 !syntax description /Kernels/PorousFlowAdvectiveFlux
 
 This `Kernel` implements the weak form of

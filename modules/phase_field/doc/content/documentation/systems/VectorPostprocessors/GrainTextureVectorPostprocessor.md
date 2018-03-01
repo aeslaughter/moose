@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GrainTextureVectorPostprocessor
+
 !syntax description /VectorPostprocessors/GrainTextureVectorPostprocessor
 
 !syntax parameters /VectorPostprocessors/GrainTextureVectorPostprocessor

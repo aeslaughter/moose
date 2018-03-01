@@ -1,4 +1,5 @@
 # Contact System
+
 The contact system detects proximity and overlaps between surfaces in the mesh,
 and enforces appropriate constraints on the mechanical and thermal behavior on
 that interface. The mechanical contact system prevents penetration between
@@ -7,6 +8,7 @@ non-penetration condition. The thermal contact system transfers heat between
 surfaces.
 
 ## Mechanical Contact
+
 Historically, there have been multiple approaches taken to enforce mechanical
 contact in MOOSE. The Constraint contact system is the most robust of these
 approaches, and is recommended for mechanical contact enforcement in both 2D and
@@ -42,13 +44,14 @@ convergence will suffer with the kinematic formulation. If the parameter is too
 large, the solver may struggle due to poor conditioning.
 
 ## Thermal Contact
+
 Thermal contact also uses the master/slave algorithm, and, as in mechanical
 contact, the coarser meshed surface should be set as the master surface. In
 thermal contact heat is transferred between the two surfaces.
 
 
-!syntax objects /Contact
+!syntax list /Contact objects=True actions=False subsystems=False
 
-!syntax subsystems /Contact
+!syntax list /Contact objects=False actions=False subsystems=True
 
-!syntax actions /Contact
+!syntax list /Contact objects=False actions=True subsystems=False

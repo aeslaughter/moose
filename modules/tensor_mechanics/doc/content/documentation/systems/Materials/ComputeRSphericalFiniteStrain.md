@@ -1,7 +1,9 @@
 # Compute R-Spherical Finite Strain
+
 !syntax description /Materials/ComputeRSphericalFiniteStrain
 
 ## Description
+
 The material `ComputeRSphericalFiniteStrain` calculates the small incremental strain for 1D R-Spherical systems.
 
 The 1D RSpherical materials and kernel are designed to model sphere geometries with 1D models.
@@ -30,6 +32,7 @@ In the cylindrical coordinate axisymmetric system, the values of stress and stra
 Once the deformation gradient is calculated for the 1D geometry, the deformation gradient is passed to the strain and rotation methods used by default 3D Cartesian simulations, as described in the [Finite Strain Class](ComputeFiniteStrain.md) page.
 
 ## Example Input File Syntax
+
 The finite incremental R-spherical strain calculator can be activated in the input file through the use of the TensorMechanics Master Action, as shown below.
 !listing modules/tensor_mechanics/test/tests/1D_spherical/finiteStrain_1DSphere_hollow.i block=Modules/TensorMechanics/Master
 

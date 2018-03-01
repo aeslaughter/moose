@@ -1,7 +1,7 @@
 #StiffenedGasFluidProperties
 !syntax description /Modules/FluidProperties/StiffenedGasFluidProperties
 
-A simple fluid class that implements a stiffened equation of state \citep{metayer2004}
+A simple fluid class that implements a stiffened equation of state [citep:metayer2004]
 \begin{equation}
   p = (\gamma - 1) \rho (e - q) - \gamma p_{\infty},
 \end{equation}
@@ -18,5 +18,6 @@ is typically used to represent water that is under very high pressure.
 !syntax children /Modules/FluidProperties/StiffenedGasFluidProperties
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{fluid_properties.bib}

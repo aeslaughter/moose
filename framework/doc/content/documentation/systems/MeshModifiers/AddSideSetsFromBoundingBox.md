@@ -1,5 +1,6 @@
 
 # AddSideSetsFromBoundingBox
+
 !syntax description /MeshModifiers/AddSideSetsFromBoundingBox
 
 !syntax parameters /MeshModifiers/AddSideSetsFromBoundingBox

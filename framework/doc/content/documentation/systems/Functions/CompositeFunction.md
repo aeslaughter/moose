@@ -1,4 +1,5 @@
 # CompositeFunction
+
 !syntax description /Functions/CompositeFunction
 
 ## Description

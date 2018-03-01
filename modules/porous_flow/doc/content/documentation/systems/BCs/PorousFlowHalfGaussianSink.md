@@ -1,4 +1,5 @@
 # PorousFlowHalfGaussianSink
+
 !syntax description /BCs/PorousFlowHalfGaussianSink
 
 The basic sink $f(x,t)$ is scaled by a Gaussian flux multiplier of the pressure

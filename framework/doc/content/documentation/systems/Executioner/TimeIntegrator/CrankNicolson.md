@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CrankNicolson
+
 !syntax description /Executioner/TimeIntegrator/CrankNicolson
 
 !syntax parameters /Executioner/TimeIntegrator/CrankNicolson

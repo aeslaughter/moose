@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputeStrainIncrementBasedStress
+
 !syntax description /Materials/ComputeStrainIncrementBasedStress
 
 !syntax parameters /Materials/ComputeStrainIncrementBasedStress

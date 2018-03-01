@@ -157,6 +157,7 @@ $$
 
 
 ## Custom Phase Field Actions
+
 To simplify the formation of input files that use standard Allen-Cahn and Cahn-Hilliard equations, custom actions have been created that automatically create conserved  and nonconserved phase field field variables and all the corresponding kernels. Additional kernels can still be added using standard MOOSE syntax.
 
 The actions are in the phase field block, under the modules block. Nonconserved variables are created using [NonconservedAction](/NonconservedAction.md). For an example, see

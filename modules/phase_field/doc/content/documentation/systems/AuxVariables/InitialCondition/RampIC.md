@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RampIC
+
 !syntax description /AuxVariables/InitialCondition/RampIC
 
 !syntax parameters /AuxVariables/InitialCondition/RampIC

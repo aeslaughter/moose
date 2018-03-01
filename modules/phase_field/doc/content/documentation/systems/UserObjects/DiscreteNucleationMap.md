@@ -1,5 +1,6 @@
 
 # DiscreteNucleationMap
+
 !syntax description /UserObjects/DiscreteNucleationMap
 
 The map objects builds a smooth map of nucleation sites in the simulation domain, expanding the point description from the ```DiscreteNucleationInserter``` to a description in which nucleation sites have a finite size and a smooth interface. This object takes three parameters

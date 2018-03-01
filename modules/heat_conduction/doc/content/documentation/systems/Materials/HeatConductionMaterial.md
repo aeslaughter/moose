@@ -1,7 +1,9 @@
 # HeatConductionMaterial
+
 !syntax description /Materials/HeatConductionMaterial
 
 ## Description
+
 `HeatConductionMaterial` is a general-purpose material model for heat conduction.  It sets
 the thermal conductivity and specific heat at integration points.
 

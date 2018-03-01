@@ -30,6 +30,7 @@ have identified certain options that work well for phase field problems. They ar
 summarized below:
 
 ### LU
+
 This uses LU decomposition to directly apply the inverse of the Jacobian matrix.
 It is typically the most accurate approach, but is expensive and only works on
 one processor. It is often a good debugging tool. Typical options in the block are
@@ -40,6 +41,7 @@ one processor. It is often a good debugging tool. Typical options in the block a
 ```
 
 ### ASM
+
 The Additive Schwartz Method (ASM), is a domain decomposition method. It works
 well for most models, and is the only method that works well with the split
 Cahn-Hilliard equations. Increasing the `-pc_asm_overlap` improves performance
@@ -51,10 +53,12 @@ but increases the computational expense. Typical options are
 ```
 
 #### ASM/ILU
+
 The incomplete factorization method (ILU) allows specifying a fill factor using
 `-pc_factor_levels` increasing this can improve the preconditioner.
 
 ### BoomerAMG
+
 BoomerAMG is the Hypre implementation of the Algebraic MultiGrid Method. It works
 well for solving the Allen-Cahn equation and the direct solution of the Cahn-Hilliard
 method. It has horrible performance with solving the split Cahn-Hilliard equations.

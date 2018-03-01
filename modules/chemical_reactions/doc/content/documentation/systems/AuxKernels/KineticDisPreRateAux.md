@@ -1,4 +1,5 @@
 # KineticDisPreRateAux
+
 !syntax description /AuxKernels/KineticDisPreRateAux
 
 Calculates the kinetic reaction rate based on transition state theory

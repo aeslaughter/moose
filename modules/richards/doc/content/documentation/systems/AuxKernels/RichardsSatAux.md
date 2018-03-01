@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsSatAux
+
 !syntax description /AuxKernels/RichardsSatAux
 
 !syntax parameters /AuxKernels/RichardsSatAux

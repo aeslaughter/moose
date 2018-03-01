@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputeMultiPlasticityStress
+
 !syntax description /Materials/ComputeMultiPlasticityStress
 
 !syntax parameters /Materials/ComputeMultiPlasticityStress

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ThumbIC
+
 !syntax description /Variables/InitialCondition/ThumbIC
 
 !syntax parameters /Variables/InitialCondition/ThumbIC

@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FunctionSideIntegral
+
 !syntax description /Postprocessors/FunctionSideIntegral
 
 !syntax parameters /Postprocessors/FunctionSideIntegral

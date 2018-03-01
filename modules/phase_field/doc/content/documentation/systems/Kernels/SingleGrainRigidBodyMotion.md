@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SingleGrainRigidBodyMotion
+
 !syntax description /Kernels/SingleGrainRigidBodyMotion
 
 !syntax parameters /Kernels/SingleGrainRigidBodyMotion

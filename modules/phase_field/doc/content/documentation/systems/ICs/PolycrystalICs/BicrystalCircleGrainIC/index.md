@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # BicrystalCircleGrainIC System
-!syntax objects /ICs/PolycrystalICs/BicrystalCircleGrainIC
 
-!syntax subsystems /ICs/PolycrystalICs/BicrystalCircleGrainIC
+!syntax list /ICs/PolycrystalICs/BicrystalCircleGrainIC objects=True actions=False subsystems=False
 
-!syntax actions /ICs/PolycrystalICs/BicrystalCircleGrainIC
+!syntax list /ICs/PolycrystalICs/BicrystalCircleGrainIC objects=False actions=False subsystems=True
+
+!syntax list /ICs/PolycrystalICs/BicrystalCircleGrainIC objects=False actions=True subsystems=False

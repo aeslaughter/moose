@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SolidKineticReactions System
-!syntax objects /ReactionNetwork/SolidKineticReactions
 
-!syntax subsystems /ReactionNetwork/SolidKineticReactions
+!syntax list /ReactionNetwork/SolidKineticReactions objects=True actions=False subsystems=False
 
-!syntax actions /ReactionNetwork/SolidKineticReactions
+!syntax list /ReactionNetwork/SolidKineticReactions objects=False actions=False subsystems=True
+
+!syntax list /ReactionNetwork/SolidKineticReactions objects=False actions=True subsystems=False

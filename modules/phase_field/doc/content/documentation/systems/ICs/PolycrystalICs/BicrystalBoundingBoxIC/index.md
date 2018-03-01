@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # BicrystalBoundingBoxIC System
-!syntax objects /ICs/PolycrystalICs/BicrystalBoundingBoxIC
 
-!syntax subsystems /ICs/PolycrystalICs/BicrystalBoundingBoxIC
+!syntax list /ICs/PolycrystalICs/BicrystalBoundingBoxIC objects=True actions=False subsystems=False
 
-!syntax actions /ICs/PolycrystalICs/BicrystalBoundingBoxIC
+!syntax list /ICs/PolycrystalICs/BicrystalBoundingBoxIC objects=False actions=False subsystems=True
+
+!syntax list /ICs/PolycrystalICs/BicrystalBoundingBoxIC objects=False actions=True subsystems=False

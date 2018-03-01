@@ -68,6 +68,7 @@ An example material block looks like this (materials for phase field mobilities 
 ```puppet
 [Materials]
 # Free energy for phase A
+
 [./free_energy_A]
   type = DerivativeParsedMaterial
   block = 0
@@ -79,6 +80,7 @@ An example material block looks like this (materials for phase field mobilities 
 [../]
 
 # Free energy for phase B
+
 [./free_energy_B]
   type = DerivativeParsedMaterial
   block = 0
@@ -104,6 +106,7 @@ An example material block looks like this (materials for phase field mobilities 
 [../]
 
 # Total free energy F = h(phi)*Fb + (1-h(phi))*Fa
+
 [./free_energy]
   type = DerivativeTwoPhaseMaterial
   block = 0

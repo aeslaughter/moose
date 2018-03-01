@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFCRFFVariables System
-!syntax objects /Variables/PFCRFFVariables
 
-!syntax subsystems /Variables/PFCRFFVariables
+!syntax list /Variables/PFCRFFVariables objects=True actions=False subsystems=False
 
-!syntax actions /Variables/PFCRFFVariables
+!syntax list /Variables/PFCRFFVariables objects=False actions=False subsystems=True
+
+!syntax list /Variables/PFCRFFVariables objects=False actions=True subsystems=False

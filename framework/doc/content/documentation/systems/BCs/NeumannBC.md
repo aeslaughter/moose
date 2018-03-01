@@ -1,8 +1,10 @@
 
 # NeumannBC
+
 !syntax description /BCs/NeumannBC
 
 ## Description
+
 `NeumannBC` is the simplest type of `IntegratedBC`, and is used for
 imposing flux boundary conditions on systems of partial differential
 equations (PDEs). This class is appropriate to use for PDEs of the
@@ -25,6 +27,7 @@ u}{\partial n} \equiv \nabla u \cdot \hat{n}$, where $\hat{n}$ is the
 outward unit normal to $\partial \Omega_N$.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/1d_neumann/1d_neumann.i start=[./right] end=[../] include-end=true
 
 !syntax parameters /BCs/NeumannBC

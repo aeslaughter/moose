@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NodalValueSampler
+
 !syntax description /VectorPostprocessors/NodalValueSampler
 
 !syntax parameters /VectorPostprocessors/NodalValueSampler

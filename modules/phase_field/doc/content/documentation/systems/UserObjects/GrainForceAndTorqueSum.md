@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # GrainForceAndTorqueSum
+
 !syntax description /UserObjects/GrainForceAndTorqueSum
 
 !syntax parameters /UserObjects/GrainForceAndTorqueSum

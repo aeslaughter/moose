@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PolycrystalVoronoiVoidIC System
-!syntax objects /ICs/PolycrystalICs/PolycrystalVoronoiVoidIC
 
-!syntax subsystems /ICs/PolycrystalICs/PolycrystalVoronoiVoidIC
+!syntax list /ICs/PolycrystalICs/PolycrystalVoronoiVoidIC objects=True actions=False subsystems=False
 
-!syntax actions /ICs/PolycrystalICs/PolycrystalVoronoiVoidIC
+!syntax list /ICs/PolycrystalICs/PolycrystalVoronoiVoidIC objects=False actions=False subsystems=True
+
+!syntax list /ICs/PolycrystalICs/PolycrystalVoronoiVoidIC objects=False actions=True subsystems=False

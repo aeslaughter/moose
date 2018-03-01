@@ -19,6 +19,7 @@ import anytree
 
 import mooseutils
 
+import MooseDocs
 from .base import NodeBase, Property
 
 LOG = logging.getLogger(__name__)
@@ -27,7 +28,26 @@ class SyntaxNodeBase(NodeBase):
     """
     Node for MOOSE syntax that serves as the parent for actions/objects.
     """
-    PROPERTIES = NodeBase.PROPERTIES + [Property('hidden', ptype=bool, default=False)]
+    PROPERTIES = [Property('hidden', ptype=bool, default=False)]
+
+    # Default documentation destinations for MOOSE and Modules
+    DESTINATIONS = dict()
+    DESTINATIONS['XFEM'] = 'modules/xfem/doc/content/documentation/systems'
+    DESTINATIONS['NavierStokes'] = 'modules/navier_stokes/doc/content/documentation/systems'
+    DESTINATIONS['TensorMechanics'] = 'modules/tensor_mechanics/doc/content/documentation/systems'
+    DESTINATIONS['PhaseField'] = 'modules/phase_field/doc/content/documentation/systems'
+    DESTINATIONS['Rdg'] = 'rdg', 'modules/rdg/doc/content/documentation/systems'
+    DESTINATIONS['Contact'] = 'modules/contact/doc/content/documentation/systems'
+    DESTINATIONS['SolidMechanics'] = 'modules/solid_mechanics/doc/content/documentation/systems'
+    DESTINATIONS['HeatConduction'] = 'modules/heat_conduction/doc/content/documentation/systems'
+    DESTINATIONS['Framework'] = 'framework/doc/content/documentation/systems'
+    DESTINATIONS['StochasticTools'] = 'modules/stochastic_tools/doc/content/documentation/systems'
+    DESTINATIONS['Misc'] = 'modules/misc/doc/content/documentation/systems'
+    DESTINATIONS['FluidProperties'] = 'modules/fluid_properties/doc/content/documentation/systems'
+    DESTINATIONS['ChemicalReactions'] = 'modules/chemical_reactions/doc/content/documentation/systems'
+    DESTINATIONS['LevelSet'] = 'modules/level_set/doc/content/documentation/systems'
+    DESTINATIONS['PorousFlow'] = 'modules/porous_flow/doc/content/documentation/systems'
+    DESTINATIONS['Richards'] = 'modules/richards/doc/content/documentation/systems'
 
     STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->\n'
 
@@ -92,7 +112,7 @@ class SyntaxNodeBase(NodeBase):
         raise NotImplementedError("The 'markdown' method must return the expected markdown "
                                   "filename.")
 
-    def check(self, install, generate=False, groups=None, update=None):
+    def check(self, generate=False, groups=None, update=None):
         """
         Check that the expected documentation exists.
 
@@ -101,20 +121,39 @@ class SyntaxNodeBase(NodeBase):
             page does not exist or doesn't contain content, and None indicates that the page is
             hidden.
         """
-        out = None # not checked because it was hidden
+        if groups is None:
+            groups = self.groups
+
         if self.hidden:
             LOG.debug("Skipping documentation check for %s, it is hidden.", self.fullpath)
 
-        elif groups and not set(self.groups).intersection(groups):
-            LOG.debug("Skipping documentation check for %s (%s), it is not listed in the provided "
-                      "groups: %s.", self.fullpath, self.groups.keys(), groups)
-
         else:
-            filename = self.markdown(install)
-            if not os.path.isfile(filename):
-                out = False
-                LOG.error("No documentation for %s, documentation for this object should be "
-                          "created in: %s", self.fullpath, filename)
+            # Locate all the possible locations for the markdown
+            filenames = []
+            for group in self.groups:
+                install = SyntaxNodeBase.DESTINATIONS.get(group, 'doc/content/systems')
+                filename = os.path.join(MooseDocs.ROOT_DIR, install, self.markdown())
+                filenames.append((filename, os.path.isfile(filename)))
+
+            # Determine the number of files that exist
+            count = sum([x[1] for x in filenames])
+
+            # Error if multiple files exist
+            if count > 1:
+                msg = "Multiple markdown files were located for the '%s' syntax:"
+                for filename, exists in filenames:
+                    if exists:
+                        msg += '\n  {}'.format(filename)
+                LOG.error(msg, self.fullpath)
+
+            # Error if no files exist
+            elif count == 0:
+                msg = "No documentation for %s, documentation for this object should be created " \
+                      "in one of the following locations:"
+                for filename, _ in filenames:
+                    msg += '\n  {}'.format(filename)
+                LOG.error(msg, self.fullpath)
+
                 if generate:
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
@@ -125,10 +164,14 @@ class SyntaxNodeBase(NodeBase):
                             raise TypeError("The _defaultContent method must return a str.")
                         fid.write(content)
             else:
+                for name, exists in filenames:
+                    if exists:
+                        filename = name
+
                 with open(filename, 'r') as fid:
                     lines = fid.readlines()
+
                 if lines and self.STUB_HEADER in lines[0]:
-                    out = False
                     LOG.error("A MOOSE generated stub page for %s exists, but no content was "
                               "added. Add documentation content to %s.", self.name, filename)
                     if update:
@@ -138,7 +181,6 @@ class SyntaxNodeBase(NodeBase):
                             if not isinstance(content, str):
                                 raise TypeError("The _defaultContent method must return a str.")
                             fid.write(content)
-        return out
 
     def _defaultContent(self):
         """
@@ -194,14 +236,6 @@ class SyntaxNode(SyntaxNodeBase):
         """
         return os.path.join(prefix, self.fullpath.strip('/'), 'index.md')
 
-
-        #path = os.path.join(install, self.fullpath.strip('/')).split('/')
-        #path += ['index.md']
-        #if absolute:
-        #    return os.path.join(self.root_directory, *path)
-        #else:
-        #    return os.path.join(*path)
-
     @property
     def parameters(self):
         """
@@ -252,19 +286,11 @@ class ObjectNode(SyntaxNodeBase): #pylint: disable=abstract-method
         """
         return self.__parameters
 
-    def markdown(self, prefix=''):
+    def markdown(self):
         """
         The expected markdown file.
         """
-        return os.path.join(prefix, self.fullpath.strip('/') + '.md')
-
-        # folder = self.__groups.keys()[0]
-        # path = os.path.join(install, self.fullpath.strip('/')).split('/')
-        # path.insert(-1, folder)
-        # if absolute:
-        #     return os.path.join(self.root_directory, '/'.join(path) + '.md')
-        # else:
-        #     return os.path.join(*path) + '.md'
+        return self.fullpath.strip('/') + '.md'
 
     def _locateGroupNames(self, item):
         """
@@ -300,7 +326,7 @@ class MooseObjectNode(ObjectNode):
         Markdown stub content.
         """
         template_filename = os.path.join(MooseDocs.MOOSE_DIR,
-                                         'docs/templates/standards/moose_object.md.template')
+                                         'docs', 'templates', 'moose_object.md.template')
         with open(template_filename, 'r') as fid:
             template_content = fid.read()
 
@@ -329,7 +355,7 @@ class ActionNode(ObjectNode):
         Markdown stub content.
         """
         template_filename = os.path.join(MooseDocs.MOOSE_DIR,
-                                         'docs/templates/standards/'
+                                         'docs', 'templates',
                                          'action_object.md.template')
         with open(template_filename, 'r') as fid:
             template_content = fid.read()

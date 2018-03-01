@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ExplicitMidpoint
+
 !syntax description /Executioner/TimeIntegrator/ExplicitMidpoint
 
 !syntax parameters /Executioner/TimeIntegrator/ExplicitMidpoint

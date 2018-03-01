@@ -1,5 +1,6 @@
 
 # CrossTermBarrierFunctionMaterial
+
 !syntax description /Materials/CrossTermBarrierFunctionMaterial
 
 The material provides a function $g(\vec\eta)$ that is parameterized by all

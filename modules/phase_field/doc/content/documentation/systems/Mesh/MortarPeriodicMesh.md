@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # MortarPeriodicMesh
+
 !syntax description /Mesh/MortarPeriodicMesh
 
 !syntax parameters /Mesh/MortarPeriodicMesh

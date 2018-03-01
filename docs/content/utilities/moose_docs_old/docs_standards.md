@@ -3,18 +3,21 @@
 The standards outlined on this page are intended to aid in creating and maintaining easy-to-read, focused, and consistent documentation for the MOOSE and MOOSE module codes.
 
 ## Content Creation Standards
+
 Developers submitting new classes to the MOOSE repository should also create a new markdown documentation files with the same names as the created classes.
 A template documentation stub file is provided as a starting place for new markdown documentation pages created with the [Markdown File Generation Tool](moose_docs/generate.md).
 
 ### End-User Focused
+
 The intended audience for the markdown documentation pages is an end-user with no or little development experience.
 As such, the markdown documentation page should focus on the theoretical background and input file usage of the corresponding class, including limitations on usability ranges for the class.
 If the background and description are long, break up the information with multiple second (`##`) and third (`###`) level headings.
 Keep in mind that only the second level headings will appear in the right-hand sidebar as navigation links.
 
 ### Citation Information
+
 When appropriate, include citation information for the models implemented in the class being documented.
-Avoid accidental duplication of the citation information in the documentation text by listing and immediately citing the source; use only `\cite{example_reference}` which will render as the author name and publication year in the documentation page.
+Avoid accidental duplication of the citation information in the documentation text by listing and immediately citing the source; use only `[cite:example_reference]` which will render as the author name and publication year in the documentation page.
 If a reference is not currently included in the appropriate bibtex file, add the reference citation information to the bibtex file.
 
 Detailed information about class inheritance should not be included in the markdown text since this information is already provided in the Doxygen link provided automatically by the MooseDocs system.

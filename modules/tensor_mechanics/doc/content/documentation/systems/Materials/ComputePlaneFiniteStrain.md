@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputePlaneFiniteStrain
+
 !syntax description /Materials/ComputePlaneFiniteStrain
 
 !syntax parameters /Materials/ComputePlaneFiniteStrain

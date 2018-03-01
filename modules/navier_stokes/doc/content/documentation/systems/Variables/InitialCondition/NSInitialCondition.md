@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # NSInitialCondition
+
 !syntax description /Variables/InitialCondition/NSInitialCondition
 
 !syntax parameters /Variables/InitialCondition/NSInitialCondition

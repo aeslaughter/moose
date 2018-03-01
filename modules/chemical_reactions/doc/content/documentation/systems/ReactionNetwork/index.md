@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ReactionNetwork System
-!syntax objects /ReactionNetwork
 
-!syntax subsystems /ReactionNetwork
+!syntax list /ReactionNetwork objects=True actions=False subsystems=False
 
-!syntax actions /ReactionNetwork
+!syntax list /ReactionNetwork objects=False actions=False subsystems=True
+
+!syntax list /ReactionNetwork objects=False actions=True subsystems=False

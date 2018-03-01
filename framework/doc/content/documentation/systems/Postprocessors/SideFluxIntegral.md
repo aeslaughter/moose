@@ -1,4 +1,5 @@
 # SideFluxIntegral
+
 !syntax description /Postprocessors/SideFluxIntegral
 
 ## Example Input Syntax

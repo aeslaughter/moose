@@ -1,12 +1,15 @@
 # Stochastic Tools
+
 The stochastic tools module is a toolbox designed for performing stochastic analysis for MOOSE-based
 applications. The following sections detail the various aspects of this module that can be
 used independently or in combination to meet the needs of the application developer.
 
 ## Examples
+
 * [Example 1: Monte Carlo](/examples/monte_carlo.md)
 
 ## Distributions
+
 Distribution objects in [MOOSE] are [function](Functions/index.md)-like in that they have methods
 that are called on-demand by other objects and do not maintain any state. A custom Distribution
 object is created in the typical fashion, by creating a C++ class that inherits from the
@@ -17,7 +20,7 @@ distribution. Similarly, the "cdf" method must return the value of the cumulativ
 function (CDF). Finally, the "quantile" method must return the inverse of the CDF, which is commonly
 referred to as the [quantile function](https://en.wikipedia.org/wiki/Quantile_function).
 
-For example \ref{uniform-distribution-h} is the header for the [UniformDistribution](stochastic_tools/UniformDistribution.md), which overrides the aforementioned
+For example [uniform-distribution-h] is the header for the [UniformDistribution](stochastic_tools/UniformDistribution.md), which overrides the aforementioned
 methods.
 
 !listing modules/stochastic_tools/include/distributions/UniformDistribution.h id=uniform-distribution-h caption=Header for the UniformDistribution object that includes the three required method overrides for creating a distribution.
@@ -42,11 +45,13 @@ Each of these methods return a reference to Distribution object, from which you 
 various methods on the object as discussed previously.
 
 ## Distribution Objects
+
 The following lists the available Distribution objects within the Stochastic Tools module.
 
-!syntax objects /Distributions title=None
+!syntax list /Distributions objects=True actions=False subsystems=False 
 
 ## Samplers
+
 Sampler objects in [MOOSE] are designed to generate an arbitrary set of data sampled from
 any number of Distribution objects.
 
@@ -58,6 +63,7 @@ However, in general, the system is designed such that each row in the matrices r
 complete set of samples that could be passed to sub-applications via the [SamplerMultiApp](/stochastic_tools/SamplerMultiApp.md).
 
 ## Sampler Objects
+
 The following lists the available Sampler objects within the Stochastic Tools module.
 
-!syntax objects /Samplers title=None
+!syntax list /Samplers objects=True actions=False subsystems=False 

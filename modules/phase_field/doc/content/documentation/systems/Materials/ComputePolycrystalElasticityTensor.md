@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputePolycrystalElasticityTensor
+
 !syntax description /Materials/ComputePolycrystalElasticityTensor
 
 !syntax parameters /Materials/ComputePolycrystalElasticityTensor

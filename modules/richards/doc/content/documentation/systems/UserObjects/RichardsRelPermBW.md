@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsRelPermBW
+
 !syntax description /UserObjects/RichardsRelPermBW
 
 !syntax parameters /UserObjects/RichardsRelPermBW

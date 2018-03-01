@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # DGDiffusion
+
 !syntax description /DGKernels/DGDiffusion
 
 !syntax parameters /DGKernels/DGDiffusion

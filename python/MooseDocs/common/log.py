@@ -35,16 +35,15 @@ class MultiprocessingHandler(logging.StreamHandler):
     """A simple handler that locks when writing with multiprocessing."""
 
     def flush(self):
-        #if self._lock:
-        #    with self._lock:
-        #        super(MultiprocessingHandler, self).flush()
-        #else:
-        super(MultiprocessingHandler, self).flush()
+        if self._lock:
+            with self._lock:
+                super(MultiprocessingHandler, self).flush()
+        else:
+            super(MultiprocessingHandler, self).flush()
 
     def createLock(self):
-
         self.lock = None
-        #self._lock = multiprocessing.Lock()
+        self._lock = multiprocessing.Lock()
 
     def aquire(self):
         pass
@@ -66,10 +65,7 @@ def init_logging(level=logging.INFO):
     # Setup the custom formatter
     log = logging.getLogger('MooseDocs')
     log.addHandler(handler)
-    #log.addHandler(logging.NullHandler())
 
     log.setLevel(level)
     MooseDocs.LOG_LEVEL = level
     return log
-
-#    return formatter

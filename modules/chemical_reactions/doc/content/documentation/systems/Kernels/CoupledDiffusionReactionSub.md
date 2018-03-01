@@ -1,4 +1,5 @@
 # CoupledDiffusionReactionSub
+
 !syntax description /Kernels/CoupledDiffusionReactionSub
 
 Diffusive flux of the $j^{\mathrm{th}}$ primary species present in the

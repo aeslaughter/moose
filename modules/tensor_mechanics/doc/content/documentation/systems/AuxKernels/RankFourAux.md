@@ -1,7 +1,9 @@
 # Rank Four Aux
+
 !syntax description /AuxKernels/RankFourAux
 
 ## Description
+
 The AuxKernel `RankFourAux` is used to save single components of Rank-4 tensors into an AuxVariable for visualization and/or post-processing purposes, similar to the functionality provided by [RankTwoAux](/RankTwoAux.md) for Rank-2 tensors
 `RankFourAux` is commonly used to output components of the elasticity (or stiffness) tensor, $C_{ijkl}$, in mechanics simulations.
 
@@ -30,6 +32,7 @@ The `RankFourAux` takes as arguments the values of the `index_i`, `index_j`, `in
 Eq \eqref{eq:rank4tensor_aux_indices} shows the index values for a linear hyperelastic stiffness tensor with 21 indepent material parameters; the various available elasticity tensor symmetry options is discussed in the material [ComputeElasticityTensor](/Materials/tensor_mechanics/ComputeElasticityTensor.md) documentation.
 
 ## Example Input File Syntax
+
 !listing modules/combined/test/tests/linear_elasticity/tensor.i block=AuxKernels/matl_C25
 
 An AuxVariable is required to store the `RankFourAux` AuxKernel information. Note that the name of the AuxVariable is used as the argument for the `variable` input parameter in the `RankFourAux` block.

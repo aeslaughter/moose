@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # FiniteStrainPlasticMaterial
+
 !syntax description /Materials/FiniteStrainPlasticMaterial
 
 !syntax parameters /Materials/FiniteStrainPlasticMaterial

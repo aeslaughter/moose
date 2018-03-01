@@ -1,8 +1,9 @@
 # PFFracBulkRate
+
 !syntax description /Kernels/PFFractureBulkRate
 
 The kernel implements second equation substituted into the third equation in (63)
-from \cite{Miehe10} in a non-split form
+from [cite:Miehe10] in a non-split form
 
 $$
 - \frac1\eta \langle l \cdot \nabla^2 c + 2 (1-c) \frac{\psi^+_0}{g_c} - \frac cl \rangle_+,

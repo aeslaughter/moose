@@ -1,10 +1,11 @@
 # MethaneFluidProperties
+
 !syntax description /Modules/FluidProperties/MethaneFluidProperties
 
 Density of methane is calculated assuming an ideal gas, while all other properties are calculated using
-the formulations provided in \citet{irvine1984}.
+the formulations provided in [citet:irvine1984].
 
-Dissolution of methane into water is calculated using Henry's law \citep{iapws2004}.
+Dissolution of methane into water is calculated using Henry's law [citep:iapws2004].
 
 ##Properties of methane
 
@@ -31,5 +32,6 @@ The MethaneFluidProperties UserObject is valid for:
 
 
 ## References
+
 \bibliographystyle{unsrt}
 \bibliography{fluid_properties.bib}

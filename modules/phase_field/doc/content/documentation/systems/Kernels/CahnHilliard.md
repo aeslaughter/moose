@@ -1,4 +1,5 @@
 # CahnHilliard
+
 !syntax description /Kernels/CahnHilliard
 
 Implements the term

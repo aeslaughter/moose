@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # VolumeDeformGradCorrectedStress
+
 !syntax description /Materials/VolumeDeformGradCorrectedStress
 
 !syntax parameters /Materials/VolumeDeformGradCorrectedStress

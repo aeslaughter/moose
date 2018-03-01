@@ -1,4 +1,5 @@
 # LevelSetMeshRefinementTransfer
+
 When solving the level set equation performing reinitialization of the level set variable is often required
 to maintain its conservative or signed distance characteristics. Within MOOSE the reinitialization step of the solve
 is handled using the [MultiApp](/MultiApps/index.md) system.

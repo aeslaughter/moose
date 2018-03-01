@@ -1,8 +1,10 @@
 
 # MatchedValueBC
+
 !syntax description /BCs/MatchedValueBC
 
 ## Description
+
 `MatchedValueBC` is a `NodalBC` which applies to systems of two or more variables,
 and can be used to impose equality of two solutions along a given `boundary`.
 This class is appropriate for systems of partial differential equations (PDEs) of
@@ -25,6 +27,7 @@ is tied to $u$. In the example below, the other variable's name
 happens to be `v` as well.
 
 ## Example Input Syntax
+
 !listing test/tests/bcs/matched_value_bc/matched_value_bc_test.i start=[./left_u] end=[../] include-end=true
 
 !syntax parameters /BCs/MatchedValueBC

@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TensorMechanics System
-!syntax objects /Kernels/TensorMechanics
 
-!syntax subsystems /Kernels/TensorMechanics
+!syntax list /Kernels/TensorMechanics objects=True actions=False subsystems=False
 
-!syntax actions /Kernels/TensorMechanics
+!syntax list /Kernels/TensorMechanics objects=False actions=False subsystems=True
+
+!syntax list /Kernels/TensorMechanics objects=False actions=True subsystems=False

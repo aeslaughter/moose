@@ -1,4 +1,5 @@
 # Water and non-condensable gas
+
 [`PorousFlowFluidStateWaterNCG`](/porous_flow/PorousFlowFluidStateWaterNCG.md)
 
 A miscible water and non-condensable gas model is available in PorousFlow based on the [persistent variable](/porous_flow/persistent_variables.md) approach.

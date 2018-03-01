@@ -17,9 +17,11 @@ the resulting html, which in this case is setup for website display.
 !listing docs/website.yml
 
 ## Creating Web-Site Content
+
 Adding content to the web-site is as simple as creating a markdown file with content. Generally,  the markdown files are located in the "docs/content" directory of your application.
 
 ## Viewing and Deploying a Web-site
+
 To view or build a website the "build" sub-command of the `moosedocs.py` executable is utilized.
 A complete list of options for this command run with the "-h" flag.
 ```text
@@ -45,6 +47,7 @@ copied to an external server for hosting.
 ```
 
 ## Including App Documentation
+
 MooseDocs allows for the inclusion of documentation from other applications. This includes the
 ability to include documentation from the framework and/or modules in your own application.
 To include other sources of markdown, you must define a "contents" YAML file
@@ -54,7 +57,7 @@ tree can be viewed by running the "build" command with the "--dump" option, whic
 tree but not actually perform a build.
 
 The [MOOSE] test application ("moose_test") includes an example file, as shown in
-\ref{moose_test_content}. At the top level are arbitrary labels (e.g., "framework") that contain
+[moose_test_content]. At the top level are arbitrary labels (e.g., "framework") that contain
 information about what markdown files to include or exclude. Beneath each label the following
 items can be defined to describe the markdown files that should be included.
 

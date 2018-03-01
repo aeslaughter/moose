@@ -1,11 +1,14 @@
 # Pressure Action
+
 !syntax description /BCs/Pressure/PressureAction
 
 ## Description
+
 The Pressure Action, given in the input file as simply `Pressure`, is designed to simplify the input file when several variables have the same pressure boundary condition magnitude applied in the normal component.
 Hydrostatic stress is a good example of a use case for the Pressure Action.
 
 ## Constructed MooseObjects
+
 The Pressure Action is used to construct only the [Pressure boundary condition](/BCs/tensor_mechanics/Pressure.md).
 
 !table id=pressure_BC_action_table caption=Correspondence Among Action Functionality and MooseObjects
@@ -25,6 +28,7 @@ Note that the placement of the variables in the `displacements` string determine
 As in the [Pressure](/BCs/tensor_mechanics/Pressure.md) boundary condition, the  magnitude of the `Pressure` boundary condition can be specified as either a scalar (use the input parameter `factor`) or a `function` parameter.
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/pressure/pressure_test.i block=BCs/Pressure
 
 !syntax parameters /BCs/Pressure/PressureAction

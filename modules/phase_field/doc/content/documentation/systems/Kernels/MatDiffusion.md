@@ -1,5 +1,6 @@
 
 # MatDiffusion
+
 !syntax description /Kernels/MatDiffusion
 
 Implements the term

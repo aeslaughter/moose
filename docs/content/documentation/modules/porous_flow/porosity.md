@@ -5,6 +5,7 @@ effective porepressure, the volumetric strain and/or the temperature.
 
 Available porosity formulations include:
 ## Constant
+
 [`PorousFlowPorosityConst`](/porous_flow/PorousFlowPorosityConst.md)
 
 The simplest case where porosity does not change during the simulation. A single
@@ -12,6 +13,7 @@ value of porosity can be used, or a spatially varying porosity `AuxVariable` can
 be used to define a heterogeneous porosity distribution.
 
 ## Strain-dependent porosity
+
 The porosity can also depend on the mechanical response of the porous medium using
 one of the following materials (depending on the coupled physics)
 
@@ -20,7 +22,7 @@ one of the following materials (depending on the coupled physics)
 - Hydro-Thermo-Mechanical coupling: [`PorousFlowPorosityTHM`](/porous_flow/PorousFlowPorosityTHM.md)
 
 ##Evolution of porosity
-The evolution of the porosity is governed by \citep{chen2009}
+The evolution of the porosity is governed by [citep:chen2009]
 \begin{equation}
 \frac{\partial \phi}{\partial t} = (\alpha_{B} -
 \phi)\frac{\partial}{\partial t}

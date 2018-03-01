@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # TricrystalTripleJunctionIC
+
 !syntax description /ICs/TricrystalTripleJunctionIC
 
 !syntax parameters /ICs/TricrystalTripleJunctionIC

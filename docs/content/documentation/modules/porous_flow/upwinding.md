@@ -1,14 +1,14 @@
 #Upwinding
 
 Upwinding is necessary in scenarios with nonlinear advection, such as the
-physics modelled by PorousFlow \citep{huyakorn1978, Dalen1979, helmig1998}. For
+physics modelled by PorousFlow [citep:huyakorn1978, Dalen1979, helmig1998]. For
 multi-phase situations many upwinding schemes can lead to disaster as the
 algorithm attempts to withdraw fluid from a node where there is no fluid.  In
 situations where one phase disappears, or almost disappears, full upwinding is
 advisable, and hence PorousFlow always employs full upwinding.
 
 Full upwinding has the numerical disadvantage that it is not smooth (in contrast
-to the SUPG upwinding scheme, see  \citet{brooks1982, hughes1986, hughes1986b},
+to the SUPG upwinding scheme, see  [citet:brooks1982, hughes1986, hughes1986b],
 for instance), so that close to steady-state where the fluxes are zero, the
 upwind direction can oscillate, leading to nonconvergence, however this is dealt
 with by placing a cutoff on the upwinding in PorousFlow. The remainder of this
@@ -54,7 +54,7 @@ R_{a} \equiv m_{a}I_{a} \ \ \ \textrm{if}\ \ \ I_{a}\geq 0 \ .
 
 The nodes for which $I_{a}\geq 0$ are called *upwind nodes*, since fluid is
 flowing from them to the *downwind nodes*.  This approach was first introduced
-by \citet{dalen1979}.
+by [citet:dalen1979].
 
 The residual at the downwind nodes is determined by conserving mass.
 Specifically, let

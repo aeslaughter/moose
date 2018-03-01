@@ -1,7 +1,9 @@
 # Cavity Pressure UserObject
+
 !syntax description /UserObjects/CavityPressureUserObject
 
 ## Description
+
 The `CavityPressureUserObject` is used to compute: both the number of initial moles from a gas contained in an internal volume and the pressure exterted by a gas on the cavity boundary.
 This postprocessor is suitable only for ideal gases, which obey the ideal gas law:
 \begin{equation}

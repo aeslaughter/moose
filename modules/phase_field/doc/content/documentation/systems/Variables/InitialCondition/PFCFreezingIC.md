@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # PFCFreezingIC
+
 !syntax description /Variables/InitialCondition/PFCFreezingIC
 
 !syntax parameters /Variables/InitialCondition/PFCFreezingIC

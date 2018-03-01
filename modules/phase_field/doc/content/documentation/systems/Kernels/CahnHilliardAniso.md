@@ -1,4 +1,5 @@
 # CahnHilliardAniso
+
 !syntax description /Kernels/CahnHilliardAniso
 
 This is anisotropic version of [`CahnHilliard`](/CahnHilliard.md), which expects a tensor valued mobility $M$.

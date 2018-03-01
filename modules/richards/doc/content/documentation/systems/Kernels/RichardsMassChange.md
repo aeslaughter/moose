@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # RichardsMassChange
+
 !syntax description /Kernels/RichardsMassChange
 
 !syntax parameters /Kernels/RichardsMassChange

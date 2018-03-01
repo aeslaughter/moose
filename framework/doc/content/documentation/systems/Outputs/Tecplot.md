@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # Tecplot
+
 !syntax description /Outputs/Tecplot
 
 !syntax parameters /Outputs/Tecplot

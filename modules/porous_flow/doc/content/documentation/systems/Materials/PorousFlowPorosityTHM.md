@@ -1,4 +1,5 @@
 # PorousFlowPorosityTHM
+
 !syntax description /Materials/PorousFlowPorosityTHM
 
 !syntax parameters /Materials/PorousFlowPorosityTHM

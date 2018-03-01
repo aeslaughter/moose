@@ -1,8 +1,9 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # BCs System
-!syntax objects /BCs
 
-!syntax subsystems /BCs
+!syntax list /BCs objects=True actions=False subsystems=False
 
-!syntax actions /BCs
+!syntax list /BCs objects=False actions=False subsystems=True
+
+!syntax list /BCs objects=False actions=True subsystems=False

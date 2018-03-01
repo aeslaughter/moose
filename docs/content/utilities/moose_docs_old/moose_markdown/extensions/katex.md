@@ -1,4 +1,5 @@
 # KatexExtension
+
 The [KaTeX](https://khan.github.io/KaTeX/) claims to be "the fastest math typesetting library for
 the web." The main alternative being [MathJax](https://www.mathjax.org/). The KaTeX package is
 used for MooseDocs for one reason: portability. MathJax is widely used, complete, and
@@ -11,12 +12,14 @@ building.
 A complete list of the supported LaTeX syntax is provided here: [LaTeX function support](https://khan.github.io/KaTeX/function-support.html).
 
 ## Inline Math
+
 The KaTeX extension uses `$` with markdown for inline equations. For example, `$y=ax+b$` produces
 the following: $y=ax+b$.
 
 ## Numbered Equations
+
 Number equations must be included within traditional latex begin and end equation. For example,
-the markdown in \ref{num-eqn} produces the following.
+the markdown in [num-eqn] produces the following.
 
 \begin{equation}
 a^2+b^2=c^2
@@ -30,8 +33,9 @@ a^2+b^2=c^2
 ```
 
 ## Non-numbered equations
+
 It is also possible to create display style equations without numbering using the traditional latex star version of begin/end
-equation. The following equation is generated from the markdown in \ref{no-num-eqn-0}.
+equation. The following equation is generated from the markdown in [no-num-eqn-0].
 
 \begin{equation*}
 y=e^{1/t}
@@ -44,7 +48,7 @@ a^2+b^2=c^2
 \end{equation}
 ```
 
-It is also possible do use two dollars signs (`$$`) enclosing the latex to create a non-numbered equation. The following equation is generated from the markdown in \ref{no-num-eqn-1}.
+It is also possible do use two dollars signs (`$$`) enclosing the latex to create a non-numbered equation. The following equation is generated from the markdown in [no-num-eqn-1].
 
 $$
 y = a + bx + cx^2 + dx^3
@@ -59,6 +63,7 @@ $$
 ```
 
 ## Errors
+
 If the supplied latex does not evaluate you will see the content rendered as red text within the
 browser, as shown below.
 

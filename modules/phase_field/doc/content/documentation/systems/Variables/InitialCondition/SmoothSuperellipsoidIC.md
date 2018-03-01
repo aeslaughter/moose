@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # SmoothSuperellipsoidIC
+
 !syntax description /Variables/InitialCondition/SmoothSuperellipsoidIC
 
 !syntax parameters /Variables/InitialCondition/SmoothSuperellipsoidIC

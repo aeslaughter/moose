@@ -1,4 +1,5 @@
 # PiecewiseLinear
+
 !syntax description /Functions/PiecewiseLinear
 
 ## Description
@@ -19,6 +20,7 @@ or z coordinate with the `axis` line.  If the function is queried outside of its
 x data, it returns the y value associated with the closest x data point.
 
 ## Example Input Syntax
+
 !listing test/tests/misc/check_error/function_file_test1.i block=Functions
 
 !syntax parameters /Functions/PiecewiseLinear

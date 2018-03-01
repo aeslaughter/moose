@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # CrossTermGradientFreeEnergy
+
 !syntax description /AuxKernels/CrossTermGradientFreeEnergy
 
 !syntax parameters /AuxKernels/CrossTermGradientFreeEnergy

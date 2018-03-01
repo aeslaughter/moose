@@ -1,7 +1,9 @@
 # Generalized Kelvin-Voigt Model
+
 !syntax description /Materials/GeneralizedKelvinVoigtModel
 
 ## Description
+
 The `GeneralizedKelvinVoigtModel` material represents a generalized Kelvin-Voigt model, that is, a material composed of $N$ Kelvin-Voigt units assembled in series.
 The material obeys to the following constitutive equation:
 \begin{equation}
@@ -20,7 +22,7 @@ The constitutive equations are solved using a semi-implicit single-step first-or
 \begin{equation}
 \alpha^{n}(t+\Delta t) = \alpha^{n}(t) + \Delta t \left[ \theta^n \dot{\alpha}^n (t+\Delta t) + \left( 1 - \theta^n \right) \dot{\alpha}^n (t)  \right]
 \end{equation}
-$\theta$ is a scalar between 0 (fully explicit) and 1 (fully implicit) that controls the time-stepping scheme (default value: 1). The value $\theta$ is determined by the "integration_rule" input parameter, which can take one of the forms shown in \ref{theta_formulations_gkvm}.
+$\theta$ is a scalar between 0 (fully explicit) and 1 (fully implicit) that controls the time-stepping scheme (default value: 1). The value $\theta$ is determined by the "integration_rule" input parameter, which can take one of the forms shown in [theta_formulations_gkvm].
 
 !table id=theta_formulations_gkvm caption=Integration Rule and Time-Stepping Scheme
 | Integration Rule | Value of $\theta$  | Unconditional Convergence |
@@ -41,7 +43,8 @@ For efficiency reasons, the $\alpha^{n}(t)$ and $\dot{\alpha}^{n}(t)$ are not st
     For the time-stepping scheme to be properly updated, a [LinearViscoelasticityManager](/LinearViscoelasticityManager.md) object must be included in the input file, and linked to the material
 
 ## Stress-Strain Computation
-The material is compatible with either the total small strain approximation, or either of the incremental strain approximation (incremental small strains or finite strains). The model requires the stress calculators listed in \ref{stress_calculators_gkvm}.
+
+The material is compatible with either the total small strain approximation, or either of the incremental strain approximation (incremental small strains or finite strains). The model requires the stress calculators listed in [stress_calculators_gkvm].
 
 !table id=stress_calculators_gkvm caption=Consistent Strain and Stress Calculators
 | Strain | Stress | Additional Materials |
@@ -60,6 +63,7 @@ If the user defines a driving eigenstrain, then the stress induced by this eigen
 \end{equation}
 
 ## Example Input File Syntax
+
 !listing modules/tensor_mechanics/test/tests/visco/visco_finite_strain.i block=Materials/kelvin_voigt
 
 with the required strain calculator

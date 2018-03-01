@@ -6,13 +6,14 @@ outside extensions enabled, as well as the custom extensions included with [MOOS
 including the custom syntax defined exclusively for documenting [MOOSE] source code.
 
 ## MooseDocs Extensions
+
 Much of the capability that enables the MooseDocs system to be useful for creating documentation
 stems from the set of custom extensions created. In general, these extensions add commands, which
 begin with an exclamation point (!) and some number of arguments. Therefore, each extension contains
 configuration options at the extension level and each command defined as a settings that can be
 applied.
 
-\ref{moose-extensions} summarizes all of the available MooseDocs extensions and provides a link to
+[moose-extensions] summarizes all of the available MooseDocs extensions and provides a link to
 another page that details the use and configuration of the extension as well as a list of any
 commands that add associated settings defined in the extension.
 
@@ -40,7 +41,7 @@ commands that add associated settings defined in the extension.
 
 The [python-markdown] package includes many useful, officially-supported extensions, as listed on the
 [available extensions](https://pythonhosted.org/Markdown/extensions/) page.
-\ref{official-extensions} is a list the extensions that are utilized on this website and will
+[official-extensions] is a list the extensions that are utilized on this website and will
 likely be of use as you develop your own  website, reports, or presentations.
 
 !table id=official-extensions caption=List of official [python-markdown] extensions useful for writing documentation.

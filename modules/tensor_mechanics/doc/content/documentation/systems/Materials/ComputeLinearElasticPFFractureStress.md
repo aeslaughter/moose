@@ -1,6 +1,7 @@
 <!-- MOOSE Documentation Stub: Remove this when content is added. -->
 
 # ComputeLinearElasticPFFractureStress
+
 !syntax description /Materials/ComputeLinearElasticPFFractureStress
 
 !syntax parameters /Materials/ComputeLinearElasticPFFractureStress

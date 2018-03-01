@@ -8,13 +8,13 @@ specifying the "id", as detailed on the [Numbered Floats](extensions/numbered_fl
 
 ## Images
 
-It is possible to include images with more flexibility than standard markdown. For example, \ref{memory_logger} was produced using the markdown listed in \ref{image-example}.
+It is possible to include images with more flexibility than standard markdown. For example, [memory_logger] was produced using the markdown listed in [image-example].
 
 The markdown keyword for MOOSE images is `!media` followed by the filename as shown below. This
 command, like most of the other special MOOSE markdown commands except arbitrary html attributes
 that are then applied to the "style" attribute.
 
-!listing id=image-example caption=Markdown used in this document to produce \ref{memory_logger}.
+!listing id=image-example caption=Markdown used in this document to produce [memory_logger].
 ```markdown
 !media media/memory_logger-plot_multi.png width=30% padding-left=20px float=right caption=The [memory_logger](/memory_logger.md) is a utility that allows the user to track the memory use of a simulation.
 ```
@@ -32,9 +32,10 @@ below.
 !extension-settings moose_video title=Video Command Settings (`!media`)
 
 ## Slideshows
-A sequence of images can be shown via a ["slider"](http://materializecss.com/media.html#slider). For example, \ref{slider-example} produces the slider shown in \ref{slider-figure}
 
-!listing id=slider-example caption=Syntax for the `!media` command that created \ref{slider-figure}.
+A sequence of images can be shown via a ["slider"](http://materializecss.com/media.html#slider). For example, [slider-example] produces the slider shown in [slider-figure]
+
+!listing id=slider-example caption=Syntax for the `!media` command that created [slider-figure].
 ```markdown
 !media style=width:50%;margin-left:auto;margin-right:auto; id=slider-figure caption=Example "slider".
     media/memory_logger-darkmode.png caption= Output of memory logging tool position=relative left=150px top=-150px
