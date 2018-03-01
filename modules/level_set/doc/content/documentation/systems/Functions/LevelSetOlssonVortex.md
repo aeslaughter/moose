@@ -2,7 +2,10 @@
 
 !syntax description /Functions/LevelSetOlssonVortex
 
-One of the most often utilized benchmark problems for the level set equation involve a vortex velocity field in two-dimensions that result in a full reversal of the advected variable after some time. The LevelSetOlssonVortex provides the velocity in the x and y direction ($v_x$ and $v_y$) defined by [citet:olsson2005conservative] as:
+One of the most often utilized benchmark problems for the level set equation involve a vortex
+velocity field in two-dimensions that result in a full reversal of the advected variable after some
+time. The LevelSetOlssonVortex provides the velocity in the x and y direction ($v_x$ and $v_y$)
+defined by [citet:olsson2005conservative] as:
 
 $$
 \begin{aligned}
@@ -23,5 +26,6 @@ Example Input Syntax
 
 ## References
 
+!bibtex
 \bibliographystyle{unsrt}
 \bibliography{level_set.bib}
