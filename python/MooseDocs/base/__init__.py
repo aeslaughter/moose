@@ -4,7 +4,7 @@ converting Markdown into HTML or LaTeX.
 """
 from lexers import Lexer, RecursiveLexer
 from readers import Reader, MarkdownReader
-from renderers import Renderer, HTMLRenderer, MaterializeRenderer, LatexRenderer
+from renderers import Renderer, HTMLRenderer, MaterializeRenderer, LatexRenderer, MooseDownRenderer
 from translators import Translator
 #import components
 #from components import Extension, RenderComponent, TokenComponent

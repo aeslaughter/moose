@@ -12,7 +12,7 @@ import mooseutils
 import MooseDocs
 from MooseDocs import common
 from MooseDocs.common import exceptions, mixins
-from MooseDocs.tree import html, latex, base, page
+from MooseDocs.tree import html, latex, base, page, markdown
 
 LOG = logging.getLogger(__name__)
 
@@ -23,6 +23,9 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
 
     #:[str] The name of the method to call on RendererComponent objects.
     METHOD = None
+
+    #:[str] Filename extension to be created.
+    EXTENSION = None
 
     def __init__(self, **kwargs):
         mixins.ConfigObject.__init__(self, **kwargs)
@@ -140,7 +143,7 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
         elif not hasattr(component, self.METHOD):
             msg = "The component object {} does not have a {} method."
             raise exceptions.MooseDocsException(msg, type(component), self.METHOD)
-        return getattr(component, self.METHOD)
+        return getattr(component, self.METHOD, self.defaultMethod)
 
     def __getFunction(self, token):
         """
@@ -156,6 +159,7 @@ class HTMLRenderer(Renderer):
     Converts AST into HTML.
     """
     METHOD = 'createHTML'
+    EXTENSION = 'html'
 
     def createRoot(self, config):
         return html.Tag(None, 'body', class_='moose-content')
@@ -578,6 +582,7 @@ class LatexRenderer(Renderer):
     Renderer for converting AST to LaTeX.
     """
     METHOD = 'createLatex'
+    EXTENSION = 'tex'
 
     def __init__(self, *args, **kwargs):
         self._packages = set()
@@ -607,3 +612,18 @@ class LatexRenderer(Renderer):
         Add a LaTeX package to the list of packages for rendering.
         """
         self._packages.update(args)
+
+
+class MooseDownRenderer(Renderer):
+    METHOD = 'createMooseDown'
+    EXTENSION = 'md'
+
+    def _method(self, component):
+        func = getattr(component, self.METHOD, self.defaultMethod)
+        return func
+
+    def createRoot(self, config):
+        return markdown.MarkdownNode(None, content=u'')
+
+    def defaultMethod(self, token, parent):
+        pass

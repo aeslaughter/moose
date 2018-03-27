@@ -3,5 +3,6 @@ import base
 import html
 import tokens
 import page
+import markdown
 import build_page_tree
 from app_syntax import app_syntax

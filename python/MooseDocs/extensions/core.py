@@ -9,7 +9,7 @@ import anytree
 
 from MooseDocs.base import components, renderers
 from MooseDocs.common import exceptions
-from MooseDocs.tree import tokens, html, latex
+from MooseDocs.tree import tokens, html, latex, markdown
 
 LOG = logging.getLogger(__name__)
 
@@ -337,6 +337,9 @@ class RenderHeading(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, self.LATEX_SECTIONS[token.level], start='\n', end='\n')
 
+    def createMooseDown(self, token, parent):
+        return markdown.Block(parent, content=u'{} '.format('#'*token.level))
+
 class RenderLabel(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
         pass
@@ -427,6 +430,10 @@ class RenderBreak(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.String(parent, content=u' ')
 
+    def createMooseDown(self, token, parent):
+        n = 2 if token.count > 1 else 1
+        return markdown.MarkdownNode(parent, content='\n'*n)
+
 class RenderLink(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'a', href=token.url, **token.attributes)
@@ -454,6 +461,9 @@ class RenderParagraph(components.RenderComponent):
         latex.CustomCommand(parent, 'par', start='\n', end='\n')
         return parent
 
+    #def createMooseDown(self, token, parent):
+    #    return markdown.MarkdownNode(parent, content=u'\n'*2)
+
 class RenderOrderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return html.Tag(parent, 'ol', **token.attributes)
@@ -466,6 +476,7 @@ class RenderOrderedList(components.RenderComponent):
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'enumerate')
+
 
 class RenderUnorderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -493,6 +504,9 @@ class RenderString(components.RenderComponent):
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use
         return latex.String(parent, content=token.content)
+
+    def createMooseDown(self, token, parent):
+        return markdown.MarkdownNode(parent, content=token.content)
 
 class RenderQuote(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use

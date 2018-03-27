@@ -35,11 +35,12 @@ DEFAULT_READER = 'MooseDocs.base.MarkdownReader'
 DEFAULT_RENDERER = 'MooseDocs.base.MarkdownReader'
 DEFAULT_TRANSLATOR = 'MooseDocs.base.Translator'
 
-def load_config(filename):
+def load_config(filename, **kwargs):
     """
     Read the config.yml file and create the Translator object.
     """
     config = yaml_load(filename, root=MooseDocs.ROOT_DIR)
+    config.update(kwargs)
 
     content = _yaml_load_content(config)
     extensions = _yaml_load_extensions(config)

@@ -23,6 +23,10 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         In general, it is not necessary to deal directly with the Reader beyond construction.
         The reader should be passed into the Translator, which handles all the necessary calls.
     """
+
+    #:[str] Extension of file being read.
+    EXTENSION = None
+
     def __init__(self, lexer, **kwargs):
         mixins.ConfigObject.__init__(self, **kwargs)
         mixins.ComponentObject.__init__(self)
@@ -106,11 +110,9 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
 class MarkdownReader(Reader):
     """
     Reader designed to work with the 'block' and 'inline' structure of markdown to html conversion.
-
-    TODO: Re-investigate removing the 'inline' vs. 'block', it really should be possible if
-          the regex's are designed and ordered correctly. Use 'content' or something similar for
-          recursion.
     """
+    EXTENSION = 'md'
+
     def __init__(self, **kwargs):
         Reader.__init__(self,
                         lexer=RecursiveLexer(MooseDocs.BLOCK, MooseDocs.INLINE),

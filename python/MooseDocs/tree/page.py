@@ -191,7 +191,9 @@ class MarkdownNode(FileNode):
     @property
     def destination(self):
         """The content destination (override)."""
-        return super(MarkdownNode, self).destination.replace('.md', '.html')
+        ext_read = self.translator.reader.EXTENSION
+        ext_write = self.translator.renderer.EXTENSION
+        return super(MarkdownNode, self).destination.replace(ext_read, ext_write)
 
     @property
     def ast(self):
