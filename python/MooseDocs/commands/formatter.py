@@ -15,6 +15,11 @@ def command_line_options(subparser, parent):
                         default=os.path.join(os.getenv('HOME'), '.local', 'share', 'moose', 'site'),
                         help="Destination for writing build content.")
 
+    parser.add_argument('-f', '--files', default=[], nargs='*',
+                        help="A list of file to build, this is useful for testing. The paths " \
+                             "should be as complete as necessary to make the name unique, just " \
+                             "as done within the markdown itself.")
+
     #parser.add_argument('-t', '--tokenize', action='store_true',
     #                    help="Enable profiling of tokenization.")
    # parser.add_argument('-r', '--render', action='store_true',
@@ -29,6 +34,6 @@ def main(options):
     translator = common.load_config(options.config, Renderer={'type':'MooseDocs.base.MooseDownRenderer'})
     translator.init(options.destination)
 
-    core = translator.root.findall('core.md')[0]
+    core = translator.root.findall('format.md')[0]
     core.build()
     #print core.ast

@@ -338,7 +338,7 @@ class RenderHeading(components.RenderComponent):
         return latex.Command(parent, self.LATEX_SECTIONS[token.level], start='\n', end='\n')
 
     def createMooseDown(self, token, parent):
-        return markdown.Block(parent, content=u'{} '.format('#'*token.level))
+        return markdown.Block(parent, content=u'{} '.format('#'*token.level), **token.attributes)
 
 class RenderLabel(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
