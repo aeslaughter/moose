@@ -94,7 +94,7 @@ class Code(components.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})^'         # start of string or empty line
                     r'`{3}(?P<settings>.*?)$' # start of code with key=value settings
                     r'(?P<code>.*?)^`{3}'     # code and end of fenced block
-                    r'(?=\n*\Z|\n{2,})',         # end of string or empty line
+                    r'(?=\n*\Z|\n{2,})',      # end of string or empty line
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
     @staticmethod
@@ -358,6 +358,14 @@ class RenderCode(components.RenderComponent):
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'verbatim', string=token.code)
+
+    def createMooseDown(self, token, parent):
+        markdown.MarkdownNode(parent, content=u'```{}'.format(token.language))
+        for key, value in token.attributes.iteritems():
+            if value:
+                markdown.MarkdownNode(parent, content=u' {}={}'.format(key, value))
+        markdown.MarkdownNode(parent, content=token.code)
+        markdown.MarkdownNode(parent, content=u'```\n\n')
 
 class RenderShortcutLink(components.RenderComponent):
     def __init__(self, *args, **kwargs):

@@ -25,10 +25,8 @@ class MarkdownNode(NodeBase):
             out += child.write()
         return out
 
-
     def length(self):
        return len(self.content)
-
 
 class Block(MarkdownNode):
     PROPERTIES = [Property('textwrap', ptype=int, default=100)]
