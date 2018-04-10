@@ -154,7 +154,7 @@ class Heading(Token):
 
         id_ = self.get('id', None)
         if id_:
-            Shortcut(self.root, key=id_, link=u'#{}'.format(id_), token=self)
+            Shortcut(self.root, auto=True, key=id_, link=u'#{}'.format(id_), token=self)
 
 class Paragraph(Token):
     """
@@ -206,9 +206,12 @@ class Shortcut(Token):
                       is also used for the shortcut text, see RenderShortcutLink.
         link[unicode]: (Required) The content to which the shortcut links against, e.g., the value
                        of 'href' for HTML.
+        auto[bool]: (Default: False) When True the link is considered auto generated, thus the
+                    short cut is excluded from the MooseDown formatter.
     """
     PROPERTIES = [Property('key', required=True, ptype=unicode),
-                  Property('link', required=True, ptype=unicode)]
+                  Property('link', required=True, ptype=unicode),
+                  Property('auto', default=False, ptype=bool)]
 
 class ShortcutLink(Token):
     PROPERTIES = [Property('key', ptype=unicode, required=True)]

@@ -29,6 +29,8 @@ class PanopticExtension(command.CommandExtension):
         for key, value in shortcuts.iteritems():
             if isinstance(value, dict):
                 for k, v in value.iteritems():
-                    tokens.Shortcut(ast, key=unicode(k), link=unicode(v), string=unicode(k))
+                    tokens.Shortcut(ast, auto=True, key=unicode(k), link=unicode(v),
+                                    string=unicode(k))
             else:
-                tokens.Shortcut(ast, key=unicode(key), link=unicode(value), string=unicode(key))
+                tokens.Shortcut(ast, auto=True, key=unicode(key), link=unicode(value),
+                                string=unicode(key))
