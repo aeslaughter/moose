@@ -31,10 +31,10 @@ def main(options):
     log = logging.getLogger(__name__)
 
 
-    translator = common.load_config(options.config, Renderer={'type':'MooseDocs.base.MooseDownRenderer'})
+    translator, _ = common.load_config(options.config, Renderer={'type':'MooseDocs.base.MooseDownRenderer'})
     translator.init(options.destination)
 
     core = translator.root.findall('format.md')[0]
     core.build()
-    #print core.ast
+    print core.ast
     print core.result

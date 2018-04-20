@@ -12,28 +12,48 @@ import textwrap
 
 from base import NodeBase, Property
 
+class Line(NodeBase):
+    PROPERTIES = [Property('content', ptype=unicode),
+                  Property('initial_indent', default='', ptype=unicode),
+                  Property('subsequent_indent', default='', ptype=unicode)]
+
+    def __init__(self, *args, **kwargs):
+        NodeBase.__init__(self, *args, **kwargs)
+        self._wrapper = textwrap.TextWrapper()
+    def write(self):
+
+
+
+
+
 class MarkdownNode(NodeBase):
-    PROPERTIES = [Property('content', ptype=unicode, required=False, default=u''),
+    PROPERTIES = [Property('content', ptype=list, required=False, default=u''),
                   Property('indent', ptype=int, default=0)]
 
 
     def write(self):
         out = self.content
         for child in self.children:
-            out += ' '*self.indent + child.write()
-        return out
+            out += child.write()
+        return '\n'.join(out)
 
     def length(self):
        return len(self.content) + self.indent
 
+    @property
     def indent(self):
         return sum([a.indent for a in self.anscestors])
 
+"""
 class Block(MarkdownNode):
     PROPERTIES = [Property('textwrap', ptype=int, default=100),
                   Property('count', ptype=int, default=2)]
 
     def write(self):
+        lines = []
+
+
+        width = self.textwrap - self.indent
 
         # If the rendered output fits on a line, just write it out
         # TODO: Make this configure option
@@ -41,8 +61,9 @@ class Block(MarkdownNode):
         for key, value in self.attributes.iteritems():
             if value:
                 output += u' {}={}'.format(key, value)
-        if len(output) < self.textwrap:
-            return '{}\n\n'.format(output)
+
+        if len(output) < width:
+            return [output, '', '']#{}\n\n'.format(output)
 
         # Wrap content
         loc = self.length()
@@ -53,12 +74,12 @@ class Block(MarkdownNode):
 
             #print loc, self.textwrap, child.content
             loc += child.length()
-            if loc > self.textwrap:
+            if loc > width:
                 space.content = u'\n{}'.format(' '*self.length())
                 loc = child.length()# + child.length()
 
         # One setting per line
-        wrapper = textwrap.TextWrapper(width=self.textwrap)
+        wrapper = textwrap.TextWrapper(width=width)
         for key, value in self.attributes.iteritems():
             if not value:
                 continue
@@ -102,8 +123,9 @@ class ListItem(MarkdownNode):
 
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
-        #self.indent = len(self.prefix)
-
+        self.indent = len(self.prefix)
+"""
+    """
     def write(self):
         for i, child in enumerate(self.children):
             if i == 0:
@@ -112,3 +134,4 @@ class ListItem(MarkdownNode):
                 child.content = u' '*len(self.prefix)
                 child.count = 0
         return MarkdownNode.write(self)
+    """

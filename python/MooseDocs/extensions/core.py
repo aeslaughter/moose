@@ -348,8 +348,8 @@ class RenderLabel(components.RenderComponent):
         label = token.get('id', re.sub(r' +', r'-', token.text.lower()))
         return latex.Command(parent, 'label', string=label)
 
-    def createMooseDown(self, token, parent): #pylint: disable=no-self-use,unused-argument
-        pass
+    #def createMooseDown(self, token, parent): #pylint: disable=no-self-use,unused-argument
+    #    pass
 
 class RenderCode(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -362,13 +362,13 @@ class RenderCode(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'verbatim', string=token.code)
 
-    def createMooseDown(self, token, parent):
-        markdown.String(parent, content=u'```{}'.format(token.language))
-        for key, value in token.attributes.iteritems():
-            if value:
-                markdown.String(parent, content=u' {}={}'.format(key, value))
-        markdown.String(parent, content=token.code)
-        markdown.String(parent, content=u'```\n\n')
+    #def createMooseDown(self, token, parent):
+    #    markdown.String(parent, content=u'```{}'.format(token.language))
+    #    for key, value in token.attributes.iteritems():
+    #        if value:
+    #            markdown.String(parent, content=u' {}={}'.format(key, value))
+    #    markdown.String(parent, content=token.code)
+    #    markdown.String(parent, content=u'```\n\n')
 
 class RenderShortcutLink(components.RenderComponent):
     def __init__(self, *args, **kwargs):
@@ -428,10 +428,10 @@ class RenderShortcut(components.RenderComponent):
     def createLatex(self, *args):
         pass
 
-    def createMooseDown(self, token, parent):
-        if not token.auto:
-            markdown.String(markdown.Block(parent),
-                            content=u'[{}]: {}'.format(token.key, token.link))
+    #def createMooseDown(self, token, parent):
+    #    if not token.auto:
+    #        markdown.String(markdown.Block(parent),
+    #                        content=u'[{}]: {}'.format(token.key, token.link))
 
 class RenderMonospace(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -444,13 +444,13 @@ class RenderMonospace(components.RenderComponent):
         latex.String(code, content=token.code)
         return
 
-    def createMooseDown(self, token, parent):
-        markdown.String(parent, content=u'`')
-        for i, child in enumerate(token.code.split()):
-            if i > 0:
-                markdown.Space(parent)
-            markdown.String(parent, content=child)
-        markdown.String(parent, content=u'`')
+    #def createMooseDown(self, token, parent):
+    #    markdown.String(parent, content=u'`')
+    #    for i, child in enumerate(token.code.split()):
+    #        if i > 0:
+    #            markdown.Space(parent)
+    #        markdown.String(parent, content=child)
+    #    markdown.String(parent, content=u'`')
 
 class RenderBreak(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
@@ -496,8 +496,8 @@ class RenderParagraph(components.RenderComponent):
         latex.CustomCommand(parent, 'par', start='\n', end='\n')
         return parent
 
-    def createMooseDown(self, token, parent):
-        return markdown.Block(parent)
+    #def createMooseDown(self, token, parent):
+    #    return markdown.Block(parent)
 
 class RenderOrderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
@@ -512,8 +512,8 @@ class RenderOrderedList(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'enumerate')
 
-    def createMooseDown(self, token, parent):
-        return markdown.List(parent, indent=3)
+    #def createMooseDown(self, token, parent):
+    #    return markdown.List(parent, indent=3)
 
 class RenderUnorderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -527,8 +527,8 @@ class RenderUnorderedList(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'itemize')
 
-    def createMooseDown(self, token, parent):
-        return markdown.List(parent, indent=2)
+    #def createMooseDown(self, token, parent):
+    #    return markdown.List(parent, indent=2)
 
 class RenderListItem(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -538,11 +538,11 @@ class RenderListItem(components.RenderComponent):
         latex.CustomCommand(parent, 'item', start='\n')
         return parent
 
-    def createMooseDown(self, token, parent):
-        if isinstance(token.parent, tokens.UnorderedList):
-            return markdown.ListItem(parent, prefix=u'- ')
-        else:
-            return markdown.ListItem(parent, prefix=u'1. ')
+    #def createMooseDown(self, token, parent):
+    #    if isinstance(token.parent, tokens.UnorderedList):
+    #        return markdown.ListItem(parent, prefix=u'- ')
+    #    else:
+    #        return markdown.ListItem(parent, prefix=u'1. ')
 
 class RenderString(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -551,10 +551,10 @@ class RenderString(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use
         return latex.String(parent, content=token.content)
 
-    def createMooseDown(self, token, parent):
-        if isinstance(token, tokens.Space):
-            return markdown.Space(parent)
-        return markdown.String(parent, content=token.content)
+    #def createMooseDown(self, token, parent):
+    #    if isinstance(token, tokens.Space):
+    #        return markdown.Space(parent)
+    #    return markdown.String(parent, content=token.content)
 
 class RenderQuote(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
