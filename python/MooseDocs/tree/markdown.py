@@ -30,7 +30,6 @@ class Line(NodeBase):
         self._wrapper.subsequent_indent = u'{}{}'.format(margin, self.subsequent_indent)
         self._wrapper.width = self.width
 
-        #print [child.content for child in self.children if child.content]
         items = [child.content for child in self.children if child.content]
         if items:
             content = u''.join([child.content for child in self.children if child.content])
@@ -48,6 +47,18 @@ class Break(NodeBase):
 
     def write(self):
         return u'\n'*self.count
+
+class Block(Line):
+
+    def write(self):
+
+        content = Line.write(self)
+
+        single = content.replace('\n', ' ')
+        if len(single) < self.width - self.margin:
+            return single
+
+        return content
 
 #class Space(NodeBase):
 #    def write(self):
