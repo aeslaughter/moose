@@ -9,14 +9,17 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 #pylint: enable=missing-docstring
 import textwrap
+import re
 
 from base import NodeBase, Property
 
-class Line(NodeBase):
-    PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
-                  Property('subsequent_indent', default=u'', ptype=unicode),
-                  Property('width', default=100, ptype=int),
+class MarkdownNode(NodeBase):
+    PROPERTIES = [Property('width', default=100, ptype=int),
                   Property('margin', default=0, ptype=int)]
+
+class Line(MarkdownNode):
+    PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
+                  Property('subsequent_indent', default=u'', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         NodeBase.__init__(self, *args, **kwargs)
@@ -48,13 +51,14 @@ class Break(NodeBase):
     def write(self):
         return u'\n'*self.count
 
-class Block(Line):
+class Block(MarkdownNode):
 
     def write(self):
 
-        content = Line.write(self)
+        content = NodeBase.write(self)
 
-        single = content.replace('\n', ' ')
+        single = re.sub(r'\n^\s+', ' ', content, flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+        print 'CONTENT:', repr(content), repr(single)
         if len(single) < self.width - self.margin:
             return single
 

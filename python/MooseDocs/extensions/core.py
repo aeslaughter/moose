@@ -339,12 +339,14 @@ class RenderHeading(components.RenderComponent):
 
     def createMooseDown(self, token, parent):
         n = token.level + 1
-        head = markdown.Line(parent,
+        block = markdown.Block(parent)
+
+        head = markdown.Line(block,
                              initial_indent=u'{} '.format('#'*token.level),
                              subsequent_indent=u' '*n)
 
         for key, value in token.attributes.iteritems():
-            attr = markdown.Line(parent,
+            attr = markdown.Line(block,
                                  initial_indent=u'{}{}='.format(u' '*n, key),
                                  subsequent_indent=u' '*(len(key) + n + 1))
             markdown.String(attr, content=value)
