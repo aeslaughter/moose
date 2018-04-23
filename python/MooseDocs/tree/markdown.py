@@ -13,19 +13,49 @@ import textwrap
 from base import NodeBase, Property
 
 class Line(NodeBase):
-    PROPERTIES = [Property('content', ptype=unicode),
-                  Property('initial_indent', default='', ptype=unicode),
-                  Property('subsequent_indent', default='', ptype=unicode)]
+    PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
+                  Property('subsequent_indent', default=u'', ptype=unicode),
+                  Property('width', default=100, ptype=int),
+                  Property('margin', default=0, ptype=int)]
 
     def __init__(self, *args, **kwargs):
         NodeBase.__init__(self, *args, **kwargs)
         self._wrapper = textwrap.TextWrapper()
+
+
     def write(self):
 
+        margin = u' '*self.margin
+        self._wrapper.initial_indent = u'{}{}'.format(margin, self.initial_indent)
+        self._wrapper.subsequent_indent = u'{}{}'.format(margin, self.subsequent_indent)
+        self._wrapper.width = self.width
+
+        #print [child.content for child in self.children if child.content]
+        items = [child.content for child in self.children if child.content]
+        if items:
+            content = u''.join([child.content for child in self.children if child.content])
+            return u'\n'.join(self._wrapper.wrap(content)) + u'\n'
+        else:
+            return ''
+
+class String(NodeBase):
+    PROPERTIES = [Property('content', default=u'', ptype=unicode)]
+    def write(self):
+        return self.content
+
+class Break(NodeBase):
+    PROPERTIES = [Property('count', default=1, ptype=int)]
+
+    def write(self):
+        return u'\n'*self.count
+
+#class Space(NodeBase):
+#    def write(self):
+#        return u' '
 
 
 
-
+"""
 class MarkdownNode(NodeBase):
     PROPERTIES = [Property('content', ptype=list, required=False, default=u''),
                   Property('indent', ptype=int, default=0)]
@@ -43,6 +73,7 @@ class MarkdownNode(NodeBase):
     @property
     def indent(self):
         return sum([a.indent for a in self.anscestors])
+"""
 
 """
 class Block(MarkdownNode):
@@ -125,13 +156,13 @@ class ListItem(MarkdownNode):
         MarkdownNode.__init__(self, *args, **kwargs)
         self.indent = len(self.prefix)
 """
-    """
-    def write(self):
-        for i, child in enumerate(self.children):
-            if i == 0:
-                child.content = self.prefix
-            else:
-                child.content = u' '*len(self.prefix)
-                child.count = 0
-        return MarkdownNode.write(self)
-    """
+"""
+def write(self):
+for i, child in enumerate(self.children):
+if i == 0:
+child.content = self.prefix
+else:
+child.content = u' '*len(self.prefix)
+child.count = 0
+return MarkdownNode.write(self)
+"""
