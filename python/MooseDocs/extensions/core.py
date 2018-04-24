@@ -542,8 +542,8 @@ class RenderOrderedList(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'enumerate')
 
-    #def createMooseDown(self, token, parent):
-    #    return markdown.List(parent, indent=3)
+    def createMooseDown(self, token, parent):
+        return markdown.MarkdownNode(parent, margin=3)
 
 class RenderUnorderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -557,8 +557,8 @@ class RenderUnorderedList(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'itemize')
 
-    #def createMooseDown(self, token, parent):
-    #    return markdown.List(parent, indent=2)
+    def createMooseDown(self, token, parent):
+        return markdown.MarkdownNode(parent, margin=2)
 
 class RenderListItem(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -568,7 +568,26 @@ class RenderListItem(components.RenderComponent):
         latex.CustomCommand(parent, 'item', start='\n')
         return parent
 
-    #def createMooseDown(self, token, parent):
+    def createMooseDown(self, token, parent):
+
+        item = markdown.MarkdownNode(parent)
+        #markdown.String(item, content=u'- ')
+        for child in token.children:
+            self.translator.renderer.process(item, child)
+
+        for child in item.children:
+            child.margin = 2
+
+        item.children[0].margin = 0
+        item.children[0].initial_indent = u'- '
+        item.children[0].subsequent_indent = u'  '
+        print item
+
+        return None
+
+        #return markdown.Line(parent,
+        #                     initial_indent=u'- ',
+        #                     subsequent_indent=u'  ')
     #    if isinstance(token.parent, tokens.UnorderedList):
     #        return markdown.ListItem(parent, prefix=u'- ')
     #    else:

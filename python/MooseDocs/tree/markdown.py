@@ -26,7 +26,7 @@ class MarkdownNode(NodeBase):
 
     @property
     def margin(self):
-        if self.parent:
+        if self.parent is not None:
             return NodeBase.margin.fget(self) + self.parent.margin
         return NodeBase.margin.fget(self)
 

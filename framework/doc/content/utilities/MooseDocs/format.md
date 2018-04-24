@@ -16,4 +16,10 @@ that has
 a link to [google]. The lines are generally short, except for this one which is too long. All of this content should
 wrap.
 
+- This is a list item, this item has a lot of content that makes it long so that it should be wrapped automatically by the format command.
+
+  This list also has a second paragraph.
+
+  - Nested, what are the chances.
+
 [google]: https://www.google.com
