@@ -92,7 +92,8 @@ class CoreExtension(components.Extension):
 #TODO: Rename these classes to use the word compoment so they don't get mixed with tokens names
 class Code(components.TokenComponent):
     RE = re.compile(r'(?:\A|\n{2,})^'         # start of string or empty line
-                    r'`{3}(?P<settings>.*?)$' # start of code with key=value settings
+                    r'`{3}(?P<settings>.*?)'  # settings
+                    r'(?=^\S|^\n)(?:^\n)?'    # continue until empty line or line starting with text
                     r'(?P<code>.*?)^`{3}'     # code and end of fenced block
                     r'(?=\n*\Z|\n{2,})',      # end of string or empty line
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
@@ -363,8 +364,8 @@ class RenderLabel(components.RenderComponent):
         label = token.get('id', re.sub(r' +', r'-', token.text.lower()))
         return latex.Command(parent, 'label', string=label)
 
-    #def createMooseDown(self, token, parent): #pylint: disable=no-self-use,unused-argument
-    #    pass
+    def createMooseDown(self, token, parent): #pylint: disable=no-self-use,unused-argument
+        pass
 
 class RenderCode(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -377,13 +378,24 @@ class RenderCode(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'verbatim', string=token.code)
 
-    #def createMooseDown(self, token, parent):
-    #    markdown.String(parent, content=u'```{}'.format(token.language))
-    #    for key, value in token.attributes.iteritems():
-    #        if value:
-    #            markdown.String(parent, content=u' {}={}'.format(key, value))
-    #    markdown.String(parent, content=token.code)
-    #    markdown.String(parent, content=u'```\n\n')
+    def createMooseDown(self, token, parent):
+
+        block = markdown.Block(parent)
+
+        top = markdown.Line(block, string=token.language,
+                            initial_indent=u'```',
+                            subsequent_indent=u' '*3)
+
+        for key, value in token.attributes.iteritems():
+            attr = markdown.Line(block,
+                                 initial_indent=u'{}{}='.format(u' '*3, key),
+                                 subsequent_indent=u' '*(len(key) + 4))
+            markdown.String(attr, content=value)
+
+        markdown.Break(parent, count=1)
+        markdown.String(parent, content=token.code)
+        markdown.Line(parent, string=u'```')
+        markdown.Break(parent, count=1)
 
 class RenderShortcutLink(components.RenderComponent):
     def __init__(self, *args, **kwargs):
@@ -419,10 +431,9 @@ class RenderShortcutLink(components.RenderComponent):
         return cmd
 
     def createMooseDown(self, token, parent):
-        pass
-        #markdown.String(parent, content=u'[')
-        #markdown.String(parent, content=token.key)
-        #markdown.String(parent, content=u']')
+        markdown.String(parent, content=u'[')
+        markdown.String(parent, content=token.key)
+        markdown.String(parent, content=u']')
 
     def getShortcut(self, token):
         if token.key in self.__cache:
@@ -444,10 +455,11 @@ class RenderShortcut(components.RenderComponent):
     def createLatex(self, *args):
         pass
 
-    #def createMooseDown(self, token, parent):
-    #    if not token.auto:
-    #        markdown.String(markdown.Block(parent),
-    #                        content=u'[{}]: {}'.format(token.key, token.link))
+    def createMooseDown(self, token, parent):
+        if not token.auto:
+            markdown.String(parent,
+                            content=u'[{}]: {}'.format(token.key, token.link))
+            markdown.Break(parent)
 
 class RenderMonospace(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -460,13 +472,13 @@ class RenderMonospace(components.RenderComponent):
         latex.String(code, content=token.code)
         return
 
-    #def createMooseDown(self, token, parent):
-    #    markdown.String(parent, content=u'`')
-    #    for i, child in enumerate(token.code.split()):
-    #        if i > 0:
-    #            markdown.Space(parent)
-    #        markdown.String(parent, content=child)
-    #    markdown.String(parent, content=u'`')
+    def createMooseDown(self, token, parent):
+        markdown.String(parent, content=u'`')
+        for i, child in enumerate(token.code.split()):
+            if i > 0:
+                markdown.String(parent, content=u' ')
+            markdown.String(parent, content=child)
+        markdown.String(parent, content=u'`')
 
 class RenderBreak(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
@@ -476,8 +488,7 @@ class RenderBreak(components.RenderComponent):
         return latex.String(parent, content=u' ')
 
     def createMooseDown(self, token, parent):
-        pass
-        #return markdown.Space(parent)
+        return markdown.String(parent, content=u' ')
 
 class RenderLink(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -499,12 +510,11 @@ class RenderLink(components.RenderComponent):
         return arg1
 
     def createMooseDown(self, token, parent):
-        pass
-        #markdown.String(parent, content=u'[')
-        #for child in token.children:
-        #    self.translator.renderer.process(parent, child)
-        #markdown.String(parent, content=u']')
-        #markdown.String(parent, content=u'({})'.format(token.url))
+        markdown.String(parent, content=u'[')
+        for child in token.children:
+            self.translator.renderer.process(parent, child)
+        markdown.String(parent, content=u']')
+        markdown.String(parent, content=u'({})'.format(token.url))
 
 class RenderParagraph(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument
@@ -514,8 +524,10 @@ class RenderParagraph(components.RenderComponent):
         latex.CustomCommand(parent, 'par', start='\n', end='\n')
         return parent
 
-    #def createMooseDown(self, token, parent):
-    #    return markdown.Block(parent)
+    def createMooseDown(self, token, parent):
+        par =  markdown.Line(parent)
+        markdown.Break(parent)
+        return par
 
 class RenderOrderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use,unused-argument

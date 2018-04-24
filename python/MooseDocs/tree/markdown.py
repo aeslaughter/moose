@@ -15,14 +15,27 @@ from base import NodeBase, Property
 
 class MarkdownNode(NodeBase):
     PROPERTIES = [Property('width', default=100, ptype=int),
-                  Property('margin', default=0, ptype=int)]
+                  Property('margin', default=0, ptype=int),
+                  Property('string', ptype=unicode)]
+
+    def __init__(self, *args, **kwargs):
+        NodeBase.__init__(self, *args, **kwargs)
+
+        if self.string is not None:
+            String(self, content=self.string)
+
+    @property
+    def margin(self):
+        if self.parent:
+            return NodeBase.margin.fget(self) + self.parent.margin
+        return NodeBase.margin.fget(self)
 
 class Line(MarkdownNode):
     PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
                   Property('subsequent_indent', default=u'', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
-        NodeBase.__init__(self, *args, **kwargs)
+        MarkdownNode.__init__(self, *args, **kwargs)
         self._wrapper = textwrap.TextWrapper()
 
 
@@ -40,6 +53,11 @@ class Line(MarkdownNode):
         else:
             return ''
 
+class FixedLine(MarkdownNode):
+    def write(self):
+        margin = u' '*self.margin
+        return re.sub(r'^', margin, self.content, flags=re.MULTILINE|re.UNICODE)
+
 class String(NodeBase):
     PROPERTIES = [Property('content', default=u'', ptype=unicode)]
     def write(self):
@@ -55,10 +73,10 @@ class Block(MarkdownNode):
 
     def write(self):
 
-        content = NodeBase.write(self)
+        content = MarkdownNode.write(self)
 
         single = re.sub(r'\n^\s+', ' ', content, flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-        print 'CONTENT:', repr(content), repr(single)
+        #print 'CONTENT:', repr(content), repr(single)
         if len(single) < self.width - self.margin:
             return single
 
