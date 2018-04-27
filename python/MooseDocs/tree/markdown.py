@@ -14,188 +14,106 @@ import re
 from base import NodeBase, Property
 
 class MarkdownNode(NodeBase):
-    PROPERTIES = [Property('width', default=100, ptype=int),
-                  Property('margin', default=0, ptype=int),
-                  Property('string', ptype=unicode)]
-
     def __init__(self, *args, **kwargs):
         NodeBase.__init__(self, *args, **kwargs)
+
+    def write(self):
+        content = u''
+        for child in self.children:
+            content += child.write()
+        return content
+
+class Page(MarkdownNode):
+    PROPERTIES = [Property('width', default=100, ptype=int),
+                  Property('indent', default=0, ptype=int)]
+
+    def __init__(self, *args, **kwargs):
+        MarkdownNode.__init__(self, *args, **kwargs)
+
+        if (self.parent is not None) and (not isinstance(self, Page)):
+            raise exceptions.MooseDocsException("Page objects must be children of other Page objects.")
+
+        self.width -= self.indent
+
+    def write(self):
+        content = MarkdownNode.write(self)
+        content = re.sub(r'^', u' '*self.indent, content, flags=re.MULTILINE)
+        print repr(content)
+        return content
+
+class Block(MarkdownNode):
+    def __init__(self, *args, **kwargs):
+        MarkdownNode.__init__(self, *args, **kwargs)
+        if not isinstance(self.parent, Page):
+            raise exceptions.MooseDocsException("Block objects must be children of Page objects.")
+
+    def write(self):
+        return u'\n' + MarkdownNode.write(self)
+
+    @property
+    def width(self):
+        return self.parent.width
+
+class LineGroup(MarkdownNode):
+    def __init__(self, *args, **kwargs):
+        MarkdownNode.__init__(self, *args, **kwargs)
+        if not isinstance(self.parent, Block):
+            raise exceptions.MooseDocsException("LineGroup objects must be children of Block objects.")
+
+    @property
+    def width(self):
+        return self.parent.width
+
+    def write(self):
+        content = MarkdownNode.write(self)
+        line = re.sub(r'\s*\n\s*', u' ', content).strip()
+        if len(line) < self.width:
+            return line
+        return content
+
+class Line(MarkdownNode):
+    PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
+                  Property('subsequent_indent', default=u'', ptype=unicode),
+                  Property('padding', default=0, ptype=int),
+                  Property('string', ptype=unicode)]
+
+    @property
+    def width(self):
+        return self.parent.width
+
+    def __init__(self, *args, **kwargs):
+
+        self._wrapper = textwrap.TextWrapper()
+
+        MarkdownNode.__init__(self, *args, **kwargs)
+
+        if not isinstance(self.parent, (Block, LineGroup)):
+            raise exceptions.MooseDocsException("Line objects must be children of Block or LineGroup objects.")
 
         if self.string is not None:
             String(self, content=self.string)
 
-    @property
-    def margin(self):
-        if self.parent is not None:
-            return NodeBase.margin.fget(self) + self.parent.margin
-        return NodeBase.margin.fget(self)
-
-class Line(MarkdownNode):
-    PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
-                  Property('subsequent_indent', default=u'', ptype=unicode)]
-
-    def __init__(self, *args, **kwargs):
-        MarkdownNode.__init__(self, *args, **kwargs)
-        self._wrapper = textwrap.TextWrapper()
-
-
     def write(self):
-
-        margin = u' '*self.margin
-        self._wrapper.initial_indent = u'{}{}'.format(margin, self.initial_indent)
-        self._wrapper.subsequent_indent = u'{}{}'.format(margin, self.subsequent_indent)
-        self._wrapper.width = self.width
 
         items = [child.content for child in self.children if child.content]
-        if items:
-            content = u''.join([child.content for child in self.children if child.content])
-            return u'\n'.join(self._wrapper.wrap(content)) + u'\n'
-        else:
-            return ''
+        if self.width > 0:
+            margin = u' '*self.padding
+            self._wrapper.initial_indent = u'{}{}'.format(margin, self.initial_indent)
+            self._wrapper.subsequent_indent = u'{}{}'.format(margin, self.subsequent_indent)
+            self._wrapper.width = self.width
 
-class FixedLine(MarkdownNode):
-    def write(self):
-        margin = u' '*self.margin
-        return re.sub(r'^', margin, self.content, flags=re.MULTILINE|re.UNICODE)
+            if items:
+                content = u''.join(items)
+                return u'\n' + u'\n'.join(self._wrapper.wrap(content))
+            else:
+                return ''
+        else:
+            return u'\n' + u' '.join(items)
 
 class String(NodeBase):
     PROPERTIES = [Property('content', default=u'', ptype=unicode)]
-    def write(self):
-        return self.content
 
-class Break(NodeBase):
-    PROPERTIES = [Property('count', default=1, ptype=int)]
-
-    def write(self):
-        return u'\n'*self.count
-
-class Block(MarkdownNode):
-
-    def write(self):
-
-        content = MarkdownNode.write(self)
-
-        single = re.sub(r'\n^\s+', ' ', content, flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-        #print 'CONTENT:', repr(content), repr(single)
-        if len(single) < self.width - self.margin:
-            return single
-
-        return content
-
-#class Space(NodeBase):
-#    def write(self):
-#        return u' '
-
-
-
-"""
-class MarkdownNode(NodeBase):
-    PROPERTIES = [Property('content', ptype=list, required=False, default=u''),
-                  Property('indent', ptype=int, default=0)]
 
 
     def write(self):
-        out = self.content
-        for child in self.children:
-            out += child.write()
-        return '\n'.join(out)
-
-    def length(self):
-       return len(self.content) + self.indent
-
-    @property
-    def indent(self):
-        return sum([a.indent for a in self.anscestors])
-"""
-
-"""
-class Block(MarkdownNode):
-    PROPERTIES = [Property('textwrap', ptype=int, default=100),
-                  Property('count', ptype=int, default=2)]
-
-    def write(self):
-        lines = []
-
-
-        width = self.textwrap - self.indent
-
-        # If the rendered output fits on a line, just write it out
-        # TODO: Make this configure option
-        output = MarkdownNode.write(self)
-        for key, value in self.attributes.iteritems():
-            if value:
-                output += u' {}={}'.format(key, value)
-
-        if len(output) < width:
-            return [output, '', '']#{}\n\n'.format(output)
-
-        # Wrap content
-        loc = self.length()
-        space = None
-        for child in self.children:
-            if isinstance(child, Space):
-                space = child
-
-            #print loc, self.textwrap, child.content
-            loc += child.length()
-            if loc > width:
-                space.content = u'\n{}'.format(' '*self.length())
-                loc = child.length()# + child.length()
-
-        # One setting per line
-        wrapper = textwrap.TextWrapper(width=width)
-        for key, value in self.attributes.iteritems():
-            if not value:
-                continue
-
-            n = len(key) + 1
-            wrapper.initial_indent = ' '*self.length()
-            wrapper.subsequent_indent = ' '*(self.length() + n)
-
-            out = '\n'.join(wrapper.wrap(u'{}={}'.format(key, value)))
-            Break(self, count=1)
-            MarkdownNode(self, content=out)
-
-        if self.count > 0:
-            Break(self, count=self.count)
-        return '{}'.format(MarkdownNode.write(self))
-
-class String(MarkdownNode):
-    pass
-
-class Space(MarkdownNode):
-    def __init__(self, *args, **kwargs):
-        MarkdownNode.__init__(self, *args, content=u' ', **kwargs)
-
-class Break(MarkdownNode):
-    PROPERTIES = [Property('count', ptype=int, default=1)]
-
-    def __init__(self, *args, **kwargs):
-        MarkdownNode.__init__(self, *args, content=u'\n', **kwargs)
-
-    def write(self):
-        out = self.content * self.count
-        for child in self.children:
-            out += child.write()
-        return out
-
-class List(MarkdownNode):
-    pass
-
-class ListItem(MarkdownNode):
-    PROPERTIES = [Property('prefix', ptype=unicode, required=True)]
-
-    def __init__(self, *args, **kwargs):
-        MarkdownNode.__init__(self, *args, **kwargs)
-        self.indent = len(self.prefix)
-"""
-"""
-def write(self):
-for i, child in enumerate(self.children):
-if i == 0:
-child.content = self.prefix
-else:
-child.content = u' '*len(self.prefix)
-child.count = 0
-return MarkdownNode.write(self)
-"""
+        return self.content
