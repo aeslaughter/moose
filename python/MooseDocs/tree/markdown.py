@@ -25,7 +25,8 @@ class MarkdownNode(NodeBase):
 
 class Page(MarkdownNode):
     PROPERTIES = [Property('width', default=100, ptype=int),
-                  Property('indent', default=0, ptype=int)]
+                  Property('indent', default=0, ptype=int),
+                  Property('initial_indent', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
@@ -38,7 +39,10 @@ class Page(MarkdownNode):
     def write(self):
         content = MarkdownNode.write(self)
         content = re.sub(r'^', u' '*self.indent, content, flags=re.MULTILINE)
-        content = re.sub(r'^  ', u'- ', content, 1, flags=re.MULTILINE)
+
+        if self.initial_indent:
+            regex = r'^{}(?=\S)'.format(' '*self.indent)
+            content = re.sub(regex, self.initial_indent, content, 1, flags=re.MULTILINE)
 
         print repr(content)
         return content

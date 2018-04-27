@@ -556,7 +556,7 @@ class RenderUnorderedList(components.RenderComponent):
         return latex.Environment(parent, 'itemize')
 
     def createMooseDown(self, token, parent):
-        return markdown.Page(parent, indent=2)
+        return markdown.Page(parent, indent=2, initial_indent=u'- ')
 
 class RenderListItem(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
