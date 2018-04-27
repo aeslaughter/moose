@@ -38,6 +38,8 @@ class Page(MarkdownNode):
     def write(self):
         content = MarkdownNode.write(self)
         content = re.sub(r'^', u' '*self.indent, content, flags=re.MULTILINE)
+        content = re.sub(r'^  ', u'- ', content, 1, flags=re.MULTILINE)
+
         print repr(content)
         return content
 
