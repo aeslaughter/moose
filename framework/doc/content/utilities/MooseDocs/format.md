@@ -22,4 +22,8 @@ wrap.
 
   - Nested, what are the chances.
 
+
+> A quotation is like a list, it can contain other items. In MooseDown they are created by starting the lines
+> with a `>` character.
+
 [google]: https://www.google.com

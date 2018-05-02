@@ -623,7 +623,7 @@ class MooseDownRenderer(Renderer):
         return func
 
     def createRoot(self, config):
-        return markdown.Page(None)
+        return markdown.Page(None, initial_indent=u'', subsequent_indent=u'')
 
     def defaultMethod(self, token, parent):
         pass

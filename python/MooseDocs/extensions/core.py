@@ -126,7 +126,7 @@ class Quote(components.TokenComponent):
             elif line.startswith(u'> '):
                 content.append(line[2:])
             else:
-                raise Exception(repr(line))
+                raise exceptions.TokenizeException("All lines in a quotation must start with a '>'.")
 
         #TODO: error check that all lines begin with '> '
         quote = tokens.Quote(parent)
@@ -348,11 +348,12 @@ class RenderHeading(components.RenderComponent):
                              subsequent_indent=u' '*n)
 
         for key, value in token.attributes.iteritems():
-            attr = markdown.Line(group,
-                                 string=value,
-                                 padding=n,
-                                 initial_indent=u'{}='.format(key),
-                                 subsequent_indent=u' '*(len(key) + 1))
+            if value:
+                attr = markdown.Line(group,
+                                     string=value,
+                                     padding=n,
+                                     initial_indent=u'{}='.format(key),
+                                     subsequent_indent=u' '*(len(key) + 1))
 
         return head
 
@@ -387,13 +388,14 @@ class RenderCode(components.RenderComponent):
                             subsequent_indent=u' '*3)
 
         for key, value in token.attributes.iteritems():
-            attr = markdown.Line(group,
-                                 padding=3,
-                                 string=value,
-                                 initial_indent=u'{}='.format(key),
-                                 subsequent_indent=u' '*(len(key) + 1))
+            if value:
+                attr = markdown.Line(group,
+                                     padding=3,
+                                     string=value,
+                                     initial_indent=u'{}='.format(key),
+                                     subsequent_indent=u' '*(len(key) + 1))
 
-        markdown.Line(block, string=token.code, width=0)
+        markdown.Line(block, string=token.code, wrap=False)
         markdown.Line(block, string=u'```')
 
 class RenderShortcutLink(components.RenderComponent):
@@ -541,7 +543,7 @@ class RenderOrderedList(components.RenderComponent):
         return latex.Environment(parent, 'enumerate')
 
     def createMooseDown(self, token, parent):
-        return markdown.Page(parent, indent=2)
+        return markdown.Page(parent, initial_indent=u' '*2, subsequent_indent=u' '*2)
 
 class RenderUnorderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -556,7 +558,7 @@ class RenderUnorderedList(components.RenderComponent):
         return latex.Environment(parent, 'itemize')
 
     def createMooseDown(self, token, parent):
-        return markdown.Page(parent, indent=2, initial_indent=u'- ')
+        return markdown.Page(parent, initial_indent=u'- ', subsequent_indent=u' '*2)
 
 class RenderListItem(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -585,6 +587,9 @@ class RenderQuote(components.RenderComponent):
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'quote')
+
+    def createMooseDown(self, token, parent):
+        return markdown.Page(parent, initial_indent=u'> ', subsequent_indent=u'> ')
 
 class RenderStrong(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use

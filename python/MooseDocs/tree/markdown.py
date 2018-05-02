@@ -25,8 +25,8 @@ class MarkdownNode(NodeBase):
 
 class Page(MarkdownNode):
     PROPERTIES = [Property('width', default=100, ptype=int),
-                  Property('indent', default=0, ptype=int),
-                  Property('initial_indent', ptype=unicode)]
+                  Property('initial_indent', ptype=unicode),
+                  Property('subsequent_indent', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
@@ -34,17 +34,19 @@ class Page(MarkdownNode):
         if (self.parent is not None) and (not isinstance(self, Page)):
             raise exceptions.MooseDocsException("Page objects must be children of other Page objects.")
 
-        self.width -= self.indent
+        if self.initial_indent is not None:
+            self.width -= len(self.initial_indent)
 
     def write(self):
         content = MarkdownNode.write(self)
-        content = re.sub(r'^', u' '*self.indent, content, flags=re.MULTILINE)
 
-        if self.initial_indent:
-            regex = r'^{}(?=\S)'.format(' '*self.indent)
+        if self.subsequent_indent is not None:
+            content = re.sub(r'^(?=\S)', self.subsequent_indent, content, flags=re.MULTILINE)
+
+        if self.initial_indent is not None:
+            regex = r'^{}(?=\S)'.format(self.subsequent_indent)
             content = re.sub(regex, self.initial_indent, content, 1, flags=re.MULTILINE)
 
-        print repr(content)
         return content
 
 class Block(MarkdownNode):
@@ -54,7 +56,7 @@ class Block(MarkdownNode):
             raise exceptions.MooseDocsException("Block objects must be children of Page objects.")
 
     def write(self):
-        return u'\n' + MarkdownNode.write(self)
+        return MarkdownNode.write(self) + u'\n'
 
     @property
     def width(self):
@@ -74,14 +76,15 @@ class LineGroup(MarkdownNode):
         content = MarkdownNode.write(self)
         line = re.sub(r'\s*\n\s*', u' ', content).strip()
         if len(line) < self.width:
-            return line
+            content = line + u'\n'
         return content
 
 class Line(MarkdownNode):
     PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
                   Property('subsequent_indent', default=u'', ptype=unicode),
                   Property('padding', default=0, ptype=int),
-                  Property('string', ptype=unicode)]
+                  Property('string', ptype=unicode),
+                  Property('wrap', ptype=bool, default=True)]
 
     @property
     def width(self):
@@ -102,7 +105,7 @@ class Line(MarkdownNode):
     def write(self):
 
         items = [child.content for child in self.children if child.content]
-        if self.width > 0:
+        if self.wrap > 0:
             margin = u' '*self.padding
             self._wrapper.initial_indent = u'{}{}'.format(margin, self.initial_indent)
             self._wrapper.subsequent_indent = u'{}{}'.format(margin, self.subsequent_indent)
@@ -110,16 +113,16 @@ class Line(MarkdownNode):
 
             if items:
                 content = u''.join(items)
-                return u'\n' + u'\n'.join(self._wrapper.wrap(content))
+                content = u'\n'.join(self._wrapper.wrap(content))
             else:
-                return ''
+                content = u''
         else:
-            return u'\n' + u' '.join(items)
+            return u''.join(items)
+
+        return content + u'\n'
 
 class String(NodeBase):
     PROPERTIES = [Property('content', default=u'', ptype=unicode)]
-
-
 
     def write(self):
         return self.content
