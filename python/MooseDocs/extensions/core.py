@@ -598,6 +598,13 @@ class RenderStrong(components.RenderComponent):
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'textbf')
 
+    def createMooseDown(self, token, parent):
+        markdown.String(parent, content=u'+')
+        for child in token.children:
+            self.translator.renderer.process(parent, child)
+        markdown.String(parent, content=u'+')
+
+
 class RenderUnderline(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
         return html.Tag(parent, 'u', **token.attributes)

@@ -37,4 +37,4 @@ def main(options):
     core = translator.root.findall('format.md')[0]
     core.build()
 #    print core.ast
-    print core.result
+ #   print core.result

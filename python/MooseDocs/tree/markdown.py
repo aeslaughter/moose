@@ -24,28 +24,43 @@ class MarkdownNode(NodeBase):
         return content
 
 class Page(MarkdownNode):
-    PROPERTIES = [Property('width', default=100, ptype=int),
-                  Property('initial_indent', ptype=unicode),
-                  Property('subsequent_indent', ptype=unicode)]
+    PROPERTIES = [Property('initial_indent', ptype=unicode),
+                  Property('subsequent_indent', default=u'', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
+        self.__width = 100
 
         if (self.parent is not None) and (not isinstance(self, Page)):
             raise exceptions.MooseDocsException("Page objects must be children of other Page objects.")
 
-        if self.initial_indent is not None:
-            self.width -= len(self.initial_indent)
+        if self.parent is not None:
+            self.__width = self.parent.width - len(self.initial_indent)
+        else:
+            self.__width -= len(self.initial_indent)
+
+    @property
+    def width(self):
+        return self.__width
+
+    @property
+    def margin(self):
+        m = 0
+        node = self
+        while node.parent is not None:
+            node = node.parent
+            m += len(self.initial_indent)
+        return m
 
     def write(self):
         content = MarkdownNode.write(self)
 
-        if self.subsequent_indent is not None:
-            content = re.sub(r'^(?=\S)', self.subsequent_indent, content, flags=re.MULTILINE)
+        if self.margin:
+            content = re.sub(r'^(?=\S)', u' '*self.margin, content, flags=re.MULTILINE)
 
         if self.initial_indent is not None:
-            regex = r'^{}(?=\S)'.format(self.subsequent_indent)
-            content = re.sub(regex, self.initial_indent, content, 1, flags=re.MULTILINE)
+            start = self.margin - len(self.initial_indent)
+            content = content[:start] + self.initial_indent + content[self.margin:]
 
         return content
 
