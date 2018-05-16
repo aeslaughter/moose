@@ -49,12 +49,7 @@ class TimeSeries(VTKPythonAlgorithmBase):
 
     def RequestData(self, request, inInfo, outInfo):
         data_in = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-
         data_out = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        #inp = inInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        #out = outInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        #out.ShallowCopy(inp)
-
         data_out.ShallowCopy(data_in)
         return 1
 
