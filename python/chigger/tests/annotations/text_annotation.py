@@ -10,7 +10,9 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import chigger
-text = chigger.annotations.TextAnnotation(text='This is a test.', font_size=14, text_color=[1,0,1], text_opacity=0.5)
-window = chigger.RenderWindow(text, size=[300,300], test=True)
+text = chigger.annotations.TextAnnotation(text='This is a test.', font_size=32, text_color=[1,0,1], text_opacity=0.5)
+window = chigger.RenderWindow(text, size=[1000,1000], test=False)
 window.write('text_annotation.png')
+
+window.getVTKInteractor().GetInteractorStyle().SetDefaultRenderer(text.getVTKRenderer())
 window.start()

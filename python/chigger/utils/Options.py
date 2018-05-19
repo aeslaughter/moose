@@ -24,7 +24,6 @@ class Option(object):
     """
     Storage container for an "option" that can be type checked.
     """
-
     ANY = 12345
 
     def __init__(self, *args, **kwargs):
