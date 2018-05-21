@@ -17,8 +17,8 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
     """
     def __init__(self, parent=None, **kwargs):
         self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.keyPress)
-        self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.leftButton)
-        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.mouseMove)
+        #self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.leftButton)
+        #self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.mouseMove)
         super(KeyPressInteractorStyle, self).__init__(parent, **kwargs)
 
         self.__active = None

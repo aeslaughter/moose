@@ -29,6 +29,7 @@ class Move(object):
             #print loc
             self.active.SetPosition(*loc)
             self.window.Render()
+            print self.active
 
 
 
@@ -44,6 +45,9 @@ renWin.AddRenderer(ren)
 txt = vtk.vtkTextActor()
 txt.SetInput("Hello World!")
 txt.SetDisplayPosition(20, 30)
+
+
+print txt.GetProperty()
 
 m = Move(renWin)
 

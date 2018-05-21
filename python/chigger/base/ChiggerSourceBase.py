@@ -63,6 +63,7 @@ class ChiggerSourceBase(ChiggerObject):
 
         self._vtkrenderer = None # This is set automatically by ChiggerResult object.
         self._parent = None # Set by ChiggerResult
+        self._selected = False
 
     def getVTKActor(self):
         """
@@ -102,3 +103,17 @@ class ChiggerSourceBase(ChiggerObject):
 
         if self.isOptionValid('visible'):
             self._vtkactor.SetVisibility(self.getOption('visible'))
+
+    def initialize(self, *args, **kwargs):
+        super(ChiggerSourceBase, self).initialize(*args, **kwargs)
+
+        #print 'Interactive:', self._vtkrenderer.GetInteractive()
+        #if self.setVTKRenderer().GetInteractive():
+
+        interactor = self._vtkrenderer.GetRenderWindow().GetInteractor()
+
+        for event in dir(vtk.vtkCommand):
+            if event.endswith('Event'):
+                slot = 'on{}'.format(event)
+                if hasattr(self, slot):
+                    interactor.AddObserver(getattr(vtk.vtkCommand, event), getattr(self, slot))
