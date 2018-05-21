@@ -18,7 +18,10 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
     def __init__(self, parent=None, **kwargs):
         self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.keyPress)
         self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.leftButton)
+        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.mouseMove)
         super(KeyPressInteractorStyle, self).__init__(parent, **kwargs)
+
+        self.__active = None
 
     def keyPress(self, obj, event): #pylint: disable=unused-argument
         """
@@ -33,6 +36,19 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
 
     def leftButton(self, obj, event):
 
-        print obj.GetInteractor().GetEventPosition();
-        print obj, event
-        print 'hi'
+        if self.__active:
+            self.__active = None
+
+        else:
+            loc = obj.GetInteractor().GetEventPosition()
+            r = obj.GetInteractor().FindPokedRenderer(*loc)
+            self.__active = r.PickProp(*loc)
+
+    def mouseMove(self, obj, event):
+
+        loc = obj.GetInteractor().GetEventPosition()
+        if self.__active:
+            for i in range(self.__active.GetNumberOfItems()):
+                prop = self.__active.GetItemAsObject(i).GetViewProp()
+                prop.SetPosition(0.1,0.1)#*loc)
+                print prop
