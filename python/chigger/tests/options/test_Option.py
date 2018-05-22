@@ -20,20 +20,17 @@ class TestOption(unittest.TestCase):
         for match in re.finditer(r'WARNING\s*\n(?P<message>.*?)(?=^\n|\Z)', output, flags=re.MULTILINE|re.DOTALL):
             self.assertIn(msg, match.group('message'))
 
-
     def testMinimal(self):
         opt = Option('foo')
         self.assertEqual(opt.name, 'foo')
         self.assertIsNone(opt.default)
         self.assertIsNone(opt.value)
-        self.assertIsNone(opt.default)
 
     def testValue(self):
         opt = Option('foo')
         self.assertEqual(opt.name, 'foo')
         self.assertIsNone(opt.default)
         self.assertIsNone(opt.value)
-        self.assertIsNone(opt.default)
 
         self.value = 12345
         self.assertEqual(self.value, 12345)
@@ -52,7 +49,6 @@ class TestOption(unittest.TestCase):
         opt = Option('foo', allow=(1, 'two'))
         self.assertIsNone(opt.default)
         self.assertIsNone(opt.value)
-        self.assertIsNone(opt.default)
 
         opt.value = 1
         self.assertEqual(opt.value, 1)
@@ -62,6 +58,43 @@ class TestOption(unittest.TestCase):
 
         opt.value = 4
         self.assertInWarning("Attempting to set foo to a value of 4 but only the following are allowed: (1, 'two')")
+
+    def testType(self):
+        opt = Option('foo', vtype=int)
+        self.assertIsNone(opt.default)
+        self.assertIsNone(opt.value)
+
+        opt.value = 1
+        self.assertEqual(opt.value, 1)
+
+        opt.value = 4.
+        self.assertInWarning("foo must be of type int but float provided.")
+        self.assertEqual(opt.value, 1)
+
+    def testTypeWithAllow(self):
+
+        opt = Option('foo', vtype=int, allow=(1,2))
+        self.assertIsNone(opt.default)
+        self.assertIsNone(opt.value)
+
+        opt.value = 2
+        self.assertEqual(opt.value, 2)
+
+        opt.value = 1
+        self.assertEqual(opt.value, 1)
+
+        opt.value = 4
+        self.assertInWarning("Attempting to set foo to a value of 4 but only the following are allowed: (1, 2)")
+        self.assertEqual(opt.value, 1)
+
+
+    def testAllowWithTypeError(self):
+
+        with self.assertRaises(TypeError) as e:
+            opt = Option('foo', vtype=int, allow=(1,'2'))
+
+        self.assertIn("The supplied 'allow' argument must be a 'tuple' of <type 'int'> items, but a <type 'str'> item was provided.", e.exception.message)
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True, exit=False)

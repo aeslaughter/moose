@@ -43,6 +43,15 @@ class Option(object):
             raise TypeError(msg)
 
 
+        if (self.__vtype is not None) and (self.__allow is not None):
+            for value in self.__allow:
+                if not isinstance(value, self.__vtype):
+                    msg = "The supplied 'allow' argument must be a 'tuple' of {} items, but a {} item was provided.".format(self.__vtype, type(value))
+                    raise TypeError(msg)
+
+        # TODO: check vtype of allow
+
+
         """
         # Stored the supplied values
         # NOTE: The default and value are private to keep them from the type checking being
@@ -87,6 +96,9 @@ class Option(object):
         if (self.__value != None) and not isinstance(self.__value, Options):
             self.set(self.__value)
         """
+    @property
+    def name(self):
+        return self.__name
 
     @property
     def value(self):
@@ -95,10 +107,6 @@ class Option(object):
     @property
     def default(self):
         return self.__default
-
-    @property
-    def name(self):
-        return self.__name
 
     def apply(self):
         self.__applied = True
