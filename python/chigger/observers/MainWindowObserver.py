@@ -37,22 +37,24 @@ class MainWindowObserver(ChiggerObserver):
             obj, event: Required by VTK.
         """
         key = obj.GetInteractor().GetKeySym().lower()
-        print 'Pressed:', key
+        shift = obj.GetInteractor().GetShiftKey()
+        control = obj.GetInteractor().GetControlKey()
+        alt = obj.GetInteractor().GetAltKey()
 
         if key == 'left':
             self._window.nextActive(1)
-            print 'Interactive:', self._window.getActive().getVTKRenderer().GetInteractive()
-            #self._window.getActive().getVTKRenderer().SetBackground(0.5, 0.5, 0.5)
-            #self._window.getActive().getVTKRenderer().Render()
-            #print 'alpha = ', self._window.getActive().getVTKRenderer().GetBackgroundAlpha()
-
-            #self._window.getActive().getVTKRenderer().SetBackgroundAlpha(0.5)
 
         elif key == 'right':
             self._window.nextActive(-1)
 
+        elif key == 'h':
+            print 'Help...'
 
+        binding = self._window.getActive().getKeyBinding(key, shift, control, alt)
+        if binding is not None:
+            binding.function(obj, key, shift, control, alt)
 
+        self._window.update() # Do this only if needed, will applyOption get rid of the NeedsUpdate stuff
 
     def _onLeftButtonPressEvent(self, obj, event):
         pass

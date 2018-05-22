@@ -105,7 +105,6 @@ class ChiggerResult(ChiggerResultBase):
         """
         Remove actors from renderer.
         """
-
         super(ChiggerResult, self).reset()
         for src in self._sources:
             self._vtkrenderer.RemoveViewProp(src.getVTKActor())

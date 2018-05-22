@@ -45,6 +45,11 @@ class ExodusResult(base.ChiggerResult):
         # Supply the sources to the base class
         super(ExodusResult, self).__init__(*sources, **kwargs)
 
+        # Setup keybindings
+        self.addKeyBinding('c', self._printCamera, desc="Display the current camera settings.")
+        self.addKeyBinding('braceleft', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
+        self.addKeyBinding('braceright', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
+
     def update(self, **kwargs):
         super(ExodusResult, self).update(**kwargs)
 
@@ -103,3 +108,18 @@ class ExodusResult(base.ChiggerResult):
         """
         self.checkUpdateState()
         return utils.get_bounds(*self._sources)
+
+    def _printCamera(self, *args, **kwargs):
+        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
+
+    def _updateOpacity(self, obj, key, *args, **kwargs):
+        opacity = self.getOption('opacity')
+        if key == 'braceleft':
+            if opacity >= 0.01:
+                opacity -= 0.01
+        elif key == 'braceright':
+            if opacity <= 0.99:
+                opacity += 0.01
+
+        print 'Opacity', self.getOption('opacity'), opacity
+        self.update(opacity=opacity)

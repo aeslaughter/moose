@@ -7,7 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import collections
 import vtk
 from ChiggerObject import ChiggerObject
 
@@ -24,6 +24,8 @@ class ChiggerResultBase(ChiggerObject):
     Inputs:
         see ChiggerObject
     """
+
+    KeyBinding = collections.namedtuple('KeyBinding', 'key shift control alt description function')
 
     @staticmethod
     def getOptions():
@@ -46,6 +48,16 @@ class ChiggerResultBase(ChiggerObject):
     def __init__(self, renderer=None, **kwargs):
         super(ChiggerResultBase, self).__init__(**kwargs)
         self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
+        self.__keybindings = dict()
+
+    def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
+
+        # TODO: Make ethis a mixin object and add
+        self.__keybindings[(key, shift, control, alt)] = ChiggerResultBase.KeyBinding(key, shift, control, alt, desc, func)
+
+    def getKeyBinding(self, key, shift=False, control=False, alt=False):
+        return self.__keybindings.get((key, shift, control, alt), None)
+
 
     def getVTKRenderer(self):
         """
