@@ -23,15 +23,15 @@ class TimerObserver(ChiggerObserver):
         return opt
 
     def __init__(self, **kwargs):
-        super(TimerObserver, self).__init__(vtk.vtkCommand.TimerEvent, **kwargs)
+        super(TimerObserver, self).__init__(**kwargs)
         self._count = 0
 
-    def addObserver(self, event, vtkinteractor):
+    def addObservers(self, vtkinteractor):
         """
         Add the TimerEvent for this object.
         """
         vtkinteractor.CreateRepeatingTimer(self.getOption('duration'))
-        return vtkinteractor.AddObserver(event, self._callback)
+        return vtkinteractor.AddObserver(vtk.vtkCommand.TimerEvent, self._callback)
 
     def count(self):
         """

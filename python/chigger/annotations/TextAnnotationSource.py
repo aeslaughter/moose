@@ -31,7 +31,7 @@ class TextAnnotationSource(base.ChiggerSourceBase):
     def __init__(self, **kwargs):
         super(TextAnnotationSource, self).__init__(vtkactor_type=vtk.vtkActor2D,
                                                    vtkmapper_type=vtk.vtkTextMapper, **kwargs)
-        #self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
+        self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
 
     def update(self, **kwargs):
         """
@@ -39,16 +39,14 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         """
         super(TextAnnotationSource, self).update(**kwargs)
         utils.FontOptions.set_options(self._vtkmapper.GetTextProperty(), self._options)
-
-        coord = vtk.vtkCoordinate()
-        coord.SetCoordinateSystemToNormalizedViewport()
-        coord.SetValue(*self.getOption('position'))
-        loc = coord.GetComputedDisplayValue(self._vtkrenderer)
-        self._vtkactor.SetPosition(*loc)
+        self._vtkactor.GetPositionCoordinate().SetValue(*self.getOption('position'))
 
         if self.isOptionValid('text'):
             self._vtkmapper.GetTextProperty().Modified()
             self._vtkmapper.SetInput(self.getOption('text'))
+
+        # if options applied ... perform render
+        #self._vtkrenderer.GetRenderWindow().Render()
 
 
     def onLeftButtonPressEvent(self, obj, event):
@@ -65,7 +63,49 @@ class TextAnnotationSource(base.ChiggerSourceBase):
                 self._vtkmapper.GetTextProperty().FrameOn()
 
     def onMouseMoveEvent(self, obj, event):
+
         if self._selected:
             loc = obj.GetEventPosition()
-            self._vtkactor.SetPosition(*loc)
+            sz = self._vtkrenderer.GetSize()
+            self.update(position=[loc[0]/float(sz[0]), loc[1]/float(sz[1])])
+            self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
+
+    def onKeyPressEvent(self, obj, event):
+
+        key = obj.GetKeySym()
+        shift = obj.GetShiftKey()
+        if shift and key == 'plus':
+            prop = self._vtkmapper.GetTextProperty()
+            sz = prop.GetFontSize()
+            self.update(font_size=sz + 1)
+            self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
+
+        elif shift and key == 'underscore':
+            prop = self._vtkmapper.GetTextProperty()
+            sz = prop.GetFontSize()
+            if sz > 1:
+                self.update(font_size=sz - 1)
+                self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
+
+        elif shift and key == 'braceright':
+            prop = self._vtkmapper.GetTextProperty()
+            opacity = prop.GetOpacity()
+            if opacity < 0.95:
+                self.update(text_opacity=opacity + 0.05)
+                self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
+
+        elif shift and key == 'braceleft':
+            prop = self._vtkmapper.GetTextProperty()
+            opacity = prop.GetOpacity()
+            if opacity > 0.05:
+                self.update(text_opacity=opacity - 0.05)
+                self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
+
+        elif key == 'h':
+            print 'help...'
+
+        elif key == 'c':
+            self._options.printToScreen()
+            self._selected = False
+            self._vtkmapper.GetTextProperty().FrameOff()
             self._vtkrenderer.GetRenderWindow().Render()

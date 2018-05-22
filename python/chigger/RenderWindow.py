@@ -57,10 +57,12 @@ class RenderWindow(base.ChiggerObject):
 
         self.__vtkwindow = kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
+        self.__vtkinteractorstyle = None
 
         super(RenderWindow, self).__init__(**kwargs)
 
         self._results = [misc.ChiggerBackground()]
+        self._observers = set()
         self.__active = None
 
         # Store the supplied result objects
@@ -77,6 +79,13 @@ class RenderWindow(base.ChiggerObject):
         Return the vtkInteractor object.
         """
         return self.__vtkinteractor
+
+    def getVTKInteractorStyle(self):
+        """
+        Return the vtkInteractor object.
+        """
+        return self.__vtkinteractorstyle
+
 
     def getVTKWindow(self):
         """
@@ -139,9 +148,29 @@ class RenderWindow(base.ChiggerObject):
                                   "setting it as active.")
             return
 
+        for obj in self._results:
+            obj.getVTKRenderer().InteractiveOff()
+
         self.__active = result
-        if self.__vtkinteractor:
-            self.__vtkinteractor.GetInteractorStyle().SetDefaultRenderer(result.getVTKRenderer())
+        self.__active.getVTKRenderer().InteractiveOn()
+        #if self.__vtkinteractor:
+        #    self.__vtkinteractor.GetInteractorStyle().SetDefaultRenderer(result.getVTKRenderer())
+
+    def nextActive(self, step=1):
+        if self.__active is None:
+            index = 0
+
+        else:
+            n = len(self._results)
+            index = self._results.index(self.__active)
+            index += step
+            if index == n:
+                index = 0
+            elif index == -1:
+                index = n - 1
+
+        print index, self._results[index]
+        self.setActive(self._results[index])
 
     def getActive(self):
         """
@@ -186,12 +215,19 @@ class RenderWindow(base.ChiggerObject):
             style = self.getOption('style').lower()
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
-                b = base.KeyPressInteractorStyle(self.__vtkinteractor)
-                self.__vtkinteractor.SetInteractorStyle(b)
+                #b = base.KeyPressInteractorStyle(self.__vtkinteractor)
+                self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':
-                self.__vtkinteractor.SetInteractorStyle(vtk.vtkInteractorStyleImage())
+                self.__vtkinteractorstyle = vtk.vtkInteractorStyleImage()
             elif style == 'modal':
-                self.__vtkinteractor.SetInteractorStyle(vtk.vtkInteractorStyleUser())
+                self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
+
+            #self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
+            self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
+
+            main_observer = observers.MainWindowObserver()
+            main_observer.init(self)
+            self._observers.add(main_observer)
 
         # Background settings
         self._results[0].updateOptions(self._options)
@@ -233,14 +269,17 @@ class RenderWindow(base.ChiggerObject):
 
         # Observers
         if self.__vtkinteractor:
+
+
             for observer in self.getOption('observers'):
                 if not isinstance(observer, observers.ChiggerObserver):
                     msg = "The supplied observer of type {} must be a {} object."
                     raise mooseutils.MooseException(msg.format(type(observer),
                                                                observers.ChiggerObserver))
 
-                elif not observer.isActive() is None:
+                if observer not in self._observers:
                     observer.init(self)
+                    self._observers.add(observer)
 
         self.__vtkwindow.Render()
 

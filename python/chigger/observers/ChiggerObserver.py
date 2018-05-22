@@ -19,13 +19,11 @@ class ChiggerObserver(ChiggerObject):
         opt = ChiggerObject.getOptions()
         return opt
 
-    def __init__(self, event, **kwargs):
+    def __init__(self, **kwargs):
         super(ChiggerObserver, self).__init__(**kwargs)
-        self._event = event
         self._window = None
-        self._vtk_command = None
 
-    def addObserver(self, event, vtkinteractor):
+    def addObservers(self, obj):
         """
         Add the observer to the supplied vtkInteractor, see TimerObserver for an example.
 
@@ -33,21 +31,11 @@ class ChiggerObserver(ChiggerObject):
         from one of the existing objects: e.g., KeyObserver, TimerObserver.
 
         Inputs:
-            event[str]: The VTK event string, this is supplied in the constructor
-            vtkinteractor[vtkInteractor]: The interactor that the observer should be added.
+            obj[vtkInteractorStyle]: The interactor that the observer should be added.
 
         NOTE: This method must return the VTK id return from the AddObserver method.
         """
         raise NotImplementedError("The addObserver method must be implmented.")
-
-    def isActive(self):
-        """
-        Return True if this observer is already a part of the VTK interactor.
-        """
-        if self._vtk_command is not None:
-            return self._window.getVTKInteractor().HasObserver(self._event, self._vtk_command)
-        else:
-            return False
 
     def init(self, window):
         """
@@ -56,5 +44,5 @@ class ChiggerObserver(ChiggerObject):
         NOTE: This is an internal method, do not call it.
         """
         self._window = window
-        vtkid = self.addObserver(self._event, self._window.getVTKInteractor())
-        self._vtk_command = window.getVTKInteractor().GetCommand(vtkid)
+        self.addObservers(self._window.getVTKInteractorStyle())
+        #self._vtk_command = window.getVTKInteractor().GetCommand(vtkid)

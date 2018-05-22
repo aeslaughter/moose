@@ -110,10 +110,10 @@ class ChiggerSourceBase(ChiggerObject):
         #print 'Interactive:', self._vtkrenderer.GetInteractive()
         #if self.setVTKRenderer().GetInteractive():
 
-        interactor = self._vtkrenderer.GetRenderWindow().GetInteractor()
 
-        for event in dir(vtk.vtkCommand):
-            if event.endswith('Event'):
-                slot = 'on{}'.format(event)
-                if hasattr(self, slot):
-                    interactor.AddObserver(getattr(vtk.vtkCommand, event), getattr(self, slot))
+        #interactor = self._vtkrenderer.GetRenderWindow().GetInteractor()
+        #for event in dir(vtk.vtkCommand):
+        #    if event.endswith('Event'):
+        #        slot = 'on{}'.format(event)
+        #        if hasattr(self, slot):
+        #            interactor.AddObserver(getattr(vtk.vtkCommand, event), getattr(self, slot))

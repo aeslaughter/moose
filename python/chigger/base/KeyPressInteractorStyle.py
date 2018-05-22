@@ -16,7 +16,7 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
     An interactor style for capturing key press events in VTK window.
     """
     def __init__(self, parent=None, **kwargs):
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.keyPress)
+        #self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.keyPress)
         #self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.leftButton)
         #self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.mouseMove)
         super(KeyPressInteractorStyle, self).__init__(parent, **kwargs)
@@ -31,8 +31,8 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
             obj, event: Required by VTK.
         """
         key = obj.GetInteractor().GetKeySym()
-        if key == 'c':
-            print '\n'.join(utils.print_camera(self.GetCurrentRenderer().GetActiveCamera()))
+        #if key == 'c':
+        #    print '\n'.join(utils.print_camera(self.GetCurrentRenderer().GetActiveCamera()))
 
     def leftButton(self, obj, event):
 

@@ -20,14 +20,14 @@ class KeyObserver(ChiggerObserver):
         return opt
 
     def __init__(self, **kwargs):
-        super(KeyObserver, self).__init__(vtk.vtkCommand.KeyPressEvent, **kwargs)
+        super(KeyObserver, self).__init__(**kwargs)
         self._key = None
 
     def addObserver(self, event, vtkinteractor):
         """
         Add the KeyPressEvent for this object.
         """
-        return vtkinteractor.AddObserver(event, self._callback)
+        return vtkinteractor.AddObserver(vtk.vtkCommand.KeyPressEvent,  self._callback)
 
     def _callback(self, obj, event): #pylint: disable=unused-argument
         """

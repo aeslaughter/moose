@@ -24,6 +24,7 @@ class Option(object):
     """
     Storage container for an "option" that can be type checked.
     """
+
     ANY = 12345
 
     def __init__(self, *args, **kwargs):
@@ -413,3 +414,10 @@ class Options(object):
                 output.append('{}={}'.format(key, r))
 
         return output, sub_output
+
+    def printToScreen(self, **kwargs):
+
+        output, sub_output = self.toScriptString(**kwargs)
+        print 'setOptions({})'.format(', '.join(output))
+        for key, value in sub_output.iteritems():
+            print 'setOptions({}, {})'.format(key, ', '.join(value))
