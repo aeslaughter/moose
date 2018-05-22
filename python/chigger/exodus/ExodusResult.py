@@ -120,6 +120,4 @@ class ExodusResult(base.ChiggerResult):
         elif key == 'braceright':
             if opacity <= 0.99:
                 opacity += 0.01
-
-        print 'Opacity', self.getOption('opacity'), opacity
         self.update(opacity=opacity)
