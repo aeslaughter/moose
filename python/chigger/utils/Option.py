@@ -26,14 +26,14 @@ class Option(object):
     Inputs:
         name[str|unicode]: The name of the option.
         default[]: The default value, if "vtype" is set the type must match.
-        vtype[type]: The python type that this option is to be restricted.
         doc[str|unicode]: A documentation string, which is used in the option dump.
+        vtype[type]: The python type that this option is to be restricted.
         allow[tuple]: A tuple of allowed values, if vtype is set the types within must match.
         array[bool]: Define the option as an "array", which if 'vtype' is set restricts the
                      values within the tuple to match types.
     """
 
-    def __init__(self, name, default=None, vtype=None, doc=None, allow=None, array=False):
+    def __init__(self, name, default=None, doc=None, vtype=None, allow=None, array=False):
 
         self.__name = name     # option name
         self.__value = None    # current value

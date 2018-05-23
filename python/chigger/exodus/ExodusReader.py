@@ -109,14 +109,18 @@ class ExodusReader(base.ChiggerObject):
     @staticmethod
     def getOptions():
         opt = base.ChiggerObject.getOptions()
-        opt.add('time', "The time to view, if not specified the last timestep is displayed.",
-                vtype=float)
-        opt.add("timestep", -1, "The simulation timestep. (Use -1 for latest.)", vtype=int)
-        opt.add("adaptive", True, "Load adaptive files (*.e-s* files).")
-        opt.add('displacements', True, "Enable the viewing of displacements.")
-        opt.add('displacement_magnitude', 1.0, "The displacement magnitude vector.")
-        opt.add('variables', "A list of  active variables, if not specified all variables are "
-                             "loaded.", vtype=list)
+        opt.add('time', vtype=float,
+                doc="The time to view, if not specified the last timestep is displayed.")
+        opt.add("timestep", default=-1, vtype=int,
+                doc="The simulation timestep. (Use -1 for latest.)")
+        opt.add("adaptive", default=True, vtype=bool,
+                doc="Load adaptive files (*.e-s* files).")
+        opt.add('displacements', default=True, vtype=bool,
+                doc="Enable the viewing of displacements.")
+        opt.add('displacement_magnitude', default=1.0, vtype=float,
+                doc="The displacement magnitude vector.")
+        opt.add('variables', vtype=str, array=True,
+                doc="A tuple of  active variables, if not specified all variables are loaded.")
         opt.add('nodeset', None, "A list of nodeset ids or names to display, use [] to display all "
                                  "nodesets.", vtype=list)
         opt.add('boundary', None, "A list of boundary ids (sideset) ids or names to display, use "

@@ -10,148 +10,10 @@
 
 #!/usr/bin/env python2
 import sys
-import textwrap
 from collections import OrderedDict
 import traceback
-try:
-    import terminaltables
-    HAS_TERMINAL_TABLES = True
-except ImportError:
-    HAS_TERMINAL_TABLES = False
-import mooseutils
 
-class Option(object):
-    """
-    Storage container for an "option" that can be type checked.
-    """
-
-    ANY = 12345
-
-    def __init__(self, *args, **kwargs):
-
-        # Stored the supplied values
-        # NOTE: The default and value are private to keep them from the type checking being
-        # nullified if the values are just set directly.
-        if len(args) == 2:
-            self.name = args[0]
-            self.__value = None
-            self.doc = args[1]
-            self.__default = None
-        elif len(args) == 3:
-            self.name = args[0]
-            self.__value = args[1]
-            self.doc = args[2]
-            self.__default = self.__value
-        else:
-            raise Exception("Wrong number of arguments, must supply 2 or 3 input arguments.")
-
-        # Extract optional settings
-        self.vtype = kwargs.pop('vtype', type(self.__value))
-        self.allow = kwargs.pop('allow', [])
-
-        # Check that allow is correct type
-        if not isinstance(self.allow, list):
-            mooseutils.mooseWarning('The allow option must be supplied as a list.')
-
-        # Check the allowed list contains the correct types
-        else:
-            for i in range(len(self.allow)):
-                try:
-                    if not isinstance(self.allow[i], self.vtype) and self.vtype != Option.ANY:
-                        self.allow[i] = eval('{}({})'.format(self.vtype.__name__,
-                                                             str(self.allow[i])))
-
-                except: #pylint: disable=bare-except
-                    msg = 'The type provided, {}, does not match the type of the allowed ' + \
-                          'values, {} for the {} option.'
-                    mooseutils.mooseWarning(msg.format(self.vtype.__name__,
-                                                       type(self.allow[i]).__name__, self.name))
-                    return
-
-        # Try to set the value using the set method to test the type and if it is allowed
-        if (self.__value != None) and not isinstance(self.__value, Options):
-            self.set(self.__value)
-
-    def unset(self):
-        """
-        Set the value of the option to None.
-        """
-        self.__value = None
-
-    def set(self, value):
-        """
-        Set the value of this option, with type checking.
-
-        Inputs:
-            value: The value to set the option to.
-        """
-        self.__setValue(value)
-
-    def get(self):
-        """
-        Get the value of this option.
-        """
-        return self.__value
-
-    def setDefault(self, value):
-        """
-        Set the value of this option along with the default.
-
-        Inputs:
-            value: The value to set the option and its default to.
-        """
-        self.__setValue(value, set_default=True)
-
-    def getDefault(self):
-        """
-        Get the default value for this option.
-        """
-        return self.__default
-
-    def __setValue(self, value, set_default=False):
-        """
-        Set the value of the option with type checking.
-
-        Inputs:
-            set_default[bool]: (default: False) When true the value passed in is also set to the
-                               default.
-        """
-
-        # None is always allowed
-        if value is None:
-            self.unset()
-            return
-
-        # If the Option is storing another Set of options and is passed a dict(), then
-        # loop through the dictionary and update each option in the set of options.
-        if (self.vtype is Options) and isinstance(value, dict):
-            for k, v in value.iteritems():
-                self.__value[k] = v
-
-        else:
-            if not isinstance(value, self.vtype):
-
-                # Check if we can convert (e.g., int->float)
-                try:
-                    value = eval(self.vtype.__name__ + '(' + str(value) +')')
-                except: #pylint: disable=bare-except
-                    msg = '{} must be of type {} but {} provided.'
-                    mooseutils.mooseWarning(msg.format(self.name, self.vtype.__name__,
-                                                       type(value).__name__))
-                    value = None
-
-            # Check that the value is allowed
-            if self.allow and (value != None) and (value not in self.allow):
-                msg = 'Attempting to set {} to a value of {} but only the following are allowed: {}'
-                mooseutils.mooseWarning(msg.format(self.name, value, self.allow))
-                value = None
-
-            self.__value = value
-
-            if set_default:
-                self.__default = value
-
-
+from Option import Option
 
 class Options(object):
     """
@@ -189,15 +51,6 @@ class Options(object):
             option = self.__options.pop(name)
             return option.get() #pylint: disable=no-member
 
-    def hasValidOption(self):
-        """
-        Test if any option is valid within the entire set of options.
-        """
-        for key in self.__options.keys():
-            if self.isOptionValid(key):
-                return True
-        return False
-
     def isOptionValid(self, name):
         """
         Test if the given option is valid (i.e., !None). (public)
@@ -205,29 +58,20 @@ class Options(object):
         Inputs:
             name[str]: The name of the Option to retrieve
         """
-        return self.hasOption(name) and (self[name] != None)
+        opt = self.__options.get(name, None)
+        return (opt is not None) and (opt.value is not None) and (not opt.applied)
 
-    def isOptionDefault(self, name):
-        """
-        Test if the options is currently set to the default value.
+    #def setDefault(self, name, value):
+    #    """
+    #    Set the value and the default to the supplied value.
 
-        Inputs:
-            name[str]: The name of the Option to retrieve
-        """
-        return self.hasOption(name) and \
-               (self.__options[name].get() == self.__options[name].getDefault())
+    #    Inputs:
+    #        name[str]: The name of the Option to retrieve
+    #        value: The value to set the option to
+    #    """
+    #    self.__options[name].setDefault(value)
 
-    def setDefault(self, name, value):
-        """
-        Set the value and the default to the supplied value.
-
-        Inputs:
-            name[str]: The name of the Option to retrieve
-            value: The value to set the option to
-        """
-        self.__options[name].setDefault(value)
-
-    def __setitem__(self, name, value):
+    def set(self, name, value):
         """
         Overload for setting value of an option with [].
 
@@ -236,44 +80,47 @@ class Options(object):
             value: The value to set the option to
             **kwargs: Key, value pairs are passed to the Option object.
         """
-
-        # Check that the option exists
-        if not self.hasOption(name):
+        opt = self.__options.get(name, None)
+        if opt is None:
             mooseutils.mooseWarning('No option with the name:', name)
-
-        # Set option to the given value, type checking occurs in the Option object
         else:
-            self.__options[name].set(value)
+            opt.value = value
 
-    def __getitem__(self, name):
+    def get(self, name, apply=False):
         """
         Overload for accessing the parameter value by name with []
 
         Inputs:
             name[str]: The name of the Option to retrieve
         """
-        #@todo warning
-        if name not in self.__options:
-            print 'No option with the name:', name
-            print self.__options.keys()
-            traceback.print_stack()
-            sys.exit()
+        opt = self.__options.get(name, None)
+        if opt is None:
+            msg = "Unknown option name: {}".format(name)
+            mooseutils.mooseError(msg)
             return None
+        elif apply:
+            return opt.apply()
+        else:
+            return opt.value
 
-        # Return None if the value is none, without this bool
-        # checks on the value do not seem to work.
-        if self.__options[name].get() is None:
-            return None
-        return self.__options[name].get()
-
-    def hasOption(self, name):
+    def apply(self, name):
         """
-        Test that the option exists.
+        Overload for accessing the parameter value by name with []
 
         Inputs:
             name[str]: The name of the Option to retrieve
         """
-        return name in self.__options
+        return self.get(name, apply=True)
+
+
+    #def hasOption(self, name):
+    #    """
+    #    Test that the option exists.
+
+    #    Inputs:
+    #        name[str]: The name of the Option to retrieve
+    #    """
+    #    return name in self.__options
 
     def add(self, *args, **kwargs):
         """
@@ -294,7 +141,7 @@ class Options(object):
 
         self.__options[args[0]] = Option(*args, **kwargs)
 
-    def update(self, options=None, **kwargs):
+    def update(self, options=None, unsed_warning=True):
         """"
         Update the options given key, value pairs
 
@@ -304,14 +151,12 @@ class Options(object):
         # Unused options
         changed = False
         unused = set()
-        warn = kwargs.pop('warn_unused', False)
 
         # Update from Options object
         if isinstance(options, Options):
             for key in options.keys():
                 if self.hasOption(key):
                     if options.isOptionValid(key):
-                        changed = True
                         self[key] = options[key]
                 else:
                     unused.add(key)
@@ -319,19 +164,18 @@ class Options(object):
         # Update from kwargs
         for k, v in kwargs.iteritems():
             if k in self.__options:
-                changed = True
                 self[k] = v
             else:
                 unused.add(k)
 
         # Warning for unused @todo warning
-        if warn and len(unused) > 0:
+        if unused_warning and len(unused) > 0:
             msg = 'The following settings where not recognized:'
             for key in unused:
                 msg += ' '*4 + key
             mooseutils.mooseWarning(msg)
 
-        return changed
+        return any(not opt.applied for opt in self.__options.itervalues())
 
     def __iadd__(self, options):
         """
@@ -354,39 +198,7 @@ class Options(object):
         """
         Functions to output the options to a string
         """
-        if not HAS_TERMINAL_TABLES:
-            return self.__class__.__name__
-
-        width = kwargs.pop('width', 120)
-
-        def build(options, tables, title=None):
-            """
-            Helper for building terminal table
-            """
-            data = [['Option', 'Value', 'Type', 'Allowed', 'Description']]
-            for key in options.keys():
-                opt = options.raw(key)
-                if isinstance(opt.vtype, tuple):
-                    vtype = repr([v.__name__ for v in opt.vtype])
-                else:
-                    vtype = opt.vtype.__name__
-                if not isinstance(opt.get(), Options):
-                    data.append([opt.name, repr(opt.get()), vtype, repr(opt.allow), opt.doc])
-                else:
-                    data.append([opt.name, 'Options', vtype, repr(opt.allow), opt.doc])
-                    build(opt.get(), tables, title=opt.name)
-
-            table = terminaltables.SingleTable(data, title=title)
-            n = sum(table.column_widths[:-2])
-            for i in range(len(table.table_data)):
-                table.table_data[i][-2] = '\n'.join(textwrap.wrap(table.table_data[i][-2], 24))
-                table.table_data[i][-1] = '\n'.join(textwrap.wrap(table.table_data[i][-1],
-                                                                  width-(n+24)))
-            tables.append(table.table)
-
-        tables = []
-        build(self, tables)
-        return '\n\n'.join(reversed(tables))
+        return '\n\n'.join(str(opt) for opt in self.__options)
 
     def toScriptString(self, **kwargs):
         """
@@ -415,9 +227,22 @@ class Options(object):
 
         return output, sub_output
 
+
+    # TODO: Move to chigger options
     def printToScreen(self, **kwargs):
+
 
         output, sub_output = self.toScriptString(**kwargs)
         print 'setOptions({})'.format(', '.join(output))
         for key, value in sub_output.iteritems():
             print 'setOptions({}, {})'.format(key, ', '.join(value))
+
+    def __isOptionDefault(self, name):
+        """
+        Test if the options is currently set to the default value.
+
+        Inputs:
+            name[str]: The name of the Option to retrieve
+        """
+        return self.hasOption(name) and \
+               (self.__options[name].get() == self.__options[name].getDefault())

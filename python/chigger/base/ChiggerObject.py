@@ -83,7 +83,10 @@ class ChiggerObject(object):
         Inputs:
             name[str]: The name of the option to retrieve
         """
-        return self._options[name]
+        return self._options.get(name)
+
+    def applyOption(self, name):
+        return self._options.apply(name)
 
     def setOption(self, name, value):
         """
