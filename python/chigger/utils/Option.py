@@ -18,7 +18,19 @@ import mooseutils
 
 class Option(object):
     """
-    Storage container for an "option" that can be type checked.
+    Storage container for an "option" that can be type checked, restricted, and documented.
+
+    The meta data within this object is designed to be immutable, the only portion of this class
+    that can be changed (without demangling) is the assigned value, via the value setter.
+
+    Inputs:
+        name[str|unicode]: The name of the option.
+        default[]: The default value, if "vtype" is set the type must match.
+        vtype[type]: The python type that this option is to be restricted.
+        doc[str|unicode]: A documentation string, which is used in the option dump.
+        allow[tuple]: A tuple of allowed values, if vtype is set the types within must match.
+        array[bool]: Define the option as an "array", which if 'vtype' is set restricts the
+                     values within the tuple to match types.
     """
 
     def __init__(self, name, default=None, vtype=None, doc=None, allow=None, array=False):
@@ -31,6 +43,11 @@ class Option(object):
         self.__applied = False # applies status, see Options class
         self.__doc = doc       # documentation string
         self.__array = array   # create an array
+
+        if (self.__name is not None) and (not isinstance(self.__name, (str, unicode))):
+            msg = "The supplied 'name' argument must be a 'str' or 'unicode', but {} was provided.".format(type(self.__name))
+            raise TypeError(msg)
+
 
         if (self.__doc is not None) and (not isinstance(self.__doc, (str, unicode))):
             msg = "The supplied 'doc' argument must be a 'str' or 'unicode', but {} was provided.".format(type(self.__doc))
@@ -119,13 +136,25 @@ class Option(object):
 
         self.__value = val
 
+    def __str__(self):
+        out = [mooseutils.colorText(self.name, 'YELLOW')]
 
+        wrapper = textwrap.TextWrapper()
+        wrapper.initial_indent = ' '*2
+        wrapper.subsequent_indent = ' '*2
+        wrapper.width = 80
+        out += wrapper.wrap(self.doc)
 
-#@default.setter
-#def default(self, val):
-#    self.value = val
-#    if val is None:
-#        pass #TODO: Error...can't set default to None
-#    else:
-#        self.__default = val
-#
+        out += ['    Value:   {}'.format(repr(self.__value)),
+                '    Default: {}'.format(repr(self.__default)),
+                '    Type:    {}'.format(self.__vtype),
+                '    Applied: {}'.format(repr(self.__applied)),
+                '    Array:   {}'.format(repr(self.__array))]
+
+        wrapper = textwrap.TextWrapper()
+        wrapper.initial_indent = '    Allow:   '
+        wrapper.subsequent_indent = ' '*len(wrapper.initial_indent)
+        wrapper.width = 80
+        out += wrapper.wrap(repr(self.__allow))
+
+        return '\n'.join(out)

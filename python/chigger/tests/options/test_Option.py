@@ -157,6 +157,36 @@ class TestOption(unittest.TestCase):
             Option('foo', doc=42)
         self.assertIn("The supplied 'doc' argument must be a 'str' or 'unicode', but <type 'int'> was provided.", e.exception.message)
 
+    def testName(self):
+        opt = Option('foo')
+        self.assertEqual(opt.name, 'foo')
+
+        opt = Option(u'foo')
+        self.assertEqual(opt.name, u'foo')
+
+        with self.assertRaises(TypeError) as e:
+            Option(42)
+        self.assertIn("The supplied 'name' argument must be a 'str' or 'unicode', but <type 'int'> was provided.", e.exception.message)
+
+    def testPrint(self):
+
+        opt = Option('foo',
+                     default=27,
+                     allow=tuple(range(1,42)),
+                     vtype=int,
+                     doc="This option is not bar, but this description is long to test that it gets wrapped at 80 characters.")
+        print opt
+        out = sys.stdout.getvalue()
+        self.assertIn('foo', out)
+        self.assertIn('Value:   27', out)
+        self.assertIn('Default: 27', out)
+        self.assertIn('Array:   False', out)
+        self.assertIn("Type:    <type 'int'>", out)
+        self.assertIn("Applied: False", out)
+        self.assertIn('Allow:   (1, 2', out)
+
+
+
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True, exit=False)
 
