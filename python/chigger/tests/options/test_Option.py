@@ -175,8 +175,8 @@ class TestOption(unittest.TestCase):
                      allow=tuple(range(1,42)),
                      vtype=int,
                      doc="This option is not bar, but this description is long to test that it gets wrapped at 80 characters.")
-        print opt
-        out = sys.stdout.getvalue()
+
+        out = str(opt)
         self.assertIn('foo', out)
         self.assertIn('Value:   27', out)
         self.assertIn('Default: 27', out)
