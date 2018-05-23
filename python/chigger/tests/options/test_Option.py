@@ -17,8 +17,13 @@ class TestOption(unittest.TestCase):
 
     def assertInWarning(self, msg):
         output = sys.stdout.getvalue()
+        found = False
         for match in re.finditer(r'WARNING\s*\n(?P<message>.*?)(?=^\n|\Z)', output, flags=re.MULTILINE|re.DOTALL):
+            found = True
             self.assertIn(msg, match.group('message'))
+
+        if not found:
+            self.assertTrue(False, "No warnings exist.")
 
     def testMinimal(self):
         opt = Option('foo')
@@ -57,7 +62,7 @@ class TestOption(unittest.TestCase):
         self.assertEqual(opt.value, 'two')
 
         opt.value = 4
-        self.assertInWarning("Attempting to set foo to a value of 4 but only the following are allowed: (1, 'two')")
+        self.assertInWarning("Attempting to set 'foo' to a value of 4 but only the following are allowed: (1, 'two')")
 
     def testType(self):
         opt = Option('foo', vtype=int)
@@ -68,7 +73,7 @@ class TestOption(unittest.TestCase):
         self.assertEqual(opt.value, 1)
 
         opt.value = 4.
-        self.assertInWarning("foo must be of type int but float provided.")
+        self.assertInWarning("'foo' must be of type <type 'int'> but <type 'float'> provided.")
         self.assertEqual(opt.value, 1)
 
     def testTypeWithAllow(self):
@@ -84,17 +89,73 @@ class TestOption(unittest.TestCase):
         self.assertEqual(opt.value, 1)
 
         opt.value = 4
-        self.assertInWarning("Attempting to set foo to a value of 4 but only the following are allowed: (1, 2)")
+        self.assertInWarning("Attempting to set 'foo' to a value of 4 but only the following are allowed: (1, 2)")
         self.assertEqual(opt.value, 1)
-
 
     def testAllowWithTypeError(self):
 
         with self.assertRaises(TypeError) as e:
-            opt = Option('foo', vtype=int, allow=(1,'2'))
+            Option('foo', allow='wrong')
+        self.assertIn("The supplied 'allow' argument must be a 'tuple', but <type 'str'> was provided.", e.exception.message)
 
+        with self.assertRaises(TypeError) as e:
+            Option('foo', vtype=int, allow=(1,'2'))
         self.assertIn("The supplied 'allow' argument must be a 'tuple' of <type 'int'> items, but a <type 'str'> item was provided.", e.exception.message)
 
+    def testApply(self):
+
+        opt = Option('foo', default=42)
+        self.assertFalse(opt.applied)
+        self.assertEqual(opt.apply(), 42)
+        self.assertEqual(opt.value, 42)
+        self.assertTrue(opt.applied)
+        opt.value = 42
+        self.assertTrue(opt.applied)
+        opt.value = 43
+        self.assertEqual(opt.value, 43)
+        self.assertFalse(opt.applied)
+        self.assertEqual(opt.apply(), 43)
+        self.assertEqual(opt.value, 43)
+        self.assertTrue(opt.applied)
+
+    def testArray(self):
+        opt = Option('foo', default=(1,2))
+        self.assertEqual(opt._Option__array, True)
+        self.assertEqual(opt.value, (1,2))
+
+        opt.value = 4
+        self.assertInWarning("'foo' was defined as an array, which require <type 'tuple'> for assignment, but a <type 'int'> was provided.")
+
+        opt.value = (3, 4)
+        self.assertEqual(opt.value, (3,4))
+
+        opt.value = ('1', )
+        self.assertEqual(opt.value, ('1',))
+
+        opt = Option('foo', vtype=int, array=True)
+        self.assertEqual(opt._Option__array, True)
+        self.assertIsNone(opt.value)
+
+        opt.value = 4
+        self.assertInWarning("'foo' was defined as an array, which require <type 'tuple'> for assignment, but a <type 'int'> was provided.")
+
+        opt.value = ('1', )
+        self.assertInWarning("The values within 'foo' must be of type <type 'int'> but <type 'str'> provided.")
+        self.assertIsNone(opt.value)
+
+        opt.value = (1, )
+        self.assertEqual(opt.value, (1,))
+
+    def testDoc(self):
+        opt = Option('foo', doc='This is foo, not bar.')
+        self.assertEqual(opt.doc, 'This is foo, not bar.')
+
+        opt = Option('foo', doc=u'This is foo, not bar.')
+        self.assertEqual(opt.doc, u'This is foo, not bar.')
+
+        with self.assertRaises(TypeError) as e:
+            Option('foo', doc=42)
+        self.assertIn("The supplied 'doc' argument must be a 'str' or 'unicode', but <type 'int'> was provided.", e.exception.message)
 
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True, exit=False)
