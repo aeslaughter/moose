@@ -14,6 +14,20 @@ class MainWindowObserver(ChiggerObserver):
     The main means for interaction with the chigger interactive window.
     """
 
+    """
+    Notes:
+    - Create KeyBinding class here (?) instead of the namedtuple in ChiggerResult base
+    - All increments should be <key> for increase and shift-<key> for opposite
+    - ChiggerResultBase::AddKeyBinding should compare against reserved items from this object via
+      a class variable as well as other items in the self.__keybindings map
+    - Help should list the "global" and "local" bindings (i.e., local to the active result)
+    - ChiggerObject should have a "name" option that defaults to the class name, this name
+      should be used in the key binding dump
+    - ChiggerResultBase::getKeyBinding should take a KeyBinding object for lookup
+    - ChiggerResultBase::__keybindings should probably just be a set() of KeyBinding objects
+    """
+
+
     @staticmethod
     def getOptions():
         opt = ChiggerObserver.getOptions()
