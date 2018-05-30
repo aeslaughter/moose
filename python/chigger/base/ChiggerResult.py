@@ -113,6 +113,7 @@ class ChiggerResult(ChiggerResultBase):
         Initialize by adding actors to renderer.
         """
         super(ChiggerResult, self).initialize()
+
         for src in self._sources:
             if not isinstance(src, self.SOURCE_TYPE):
                 n = src.__class__.__name__
@@ -120,7 +121,9 @@ class ChiggerResult(ChiggerResultBase):
                 msg = 'The supplied source type of {} must be of type {}.'.format(n, t)
                 raise mooseutils.MooseException(msg)
             src.setVTKRenderer(self._vtkrenderer)
-            self._vtkrenderer.AddViewProp(src.getVTKActor())
+            print 'Adding actor', type(src.getVTKActor())
+            #import traceback; traceback.print_stack()
+            self._vtkrenderer.AddActor(src.getVTKActor())
 
     def __iter__(self):
         """

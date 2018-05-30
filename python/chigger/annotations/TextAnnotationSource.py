@@ -48,6 +48,7 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         if self.isOptionValid('text'):
             self._vtkmapper.GetTextProperty().Modified()
             self._vtkmapper.SetInput(self.applyOption('text'))
+            print 'Setting text:', self.applyOption('text')
 
         # if options applied ... perform render
         #self._vtkrenderer.GetRenderWindow().Render()

@@ -60,7 +60,7 @@ class RenderWindow(base.ChiggerObject):
 
         super(RenderWindow, self).__init__(**kwargs)
 
-        self._results = [misc.ChiggerBackground()]
+        self._results = []#[misc.ChiggerBackground()]
         self._observers = set()
         self.__active = None
 
@@ -256,10 +256,10 @@ class RenderWindow(base.ChiggerObject):
         for result in self._results:
             renderer = result.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
-                #print 'ADD:', renderer
+                print 'add renderer:', type(renderer)
                 self.__vtkwindow.AddRenderer(renderer)
             #if result.needsUpdate():
-            result.initialize()
+            #result.initialize()
             result.update()
             n = max(n, renderer.GetLayer() + 1)
 
