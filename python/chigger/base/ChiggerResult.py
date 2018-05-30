@@ -39,10 +39,22 @@ class ChiggerResult(ChiggerResultBase):
     def __init__(self, *sources, **kwargs):
         super(ChiggerResult, self).__init__(**kwargs)
         self._sources = sources
-        for src in self._sources:
-            src._parent = self #pylint: disable=protected-access
-
         self.update(**kwargs)
+
+        #for src in self._sources:
+        #    src._parent = self #pylint: disable=protected-access
+
+        for src in self._sources:
+            if not isinstance(src, self.SOURCE_TYPE):
+                n = src.__class__.__name__
+                t = self.SOURCE_TYPE.__name__
+                msg = 'The supplied source type of {} must be of type {}.'.format(n, t)
+                raise mooseutils.MooseException(msg)
+
+            src.setVTKRenderer(self._vtkrenderer)
+            self._vtkrenderer.AddActor(src.getVTKActor())
+
+
 
     #def needsUpdate(self):
     #    """
@@ -76,13 +88,9 @@ class ChiggerResult(ChiggerResultBase):
         Inputs:
             see ChiggerResultBase
         """
-        changed = [self.needsUpdate()]
-        changed.append(super(ChiggerResult, self).setOptions(*args, **kwargs))
+        super(ChiggerResult, self).setOptions(*args, **kwargs)
         for src in self._sources:
-            changed.append(src.setOptions(*args, **kwargs))
-        changed = any(changed)
-        self.setNeedsUpdate(changed)
-        return changed
+            src.setOptions(*args, **kwargs)
 
     def update(self, **kwargs):
         """
@@ -94,7 +102,6 @@ class ChiggerResult(ChiggerResultBase):
         super(ChiggerResult, self).update(**kwargs)
 
         for src in self._sources:
-            #print src
             src.update(**kwargs)
 
     def getSources(self):
@@ -109,24 +116,23 @@ class ChiggerResult(ChiggerResultBase):
         """
         super(ChiggerResult, self).reset()
         for src in self._sources:
-            self._vtkrenderer.RemoveViewProp(src.getVTKActor())
+            self._vtkrenderer.RemoveActor(src.getVTKActor())
 
-    def initialize(self):
-        """
-        Initialize by adding actors to renderer.
-        """
-        super(ChiggerResult, self).initialize()
-
-        for src in self._sources:
-            if not isinstance(src, self.SOURCE_TYPE):
-                n = src.__class__.__name__
-                t = self.SOURCE_TYPE.__name__
-                msg = 'The supplied source type of {} must be of type {}.'.format(n, t)
-                raise mooseutils.MooseException(msg)
-            src.setVTKRenderer(self._vtkrenderer)
-            print 'Adding actor', type(src.getVTKActor())
-            #import traceback; traceback.print_stack()
-            self._vtkrenderer.AddActor(src.getVTKActor())
+#    def initialize(self):
+#        """
+#        Initialize by adding actors to renderer.
+#        """
+#        super(ChiggerResult, self).initialize()
+#
+#        for src in self._sources:
+#            if not isinstance(src, self.SOURCE_TYPE):
+#                n = src.__class__.__name__
+#                t = self.SOURCE_TYPE.__name__
+#                msg = 'The supplied source type of {} must be of type {}.'.format(n, t)
+#                raise mooseutils.MooseException(msg)
+#            src.setVTKRenderer(self._vtkrenderer)
+#            #import traceback; traceback.print_stack()
+#            self._vtkrenderer.AddActor(src.getVTKActor())
 
     def __iter__(self):
         """

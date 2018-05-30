@@ -58,12 +58,11 @@ class ChiggerSourceBase(ChiggerObject):
         else:
             self._vtkmapper = None
 
-        #if self._vtkmapper:
-        #    print 'connecting mapper to actor'
-        #    self._vtkactor.SetMapper(self._vtkmapper)
+        if self._vtkmapper:
+            self._vtkactor.SetMapper(self._vtkmapper)
 
-        self._vtkrenderer = None # This is set automatically by ChiggerResult object.
-        self._parent = None # Set by ChiggerResult
+        self._vtkrenderer = None # set automatically by ChiggerResult object.
+        #self._parent = None # Set by ChiggerResult
         self._selected = False
 
     def getVTKActor(self):

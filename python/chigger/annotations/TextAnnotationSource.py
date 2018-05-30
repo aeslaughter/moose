@@ -45,7 +45,6 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         #if self.isOptionValid('position'):
         #    self._vtkactor.GetPositionCoordinate().SetValue(*self.applyOption('position'))
 
-        print self._options
         if self.isOptionValid('text'):
         #    self._vtkmapper.GetTextProperty().Modified()
             self._vtkmapper.SetInput(self.applyOption('text'))

@@ -204,7 +204,7 @@ class RenderWindow(base.ChiggerObject):
 
         # Setup interactor
         if self.isOptionValid('test') and self.getOption('test'):
-            self.__vtkwindow.OffScreenRenderingOn()
+            self.__vtkwindow.OffScreenRenderingOn(True)
 
         elif self.isOptionValid('style'):
             if self.__vtkinteractor is None:
@@ -249,7 +249,7 @@ class RenderWindow(base.ChiggerObject):
         if self.isOptionValid('size'):
             self.__vtkwindow.SetSize(self.getOption('size'))
 
-        self.__vtkwindow.Render()
+        #self.__vtkwindow.Render()
 
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
@@ -281,9 +281,10 @@ class RenderWindow(base.ChiggerObject):
                     observer.init(self)
                     self._observers.add(observer)
 
-        #
+        for result in self._results:
+            result.update()
         #print self.__vtkinteractor
-        self.__vtkwindow.Render()
+        #self.__vtkwindow.Render()
 
     def resetCamera(self):
         """
