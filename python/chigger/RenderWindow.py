@@ -24,18 +24,18 @@ class RenderWindow(base.ChiggerObject):
     RESULT_TYPE = base.ChiggerResultBase
 
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerObject.getOptions()
+    def validOptions():
+        opt = base.ChiggerObject.validOptions()
 
-        opt.add('size', [960, 540], "The size of the window, expects a list of two items",
-                vtype=list)
-        opt.add('style', 'interactive', "The interaction style.",
-                allow=['interactive', 'modal', 'interactive2D'])
+        opt.add('size', (960, 540), "The size of the window, expects a list of two items",
+                vtype=int)
+        opt.add('style', 'interactive', "The interaction style.", vtype=str,
+                allow=('interactive', 'modal', 'interactive2D'))
         opt.add('test', False, "When True the interaction is disabled and the window closes "
-                               "immediately after rendering.")
-        opt.add('offscreen', False, "Enable offscreen rendering.")
-        opt.add('chigger', False, "Places a chigger logo in the lower left corner.")
-        opt.add('smoothing', False, "Enable VTK render window smoothing options.")
+                               "immediately after rendering.", vtype=bool)
+        opt.add('offscreen', False, "Enable offscreen rendering.", vtype=bool)
+        #opt.add('chigger', False, "Places a chigger logo in the lower left corner.") #TODO
+        opt.add('smoothing', False, "Enable VTK render window smoothing options.", vtype=bool)
         opt.add('multisamples', None, "Set the number of multi-samples.", vtype=int)
         opt.add('antialiasing', 0, "Number of antialiasing frames to perform "
                                    "(set vtkRenderWindow::SetAAFrames).", vtype=int)
@@ -43,13 +43,13 @@ class RenderWindow(base.ChiggerObject):
         # Observers
         opt.add('observers', [], "A list of ChiggerObserver objects, once added they are not " \
                                  "removed. Hence, changing the observers in this list will not " \
-                                 "remove existing objects.")
+                                 "remove existing objects.", vtype=list)
 
         # Background settings
-        background = misc.ChiggerBackground.getOptions()
-        background.pop('layer')
-        background.pop('camera')
-        background.pop('viewport')
+        background = misc.ChiggerBackground.validOptions()
+        background.remove('layer')
+        background.remove('camera')
+        background.remove('viewport')
         opt += background
         return opt
 
@@ -97,7 +97,7 @@ class RenderWindow(base.ChiggerObject):
         """
         Append result object(s) to the window.
         """
-        self.setNeedsUpdate(True)
+        #self.setNeedsUpdate(True)
         for result in args:
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
             if isinstance(result, base.ResultGroup):
@@ -113,7 +113,7 @@ class RenderWindow(base.ChiggerObject):
         """
         Remove result object(s) from the window.
         """
-        self.setNeedsUpdate(True)
+        #self.setNeedsUpdate(True)
         for result in args:
             if self.__vtkwindow.HasRenderer(result.getVTKRenderer()):
                 self.__vtkwindow.RemoveRenderer(result.getVTKRenderer())
@@ -132,12 +132,12 @@ class RenderWindow(base.ChiggerObject):
         self.append(misc.ChiggerBackground())
         self.update()
 
-    def needsUpdate(self):
-        """
-        Returns True if the window or any of the child objects require update.
-        """
-        needs_update = base.ChiggerObject.needsUpdate(self)
-        return needs_update or any([result.needsUpdate() for result in self._results])
+    #def needsUpdate(self):
+    #    """
+    #    Returns True if the window or any of the child objects require update.
+    #    """
+    #    needs_update = base.ChiggerObject.needsUpdate(self)
+    #    return needs_update or any([result.needsUpdate() for result in self._results])
 
     def setActive(self, result):
         """
@@ -188,15 +188,15 @@ class RenderWindow(base.ChiggerObject):
 
         mooseutils.mooseDebug("{}.start()".format(self.__class__.__name__), color='MAGENTA')
 
-        if self.needsUpdate():
-            self.update()
+        #if self.needsUpdate():
+        self.update()
 
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
-        if self.getOption('style') == 'test':
-            self.__vtkwindow.Finalize()
+        #if self.getOption('style') == 'test':
+        #    self.__vtkwindow.Finalize()
 
     def update(self, **kwargs):
         """
@@ -259,8 +259,8 @@ class RenderWindow(base.ChiggerObject):
             renderer = result.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
                 self.__vtkwindow.AddRenderer(renderer)
-            if result.needsUpdate():
-                result.update()
+            #if result.needsUpdate():
+            result.update()
             n = max(n, renderer.GetLayer() + 1)
         self.__vtkwindow.SetNumberOfLayers(n)
 
@@ -299,8 +299,8 @@ class RenderWindow(base.ChiggerObject):
         """
         mooseutils.mooseDebug('RenderWindow.write()', color='MAGENTA')
 
-        if self.needsUpdate() or kwargs:
-            self.update(**kwargs)
+        #if self.needsUpdate() or kwargs:
+        #    self.update(**kwargs)
 
         # Allowed extensions and the associated readers
         writers = dict()

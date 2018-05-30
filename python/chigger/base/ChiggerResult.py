@@ -32,8 +32,8 @@ class ChiggerResult(ChiggerResultBase):
     SOURCE_TYPE = ChiggerSourceBase
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerResultBase.getOptions()
+    def validOptions():
+        opt = ChiggerResultBase.validOptions()
         return opt
 
     def __init__(self, *sources, **kwargs):
@@ -42,13 +42,13 @@ class ChiggerResult(ChiggerResultBase):
         for src in self._sources:
             src._parent = self #pylint: disable=protected-access
 
-    def needsUpdate(self):
-        """
-        Checks if this object or any of the contained ChiggerFilterSourceBase object require update.
-        (override)
-        """
-        return super(ChiggerResult, self).needsUpdate() or \
-               any([src.needsUpdate() for src in self._sources])
+    #def needsUpdate(self):
+    #    """
+    #    Checks if this object or any of the contained ChiggerFilterSourceBase object require update.
+    #    (override)
+    #    """
+    #    return super(ChiggerResult, self).needsUpdate() or \
+    #           any([src.needsUpdate() for src in self._sources])
 
     def updateOptions(self, *args):
         """
@@ -92,8 +92,7 @@ class ChiggerResult(ChiggerResultBase):
         super(ChiggerResult, self).update(**kwargs)
 
         for src in self._sources:
-            if src.needsUpdate():
-                src.update()
+            src.update()
 
     def getSources(self):
         """

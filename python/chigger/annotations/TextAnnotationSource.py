@@ -18,14 +18,14 @@ class TextAnnotationSource(base.ChiggerSourceBase):
     """
 
     @staticmethod
-    def getOptions():
+    def validOptions():
         """
         Return default options for this object.
         """
-        opt = base.ChiggerSourceBase.getOptions()
-        opt.add('position', [0.5, 0.5], "The text position within the viewport, in relative "
-                                        "coordinates.", vtype=tuple)
-        opt += utils.FontOptions.get_options()
+        opt = base.ChiggerSourceBase.validOptions()
+        opt.add('position', (0.5, 0.5), "The text position within the viewport, in relative "
+                                        "coordinates.", vtype=float)
+        opt += utils.FontOptions.validOptions()
         return opt
 
     def __init__(self, **kwargs):
@@ -38,12 +38,15 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         Updates the settings for the text creation. (override)
         """
         super(TextAnnotationSource, self).update(**kwargs)
+
+
         utils.FontOptions.set_options(self._vtkmapper.GetTextProperty(), self._options)
-        self._vtkactor.GetPositionCoordinate().SetValue(*self.getOption('position'))
+
+        if self.isOptionValid('position'):
+            self._vtkactor.GetPositionCoordinate().SetValue(*self.applyOption('position'))
 
         if self.isOptionValid('text'):
-            self._vtkmapper.GetTextProperty().Modified()
-            self._vtkmapper.SetInput(self.getOption('text'))
+            self._vtkmapper.SetInput(self.applyOption('text'))
 
         # if options applied ... perform render
         #self._vtkrenderer.GetRenderWindow().Render()

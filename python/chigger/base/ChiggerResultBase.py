@@ -28,21 +28,23 @@ class ChiggerResultBase(ChiggerObject):
     KeyBinding = collections.namedtuple('KeyBinding', 'key shift control alt description function')
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerObject.getOptions()
+    def validOptions():
+        opt = ChiggerObject.validOptions()
         opt.add('layer', 1, "The VTK layer within the render window.", vtype=int)
-        opt.add('viewport', [0, 0, 1, 1], "A list given the viewport coordinates [x_min, y_min, "
+        opt.add('viewport', (0., 0., 1., 1.), "A list given the viewport coordinates [x_min, y_min, "
                                           "x_max, y_max], in relative position to the entire "
-                                          "window (0 to 1).", vtype=list)
-        opt.add('background', [0, 0, 0], "The background color, only applied when the 'layer' "
-                                         "option is zero. A background result is automatically "
-                                         "added when chigger.RenderWindow is utilized.")
+                                          "window (0 to 1).", vtype=float)
+        opt.add('background', (0., 0., 0.), vtype=float,
+                doc="The background color, only applied when the 'layer' option is zero. A "
+                    "background result is automatically added when chigger.RenderWindow is "
+                    "utilized.")
         opt.add('background2', None, "The second background color, when supplied this creates a "
                                      "gradient background, only applied when the 'layer' option is "
                                      "zero. A background result is automatically added when "
-                                     "chigger.RenderWindow is utilized.", vtype=list)
+                                     "chigger.RenderWindow is utilized.", vtype=float, array=True)
         opt.add('gradient_background', False, "Enable/disable the use of a gradient background.")
-        opt.add('camera', "The VTK camera to utilize for viewing the results.", vtype=vtk.vtkCamera)
+        opt.add('camera', None, "The VTK camera to utilize for viewing the results.",
+                vtype=vtk.vtkCamera)
         return opt
 
     def __init__(self, renderer=None, **kwargs):
@@ -79,20 +81,22 @@ class ChiggerResultBase(ChiggerObject):
 
         # Render layer
         if self.isOptionValid('layer'):
-            self._vtkrenderer.SetLayer(self.getOption('layer'))
+            self._vtkrenderer.SetLayer(self.applyOption('layer'))
 
         # Viewport
         if self.isOptionValid('viewport'):
-            self._vtkrenderer.SetViewport(self.getOption('viewport'))
+            self._vtkrenderer.SetViewport(self.applyOption('viewport'))
 
         # Background (only gets applied if layer=0)
-        self._vtkrenderer.SetBackground(self.getOption('background'))
+        if self.isOptionValid('background'):
+            self._vtkrenderer.SetBackground(self.applyOption('background'))
+
         if self.isOptionValid('background2'):
-            self._vtkrenderer.SetBackground2(self.getOption('background2'))
+            self._vtkrenderer.SetBackground2(self.applyOption('background2'))
 
         if self.isOptionValid('gradient_background'):
-            self._vtkrenderer.SetGradientBackground(self.getOption('gradient_background'))
+            self._vtkrenderer.SetGradientBackground(self.applyOption('gradient_background'))
 
         # Camera
         if self.isOptionValid('camera'):
-            self._vtkrenderer.SetActiveCamera(self.getOption('camera'))
+            self._vtkrenderer.SetActiveCamera(self.applyOption('camera'))

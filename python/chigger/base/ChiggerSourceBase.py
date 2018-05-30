@@ -33,8 +33,8 @@ class ChiggerSourceBase(ChiggerObject):
     VTKMAPPER_TYPE = vtk.vtkAbstractMapper
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerObject.getOptions()
+    def validOptions():
+        opt = ChiggerObject.validOptions()
         opt.add('visible', True, "Toggle the visibility of the object.")
         return opt
 

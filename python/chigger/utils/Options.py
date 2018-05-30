@@ -15,6 +15,8 @@ import traceback
 
 from Option import Option
 
+import mooseutils
+
 class Options(object):
     """
     A warehouse for creating and storing options
@@ -38,18 +40,22 @@ class Options(object):
         """
         return self.__options[name]
 
-    def pop(self, name, default=None):
-        """
-        Remove an Option object from the available options. (public)
+    def remove(self, name):
+        self.__options.pop(name)
 
-        Inputs:
-            name[str]: The name of the Option to retrieve
-        """
-        if not self.hasOption(name):
-            return default
-        else:
-            option = self.__options.pop(name)
-            return option.get() #pylint: disable=no-member
+
+    #def pop(self, name, default=None):
+    #    """
+    #    Remove an Option object from the available options. (public)
+
+    #    Inputs:
+    #        name[str]: The name of the Option to retrieve
+    #    """
+    #    if not self.hasOption(name):
+    #        return default
+    #    else:
+    #        option = self.__options.pop(name)
+    #        return option.get() #pylint: disable=no-member
 
     def isOptionValid(self, name):
         """
@@ -103,7 +109,7 @@ class Options(object):
         else:
             return opt.value
 
-    def apply(self, name):
+    def applyOption(self, name):
         """
         Overload for accessing the parameter value by name with []
 
@@ -112,15 +118,14 @@ class Options(object):
         """
         return self.get(name, apply=True)
 
+    def hasOption(self, name):
+        """
+        Test that the option exists.
 
-    #def hasOption(self, name):
-    #    """
-    #    Test that the option exists.
-
-    #    Inputs:
-    #        name[str]: The name of the Option to retrieve
-    #    """
-    #    return name in self.__options
+        Inputs:
+            name[str]: The name of the Option to retrieve
+        """
+        return name in self.__options
 
     def add(self, *args, **kwargs):
         """
@@ -141,41 +146,43 @@ class Options(object):
 
         self.__options[args[0]] = Option(*args, **kwargs)
 
-    def update(self, options=None, unsed_warning=True):
+    def update(self, *args, **kwargs):
         """"
         Update the options given key, value pairs
 
-        To enable unused warning, include 'warn_unused=True'
+        Inputs:
+            *args: Options objects to use for updating this object.
+            **kwargs: key, values pairs to used for updating this object.
         """
 
         # Unused options
-        changed = False
         unused = set()
 
         # Update from Options object
-        if isinstance(options, Options):
-            for key in options.keys():
-                if self.hasOption(key):
-                    if options.isOptionValid(key):
-                        self[key] = options[key]
-                else:
-                    unused.add(key)
+        for opt in args:
+            if not isinstance(opt, Options):
+                mooseutils.mooseError("The supplied arguments must be Options objects or key, value pairs.")
+            else:
+                for key in opt.keys():
+                    if self.hasOption(key):
+                        if opt.isOptionValid(key):
+                            self.set(key, opt.get(key))
+                    else:
+                        unused.add(key)
 
         # Update from kwargs
         for k, v in kwargs.iteritems():
             if k in self.__options:
-                self[k] = v
+                self.set(k, v)
             else:
                 unused.add(k)
 
         # Warning for unused @todo warning
-        if unused_warning and len(unused) > 0:
+        if len(unused) > 0:
             msg = 'The following settings where not recognized:'
             for key in unused:
                 msg += ' '*4 + key
             mooseutils.mooseWarning(msg)
-
-        return any(not opt.applied for opt in self.__options.itervalues())
 
     def __iadd__(self, options):
         """
@@ -198,7 +205,7 @@ class Options(object):
         """
         Functions to output the options to a string
         """
-        return '\n\n'.join(str(opt) for opt in self.__options)
+        return '\n\n'.join(str(opt) for opt in self.__options.values())
 
     def toScriptString(self, **kwargs):
         """

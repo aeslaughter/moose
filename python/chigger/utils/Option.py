@@ -48,7 +48,6 @@ class Option(object):
             msg = "The supplied 'name' argument must be a 'str' or 'unicode', but {} was provided.".format(type(self.__name))
             raise TypeError(msg)
 
-
         if (self.__doc is not None) and (not isinstance(self.__doc, (str, unicode))):
             msg = "The supplied 'doc' argument must be a 'str' or 'unicode', but {} was provided.".format(type(self.__doc))
             raise TypeError(msg)
@@ -57,11 +56,9 @@ class Option(object):
             msg = "The supplied 'vtype' argument must be a 'type', but {} was provided.".format(type(self.__vtype))
             raise TypeError(msg)
 
-
         if (self.__allow is not None) and (not isinstance(self.__allow, tuple)):
             msg = "The supplied 'allow' argument must be a 'tuple', but {} was provided.".format(type(self.__allow))
             raise TypeError(msg)
-
 
         if (self.__vtype is not None) and (self.__allow is not None):
             for value in self.__allow:
@@ -142,7 +139,7 @@ class Option(object):
         wrapper = textwrap.TextWrapper()
         wrapper.initial_indent = ' '*2
         wrapper.subsequent_indent = ' '*2
-        wrapper.width = 80
+        wrapper.width = 100
         out += wrapper.wrap(self.doc)
 
         out += ['    Value:   {}'.format(repr(self.__value)),
