@@ -150,10 +150,11 @@ class ChiggerObject(object):
     #    """
     #    self.__needs_initialize = True
 
-    #def initialize(self):
-    #    """
-    #    Initialize method that runs once when update() is first called. (protected)
-    #    """
+    def initialize(self):
+        """
+        Initialize method that runs once when update() is first called. (protected)
+        """
+        pass
     #    mooseutils.mooseDebug("{}.initialize()".format(self.__class__.__name__))
     #    self.__needs_initialize = False
     #    self._setInitialOptions()

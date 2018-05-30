@@ -104,8 +104,8 @@ class ChiggerSourceBase(ChiggerObject):
         if self.isOptionValid('visible'):
             self._vtkactor.SetVisibility(self.getOption('visible'))
 
-    def initialize(self, *args, **kwargs):
-        super(ChiggerSourceBase, self).initialize(*args, **kwargs)
+    #def initialize(self, *args, **kwargs):
+    #    super(ChiggerSourceBase, self).initialize(*args, **kwargs)
 
         #print 'Interactive:', self._vtkrenderer.GetInteractive()
         #if self.setVTKRenderer().GetInteractive():

@@ -16,7 +16,7 @@ class ChiggerBackground(base.ChiggerResultBase):
     @staticmethod
     def getOptions():
         opt = base.ChiggerResultBase.getOptions()
-        #opt.setDefault('layer', 0)
+        opt.set('layer', 0)
         return opt
 
     def __init__(self, **kwargs):

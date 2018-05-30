@@ -85,7 +85,6 @@ class RenderWindow(base.ChiggerObject):
         """
         return self.__vtkinteractorstyle
 
-
     def getVTKWindow(self):
         """
         Return the vtkRenderWindow object.
@@ -108,7 +107,7 @@ class RenderWindow(base.ChiggerObject):
                 raise mooseutils.MooseException(msg)
             self._results.append(result)
 
-    def pop(self, *args):
+    def remove(self, *args):
         """
         Remove result object(s) from the window.
         """
@@ -127,7 +126,7 @@ class RenderWindow(base.ChiggerObject):
         """
         Remove all objects from the render window.
         """
-        self.pop(*self._results)
+        self.remove(*self._results)
         self.append(misc.ChiggerBackground())
         self.update()
 
@@ -257,10 +256,13 @@ class RenderWindow(base.ChiggerObject):
         for result in self._results:
             renderer = result.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
+                #print 'ADD:', renderer
                 self.__vtkwindow.AddRenderer(renderer)
             #if result.needsUpdate():
+            result.initialize()
             result.update()
             n = max(n, renderer.GetLayer() + 1)
+
         self.__vtkwindow.SetNumberOfLayers(n)
 
         if (self.__active is None) and len(self._results) > 1:
@@ -268,7 +270,6 @@ class RenderWindow(base.ChiggerObject):
 
         # Observers
         if self.__vtkinteractor:
-
 
             for observer in self.getOption('observers'):
                 if not isinstance(observer, observers.ChiggerObserver):
@@ -280,6 +281,8 @@ class RenderWindow(base.ChiggerObject):
                     observer.init(self)
                     self._observers.add(observer)
 
+        #
+        #print self.__vtkinteractor
         self.__vtkwindow.Render()
 
     def resetCamera(self):
