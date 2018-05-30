@@ -119,7 +119,7 @@ class TestOption(unittest.TestCase):
         self.assertTrue(opt.applied)
 
     def testArray(self):
-        opt = Option('foo', default=(1,2))
+        opt = Option('foo', default=(1,2), array=True)
         self.assertEqual(opt._Option__array, True)
         self.assertEqual(opt.value, (1,2))
 
@@ -145,6 +145,14 @@ class TestOption(unittest.TestCase):
 
         opt.value = (1, )
         self.assertEqual(opt.value, (1,))
+
+    def testSize(self):
+        opt = Option('foo', size=4)
+        self.assertEqual(opt._Option__array, True)
+        self.assertEqual(opt._Option__size, 4)
+
+        opt.value = (1,2,3)
+        self.assertInWarning("'foo' was defined as an array with length 4 but a value with length 3 was provided.")
 
     def testDoc(self):
         opt = Option('foo', doc='This is foo, not bar.')
@@ -184,6 +192,7 @@ class TestOption(unittest.TestCase):
         self.assertIn("Type:    <type 'int'>", out)
         self.assertIn("Applied: False", out)
         self.assertIn('Allow:   (1, 2', out)
+
 
 
 

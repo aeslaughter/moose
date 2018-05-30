@@ -31,9 +31,11 @@ class Option(object):
         allow[tuple]: A tuple of allowed values, if vtype is set the types within must match.
         array[bool]: Define the option as an "array", which if 'vtype' is set restricts the
                      values within the tuple to match types.
+        size[int]: Defines the size of an array, setting size will automatically set the
+                   array flag.
     """
 
-    def __init__(self, name, default=None, doc=None, vtype=None, allow=None, array=False):
+    def __init__(self, name, default=None, doc=None, vtype=None, allow=None, size=None, array=False):
 
         self.__name = name     # option name
         self.__value = None    # current value
@@ -43,6 +45,7 @@ class Option(object):
         self.__applied = False # applies status, see Options class
         self.__doc = doc       # documentation string
         self.__array = array   # create an array
+        self.__size = size     # array size
 
         if (self.__name is not None) and (not isinstance(self.__name, (str, unicode))):
             msg = "The supplied 'name' argument must be a 'str' or 'unicode', but {} was provided.".format(type(self.__name))
@@ -66,7 +69,11 @@ class Option(object):
                     msg = "The supplied 'allow' argument must be a 'tuple' of {} items, but a {} item was provided.".format(self.__vtype, type(value))
                     raise TypeError(msg)
 
-        if isinstance(default, tuple):
+        if (self.__size is not None) and (not isinstance(self.__size, int)):
+            msg = "The supplied 'size' argument must be a 'int', but {} was provided.".format(type(self.__size))
+            raise TypeError(msg)
+
+        elif self.__size is not None:
             self.__array = True
 
         if default is not None:
@@ -118,6 +125,12 @@ class Option(object):
                 if (self.__vtype is not None) and not isinstance(v, self.__vtype):
                     msg = "The values within '{}' must be of type {} but {} provided."
                     mooseutils.mooseWarning(msg.format(self.name, self.__vtype, type(v)))
+                    return
+
+            if self.__size is not None:
+                if (len(val) != self.__size):
+                    msg = "'{}' was defined as an array with length {} but a value with length {} was provided."
+                    mooseutils.mooseWarning(msg.format(self.name, self.__size, len(val)))
                     return
 
         else:
