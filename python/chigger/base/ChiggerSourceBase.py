@@ -102,8 +102,8 @@ class ChiggerSourceBase(ChiggerObject):
         """
         super(ChiggerSourceBase, self).update(**kwargs)
 
-        if self.isOptionValid('visible'):
-            self._vtkactor.SetVisibility(self.getOption('visible'))
+        #if self.isOptionValid('visible'):
+        #    self._vtkactor.SetVisibility(self.getOption('visible'))
 
     #def initialize(self, *args, **kwargs):
     #    super(ChiggerSourceBase, self).initialize(*args, **kwargs)

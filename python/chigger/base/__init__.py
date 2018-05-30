@@ -46,4 +46,7 @@ def create_single_source_result(source_type):
         def __init__(self, **kwargs):
             super(ChiggerResultMeta, self).__init__(source_type(), **kwargs)
 
+        #def update(self, **kwargs):
+        #    super(ChiggerResultMeta, self).update(**kwargs)
+
     return ChiggerResultMeta

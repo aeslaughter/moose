@@ -10,10 +10,10 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
 import chigger
-text = chigger.annotations.TextAnnotation(text='This is a test.', font_size=32,
-                                          text_color=(1.,0.,1.), text_opacity=0.5, layer=0)
-
-text[0].getVTKMapper().SetInput("Testing...")
+text = chigger.annotations.TextAnnotation(text='This is a test.')#, font_size=32,
+#                                          text_color=(1.,0.,1.), text_opacity=0.5, layer=0)
+text.update()
+#text[0].getVTKMapper().SetInput("Testing...")
 text[0].getVTKActor().SetMapper(text[0].getVTKMapper())
 text.getVTKRenderer().AddActor(text[0].getVTKActor())
 

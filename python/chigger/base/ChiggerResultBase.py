@@ -82,6 +82,7 @@ class ChiggerResultBase(ChiggerObject):
 
         # TODO: Background stuff should be moved to the BackgroundResult...
 
+        """
         # Render layer
         if self.isOptionValid('layer'):
             self._vtkrenderer.SetLayer(self.applyOption('layer'))
@@ -103,5 +104,5 @@ class ChiggerResultBase(ChiggerObject):
         # Camera
         if self.isOptionValid('camera'):
             self._vtkrenderer.SetActiveCamera(self.applyOption('camera'))
-
-        self._vtkrenderer.Render()
+        """
+        #self._vtkrenderer.Render()

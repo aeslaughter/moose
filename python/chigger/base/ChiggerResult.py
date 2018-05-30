@@ -42,6 +42,8 @@ class ChiggerResult(ChiggerResultBase):
         for src in self._sources:
             src._parent = self #pylint: disable=protected-access
 
+        self.update(**kwargs)
+
     #def needsUpdate(self):
     #    """
     #    Checks if this object or any of the contained ChiggerFilterSourceBase object require update.
@@ -50,21 +52,21 @@ class ChiggerResult(ChiggerResultBase):
     #    return super(ChiggerResult, self).needsUpdate() or \
     #           any([src.needsUpdate() for src in self._sources])
 
-    def updateOptions(self, *args):
-        """
-        Apply the supplied option objects to this object and the contained ChiggerFilterSourceBase
-        objects. (override)
+    #def updateOptions(self, *args):
+    #    """
+    #    Apply the supplied option objects to this object and the contained ChiggerFilterSourceBase
+    #    objects. (override)
 
-        Inputs:
-            see ChiggerResultBase
-        """
-        changed = [self.needsUpdate()]
-        changed.append(super(ChiggerResult, self).updateOptions(*args))
-        for src in self._sources:
-            changed.append(src.updateOptions(*args))
-        changed = any(changed)
-        self.setNeedsUpdate(changed)
-        return changed
+    #    Inputs:
+    #        see ChiggerResultBase
+    #    """
+    #    changed = [self.needsUpdate()]
+    #    changed.append(super(ChiggerResult, self).updateOptions(*args))
+    #    for src in self._sources:
+    #        changed.append(src.updateOptions(*args))
+    #    changed = any(changed)
+    #    self.setNeedsUpdate(changed)
+    #    return changed
 
     def setOptions(self, *args, **kwargs):
         """
@@ -92,7 +94,8 @@ class ChiggerResult(ChiggerResultBase):
         super(ChiggerResult, self).update(**kwargs)
 
         for src in self._sources:
-            src.update()
+            #print src
+            src.update(**kwargs)
 
     def getSources(self):
         """
