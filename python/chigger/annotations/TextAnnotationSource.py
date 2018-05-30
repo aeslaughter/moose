@@ -40,7 +40,7 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         super(TextAnnotationSource, self).update(**kwargs)
 
 
-        utils.FontOptions.set_options(self._vtkmapper.GetTextProperty(), self._options)
+        utils.FontOptions.applyOptions(self._vtkmapper.GetTextProperty(), self._options)
 
         if self.isOptionValid('position'):
             self._vtkactor.GetPositionCoordinate().SetValue(*self.applyOption('position'))

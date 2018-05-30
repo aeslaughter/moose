@@ -27,7 +27,7 @@ def validOptions():
     return opt
 
 
-def set_options(tprop, options):
+def applyOptions(tprop, options):
     """
     Applies font options to vtkTextProperty object.
 
@@ -37,21 +37,21 @@ def set_options(tprop, options):
     """
 
     if options.isOptionValid('text_color'):
-        tprop.SetColor(options['text_color'])
+        tprop.SetColor(options.applyOption('text_color'))
 
     if options.isOptionValid('text_shadow'):
-        tprop.SetShadow(options['text_shadow'])
+        tprop.SetShadow(options.applyOption('text_shadow'))
 
     if options.isOptionValid('justification'):
-        idx = options.raw('justification').allow.index(options['justification'])
+        idx = options.raw('justification').allow.index(options.applyOption('justification'))
         tprop.SetJustification(idx)
 
     if options.isOptionValid('vertical_justification'):
-        idx = options.raw('vertical_justification').allow.index(options['vertical_justification'])
+        idx = options.raw('vertical_justification').allow.index(options.applyOption('vertical_justification'))
         tprop.SetVerticalJustification(idx)
 
     if options.isOptionValid('text_opacity'):
-        tprop.SetOpacity(options['text_opacity'])
+        tprop.SetOpacity(options.applyOption('text_opacity'))
 
     if options.isOptionValid('font_size'):
-        tprop.SetFontSize(options['font_size'])
+        tprop.SetFontSize(options.applyOption('font_size'))

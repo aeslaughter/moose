@@ -93,6 +93,10 @@ class Option(object):
     def doc(self):
         return self.__doc
 
+    @property
+    def allow(self):
+        return self.__allow
+
     def apply(self):
         self.__applied = True
         return self.__value

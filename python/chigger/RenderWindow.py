@@ -54,7 +54,6 @@ class RenderWindow(base.ChiggerObject):
         return opt
 
     def __init__(self, *args, **kwargs):
-
         self.__vtkwindow = kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
         self.__vtkinteractorstyle = None
@@ -230,7 +229,7 @@ class RenderWindow(base.ChiggerObject):
             self._observers.add(main_observer)
 
         # Background settings
-        self._results[0].updateOptions(self._options)
+        #self._results[0].updateOptions(self._options)
 
         # vtkRenderWindow Settings
         if self.isOptionValid('offscreen'):

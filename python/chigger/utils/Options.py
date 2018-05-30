@@ -181,8 +181,8 @@ class Options(object):
         if len(unused) > 0:
             msg = 'The following settings where not recognized:'
             for key in unused:
-                msg += ' '*4 + key
-            mooseutils.mooseWarning(msg)
+                msg += ' '*1 + key
+            mooseutils.mooseError(msg)
 
     def __iadd__(self, options):
         """
