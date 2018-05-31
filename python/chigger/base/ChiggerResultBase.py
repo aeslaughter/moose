@@ -9,46 +9,62 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import collections
 import vtk
+import mooseutils
+
 from ChiggerObject import ChiggerObject
 
+
+
 class KeyBindingMixin(object):
+    KeyBinding = collections.namedtuple('KeyBinding', 'key shift control alt description function')
 
     def __init__(self):
         super(KeyBindingMixin, self).__init__()
         self.__keybindings = dict()
 
         #
-        self._window = None
+        #self._window = None
 
-        self.addKeyBinding('r', self._nextResult)
-        self.addKeyBinding('r', self._previousResult, shift=True)
+        self.addKeyBinding('r', self._nextResult, desc="Select the next result object.")
+        self.addKeyBinding('r', self._previousResult, shift=True, desc="Select the previous result object.")
         self.addKeyBinding('h', self._help)
 
 
 
-    def setChiggerRenderWindow(self, window):
-        self._window = window
+    #def setChiggerRenderWindow(self, window):
+    #    self._window = window
 
     def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
-        key = (key, shift, control, alt)
-        if key in self.__keybindings:
+        tag = (key, shift, control, alt)
+        if tag in self.__keybindings:
             msg = "The key binding '{}' already exists."
             mooseutils.mooseError(msg.format(key))
         else:
-            self.__keybindings[key] = ChiggerResultBase.KeyBinding(key, shift, control, alt, desc, func)
+            self.__keybindings[tag] = KeyBindingMixin.KeyBinding(key, shift, control, alt, desc, func)
 
     def getKeyBinding(self, key, shift=False, control=False, alt=False):
         return self.__keybindings.get((key, shift, control, alt), None)
 
 
-    def _nextResult(self):
+    def _nextResult(self, obj, window, binding):
+        window.nextActive(1)
 
-        self._window.nextActive(1)
+    def _previousResult(self, *args):
+        window.nextActive(-1)
 
-    def _previousResult(self):
-        self._window.nextActive(-1)
+    def _help(self, *args):
+        for binding in self.__keybindings.values():
+            key = []
+            if binding.shift:
+                key.append('shift')
+            if binding.control:
+                key.append('control')
+            if binding.alt:
+                key.append('alt')
+            key.append(binding.key)
+            key = '-'.join(key)
+            print mooseutils.colorText(key, 'GREEN'), binding.description
 
-    def _help(self):
         print 'help'
 
 
@@ -66,7 +82,6 @@ class ChiggerResultBase(ChiggerObject, KeyBindingMixin):
         see ChiggerObject
     """
 
-    KeyBinding = collections.namedtuple('KeyBinding', 'key shift control alt description function')
 
     @staticmethod
     def validOptions():
@@ -93,10 +108,7 @@ class ChiggerResultBase(ChiggerObject, KeyBindingMixin):
 
     def __init__(self, renderer=None, **kwargs):
         super(ChiggerResultBase, self).__init__(**kwargs)
-        print 'Renderer:', renderer
         self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
-
-
 
     def getVTKRenderer(self):
         """

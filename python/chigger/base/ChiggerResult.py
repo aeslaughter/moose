@@ -37,9 +37,7 @@ class ChiggerResult(ChiggerResultBase):
         return opt
 
     def __init__(self, *sources, **kwargs):
-        print 'WTF'
         super(ChiggerResult, self).__init__(**kwargs)
-        print 'Sources:', sources
         self._sources = sources
         self.update(**kwargs)
 

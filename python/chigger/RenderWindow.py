@@ -28,7 +28,7 @@ class RenderWindow(base.ChiggerObject):
         opt = base.ChiggerObject.validOptions()
 
         opt.add('size', (960, 540), "The size of the window, expects a list of two items",
-                vtype=int)
+                vtype=int, size=2)
         opt.add('style', 'interactive', "The interaction style.", vtype=str,
                 allow=('interactive', 'modal', 'interactive2D'))
         opt.add('test', False, "When True the interaction is disabled and the window closes "
@@ -98,7 +98,7 @@ class RenderWindow(base.ChiggerObject):
         #self.setNeedsUpdate(True)
         for result in args:
 
-            result.setChiggerRenderWindow(self)
+            #result.setChiggerRenderWindow(self)
             # TODO: setRenderWindow() this will allow for keybinding/mouse events to have full control
 
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
@@ -258,7 +258,6 @@ class RenderWindow(base.ChiggerObject):
         n = self.__vtkwindow.GetNumberOfLayers()
         for result in self._results:
             renderer = result.getVTKRenderer()
-            print type(renderer)
             if not self.__vtkwindow.HasRenderer(renderer):
                 self.__vtkwindow.AddRenderer(renderer)
             #if result.needsUpdate():
@@ -268,8 +267,8 @@ class RenderWindow(base.ChiggerObject):
 
         self.__vtkwindow.SetNumberOfLayers(n)
 
-        if (self.__active is None) and len(self._results) > 1:
-            self.setActive(self._results[1])
+        if (self.__active is None) and len(self._results) > 0:
+            self.setActive(self._results[0])
 
         # Observers
         if self.__vtkinteractor:

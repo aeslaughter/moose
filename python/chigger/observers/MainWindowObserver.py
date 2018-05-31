@@ -55,20 +55,11 @@ class MainWindowObserver(ChiggerObserver):
         control = obj.GetInteractor().GetControlKey()
         alt = obj.GetInteractor().GetAltKey()
 
-        if key == 'left': # change to r and shift-r; "r" for result
-            self._window.nextActive(1)
-
-        elif key == 'right':
-            self._window.nextActive(-1)
-
-        elif key == 'h':
-            print 'Help...'
-
         binding = self._window.getActive().getKeyBinding(key, shift, control, alt)
         if binding is not None:
-            binding.function(obj, key, shift, control, alt)
+            binding.function(obj, self._window, binding)
 
-        self._window.update() # Do this only if needed, will applyOption get rid of the NeedsUpdate stuff
+        #self._window.update() # Do this only if needed, will applyOption get rid of the NeedsUpdate stuff
 
     def _onLeftButtonPressEvent(self, obj, event):
         pass

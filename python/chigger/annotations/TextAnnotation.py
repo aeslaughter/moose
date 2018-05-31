@@ -12,8 +12,7 @@ class TextAnnotation(base.ChiggerResult):
         return opt
 
     def __init__(self, **kwargs):
-        print 'here'
-        super(base.ChiggerResult, self).__init__(TextAnnotationSource(), **kwargs)
+        super(TextAnnotation, self).__init__(TextAnnotationSource(), **kwargs)
 
 
 
