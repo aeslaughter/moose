@@ -25,6 +25,27 @@ class Options(object):
     def __init__(self):
         self.__options = OrderedDict()
 
+    def __contains__(self, name):
+        return name in self.__options
+
+    def __iadd__(self, options):
+        """
+        Append another Option objects options into this container.
+
+        Inputs:
+           options[Options]: An instance of an Options object to append.
+        """
+        for key in options.keys():
+            self.__options[key] = options.raw(key)
+        return self
+
+    def __str__(self):
+        """
+        Allows print to work with this class.
+        """
+        return self.string()
+
+
     def keys(self):
         """
         List of option names
@@ -43,6 +64,11 @@ class Options(object):
     def remove(self, name):
         self.__options.pop(name)
 
+    def modified(self):
+        """
+        Returns True if any options have the applied flag set to False
+        """
+        return any(not opt.applied for opt in self.__options.values())
 
     #def pop(self, name, default=None):
     #    """
@@ -184,22 +210,6 @@ class Options(object):
                 msg += ' '*1 + key
             mooseutils.mooseError(msg)
 
-    def __iadd__(self, options):
-        """
-        Append another Option objects options into this container.
-
-        Inputs:
-           options[Options]: An instance of an Options object to append.
-        """
-        for key in options.keys():
-            self.__options[key] = options.raw(key)
-        return self
-
-    def __str__(self):
-        """
-        Allows print to work with this class.
-        """
-        return self.string()
 
     def string(self, **kwargs):
         """
@@ -235,7 +245,7 @@ class Options(object):
         return output, sub_output
 
 
-    # TODO: Move to chigger options
+    # TODO: Move to ChiggerObject
     def printToScreen(self, **kwargs):
 
 

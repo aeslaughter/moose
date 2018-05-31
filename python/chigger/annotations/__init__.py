@@ -9,8 +9,6 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from ImageAnnotation import ImageAnnotation
-from TextAnnotationSource import TextAnnotationSource
-from TimeAnnotationSource import TimeAnnotationSource
-from .. import base
-TextAnnotation = base.create_single_source_result(TextAnnotationSource)
-TimeAnnotation = base.create_single_source_result(TimeAnnotationSource)
+from TextAnnotation import TextAnnotation
+
+#TimeAnnotation = base.create_single_source_result(TimeAnnotationSource)

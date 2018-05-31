@@ -55,7 +55,7 @@ class MainWindowObserver(ChiggerObserver):
         control = obj.GetInteractor().GetControlKey()
         alt = obj.GetInteractor().GetAltKey()
 
-        if key == 'left':
+        if key == 'left': # change to r and shift-r; "r" for result
             self._window.nextActive(1)
 
         elif key == 'right':

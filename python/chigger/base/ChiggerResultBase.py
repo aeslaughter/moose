@@ -11,7 +11,48 @@ import collections
 import vtk
 from ChiggerObject import ChiggerObject
 
-class ChiggerResultBase(ChiggerObject):
+class KeyBindingMixin(object):
+
+    def __init__(self):
+        super(KeyBindingMixin, self).__init__()
+        self.__keybindings = dict()
+
+        #
+        self._window = None
+
+        self.addKeyBinding('r', self._nextResult)
+        self.addKeyBinding('r', self._previousResult, shift=True)
+        self.addKeyBinding('h', self._help)
+
+
+
+    def setChiggerRenderWindow(self, window):
+        self._window = window
+
+    def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
+        key = (key, shift, control, alt)
+        if key in self.__keybindings:
+            msg = "The key binding '{}' already exists."
+            mooseutils.mooseError(msg.format(key))
+        else:
+            self.__keybindings[key] = ChiggerResultBase.KeyBinding(key, shift, control, alt, desc, func)
+
+    def getKeyBinding(self, key, shift=False, control=False, alt=False):
+        return self.__keybindings.get((key, shift, control, alt), None)
+
+
+    def _nextResult(self):
+
+        self._window.nextActive(1)
+
+    def _previousResult(self):
+        self._window.nextActive(-1)
+
+    def _help(self):
+        print 'help'
+
+
+class ChiggerResultBase(ChiggerObject, KeyBindingMixin):
     """
     Base class for objects to be displayed with a single vtkRenderer object.
 
@@ -30,6 +71,8 @@ class ChiggerResultBase(ChiggerObject):
     @staticmethod
     def validOptions():
         opt = ChiggerObject.validOptions()
+
+        """
         opt.add('layer', 1, "The VTK layer within the render window.", vtype=int)
         opt.add('viewport', (0., 0., 1., 1.), "A list given the viewport coordinates [x_min, y_min, "
                                           "x_max, y_max], in relative position to the entire "
@@ -45,20 +88,14 @@ class ChiggerResultBase(ChiggerObject):
         opt.add('gradient_background', False, "Enable/disable the use of a gradient background.")
         opt.add('camera', None, "The VTK camera to utilize for viewing the results.",
                 vtype=vtk.vtkCamera)
+        """
         return opt
 
     def __init__(self, renderer=None, **kwargs):
         super(ChiggerResultBase, self).__init__(**kwargs)
+        print 'Renderer:', renderer
         self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
-        self.__keybindings = dict()
 
-    def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
-
-        # TODO: Make ethis a mixin object and add
-        self.__keybindings[(key, shift, control, alt)] = ChiggerResultBase.KeyBinding(key, shift, control, alt, desc, func)
-
-    def getKeyBinding(self, key, shift=False, control=False, alt=False):
-        return self.__keybindings.get((key, shift, control, alt), None)
 
 
     def getVTKRenderer(self):

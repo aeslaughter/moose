@@ -46,11 +46,11 @@ class RenderWindow(base.ChiggerObject):
                                  "remove existing objects.", vtype=list)
 
         # Background settings
-        background = misc.ChiggerBackground.validOptions()
-        background.remove('layer')
-        background.remove('camera')
-        background.remove('viewport')
-        opt += background
+        #background = misc.ChiggerBackground.validOptions()
+        #background.remove('layer')
+        #background.remove('camera')
+        #background.remove('viewport')
+        #opt += background
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -97,6 +97,10 @@ class RenderWindow(base.ChiggerObject):
         """
         #self.setNeedsUpdate(True)
         for result in args:
+
+            result.setChiggerRenderWindow(self)
+            # TODO: setRenderWindow() this will allow for keybinding/mouse events to have full control
+
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
             if isinstance(result, base.ResultGroup):
                 self.append(*result.getResults())
@@ -167,7 +171,6 @@ class RenderWindow(base.ChiggerObject):
             elif index == -1:
                 index = n - 1
 
-        print index, self._results[index]
         self.setActive(self._results[index])
 
     def getActive(self):
@@ -255,8 +258,8 @@ class RenderWindow(base.ChiggerObject):
         n = self.__vtkwindow.GetNumberOfLayers()
         for result in self._results:
             renderer = result.getVTKRenderer()
+            print type(renderer)
             if not self.__vtkwindow.HasRenderer(renderer):
-                print 'add renderer:', type(renderer)
                 self.__vtkwindow.AddRenderer(renderer)
             #if result.needsUpdate():
             #result.initialize()
@@ -280,6 +283,8 @@ class RenderWindow(base.ChiggerObject):
                 if observer not in self._observers:
                     observer.init(self)
                     self._observers.add(observer)
+
+
 
         for result in self._results:
             result.update()

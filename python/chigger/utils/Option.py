@@ -82,34 +82,49 @@ class Option(object):
 
     @property
     def name(self):
+        """Returns the option name."""
         return self.__name
 
     @property
     def value(self):
+        """Returns the option value."""
         return self.__value
 
     @property
     def default(self):
+        """Returns the default value for the option."""
         return self.__default
 
     @property
     def applied(self):
+        """Returns the applied status."""
         return self.__applied
 
     @property
     def doc(self):
+        """Returns the documentation string."""
         return self.__doc
 
     @property
     def allow(self):
+        """Returns the allowable values for the option."""
         return self.__allow
 
     def apply(self):
+        """
+        Returns the value and marks the applied status to True.
+
+        This is used by the Options class to determine if an option has changed,
+        see the Options::applyOption method.
+        """
         self.__applied = True
         return self.__value
 
     @value.setter
     def value(self, val):
+        """
+        Sets the value and performs a myriad of consistency checks.
+        """
 
         if val is None:
             self.__value = None
@@ -151,6 +166,9 @@ class Option(object):
         self.__value = val
 
     def __str__(self):
+        """
+        Returns a string showing the current state of the option.
+        """
         out = [mooseutils.colorText(self.name, 'YELLOW')]
 
         wrapper = textwrap.TextWrapper()
