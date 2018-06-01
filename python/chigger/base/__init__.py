@@ -17,7 +17,6 @@ from ChiggerSource2D import ChiggerSource2D
 
 from ChiggerResultBase import ChiggerResultBase
 from ChiggerResult import ChiggerResult
-from KeyPressInteractorStyle import KeyPressInteractorStyle
 
 from ColorMap import ColorMap
 

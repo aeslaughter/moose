@@ -216,15 +216,14 @@ class RenderWindow(base.ChiggerObject):
             style = self.getOption('style').lower()
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
-                #b = base.KeyPressInteractorStyle(self.__vtkinteractor)
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleImage()
             elif style == 'modal':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
 
-            #self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
             self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
+            self.__vtkinteractorstyle.KeyPressActivationOff()
 
             main_observer = observers.MainWindowObserver()
             main_observer.init(self)
