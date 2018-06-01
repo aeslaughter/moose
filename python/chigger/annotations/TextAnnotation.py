@@ -13,8 +13,8 @@ class TextAnnotation(base.ChiggerResult):
 
     def __init__(self, **kwargs):
         super(TextAnnotation, self).__init__(TextAnnotationSource(), **kwargs)
-
-        self.addKeyBinding('f', self._increaseFont, desc="Increase the font size by 1 point.")
+        self.addKeyBinding('f', self._increaseFont, desc="Increase the font size by 1 point (when result is selected).")
+        self.addKeyBinding('f', self._decreaseFont, shift=True, desc="Decrease the font size by 1 point (when result is selected).")
 
     def onSelect(self, active):
         self._sources[0].getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
@@ -22,13 +22,21 @@ class TextAnnotation(base.ChiggerResult):
         self._sources[0].getVTKMapper().GetTextProperty().SetFrame(active)
 
     def _increaseFont(self, *args):
-        sz = self.getOption('font_size') + 1
-        print '{}: setOptions(font_size={})'.format(self.title(), sz)
-        self.update(font_size=sz)
+        if self.isSelected():
+            sz = self.getOption('font_size') + 1
+            print '{}: setOptions(font_size={})'.format(self.title(), sz)
+            self.update(font_size=sz)
+
+    def _decreaseFont(self, *args):
+        if self.isSelected():
+            sz = self.getOption('font_size') - 1
+            print '{}: setOptions(font_size={})'.format(self.title(), sz)
+            self.update(font_size=sz)
 
     def onMouseMoveEvent(self, position):
-        print '{}: setOptions(position={})'.format(self.title(), position)
-        self.update(position=position)
+        if self.isSelected():
+            print '{}: setOptions(position={})'.format(self.title(), position)
+            self.update(position=position)
     """
     def onLeftButtonPressEvent(self, obj, event):
 
@@ -42,6 +50,7 @@ class TextAnnotation(base.ChiggerResult):
             if properties:
                 self._selected = True
                 self._vtkmapper.GetTextProperty().FrameOn()
+
 
     def onMouseMoveEvent(self, obj, event):
 

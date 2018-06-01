@@ -36,7 +36,6 @@ class MainWindowObserver(ChiggerObserver):
 
     def __init__(self, **kwargs):
         super(MainWindowObserver, self).__init__(**kwargs)
-        self.__selected = None
 
     def addObservers(self, obj):
         """
@@ -69,25 +68,20 @@ class MainWindowObserver(ChiggerObserver):
         renderer = self._window.getVTKInteractor().FindPokedRenderer(*loc)
         properties = renderer.PickProp(*loc)
         if properties is not None:
-            self.__selected = None
             for result in self._window:
                 if renderer is result.getVTKRenderer():
-                    result._ResultEventHandler__active = not result._ResultEventHandler__active
-                    result.onSelect(result._ResultEventHandler__active)
-                    self.__selected = result if result._ResultEventHandler__active else None
+                    result._ResultEventHandler__selected = not result._ResultEventHandler__selected
+                    result.onSelect(result._ResultEventHandler__selected)
                     break
-        else:
-            self.__selected = None
-
         self._window.update()
 
     def _onMouseMoveEvent(self, obj, event):
-        if self.__selected is not None:
+        result = self._window.getActive()
+        if result is not None:
             loc = obj.GetInteractor().GetEventPosition()
-            sz = self.__selected.getVTKRenderer().GetSize()
+            sz = result.getVTKRenderer().GetSize()
             position=(loc[0]/float(sz[0]), loc[1]/float(sz[1]))
-            self.__selected.onMouseMoveEvent(position)
-            #self.__selected.getVTKRenderer().REnd.GetRenderWindow().Render()
+            result.onMouseMoveEvent(position)
             self._window.update()
 
         #properties = renderer.PickProp(*loc)

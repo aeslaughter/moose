@@ -16,6 +16,11 @@ import observers
 import misc
 import mooseutils
 
+class ChiggerInteractorStyle(vtk.vtkInteractorStyleUser):
+    def OnKeyPress(self, *args, **kwargs):
+        print 'hello'
+        pass
+
 
 class RenderWindow(base.ChiggerObject):
     """
@@ -154,9 +159,7 @@ class RenderWindow(base.ChiggerObject):
             obj.getVTKRenderer().InteractiveOff()
 
         self.__active = result
-        self.__active.getVTKRenderer().InteractiveOn()
-        #if self.__vtkinteractor:
-        #    self.__vtkinteractor.GetInteractorStyle().SetDefaultRenderer(result.getVTKRenderer())
+        self.__vtkinteractorstyle.SetCurrentRenderer(self.__active.getVTKRenderer())
 
     def nextActive(self, step=1):
         if self.__active is None:
@@ -216,14 +219,14 @@ class RenderWindow(base.ChiggerObject):
             style = self.getOption('style').lower()
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
-                self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
+                self.__vtkinteractorstyle = ChiggerInteractorStyle()
+                #self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleImage()
             elif style == 'modal':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
 
             self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
-            self.__vtkinteractorstyle.KeyPressActivationOff()
 
             main_observer = observers.MainWindowObserver()
             main_observer.init(self)

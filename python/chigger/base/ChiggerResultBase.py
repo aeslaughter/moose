@@ -27,7 +27,7 @@ class ResultEventHandler(object):
     def __init__(self):
         super(ResultEventHandler, self).__init__()
         self.__keybindings = dict()
-        self.__active = False
+        self.__selected = False
         #
         #self._window = None
 
@@ -51,7 +51,10 @@ class ResultEventHandler(object):
     def getKeyBinding(self, key, shift=False, control=False, alt=False):
         return self.__keybindings.get((key, shift, control, alt), None)
 
-    def onSelect(self, active):
+    def isSelected(self):
+        return self.__selected
+
+    def onSelect(self, selected):
         pass
 
     def onMouseMoveEvent(self):
