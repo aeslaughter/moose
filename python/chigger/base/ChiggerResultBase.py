@@ -28,17 +28,9 @@ class ResultEventHandler(object):
         super(ResultEventHandler, self).__init__()
         self.__keybindings = dict()
         self.__selected = False
-        #
-        #self._window = None
-
         self.addKeyBinding('r', self._nextResult, desc="Select the next result object.")
         self.addKeyBinding('r', self._previousResult, shift=True, desc="Select the previous result object.")
         self.addKeyBinding('h', self._printHelp, desc="Display the help for this object.")
-
-
-
-    #def setChiggerRenderWindow(self, window):
-    #    self._window = window
 
     def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
         tag = (key, shift, control, alt)
@@ -60,6 +52,8 @@ class ResultEventHandler(object):
     def onMouseMoveEvent(self):
         pass
 
+    def printOption(self, opt):
+        print '{}: setOptions({}={})'.format(self.title(), opt, repr(self.getOption(opt)))
 
     def _nextResult(self, obj, window, binding):
         window.nextActive(1)

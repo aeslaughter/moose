@@ -15,6 +15,10 @@ class TextAnnotation(base.ChiggerResult):
         super(TextAnnotation, self).__init__(TextAnnotationSource(), **kwargs)
         self.addKeyBinding('f', self._increaseFont, desc="Increase the font size by 1 point (when result is selected).")
         self.addKeyBinding('f', self._decreaseFont, shift=True, desc="Decrease the font size by 1 point (when result is selected).")
+        self.addKeyBinding('o', self._increaseOpacity, desc="Increase the font opacity by 5% (when result is selected).")
+        self.addKeyBinding('o', self._decreaseOpacity, shift=True, desc="Decrease the font opacity by 5% (when result is selected).")
+
+
 
     def onSelect(self, active):
         self._sources[0].getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
@@ -24,79 +28,30 @@ class TextAnnotation(base.ChiggerResult):
     def _increaseFont(self, *args):
         if self.isSelected():
             sz = self.getOption('font_size') + 1
-            print '{}: setOptions(font_size={})'.format(self.title(), sz)
             self.update(font_size=sz)
+            self.printOption('font_size')
 
     def _decreaseFont(self, *args):
         if self.isSelected():
             sz = self.getOption('font_size') - 1
-            print '{}: setOptions(font_size={})'.format(self.title(), sz)
             self.update(font_size=sz)
+            self.printOption('font_size')
+
+    def _increaseOpacity(self, *args):
+        if self.isSelected():
+            opacity = self.getOption('text_opacity') + 0.05
+            if opacity <= 1.:
+                self.update(text_opacity=opacity)
+                self.printOption('text_opacity')
+
+    def _decreaseOpacity(self, *args):
+        if self.isSelected():
+            opacity = self.getOption('text_opacity') - 0.05
+            if opacity > 0.:
+                self.update(text_opacity=opacity)
+                self.printOption('text_opacity')
 
     def onMouseMoveEvent(self, position):
         if self.isSelected():
-            print '{}: setOptions(position={})'.format(self.title(), position)
             self.update(position=position)
-    """
-    def onLeftButtonPressEvent(self, obj, event):
-
-        if self._selected:
-            self._selected = False
-            self._vtkmapper.GetTextProperty().FrameOff()
-
-        else:
-            loc = obj.GetEventPosition()
-            properties = self._vtkrenderer.PickProp(*loc)
-            if properties:
-                self._selected = True
-                self._vtkmapper.GetTextProperty().FrameOn()
-
-
-    def onMouseMoveEvent(self, obj, event):
-
-        if self._selected:
-            loc = obj.GetEventPosition()
-            sz = self._vtkrenderer.GetSize()
-            self.update(position=[loc[0]/float(sz[0]), loc[1]/float(sz[1])])
-            self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
-
-    def onKeyPressEvent(self, obj, event):
-
-        key = obj.GetKeySym()
-        shift = obj.GetShiftKey()
-        if shift and key == 'plus':
-            prop = self._vtkmapper.GetTextProperty()
-            sz = prop.GetFontSize()
-            self.update(font_size=sz + 1)
-            self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
-
-        elif shift and key == 'underscore':
-            prop = self._vtkmapper.GetTextProperty()
-            sz = prop.GetFontSize()
-            if sz > 1:
-                self.update(font_size=sz - 1)
-                self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
-
-        elif shift and key == 'braceright':
-            prop = self._vtkmapper.GetTextProperty()
-            opacity = prop.GetOpacity()
-            if opacity < 0.95:
-                self.update(text_opacity=opacity + 0.05)
-                self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
-
-        elif shift and key == 'braceleft':
-            prop = self._vtkmapper.GetTextProperty()
-            opacity = prop.GetOpacity()
-            if opacity > 0.05:
-                self.update(text_opacity=opacity - 0.05)
-                self._vtkrenderer.GetRenderWindow().Render() #TODO: Handle this in update
-
-        elif key == 'h':
-            print 'help...'
-
-        elif key == 'c':
-            self._options.printToScreen()
-            self._selected = False
-            self._vtkmapper.GetTextProperty().FrameOff()
-            self._vtkrenderer.GetRenderWindow().Render()
-    """
+            self.printOption('position')
