@@ -25,6 +25,7 @@ class ChiggerObject(object):
         All object should define a static validOptions method to add new key, value options. (public)
         """
         opt = utils.Options()
+        opt.add('name', "The object name (this name is displayed on the console help by pressing 'h').", vtype=str)
         opt.add('debug', False, "Enable/disable debug messaging.")
         return opt
 
@@ -39,6 +40,13 @@ class ChiggerObject(object):
     def __str__(self):
         return '{}:\n{}'.format(mooseutils.colorText(self.__class__.__name__, "GREY"),
                                 self._options.string())
+
+    def title(self):
+        if self.isOptionValid('name'):
+            title = '{} ({})'.format(self.getOption('name'), self.__class__.__name__)
+        else:
+            title = self.__class__.__name__
+        return title
 
     def options(self):
         """

@@ -8,6 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import collections
+import textwrap
 import vtk
 import mooseutils
 
@@ -15,19 +16,24 @@ from ChiggerObject import ChiggerObject
 
 
 
-class KeyBindingMixin(object):
+#TODO:
+# Rename KeyBindingMixin to EventHandler or something
+# RenderWindow should have addObserver method, used by update
+# FilterResult should have addFilter method, used by update
+
+class ResultEventHandler(object):
     KeyBinding = collections.namedtuple('KeyBinding', 'key shift control alt description function')
 
     def __init__(self):
-        super(KeyBindingMixin, self).__init__()
+        super(ResultEventHandler, self).__init__()
         self.__keybindings = dict()
-
+        self.__active = False
         #
         #self._window = None
 
         self.addKeyBinding('r', self._nextResult, desc="Select the next result object.")
         self.addKeyBinding('r', self._previousResult, shift=True, desc="Select the previous result object.")
-        self.addKeyBinding('h', self._help)
+        self.addKeyBinding('h', self._printHelp, desc="Display the help for this object.")
 
 
 
@@ -40,19 +46,37 @@ class KeyBindingMixin(object):
             msg = "The key binding '{}' already exists."
             mooseutils.mooseError(msg.format(key))
         else:
-            self.__keybindings[tag] = KeyBindingMixin.KeyBinding(key, shift, control, alt, desc, func)
+            self.__keybindings[tag] = ResultEventHandler.KeyBinding(key, shift, control, alt, desc, func)
 
     def getKeyBinding(self, key, shift=False, control=False, alt=False):
         return self.__keybindings.get((key, shift, control, alt), None)
 
+    def onSelect(self, active):
+        pass
+
+    def onMouseMoveEvent(self):
+        pass
+
 
     def _nextResult(self, obj, window, binding):
         window.nextActive(1)
+        msg = 'Set Active: {}'.format(window.getActive().title())
+        print mooseutils.colorText(msg, 'CYAN')
 
     def _previousResult(self, *args):
         window.nextActive(-1)
 
-    def _help(self, *args):
+    def _printHelp(self, *args):
+        """
+        Display the available controls for this object.
+        """
+
+        # Object name/type
+        print mooseutils.colorText(self._title(), 'CYAN')
+
+        # Keybindings
+        n = 0
+        out = []
         for binding in self.__keybindings.values():
             key = []
             if binding.shift:
@@ -63,12 +87,15 @@ class KeyBindingMixin(object):
                 key.append('alt')
             key.append(binding.key)
             key = '-'.join(key)
-            print mooseutils.colorText(key, 'GREEN'), binding.description
+            out.append([key, binding.description])
+            n = max(n, len(key))
 
-        print 'help'
+        for key, desc in out:
+            key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
+            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key, subsequent_indent=' '*(n + 2)))
 
 
-class ChiggerResultBase(ChiggerObject, KeyBindingMixin):
+class ChiggerResultBase(ChiggerObject, ResultEventHandler):
     """
     Base class for objects to be displayed with a single vtkRenderer object.
 

@@ -14,8 +14,21 @@ class TextAnnotation(base.ChiggerResult):
     def __init__(self, **kwargs):
         super(TextAnnotation, self).__init__(TextAnnotationSource(), **kwargs)
 
+        self.addKeyBinding('f', self._increaseFont, desc="Increase the font size by 1 point.")
 
+    def onSelect(self, active):
+        self._sources[0].getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
+        self._sources[0].getVTKMapper().GetTextProperty().SetFrameWidth(3)
+        self._sources[0].getVTKMapper().GetTextProperty().SetFrame(active)
 
+    def _increaseFont(self, *args):
+        sz = self.getOption('font_size') + 1
+        print '{}: setOptions(font_size={})'.format(self.title(), sz)
+        self.update(font_size=sz)
+
+    def onMouseMoveEvent(self, position):
+        print '{}: setOptions(position={})'.format(self.title(), position)
+        self.update(position=position)
     """
     def onLeftButtonPressEvent(self, obj, event):
 

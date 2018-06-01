@@ -288,7 +288,8 @@ class RenderWindow(base.ChiggerObject):
         for result in self._results:
             result.update()
         #print self.__vtkinteractor
-        #self.__vtkwindow.Render()
+
+        self.__vtkwindow.Render()
 
     def resetCamera(self):
         """

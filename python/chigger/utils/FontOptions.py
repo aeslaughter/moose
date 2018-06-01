@@ -23,7 +23,7 @@ def validOptions():
     #        allow=('bottom', 'middle', 'top'))
     #opt.add('text_opacity', 1., "The text opacity.", vtype=float)
     #opt.add('text', None, "The text to display.", vtype=str)
-    #opt.add('font_size', 24, "The text font size.", vtype=int)
+    opt.add('font_size', 24, "The text font size.", vtype=int)
     return opt
 
 
