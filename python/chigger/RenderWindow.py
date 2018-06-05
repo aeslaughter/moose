@@ -210,7 +210,7 @@ class RenderWindow(base.ChiggerObject):
 
         # Setup interactor
         if self.isOptionValid('test') and self.getOption('test'):
-            self.__vtkwindow.OffScreenRenderingOn(True)
+            self.__vtkwindow.OffScreenRenderingOn()
 
         elif self.isOptionValid('style'):
             if self.__vtkinteractor is None:

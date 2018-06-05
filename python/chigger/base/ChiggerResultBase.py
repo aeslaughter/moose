@@ -49,7 +49,7 @@ class ResultEventHandler(object):
     def onSelect(self, selected):
         pass
 
-    def onMouseMoveEvent(self):
+    def onMouseMoveEvent(self, position):
         pass
 
     def printOption(self, opt):

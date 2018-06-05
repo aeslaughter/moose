@@ -22,11 +22,11 @@ class ImageAnnotationSource(base.ChiggerSource):
     VTKMAPPER_TYPE = vtk.vtkImageSliceMapper
 
     @staticmethod
-    def getOptions():
+    def validOptions():
         """
         Return default options for this object.
         """
-        opt = base.ChiggerSource.getOptions()
+        opt = base.ChiggerSource.validOptions()
         opt.add('filename', None, "The PNG file to read, this can be absolute or relative path to "
                                   "a PNG or just the name of a PNG located in the chigger/logos "
                                   "directory.", vtype=str)

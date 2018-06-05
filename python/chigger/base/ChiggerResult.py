@@ -39,7 +39,7 @@ class ChiggerResult(ChiggerResultBase):
     def __init__(self, *sources, **kwargs):
         super(ChiggerResult, self).__init__(**kwargs)
         self._sources = sources
-        self.update(**kwargs)
+        self.setOptions(**kwargs)
 
         #for src in self._sources:
         #    src._parent = self #pylint: disable=protected-access
@@ -53,7 +53,6 @@ class ChiggerResult(ChiggerResultBase):
 
             src.setVTKRenderer(self._vtkrenderer)
             self._vtkrenderer.AddActor(src.getVTKActor())
-
 
 
     #def needsUpdate(self):
@@ -90,7 +89,15 @@ class ChiggerResult(ChiggerResultBase):
         """
         super(ChiggerResult, self).setOptions(*args, **kwargs)
         for src in self._sources:
-            src.setOptions(*args, **kwargs)
+            valid = src.validOptions()
+            if args:
+                for sub in args:
+                    if sub in valid:
+                        src.setOptions(sub, **kwargs)
+            else:
+                for key, value in kwargs.iteritems():
+                    if key in src:
+                        src.setOption(key, value)
 
     def update(self, **kwargs):
         """
@@ -100,9 +107,13 @@ class ChiggerResult(ChiggerResultBase):
             see ChiggerResultBase
         """
         super(ChiggerResult, self).update(**kwargs)
-
         for src in self._sources:
             src.update(**kwargs)
+
+    def setOptions(self, *args, **kwargs):
+        super(ChiggerResult, self).setOptions(*args, **kwargs)
+        for src in self._sources:
+            src.setOptions(*args, **kwargs)
 
     def getSources(self):
         """

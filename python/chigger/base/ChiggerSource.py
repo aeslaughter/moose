@@ -27,16 +27,17 @@ class ChiggerSource(ChiggerFilterSourceBase):
     VTKMAPPER_TYPE = vtk.vtkMapper
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerFilterSourceBase.getOptions()
-        opt.add('orientation', None, "The orientation of the object.", vtype=list)
-        opt.add('rotation', [0, 0, 0], "The rotation of the object about x, y, z axes.", vtype=list)
-        opt.add('edges', False, "Enable/disable display of object edges.")
-        opt.add('edge_color', [1, 1, 1], "Set the edge color.")
-        opt.add('edge_width', "The edge width.", vtype=int)
-        opt.add('point_size', "The point size.", vtype=float)
-        opt.add('opacity', 1, "The object opacity.", vtype=float)
-        opt.add('color', "The color of the object.", vtype=list)
+    def validOptions():
+        opt = ChiggerFilterSourceBase.validOptions()
+        opt.add('orientation', None, vtype=float, size=3, doc="The orientation of the object.")
+        opt.add('rotation', (0., 0., 0.), vtype=float, size=3,
+                doc="The rotation of the object about x, y, z axes.")
+        opt.add('edges', False, doc="Enable/disable display of object edges.")
+        opt.add('edge_color', (1., 1., 1.), size=3, doc="Set the edge color.")
+        opt.add('edge_width', vtype=int, doc="The edge width, if None then no edges are shown.")
+        opt.add('point_size', vtype=int, doc="The point size, if None then no points are shown.")
+        opt.add('opacity', 1., vtype=float, doc="The object opacity.")
+        opt.add('color', vtype=float, size=3, doc="The color of the object.")
         return opt
 
     def __init__(self, vtkactor_type=vtk.vtkActor, vtkmapper_type=vtk.vtkPolyDataMapper, **kwargs):

@@ -38,8 +38,8 @@ class ChiggerFilterSourceBase(ChiggerSourceBase):
     FILTER_TYPES = []
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerSourceBase.getOptions()
+    def validOptions():
+        opt = ChiggerSourceBase.validOptions()
         opt.add('filters', [], "A list of Filter objects to apply to this mapper.")
         return opt
 

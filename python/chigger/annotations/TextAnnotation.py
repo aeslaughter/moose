@@ -18,8 +18,6 @@ class TextAnnotation(base.ChiggerResult):
         self.addKeyBinding('o', self._increaseOpacity, desc="Increase the font opacity by 5% (when result is selected).")
         self.addKeyBinding('o', self._decreaseOpacity, shift=True, desc="Decrease the font opacity by 5% (when result is selected).")
 
-
-
     def onSelect(self, active):
         self._sources[0].getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
         self._sources[0].getVTKMapper().GetTextProperty().SetFrameWidth(3)

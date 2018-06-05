@@ -11,6 +11,7 @@
 import math
 import vtk
 
+from ..geometric import CubeSource
 from ImageAnnotationSource import ImageAnnotationSource
 from .. import base
 
@@ -23,22 +24,25 @@ class ImageAnnotation(base.ChiggerResult):
     """
 
     @staticmethod
-    def getOptions():
+    def validOptions():
         """
         Return the default options for this object.
         """
-        opt = base.ChiggerResult.getOptions()
-        opt.add('position', (0.5, 0.5), "The position of the image center within the viewport, in "
-                                        "relative coordinates.", vtype=tuple)
-        opt.add('width', 0.25, "The logo width as a fraction of the window width, this is ignored "
-                               "if 'scale' option is set.")
-        opt.add('horizontal_alignment', 'center', "The position horizontal position alignment.",
-                allow=['left', 'center', 'right'])
-        opt.add('vertical_alignment', 'center', "The position vertical position alignment.",
-                allow=['bottom', 'center', 'top'])
-        opt.add('scale', None, "The scale of the image. (By default the image is scaled by the "
-                               "width.)", vtype=float)
-        opt += ImageAnnotationSource.getOptions()
+        opt = base.ChiggerResult.validOptions()
+        opt.add('filename', None, "The PNG file to read, this can be absolute or relative path to "
+                                  "a PNG or just the name of a PNG located in the chigger/logos "
+                                  "directory.", vtype=str)
+        opt.add('position', (0.5, 0.5), vtype=float, size=2,
+                doc="The position of the image center within the viewport, in relative coordinates.")
+        opt.add('width', 0.25, vtype=float,
+                doc="The logo width as a fraction of the window width, this is ignored if 'scale' option is set.")
+        opt.add('horizontal_alignment', 'center', allow=('left', 'center', 'right'),
+                doc="The position horizontal position alignment.")
+        opt.add('vertical_alignment', 'center', allow=('bottom', 'center', 'top'),
+                doc="The position vertical position alignment.")
+        opt.add('scale', None, vtype=float,
+                doc="The scale of the image. (By default the image is scaled by the width.)")
+        opt += ImageAnnotationSource.validOptions()
         return opt
 
     def __init__(self, **kwargs):
@@ -46,15 +50,19 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera = self._vtkrenderer.MakeCamera()
         self._vtkrenderer.SetInteractive(False)
 
+        self._highlight_box = CubeSource()
+
+
     def update(self, **kwargs):
         """
         Updates the 3D camera to place the image in the defined location.
         """
         super(ImageAnnotation, self).update(**kwargs)
 
+
         renderer = self.getVTKRenderer()
 
-        # Coordinate transormation object
+        # Coordinate transformation object
         tr = vtk.vtkCoordinate()
         tr.SetCoordinateSystemToNormalizedViewport()
 
@@ -107,3 +115,11 @@ class ImageAnnotation(base.ChiggerResult):
         # Update the renderer
         renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
+
+    def onSelect(self, selected):
+        super(ImageAnnotation, self).onSelect(selected)
+        if selected:
+            self._sources.append(self._box)
+
+        elif self._box in self._sources:
+            self._sources.remove(self._box)

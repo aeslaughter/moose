@@ -137,6 +137,12 @@ class Option(object):
 
         if self.__array:
             for v in val:
+                if (self.__vtype is not None):
+                    try:
+                        v = self.__vtype(v)
+                    except ValueError:
+                        pass
+
                 if (self.__vtype is not None) and not isinstance(v, self.__vtype):
                     msg = "The values within '{}' must be of type {} but {} provided."
                     mooseutils.mooseWarning(msg.format(self.name, self.__vtype, type(v)))
@@ -149,6 +155,12 @@ class Option(object):
                     return
 
         else:
+            if self.__vtype is not None:
+                try:
+                    val = self.__vtype(val)
+                except ValueError:
+                    pass
+
             if (self.__vtype is not None) and not isinstance(val, self.__vtype):
                 msg = "'{}' must be of type {} but {} provided."
                 mooseutils.mooseWarning(msg.format(self.name, self.__vtype, type(val)))

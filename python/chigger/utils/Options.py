@@ -128,7 +128,7 @@ class Options(object):
         opt = self.__options.get(name, None)
         if opt is None:
             msg = "Unknown option name: {}".format(name)
-            mooseutils.mooseError(msg)
+            mooseutils.mooseWarning(msg)
             return None
         elif apply:
             return opt.apply()
@@ -187,7 +187,7 @@ class Options(object):
         # Update from Options object
         for opt in args:
             if not isinstance(opt, Options):
-                mooseutils.mooseError("The supplied arguments must be Options objects or key, value pairs.")
+                mooseutils.mooseWarning("The supplied arguments must be Options objects or key, value pairs.")
             else:
                 for key in opt.keys():
                     if self.hasOption(key):
@@ -208,7 +208,7 @@ class Options(object):
             msg = 'The following settings where not recognized:'
             for key in unused:
                 msg += ' '*1 + key
-            mooseutils.mooseError(msg)
+            mooseutils.mooseWarning(msg)
 
 
     def string(self, **kwargs):
