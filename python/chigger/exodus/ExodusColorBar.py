@@ -23,8 +23,8 @@ class ExodusColorBar(misc.ColorBar):
     AXIS_NAMES = ['primary', 'secondary']
 
     @staticmethod
-    def getOptions():
-        opt = misc.ColorBar.getOptions()
+    def validOptions():
+        opt = misc.ColorBar.validOptions()
         opt.setDefault('viewport', None)
         return opt
 

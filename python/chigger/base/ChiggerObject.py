@@ -25,8 +25,8 @@ class ChiggerObject(object):
         All object should define a static validOptions method to add new key, value options. (public)
         """
         opt = utils.Options()
-        opt.add('name', "The object name (this name is displayed on the console help by pressing 'h').", vtype=str)
-        opt.add('debug', False, "Enable/disable debug messaging.")
+        opt.add('name', doc="The object name (this name is displayed on the console help by pressing 'h').", vtype=str)
+        opt.add('debug', False, doc="Enable/disable debug messaging.")
         return opt
 
     def __init__(self, **kwargs):

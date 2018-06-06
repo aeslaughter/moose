@@ -107,8 +107,8 @@ class ExodusReader(base.ChiggerObject):
     TimeData = collections.namedtuple('TimeData', ['timestep', 'time', 'filename', 'index'])
 
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerObject.getOptions()
+    def validOptions():
+        opt = base.ChiggerObject.validOptions()
         opt.add('time', vtype=float,
                 doc="The time to view, if not specified the last timestep is displayed.")
         opt.add("timestep", default=-1, vtype=int,
@@ -216,16 +216,16 @@ class ExodusReader(base.ChiggerObject):
 
             self.__vtkreader.Update()
 
-    def needsUpdate(self):
-        """ Determine the status of the object to indicate if the "update" method should be called.
-        (public)
+    #def needsUpdate(self):
+    #    """ Determine the status of the object to indicate if the "update" method should be called.
+    #    (public)
 
-        Returns: bool: True when the settings and/or file(s) have been changed and the reader needs
-        to be updated. """
-        active = self.__getActiveFilenames()
-        if self.__active != active:
-            self.setNeedsUpdate(True)
-        return super(ExodusReader, self).needsUpdate()
+    #    Returns: bool: True when the settings and/or file(s) have been changed and the reader needs
+    #    to be updated. """
+    #    active = self.__getActiveFilenames()
+    #    if self.__active != active:
+    #        self.setNeedsUpdate(True)
+    #    return super(ExodusReader, self).needsUpdate()
 
     def getErrorObserver(self):
         return self._error_observer
@@ -249,7 +249,7 @@ class ExodusReader(base.ChiggerObject):
         Note: This function can also return the "Info_Records", which in MOOSE contains input file
         and other information from MOOSE, in this case a list of strings is returned.
         reader.GetFieldData('Info_Records') """
-        self.checkUpdateState()
+        #self.checkUpdateState()
 
         field_data = self.__vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetFieldData()
         varinfo = self.__variableinfo[variable]

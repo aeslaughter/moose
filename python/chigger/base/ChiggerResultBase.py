@@ -12,6 +12,8 @@ import textwrap
 import vtk
 import mooseutils
 
+import chigger
+from .. import utils
 from ChiggerObject import ChiggerObject
 
 
@@ -28,9 +30,12 @@ class ResultEventHandler(object):
         super(ResultEventHandler, self).__init__()
         self.__keybindings = dict()
         self.__selected = False
+        self.__outline_result = None
         self.addKeyBinding('r', self._nextResult, desc="Select the next result object.")
         self.addKeyBinding('r', self._previousResult, shift=True, desc="Select the previous result object.")
+        self.addKeyBinding('d', self._deactivateResult, desc="Clear selection(s).")
         self.addKeyBinding('h', self._printHelp, desc="Display the help for this object.")
+        self.addKeyBinding('c', self._printCamera, desc="Display the camera settings for this object.")
 
     def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
         tag = (key, shift, control, alt)
@@ -49,6 +54,17 @@ class ResultEventHandler(object):
     def onSelect(self, selected):
         pass
 
+    def onActivate(self, window, active):
+        if active and (self.__outline_result is None):
+            mooseutils.mooseMessage('Activate {}'.format(self.title()))
+            self.__outline_result = chigger.geometric.OutlineResult(self, color=(1,0,0), edge_width=3)
+            window.append(self.__outline_result)
+
+        elif not active and (self.__outline_result is not None):
+            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
+            window.remove(self.__outline_result)
+            self.__outline_result = None
+
     def onMouseMoveEvent(self, position):
         pass
 
@@ -57,11 +73,19 @@ class ResultEventHandler(object):
 
     def _nextResult(self, obj, window, binding):
         window.nextActive(1)
-        msg = 'Set Active: {}'.format(window.getActive().title())
-        print mooseutils.colorText(msg, 'CYAN')
+        window.getActive().onActivate(window, True)
 
-    def _previousResult(self, *args):
+    def _previousResult(self, obj, window, binding):
         window.nextActive(-1)
+        window.getActive().onActivate(window, True)
+
+    def _deactivateResult(self, obj, window, binding):
+        active = window.getActive()
+        if active is not None:
+            active.onActivate(window, False)
+
+    def _printCamera(self, *args):
+        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 
     def _printHelp(self, *args):
         """
@@ -69,7 +93,7 @@ class ResultEventHandler(object):
         """
 
         # Object name/type
-        print mooseutils.colorText(self._title(), 'CYAN')
+        print mooseutils.colorText(self.title(), 'CYAN')
 
         # Keybindings
         n = 0

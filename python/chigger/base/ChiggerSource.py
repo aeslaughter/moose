@@ -48,7 +48,7 @@ class ChiggerSource(ChiggerFilterSourceBase):
         Updates the VTK settings for the VTKACTOR_TYPE/VTKMAPPER_TYPE objects. (override)
 
         Inputs:
-            see ChiggerFilterSourceBase
+            see ChiggerFilterSourceBa.se
         """
         super(ChiggerSource, self).update(**kwargs)
 
@@ -59,7 +59,7 @@ class ChiggerSource(ChiggerFilterSourceBase):
             x, y, z = self.getOption('rotation')
             self._vtkactor.RotateX(x)
             self._vtkactor.RotateY(y)
-            self._vtkactor.RotateZ(z)
+            self._vtkactor.RotateZ(z),
 
         if self.isOptionValid('edges') and \
            hasattr(self._vtkactor.GetProperty(), 'SetEdgeVisibility'):

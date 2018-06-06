@@ -44,6 +44,7 @@ class MainWindowObserver(ChiggerObserver):
         obj.AddObserver(vtk.vtkCommand.KeyPressEvent,  self._onKeyPressEvent)
         obj.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self._onLeftButtonPressEvent)
         obj.AddObserver(vtk.vtkCommand.MouseMoveEvent, self._onMouseMoveEvent)
+       # obj.AddObserver(vtk.vtkCommand.WindowResizeEvent, self._onWindowResizeEvent)
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """
@@ -82,7 +83,11 @@ class MainWindowObserver(ChiggerObserver):
             sz = result.getVTKRenderer().GetSize()
             position=(loc[0]/float(sz[0]), loc[1]/float(sz[1]))
             result.onMouseMoveEvent(position)
-            self._window.update()
+        self._window.update()
+
+    def _onWindowResizeEvent(self, obj, event):
+        #TODO: vtk8 is needed for this event
+        print obj, event
 
         #properties = renderer.PickProp(*loc)
         #if properties:

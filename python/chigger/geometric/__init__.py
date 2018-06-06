@@ -11,6 +11,9 @@
 from CubeSource import CubeSource
 from CylinderSource import CylinderSource
 from LineSource import LineSource
+from OutlineSource import OutlineSource
+
+from OutlineResult import OutlineResult
 
 import PlaneSourceMeta
 from .. import base

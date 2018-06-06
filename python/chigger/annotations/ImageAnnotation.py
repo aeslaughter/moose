@@ -50,9 +50,6 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera = self._vtkrenderer.MakeCamera()
         self._vtkrenderer.SetInteractive(False)
 
-        self._highlight_box = CubeSource()
-
-
     def update(self, **kwargs):
         """
         Updates the 3D camera to place the image in the defined location.
@@ -70,7 +67,7 @@ class ImageAnnotation(base.ChiggerResult):
         window = renderer.GetRenderWindow().GetSize()
 
         # Size of image
-        size = self._sources[-1].getVTKSource().GetOutput().GetDimensions()
+        size = self._sources[0].getVTKSource().GetOutput().GetDimensions()
 
         # Image scale
         if self.isOptionValid('scale'):
@@ -115,11 +112,3 @@ class ImageAnnotation(base.ChiggerResult):
         # Update the renderer
         renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
-
-    def onSelect(self, selected):
-        super(ImageAnnotation, self).onSelect(selected)
-        if selected:
-            self._sources.append(self._box)
-
-        elif self._box in self._sources:
-            self._sources.remove(self._box)

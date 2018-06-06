@@ -39,13 +39,14 @@ class CubeSource(BaseType):
         super(CubeSource, self).update(**kwargs)
 
         if self.isOptionValid('center'):
-            self._vtksource.SetCenter(self.getOption('center'))
+            self._vtksource.SetCenter(self.applyOption('center'))
 
         if self.isOptionValid('lengths'):
-            x, y, z = self.getOption('lengths')
+            x, y, z = self.applyOption('lengths')
             self._vtksource.SetXLength(x)
             self._vtksource.SetYLength(y)
             self._vtksource.SetZLength(z)
 
         if self.isOptionValid('bounds'):
-            self._vtksource.SetBounds(*self.getOption('bounds'))
+            print 'BOUNDS:', self.applyOption('bounds')
+            self._vtksource.SetBounds(*self.applyOption('bounds'))

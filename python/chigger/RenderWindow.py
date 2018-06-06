@@ -116,20 +116,33 @@ class RenderWindow(base.ChiggerObject):
                 raise mooseutils.MooseException(msg)
             self._results.append(result)
 
+        self.update()
+
+
     def remove(self, *args):
         """
         Remove result object(s) from the window.
         """
         #self.setNeedsUpdate(True)
         for result in args:
-            if self.__vtkwindow.HasRenderer(result.getVTKRenderer()):
+            actors = result.getVTKRenderer().GetActors()
+            for source in result.getSources():
+                result.getVTKRenderer().RemoveActor(source.getVTKActor())
+
+            if result.getVTKRenderer().GetActors().GetNumberOfItems() == 0:
                 self.__vtkwindow.RemoveRenderer(result.getVTKRenderer())
+
+
+            #if self.__vtkwindow.HasRenderer(result.getVTKRenderer()):
+            #    self.__vtkwindow.RemoveRenderer(result.getVTKRenderer())
             if result in self._results:
                 self._results.remove(result)
 
         # Reset active if it was removed
         if self.__active and (self.__active not in self._results):
             self.__active = None
+
+        self.update()
 
     def clear(self):
         """
@@ -159,7 +172,8 @@ class RenderWindow(base.ChiggerObject):
             obj.getVTKRenderer().InteractiveOff()
 
         self.__active = result
-        self.__vtkinteractorstyle.SetCurrentRenderer(self.__active.getVTKRenderer())
+        if self.__vtkinteractorstyle is not None:
+            self.__vtkinteractorstyle.SetCurrentRenderer(self.__active.getVTKRenderer())
 
     def nextActive(self, step=1):
         if self.__active is None:

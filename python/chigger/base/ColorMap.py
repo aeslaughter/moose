@@ -50,12 +50,12 @@ class ColorMap(ChiggerObject):
     """
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerObject.getOptions()
-        opt.add('cmap', 'default', "The colormap name.")
-        opt.add('cmap_reverse', False, "Reverse the order of colormap.")
-        opt.add('cmap_num_colors', 256, "Number of colors to use (matplotlib only).")
-        opt.add('cmap_range', [0, 1], "Set the data range for the color map to display.")
+    def validOptions():
+        opt = ChiggerObject.validOptions()
+        opt.add('cmap', 'default', doc="The colormap name.")
+        opt.add('cmap_reverse', False, doc="Reverse the order of colormap.")
+        opt.add('cmap_num_colors', 256, doc="Number of colors to use (matplotlib only).")
+        opt.add('cmap_range', [0, 1], doc="Set the data range for the color map to display.")
         return opt
 
     # The table is only needed once

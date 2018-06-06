@@ -15,6 +15,10 @@ box0 = chigger.geometric.CubeSource(center=(0.5,0.5,0.5), lengths=(1.,1.,1.), co
                                     opacity=0.5, edges=True, edge_color=(1,1,1))
 box1 = chigger.geometric.CubeSource(center=(0.25,0.25,0.25), lengths=(3.,2.,1.), color=(1,0.5,0.5))
 
+highlight = chigger.geometric.CubeSource(bounds=(-1.25, 1.75, -0.75, 1.25, -0.25, 1.0),
+                                         edge_width=4, color=(1,0,0))
+highlight.getVTKActor().GetProperty().SetRepresentationToWireframe()
+
 cubes = chigger.base.ChiggerResult(box0, box1)
 
 window = chigger.RenderWindow(cubes, size=(300,300), test=False)

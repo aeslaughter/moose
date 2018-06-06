@@ -20,9 +20,9 @@ class ExodusResult(base.ChiggerResult):
     Result object to displaying ExodusII data from a single reader.
     """
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerResult.getOptions()
-        opt += ExodusSource.getOptions()
+    def validOptions():
+        opt = base.ChiggerResult.validOptions()
+        opt += ExodusSource.validOptions()
         opt.add('explode', None, "When multiple sources are being used (e.g., NemesisReader) "
                                  "setting this to a value will cause the various sources to be "
                                  "'exploded' away from the center of the entire object.",
@@ -46,7 +46,6 @@ class ExodusResult(base.ChiggerResult):
         super(ExodusResult, self).__init__(*sources, **kwargs)
 
         # Setup keybindings
-        self.addKeyBinding('c', self._printCamera, desc="Display the current camera settings.")
         self.addKeyBinding('braceleft', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
         self.addKeyBinding('braceright', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
 
@@ -91,7 +90,7 @@ class ExodusResult(base.ChiggerResult):
         NOTE: For the range to be restricted by block/boundary/nodest the reader must have
               "squeeze=True", which can be much slower.
         """
-        self.checkUpdateState()
+        #self.checkUpdateState()
         rngs = [src.getRange() for src in self._sources]
         return utils.get_min_max(*rngs)
 
@@ -101,16 +100,6 @@ class ExodusResult(base.ChiggerResult):
         """
         a, b = self.getBounds()
         return ((b[0]-a[0])/2., (b[1]-a[1])/2., (b[2]-a[2])/2.)
-
-    def getBounds(self):
-        """
-        Return the bounding box of the results.
-        """
-        self.checkUpdateState()
-        return utils.get_bounds(*self._sources)
-
-    def _printCamera(self, *args, **kwargs):
-        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 
     def _updateOpacity(self, obj, key, *args, **kwargs):
         opacity = self.getOption('opacity')

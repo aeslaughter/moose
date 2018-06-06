@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import mooseutils
+import chigger
 from ChiggerResultBase import ChiggerResultBase
 from ChiggerSourceBase import ChiggerSourceBase
 
@@ -37,22 +38,41 @@ class ChiggerResult(ChiggerResultBase):
         return opt
 
     def __init__(self, *sources, **kwargs):
-        super(ChiggerResult, self).__init__(**kwargs)
-        self._sources = sources
-        self.setOptions(**kwargs)
-
+        super(ChiggerResult, self).__init__(renderer=kwargs.pop('renderer', None), **kwargs)
+        self._sources = list()#list(sources)
         #for src in self._sources:
         #    src._parent = self #pylint: disable=protected-access
 
-        for src in self._sources:
-            if not isinstance(src, self.SOURCE_TYPE):
-                n = src.__class__.__name__
-                t = self.SOURCE_TYPE.__name__
-                msg = 'The supplied source type of {} must be of type {}.'.format(n, t)
-                raise mooseutils.MooseException(msg)
+        for src in sources:
+            self.addSource(src)
 
-            src.setVTKRenderer(self._vtkrenderer)
-            self._vtkrenderer.AddActor(src.getVTKActor())
+        self.setOptions(**kwargs)
+
+    def getSources(self):
+        return self._sources
+
+    def getBounds(self):
+        """
+        Return the bounding box of the results.
+        """
+        self.update()
+        return chigger.utils.get_bounds(*self._sources)
+
+    def addSource(self, source):
+        if not isinstance(source, self.SOURCE_TYPE):
+            msg = 'The supplied source type of {} must be of type {}.'
+            raise mooseutils.MooseException(msg.format(src.__class__.__name__,
+                                                       self.SOURCE_TYPE.__name__))
+
+        self._sources.append(source)
+        source.setVTKRenderer(self._vtkrenderer)
+        self._vtkrenderer.AddActor(source.getVTKActor())
+
+    def removeSource(self, source):
+        source.setVTKRenderer(None)
+        self._vtkrenderer.RemoveActor(source.getVTKActor())
+        self._sources.remove(source)
+
 
 
     #def needsUpdate(self):

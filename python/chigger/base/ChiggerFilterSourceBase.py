@@ -56,7 +56,7 @@ class ChiggerFilterSourceBase(ChiggerSourceBase):
         be connected to the first filter, if then exist, or the vtkAbstractMapper object. See the
         'update' method for this class for how the connections are made.
         """
-        raise mooseutils.MooseException('The {}."getSource()" method must be overridden by your '
+        raise mooseutils.MooseException('The {}."getVTKSource()" method must be overridden by your '
                                         'mapper object and return the source vtk object to connect '
                                         'to the filers and mapper.'.format(self.__class__.__name__))
 
@@ -88,10 +88,9 @@ class ChiggerFilterSourceBase(ChiggerSourceBase):
 
         # Initialize and update filters
         for f in self._filters:
-            if f.needsInitialize():
-                f.initializeFilter(self)
-            if f.needsUpdate():
-                f.update()
+            #if f.needsInitialize():
+            f.initializeFilter(self)
+            f.update()
 
     def __connectFilters(self):
         """

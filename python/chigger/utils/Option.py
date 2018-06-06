@@ -140,7 +140,7 @@ class Option(object):
                 if (self.__vtype is not None):
                     try:
                         v = self.__vtype(v)
-                    except ValueError:
+                    except (ValueError, TypeError):
                         pass
 
                 if (self.__vtype is not None) and not isinstance(v, self.__vtype):
@@ -158,7 +158,7 @@ class Option(object):
             if self.__vtype is not None:
                 try:
                     val = self.__vtype(val)
-                except ValueError:
+                except (ValueError, TypeError):
                     pass
 
             if (self.__vtype is not None) and not isinstance(val, self.__vtype):
