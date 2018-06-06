@@ -18,105 +18,9 @@ from ChiggerObject import ChiggerObject
 
 
 
-#TODO:
-# Rename KeyBindingMixin to EventHandler or something
-# RenderWindow should have addObserver method, used by update
-# FilterResult should have addFilter method, used by update
-
-class ResultEventHandler(object):
-    KeyBinding = collections.namedtuple('KeyBinding', 'key shift control alt description function')
-
-    def __init__(self):
-        super(ResultEventHandler, self).__init__()
-        self.__keybindings = dict()
-        self.__selected = False
-        self.__outline_result = None
-        self.addKeyBinding('r', self._nextResult, desc="Select the next result object.")
-        self.addKeyBinding('r', self._previousResult, shift=True, desc="Select the previous result object.")
-        self.addKeyBinding('d', self._deactivateResult, desc="Clear selection(s).")
-        self.addKeyBinding('h', self._printHelp, desc="Display the help for this object.")
-        self.addKeyBinding('c', self._printCamera, desc="Display the camera settings for this object.")
-
-    def addKeyBinding(self, key, func, shift=False, control=False, alt=False, desc=None):
-        tag = (key, shift, control, alt)
-        if tag in self.__keybindings:
-            msg = "The key binding '{}' already exists."
-            mooseutils.mooseError(msg.format(key))
-        else:
-            self.__keybindings[tag] = ResultEventHandler.KeyBinding(key, shift, control, alt, desc, func)
-
-    def getKeyBinding(self, key, shift=False, control=False, alt=False):
-        return self.__keybindings.get((key, shift, control, alt), None)
-
-    def isSelected(self):
-        return self.__selected
-
-    def onSelect(self, selected):
-        pass
-
-    def onActivate(self, window, active):
-        if active and (self.__outline_result is None):
-            mooseutils.mooseMessage('Activate {}'.format(self.title()))
-            self.__outline_result = chigger.geometric.OutlineResult(self, color=(1,0,0), edge_width=3)
-            window.append(self.__outline_result)
-
-        elif not active and (self.__outline_result is not None):
-            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
-            window.remove(self.__outline_result)
-            self.__outline_result = None
-
-    def onMouseMoveEvent(self, position):
-        pass
-
-    def printOption(self, opt):
-        print '{}: setOptions({}={})'.format(self.title(), opt, repr(self.getOption(opt)))
-
-    def _nextResult(self, obj, window, binding):
-        window.nextActive(1)
-        window.getActive().onActivate(window, True)
-
-    def _previousResult(self, obj, window, binding):
-        window.nextActive(-1)
-        window.getActive().onActivate(window, True)
-
-    def _deactivateResult(self, obj, window, binding):
-        active = window.getActive()
-        if active is not None:
-            active.onActivate(window, False)
-
-    def _printCamera(self, *args):
-        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
-
-    def _printHelp(self, *args):
-        """
-        Display the available controls for this object.
-        """
-
-        # Object name/type
-        print mooseutils.colorText(self.title(), 'CYAN')
-
-        # Keybindings
-        n = 0
-        out = []
-        for binding in self.__keybindings.values():
-            key = []
-            if binding.shift:
-                key.append('shift')
-            if binding.control:
-                key.append('control')
-            if binding.alt:
-                key.append('alt')
-            key.append(binding.key)
-            key = '-'.join(key)
-            out.append([key, binding.description])
-            n = max(n, len(key))
-
-        for key, desc in out:
-            key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
-            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key, subsequent_indent=' '*(n + 2)))
 
 
-class ChiggerResultBase(ChiggerObject, ResultEventHandler):
+class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
     """
     Base class for objects to be displayed with a single vtkRenderer object.
 
@@ -129,11 +33,10 @@ class ChiggerResultBase(ChiggerObject, ResultEventHandler):
     Inputs:
         see ChiggerObject
     """
-
-
     @staticmethod
     def validOptions():
         opt = ChiggerObject.validOptions()
+        opt.add('interactive', True, doc="Control if the object may be selected with key bindings.")
 
         """
         opt.add('layer', 1, "The VTK layer within the render window.", vtype=int)
@@ -175,6 +78,7 @@ class ChiggerResultBase(ChiggerObject, ResultEventHandler):
             see ChiggerObject
         """
         super(ChiggerResultBase, self).update(**kwargs)
+        #ResultEventHandler.update(self)
 
 
         # TODO: Background stuff should be moved to the BackgroundResult...

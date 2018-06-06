@@ -105,6 +105,8 @@ class RenderWindow(base.ChiggerObject):
 
             #result.setChiggerRenderWindow(self)
             # TODO: setRenderWindow() this will allow for keybinding/mouse events to have full control
+            result.getVTKRenderer().SetInteractive(False)
+
 
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
             if isinstance(result, base.ResultGroup):
@@ -168,8 +170,8 @@ class RenderWindow(base.ChiggerObject):
                                   "setting it as active.")
             return
 
-        for obj in self._results:
-            obj.getVTKRenderer().InteractiveOff()
+        #for obj in self._results:
+        #    obj.getVTKRenderer().InteractiveOff()
 
         self.__active = result
         if self.__vtkinteractorstyle is not None:
@@ -189,6 +191,9 @@ class RenderWindow(base.ChiggerObject):
                 index = n - 1
 
         self.setActive(self._results[index])
+        if not self._results[index].getOption('interactive'):
+            self.nextActive(step)
+
 
     def getActive(self):
         """
@@ -266,7 +271,7 @@ class RenderWindow(base.ChiggerObject):
             self.__vtkwindow.SetMultiSamples(self.getOption('multisamples'))
 
         if self.isOptionValid('size'):
-            self.__vtkwindow.SetSize(self.getOption('size'))
+            self.__vtkwindow.SetSize(self.applyOption('size'))
 
         #self.__vtkwindow.Render()
 
@@ -281,10 +286,11 @@ class RenderWindow(base.ChiggerObject):
             result.update()
             n = max(n, renderer.GetLayer() + 1)
 
+        # TODO: set if changed only
         self.__vtkwindow.SetNumberOfLayers(n)
 
-        if (self.__active is None) and len(self._results) > 0:
-            self.setActive(self._results[0])
+        #if (self.__active is None) and len(self._results) > 0:
+        #    self.setActive(self._results[0])
 
         # Observers
         if self.__vtkinteractor:

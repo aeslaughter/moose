@@ -20,6 +20,7 @@ from Options import Options
 import AxisOptions
 import FontOptions
 import LegendOptions
+from KeyBindingMixin import KeyBinding, KeyBindingMixin
 
 def get_active_filenames(basename, pattern=None):
     """

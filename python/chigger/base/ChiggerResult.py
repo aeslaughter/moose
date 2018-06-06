@@ -116,7 +116,7 @@ class ChiggerResult(ChiggerResultBase):
                         src.setOptions(sub, **kwargs)
             else:
                 for key, value in kwargs.iteritems():
-                    if key in src:
+                    if key in src._options:
                         src.setOption(key, value)
 
     def update(self, **kwargs):
@@ -130,10 +130,10 @@ class ChiggerResult(ChiggerResultBase):
         for src in self._sources:
             src.update(**kwargs)
 
-    def setOptions(self, *args, **kwargs):
-        super(ChiggerResult, self).setOptions(*args, **kwargs)
-        for src in self._sources:
-            src.setOptions(*args, **kwargs)
+    #def setOptions(self, *args, **kwargs):
+    #    super(ChiggerResult, self).setOptions(*args, **kwargs)
+    #    for src in self._sources:
+    #        src.setOptions(*args, **kwargs)
 
     def getSources(self):
         """
