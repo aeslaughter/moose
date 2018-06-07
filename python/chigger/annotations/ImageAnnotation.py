@@ -51,6 +51,9 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera = self._vtkrenderer.MakeCamera()
         self._vtkrenderer.SetInteractive(False)
 
+        self.addKeyBinding('s', self._setScale, desc="Increase the scale of the image by 0.1.")
+        self.addKeyBinding('s', self._setScale, shift=True, desc="Decrease the scale of the image by 0.1.")
+
     def update(self, **kwargs):
         """
         Updates the 3D camera to place the image in the defined location.
@@ -129,3 +132,11 @@ class ImageAnnotation(base.ChiggerResult):
     def onMouseMoveEvent(self, position):
         self.setOption('position', position)
         self.update()
+
+
+    def _setScale(self, window, binding):
+        step = -0.05 if binding.shift else 0.05
+        scale = self.getOption('scale') + step
+        if scale > 0:
+            print '{}: scale={}'.format(self.title(), scale)
+            self.setOption('scale', scale)

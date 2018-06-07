@@ -15,8 +15,8 @@ class ChiggerObserver(ChiggerObject):
     This object is a base class and not intended for general use, see TimerObserver as an example.
     """
     @staticmethod
-    def getOptions():
-        opt = ChiggerObject.getOptions()
+    def validOptions():
+        opt = ChiggerObject.validOptions()
         return opt
 
     def __init__(self, **kwargs):
@@ -45,4 +45,3 @@ class ChiggerObserver(ChiggerObject):
         """
         self._window = window
         self.addObservers(self._window.getVTKInteractorStyle())
-        #self._vtk_command = window.getVTKInteractor().GetCommand(vtkid)
