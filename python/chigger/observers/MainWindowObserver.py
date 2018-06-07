@@ -7,6 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import textwrap
 import vtk
 
 import mooseutils
@@ -113,22 +114,22 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
 
         # Object name/type
         print mooseutils.colorText('General Keybindings:', 'YELLOW')
-        self.__printKeyBindings(self.__keybindings)
+        self.__printKeyBindings(self.keyBindings())
 
         active = window.getActive()
         if active is not None:
-            print mooseutils.colorText('{} Keybindings:'.format(active.title()), 'YELLOW')
-            #self.printKeyBindings(active.getKeyBindings())
+            print mooseutils.colorText('\n{} Keybindings:'.format(active.title()), 'YELLOW')
+            self.__printKeyBindings(active.keyBindings())
 
     @staticmethod
     def __printKeyBindings(bindings):
         n = 0
         out = []
         for key, value in bindings.iteritems():
-            tag = 'shift-{}'.format(key.key) if key.shift else key.key
+            tag = 'shift-{}'.format(key[0]) if key[1] else key[0]
             desc = [item.description for item in value]
-            out.append([key, '\n\n'.join(desc)])
-            n = max(n, len(key))
+            out.append([tag, '\n\n'.join(desc)])
+            n = max(n, len(tag))
 
         for key, desc in out:
             key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')

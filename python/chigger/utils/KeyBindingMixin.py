@@ -14,9 +14,14 @@ KeyBinding = collections.namedtuple('KeyBinding', 'key shift description functio
 class KeyBindingMixin(object):
     def __init__(self):
         super(KeyBindingMixin, self).__init__()
-        self.__keybindings = collections.defaultdict(set)
+        self.__keybindings = collections.OrderedDict()
+
+    def keyBindings(self):
+        return self.__keybindings
 
     def addKeyBinding(self, key, func, shift=False, desc=None):
+        if (key, shift) not in self.__keybindings:
+            self.__keybindings[(key, shift)] = set()
         self.__keybindings[(key, shift)].add(KeyBinding(key, shift, desc, func))
 
     def getKeyBindings(self, key, shift=False):
