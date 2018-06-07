@@ -238,7 +238,7 @@ class RenderWindow(base.ChiggerObject):
             style = self.getOption('style').lower()
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
-                self.__vtkinteractorstyle = ChiggerInteractorStyle()
+                self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
                 #self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleImage()
@@ -247,10 +247,20 @@ class RenderWindow(base.ChiggerObject):
 
             self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
 
+            #self.__vtkinteractorstyle.RemoveObserver(4)
+            #int vtk.vtkCommand.KeyPressEvent
+
+            #print self.__vtkinteractor
+            self.__vtkinteractor.RemoveObservers(vtk.vtkCommand.CharEvent)
+            #self.__vtkinteractorstyle.RemoveObservers(vtk.vtkCommand.KeyPressEvent)
+
+            print self.__vtkinteractor
+
             main_observer = observers.MainWindowObserver()
             main_observer.init(self)
             self._observers.add(main_observer)
 
+            #print self.__vtkinteractorstyle
         # Background settings
         #self._results[0].updateOptions(self._options)
 
