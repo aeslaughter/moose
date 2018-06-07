@@ -56,7 +56,7 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
         """
         obj.AddObserver(vtk.vtkCommand.KeyPressEvent,  self._onKeyPressEvent)
        # obj.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self._onLeftButtonPressEvent)
-       # obj.AddObserver(vtk.vtkCommand.MouseMoveEvent, self._onMouseMoveEvent)
+        obj.AddObserver(vtk.vtkCommand.MouseMoveEvent, self._onMouseMoveEvent)
        # obj.AddObserver(vtk.vtkCommand.WindowResizeEvent, self._onWindowResizeEvent)
 
 #    def isSelected(self):
@@ -92,17 +92,18 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
     def _nextResult(self, obj, window, binding):
         self._deactivateResult(obj, window, binding)
         window.nextActive(1)
-        window.getActive().setHighlight(window, True)
+        window.getActive().onActivate(window, True)
 
     def _previousResult(self, obj, window, binding):
         self._deactivateResult(obj, window, binding)
         window.nextActive(-1)
-        window.getActive().setHighlight(window, True)
+        window.getActive().onActivate(window, True)
 
     def _deactivateResult(self, obj, window, binding):
         active = window.getActive()
         if active is not None:
-            active.setHighlight(window, False)
+            active.onActivate(window, False)
+        window.setActive(None)
 
     def _printCamera(self, *args):
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
@@ -143,6 +144,8 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
         Inputs:
             obj, event: Required by VTK.
         """
+        print 'C:', obj.GetInteractor().GetKeyCode()
+
         key = obj.GetInteractor().GetKeySym().lower()
         shift = obj.GetInteractor().GetShiftKey()
 
@@ -168,8 +171,6 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
         self._window.update()
         """
     def _onMouseMoveEvent(self, obj, event):
-        pass
-        """
         result = self._window.getActive()
         if result is not None:
             loc = obj.GetInteractor().GetEventPosition()
@@ -177,7 +178,7 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
             position=(loc[0]/float(sz[0]), loc[1]/float(sz[1]))
             result.onMouseMoveEvent(position)
         self._window.update()
-        """
+
     def _onWindowResizeEvent(self, obj, event):
         pass
         #TODO: vtk8 is needed for this event

@@ -107,11 +107,17 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
             self._vtkrenderer.SetActiveCamera(self.applyOption('camera'))
         """
         #self._vtkrenderer.Render()
-    def setHighlight(self, window, value):
-        pass
+    def onActivate(self, window, active):
+        if active:
+            mooseutils.mooseMessage('Activate {}'.format(self.title()))
+        else:
+            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
 
     def getBounds(self):
         """
         Return the bounding box of the results.
         """
         pass
+
+    def onMouseMoveEvent(self, position):
+        print position

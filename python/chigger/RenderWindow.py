@@ -165,6 +165,10 @@ class RenderWindow(base.ChiggerObject):
         """
         Set the active result object for interaction.
         """
+        if result is None:
+            self.__active = None
+            return
+
         if result not in self._results:
             mooseutils.mooseError("The active result must be added to the RendererWindow prior to "
                                   "setting it as active.")
@@ -254,7 +258,8 @@ class RenderWindow(base.ChiggerObject):
             self.__vtkinteractor.RemoveObservers(vtk.vtkCommand.CharEvent)
             #self.__vtkinteractorstyle.RemoveObservers(vtk.vtkCommand.KeyPressEvent)
 
-            print self.__vtkinteractor
+            #self.__vtkinteractor.Disable()
+            #self.__vtkinteractorstyle.SetEnabled(False)
 
             main_observer = observers.MainWindowObserver()
             main_observer.init(self)

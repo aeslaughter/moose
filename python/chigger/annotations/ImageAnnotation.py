@@ -114,7 +114,8 @@ class ImageAnnotation(base.ChiggerResult):
         renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
 
-    def setHighlight(self, window, active):
+    def onActivate(self, window, active):
+        super(ImageAnnotation, self).onActivate(window, active)
 
         if active:
             mooseutils.mooseMessage('Activate {}'.format(self.title()))
@@ -124,3 +125,7 @@ class ImageAnnotation(base.ChiggerResult):
         else:
             mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
             self._sources[0].getVTKActor().GetProperty().SetBacking(False)
+
+    def onMouseMoveEvent(self, position):
+        self.setOption('position', position)
+        self.update()
