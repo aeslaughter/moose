@@ -119,6 +119,12 @@ class ChiggerResult(ChiggerResultBase):
                     if key in src._options:
                         src.setOption(key, value)
 
+    def setOption(self, key, value):
+        super(ChiggerResult, self).setOption(key, value)
+        for src in self._sources:
+            if key in src._options:
+                src.setOption(key, value)
+
     def update(self, **kwargs):
         """
         Update this object and the contained ChiggerFilterSourceBase objects. (override)

@@ -51,8 +51,10 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera = self._vtkrenderer.MakeCamera()
         self._vtkrenderer.SetInteractive(False)
 
-        self.addKeyBinding('s', self._setScale, desc="Increase the scale of the image by 0.1.")
-        self.addKeyBinding('s', self._setScale, shift=True, desc="Decrease the scale of the image by 0.1.")
+        self.addKeyBinding('s', self._setScale, desc="Increase the scale of the image by 0.05.")
+        self.addKeyBinding('s', self._setScale, shift=True, desc="Decrease the scale of the image by 0.05.")
+        self.addKeyBinding('o', self._setOpacity, desc="Increase the opacity of the image by 0.05.")
+        self.addKeyBinding('o', self._setOpacity, shift=True, desc="Decrease the opacity of the image by 0.05.")
 
     def update(self, **kwargs):
         """
@@ -133,10 +135,16 @@ class ImageAnnotation(base.ChiggerResult):
         self.setOption('position', position)
         self.update()
 
-
     def _setScale(self, window, binding):
         step = -0.05 if binding.shift else 0.05
         scale = self.getOption('scale') + step
         if scale > 0:
             print '{}: scale={}'.format(self.title(), scale)
             self.setOption('scale', scale)
+
+    def _setOpacity(self, window, binding):
+        step = -0.05 if binding.shift else 0.05
+        opacity = self.getOption('opacity') + step
+        if opacity > 0 and opacity < 1:
+            print '{}: opacity={}'.format(self.title(), opacity)
+            self.setOption('opacity', opacity)

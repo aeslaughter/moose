@@ -53,32 +53,32 @@ class ChiggerSource(ChiggerFilterSourceBase):
         super(ChiggerSource, self).update(**kwargs)
 
         if self.isOptionValid('orientation'):
-            self._vtkactor.SetOrientation(self.getOption('orientation'))
+            self._vtkactor.SetOrientation(self.applyOption('orientation'))
 
         if self.isOptionValid('rotation'):
-            x, y, z = self.getOption('rotation')
+            x, y, z = self.applyOption('rotation')
             self._vtkactor.RotateX(x)
             self._vtkactor.RotateY(y)
             self._vtkactor.RotateZ(z),
 
         if self.isOptionValid('edges') and \
            hasattr(self._vtkactor.GetProperty(), 'SetEdgeVisibility'):
-            self._vtkactor.GetProperty().SetEdgeVisibility(self.getOption('edges'))
+            self._vtkactor.GetProperty().SetEdgeVisibility(self.applyOption('edges'))
 
         if self.isOptionValid('edge_color') and \
            hasattr(self._vtkactor.GetProperty(), 'SetEdgeColor'):
-            self._vtkactor.GetProperty().SetEdgeColor(self.getOption('edge_color'))
+            self._vtkactor.GetProperty().SetEdgeColor(self.applyOption('edge_color'))
 
         if self.isOptionValid('edge_width') and \
            hasattr(self._vtkactor.GetProperty(), 'SetLineWidth'):
-            self._vtkactor.GetProperty().SetLineWidth(self.getOption('edge_width'))
+            self._vtkactor.GetProperty().SetLineWidth(self.applyOption('edge_width'))
 
         if self.isOptionValid('point_size') and \
            hasattr(self._vtkactor.GetProperty(), 'SetPointSize'):
-            self._vtkactor.GetProperty().SetPointSize(self.getOption('point_size'))
+            self._vtkactor.GetProperty().SetPointSize(self.applyOption('point_size'))
 
         if self.isOptionValid('opacity'):
-            self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
+            self._vtkactor.GetProperty().SetOpacity(self.applyOption('opacity'))
 
         if self.isOptionValid('color'):
-            self._vtkactor.GetProperty().SetColor(self.getOption('color'))
+            self._vtkactor.GetProperty().SetColor(self.applyOption('color'))
