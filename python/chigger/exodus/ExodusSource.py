@@ -105,8 +105,6 @@ class ExodusSource(base.ChiggerSource):
         """
         Return the extents of the active data objects.
         """
-        #self.checkUpdateState()
-
         bnds = []
         for i in range(self.__vtkextractblock.GetOutput().GetNumberOfBlocks()):
             current = self.__vtkextractblock.GetOutput().GetBlock(i)

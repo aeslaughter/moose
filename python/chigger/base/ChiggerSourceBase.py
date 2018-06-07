@@ -63,7 +63,7 @@ class ChiggerSourceBase(ChiggerObject):
 
         self._vtkrenderer = None # set automatically by ChiggerResult object.
         #self._parent = None # Set by ChiggerResult
-        self._selected = False
+        #self._selected = False
 
     def getVTKActor(self):
         """
@@ -100,6 +100,15 @@ class ChiggerSourceBase(ChiggerObject):
             see ChiggerObject
         """
         super(ChiggerSourceBase, self).update(**kwargs)
+
+    def setHighlight(self, window, value):
+        pass
+
+
+
+    def getBounds(self):
+        pass
+        #self._vtkmapper.GetBounds()
 
         #if self.isOptionValid('visible'):
         #    self._vtkactor.SetVisibility(self.getOption('visible'))

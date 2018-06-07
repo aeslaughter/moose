@@ -14,6 +14,7 @@ from MultiAppExodusReader import MultiAppExodusReader
 import mooseutils
 from .. import base
 from .. import utils
+from .. import geometric
 
 class ExodusResult(base.ChiggerResult):
     """
@@ -48,6 +49,8 @@ class ExodusResult(base.ChiggerResult):
         # Setup keybindings
         self.addKeyBinding('braceleft', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
         self.addKeyBinding('braceright', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
+
+        self.__outline_result = None
 
     def update(self, **kwargs):
         super(ExodusResult, self).update(**kwargs)
@@ -100,6 +103,19 @@ class ExodusResult(base.ChiggerResult):
         """
         a, b = self.getBounds()
         return ((b[0]-a[0])/2., (b[1]-a[1])/2., (b[2]-a[2])/2.)
+
+    def setHighlight(self, window, active):
+
+        if active and (self.__outline_result is None):
+            mooseutils.mooseMessage('Activate {}'.format(self.title()))
+            self.__outline_result = geometric.OutlineResult(self, color=(1,0,0), edge_width=3, interactive=False)
+            window.append(self.__outline_result)
+
+        elif not active and (self.__outline_result is not None):
+            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
+            window.remove(self.__outline_result)
+            self.__outline_result = None
+
 
     def _updateOpacity(self, obj, key, *args, **kwargs):
         opacity = self.getOption('opacity')

@@ -65,17 +65,17 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
 #        print result
 
 
-    def onActivate(self, result, active):
-
-        if active and (self.__outline_result is None):
-            mooseutils.mooseMessage('Activate {}'.format(result.title()))
-            self.__outline_result = OutlineResult(result, color=(1,0,0), edge_width=3, interactive=False)
-            self._window.append(self.__outline_result)
-
-        elif not active and (self.__outline_result is not None):
-            mooseutils.mooseMessage('Deactivate {}'.format(result.title()))
-            self._window.remove(self.__outline_result)
-            self.__outline_result = None
+#    def onActivate(self, result, active):
+#
+#        if active and (self.__outline_result is None):
+#            mooseutils.mooseMessage('Activate {}'.format(result.title()))
+#            self.__outline_result = OutlineResult(result, color=(1,0,0), edge_width=3, interactive=False)
+#            self._window.append(self.__outline_result)
+#
+#        elif not active and (self.__outline_result is not None):
+#            mooseutils.mooseMessage('Deactivate {}'.format(result.title()))
+#            self._window.remove(self.__outline_result)
+#            self.__outline_result = None
 
     def onMouseMoveEvent(self, position):
         pass
@@ -89,17 +89,19 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
 
 
     def _nextResult(self, obj, window, binding):
+        self._deactivateResult(obj, window, binding)
         window.nextActive(1)
-        self.onActivate(window.getActive(), True)
+        window.getActive().setHighlight(window, True)
 
     def _previousResult(self, obj, window, binding):
+        self._deactivateResult(obj, window, binding)
         window.nextActive(-1)
-        self.onActivate(window.getActive(), True)
+        window.getActive().setHighlight(window, True)
 
     def _deactivateResult(self, obj, window, binding):
         active = window.getActive()
         if active is not None:
-            self.onActivate(active, False)
+            active.setHighlight(window, False)
 
     def _printCamera(self, *args):
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))

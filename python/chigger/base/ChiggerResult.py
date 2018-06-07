@@ -70,7 +70,7 @@ class ChiggerResult(ChiggerResultBase):
 
     def removeSource(self, source):
         source.setVTKRenderer(None)
-        self._vtkrenderer.RemoveActor(source.getVTKActor())
+        selxbf._vtkrenderer.RemoveActor(source.getVTKActor())
         self._sources.remove(source)
 
 
