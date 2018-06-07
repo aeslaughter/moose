@@ -107,3 +107,11 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
             self._vtkrenderer.SetActiveCamera(self.applyOption('camera'))
         """
         #self._vtkrenderer.Render()
+    def setHighlight(self, window, value):
+        pass
+
+    def getBounds(self):
+        """
+        Return the bounding box of the results.
+        """
+        pass

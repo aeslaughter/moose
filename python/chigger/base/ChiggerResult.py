@@ -56,12 +56,12 @@ class ChiggerResult(ChiggerResultBase):
         Return the bounding box of the results.
         """
         self.update()
-        return chigger.utils.get_bounds(*self._sources)
+        return utils.get_bounds(*self._sources)
 
     def addSource(self, source):
         if not isinstance(source, self.SOURCE_TYPE):
             msg = 'The supplied source type of {} must be of type {}.'
-            raise mooseutils.MooseException(msg.format(src.__class__.__name__,
+            raise moosecutils.MooseException(msg.format(src.__class__.__name__,
                                                        self.SOURCE_TYPE.__name__))
 
         self._sources.append(source)

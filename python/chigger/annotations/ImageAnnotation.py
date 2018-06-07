@@ -10,10 +10,11 @@
 
 import math
 import vtk
-
+import mooseutils
 from ..geometric import CubeSource
 from ImageAnnotationSource import ImageAnnotationSource
 from .. import base
+from .. import geometric
 
 class ImageAnnotation(base.ChiggerResult):
     """
@@ -112,3 +113,14 @@ class ImageAnnotation(base.ChiggerResult):
         # Update the renderer
         renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
+
+    def setHighlight(self, window, active):
+
+        if active:
+            mooseutils.mooseMessage('Activate {}'.format(self.title()))
+            self._sources[0].getVTKActor().GetProperty().SetBackingColor(1,0,0)
+            self._sources[0].getVTKActor().GetProperty().SetBacking(True)
+
+        else:
+            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
+            self._sources[0].getVTKActor().GetProperty().SetBacking(False)

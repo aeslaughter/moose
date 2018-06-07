@@ -11,6 +11,7 @@
 import vtk
 import mooseutils
 from ChiggerObject import ChiggerObject
+from .. import utils
 
 class ChiggerSourceBase(ChiggerObject):
     """
@@ -104,10 +105,14 @@ class ChiggerSourceBase(ChiggerObject):
     def setHighlight(self, window, value):
         pass
 
-
-
     def getBounds(self):
-        pass
+        """
+        Return the bounding box of the results.
+        """
+        self.update()
+        return utils.get_bounds(self)
+
+
         #self._vtkmapper.GetBounds()
 
         #if self.isOptionValid('visible'):
