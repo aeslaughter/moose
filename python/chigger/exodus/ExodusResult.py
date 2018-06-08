@@ -104,7 +104,8 @@ class ExodusResult(base.ChiggerResult):
         a, b = self.getBounds()
         return ((b[0]-a[0])/2., (b[1]-a[1])/2., (b[2]-a[2])/2.)
 
-    def setHighlight(self, window, active):
+    def onActivate(self, window, active):
+        super(ExodusResult, self).onActivate(window, active)
 
         if active and (self.__outline_result is None):
             mooseutils.mooseMessage('Activate {}'.format(self.title()))

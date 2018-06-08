@@ -51,11 +51,11 @@ class RenderWindow(base.ChiggerObject):
                                  "remove existing objects.", vtype=list)
 
         # Background settings
-        #background = misc.ChiggerBackground.validOptions()
-        #background.remove('layer')
-        #background.remove('camera')
-        #background.remove('viewport')
-        #opt += background
+        background = misc.ChiggerBackground.validOptions()
+        background.remove('layer')
+        background.remove('camera')
+        background.remove('viewport')
+        opt += background
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -65,12 +65,12 @@ class RenderWindow(base.ChiggerObject):
 
         super(RenderWindow, self).__init__(**kwargs)
 
-        self._results = []#[misc.ChiggerBackground()]
+        self._results = []
         self._observers = set()
         self.__active = None
 
         # Store the supplied result objects
-        self.append(*args)
+        self.append(misc.ChiggerBackground(), *args)
 
     def __contains__(self, item):
         """
@@ -267,7 +267,7 @@ class RenderWindow(base.ChiggerObject):
 
             #print self.__vtkinteractorstyle
         # Background settings
-        #self._results[0].updateOptions(self._options)
+        self._results[0].updateOptions(self._options)
 
         # vtkRenderWindow Settings
         if self.isOptionValid('offscreen'):
@@ -345,7 +345,7 @@ class RenderWindow(base.ChiggerObject):
         mooseutils.mooseDebug('RenderWindow.write()', color='MAGENTA')
 
         #if self.needsUpdate() or kwargs:
-        #    self.update(**kwargs)
+        self.update(**kwargs)
 
         # Allowed extensions and the associated readers
         writers = dict()

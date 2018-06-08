@@ -16,10 +16,6 @@ import chigger
 from .. import utils
 from ChiggerObject import ChiggerObject
 
-
-
-
-
 class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
     """
     Base class for objects to be displayed with a single vtkRenderer object.
@@ -37,24 +33,21 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
     def validOptions():
         opt = ChiggerObject.validOptions()
         opt.add('interactive', True, doc="Control if the object may be selected with key bindings.")
-
-        """
-        opt.add('layer', 1, "The VTK layer within the render window.", vtype=int)
-        opt.add('viewport', (0., 0., 1., 1.), "A list given the viewport coordinates [x_min, y_min, "
-                                          "x_max, y_max], in relative position to the entire "
-                                          "window (0 to 1).", vtype=float)
-        opt.add('background', (0., 0., 0.), vtype=float,
-                doc="The background color, only applied when the 'layer' option is zero. A "
-                    "background result is automatically added when chigger.RenderWindow is "
+        opt.add('layer', 1, vtype=int, doc="The VTK layer within the render window.")
+        opt.add('viewport', (0., 0., 1., 1.), vtype=float, size=4,
+                doc="A list given the viewport coordinates [x_min, y_min, x_max, y_max], in " \
+                    "relative position to the entire window (0 to 1).")
+        opt.add('background', (0., 0., 0.), vtype=float, size=3,
+                doc="The background color, only applied when the 'layer' option is zero. A " \
+                    "background result is automatically added when chigger.RenderWindow is " \
                     "utilized.")
-        opt.add('background2', None, "The second background color, when supplied this creates a "
-                                     "gradient background, only applied when the 'layer' option is "
-                                     "zero. A background result is automatically added when "
-                                     "chigger.RenderWindow is utilized.", vtype=float, array=True)
-        opt.add('gradient_background', False, "Enable/disable the use of a gradient background.")
-        opt.add('camera', None, "The VTK camera to utilize for viewing the results.",
-                vtype=vtk.vtkCamera)
-        """
+        opt.add('background2', None, vtype=float, size=3,
+                doc="The second background color, when supplied this creates a gradient " \
+                    "background, only applied when the 'layer' option is zero. A background " \
+                    "result is automatically added when chigger.RenderWindow is utilized.")
+        opt.add('gradient_background', False, doc="Enable/disable the use of a gradient background.")
+        opt.add('camera', None, vtype=vtk.vtkCamera,
+                doc="The VTK camera to utilize for viewing the results.")
         return opt
 
     def __init__(self, renderer=None, **kwargs):
@@ -81,9 +74,6 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
         #ResultEventHandler.update(self)
 
 
-        # TODO: Background stuff should be moved to the BackgroundResult...
-
-        """
         # Render layer
         if self.isOptionValid('layer'):
             self._vtkrenderer.SetLayer(self.applyOption('layer'))
@@ -105,7 +95,7 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
         # Camera
         if self.isOptionValid('camera'):
             self._vtkrenderer.SetActiveCamera(self.applyOption('camera'))
-        """
+
         #self._vtkrenderer.Render()
     def onActivate(self, window, active):
         if active:

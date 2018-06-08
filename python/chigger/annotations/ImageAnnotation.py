@@ -50,6 +50,7 @@ class ImageAnnotation(base.ChiggerResult):
         super(ImageAnnotation, self).__init__(ImageAnnotationSource(), **kwargs)
         self._vtkcamera = self._vtkrenderer.MakeCamera()
         self._vtkrenderer.SetInteractive(False)
+        self._vtkrenderer.SetActiveCamera(self._vtkcamera)
 
         self.addKeyBinding('s', self._setScale, desc="Increase the scale of the image by 0.05.")
         self.addKeyBinding('s', self._setScale, shift=True, desc="Decrease the scale of the image by 0.05.")
@@ -77,9 +78,9 @@ class ImageAnnotation(base.ChiggerResult):
 
         # Image scale
         if self.isOptionValid('scale'):
-            scale = self.getOption('scale')
-        else:
-            scale = float(window[0])/float(size[0]) * self.getOption('width')
+            scale = self.applyOption('scale')
+        elif self.isOptionValid('width'):
+            scale = float(window[0])/float(size[0]) * self.applyOption('width')
 
         # Compute the camera distance
         angle = self._vtkcamera.GetViewAngle()
@@ -87,7 +88,7 @@ class ImageAnnotation(base.ChiggerResult):
 
         # Determine the image position
         if self.isOptionValid('position'):
-            p = self.getOption('position')
+            p = self.applyOption('position')
             tr.SetValue(p[0], p[1], 0)
             position = list(tr.GetComputedDisplayValue(renderer))
 
@@ -116,7 +117,7 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera.SetFocalPoint(size[0]/2. + x, size[1]/2. + y, 0)
 
         # Update the renderer
-        renderer.SetActiveCamera(self._vtkcamera)
+        #renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
 
     def onActivate(self, window, active):

@@ -45,7 +45,6 @@ class Options(object):
         """
         return self.string()
 
-
     def keys(self):
         """
         List of option names

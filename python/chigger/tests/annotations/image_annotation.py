@@ -9,6 +9,10 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
+"""MooseDocs
+This is a MooseDocs markdown section.
+"""
+
 import chigger
 moose = chigger.annotations.ImageAnnotation(filename='../../../chigger/logos/moose.png', opacity=0.5,
                                             scale=0.5, position=(0.5, 0.75))

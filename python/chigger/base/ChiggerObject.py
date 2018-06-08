@@ -142,7 +142,7 @@ class ChiggerObject(object):
         #self.setNeedsUpdate(changed)
         #return changed
 
-    def updateOptions(self, *args):
+    def updateOptions(self, *options):
         """
         Apply the supplied option objects to this object and the contained ChiggerFilterSourceBase
         objects. (override)
@@ -150,7 +150,10 @@ class ChiggerObject(object):
         Inputs:
             see ChiggerResultBase
         """
-        self._options.update(*args)
+        for opt in options:
+            for key in opt.keys():
+                if key in self._options:
+                    self.setOption(key, opt.get(key))
 
     #def reset(self):
     #    """

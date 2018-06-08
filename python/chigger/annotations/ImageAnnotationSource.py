@@ -52,7 +52,7 @@ class ImageAnnotationSource(base.ChiggerSource):
         super(ImageAnnotationSource, self).update(**kwargs)
 
         if self.isOptionValid('filename'):
-            filename = self.getOption('filename')
+            filename = self.applyOption('filename')
             if not os.path.exists(filename):
                 filename = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logos',
                                                         os.path.basename(filename)))
