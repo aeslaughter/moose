@@ -110,4 +110,4 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
         pass
 
     def onMouseMoveEvent(self, position):
-        print position
+        pass

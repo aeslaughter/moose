@@ -12,10 +12,10 @@ import vtk
 
 import mooseutils
 from ChiggerObserver import ChiggerObserver
-from ..utils import KeyBinding, KeyBindingMixin
+from .. import utils
 from ..geometric import OutlineResult
 
-class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
+class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
     """
@@ -94,7 +94,7 @@ class MainWindowObserver(ChiggerObserver, KeyBindingMixin):
     def _printCamera(self, *args):
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 
-    def _printHelp(self, obj, window, binding):
+    def _printHelp(self, window, binding):
         """
         Display the available controls for this object.
         """

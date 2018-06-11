@@ -183,14 +183,14 @@ class RenderWindow(base.ChiggerObject):
 
     def nextActive(self, step=1):
         if self.__active is None:
-            index = 0
+            index = 1
 
         else:
             n = len(self._results)
             index = self._results.index(self.__active)
             index += step
             if index == n:
-                index = 0
+                index = 1
             elif index == -1:
                 index = n - 1
 

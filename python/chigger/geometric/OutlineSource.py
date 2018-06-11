@@ -30,7 +30,6 @@ class OutlineSource(BaseType):
         super(OutlineSource, self).update(**kwargs)
 
         xmin, xmax = self._input_source.getBounds()
-        print xmin, xmax
         self._vtksource.SetBounds(xmin[0], xmax[0], xmin[1], xmax[1], xmin[2], xmax[2])
         #if not self._vtksource.GetNumberOfInputConnections(0):
         #self._vtksource.SetInputConnection(self._input_source.getVTKMapper().GetInputConnection(0,0))

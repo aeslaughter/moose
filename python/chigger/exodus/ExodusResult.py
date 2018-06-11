@@ -47,8 +47,8 @@ class ExodusResult(base.ChiggerResult):
         super(ExodusResult, self).__init__(*sources, **kwargs)
 
         # Setup keybindings
-        self.addKeyBinding('braceleft', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
-        self.addKeyBinding('braceright', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
+        self.addKeyBinding('o', self._updateOpacity, desc='Decrease the opacity by 1%')
+        self.addKeyBinding('o', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
 
         self.__outline_result = None
 
@@ -118,12 +118,12 @@ class ExodusResult(base.ChiggerResult):
             self.__outline_result = None
 
 
-    def _updateOpacity(self, obj, key, *args, **kwargs):
+    def _updateOpacity(self, window, binding):
         opacity = self.getOption('opacity')
-        if key == 'braceleft':
-            if opacity >= 0.01:
-                opacity -= 0.01
-        elif key == 'braceright':
-            if opacity <= 0.99:
-                opacity += 0.01
+        if binding.shift:
+            if opacity > 0.05:
+                opacity -= 0.05
+        else:
+            if opacity <= 0.95:
+                opacity += 0.05
         self.update(opacity=opacity)

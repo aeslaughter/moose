@@ -48,5 +48,4 @@ class CubeSource(BaseType):
             self._vtksource.SetZLength(z)
 
         if self.isOptionValid('bounds'):
-            print 'BOUNDS:', self.applyOption('bounds')
             self._vtksource.SetBounds(*self.applyOption('bounds'))
