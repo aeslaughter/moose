@@ -1,7 +1,14 @@
 from message import MOOSE_DEBUG_MODE
 from message import mooseError, mooseWarning, mooseDebug, mooseMessage
 
-def check(variable, vtype, debug=None, warning=None, message=None):
+def check(cls):
+    return check_type
+
+
+def check_type(variable, vtype, debug=None, warning=None, message=None):
+    """
+    ...
+    """
 
     if debug and not MOOSE_DEBUG_MODE:
         return
@@ -32,4 +39,12 @@ def check(variable, vtype, debug=None, warning=None, message=None):
             mooseError(msg)
 
 if __name__ == '__main__':
-    check([1, 2, 3., 4, 5., 6], int)
+
+    class Foo(object):
+
+        @check(bar, int)
+        def method(bar):
+            return bar
+
+    f = Foo()
+    f.method('str')
