@@ -18,39 +18,39 @@ class TextAnnotation(base.ChiggerResult):
         self.addKeyBinding('o', self._increaseOpacity, desc="Increase the font opacity by 5% (when result is selected).")
         self.addKeyBinding('o', self._decreaseOpacity, shift=True, desc="Decrease the font opacity by 5% (when result is selected).")
 
-    def setHighlight(self, window, active):
         for src in self._sources:
             src.getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
             src.getVTKMapper().GetTextProperty().SetFrameWidth(3)
+
+    def onActivate(self, window, active):
+        super(TextAnnotation, self).onActivate(window, active)
+        for src in self._sources:
+            #src.getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
+            #src.getVTKMapper().GetTextProperty().SetFrameWidth(3)
             src.getVTKMapper().GetTextProperty().SetFrame(active)
 
     def _increaseFont(self, *args):
-        if self.isSelected():
-            sz = self.getOption('font_size') + 1
-            self.update(font_size=sz)
-            self.printOption('font_size')
+        sz = self.getOption('font_size') + 1
+        self.update(font_size=sz)
+        self.printOption('font_size')
 
     def _decreaseFont(self, *args):
-        if self.isSelected():
-            sz = self.getOption('font_size') - 1
-            self.update(font_size=sz)
-            self.printOption('font_size')
+        sz = self.getOption('font_size') - 1
+        self.update(font_size=sz)
+        self.printOption('font_size')
 
     def _increaseOpacity(self, *args):
-        if self.isSelected():
-            opacity = self.getOption('text_opacity') + 0.05
-            if opacity <= 1.:
-                self.update(text_opacity=opacity)
-                self.printOption('text_opacity')
+        opacity = self.getOption('text_opacity') + 0.05
+        if opacity <= 1.:
+            self.update(text_opacity=opacity)
+            self.printOption('text_opacity')
 
     def _decreaseOpacity(self, *args):
-        if self.isSelected():
-            opacity = self.getOption('text_opacity') - 0.05
-            if opacity > 0.:
-                self.update(text_opacity=opacity)
-                self.printOption('text_opacity')
+        opacity = self.getOption('text_opacity') - 0.05
+        if opacity > 0.:
+            self.update(text_opacity=opacity)
+            self.printOption('text_opacity')
 
     def onMouseMoveEvent(self, position):
-        if self.isSelected():
-            self.update(position=position)
-            self.printOption('position')
+        self.update(position=position)
+        self.printOption('position')

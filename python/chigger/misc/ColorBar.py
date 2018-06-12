@@ -23,27 +23,32 @@ class ColorBar(base.ChiggerResult):
     width, which makes it difficult to control either. This class decouples the colorbar and labels.
     """
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerResult.getOptions()
-        opt.add('location', 'right', "The location of the primary axis.",
-                allow=['left', 'right', 'top', 'bottom'])
-        opt.add('colorbar_origin', None, "The position of the colorbar, relative to the viewport.",
+    def validOptions():
+        opt = base.ChiggerResult.validOptions()
+        opt.add('location', 'right',
+                doc="The location of the primary axis.",
+                allow=('left', 'right', 'top', 'bottom'))
+        opt.add('colorbar_origin',
+                None,
+                doc="The position of the colorbar, relative to the viewport.",
                 vtype=tuple)
-        opt.add('width', 0.05, "The width of the colorbar, relative to window.", vtype=float)
-        opt.add('length', 0.5, "The height of the colorbar, relative to window.", vtype=float)
-        opt += base.ColorMap.getOptions()
+        opt.add('width', 0.05, vtype=float,
+                doc="The width of the colorbar, relative to window.")
+        opt.add('length', 0.5, vtype=float,
+                doc="The height of the colorbar, relative to window.")
+        opt += base.ColorMap.validOptions()
 
-        ax0 = AxisSource.getOptions()
-        ax0.setDefault('ticks_visible', False)
-        ax0.setDefault('axis_visible', False)
-        ax0.pop('color')
+        ax0 = AxisSource.validOptions()
+        ax0.set('ticks_visible', False)
+        ax0.set('axis_visible', False)
+        #ax0.remove('color')
         opt.add('primary', ax0, "The primary axis options.")
 
-        ax1 = AxisSource.getOptions()
-        ax1.setDefault('axis_visible', False)
-        ax1.setDefault('ticks_visible', False)
-        ax1.setDefault('visible', False)
-        ax1.pop('color')
+        ax1 = AxisSource.validOptions()
+        ax1.set('axis_visible', False)
+        ax1.set('ticks_visible', False)
+        ax1.set('visible', False)
+        #ax1.remove('color')
         opt.add('secondary', ax1, "The secondary axis options.")
         return opt
 
@@ -58,11 +63,13 @@ class ColorBar(base.ChiggerResult):
         Inputs:
             see ChiggerResult
         """
+        # Call base class method
+        super(ColorBar, self).update(**kwargs)
 
         # Set the options provided
-        self.setOptions(**kwargs)
-        if self.needsInitialize():
-            self.initialize()
+        #self.setOptions(**kwargs)
+        #if self.needsInitialize():
+        #    self.initialize()
 
         # Error if the vtkRenderWindow is not set
         size = self._vtkrenderer.GetSize()
@@ -138,8 +145,6 @@ class ColorBar(base.ChiggerResult):
         axis1.options().update(self.getOption('secondary'))
         self.__setAxisPosition(axis1, p0, p1, location)
 
-        # Call base class method
-        super(ColorBar, self).update()
 
     @staticmethod
     def __setAxisPosition(axis, pt0, pt1, location):

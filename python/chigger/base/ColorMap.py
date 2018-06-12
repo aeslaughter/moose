@@ -11,6 +11,7 @@
 import os
 import glob
 import xml.etree.ElementTree as xml
+import json
 
 # Import matplotlib, if it exists
 try:
@@ -38,6 +39,26 @@ def get_xml_table_values():
     for fname in filenames:
         for child in xml.parse(fname).getroot():
             data[child.attrib['name']] = child
+    return data
+
+def get_json_table_values():
+    """
+    Load Paraview JSON files.
+    """
+    # Locate the XML files storing the colormap data
+    contrib = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+    filenames = glob.glob(os.path.join(contrib, '*.json'))
+
+    # If a name is provided, locate the actual table values
+    data = dict()
+    for fname in filenames:
+        with open(fname, 'r') as fid:
+            tree = json.read(fid)
+            print tree
+
+
+        #for child in json.parse(fname).getroot():
+        #    data[child.attrib['name']] = child
     return data
 
 class ColorMap(ChiggerObject):

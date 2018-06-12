@@ -130,7 +130,7 @@ class ChiggerObject(object):
         if sub is not None:
             if not self._options.hasOption(sub):
                 mooseutils.mooseError("The supplied sub-option '{}' does not exist.".format(sub))
-            elif not isinstance(opt, utils.Options):
+            elif not isinstance(sub, utils.Options):
                 mooseutils.mooseError("The supplied sub-option '{}' must be an Options object.".format(sub))
             self._options[sub].update(**kwargs)
 
@@ -202,3 +202,6 @@ class ChiggerObject(object):
     #    """
     #    if self.needsUpdate():
     #        self.update()
+
+    def printOption(self, name):
+        print '{}={}'.format(name, repr(self.getOption(name)))

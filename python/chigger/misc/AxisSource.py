@@ -20,8 +20,8 @@ class AxisSource(base.ChiggerFilterSourceBase):
     VTKACTOR_TYPE = vtk.vtkContextActor
 
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerFilterSourceBase.getOptions()
+    def validOptions():
+        opt = base.ChiggerFilterSourceBase.validOptions()
         opt += utils.AxisOptions.get_options()
         return opt
 

@@ -117,6 +117,10 @@ class Options(object):
         else:
             opt.value = value
 
+    def __getitem__(self, name):
+        #TODO: This should go away
+        return self.get(name)
+
     def get(self, name, apply=False):
         """
         Overload for accessing the parameter value by name with []

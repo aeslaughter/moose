@@ -105,7 +105,9 @@ class RenderWindow(base.ChiggerObject):
 
             #result.setChiggerRenderWindow(self)
             # TODO: setRenderWindow() this will allow for keybinding/mouse events to have full control
-            result.getVTKRenderer().SetInteractive(False)
+            #result.getVTKRenderer().SetInteractive(False)
+
+            # TODO: Add type checking mooseutils decorator
 
 
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
@@ -150,8 +152,7 @@ class RenderWindow(base.ChiggerObject):
         """
         Remove all objects from the render window.
         """
-        self.remove(*self._results)
-        self.append(misc.ChiggerBackground())
+        self.remove(*self._results[1:])
         self.update()
 
     #def needsUpdate(self):
@@ -166,6 +167,7 @@ class RenderWindow(base.ChiggerObject):
         Set the active result object for interaction.
         """
         if result is None:
+            self.__active.onActivate(self, False)
             self.__active = None
             return
 
@@ -178,26 +180,26 @@ class RenderWindow(base.ChiggerObject):
         #    obj.getVTKRenderer().InteractiveOff()
 
         self.__active = result
+        self.__active.onActivate(self, True)
         if self.__vtkinteractorstyle is not None:
             self.__vtkinteractorstyle.SetCurrentRenderer(self.__active.getVTKRenderer())
 
-    def nextActive(self, step=1):
-        if self.__active is None:
-            index = 1
+    def nextActive(self, reverse=False):
 
+        step = 1 if not reverse else -1
+        available = [result for result in self._results if result.getOption('interactive')]
+        if (self.__active is None) and step == 1:
+            self.setActive(available[0])
+        elif (self.__active is None) and step == -1:
+            self.setActive(available[-1])
         else:
-            n = len(self._results)
-            index = self._results.index(self.__active)
+            n = len(available)
+            index = available.index(self.__active)
             index += step
-            if index == n:
-                index = 1
-            elif index == -1:
-                index = n - 1
-
-        self.setActive(self._results[index])
-        if not self._results[index].getOption('interactive'):
-            self.nextActive(step)
-
+            if (index == n) or (index == -1):
+                self.setActive(None)
+            else:
+                self.setActive(available[index])
 
     def getActive(self):
         """

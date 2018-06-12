@@ -17,6 +17,7 @@ class ChiggerBackground(base.ChiggerResultBase):
     def validOptions():
         opt = base.ChiggerResultBase.validOptions()
         opt.set('layer', 0)
+        opt.set('interactive', False)
         return opt
 
     def __init__(self, **kwargs):

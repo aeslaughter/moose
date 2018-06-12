@@ -76,19 +76,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
 
     def _nextResult(self, window, binding):
-        self._deactivateResult(window, binding)
-        window.nextActive(1)
-        window.getActive().onActivate(window, True)
+        window.nextActive()
 
     def _previousResult(self, window, binding):
-        self._deactivateResult(window, binding)
-        window.nextActive(-1)
-        window.getActive().onActivate(window, True)
+        window.nextActive(reverse=True)
 
     def _deactivateResult(self, window, binding):
-        active = window.getActive()
-        if active is not None:
-            active.onActivate(window, False)
         window.setActive(None)
 
     def _printCamera(self, *args):
