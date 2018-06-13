@@ -204,4 +204,4 @@ class ChiggerObject(object):
     #        self.update()
 
     def printOption(self, name):
-        print '{}={}'.format(name, repr(self.getOption(name)))
+        print '{}:{}={}'.format(self.title(), name, repr(self.getOption(name)))

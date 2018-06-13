@@ -166,19 +166,29 @@ class RenderWindow(base.ChiggerObject):
         """
         Set the active result object for interaction.
         """
+        # If 'None' is supplied, disable the current result
         if result is None:
-            self.__active.onActivate(self, False)
-            self.__active = None
+            if self.__active is not None:
+                self.__active.onActivate(self, False)
+                self.__active = None
+            return
+
+        # Check that the supplied result is available for activation
+        if not result.getOption('interactive'):
+            mooseutils.mooseError("The supplied result must be cable of interaction, i.e., the " \
+                                  "'interactive' option must be True.")
             return
 
         if result not in self._results:
-            mooseutils.mooseError("The active result must be added to the RendererWindow prior to "
+            mooseutils.mooseError("The active result must be added to the RendererWindow prior to " \
                                   "setting it as active.")
             return
 
-        #for obj in self._results:
-        #    obj.getVTKRenderer().InteractiveOff()
+        # Disable existing active result
+        if self.__active is not None:
+            self.__active.onActivate(self, False)
 
+        # Set the supplied result as active and update the current renderer
         self.__active = result
         self.__active.onActivate(self, True)
         if self.__vtkinteractorstyle is not None:
@@ -345,6 +355,9 @@ class RenderWindow(base.ChiggerObject):
         Writes the VTKWindow to an image.
         """
         mooseutils.mooseDebug('RenderWindow.write()', color='MAGENTA')
+
+
+        # TODO: Deactive and re-activate
 
         #if self.needsUpdate() or kwargs:
         self.update(**kwargs)

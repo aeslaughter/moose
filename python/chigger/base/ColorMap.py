@@ -16,6 +16,7 @@ import json
 # Import matplotlib, if it exists
 try:
     from matplotlib import cm
+    import matplotlib.pyplot as plt
     import numpy as np
     USE_MATPLOTLIB = True
 except ImportError:
@@ -94,7 +95,7 @@ class ColorMap(ChiggerObject):
         """
         names = ['default']
         if USE_MATPLOTLIB:
-            names += dir(cm)
+            names += plt.colormaps()
         names += self._data.keys()
         return names
 

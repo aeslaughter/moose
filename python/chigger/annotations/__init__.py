@@ -10,5 +10,4 @@
 
 from ImageAnnotation import ImageAnnotation
 from TextAnnotation import TextAnnotation
-
-#TimeAnnotation = base.create_single_source_result(TimeAnnotationSource)
+from TimeAnnotation import TimeAnnotation

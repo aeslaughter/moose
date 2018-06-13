@@ -269,7 +269,8 @@ class ExodusReader(base.ChiggerObject):
             ExodusReader.TimeData: A collections.namedtuple with the current timestep, time,
                                    filename and local time index for the file.
         """
-        self.checkUpdateState()
+        self.update()
+        #self.checkUpdateState()
         return self.__current
 
     def getTimes(self):
@@ -279,7 +280,8 @@ class ExodusReader(base.ChiggerObject):
         Returns:
             list: A list of all times.
         """
-        self.checkUpdateState()
+        self.update()
+        #self.checkUpdateState()
         return [t.time for t in self.__timedata if t.time != None]
 
     def getBlockInformation(self):

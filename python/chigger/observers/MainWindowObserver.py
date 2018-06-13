@@ -41,7 +41,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         Add the KeyPressEvent for this object.
         """
         obj.AddObserver(vtk.vtkCommand.KeyPressEvent,  self._onKeyPressEvent)
-       # obj.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self._onLeftButtonPressEvent)
+        #obj.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self._onLeftButtonPressEvent)
         obj.AddObserver(vtk.vtkCommand.MouseMoveEvent, self._onMouseMoveEvent)
        # obj.AddObserver(vtk.vtkCommand.WindowResizeEvent, self._onWindowResizeEvent)
 
@@ -137,21 +137,21 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         self._window.update()
 
+    """
     def _onLeftButtonPressEvent(self, obj, event):
-        pass
-        """
         loc = obj.GetInteractor().GetEventPosition()
         renderer = self._window.getVTKInteractor().FindPokedRenderer(*loc)
         properties = renderer.PickProp(*loc)
         if properties is not None:
             for result in self._window:
                 if renderer is result.getVTKRenderer():
-                    self.selectResult(result)
+                    window.setActive(result)
                     #result._ResultEventHandler__selected = not result._ResultEventHandler__selected
                     #result.onSelect(result._ResultEventHandler__selected)
                     break
         self._window.update()
-        """
+    """
+
     def _onMouseMoveEvent(self, obj, event):
         result = self._window.getActive()
         if result is not None:

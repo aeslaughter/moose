@@ -63,10 +63,9 @@ class ImageAnnotation(base.ChiggerResult):
         """
         super(ImageAnnotation, self).update(**kwargs)
 
-
         renderer = self.getVTKRenderer()
 
-        # Coordinate transformation object
+        # Coordinate transormation object
         tr = vtk.vtkCoordinate()
         tr.SetCoordinateSystemToNormalizedViewport()
 
@@ -74,13 +73,13 @@ class ImageAnnotation(base.ChiggerResult):
         window = renderer.GetRenderWindow().GetSize()
 
         # Size of image
-        size = self._sources[0].getVTKSource().GetOutput().GetDimensions()
+        size = self._sources[-1].getVTKSource().GetOutput().GetDimensions()
 
         # Image scale
         if self.isOptionValid('scale'):
-            scale = self.applyOption('scale')
-        elif self.isOptionValid('width'):
-            scale = float(window[0])/float(size[0]) * self.applyOption('width')
+            scale = self.getOption('scale')
+        else:
+            scale = float(window[0])/float(size[0]) * self.getOption('width')
 
         # Compute the camera distance
         angle = self._vtkcamera.GetViewAngle()
@@ -88,7 +87,7 @@ class ImageAnnotation(base.ChiggerResult):
 
         # Determine the image position
         if self.isOptionValid('position'):
-            p = self.applyOption('position')
+            p = self.getOption('position')
             tr.SetValue(p[0], p[1], 0)
             position = list(tr.GetComputedDisplayValue(renderer))
 
@@ -117,35 +116,45 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera.SetFocalPoint(size[0]/2. + x, size[1]/2. + y, 0)
 
         # Update the renderer
-        #renderer.SetActiveCamera(self._vtkcamera)
+        renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
 
     def onActivate(self, window, active):
+        """
+        Activate/deactive highlighting for the image.
+        """
         super(ImageAnnotation, self).onActivate(window, active)
 
         if active:
-            mooseutils.mooseMessage('Activate {}'.format(self.title()))
             self._sources[0].getVTKActor().GetProperty().SetBackingColor(1,0,0)
             self._sources[0].getVTKActor().GetProperty().SetBacking(True)
 
         else:
-            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
             self._sources[0].getVTKActor().GetProperty().SetBacking(False)
 
     def onMouseMoveEvent(self, position):
+        """
+        Re-position the image based on the mouse position.
+        """
         self.setOption('position', position)
         self.update()
 
     def _setScale(self, window, binding):
+        """
+        Callback for setting the image scale factor.
+        """
         step = -0.05 if binding.shift else 0.05
         scale = self.getOption('scale') + step
         if scale > 0:
-            print '{}: scale={}'.format(self.title(), scale)
             self.setOption('scale', scale)
+            self.printOption('scale')
 
     def _setOpacity(self, window, binding):
+        """
+        Callback for changing opacity.
+        """
         step = -0.05 if binding.shift else 0.05
         opacity = self.getOption('opacity') + step
         if opacity > 0 and opacity < 1:
-            print '{}: opacity={}'.format(self.title(), opacity)
             self.setOption('opacity', opacity)
+            self.printOption('opacity')

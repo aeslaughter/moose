@@ -33,6 +33,8 @@ class ExodusResult(base.ChiggerResult):
 
     def __init__(self, reader, **kwargs):
 
+        self._reader = reader
+
         # Build the ExodusSource objects
         if isinstance(reader, ExodusReader):
             sources = [ExodusSource(reader)]
@@ -46,9 +48,19 @@ class ExodusResult(base.ChiggerResult):
         # Supply the sources to the base class
         super(ExodusResult, self).__init__(*sources, **kwargs)
 
-        # Setup keybindings
+        # Opacity keybindings
         self.addKeyBinding('o', self._updateOpacity, desc='Decrease the opacity by 1%')
-        self.addKeyBinding('o', self._updateOpacity, shift=True, desc='Decrease the opacity by 1%')
+        self.addKeyBinding('o', self._updateOpacity, shift=True,
+                           desc='Decrease the opacity by 1%')
+
+        # Colormap keybindings
+        self.addKeyBinding('m', self._updateColorMap, desc="Toggle through available colormaps.")
+        self.addKeyBinding('m', self._updateColorMap, shift=True,
+                           desc="Toggle through available colormaps, in reverse direction.")
+
+        # Time keybindngs
+        self.addKeyBinding('t', self._updateTimestep, desc="Increase timestep by 1.")
+        self.addKeyBinding('t', self._updateTimestep, shift=True, desc="Decrease the timestep by 1.")
 
         self.__outline_result = None
 
@@ -117,7 +129,6 @@ class ExodusResult(base.ChiggerResult):
             window.remove(self.__outline_result)
             self.__outline_result = None
 
-
     def _updateOpacity(self, window, binding):
         opacity = self.getOption('opacity')
         if binding.shift:
@@ -127,3 +138,28 @@ class ExodusResult(base.ChiggerResult):
             if opacity <= 0.95:
                 opacity += 0.05
         self.update(opacity=opacity)
+
+    def _updateColorMap(self, window, binding):
+        step = 1 if not binding.shift else -1
+        available = self._sources[0]._colormap.names()
+        index = available.index(self.getOption('cmap'))
+
+        n = len(available)
+        index += step
+        if index == n:
+            index = 0
+        elif index < 0:
+            index = n - 1
+
+        self.setOption('cmap', available[index])
+        self.printOption('cmap')
+
+    def _updateTimestep(self, window, binding):
+        step = 1 if not binding.shift else -1
+        current = self._reader.getTimeData().timestep + step
+        n = len(self._reader.getTimes())
+        if current == n:
+            current = 0
+        self._reader.setOption('time', None)
+        self._reader.setOption('timestep', current)
+        self._reader.printOption('timestep')
