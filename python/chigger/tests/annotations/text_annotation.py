@@ -8,12 +8,9 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+
 import chigger
-text = chigger.annotations.TextAnnotation(name='text', text='This is a test.')
-text.setOptions(font_size=32)
-
-#, font_size=32,
-#                                          text_color=(1.,0.,1.), text_opacity=0.5, layer=0)
-
-window = chigger.RenderWindow(text, size=(1000,1000), test=False)
+text = chigger.annotations.TextAnnotation(text='This is a test.', font_size=14, text_color=(1,0,1), text_opacity=0.5)
+window = chigger.RenderWindow(text, size=(300,300), test=True)
+window.write('text_annotation.png')
 window.start()
