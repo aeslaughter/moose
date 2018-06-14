@@ -36,13 +36,11 @@ class ImageAnnotation(base.ChiggerResult):
         opt.add('position', (0.5, 0.5), vtype=float, size=2,
                 doc="The position of the image center within the viewport, in relative coordinates.")
         opt.add('width', 0.25, vtype=float,
-                doc="The logo width as a fraction of the window width, this is ignored if 'scale' option is set.")
+                doc="The logo width as a fraction of the window width.")
         opt.add('horizontal_alignment', 'center', allow=('left', 'center', 'right'),
                 doc="The position horizontal position alignment.")
         opt.add('vertical_alignment', 'center', allow=('bottom', 'center', 'top'),
                 doc="The position vertical position alignment.")
-        opt.add('scale', None, vtype=float,
-                doc="The scale of the image. (By default the image is scaled by the width.)")
         opt += ImageAnnotationSource.validOptions()
         return opt
 
@@ -52,8 +50,8 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkrenderer.SetInteractive(False)
         self._vtkrenderer.SetActiveCamera(self._vtkcamera)
 
-        self.addKeyBinding('s', self._setScale, desc="Increase the scale of the image by 0.05.")
-        self.addKeyBinding('s', self._setScale, shift=True, desc="Decrease the scale of the image by 0.05.")
+        self.addKeyBinding('w', self._setWidth, desc="Increase the scale of the image by 0.05.")
+        self.addKeyBinding('w', self._setWidth, shift=True, desc="Decrease the scale of the image by 0.05.")
         self.addKeyBinding('o', self._setOpacity, desc="Increase the opacity of the image by 0.05.")
         self.addKeyBinding('o', self._setOpacity, shift=True, desc="Decrease the opacity of the image by 0.05.")
 
@@ -65,7 +63,7 @@ class ImageAnnotation(base.ChiggerResult):
 
         renderer = self.getVTKRenderer()
 
-        # Coordinate transormation object
+        # Coordinate transformation object
         tr = vtk.vtkCoordinate()
         tr.SetCoordinateSystemToNormalizedViewport()
 
@@ -75,21 +73,17 @@ class ImageAnnotation(base.ChiggerResult):
         # Size of image
         size = self._sources[-1].getVTKSource().GetOutput().GetDimensions()
 
-        # Image scale
-        if self.isOptionValid('scale'):
-            scale = self.getOption('scale')
-        else:
-            scale = float(window[0])/float(size[0]) * self.getOption('width')
+        # Normalized image width
+        scale = float(window[0])/float(size[0]) * self.getOption('width')
 
         # Compute the camera distance
         angle = self._vtkcamera.GetViewAngle()
         d = window[1]*0.5 / math.tan(math.radians(angle*0.5))
 
         # Determine the image position
-        if self.isOptionValid('position'):
-            p = self.getOption('position')
-            tr.SetValue(p[0], p[1], 0)
-            position = list(tr.GetComputedDisplayValue(renderer))
+        p = self.getOption('position')
+        tr.SetValue(p[0], p[1], 0)
+        position = list(tr.GetComputedDisplayValue(renderer))
 
         # Adjust for off-center alignments
         if self.getOption('horizontal_alignment') == 'left':
@@ -116,7 +110,6 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkcamera.SetFocalPoint(size[0]/2. + x, size[1]/2. + y, 0)
 
         # Update the renderer
-        renderer.SetActiveCamera(self._vtkcamera)
         renderer.ResetCameraClippingRange()
 
     def onActivate(self, window, active):
@@ -139,15 +132,15 @@ class ImageAnnotation(base.ChiggerResult):
         self.setOption('position', position)
         self.update()
 
-    def _setScale(self, window, binding):
+    def _setWidth(self, window, binding):
         """
-        Callback for setting the image scale factor.
+        Callback for setting the image width.
         """
         step = -0.05 if binding.shift else 0.05
-        scale = self.getOption('scale') + step
-        if scale > 0:
-            self.setOption('scale', scale)
-            self.printOption('scale')
+        width = self.getOption('width') + step
+        if width > 0 and (width <= 1):
+            self.setOption('width', width)
+            self.printOption('width')
 
     def _setOpacity(self, window, binding):
         """

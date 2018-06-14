@@ -36,6 +36,7 @@ class ExodusResult(base.ChiggerResult):
         self._reader = reader
 
         # Build the ExodusSource objects
+        #TODO: Create an ExodusReaderResult object to allow other items to use the reader, for automatic time updating stuff...
         if isinstance(reader, ExodusReader):
             sources = [ExodusSource(reader)]
         elif isinstance(reader, MultiAppExodusReader):
