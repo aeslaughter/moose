@@ -2,7 +2,8 @@
 import re
 from MooseDocs import common
 from MooseDocs.common import exceptions
-from MooseDocs.extensions import command
+import chigger
+from MooseDocs.extensions import command, table, floats
 from MooseDocs.tree import tokens
 
 
@@ -15,7 +16,7 @@ class PyScriptExtension(command.CommandExtension):
     """
 
     def extend(self, reader, renderer):
-        self.requires(command)
+        self.requires(command, table, floats)
         self.addCommand(ChiggerKeybindings())
         self.addCommand(ChiggerOptions())
 
@@ -27,12 +28,26 @@ class ChiggerKeybindings(command.CommandComponent):
     @staticmethod
     def defaultSettings():
         settings = command.CommandComponent.defaultSettings()
+        settings['caption'] = (None, "The caption to use for the listing content.")
         settings['object'] = (None, "The chigger object to load.")
+        settings['prefix'] = (u'Table', "Text to include prior to the included text.")
         return settings
 
     def createToken(self, info, parent):
-        print self.settings
-        return tokens.String('keybindings...')
+        obj = eval(self.settings['object'])()
+        rows = []
+        for key, bindings in obj.keyBindings().iteritems():
+            txt = 'shift-{}'.format(key[0]) if key[1] else key[0]
+            for i, binding in enumerate(bindings):
+                if i == 0:
+                    rows.append((txt, binding.description))
+                else:
+                    rows.append(('', binding.description))
+
+        tbl = table.builder(rows, headings=['Binding', 'Description'])
+        tbl.parent = floats.create_float(parent, self.extension, self.settings, **self.attributes)
+
+        return parent
 
 class ChiggerOptions(command.CommandComponent):
     COMMAND = 'chigger'
@@ -45,5 +60,4 @@ class ChiggerOptions(command.CommandComponent):
         return settings
 
     def createToken(self, info, parent):
-        print self.settings
-        return tokens.String('options...')
+        return tokens.String(parent, text='options...')

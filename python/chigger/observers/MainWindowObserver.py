@@ -32,7 +32,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.addKeyBinding('r', self._previousResult, shift=True, desc="Select the previous result object.")
         self.addKeyBinding('d', self._deactivateResult, desc="Clear selection(s).")
         self.addKeyBinding('h', self._printHelp, desc="Display the help for this object.")
-        self.addKeyBinding('c', self._printCamera, desc="Display the camera settings for this object.")
 
         self.__outline_result = None
 
@@ -84,8 +83,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def _deactivateResult(self, window, binding):
         window.setActive(None)
 
-    def _printCamera(self, *args):
-        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 
     def _printHelp(self, window, binding):
         """

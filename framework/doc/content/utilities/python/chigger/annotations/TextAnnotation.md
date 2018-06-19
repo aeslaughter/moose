@@ -1,7 +1,7 @@
 # TextAnnotation
 
-[Chigger] allows for text annotations to be added to the render window with the `TextAnnotation`
-object.
+[Chigger](chigger/index.md) allows for text annotations to be added to the render window with the
+`TextAnnotation` object.
 
 ## Example Text Annotation
 

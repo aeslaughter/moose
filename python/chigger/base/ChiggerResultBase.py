@@ -53,6 +53,7 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
     def __init__(self, renderer=None, **kwargs):
         super(ChiggerResultBase, self).__init__(**kwargs)
         self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
+        self.addKeyBinding('c', self._printCamera, desc="Display the camera settings for this object.")
 
     def getVTKRenderer(self):
         """
@@ -109,5 +110,5 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
         """
         pass
 
-    def onMouseMoveEvent(self, position):
-        pass
+    def _printCamera(self, *args):
+        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
