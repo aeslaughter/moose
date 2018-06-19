@@ -192,7 +192,7 @@ class RenderWindow(base.ChiggerObject):
         self.__active = result
         self.__active.onActivate(self, True)
         if self.__vtkinteractorstyle is not None:
-            self.__vtkinteractorstyle.SetCurrentRenderer(self.__active.getVTKRenderer())
+            self.__vtkinteractorstyle.SetDefaultRenderer(self.__active.getVTKRenderer())
 
     def nextActive(self, reverse=False):
 
@@ -254,14 +254,17 @@ class RenderWindow(base.ChiggerObject):
             style = self.getOption('style').lower()
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
-                self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
-                #self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
+                #self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
+                self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleImage()
             elif style == 'modal':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
 
-            self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
+
+            print 'here....'
+            #self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
+            self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
 
             #self.__vtkinteractorstyle.RemoveObserver(4)
             #int vtk.vtkCommand.KeyPressEvent

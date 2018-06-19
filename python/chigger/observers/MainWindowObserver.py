@@ -151,12 +151,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
     def _onMouseMoveEvent(self, obj, event):
         result = self._window.getActive()
-        if result is not None:
+        if (result is not None) and hasattr(result, 'onMouseMoveEvent'):
             loc = obj.GetInteractor().GetEventPosition()
             sz = result.getVTKRenderer().GetSize()
             position=(loc[0]/float(sz[0]), loc[1]/float(sz[1]))
             result.onMouseMoveEvent(position)
-        self._window.update()
+            self._window.update()
 
     def _onWindowResizeEvent(self, obj, event):
         pass
