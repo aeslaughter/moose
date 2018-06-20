@@ -40,10 +40,6 @@ def app_syntax(exe, remove=None, allow_test_objects=False, hide=None, alias=None
         raw = raw.split('**START JSON DATA**\n')[1]
         raw = raw.split('**END JSON DATA**')[0]
         tree = json.loads(raw, object_pairs_hook=collections.OrderedDict)
-        raw = mooseutils.runExe(exe, ['--registry-hit'])
-        raw = raw.split('### START REGISTRY DATA ###\n')[1]
-        raw = raw.split('### END REGISTRY DATA ###')[0]
-        reg = mooseutils.hit_load(raw)
 
     except Exception as e: #pylint: disable=broad-except
         LOG.error("Failed to execute the MOOSE executable '%s':\n%s", exe, e.message)
@@ -65,26 +61,6 @@ def app_syntax(exe, remove=None, allow_test_objects=False, hide=None, alias=None
         for node in anytree.PreOrderIter(root):
             if node.fullpath in hidden:
                 node.hidden = True
-
-    #TODO: When the new registration methods are added to the --json dump, this will not be needed.
-    # Add groups from --registry-hit output
-    object_groups = collections.defaultdict(set)
-    action_groups = collections.defaultdict(set)
-
-    for node in reg.children[0].children[0]:
-        object_groups[node['name']].add(node['label'].replace('App', ''))
-
-    for node in reg.children[0].children[1]:
-        action_groups[node['name']].add(node['label'].replace('App', ''))
-        action_groups[node['class']].add(node['label'].replace('App', ''))
-
-    for node in anytree.PreOrderIter(root):
-        if isinstance(node, MooseObjectNode):
-            node._groups.update(object_groups[node.name]) #pylint: disable=protected-access
-        elif isinstance(node, ActionNode):
-            node._groups.update(action_groups[node.name]) #pylint: disable=protected-access
-            for task in node.tasks:
-                node._groups.update(action_groups[task]) #pylint: disable=protected-access
 
     # Remove
     removed = set()

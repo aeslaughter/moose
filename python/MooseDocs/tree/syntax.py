@@ -302,26 +302,13 @@ class ObjectNode(SyntaxNodeBase): #pylint: disable=abstract-method
         if item['parameters']:
             self.parameters = item['parameters']
 
-        self._locateGroupNames(item)
-        if 'tasks' in item:
-            for values in item['tasks'].itervalues():
-                self._locateGroupNames(values)
+        self._groups.add(item['label'].replace('App', ''))
 
     def markdown(self):
         """
         The expected markdown file.
         """
         return self.fullpath.lstrip('/') + '.md'
-
-    def _locateGroupNames(self, item):
-        """
-        Creates a list of groups (i.e., Apps).
-        """
-        if 'file_info' in item:
-            for info in item['file_info'].iterkeys():
-                match = re.search(r'/(?P<group>\w+)(?:App|Syntax)\.C', info)
-                if match:
-                    self._groups.add(match.group('group'))
 
 class MooseObjectNode(ObjectNode):
     """
