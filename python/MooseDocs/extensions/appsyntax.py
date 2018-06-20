@@ -71,6 +71,8 @@ class AppSyntaxExtension(command.CommandExtension):
                              "Parameter groups to show as un-collapsed.")
         config['alias'] = (None, "List of Dictionary of lists of syntax aliases.")
         config['allow-test-objects'] = (False, "Enable the test objects.")
+        config['use-legacy-location'] = (True, "Use syntax based markdown location rather " \
+                                               "than header based location.")
 
         return config
 
@@ -92,7 +94,8 @@ class AppSyntaxExtension(command.CommandExtension):
                                                   alias=self['alias'],
                                                   remove=self['remove'],
                                                   hide=self['hide'],
-                                                  allow_test_objects=self['allow-test-objects'])
+                                                  allow_test_objects=self['allow-test-objects'],
+                                                  legacy_loc=self['use-legacy-location'])
 
                     self._app_type = mooseutils.runExe(exe, ['--type']).strip(' \n')
 

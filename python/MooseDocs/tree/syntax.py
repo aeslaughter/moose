@@ -30,7 +30,8 @@ class SyntaxNodeBase(NodeBase):
                   Property('removed', ptype=bool, default=False),
                   Property('parameters', ptype=dict),
                   Property('description', ptype=unicode),
-                  Property('alias', ptype=unicode)]
+                  Property('alias', ptype=unicode),
+                  Property('use_legacy_location', ptype=bool, default=True)]
 
     STUB_HEADER = '<!-- MOOSE Documentation Stub: Remove this when content is added. -->'
 
