@@ -24,14 +24,14 @@ def create_renderer(view):
     return renderer
 
 # Create some geometry for the left and right sides
-left = create_renderer([0,0,0.5,1])
-right = create_renderer([0.5,0,1,1])
+r0 = create_renderer([0,0,0.5,1])
+r1 = create_renderer([0.5,0,1,1])
 
 # Window and Interactor
 window = vtk.vtkRenderWindow()
 window.SetSize(600, 600)
-window.AddRenderer(left)
-window.AddRenderer(right)
+window.AddRenderer(r0)
+window.AddRenderer(r1)
 
 interactor = vtk.vtkRenderWindowInteractor()
 interactor.SetRenderWindow(window)
@@ -50,18 +50,15 @@ def select(obj, event):
         current = style.GetCurrentRenderer()
         if current is None:
             print 'Left Side Active'
-            style.SetCurrentRenderer(left)
-            style.HighlightProp3D(left.GetActors().GetLastActor())
+            style.SetCurrentRenderer(r0)
+            style.HighlightProp3D(r0.GetActors().GetLastActor())
             interactor.SetInteractorStyle(style)
-            # HELP: Disable right-side renderer from being manipulated...nothing below works
-            right.GetActors().GetLastActor().SetPickable(False)
-            right.GetActors().GetLastActor().SetDragable(False)
-            right.SetInteractive(False)
+            # HELP: Disable right-side renderer from being manipulated...
 
-        elif current == left:
+        elif current == r0:
             print 'Right Side Active'
-            style.SetCurrentRenderer(right)
-            style.HighlightProp3D(right.GetActors().GetLastActor())
+            style.SetCurrentRenderer(r1)
+            style.HighlightProp3D(r1.GetActors().GetLastActor())
             interactor.SetInteractorStyle(style)
             # HELP: Disable left-side renderer from being manipulated...
 
