@@ -38,7 +38,6 @@ class Tests(Testing.PeacockTester):
         self.check_current_tab(tabs, self.exe.tabName())
         self.app.main_widget.setTab(self.input.tabName())
         tab = tabs.currentWidget()
-        self.assertEqual(tab.InputMeshPlugin.isEnabled(), False)
 
     def testPeacockAppWithExe(self):
         self.create_app([Testing.find_moose_test_exe()])
@@ -50,7 +49,6 @@ class Tests(Testing.PeacockTester):
         tabs = self.app.main_widget.tab_plugin
         self.check_current_tab(tabs, self.input.tabName())
         tab = tabs.currentWidget()
-        self.assertEqual(tab.InputMeshPlugin.isEnabled(), True)
 
     def check_result(self):
         fname = "peacock_results.png"
@@ -138,7 +136,6 @@ class Tests(Testing.PeacockTester):
             tabs = self.app.main_widget.tab_plugin
             self.check_current_tab(tabs, self.input.tabName())
             tab = tabs.currentWidget()
-            self.assertEqual(tab.InputMeshPlugin.isEnabled(), True)
 
     def testWrongExe(self):
         # use the test/moose_test-opt to try to process a modules/combined input file
@@ -146,8 +143,6 @@ class Tests(Testing.PeacockTester):
         self.create_app([input_file, Testing.find_moose_test_exe()])
         tabs = self.app.main_widget.tab_plugin
         self.check_current_tab(tabs, self.input.tabName())
-        tab = tabs.currentWidget()
-        self.assertEqual(tab.InputMeshPlugin.isEnabled(), False)
 
     def testBadInput(self):
         self.create_app(["-i", "gold/out_transient.e", Testing.find_moose_test_exe()])

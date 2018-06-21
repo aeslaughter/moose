@@ -66,10 +66,10 @@ class ColorBar(base.ChiggerResult):
 
         # Error if the vtkRenderWindow is not set
         size = self._vtkrenderer.GetSize()
-        if size == (0, 0):
-            raise mooseutils.MooseException('Calling update() prior to calling '
-                                            'RenderWindow.update() is not supported for this '
-                                            'object.')
+        #if size == (0, 0):
+        #    raise mooseutils.MooseException('Calling update() prior to calling '
+        #                                    'RenderWindow.update() is not supported for this '
+        #                                    'object.')
 
         # Convenience names for the various sources
         plane, axis0, axis1 = self._sources

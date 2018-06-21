@@ -294,7 +294,7 @@ class TestFilePlugin(Testing.PeacockImageTestCase):
 
 class TestFilePluginNewVariable(Testing.PeacockImageTestCase):
     """
-    Testing for FileControl widget when a new variable is added.
+    Testing for FilePlugin widget when a new variable is added.
     """
 
     qapp = QtWidgets.QApplication(sys.argv)
