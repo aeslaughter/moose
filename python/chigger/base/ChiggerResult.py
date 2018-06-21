@@ -73,6 +73,12 @@ class ChiggerResult(ChiggerResultBase):
         selxbf._vtkrenderer.RemoveActor(source.getVTKActor())
         self._sources.remove(source)
 
+    def highlight(self, window, active):
+        if active:
+            for src in self._sources:
+                window.getVTKInteractorStyle().HighlightProp(src.getVTKActor())
+        else:
+            window.getVTKInteractorStyle().HighlightProp(None)
 
 
     #def needsUpdate(self):

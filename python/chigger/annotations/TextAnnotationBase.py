@@ -18,8 +18,7 @@ class TextAnnotationBase(base.ChiggerResult):
             src.getVTKMapper().GetTextProperty().SetFrameColor(1,0,0)
             src.getVTKMapper().GetTextProperty().SetFrameWidth(3)
 
-    def onActivate(self, window, active):
-        super(TextAnnotationBase, self).onActivate(window, active)
+    def highlight(self, window, active):
         for src in self._sources:
             src.getVTKMapper().GetTextProperty().SetFrame(active)
 

@@ -117,19 +117,6 @@ class ExodusResult(base.ChiggerResult):
         a, b = self.getBounds()
         return ((b[0]-a[0])/2., (b[1]-a[1])/2., (b[2]-a[2])/2.)
 
-    def onActivate(self, window, active):
-        super(ExodusResult, self).onActivate(window, active)
-
-        if active and (self.__outline_result is None):
-            mooseutils.mooseMessage('Activate {}'.format(self.title()))
-            self.__outline_result = geometric.OutlineResult(self, color=(1,0,0), edge_width=3, interactive=False)
-            window.append(self.__outline_result)
-
-        elif not active and (self.__outline_result is not None):
-            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
-            window.remove(self.__outline_result)
-            self.__outline_result = None
-
     def _updateOpacity(self, window, binding):
         opacity = self.getOption('opacity')
         if binding.shift:

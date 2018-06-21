@@ -169,7 +169,7 @@ class RenderWindow(base.ChiggerObject):
         # If 'None' is supplied, disable the current result
         if result is None:
             if self.__active is not None:
-                self.__active.onActivate(self, False)
+                self.__active.highlight(self, False)
                 self.__active = None
             return
 
@@ -190,9 +190,7 @@ class RenderWindow(base.ChiggerObject):
 
         # Set the supplied result as active and update the current renderer
         self.__active = result
-        self.__active.onActivate(self, True)
-        if self.__vtkinteractorstyle is not None:
-            self.__vtkinteractorstyle.SetDefaultRenderer(self.__active.getVTKRenderer())
+        self.__active.highlight(self, True)
 
     def nextActive(self, reverse=False):
 

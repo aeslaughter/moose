@@ -98,11 +98,8 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
             self._vtkrenderer.SetActiveCamera(self.applyOption('camera'))
 
         #self._vtkrenderer.Render()
-    def onActivate(self, window, active):
-        if active:
-            mooseutils.mooseMessage('Activate {}'.format(self.title()))
-        else:
-            mooseutils.mooseMessage('Deactivate {}'.format(self.title()))
+    def highlight(self, window, active):
+        pass
 
     def getBounds(self):
         """
