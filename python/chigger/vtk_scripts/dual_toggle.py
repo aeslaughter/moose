@@ -53,6 +53,8 @@ def select(obj, event):
             style.SetCurrentRenderer(r0)
             style.HighlightProp3D(r0.GetActors().GetLastActor())
             interactor.SetInteractorStyle(style)
+
+            r1.ProcessEvents(False)
             # HELP: Disable right-side renderer from being manipulated...
 
         elif current == r0:
