@@ -20,26 +20,37 @@ def create_renderer(view):
     renderer = vtk.vtkRenderer()
     renderer.AddActor(actor)
     renderer.SetViewport(view)
+    renderer.SetLayer(1)
+    renderer.SetInteractive(False)
 
     return renderer
 
 # Create some geometry for the left and right sides
-r0 = create_renderer([0,0,0.5,1])
-r1 = create_renderer([0.5,0,1,1])
+left = create_renderer([0,0,0.5,1])
+right = create_renderer([0.5,0,1,1])
+
+background = vtk.vtkRenderer()
+background.SetLayer(0)
+background.SetInteractive(True)
 
 # Window and Interactor
 window = vtk.vtkRenderWindow()
 window.SetSize(600, 600)
-window.AddRenderer(r0)
-window.AddRenderer(r1)
+window.AddRenderer(background) # used vtkRenderWindowInteractor::FindPokedRenderer as last resort
+window.AddRenderer(left)
+window.AddRenderer(right)
+window.SetNumberOfLayers(2)
 
 interactor = vtk.vtkRenderWindowInteractor()
 interactor.SetRenderWindow(window)
 interactor.Initialize()
 
 # Disable interaction to begin, but create a interactor to be added while toggling results
-interactor.SetInteractorStyle(None)
 style = vtk.vtkInteractorStyleJoystickCamera()
+interactor.SetInteractorStyle(style)
+style.SetInteractor(interactor)
+style.SetCurrentRenderer(background)
+style.SetEnabled(False)
 
 def select(obj, event):
     """
@@ -47,28 +58,27 @@ def select(obj, event):
     """
     key = obj.GetKeySym()
     if key == 't':
-        current = style.GetCurrentRenderer()
-        if current is None:
-            print 'Left Side Active'
-            style.SetCurrentRenderer(r0)
-            style.HighlightProp3D(r0.GetActors().GetLastActor())
-            interactor.SetInteractorStyle(style)
+        if left.GetInteractive():
+            style.SetCurrentRenderer(right)
+            style.SetEnabled(True)
+            left.SetInteractive(False)
+            right.SetInteractive(True)
+            style.HighlightProp3D(right.GetActors().GetLastActor())
 
-            r1.ProcessEvents(False)
-            # HELP: Disable right-side renderer from being manipulated...
-
-        elif current == r0:
-            print 'Right Side Active'
-            style.SetCurrentRenderer(r1)
-            style.HighlightProp3D(r1.GetActors().GetLastActor())
-            interactor.SetInteractorStyle(style)
-            # HELP: Disable left-side renderer from being manipulated...
+        elif right.GetInteractive():
+            style.SetCurrentRenderer(background)
+            style.SetEnabled(False)
+            left.SetInteractive(False)
+            right.SetInteractive(False)
+            style.HighlightProp3D(None)
 
         else:
-            print 'Nothing Active'
-            style.HighlightProp3D(None)
-            style.SetCurrentRenderer(None)
-            interactor.SetInteractorStyle(None)
+            style.SetCurrentRenderer(left)
+            style.SetEnabled(True)
+            left.SetInteractive(True)
+            right.SetInteractive(False)
+            style.HighlightProp3D(left.GetActors().GetLastActor())
+
     window.Render()
 
 interactor.AddObserver(vtk.vtkCommand.KeyPressEvent, select)
