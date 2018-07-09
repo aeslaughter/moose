@@ -1,7 +1,15 @@
-- 1
+- item
 
-  - 2
+  content in item
 
-    - 3
+  - sub item
 
-      > stuff
+    content in sub item
+
+    1. sub sub item
+
+       content in sub sub item
+
+       - sub sub sub item
+
+         content in sub sub sub item

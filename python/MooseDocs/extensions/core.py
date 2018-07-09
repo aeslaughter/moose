@@ -366,6 +366,7 @@ class RenderLabel(components.RenderComponent):
         return latex.Command(parent, 'label', string=label)
 
     def createMooseDown(self, token, parent): #pylint: disable=no-self-use,unused-argument
+
         pass
 
 class RenderCode(components.RenderComponent):
@@ -543,7 +544,8 @@ class RenderOrderedList(components.RenderComponent):
         return latex.Environment(parent, 'enumerate')
 
     def createMooseDown(self, token, parent):
-        return markdown.Page(parent, initial_indent=u' '*2, subsequent_indent=u' '*2)
+        return parent
+        #return markdown.Page(parent, initial_indent=u'1. '*2, subsequent_indent=u' '*2)
 
 class RenderUnorderedList(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -558,7 +560,8 @@ class RenderUnorderedList(components.RenderComponent):
         return latex.Environment(parent, 'itemize')
 
     def createMooseDown(self, token, parent):
-        return markdown.Page(parent, initial_indent=u'- ', subsequent_indent=u' '*2)
+        return parent
+        #return markdown.Page(parent, initial_indent=u'- ', subsequent_indent=u' '*2)
 
 class RenderListItem(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -569,7 +572,10 @@ class RenderListItem(components.RenderComponent):
         return parent
 
     def createMooseDown(self, token, parent):
-        return parent
+        if isinstance(token.parent, tokens.OrderedList):
+            return markdown.Page(parent, prefix=u'1. ')
+        else:
+            return markdown.Page(parent, prefix=u'- ')
 
 class RenderString(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
