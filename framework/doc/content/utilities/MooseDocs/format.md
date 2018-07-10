@@ -41,3 +41,6 @@ this as well`, which it does.
    1. This is another item that is nested under the first list item.
 
 2. This is a second item in the top-level list, it also has a lot of words so it should get automatically wrapped by format.
+
+
+1. This should be a new list

@@ -52,49 +52,11 @@ class Page(MarkdownNode):
     def width(self):
         return self.__width
 
-    @property
-    def margin(self):
-
-        #if self.parent is None:
-        #    return 0#len(self.initial_indent)
-        #else:
-        #    return self.parent.margin + len(self.initial_indent)
-
-
-        m = 0
-        node = self
-        while node is not None:
-            m += len(node.initial_indent)
-            node = node.parent
-        return m
-
     def write(self):
         content = MarkdownNode.write(self)
-
-
-        #content = re.sub(r'^(?=\A)', 'y'*len(self.initial_indent), content, flags=re.MULTILINE)
-        #content = re.sub(r'^(?=\S)(?!\A)', 'x'*len(self.initial_indent), content, flags=re.MULTILINE)
-
         content = re.sub(r'^(?= *\S)(?=\A)', self.initial_indent, content, flags=re.MULTILINE)
         content = re.sub(r'^(?= *\S)(?!\A)', self.subsequent_indent, content, flags=re.MULTILINE)
 
-        #content = initial_re.sub(self.initial_indent, content)
-        #content = subsequent_re.sub('x'*self.margin + self.subsequent_indent, content)
-        #match = regex.search(content)
-
-
-
-
-        #match = regex.match(content, pos=0)
-        #while match:
-        #    content = content[:match.start()] + self.initial_indent + content[match.end():]
-        #    match = regex.match(content, pos=match.end())
-
-
-
-        #content = re.sub(r'^(?=\S)', self.initial_indent, content, flags=re.MULTILINE)
-        #start = self.margin - len(self.subsequent_indent)
-        #content = content[:start] + self.initial_indent + content[self.margin:]
         return content
 
 
@@ -112,22 +74,22 @@ class Block(MarkdownNode):
     def width(self):
         return self.parent.width
 
-class LineGroup(MarkdownNode):
-    def __init__(self, *args, **kwargs):
-        MarkdownNode.__init__(self, *args, **kwargs)
-        if not isinstance(self.parent, Block):
-            raise exceptions.MooseDocsException("LineGroup objects must be children of Block objects.")
-
-    @property
-    def width(self):
-        return self.parent.width
-
-    def write(self):
-        content = MarkdownNode.write(self)
-        line = re.sub(r'\s*\n\s*', u' ', content).strip()
-        if len(line) < self.width:
-            content = line + u'\n'
-        return content
+#class LineGroup(MarkdownNode):
+#    def __init__(self, *args, **kwargs):
+#        MarkdownNode.__init__(self, *args, **kwargs)
+#        if not isinstance(self.parent, Block):
+#            raise exceptions.MooseDocsException("LineGroup objects must be children of Block objects.")
+#
+#    @property
+#    def width(self):
+#        return self.parent.width
+#
+#    def write(self):
+#        content = MarkdownNode.write(self)
+#        line = re.sub(r'\s*\n\s*', u' ', content).strip()
+#        if len(line) < self.width:
+#            content = line + u'\n'
+#        return content
 
 class Line(MarkdownNode):
     PROPERTIES = [Property('initial_indent', default=u'', ptype=unicode),
@@ -146,7 +108,7 @@ class Line(MarkdownNode):
 
         MarkdownNode.__init__(self, *args, **kwargs)
 
-        if not isinstance(self.parent, (Block, LineGroup)):
+        if not isinstance(self.parent, Block):
             raise exceptions.MooseDocsException("Line objects must be children of Block or LineGroup objects.")
 
         if self.string is not None:

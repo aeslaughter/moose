@@ -341,7 +341,7 @@ class RenderHeading(components.RenderComponent):
     def createMooseDown(self, token, parent):
         n = token.level + 1
         block = markdown.Block(parent)
-        group = markdown.LineGroup(block)
+        group = block#markdown.LineGroup(block)
 
         head = markdown.Line(group,
                              initial_indent=u'{} '.format('#'*token.level),
@@ -383,7 +383,7 @@ class RenderCode(components.RenderComponent):
 
         block = markdown.Block(parent)
 
-        group = markdown.LineGroup(block)
+        group = block# markdown.LineGroup(block)
         top = markdown.Line(group, string=token.language,
                             initial_indent=u'```',
                             subsequent_indent=u' '*3)
