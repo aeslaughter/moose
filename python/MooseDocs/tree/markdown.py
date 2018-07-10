@@ -11,6 +11,7 @@
 import textwrap
 import re
 
+from ..common import exceptions
 from base import NodeBase, Property
 
 class MarkdownNode(NodeBase):
@@ -23,20 +24,29 @@ class MarkdownNode(NodeBase):
             content += child.write()
         return content
 
+
 class Page(MarkdownNode):
-    PROPERTIES = [Property('prefix', ptype=unicode, default=u'')]
+    PROPERTIES = [Property('initial_indent', ptype=unicode, default=u''),
+                  Property('subsequent_indent', ptype=unicode)]
 
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
         self.__width = 100
 
+        if self.subsequent_indent is None:
+            self.subsequent_indent = u' '*len(self.initial_indent)
+
+        if len(self.initial_indent) != len(self.subsequent_indent):
+            raise exceptions.MooseDocsException("The 'initial_indent' and 'subsequent_indent'" \
+                                                "properties must be the same length.")
+
         if (self.parent is not None) and (not isinstance(self, Page)):
             raise exceptions.MooseDocsException("Page objects must be children of other Page objects.")
 
         if self.parent is not None:
-            self.__width = self.parent.width - len(self.prefix)
+            self.__width = self.parent.width - len(self.initial_indent)
         else:
-            self.__width -= len(self.prefix)
+            self.__width -= len(self.initial_indent)
 
     @property
     def width(self):
@@ -44,29 +54,59 @@ class Page(MarkdownNode):
 
     @property
     def margin(self):
-        m = len(self.prefix)
+
+        #if self.parent is None:
+        #    return 0#len(self.initial_indent)
+        #else:
+        #    return self.parent.margin + len(self.initial_indent)
+
+
+        m = 0
         node = self
-        while node.parent is not None:
+        while node is not None:
+            m += len(node.initial_indent)
             node = node.parent
-            m += len(node.prefix)
         return m
 
     def write(self):
         content = MarkdownNode.write(self)
-        content = re.sub(r'^(?=\S)', u' '*self.margin, content, flags=re.MULTILINE)
-        start = self.margin - len(self.prefix)
-        content = content[:start] + self.prefix + content[self.margin:]
+
+
+        #content = re.sub(r'^(?=\A)', 'y'*len(self.initial_indent), content, flags=re.MULTILINE)
+        #content = re.sub(r'^(?=\S)(?!\A)', 'x'*len(self.initial_indent), content, flags=re.MULTILINE)
+
+        content = re.sub(r'^(?= *\S)(?=\A)', self.initial_indent, content, flags=re.MULTILINE)
+        content = re.sub(r'^(?= *\S)(?!\A)', self.subsequent_indent, content, flags=re.MULTILINE)
+
+        #content = initial_re.sub(self.initial_indent, content)
+        #content = subsequent_re.sub('x'*self.margin + self.subsequent_indent, content)
+        #match = regex.search(content)
+
+
+
+
+        #match = regex.match(content, pos=0)
+        #while match:
+        #    content = content[:match.start()] + self.initial_indent + content[match.end():]
+        #    match = regex.match(content, pos=match.end())
+
+
+
+        #content = re.sub(r'^(?=\S)', self.initial_indent, content, flags=re.MULTILINE)
+        #start = self.margin - len(self.subsequent_indent)
+        #content = content[:start] + self.initial_indent + content[self.margin:]
         return content
 
 
 class Block(MarkdownNode):
+    PROPERTIES = [Property('close', ptype=unicode, default=u'\n')]
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
         if not isinstance(self.parent, Page):
             raise exceptions.MooseDocsException("Block objects must be children of Page objects.")
 
     def write(self):
-        return MarkdownNode.write(self) + u'\n'
+        return MarkdownNode.write(self) + self.close
 
     @property
     def width(self):

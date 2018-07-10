@@ -573,9 +573,9 @@ class RenderListItem(components.RenderComponent):
 
     def createMooseDown(self, token, parent):
         if isinstance(token.parent, tokens.OrderedList):
-            return markdown.Page(parent, prefix=u'1. ')
+            return markdown.Page(parent, initial_indent=u'1. ')
         else:
-            return markdown.Page(parent, prefix=u'- ')
+            return markdown.Page(parent, initial_indent=u'- ')
 
 class RenderString(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
@@ -609,7 +609,6 @@ class RenderStrong(components.RenderComponent):
         for child in token.children:
             self.translator.renderer.process(parent, child)
         markdown.String(parent, content=u'+')
-
 
 class RenderUnderline(components.RenderComponent):
     def createHTML(self, token, parent): #pylint: disable=no-self-use
