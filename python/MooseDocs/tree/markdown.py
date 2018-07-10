@@ -56,19 +56,20 @@ class Page(MarkdownNode):
         content = MarkdownNode.write(self)
         content = re.sub(r'^(?= *\S)(?=\A)', self.initial_indent, content, flags=re.MULTILINE)
         content = re.sub(r'^(?= *\S)(?!\A)', self.subsequent_indent, content, flags=re.MULTILINE)
-
         return content
 
-
 class Block(MarkdownNode):
-    PROPERTIES = [Property('close', ptype=unicode, default=u'\n')]
+    #PROPERTIES = [Property('close', ptype=unicode, default=u'\n')]
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
         if not isinstance(self.parent, Page):
             raise exceptions.MooseDocsException("Block objects must be children of Page objects.")
 
     def write(self):
-        return MarkdownNode.write(self) + self.close
+        content = MarkdownNode.write(self) + u'\n'
+        content, n = re.subn(r'\n{3,}\Z', u'\n\n', content)
+        print n
+        return content
 
     @property
     def width(self):
@@ -97,7 +98,6 @@ class Line(MarkdownNode):
                   Property('padding', default=0, ptype=int),
                   Property('string', ptype=unicode),
                   Property('wrap', ptype=bool, default=True)]
-
     @property
     def width(self):
         return self.parent.width
@@ -117,7 +117,7 @@ class Line(MarkdownNode):
     def write(self):
 
         items = [child.content for child in self.children if child.content]
-        if self.wrap > 0:
+        if self.wrap:
             margin = u' '*self.padding
             self._wrapper.initial_indent = u'{}{}'.format(margin, self.initial_indent)
             self._wrapper.subsequent_indent = u'{}{}'.format(margin, self.subsequent_indent)
@@ -129,7 +129,9 @@ class Line(MarkdownNode):
             else:
                 content = u''
         else:
-            return u''.join(items)
+            content = u''.join(items)
+
+        #if self is not self.parent.children[-1]:
 
         return content + u'\n'
 
