@@ -396,7 +396,7 @@ class RenderCode(components.RenderComponent):
                                      initial_indent=u'{}='.format(key),
                                      subsequent_indent=u' '*(len(key) + 1))
 
-        markdown.Line(block, string=token.code, wrap=False)
+        markdown.Line(block, string=token.code, wrap=False, close=u'')
         markdown.Line(block, string=u'```')
 
 class RenderShortcutLink(components.RenderComponent):
@@ -544,6 +544,13 @@ class RenderOrderedList(components.RenderComponent):
         return latex.Environment(parent, 'enumerate')
 
     def createMooseDown(self, token, parent):
+
+        idx = token.parent.children.index(token)
+        if idx > 1 and isinstance(token.parent.children[idx-1], (tokens.OrderedList, tokens.UnorderedList)):
+            markdown.Block(parent)
+
+
+
         return parent
         #return markdown.Page(parent, initial_indent=u'1. '*2, subsequent_indent=u' '*2)
 

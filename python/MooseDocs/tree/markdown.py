@@ -56,19 +56,21 @@ class Page(MarkdownNode):
         content = MarkdownNode.write(self)
         content = re.sub(r'^(?= *\S)(?=\A)', self.initial_indent, content, flags=re.MULTILINE)
         content = re.sub(r'^(?= *\S)(?!\A)', self.subsequent_indent, content, flags=re.MULTILINE)
+
+        content, n = re.subn(r'\n{3,}\Z', u'\n\n', content)
+        print n
+
         return content
 
 class Block(MarkdownNode):
-    #PROPERTIES = [Property('close', ptype=unicode, default=u'\n')]
+    PROPERTIES = [Property('close', ptype=unicode, default=u'\n')]
     def __init__(self, *args, **kwargs):
         MarkdownNode.__init__(self, *args, **kwargs)
         if not isinstance(self.parent, Page):
             raise exceptions.MooseDocsException("Block objects must be children of Page objects.")
 
     def write(self):
-        content = MarkdownNode.write(self) + u'\n'
-        content, n = re.subn(r'\n{3,}\Z', u'\n\n', content)
-        print n
+        content = MarkdownNode.write(self) + self.close
         return content
 
     @property
@@ -97,7 +99,9 @@ class Line(MarkdownNode):
                   Property('subsequent_indent', default=u'', ptype=unicode),
                   Property('padding', default=0, ptype=int),
                   Property('string', ptype=unicode),
-                  Property('wrap', ptype=bool, default=True)]
+                  Property('wrap', ptype=bool, default=True),
+                  Property('close', ptype=unicode, default=u'\n')]
+
     @property
     def width(self):
         return self.parent.width
@@ -125,6 +129,10 @@ class Line(MarkdownNode):
 
             if items:
                 content = u''.join(items)
+
+                lines = self._wrapper.wrap(content)
+                print lines
+
                 content = u'\n'.join(self._wrapper.wrap(content))
             else:
                 content = u''
@@ -133,7 +141,7 @@ class Line(MarkdownNode):
 
         #if self is not self.parent.children[-1]:
 
-        return content + u'\n'
+        return content + self.close
 
 class String(NodeBase):
     PROPERTIES = [Property('content', default=u'', ptype=unicode)]
