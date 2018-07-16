@@ -53,6 +53,7 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
     def __init__(self, renderer=None, **kwargs):
         super(ChiggerResultBase, self).__init__(**kwargs)
         self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
+        self._vtkrenderer.SetInteractive(False)
         self.addKeyBinding('c', self._printCamera, desc="Display the camera settings for this object.")
 
     def getVTKRenderer(self):
@@ -99,7 +100,7 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
 
         #self._vtkrenderer.Render()
     def highlight(self, window, active):
-        pass
+        self._vtkrenderer.SetInteractive(active)
 
     def getBounds(self):
         """

@@ -74,6 +74,7 @@ class ChiggerResult(ChiggerResultBase):
         self._sources.remove(source)
 
     def highlight(self, window, active):
+        super(ChiggerResult, self).highlight(window, active)
         if active:
             for src in self._sources:
                 window.getVTKInteractorStyle().HighlightProp(src.getVTKActor())

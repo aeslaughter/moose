@@ -76,6 +76,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
     def _nextResult(self, window, binding):
         window.nextActive()
+        print type(window.getActive())
 
     def _previousResult(self, window, binding):
         window.nextActive(reverse=True)

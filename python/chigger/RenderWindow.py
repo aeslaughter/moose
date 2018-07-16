@@ -70,7 +70,10 @@ class RenderWindow(base.ChiggerObject):
         self.__active = None
 
         # Store the supplied result objects
-        self.append(misc.ChiggerBackground(), *args)
+        self.__background = misc.ChiggerBackground()
+        self.append(self.__background, *args)
+        self.setActive(None)
+
 
     def __contains__(self, item):
         """
@@ -144,7 +147,7 @@ class RenderWindow(base.ChiggerObject):
 
         # Reset active if it was removed
         if self.__active and (self.__active not in self._results):
-            self.__active = None
+            self.setActive(None)
 
         self.update()
 
@@ -166,11 +169,33 @@ class RenderWindow(base.ChiggerObject):
         """
         Set the active result object for interaction.
         """
+        if self.__active is not None:
+            self.__active.highlight(self, False)
+            self.__active.getVTKRenderer().SetInteractive(False)
+
+        if result is None:
+            self.__active = None
+            self.__background.getVTKRenderer().SetInteractive(True)
+            self.getVTKInteractorStyle().SetCurrentRenderer(self.__background.getVTKRenderer())
+            self.getVTKInteractorStyle().SetEnabled(False)
+
+        else:
+            self.__active = result
+            self.getVTKInteractorStyle().SetEnabled(True)
+            self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
+            self.__active.getVTKRenderer().SetInteractive(True)
+            self.__active.highlight(self, True)
+
+
+
+
+        """
         # If 'None' is supplied, disable the current result
         if result is None:
             if self.__active is not None:
                 self.__active.highlight(self, False)
                 self.__active = None
+            self.setActive(self._background)
             return
 
         # Check that the supplied result is available for activation
@@ -186,12 +211,12 @@ class RenderWindow(base.ChiggerObject):
 
         # Disable existing active result
         if self.__active is not None:
-            self.__active.onActivate(self, False)
+            self.__active.highlight(self, False)
 
         # Set the supplied result as active and update the current renderer
         self.__active = result
         self.__active.highlight(self, True)
-
+        """
     def nextActive(self, reverse=False):
 
         step = 1 if not reverse else -1
@@ -260,7 +285,6 @@ class RenderWindow(base.ChiggerObject):
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
 
 
-            print 'here....'
             #self.__vtkinteractorstyle.SetInteractor(self.__vtkinteractor)
             self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
 
