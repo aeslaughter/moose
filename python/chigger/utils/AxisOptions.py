@@ -16,7 +16,7 @@ def get_options():
     Retuns options for vtkAxis objects.
     """
     opt = Options()
-    opt.add('num_ticks', 5, vtype=int, doc="The number of tick marks to place on the axis.")
+    opt.add('num_ticks', default=5, vtype=int, doc="The number of tick marks to place on the axis.")
     opt.add('lim', vtype=float, size=2, doc="The axis extents.")
     opt.add('font_color', (1, 1, 1), vtype=float, size=3,
             doc="The color of the axis, ticks, and labels.")
@@ -25,7 +25,8 @@ def get_options():
     opt.add('title_font_size', vtype=int, doc="The axis title font size, in points.")
     opt.add('tick_font_size', vtype=int, doc="The axis tick label font size, in points.")
     opt.add('grid', True, vtype=bool, doc="Show/hide the grid lines for this axis.")
-    opt.add('grid_color', (0.25, 0.25, 0.25), vtype=float, doc="The color for the grid lines.")
+    opt.add('grid_color', default=(0.25, 0.25, 0.25), vtype=float, size=3,
+            doc="The color for the grid lines.")
     opt.add('precision', 3, vtype=int, doc="The axis numeric precision.")
     opt.add('notation', vtype=str, doc="The type of notation, leave empty to let VTK decide.",
             allow=('standard', 'scientific', 'fixed', 'printf'))
@@ -53,10 +54,10 @@ def set_options(vtkaxis, opt):
         vtkaxis.SetTicksVisible(opt.applyOption('ticks_visible'))
 
     if opt.isOptionValid('axis_visible'):
-        vtkaxis.SetAxisVisible(opt.applyOption['axis_visible'])
+        vtkaxis.SetAxisVisible(opt.applyOption('axis_visible'))
 
     if opt.isOptionValid('labels_visible'):
-        vtkaxis.SetLabelsVisible(opt.applyOption['labels_visible'])
+        vtkaxis.SetLabelsVisible(opt.applyOption('labels_visible'))
 
     # Ticks
     if opt.isOptionValid('num_ticks'):

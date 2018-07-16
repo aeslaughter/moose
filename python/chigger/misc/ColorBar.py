@@ -29,12 +29,16 @@ class ColorBar(base.ChiggerResult):
                 doc="The location of the primary axis.",
                 allow=('left', 'right', 'top', 'bottom'))
         opt.add('colorbar_origin',
-                None,
                 doc="The position of the colorbar, relative to the viewport.",
-                vtype=tuple)
-        opt.add('width', 0.05, vtype=float,
+                vtype=float,
+                size=3)
+        opt.add('width',
+                default=0.05,
+                vtype=float,
                 doc="The width of the colorbar, relative to window.")
-        opt.add('length', 0.5, vtype=float,
+        opt.add('length',
+                default=0.5,
+                vtype=float,
                 doc="The height of the colorbar, relative to window.")
         opt += base.ColorMap.validOptions()
 
@@ -42,14 +46,14 @@ class ColorBar(base.ChiggerResult):
         ax0.set('ticks_visible', False)
         ax0.set('axis_visible', False)
         #ax0.remove('color')
-        opt.add('primary', ax0, "The primary axis options.")
+        opt.add('primary', default=ax0, doc="The primary axis options.")
 
         ax1 = AxisSource.validOptions()
         ax1.set('axis_visible', False)
         ax1.set('ticks_visible', False)
         ax1.set('visible', False)
         #ax1.remove('color')
-        opt.add('secondary', ax1, "The secondary axis options.")
+        opt.add('secondary', default=ax1, doc="The secondary axis options.")
         return opt
 
     def __init__(self, **kwargs):
@@ -85,9 +89,9 @@ class ColorBar(base.ChiggerResult):
         loc = self.getOption('location').lower()
         if not self.isOptionValid('colorbar_origin'):
             if (loc == 'right') or (loc == 'left'):
-                self.setOption('colorbar_origin', [0.8, 0.25, 0.0])
+                self.setOption('colorbar_origin', (0.8, 0.25, 0.0))
             else:
-                self.setOption('colorbar_origin', [0.25, 0.2, 0.0])
+                self.setOption('colorbar_origin', (0.25, 0.2, 0.0))
 
         # Get dimensions of colorbar, taking into account the orientation
         n = self.getOption('cmap_num_colors')
@@ -97,11 +101,11 @@ class ColorBar(base.ChiggerResult):
         if (loc is 'right') or (loc is 'left'):
             length0 = self.getOption('width')
             length1 = self.getOption('length')
-            plane.setOptions(resolution=[1, n+1])
+            plane.setOptions(resolution=(1, n+1))
         else:
             length0 = self.getOption('length')
             length1 = self.getOption('width')
-            plane.setOptions(resolution=[n+1, 1])
+            plane.setOptions(resolution=(n+1, 1))
 
         # Coordinate system transformation object
         pos = self.getOption('colorbar_origin')
@@ -125,9 +129,9 @@ class ColorBar(base.ChiggerResult):
         pos = coord.GetComputedViewportValue(self._vtkrenderer)
 
         # Update the bar position
-        plane.setOptions(origin=[pos[0], pos[1], 0], point1=[p0[0], p0[1], 0],
-                         point2=[p1[0], p1[1], 0])
-
+        plane.setOptions(origin=(pos[0], pos[1], 0),
+                         point1=(p0[0], p0[1], 0),
+                         point2=(p1[0], p1[1],0))
         # Set the colormap for the bar
         rng = self.getOption('cmap_range')
         step = (rng[1] - rng[0]) / float(n)
@@ -158,22 +162,22 @@ class ColorBar(base.ChiggerResult):
         # Position the axis
         axis.setOption('axis_position', location.lower())
         if location.lower() == 'left':
-            axis.setOption('axis_point1', [pt1[0], pt0[1]])
-            axis.setOption('axis_point2', [pt1[0], pt1[1]])
+            axis.setOption('axis_point1', (pt1[0], pt0[1]))
+            axis.setOption('axis_point2', (pt1[0], pt1[1]))
             secondary_location = 'right'
 
         elif location.lower() == 'right':
-            axis.setOption('axis_point1', [pt0[0], pt0[1]])
-            axis.setOption('axis_point2', [pt0[0], pt1[1]])
+            axis.setOption('axis_point1', (pt0[0], pt0[1]))
+            axis.setOption('axis_point2', (pt0[0], pt1[1]))
             secondary_location = 'left'
 
         elif location.lower() == 'top':
-            axis.setOption('axis_point1', [pt1[0], pt1[1]])
-            axis.setOption('axis_point2', [pt0[0], pt0[1]])
+            axis.setOption('axis_point1', (pt1[0], pt1[1]))
+            axis.setOption('axis_point2', (pt0[0], pt0[1]))
             secondary_location = 'bottom'
 
         elif location.lower() == 'bottom':
-            axis.setOption('axis_point1', [pt1[0], pt0[1]])
-            axis.setOption('axis_point2', [pt0[0], pt0[1]])
+            axis.setOption('axis_point1', (pt1[0], pt0[1]))
+            axis.setOption('axis_point2', (pt0[0], pt0[1]))
             secondary_location = 'top'
         return secondary_location

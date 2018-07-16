@@ -34,18 +34,22 @@ def create(base_type):
         """
 
         @staticmethod
-        def getOptions():
-            opt = source_type.getOptions()
-            opt.add('origin', [0, 0, 0], 'Define the origin of the plane.')
-            opt.add('point1', [1, 0, 0], 'Define the first edge of the plane (origin->point1).')
-            opt.add('point2', [0, 1, 0], 'Define the second edge of the plane (origin->point2).')
-            opt.add('resolution', [1, 1], "Define the number of subdivisions in the x- and "
-                                          "y-direction of the plane.")
-            opt.add('data', None, "The VTK data to attach to the vtkMapper for this object, for "
-                                  "used with the 'cmap' option.", vtype=vtk.vtkFloatArray)
-            opt += ColorMap.getOptions()
-            opt.setDefault('color', None)
-            opt.setDefault('cmap', None)
+        def validOptions():
+            opt = source_type.validOptions()
+            opt.add('origin', default=(0, 0, 0), vtype=float, size=3,
+                    doc='Define the origin of the plane.')
+            opt.add('point1', default=(1, 0, 0), vtype=float, size=3,
+                    doc='Define the first edge of the plane (origin->point1).')
+            opt.add('point2', default=(0, 1, 0), vtype=float, size=3,
+                    doc='Define the second edge of the plane (origin->point2).')
+            opt.add('resolution', default=(1, 1), vtype=int, size=2,
+                    doc="Define the number of subdivisions in the x- and y-direction of the plane.")
+            opt.add('data', None, vtype=vtk.vtkFloatArray,
+                    doc="The VTK data to attach to the vtkMapper for this object, for used with " \
+                        "the 'cmap' option.")
+            opt += ColorMap.validOptions()
+           # opt.set('color', None)
+            opt.set('cmap', None)
             return opt
 
         def __init__(self, **kwargs):

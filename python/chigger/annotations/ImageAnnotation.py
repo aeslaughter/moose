@@ -69,6 +69,7 @@ class ImageAnnotation(base.ChiggerResult):
 
         # Size of window
         window = renderer.GetRenderWindow().GetSize()
+        print window
 
         # Size of image
         size = self._sources[-1].getVTKSource().GetOutput().GetDimensions()
@@ -79,6 +80,7 @@ class ImageAnnotation(base.ChiggerResult):
         # Compute the camera distance
         angle = self._vtkcamera.GetViewAngle()
         d = window[1]*0.5 / math.tan(math.radians(angle*0.5))
+        print size, d, scale
 
         # Determine the image position
         p = self.getOption('position')

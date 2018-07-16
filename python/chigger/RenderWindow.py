@@ -185,8 +185,10 @@ class RenderWindow(base.ChiggerObject):
             if self.getVTKInteractorStyle():
                 self.getVTKInteractorStyle().SetEnabled(True)
                 self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
-                actors = self.__active.getVTKRenderer().GetActors()
+                actors = self.__active.getVTKRenderer().GetViewProps()
+                print self.__active.getVTKRenderer()
                 for i in range(actors.GetNumberOfItems()):
+                    print actors.GetItemAsObject(i)
                     self.getVTKInteractorStyle().HighlightProp(actors.GetItemAsObject(i))
             self.__active.getVTKRenderer().SetInteractive(True)
 
