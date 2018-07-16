@@ -65,7 +65,7 @@ print 'size =', size
 
 # Normalized image width
 #scale = 1#float(window[0])/float(size[0]) * self.getOption('width')
-scale = float(window_size[0])/float(size[0]) * size[0]#self.getOption('width')
+scale = float(window_size[0])/float(size[0])# * size[0]#self.getOption('width')
 print 'scale = ', scale
 
 # Compute the camera distance
