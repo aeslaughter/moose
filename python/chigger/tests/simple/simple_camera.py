@@ -23,10 +23,9 @@ file_name = '../input/mug_blocks_out.e'
 reader = chigger.exodus.ExodusReader(file_name, time=3)
 
 mug = chigger.exodus.ExodusResult(reader, variable='convected', cmap='PiYG', camera=camera)
-mug.setOptions('colorbar', visible=False)
 
 # Create the window
-window = chigger.RenderWindow(mug, size=[300,300], test=True)
+window = chigger.RenderWindow(mug, size=(300,300), test=True)
 
 # Render the results and write a file
 window.write('simple_camera.png')

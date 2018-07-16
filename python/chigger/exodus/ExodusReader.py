@@ -344,7 +344,7 @@ class ExodusReader(base.ChiggerObject):
         if self.isOptionValid('timestep') and self.isOptionValid('time'):
             time = self.getOption('time')
             timestep = self.getOption('timestep')
-            self._options.raw('time').unset()
+            self._options.raw('time').value = None # unset
             msg = "Both 'time' ({}) and 'timestep' ({}) are set, 'timestep' is being used."
             mooseutils.mooseWarning(msg.format(time, timestep))
 
