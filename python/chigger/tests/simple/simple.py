@@ -12,6 +12,6 @@
 import chigger
 reader = chigger.exodus.ExodusReader('../input/mug_blocks_out.e')
 mug = chigger.exodus.ExodusResult(reader, variable='diffused', cmap='viridis')
-window = chigger.RenderWindow(mug, size=(300,300), test=False)
+window = chigger.RenderWindow(mug, size=(300,300), test=True)
 window.write('simple.png')
 window.start()

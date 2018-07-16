@@ -170,53 +170,26 @@ class RenderWindow(base.ChiggerObject):
         Set the active result object for interaction.
         """
         if self.__active is not None:
-            self.__active.highlight(self, False)
+            self.getVTKInteractorStyle().HighlightProp(None)
             self.__active.getVTKRenderer().SetInteractive(False)
 
         if result is None:
             self.__active = None
             self.__background.getVTKRenderer().SetInteractive(True)
-            self.getVTKInteractorStyle().SetCurrentRenderer(self.__background.getVTKRenderer())
-            self.getVTKInteractorStyle().SetEnabled(False)
+            if self.getVTKInteractorStyle():
+                self.getVTKInteractorStyle().SetCurrentRenderer(self.__background.getVTKRenderer())
+                self.getVTKInteractorStyle().SetEnabled(False)
 
         else:
             self.__active = result
-            self.getVTKInteractorStyle().SetEnabled(True)
-            self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
+            if self.getVTKInteractorStyle():
+                self.getVTKInteractorStyle().SetEnabled(True)
+                self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
+                actors = self.__active.getVTKRenderer().GetActors()
+                for i in range(actors.GetNumberOfItems()):
+                    self.getVTKInteractorStyle().HighlightProp(actors.GetItemAsObject(i))
             self.__active.getVTKRenderer().SetInteractive(True)
-            self.__active.highlight(self, True)
 
-
-
-
-        """
-        # If 'None' is supplied, disable the current result
-        if result is None:
-            if self.__active is not None:
-                self.__active.highlight(self, False)
-                self.__active = None
-            self.setActive(self._background)
-            return
-
-        # Check that the supplied result is available for activation
-        if not result.getOption('interactive'):
-            mooseutils.mooseError("The supplied result must be cable of interaction, i.e., the " \
-                                  "'interactive' option must be True.")
-            return
-
-        if result not in self._results:
-            mooseutils.mooseError("The active result must be added to the RendererWindow prior to " \
-                                  "setting it as active.")
-            return
-
-        # Disable existing active result
-        if self.__active is not None:
-            self.__active.highlight(self, False)
-
-        # Set the supplied result as active and update the current renderer
-        self.__active = result
-        self.__active.highlight(self, True)
-        """
     def nextActive(self, reverse=False):
 
         step = 1 if not reverse else -1
