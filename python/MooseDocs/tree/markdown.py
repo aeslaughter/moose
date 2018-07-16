@@ -58,7 +58,7 @@ class Page(MarkdownNode):
         content = re.sub(r'^(?= *\S)(?!\A)', self.subsequent_indent, content, flags=re.MULTILINE)
 
         content, n = re.subn(r'\n{3,}\Z', u'\n\n', content)
-        print n
+        #print n
 
         return content
 
@@ -131,7 +131,7 @@ class Line(MarkdownNode):
                 content = u''.join(items)
 
                 lines = self._wrapper.wrap(content)
-                print lines
+                #print lines
 
                 content = u'\n'.join(self._wrapper.wrap(content))
             else:
