@@ -30,6 +30,7 @@ plane0 = chigger.geometric.PlaneSource2D(origin=(100,100,0),
                                          resolution=(n,m),
                                          cmap='viridis',
                                          data=data)
+
 result = chigger.base.ChiggerResult(plane0)
 window = chigger.RenderWindow(result, size=(300,300), test=False)
 window.write('plane_source.png')

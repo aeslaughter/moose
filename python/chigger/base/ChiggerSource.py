@@ -81,4 +81,5 @@ class ChiggerSource(ChiggerFilterSourceBase):
             self._vtkactor.GetProperty().SetOpacity(self.applyOption('opacity'))
 
         if self.isOptionValid('color'):
+            print 'Setting color...', self.getOption('color')
             self._vtkactor.GetProperty().SetColor(self.applyOption('color'))

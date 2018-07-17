@@ -13,6 +13,7 @@ import vtk
 
 import base
 import observers
+import geometric
 import misc
 import mooseutils
 
@@ -68,6 +69,7 @@ class RenderWindow(base.ChiggerObject):
         self._results = []
         self._observers = set()
         self.__active = None
+        self.__highlight = None
 
         # Store the supplied result objects
         self.__background = misc.ChiggerBackground()
@@ -170,7 +172,10 @@ class RenderWindow(base.ChiggerObject):
         Set the active result object for interaction.
         """
         if self.__active is not None:
-            self.getVTKInteractorStyle().HighlightProp(None)
+            #self.getVTKInteractorStyle().HighlightProp(None)
+            #self.__active.onHighlight(False)
+            self.remove(self.__highlight)
+            self.__highlight = None
             self.__active.getVTKRenderer().SetInteractive(False)
 
         if result is None:
@@ -185,11 +190,14 @@ class RenderWindow(base.ChiggerObject):
             if self.getVTKInteractorStyle():
                 self.getVTKInteractorStyle().SetEnabled(True)
                 self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
-                actors = self.__active.getVTKRenderer().GetViewProps()
-                print self.__active.getVTKRenderer()
-                for i in range(actors.GetNumberOfItems()):
-                    print actors.GetItemAsObject(i)
-                    self.getVTKInteractorStyle().HighlightProp(actors.GetItemAsObject(i))
+
+                # Creates a OutlineResult to higlight the data. The original version of this
+                # relied on the VTK based HighlightProp. However, the highlighting for 2D objects
+                # was not very good.
+                self.__highlight = geometric.OutlineResult(self.__active, interactive=False,
+                                                           color=(1,0,0), line_width=5)
+                self.append(self.__highlight)
+
             self.__active.getVTKRenderer().SetInteractive(True)
 
     def nextActive(self, reverse=False):

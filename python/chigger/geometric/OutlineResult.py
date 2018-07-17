@@ -9,7 +9,9 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
 from .. import base
-from OutlineSource import OutlineSource
+from . import OutlineSource, OutlineSource2D
+
+#from OutlineSource import OutlineSource
 
 class OutlineResult(base.ChiggerResult):
 
@@ -20,7 +22,12 @@ class OutlineResult(base.ChiggerResult):
         return opt
 
     def __init__(self, result, **kwargs):
-        sources = [OutlineSource(src) for src in result.getSources()]
+        sources = []
+        for src in result.getSources():
+            if isinstance(src.getVTKActor(), vtk.vtkActor2D):
+                sources.append(OutlineSource2D(src))
+            else:
+                sources.append(OutlineSource(src))
         super(OutlineResult, self).__init__(*sources, renderer=result.getVTKRenderer(), **kwargs)
 
     """

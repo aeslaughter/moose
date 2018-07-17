@@ -12,7 +12,7 @@ import vtk
 from .. import utils
 from .. import base
 
-class TextAnnotationSource(base.ChiggerSourceBase):
+class TextAnnotationSource(base.ChiggerSource2D):
     """
     Source for creating text annotations.
     """
@@ -31,8 +31,12 @@ class TextAnnotationSource(base.ChiggerSourceBase):
 
     def __init__(self, **kwargs):
         super(TextAnnotationSource, self).__init__(vtkactor_type=vtk.vtkActor2D,
-                                                   vtkmapper_type=vtk.vtkTextMapper, **kwargs)
+                                                   vtkmapper_type=vtk.vtkPolyDataMapper2D, **kwargs)
         self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
+        self._vtksource = vtk.vtkTextSource()
+
+    def getVTKSource(self):
+        return self._vtksource
 
     def update(self, **kwargs):
         """
@@ -40,10 +44,10 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         """
         super(TextAnnotationSource, self).update(**kwargs)
 
-        utils.FontOptions.applyOptions(self._vtkmapper.GetTextProperty(), self._options)
+        #utils.FontOptions.applyOptions(self._vtksource.GetProperty(), self._options)
 
         if self.isOptionValid('position'):
             self._vtkactor.GetPositionCoordinate().SetValue(*self.applyOption('position'))
 
         if self.isOptionValid('text'):
-            self._vtkmapper.SetInput(self.applyOption('text'))
+            self._vtksource.SetText(self.applyOption('text'))

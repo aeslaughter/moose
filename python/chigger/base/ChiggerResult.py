@@ -40,8 +40,6 @@ class ChiggerResult(ChiggerResultBase):
     def __init__(self, *sources, **kwargs):
         super(ChiggerResult, self).__init__(renderer=kwargs.pop('renderer', None), **kwargs)
         self._sources = list()#list(sources)
-        #for src in self._sources:
-        #    src._parent = self #pylint: disable=protected-access
 
         for src in sources:
             self.addSource(src)
@@ -66,6 +64,7 @@ class ChiggerResult(ChiggerResultBase):
 
         self._sources.append(source)
         source.setVTKRenderer(self._vtkrenderer)
+        source._ChiggerSourceBase__result = self
         self._vtkrenderer.AddActor(source.getVTKActor())
 
     def removeSource(self, source):

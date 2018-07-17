@@ -54,7 +54,6 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
         super(ChiggerResultBase, self).__init__(**kwargs)
         self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
         self._vtkrenderer.SetInteractive(False)
-       # self.__chiggerwindow = None # Set by RenderWindow::append
         self.addKeyBinding('c', self._printCamera, desc="Display the camera settings for this object.")
 
     def getVTKRenderer(self):
@@ -65,12 +64,6 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
         populate the list of renderers that it will be displaying.
         """
         return self._vtkrenderer
-
-    def getWindow(self):
-        """
-        Return the current RenderWindow object for this result.
-        """
-        return self.__chiggerwindow
 
     def update(self, **kwargs):
         """
@@ -115,3 +108,7 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
 
     def _printCamera(self, *args):
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
+
+
+    def onHighlight(self, value):
+        pass

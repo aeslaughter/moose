@@ -85,7 +85,11 @@ def get_bounds(*sources):
     """
     bnds = []
     for src in sources:
-        bnds.append(src.getVTKMapper().GetBounds())
+        if isinstance(src.getVTKActor(), vtk.vtkActor2D):
+            print src.getVTKActor().GetBounds()
+            bnds.append(src.getVTKActor().GetBounds())
+        else:
+            bnds.append(src.getVTKMapper().GetBounds())
     return get_bounds_min_max(*bnds)
 
 def compute_distance(*sources):
