@@ -173,10 +173,14 @@ class RenderWindow(base.ChiggerObject):
         """
         if self.__active is not None:
             #self.getVTKInteractorStyle().HighlightProp(None)
-            #self.__active.onHighlight(False)
-            self.remove(self.__highlight)
-            self.__highlight = None
             self.__active.getVTKRenderer().SetInteractive(False)
+
+            if self.__highlight is not None:
+                self.remove(self.__highlight)
+                self.__highlight = None
+
+            if hasattr(self.__active, 'onHighlight'):
+                self.__active.onHighlight(self, False)
 
         if result is None:
             self.__active = None
@@ -191,12 +195,17 @@ class RenderWindow(base.ChiggerObject):
                 self.getVTKInteractorStyle().SetEnabled(True)
                 self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
 
-                # Creates a OutlineResult to higlight the data. The original version of this
-                # relied on the VTK based HighlightProp. However, the highlighting for 2D objects
-                # was not very good.
-                self.__highlight = geometric.OutlineResult(self.__active, interactive=False,
-                                                           color=(1,0,0), line_width=5)
-                self.append(self.__highlight)
+
+                if hasattr(self.__active, 'onHighlight'):
+                    self.__active.onHighlight(self, True)
+                else:
+
+                    # Creates a OutlineResult to higlight the data. The original version of this
+                    # relied on the VTK based HighlightProp. However, the highlighting for 2D objects
+                    # was not very good.
+                    self.__highlight = geometric.OutlineResult(self.__active, interactive=False,
+                                                               color=(1,0,0), line_width=5)
+                    self.append(self.__highlight)
 
             self.__active.getVTKRenderer().SetInteractive(True)
 

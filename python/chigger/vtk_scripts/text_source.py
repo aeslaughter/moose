@@ -30,8 +30,8 @@ interactor.Initialize()
 # Show the result
 window.Render()
 
-bbox = [0,0,0,0]
-actor.GetBoundingBox(renderer, bbox)
+bbox = [0,0]
+actor.GetSize(renderer, bbox)
 print bbox
 #print actor.GetMinimumSize(), actor.GetMaximumLineHeight()
 

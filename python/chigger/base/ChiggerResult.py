@@ -10,6 +10,7 @@
 
 import mooseutils
 import chigger
+
 from ChiggerResultBase import ChiggerResultBase
 from ChiggerSourceBase import ChiggerSourceBase
 
