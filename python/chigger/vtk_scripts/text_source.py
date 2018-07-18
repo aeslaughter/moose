@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 import vtk
 
-source = vtk.vtkTextSource()
-source.SetText('Testing...')
-source.BackingOff()
+#source = vtk.vtkTextSource()
+#source.SetText('Testing...')
+#source.BackingOff()
 
-mapper = vtk.vtkPolyDataMapper2D()
-mapper.SetInputConnection(source.GetOutputPort())
-mapper.ScalarVisibilityOff()
+#mapper = vtk.vtkPolyDataMapper2D()
+#mapper.SetInputConnection(source.GetOutputPort())
+#mapper.ScalarVisibilityOff()
 
 
-actor = vtk.vtkActor2D()
-actor.SetMapper(mapper)
-actor.GetProperty().SetColor(1,0.2,0.1)
+actor = vtk.vtkTextActor()
+actor.SetInput("$y = \sqrt{ax + b} + cx$")
+actor.SetPosition(100, 100)
+#actor.Update()
 
 renderer = vtk.vtkRenderer()
 renderer.AddActor(actor)
@@ -28,4 +29,10 @@ interactor.Initialize()
 
 # Show the result
 window.Render()
+
+bbox = [0,0,0,0]
+actor.GetBoundingBox(renderer, bbox)
+print bbox
+#print actor.GetMinimumSize(), actor.GetMaximumLineHeight()
+
 interactor.Start()
