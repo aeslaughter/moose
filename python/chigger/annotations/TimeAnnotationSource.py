@@ -55,5 +55,5 @@ class TimeAnnotationSource(TextAnnotationSource):
         if self.isOptionValid('suffix'):
             text.append(self.getOption('suffix'))
 
-        self._vtkmapper.GetTextProperty().Modified()
-        self._vtkmapper.SetInput(' '.join(text))
+        self._vtkactor.GetTextProperty().Modified()
+        self._vtkactor.SetInput(' '.join(text))

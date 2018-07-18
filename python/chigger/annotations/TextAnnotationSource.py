@@ -23,9 +23,10 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         Return default options for this object.
         """
         opt = base.ChiggerSourceBase.validOptions()
-        opt.add('position', (0.5, 0.5), "The text position within the viewport, in relative "
-                                        "coordinates.", vtype=float, size=2)
-        opt.add('text', None, "The text to display.", vtype=str)
+        opt.add('position', default=(0.5, 0.5), vtype=float, size=2,
+                doc="The text position within the viewport, in relative coordinates.")
+        opt.add('text', vtype=str, doc="The text to display.")
+        opt.add('color', vtype=float, size=3, doc="The text color.")
         opt += utils.FontOptions.validOptions()
         return opt
 
@@ -40,10 +41,13 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         """
         super(TextAnnotationSource, self).update(**kwargs)
 
-        #utils.FontOptions.applyOptions(self._vtksource.GetProperty(), self._options)
+        utils.FontOptions.applyOptions(self._vtkactor.GetTextProperty(), self._options)
 
         if self.isOptionValid('position'):
             self._vtkactor.GetPositionCoordinate().SetValue(*self.applyOption('position'))
 
         if self.isOptionValid('text'):
             self._vtkactor.SetInput(self.applyOption('text'))
+
+        if self.isOptionValid('color'):
+            self._vtkactor.GetProperty().SetColor(self.applyOption('color'))

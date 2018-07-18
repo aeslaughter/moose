@@ -85,7 +85,7 @@ class ExodusColorBar(misc.ColorBar):
 
             # Set the range for the axis' and titles
             axis_options = self.getOption(self.AXIS_NAMES[i])
-            axis_options['lim'] = list(result[0].getVTKMapper().GetScalarRange())
+            axis_options.set('lim', result[0].getVTKMapper().GetScalarRange())
             if not axis_options.isOptionValid('title'):
                 self._sources[i+1].getVTKSource().SetTitle(result[0].getVTKMapper().GetArrayName())
 

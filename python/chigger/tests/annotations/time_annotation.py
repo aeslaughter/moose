@@ -24,6 +24,6 @@ text = chigger.annotations.TimeAnnotation(layer=2, time=times[-1], font_size=24,
                                           justification='center')
 
 # Create the window
-window = chigger.RenderWindow(text, mug, size=(300,300), test=False)
+window = chigger.RenderWindow(text, mug, size=(300,300), test=True)
 window.write('time_annotation.png')
 window.start()

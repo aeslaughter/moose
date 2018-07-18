@@ -28,6 +28,6 @@ chigger = ImageAnnotation(filename='chigger_white.png', position=(1., 0.),
 inl = ImageAnnotation(filename='inl.png')
 
 # Create the window
-window = RenderWindow(moose, marmot, pika, chigger, inl, test=False)
+window = RenderWindow(moose, marmot, pika, chigger, inl, test=True)
 window.write('logo_annotation.png')
 window.start()
