@@ -60,3 +60,6 @@ class ImageAnnotationSource(base.ChiggerSource):
                 raise mooseutils.MooseException('Unable to locate image file: {}'.format(filename))
             self.__reader.SetFileName(filename)
             self.__reader.Update()
+
+    def getBounds(self):
+        return self.getVTKActor().GetBounds()

@@ -172,7 +172,6 @@ class RenderWindow(base.ChiggerObject):
         Set the active result object for interaction.
         """
         if self.__active is not None:
-            #self.getVTKInteractorStyle().HighlightProp(None)
             self.__active.getVTKRenderer().SetInteractive(False)
 
             if self.__highlight is not None:
@@ -181,6 +180,8 @@ class RenderWindow(base.ChiggerObject):
 
             if hasattr(self.__active, 'onHighlight'):
                 self.__active.onHighlight(self, False)
+            #else:
+            #    self.getVTKInteractorStyle().HighlightProp(None)
 
         if result is None:
             self.__active = None
@@ -199,6 +200,9 @@ class RenderWindow(base.ChiggerObject):
                 if hasattr(self.__active, 'onHighlight'):
                     self.__active.onHighlight(self, True)
                 else:
+                    #actors = self.__active.getVTKRenderer().GetActors()
+                    #for i in range(actors.GetNumberOfItems()):
+                    #    self.getVTKInteractorStyle().HighlightProp(actors.GetItemAsObject(i))
 
                     # Creates a OutlineResult to higlight the data. The original version of this
                     # relied on the VTK based HighlightProp. However, the highlighting for 2D objects

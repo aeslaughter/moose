@@ -50,8 +50,8 @@ class ImageAnnotation(base.ChiggerResult):
         self._vtkrenderer.SetInteractive(False)
         self._vtkrenderer.SetActiveCamera(self._vtkcamera)
 
-        self.addKeyBinding('w', self._setWidth, desc="Increase the scale of the image by 0.05.")
-        self.addKeyBinding('w', self._setWidth, shift=True, desc="Decrease the scale of the image by 0.05.")
+        self.addKeyBinding('w', self._setWidth, desc="Increase the scale of the image by 0.01.")
+        self.addKeyBinding('w', self._setWidth, shift=True, desc="Decrease the scale of the image by 0.01.")
         self.addKeyBinding('o', self._setOpacity, desc="Increase the opacity of the image by 0.05.")
         self.addKeyBinding('o', self._setOpacity, shift=True, desc="Decrease the opacity of the image by 0.05.")
 
@@ -69,7 +69,6 @@ class ImageAnnotation(base.ChiggerResult):
 
         # Size of window
         window = renderer.GetRenderWindow().GetSize()
-        print window
 
         # Size of image
         size = self._sources[-1].getVTKSource().GetOutput().GetDimensions()
@@ -80,7 +79,6 @@ class ImageAnnotation(base.ChiggerResult):
         # Compute the camera distance
         angle = self._vtkcamera.GetViewAngle()
         d = window[1]*0.5 / math.tan(math.radians(angle*0.5))
-        print size, d, scale
 
         # Determine the image position
         p = self.getOption('position')
@@ -132,13 +130,13 @@ class ImageAnnotation(base.ChiggerResult):
         Re-position the image based on the mouse position.
         """
         self.setOption('position', position)
-        self.update()
+        self.printOption('position')
 
     def _setWidth(self, window, binding):
         """
         Callback for setting the image width.
         """
-        step = -0.05 if binding.shift else 0.05
+        step = -0.01 if binding.shift else 0.01
         width = self.getOption('width') + step
         if width > 0 and (width <= 1):
             self.setOption('width', width)

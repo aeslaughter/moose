@@ -78,9 +78,9 @@ def create(base_type):
                     mooseutils.mooseWarning('The "color" and "cmap" options are both being set, '
                                             'the "color" will be ignored.')
 
-                if not self.isOptionValid('data'):
-                    mooseutils.mooseError('The "cmap" option requires that "data" option also '
-                                          'be supplied.')
+                #if not self.isOptionValid('data'):
+                #    mooseutils.mooseError('The "cmap" option requires that "data" option also '
+                #                          'be supplied.')
 
                 if self.isOptionValid('data'):
                     self._vtksource.Update()
@@ -93,13 +93,8 @@ def create(base_type):
                     self._vtkmapper.SetScalarRange(data.GetRange(0))
                     self._vtkmapper.SetLookupTable(self._colormap())
 
-        def onHighlight(self, active):
-            if active:
-                self.setOption('cmap', None)
-                self._vtkmapper.SetLookupTable(None)
-                self._vtkmapper.SetScalarVisibility(False)
-                self._vtkactor.GetProperty().SetColor(0,1,0)
-                self.update()
-
+        def getBounds(self):
+            self._vtksource.Update()
+            return self._vtksource.GetOutput().GetBounds()
 
     return PlaneSourceMeta

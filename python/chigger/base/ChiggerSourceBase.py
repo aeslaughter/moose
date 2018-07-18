@@ -107,5 +107,6 @@ class ChiggerSourceBase(ChiggerObject):
         """
         Return the bounding box of the results.
         """
-        self.update()
-        return utils.get_bounds(self)
+        raise NotImplementedError("The getBounds method must be implemented in {}.".format(type(self)))
+        #self.update()
+        #return utils.get_bounds(self)

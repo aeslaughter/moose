@@ -108,7 +108,3 @@ class ChiggerResultBase(ChiggerObject, utils.KeyBindingMixin):
 
     def _printCamera(self, *args):
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
-
-
-    def onHighlight(self, value):
-        pass

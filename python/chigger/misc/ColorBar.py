@@ -31,7 +31,7 @@ class ColorBar(base.ChiggerResult):
         opt.add('colorbar_origin',
                 doc="The position of the colorbar, relative to the viewport.",
                 vtype=float,
-                size=3)
+                size=2)
         opt.add('width',
                 default=0.05,
                 vtype=float,
@@ -57,8 +57,23 @@ class ColorBar(base.ChiggerResult):
         return opt
 
     def __init__(self, **kwargs):
-        super(ColorBar, self).__init__(**kwargs)
-        self._sources = [geometric.PlaneSource2D(), AxisSource(), AxisSource()]
+        super(ColorBar, self).__init__(geometric.PlaneSource2D(),
+                                       AxisSource(),
+                                       AxisSource(),
+                                       **kwargs)
+
+        self.addKeyBinding('w', lambda *args: self._increment(0.005, 'width', *args),
+                           desc="Increase the width of the colorbar by 0.005.")
+        self.addKeyBinding('w', lambda *args: self._increment(-0.005, 'width', *args), shift=True,
+                           desc="Decrease the width of the colorbar by 0.005.")
+        self.addKeyBinding('l', lambda *args: self._increment(0.005, 'length', *args),
+                           desc="Increase the length of the colorbar by 0.005.")
+        self.addKeyBinding('l', lambda *args: self._increment(-0.005, 'length', *args), shift=True,
+                           desc="Decrease the length of the colorbar by 0.005.")
+        self.addKeyBinding('f', lambda *args: self._incrementFont(1),
+                           desc="Increase the font size by 1 point (when result is selected).")
+        self.addKeyBinding('f', lambda *args: self._incrementFont(-1), shift=True,
+                           desc="Decrease the font size by 1 point (when result is selected).")
 
     def update(self, **kwargs):
         """
@@ -89,9 +104,9 @@ class ColorBar(base.ChiggerResult):
         loc = self.getOption('location').lower()
         if not self.isOptionValid('colorbar_origin'):
             if (loc == 'right') or (loc == 'left'):
-                self.setOption('colorbar_origin', (0.8, 0.25, 0.0))
+                self.setOption('colorbar_origin', (0.8, 0.25))
             else:
-                self.setOption('colorbar_origin', (0.25, 0.2, 0.0))
+                self.setOption('colorbar_origin', (0.25, 0.2))
 
         # Get dimensions of colorbar, taking into account the orientation
         n = self.getOption('cmap_num_colors')
@@ -132,6 +147,7 @@ class ColorBar(base.ChiggerResult):
         plane.setOptions(origin=(pos[0], pos[1], 0),
                          point1=(p0[0], p0[1], 0),
                          point2=(p1[0], p1[1],0))
+
         # Set the colormap for the bar
         rng = self.getOption('cmap_range')
         step = (rng[1] - rng[0]) / float(n)
@@ -148,6 +164,40 @@ class ColorBar(base.ChiggerResult):
         # Setup the secondary Axis
         axis1.options().update(self.getOption('secondary'))
         self.__setAxisPosition(axis1, p0, p1, location)
+
+    def onMouseMoveEvent(self, position):
+        self.setOption('colorbar_origin', position)
+        self.printOption('colorbar_origin')
+
+    def _increment(self, increment, name, *args):
+        """
+        Helper for changing the width and length of the colorbar.
+        """
+        value = self.getOption(name) + increment
+        if value < 1 and value > 0:
+            self.printOption(name)
+            self.setOption(name, value)
+
+    def _incrementFont(self, increment, *args):
+        """
+        Helper for changing the font sizes.
+        """
+
+        def set_font_size(ax):
+            """Helper for setting both the label and tile fonts."""
+            fz_tick = ax.getVTKSource().GetLabelProperties().GetFontSize() + increment
+            fz_title = ax.getVTKSource().GetTitleProperties().GetFontSize() + increment
+            if fz_tick > 0:
+                ax.setOption('tick_font_size', fz_tick)
+                ax.printOption('tick_font_size')
+
+            if fz_title > 0:
+                ax.setOption('title_font_size', fz_title)
+                ax.printOption('title_font_size')
+
+        _, axis0, axis1 = self._sources
+        set_font_size(axis0)
+        set_font_size(axis1)
 
 
     @staticmethod

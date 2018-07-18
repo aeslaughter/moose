@@ -16,3 +16,14 @@ colorbar.setOptions('secondary', lim=(100,500), visible=True)
 window = chigger.RenderWindow(colorbar, size=(600,400), test=False)
 window.write('colorbar.png')
 window.start()
+
+"""
+plane0 = chigger.geometric.PlaneSource2D(origin=(479,100,0),
+                                         point1=(509,100,0),
+                                         point2=(479,299,0))
+
+result = chigger.base.ChiggerResult(plane0)
+window = chigger.RenderWindow(result, size=(600,400), test=False)
+window.write('plane_source.png')
+window.start()
+"""

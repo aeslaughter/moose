@@ -31,13 +31,11 @@ def create(base_type):
         def update(self, **kwargs):
             super(OutlineSourceMeta, self).update(**kwargs)
 
-            self._vtksource.SetBounds(self._input_source.getBounds())###GetOutput().GetBounds())
-
+            bnds = self._input_source.getBounds()
+            self._vtksource.SetBounds(*bnds)
 
             if self.isOptionValid('line_width'):
                 self._vtkactor.GetProperty().SetLineWidth(self.applyOption('line_width'))
-
-
 
             #xmin, xmax = self._input_source.getBounds()
             #print xmin, xmax

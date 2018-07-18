@@ -79,18 +79,19 @@ def get_bounds_min_max(*all_bounds):
             xmax[i] = max(xmax[i], bounds[j])
     return xmin, xmax
 
-def get_bounds(*sources):
-    """
-    Returns the bounding box for all supplied sources.
-    """
-    bnds = []
-    for src in sources:
-        if isinstance(src.getVTKActor(), vtk.vtkActor2D):
-            print src.getVTKActor().GetBounds()
-            bnds.append(src.getVTKActor().GetBounds())
-        else:
-            bnds.append(src.getVTKMapper().GetBounds())
-    return get_bounds_min_max(*bnds)
+#def get_bounds(*sources):
+#    """
+#    Returns the bounding box for all supplied sources.
+#    """
+#    bnds = []
+#    for src in sources:
+#        if src is None:
+#            continue
+#        elif isinstance(src.getVTKActor(), vtk.vtkActor2D):
+#            bnds.append(src.getVTKActor().GetBounds())
+#        elif src.getVTKMapper() is not None:
+#            bnds.append(src.getVTKMapper().GetBounds())
+#    return get_bounds_min_max(*bnds)
 
 def compute_distance(*sources):
     """
