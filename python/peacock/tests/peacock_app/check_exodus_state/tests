@@ -1,8 +1,18 @@
 [Tests]
-  [./test]
+  [./exodus_state]
     type = PythonUnitTest
     input = test_exodus_state.py
     platform = "DARWIN"
     separate = True
+  [../]
+  [./exodus_auto_range]
+    type = PythonUnitTest
+    input = test_exodus_auto_range.py
+    platform = "DARWIN"
+  [../]
+  [./exodus_colorbar_toggle]
+    type = PythonUnitTest
+    input = test_exodus_colorbar_toggle.py
+    platform = "DARWIN"
   [../]
 []

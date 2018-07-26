@@ -342,17 +342,6 @@ class VTKWindowPlugin(QtWidgets.QFrame, ExodusPlugin):
         """
         self._window.getVTKInteractor().AddObserver(event, callback)
 
-    def onSetColorbarVisible(self, value):
-        """
-        Toggle the colorbar existence.
-        """
-        title = self._result[0].getVTKMapper().GetArrayName() if value else ''
-        colorbar_options = dict()
-        colorbar_options['visible'] = value
-        colorbar_options['primary'] = dict(labels_visible=value, title=title)
-        colorbar_options['font_size'] = 12*self.devicePixelRatio()
-        self.onColorbarOptionsChanged(colorbar_options)
-
     def _reset(self):
         """
         Clears the VTK windows and restarts the initialize timer.

@@ -131,7 +131,7 @@ class MeshViewerPlugin(VTKWindowPlugin):
             ExeLauncher.runExe(exe_path, args, print_errors=False)
             self.meshEnabled.emit(True)
             self.onSetFilename(self.current_temp_mesh_file)
-            self.onSetColorbarVisible(False)
+            self.onColorbarOptionsChanged({'visible':False})
             self.onWindowRequiresUpdate()
 
         except Exception as e:

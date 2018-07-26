@@ -24,6 +24,7 @@ class ColorBar(base.ChiggerResult):
     @staticmethod
     def getOptions():
         opt = base.ChiggerResult.getOptions()
+        opt.add('visible', True, "Enable/disable the existence of the colorbar.")
         opt.add('location', 'right', "The location of the primary axis.",
                 allow=['left', 'right', 'top', 'bottom'])
         opt.add('colorbar_origin', None, "The position of the colorbar, relative to the viewport.",
@@ -57,11 +58,20 @@ class ColorBar(base.ChiggerResult):
         Inputs:
             see ChiggerResult
         """
-
         # Set the options provided
         self.setOptions(**kwargs)
         if self.needsInitialize():
             self.initialize()
+
+        # The vtkAxis object is buggy, if SetPosition, SetPoint, or SetScalingFactor
+        # the visibility of the object is restored. Thus, this will remove add add the
+        # actors directly to make sure the object goes away.
+        if not self.getOption('visible'):
+            for src in self._sources:
+                self._vtkrenderer.RemoveActor(src.getVTKActor())
+        else:
+            for src in self._sources:
+                self._vtkrenderer.AddActor(src.getVTKActor())
 
         # Convenience names for the various sources
         plane, axis0, axis1 = self._sources

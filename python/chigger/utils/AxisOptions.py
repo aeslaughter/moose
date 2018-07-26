@@ -28,6 +28,7 @@ def get_options():
     opt.add('precision', 3, "The axis numeric precision.", vtype=int)
     opt.add('notation', "The type of notation, leave empty to let VTK decide", vtype=str,
             allow=['standard', 'scientific', 'fixed', 'printf'])
+    opt.add('visible', True, "Control overall visibility of axis.")
     opt.add('ticks_visible', True, "Control visibility of tickmarks on colorbar axis.")
     opt.add('axis_visible', True, "Control visibility of axis line on colorbar axis.")
     opt.add('labels_visible', True, "Control visibility of the numeric labels.")
@@ -45,9 +46,14 @@ def set_options(vtkaxis, opt):
     """
 
     # Visibility
-    vtkaxis.SetTicksVisible(opt['ticks_visible'])
-    vtkaxis.SetAxisVisible(opt['axis_visible'])
-    vtkaxis.SetLabelsVisible(opt['labels_visible'])
+    if opt['visible'] == False:
+        vtkaxis.SetTicksVisible(False)
+        vtkaxis.SetAxisVisible(False)
+        vtkaxis.SetLabelsVisible(False)
+    else:
+        vtkaxis.SetTicksVisible(opt['ticks_visible'])
+        vtkaxis.SetAxisVisible(opt['axis_visible'])
+        vtkaxis.SetLabelsVisible(opt['labels_visible'])
 
     # Ticks
     if opt.isOptionValid('num_ticks'):

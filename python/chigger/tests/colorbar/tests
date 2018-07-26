@@ -70,4 +70,10 @@
     command = zero_range.py
     imagediff = 'zero_range.png'
   [../]
+
+  [./visible_off]
+    type = ImageDiff
+    command = colorbar_visible_off.py
+    imagediff = colorbar_visible_off.png
+  [../]
 []

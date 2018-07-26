@@ -26,9 +26,6 @@ class ColorbarPlugin(QtWidgets.QGroupBox, ExodusPlugin):
     resultOptionsChanged = QtCore.pyqtSignal(dict)
     colorbarOptionsChanged = QtCore.pyqtSignal(dict)
 
-    #: pyqtSignal: Emitted when colorbar is added/removed
-    setColorbarVisible = QtCore.pyqtSignal(bool)
-
     def __init__(self):
         super(ColorbarPlugin, self).__init__()
 
@@ -141,6 +138,7 @@ class ColorbarPlugin(QtWidgets.QGroupBox, ExodusPlugin):
         Update result/reader options for this widget.
         """
         self.updateResultOptions()
+        self.updateColorbarOptions()
 
     def updateResultOptions(self):
         """
@@ -174,7 +172,7 @@ class ColorbarPlugin(QtWidgets.QGroupBox, ExodusPlugin):
         """
         Toggle the state of the colorbar.
         """
-        self.setColorbarVisible.emit(self.ColorBarToggle.isChecked())
+        self.colorbarOptionsChanged.emit({'visible':self.ColorBarToggle.isChecked()})
 
     @staticmethod
     def _setLimitHelper(mode, qobject):
@@ -317,7 +315,6 @@ class ColorbarPlugin(QtWidgets.QGroupBox, ExodusPlugin):
         Setup the colorbar toggle.
         """
         qobject.setChecked(True)
-        self.setColorbarVisible.emit(True)
         qobject.stateChanged.connect(self._callbackColorBarToggle)
 
     def _callbackColorBarToggle(self, value):
@@ -325,8 +322,7 @@ class ColorbarPlugin(QtWidgets.QGroupBox, ExodusPlugin):
         Callback for the colorbar toggle.
         """
         self.store(self.ColorBarToggle)
-        self.updateColorbarOptions()
-        #self.updateOptions()
+        self.updateOptions()
         self.windowRequiresUpdate.emit()
 
     def _setupColorBarRangeType(self, qobject):

@@ -13,10 +13,9 @@ from peacock import PeacockApp
 from peacock.utils import Testing
 import os
 
-class TestExodusAutoRange(Testing.PeacockImageTestCase):
+class TestExodusColorbarVisible(Testing.PeacockImageTestCase):
     qapp = QtWidgets.QApplication([])
     INPUT_FILE = "../../common/transient.i"
-
     def setUp(self):
         """
         Creates the peacock application.
@@ -46,18 +45,21 @@ class TestExodusAutoRange(Testing.PeacockImageTestCase):
         execute.ExecuteRunnerPlugin.runClicked()
         Testing.process_events(t=5)
 
-    def testAutoRangeUpdate(self):
-        """
-        Test that the auto range is updating correctly.
-        """
-
-        # Execute the test
+    def testMultipleRun(self):
         exodus = self._app.main_widget.tab_plugin.ExodusViewer
+        plugin = exodus.currentWidget().ColorbarPlugin
         self.selectTab(exodus)
         self.execute()
 
-        self.assertAlmostEqual(0.00551776864449, float(exodus.currentWidget().ColorbarPlugin.RangeMinimum.text()))
-        self.assertAlmostEqual(0.25, float(exodus.currentWidget().ColorbarPlugin.RangeMaximum.text()))
+        plugin.ColorBarToggle.setChecked(QtCore.Qt.Unchecked)
+        plugin.ColorBarToggle.stateChanged.emit(QtCore.Qt.Unchecked)
+        self.assertFalse(plugin.ColorBarToggle.isChecked())
+        self.assertImage('multipleRun.png')
+
+        #self.selectTab(exodus)
+        self.execute()
+        self.assertFalse(plugin.ColorBarToggle.isChecked())
+        self.assertImage('multipleRun.png')
 
 if __name__ == '__main__':
     Testing.run_tests()
