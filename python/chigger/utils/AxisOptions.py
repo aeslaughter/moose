@@ -46,7 +46,7 @@ def set_options(vtkaxis, opt):
     """
 
     # Visibility
-    if opt['visible'] == False:
+    if not opt['visible']:
         vtkaxis.SetTicksVisible(False)
         vtkaxis.SetAxisVisible(False)
         vtkaxis.SetLabelsVisible(False)

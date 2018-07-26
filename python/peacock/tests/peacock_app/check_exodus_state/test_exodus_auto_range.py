@@ -8,7 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 from peacock import PeacockApp
 from peacock.utils import Testing
 import os

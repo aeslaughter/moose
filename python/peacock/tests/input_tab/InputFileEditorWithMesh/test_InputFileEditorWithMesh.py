@@ -330,6 +330,7 @@ class Tests(BaseTests):
         w.vtkwin.onWrite(sdiffusion_image)
         self.assertFalse(Testing.gold_diff(sdiffusion_image, .98))
 
+
         other = "spherical_average.i"
         w.setInputFile(other)
         other_image = "meshrender_3d.png"

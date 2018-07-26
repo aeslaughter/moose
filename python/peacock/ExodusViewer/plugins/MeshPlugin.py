@@ -129,8 +129,9 @@ class MeshPlugin(QtWidgets.QGroupBox, ExodusPlugin):
         """
         Delete filters when the window is destroyed.
         """
-        self._extents.reset()
-        self._extents = None
+        if self._extents is not None:
+            self._extents.reset()
+            self._extents = None
 
     def _loadPlugin(self):
         """
