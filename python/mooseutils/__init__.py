@@ -16,6 +16,7 @@ from MooseException import MooseException
 from eval_path import eval_path
 from AutoPropertyMixin import AutoPropertyMixin, Property, addProperty
 import parallel
+from check_type import check_type
 
 try:
     from hit_load import hit_load, HitNode, hit_parse
