@@ -41,7 +41,8 @@ def validOptions():
     opt.add('axis_visible', True, vtype=bool,
             doc="Control visibility of axis line on colorbar axis.")
     opt.add('labels_visible', True, vtype=bool, doc="Control visibility of the numeric labels.")
-    opt.add('axis_position', 'left', vtype=str, doc="Set the axis position (left, right, top, bottom)",
+    opt.add('axis_position', 'left', vtype=str,
+            doc="Set the axis position (left, right, top, bottom)",
             allow=('left', 'right', 'top', 'bottom'))
     opt.add('axis_point1', (0, 0), vtype=float, size=2,
             doc='Starting location of axis, in absolute viewport coordinates.')
@@ -51,7 +52,7 @@ def validOptions():
     opt.add('zero_tol', 1e-10, vtype=float, doc="Tolerance for considering limits to be the same.")
     return opt
 
-def setOptions(vtkaxis, opt):
+def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
     """
     Set the options for vtkAxis object.
     """
