@@ -2,6 +2,10 @@
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
+
+# try using vtkInterpolateDataSetAttributes when there is two files
+# vtk.vtkTemporalInterpolator works for single file directly
+
 class ExodusReader(VTKPythonAlgorithmBase):
     def __init__(self):
         VTKPythonAlgorithmBase.__init__(self,
