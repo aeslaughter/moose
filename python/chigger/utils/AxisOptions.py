@@ -126,3 +126,4 @@ def set_options(vtkaxis, opt):
 
     if opt.isOptionValid('axis_scale'):
         vtkaxis.SetScalingFactor(opt['axis_scale'])
+        vtkaxis.Update()

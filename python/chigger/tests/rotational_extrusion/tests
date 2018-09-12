@@ -1,0 +1,7 @@
+[Tests]
+  [./exodus]
+    type = ImageDiff
+    command = rotational_extrusion.py
+    imagediff = rotational_extrusion.png
+  [../]
+[]
