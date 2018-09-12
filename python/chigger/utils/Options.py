@@ -78,11 +78,11 @@ class Options(object):
         """
         self.__options.pop(name)
 
-    #def modified(self):
-    #    """
-    #    Returns True if any options have the applied flag set to False
-    #    """
-    #    return max(opt.modified for opt in self.__options.values())
+    def modified(self):
+        """
+        Returns True if any options have the applied flag set to False
+        """
+        return max(opt.modified for opt in self.__options.values())
 
     def isOptionValid(self, name, modified=None):
         """

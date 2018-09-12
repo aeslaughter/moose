@@ -65,10 +65,12 @@ class ChiggerAlgorithm(ChiggerObject):
     def update(self, *args, **kwargs):
         ChiggerObject.update(self, *args, **kwargs)
 
-        for opt in self._options.itervalues():
-            if opt.modified > self.GetMTime():
-                print opt.name, opt.modified, self.GetMTime()
-                self.Modified()
+        if self._options.modified() > self.GetMTime():
+            self.Modified()
+        #for opt in self._options.itervalues():
+        #    if opt.modified > self.GetMTime():
+        #        print opt.name, opt.modified, self.GetMTime()
+        #        self.Modified()
 
 
     #def isOptionValid(self, name):
