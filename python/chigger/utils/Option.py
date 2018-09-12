@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #!/usr/bin/env python2
+import vtk #TODO: Create a VTKOption and VTKOptions class for modified stuff
 import textwrap
 import mooseutils
 
@@ -39,7 +40,8 @@ class Option(object):
         self.__default = default # default value
         self.__vtype = vtype     # option type
         self.__allow = allow     # list of allowed values
-        self.__applied = False   # applies status, see Options class
+        self.__modified = vtk.vtkTimeStamp()    # modified status, see Options class
+        self.__modified.Modified()
         self.__doc = doc         # documentation string
         self.__array = array     # create an array
         self.__size = size       # array size
@@ -93,9 +95,9 @@ class Option(object):
         return self.__default
 
     @property
-    def applied(self):
+    def modified(self):
         """Returns the applied status."""
-        return self.__applied
+        return self.__modified.GetMTime()
 
     @property
     def doc(self):
@@ -116,16 +118,6 @@ class Option(object):
     def vtype(self):
         """Returns the variable type."""
         return self.__vtype
-
-    def apply(self):
-        """
-        Returns the value and marks the applied status to True.
-
-        This is used by the Options class to determine if an option has changed,
-        see the Options::applyOption method.
-        """
-        self.__applied = True
-        return self.__value
 
     @value.setter
     def value(self, val):
@@ -182,7 +174,8 @@ class Option(object):
             return
 
         if self.__value != val:
-            self.__applied = False
+            self.__modified.Modified()
+            print self.__name, self.__value, val, self.modified
 
         self.__value = val
 
@@ -198,11 +191,11 @@ class Option(object):
         wrapper.width = 100
         out += wrapper.wrap(self.doc)
 
-        out += ['    Value:   {}'.format(repr(self.__value)),
-                '    Default: {}'.format(repr(self.__default)),
-                '    Type:    {}'.format(self.__vtype),
-                '    Applied: {}'.format(repr(self.__applied)),
-                '    Array:   {}'.format(repr(self.__array))]
+        out += ['    Value:    {}'.format(repr(self.__value)),
+                '    Default:  {}'.format(repr(self.__default)),
+                '    Type:     {}'.format(self.__vtype),
+                '    Modified: {}'.format(repr(self.modified)),
+                '    Array:    {}'.format(repr(self.__array))]
 
         wrapper = textwrap.TextWrapper()
         wrapper.initial_indent = '    Allow:   '

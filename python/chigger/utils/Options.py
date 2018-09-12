@@ -78,13 +78,13 @@ class Options(object):
         """
         self.__options.pop(name)
 
-    def modified(self):
-        """
-        Returns True if any options have the applied flag set to False
-        """
-        return any(not opt.applied for opt in self.__options.values())
+    #def modified(self):
+    #    """
+    #    Returns True if any options have the applied flag set to False
+    #    """
+    #    return max(opt.modified for opt in self.__options.values())
 
-    def isOptionValid(self, name):
+    def isOptionValid(self, name, modified=None):
         """
         Test if the given option is valid (i.e., !None). (public)
 
@@ -92,7 +92,7 @@ class Options(object):
             name[str]: The name of the Option to retrieve
         """
         opt = self.__options.get(name, None)
-        return (opt is not None) and (opt.value is not None) and (not opt.applied)
+        return (opt is not None) and (opt.value is not None)
 
     def isOptionDefault(self, name):
         """
@@ -130,7 +130,7 @@ class Options(object):
         else:
             opt.value = value
 
-    def get(self, name, apply=False): #pylint: disable=redefined-builtin
+    def get(self, name): #pylint: disable=redefined-builtin
         """
         Overload for accessing the parameter value by name with []
 
@@ -142,19 +142,8 @@ class Options(object):
             msg = "Unknown option name: {}".format(name)
             mooseutils.mooseWarning(msg)
             return None
-        elif apply:
-            return opt.apply()
         else:
             return opt.value
-
-    def applyOption(self, name):
-        """
-        Overload for accessing the parameter value by name with []
-
-        Inputs:
-            name[str]: The name of the Option to retrieve
-        """
-        return self.get(name, apply=True)
 
     def hasOption(self, name):
         """
