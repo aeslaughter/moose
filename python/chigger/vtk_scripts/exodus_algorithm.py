@@ -5,83 +5,8 @@ from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
 from chigger import utils
 
-class ChiggerObject(object):
-    """
-    Base for all user-facing object in chigger.
 
-    The primary purpose is to provide a method for getting key, value
-    options and consistent update methods.
-    """
-
-    @staticmethod
-    def validOptions():
-        """
-        Objects should define a static validOptions method to add new key, value options. (public)
-        """
-        opt = utils.Options()
-        #gopt.add('name', vtype=str,
-        #g        doc="The object name (this name is displayed on the console help by pressing 'h')."
-        #g            "If a name is not supplied the class name is utilized.")
-        return opt
-
-    def __init__(self, **kwargs):
-        self._options = getattr(self.__class__, 'validOptions')()
-        self._options.update(**kwargs)
-
-    def update(self, *args, **kwargs):
-        """
-        A method for setting/updating an objects options. (public)
-
-        Usage:
-           setOptions(sub0, sub1, ..., key0=value0, key1=value1, ...)
-           Updates all sub-options with the provided key value pairs
-
-           setOptions(key0=value0, key1=value1, ...)
-           Updates the main options with the provided key,value pairs
-        """
-        # Sub-options case
-        if args:
-            for sub in args:
-                if not self.options().hasOption(sub):
-                    msg = "The supplied sub-option '{}' does not exist.".format(sub)
-                    mooseutils.mooseError(msg)
-                self._options.get(sub).update(**kwargs)
-
-        # Main options case
-        else:
-            self._options.update(**kwargs)
-
-
-class ChiggerAlgorithm(ChiggerObject):
-
-    #TODO: check type VTKPythonAlgorithmBase
-
-    def __init__(self, **kwargs):
-        ChiggerObject.__init__(self, **kwargs)
-
-        self.Modified()
-
-
-    def update(self, *args, **kwargs):
-        ChiggerObject.update(self, *args, **kwargs)
-
-        if self._options.modified() > self.GetMTime():
-            self.Modified()
-        #for opt in self._options.itervalues():
-        #    if opt.modified > self.GetMTime():
-        #        print opt.name, opt.modified, self.GetMTime()
-        #        self.Modified()
-
-
-    #def isOptionValid(self, name):
-    #    return self._options.isOptionValid(name, self.GetMTime())
-
-    def getOption(self, name):
-        return self._options.get(name)
-
-
-
-class ExodusReader(VTKPythonAlgorithmBase, ChiggerAlgorithm):
+class ExodusReader(ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """I am building a tool for Exodus files, it will be doing all sorts of helpful tasks..."""
 
     @staticmethod
@@ -161,7 +86,7 @@ class ExodusReader(VTKPythonAlgorithmBase, ChiggerAlgorithm):
 
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':E
     # Input file and variable
     filename = 'mug_blocks_out.e'
     nodal_var = 'convected'

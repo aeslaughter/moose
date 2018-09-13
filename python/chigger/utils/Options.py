@@ -84,6 +84,14 @@ class Options(object):
         """
         return max(opt.modified for opt in self.__options.values())
 
+    def setDefault(self, name, default):
+        """
+        If the option is None, apply the default value.
+        """
+        opt = self.__options.get(name)
+        if opt.value is None:
+            opt.value = default
+
     def isOptionValid(self, name, modified=None):
         """
         Test if the given option is valid (i.e., !None). (public)

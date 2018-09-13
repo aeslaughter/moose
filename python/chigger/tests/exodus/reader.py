@@ -9,5 +9,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import chigger
-reader = chigger.exodus.ExodusReader('../input/vector_out.e')
-print reader
+reader = chigger.exodus.ExodusReader('../input/step10_micro_out.e')
+
+reader.UpdateInformation()
+#print reader.getTimes()

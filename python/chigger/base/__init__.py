@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from ChiggerObject import ChiggerObject
+from ChiggerAlgorithm import ChiggerAlgorithm
 
 from ChiggerSourceBase import ChiggerSourceBase
 from ChiggerFilterSourceBase import ChiggerFilterSourceBase

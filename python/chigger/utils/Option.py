@@ -175,7 +175,6 @@ class Option(object):
 
         if self.__value != val:
             self.__modified.Modified()
-            print self.__name, self.__value, val, self.modified
 
         self.__value = val
 
