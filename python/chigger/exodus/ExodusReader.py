@@ -129,19 +129,17 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__variableinfo = set()                 # VariableInformation objects
 
     def RequestInformation(self, request, inInfo, outInfo):
+        """
+        (VTK Method) This is called when the VTK UpdateInformation() method is called.
+        """
         print 'RequestInformation'
 
         filenames = self.__getActiveFilenames()
         if filenames == self.__active:
             return
+
         self.__active = filenames
-
-        self.__initializeFileInformation()
-        self.__initializeTimeInformation()
-        self.__initializeBlockInformation()
-        self.__initializeVariableInformation()
-
-
+        self.__updateInformation()
         return 1
 
 
@@ -380,9 +378,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     #                    output.append(data)
     #    return output
 
-    def __initializeFileInformation(self):
+    def __updateInformation(self):
         """
-        Initialize information (i.e., times) for each file.
+        Update file, time, block, and variable information.
         """
         # Re-move any old files in timeinfo dict()
         for fname in self.__fileinfo.keys():
@@ -412,10 +410,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                                                                          times=times,
                                                                          modified=current_modified)
 
-    def __initializeTimeInformation(self):
-        """
-        Create a TimeInformation object for each timestep that indicates the correct file.
-        """
+        #Create a TimeInformation object for each timestep that indicates the correct file.
         self.__timeinfo = []
         timestep = 0
         for tinfo in self.__fileinfo.itervalues():
@@ -426,19 +421,14 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 self.__timeinfo.append(tdata)
                 timestep += 1
 
-    def __initializeBlockInformation(self):
-        """
-        Queries the vtkExodusIIReader object for the subdomain, sideset, nodeset information.
-        (private)
-        """
-        # Index to be used with the vtkExtractBlock::AddIndex method
-        index = 0
-
+        # Queries the base file for the subdomain, sideset, nodeset, and variable, it is assumed
+        # that all files contain the same variables and blocks, as it should.
         with lock_file(self.__filename):
+            index = 0 # Index to be used with the vtkExtractBlock::AddIndex method
+
             vtkreader = vtk.vtkExodusIIReader()
             vtkreader.SetFileName(self.__filename)
             vtkreader.UpdateInformation()
-
 
             # Loop over all blocks of the vtk.MultiBlockDataSet
             for obj_type in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE:
@@ -457,16 +447,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                                                           multiblock_index=index)
                     self.__blockinfo.add(binfo)
 
-    def __initializeVariableInformation(self):
-        """
-        Queries the vtkExodusIIReader for the current time information. (private)
-        """
-        with lock_file(self.__filename):
-            vtkreader = vtk.vtkExodusIIReader()
-            vtkreader.SetFileName(self.__filename)
-            vtkreader.UpdateInformation()
-
-
+            # Loop over all variable types
             unsorted = dict()
             for variable_type in ExodusReader.VARIABLE_TYPES:
                 for i in range(vtkreader.GetNumberOfObjectArrays(variable_type)):
