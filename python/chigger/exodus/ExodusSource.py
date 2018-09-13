@@ -25,8 +25,9 @@ class ExodusSource(base.ChiggerSource):
         reader[ExodusReader]: The reader object containing the ExodusII file desired to be open.
         **kwargs: see ChiggerSource
     """
-    FILTER_TYPES = [filters.ContourFilter, filters.ClipperFilterBase, filters.GeometryFilter,
-                    filters.TransformFilter, filters.TubeFilter, filters.RotationalExtrusionFilter]
+    FILTER_TYPES = [filters.Calculator, filters.ContourFilter, filters.ClipperFilterBase,
+                    filters.GeometryFilter, filters.TransformFilter, filters.TubeFilter,
+                    filters.RotationalExtrusionFilter]
 
     @staticmethod
     def getOptions():

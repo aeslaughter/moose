@@ -14,6 +14,7 @@ from ContourFilter import ContourFilter
 from TransformFilter import TransformFilter
 from TubeFilter import TubeFilter
 from RotationalExtrusionFilter import RotationalExtrusionFilter
+from Calculator import Calculator
 
 from ClipperFilterBase import ClipperFilterBase
 from PlaneClipper import PlaneClipper

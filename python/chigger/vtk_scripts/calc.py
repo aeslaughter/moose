@@ -2,7 +2,7 @@
 import vtk
 
 # Input file and variable
-filename = 'mug_blocks_outg.e'
+filename = 'mug_blocks_out.e'
 nodal_var = 'convected'
 
 # Read Exodus Data
@@ -10,12 +10,18 @@ reader = vtk.vtkExodusIIReader()
 reader.SetFileName(filename)
 reader.UpdateInformation()
 reader.SetTimeStep(10)
-reader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1) # enables all NODAL variables
+reader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1)
 reader.Update()
 
 # Calculator
 calc = vtk.vtkArrayCalculator()
 calc.SetInputConnection(reader.GetOutputPort())
+calc.AddScalarArrayName(nodal_var)
+calc.SetFunction(nodal_var + "+2")
+calc.SetResultArrayName('foo')
+
+calc.Update()
+print calc.GetOutput(0)
 
 # Create Geometry
 geometry = vtk.vtkCompositeDataGeometryFilter()
@@ -25,9 +31,14 @@ geometry.Update()
 # Mapper
 mapper = vtk.vtkPolyDataMapper()
 mapper.SetInputConnection(geometry.GetOutputPort())
-mapper.SelectColorArray(nodal_var)
+mapper.SelectColorArray('foo')
+#mapper.SetScalarRange([2, 3])
 mapper.SetScalarModeToUsePointFieldData()
 mapper.InterpolateScalarsBeforeMappingOn()
+
+
+mapper.Update()
+print mapper.GetScalarRange() # seems like this should be [2,3]
 
 # Actor
 actor = vtk.vtkActor()

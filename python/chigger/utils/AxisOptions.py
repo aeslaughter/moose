@@ -13,7 +13,7 @@ from Options import Options
 
 def get_options():
     """
-    Retuns options for vtkAxis objects.
+    Returns options for vtkAxis objects.
     """
     opt = Options()
     opt.add('num_ticks', 5, "The number of tick marks to place on the axis.", vtype=int)
@@ -74,7 +74,8 @@ def set_options(vtkaxis, opt):
         else:
             vtkaxis.SetCustomTickPositions(None, None)
             vtkaxis.SetBehavior(vtk.vtkAxis.FIXED)
-            vtkaxis.SetRange(*lim)
+            scale = opt['axis_scale']
+            vtkaxis.SetRange(lim[0] * scale, lim[1] * scale)
             vtkaxis.RecalculateTickSpacing()
     else:
         vtkaxis.SetBehavior(vtk.vtkAxis.AUTO)
@@ -123,7 +124,3 @@ def set_options(vtkaxis, opt):
 
     if opt.isOptionValid('axis_point2'):
         vtkaxis.SetPoint2(*opt['axis_point2'])
-
-    if opt.isOptionValid('axis_scale'):
-        vtkaxis.SetScalingFactor(opt['axis_scale'])
-        vtkaxis.Update()
