@@ -1,0 +1,1 @@
+../tests/input/mug_blocks_out.e

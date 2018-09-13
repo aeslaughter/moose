@@ -70,4 +70,10 @@
     command = zero_range.py
     imagediff = 'zero_range.png'
   [../]
+
+  [./scale]
+    type = ImageDiff
+    command = colorbar_scale.py
+    imagediff = colorbar_scale.png
+  [../]
 []
