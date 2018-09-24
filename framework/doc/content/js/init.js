@@ -24,6 +24,8 @@
    //   onClose: function(el) {var icons = $(el).find('i'); $(icons[0]).text('keyboard_arrow_down');}
       // });
 
+    $('.sidenav').sidenav();
+
   }); // end of document ready
 })(jQuery); // end of jQuery name space
 
