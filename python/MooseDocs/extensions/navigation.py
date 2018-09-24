@@ -59,7 +59,10 @@ class NavigationExtension(components.Extension):
         for key, value in self.get('items').iteritems():
 
             li = html.Tag(ul, 'li')
-            if isinstance(value, str):
+            if isinstance(value, str) and value.endswith('|menu'):
+                self._buildMegaMenu(value[:-5])
+
+            elif isinstance(value, str):
                 href = value if value.startswith('http') else self._findPage(value)
                 html.Tag(li, 'a', href=href, string=unicode(key))
 
@@ -93,3 +96,9 @@ class NavigationExtension(components.Extension):
             li = html.Tag(ul, 'li')
             href = value if value.startswith('http') else self._findPage(value)
             html.Tag(li, 'a', href=href, string=unicode(key))
+
+    def _buildMegaMenu(self, path):
+        root = self.translator.current.root
+        node = root.findall(path)[0]
+
+        #print node.rend
