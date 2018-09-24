@@ -33,7 +33,7 @@ class PlotlyExtension(command.CommandExtension):
         self.addCommand(PlotlyScatter())
         renderer.add(ScatterToken, RenderScatter())
 
-    def postRender(self, root, config): #pylint: disable=unused-argument
+    def postRender(self, root):
         """Adds the plotly javascript library to the <head> tag."""
         path = "contrib/plotly/plotly.min.js"
         src = os.path.relpath(path, os.path.dirname(self.translator.current.local))

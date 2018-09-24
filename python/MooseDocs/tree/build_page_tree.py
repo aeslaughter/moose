@@ -156,6 +156,7 @@ def doc_tree(items):
         MooseDocs.PROJECT_FILES.update(mooseutils.git_ls_files(mooseutils.git_root_dir(root)))
 
         files = doc_import(root, content=value.get('content', None))
+
         for filename in files:
             key = tuple(filename.replace(root, '').strip('/').split('/'))
 

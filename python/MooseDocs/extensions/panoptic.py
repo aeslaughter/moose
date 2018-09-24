@@ -24,7 +24,7 @@ class PanopticExtension(command.CommandExtension):
     def extend(self, reader, renderer):
         pass
 
-    def postTokenize(self, ast, config): #pylint: disable=unused-argument
+    def postTokenize(self, ast):
         if ast.is_root:
             shortcuts = self.get('shortcuts', dict())
             for key, value in shortcuts.iteritems():

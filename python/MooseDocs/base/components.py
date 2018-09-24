@@ -19,10 +19,10 @@ class Extension(mixins.ConfigObject, mixins.TranslatorObject):
     and rendering. Within your extension one of the following methods exist it will be called
     automatically.
 
-        preTokenize(ast, config)
-        postTokenize(ast, config)
-        preRender(root, config)
-        postRender(root, config)
+        preTokenize(ast)
+        postTokenize(ast)
+        preRender(root)
+        postRender(root)
     """
     def __init__(self, **kwargs):
         mixins.ConfigObject.__init__(self, **kwargs)

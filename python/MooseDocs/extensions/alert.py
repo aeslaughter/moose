@@ -57,11 +57,10 @@ class AlertCommand(command.CommandComponent):
         else:
             prefix = self.extension.get('use-title-prefix', True)
 
-
-
         return AlertToken(parent, brand=brand, prefix=prefix, title=title_root)
 
 class RenderAlertToken(components.RenderComponent):
+
 
     def createTitle(self, parent, token):
 
@@ -108,4 +107,5 @@ class RenderAlertToken(components.RenderComponent):
         return html.Tag(content, 'p')
 
     def createLatex(self, token, parent):
+        print 'hello...'
         pass

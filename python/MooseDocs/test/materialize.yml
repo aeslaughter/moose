@@ -23,6 +23,13 @@ Extensions:
         type: MooseDocs.extensions.floats
     autolink:
         type: MooseDocs.extensions.autolink
+    navigation:
+        type: MooseDocs.extensions.navigation
+        items:
+            Home: https://mooseframework.org
+            Extensions:
+                Core: core.md
+
 
 Translator:
     type: MooseDocs.base.Translator

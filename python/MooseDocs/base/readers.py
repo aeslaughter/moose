@@ -64,13 +64,13 @@ class Reader(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObjec
         self.reinit()
 
         # Pre-tokenize
-        self.translator.executeExtensionFunction('preTokenize', root, config)
+        self.translator.executeExtensionFunction('preTokenize', root)
 
         # Tokenize
         self.__lexer.tokenize(root, self.__lexer.grammar(group), content)
 
         # Post-tokenize
-        self.translator.executeExtensionFunction('postTokenize', root, config)
+        self.translator.executeExtensionFunction('postTokenize', root)
 
         # Report errors
         for token in anytree.PreOrderIter(root):

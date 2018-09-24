@@ -78,9 +78,9 @@ class Renderer(mixins.ConfigObject, mixins.TranslatorObject, mixins.ComponentObj
         config = self.getConfig()
         root = self.createRoot(config)
         self.reinit()
-        self.translator.executeExtensionFunction('preRender', root, config)
+        self.translator.executeExtensionFunction('preRender', root)
         self.convert(root, ast, config)
-        self.translator.executeExtensionFunction('postRender', root, config)
+        self.translator.executeExtensionFunction('postRender', root)
         return root
 
     def process(self, parent, token):
@@ -236,7 +236,7 @@ class MaterializeRenderer(HTMLRenderer):
         wrap = html.Tag(body, 'div', class_='page-wrap')
 
         header = html.Tag(wrap, 'header')
-        nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
+        nav = None#html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
         main = html.Tag(wrap, 'main', class_='main')
 
         container = html.Tag(main, 'div', class_="container")
@@ -245,7 +245,7 @@ class MaterializeRenderer(HTMLRenderer):
         self._addHead(config, head, self.translator.current)
         self._addRepo(config, nav, self.translator.current)
         self._addName(config, nav, self.translator.current)
-        self._addNavigation(config, nav, self.translator.current)
+        #self._addNavigation(config, nav, self.translator.current)
         self._addBreadcrumbs(config, container, self.translator.current)
         self._addSearch(config, nav, self.translator.current)
 
@@ -416,13 +416,13 @@ class MaterializeRenderer(HTMLRenderer):
                     add_to_nav(key1, value1, self.__navigation)
 
         # Hamburger icon
-        hamburger = html.Tag(nav, 'a', href=u"#", class_="button-collapse")
-        hamburger['data-activates'] = "moose-mobile-menu"
-        html.Tag(hamburger, 'i', class_="material-icons", string=u'menu')
+        #hamburger = html.Tag(nav, 'a', href=u"#", class_="button-collapse")
+        #hamburger['data-activates'] = "moose-mobile-menu"
+        #html.Tag(hamburger, 'i', class_="material-icons", string=u'menu')
 
         # Build menu
         top_ul = html.Tag(nav, 'ul', id="nav-mobile", class_="right hide-on-med-and-down")
-        side_ul = html.Tag(nav, 'ul', id="moose-mobile-menu", class_="side-nav")
+        #side_ul = html.Tag(nav, 'ul', id="moose-mobile-menu", class_="side-nav")
         def menu_helper(ul): #pylint: disable=invalid-name
             """Add menu items to the supplied ul tag."""
 
@@ -442,10 +442,10 @@ class MaterializeRenderer(HTMLRenderer):
                     a = html.Tag(top_li, 'a', class_="dropdown-button", href="#!",
                                  string=unicode(key1))
                     a['data-activates'] = id_
-                    a['data-constrainWidth'] = "false"
+                    #a['data-constrainWidth'] = "false"
                     html.Tag(a, "i", class_='material-icons right', string=u'arrow_drop_down')
 
-                    bot_ul = html.Tag(nav, 'ul', id_=id_, class_='dropdown-content')
+                    bot_ul = html.Tag(nav.parent, 'ul', id_=id_, class_='dropdown-content')
                     for key2, node in value1.iteritems():
                         bot_li = html.Tag(bot_ul, 'li')
                         if isinstance(node, str):
@@ -455,7 +455,7 @@ class MaterializeRenderer(HTMLRenderer):
                             a = html.Tag(bot_li, 'a', href=href, string=unicode(key2))
 
         menu_helper(top_ul)
-        menu_helper(side_ul)
+        #menu_helper(side_ul)
 
     def _addSearch(self, config, nav, root_page): #pylint: disable=no-self-use
         """
