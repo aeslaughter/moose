@@ -32,7 +32,8 @@ class PageNodeBase(base.NodeBase, mixins.TranslatorObject):
     TODO: combine with LocationNodeBase, I don't remember why the two classes.
     """
 
-    PROPERTIES = [base.Property('source', ptype=str)]
+    PROPERTIES = [base.Property('source', ptype=str),
+                  base.Property('active', ptype=bool, default=True]
     COLOR = None
 
     def __init__(self, *args, **kwargs):

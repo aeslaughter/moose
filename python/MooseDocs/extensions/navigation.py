@@ -4,7 +4,7 @@ import anytree
 import logging
 from MooseDocs.base import components, renderers
 from MooseDocs.common import exceptions
-from MooseDocs.tree import html
+from MooseDocs.tree import html, page
 
 LOG = logging.getLogger(__name__)
 
@@ -24,8 +24,14 @@ class NavigationExtension(components.Extension):
         config['sidenav'] = (True, "Enable/disable the side navigation for small screens.")
         return config
 
+    def preRender(self, root):
+        # mark nodes with .menu.md as inactive
+
     def postRender(self, root):
         """Called after rendering is complete."""
+
+        if self.translator.current.name == 'maga.md':
+            return
 
         if isinstance(self.translator.renderer, renderers.MaterializeRenderer):
             header = anytree.search.find_by_attr(root, 'header')
@@ -101,4 +107,10 @@ class NavigationExtension(components.Extension):
         root = self.translator.current.root
         node = root.findall(path)[0]
 
-        #print node.rend
+        if self.translator.current.name != node.name:
+            print self.translator.current.name, node.name
+        #md = page.MarkdownNode(None, source=node.source)
+        #md.init(self.translator)
+        #ast = md.tokenize()
+        #md.render(ast)
+        #print md.result

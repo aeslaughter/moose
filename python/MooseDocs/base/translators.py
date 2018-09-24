@@ -242,7 +242,8 @@ class Translator(mixins.ConfigObject):
                                 array.append(entry)
 
         # Complete list of nodes
-        nodes = [n for n in anytree.PreOrderIter(self.root)]
+        func = lambda n: n.active
+        nodes = [n for n in anytree.PreOrderIter(self.root, filter_=func)]
 
         # Serial
         if num_threads == 1:
