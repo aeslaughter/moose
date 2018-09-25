@@ -236,7 +236,7 @@ class MaterializeRenderer(HTMLRenderer):
         wrap = html.Tag(body, 'div', class_='page-wrap')
 
         header = html.Tag(wrap, 'header')
-        nav = None#html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
+        nav = None
         main = html.Tag(wrap, 'main', class_='main')
 
         container = html.Tag(main, 'div', class_="container")
@@ -245,7 +245,6 @@ class MaterializeRenderer(HTMLRenderer):
         self._addHead(config, head, self.translator.current)
         self._addRepo(config, nav, self.translator.current)
         self._addName(config, nav, self.translator.current)
-        #self._addNavigation(config, nav, self.translator.current)
         self._addBreadcrumbs(config, container, self.translator.current)
         #self._addSearch(config, nav, self.translator.current)
 
@@ -297,15 +296,11 @@ class MaterializeRenderer(HTMLRenderer):
 
         def rel(path):
             """Helper to create relative paths for js/css dependencies."""
-            if self.translator.current:
-                return os.path.relpath(path, os.path.dirname(self.translator.current.local))
-            return '/' + path
+            return self.translator.relpath(path)
 
         html.Tag(head, 'meta', close=False, charset="UTF-8")
         html.Tag(head, 'link', href=rel("contrib/materialize/materialize.min.css"), type="text/css",
                  rel="stylesheet", media="screen,projection")
-        html.Tag(head, 'link', href=rel("contrib/megamenu/megamenu.css"), type="text/css",
-                 rel="stylesheet")
         html.Tag(head, 'link', href=rel("contrib/katex/katex.min.css"), type="text/css",
                  rel="stylesheet")
         html.Tag(head, 'link', href=rel("contrib/prism/prism.min.css"), type="text/css",
@@ -314,8 +309,6 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src=rel("contrib/jquery/jquery.min.js"))
         html.Tag(head, 'script', type="text/javascript",
                  src=rel("contrib/materialize/materialize.min.js"))
-        html.Tag(head, 'script', type="text/javascript",
-                 src=rel("contrib/megamenu/megamenu.js"))
 
         html.Tag(head, 'script', type="text/javascript",
                  src=rel("contrib/clipboard/clipboard.min.js"))

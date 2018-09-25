@@ -58,7 +58,7 @@ Screen style's
 
 .menu-mobile:after {
     content: "\f394";
-    font-family: "Material Icons";
+    font-family: "Ionicons";
     font-size: 2.5rem;
     padding: 0;
     float: right;
@@ -71,7 +71,7 @@ Screen style's
 
 .menu-dropdown-icon:before {
     content: "\f489";
-    font-family: "Material Icons";
+    font-family: "Ionicons";
     display: none;
     cursor: pointer;
     float: right;

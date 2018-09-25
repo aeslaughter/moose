@@ -1,4 +1,4 @@
-- [Getting Started](getting_started.menu.md)
+- Getting Started
 
   - Basic Installation
 

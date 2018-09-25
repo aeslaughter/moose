@@ -30,28 +30,35 @@ class NavigationExtension(components.Extension):
 
             # TODO: handle legacy menu items defined in renderer
 
-            menu = self.get('menu')
+            menu = self.get('menu', None)
+            header = anytree.search.find_by_attr(root, 'header')
+
             if isinstance(menu, str) and menu.endswith('menu.md'):
-                self._addMegaMenu(menu)
+                self._addMegaMenu(header, menu)
 
             elif isinstance(menu, dict):
-                header = anytree.search.find_by_attr(self.translator.current.root, 'header')
                 nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
                 self._addTopNavigation(header, nav)
                 self._addSideNavigation(header, nav)
 
-    def _addMegaMenu(self, filename):
+    def _addMegaMenu(self, header, filename):
         """Create a "mega menu" by parsing the *.menu.md file."""
-        header = anytree.search.find_by_attr(self.translator.current.root, 'header')
         div = html.Tag(header, 'div', class_='menu-container')
         menu = html.Tag(div, 'div', class_='menu')
 
-        root = self.translator.current.root
-        node = root.findall(filename)[0]
+        node = self.translator.current.root.findall(filename)[0]
         node.read()
         ast = tokens.Token(None)
         self.translator.reader.parse(ast, node.content)
         self.translator.renderer.process(menu, ast)
+
+        head = anytree.search.find_by_attr(header.root, 'head')
+        html.Tag(head, 'link', href=self.translator.relpath("contrib/megamenu/megamenu.css"),
+                 type="text/css", rel="stylesheet")
+
+        html.Tag(head, 'script', type="text/javascript",
+                 src=self.translator.relpath("contrib/megamenu/megamenu.js"))
+
 
     def _addTopNavigation(self, nav):
         """Create navigation in the top bar."""

@@ -272,6 +272,13 @@ class Translator(mixins.ConfigObject):
 
         self.renderer.postExecute()
 
+    def relpath(self, path):
+        """Helper to create relative paths for js/css dependencies."""
+        if self.current:
+            return os.path.relpath(path, os.path.dirname(self.current.local))
+        return '/' + path
+
+
     def __assertInitialize(self):
         """Helper for asserting initialize status."""
         if not self.__initialized:
