@@ -247,7 +247,7 @@ class MaterializeRenderer(HTMLRenderer):
         self._addName(config, nav, self.translator.current)
         #self._addNavigation(config, nav, self.translator.current)
         self._addBreadcrumbs(config, container, self.translator.current)
-        self._addSearch(config, nav, self.translator.current)
+        #self._addSearch(config, nav, self.translator.current)
 
         row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="moose-content")

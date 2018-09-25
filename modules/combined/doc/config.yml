@@ -26,6 +26,9 @@ Renderer:
     google_analytics: True
 
 Extensions:
+    navigation:
+        type: MooseDocs.extensions.navigation
+        items: !include modules/combined/doc/navigation.yml
     appsyntax:
         type: MooseDocs.extensions.appsyntax
         executable: ${MOOSE_DIR}/modules/combined

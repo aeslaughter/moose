@@ -4,7 +4,7 @@ import anytree
 import logging
 from MooseDocs.base import components, renderers
 from MooseDocs.common import exceptions
-from MooseDocs.tree import html, page
+from MooseDocs.tree import tokens, html, page
 
 LOG = logging.getLogger(__name__)
 
@@ -24,14 +24,8 @@ class NavigationExtension(components.Extension):
         config['sidenav'] = (True, "Enable/disable the side navigation for small screens.")
         return config
 
-    def preRender(self, root):
-        # mark nodes with .menu.md as inactive
-
     def postRender(self, root):
         """Called after rendering is complete."""
-
-        if self.translator.current.name == 'maga.md':
-            return
 
         if isinstance(self.translator.renderer, renderers.MaterializeRenderer):
             header = anytree.search.find_by_attr(root, 'header')
@@ -65,8 +59,8 @@ class NavigationExtension(components.Extension):
         for key, value in self.get('items').iteritems():
 
             li = html.Tag(ul, 'li')
-            if isinstance(value, str) and value.endswith('|menu'):
-                self._buildMegaMenu(value[:-5])
+            if isinstance(value, str) and value.endswith('.menu.md'):
+                self._buildMegaMenu(li, key, value)
 
             elif isinstance(value, str):
                 href = value if value.startswith('http') else self._findPage(value)
@@ -103,14 +97,20 @@ class NavigationExtension(components.Extension):
             href = value if value.startswith('http') else self._findPage(value)
             html.Tag(li, 'a', href=href, string=unicode(key))
 
-    def _buildMegaMenu(self, path):
+    def _buildMegaMenu(self, li, key, path):
         root = self.translator.current.root
         node = root.findall(path)[0]
 
-        if self.translator.current.name != node.name:
-            print self.translator.current.name, node.name
-        #md = page.MarkdownNode(None, source=node.source)
-        #md.init(self.translator)
-        #ast = md.tokenize()
-        #md.render(ast)
-        #print md.result
+        id_ = uuid.uuid4()
+        a = html.Tag(li, 'a', class_='modal-trigger', href='#', string=unicode(key))
+        a['data-target'] = id_
+
+        header = anytree.search.find_by_attr(li.root, 'header')
+        modal = html.Tag(header, 'div', class_='modal moose-mega-menu',
+                         id_=id_)
+        modal_content = html.Tag(modal, 'div', class_='modal-content')
+
+        node.read()
+        ast = tokens.Token(None)
+        self.translator.reader.parse(ast, node.content)
+        self.translator.renderer.process(modal_content, ast)

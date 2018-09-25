@@ -23,7 +23,11 @@
    //   onOpen: function(el) {var icons = $(el).find('i'); $(icons[0]).text('keyboard_arrow_up');},
    //   onClose: function(el) {var icons = $(el).find('i'); $(icons[0]).text('keyboard_arrow_down');}
       // });
-
+      $('.moose-mega-menu').modal({
+          startingTop: '32px',
+          endingTop: '64px',
+          opacity: '0.0'
+      });
     $('.sidenav').sidenav();
 
   }); // end of document ready

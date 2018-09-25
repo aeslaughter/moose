@@ -28,8 +28,8 @@ class ConfigExtension(command.CommandExtension):
     def extend(self, reader, renderer):
         self.addCommand(ConfigRendererCommand())
 
-    def preRender(self, root, config): #pylint: disable=unused-argument
-        config.update(self.local_config)
+    #def preRender(self, root, config): #pylint: disable=unused-argument
+    #    config.update(self.local_config)
 
 class ConfigRendererCommand(command.CommandComponent):
     COMMAND = 'config'
