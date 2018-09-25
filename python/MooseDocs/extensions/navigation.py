@@ -19,30 +19,46 @@ class NavigationExtension(components.Extension):
     @staticmethod
     def defaultConfig():
         config = components.Extension.defaultConfig()
-        config['items'] = (dict(), "The items to add to the navigation bar.")
-        config['topnav'] = (True, "Enable/disable the navigation in the top navigation bar.")
-        config['sidenav'] = (True, "Enable/disable the side navigation for small screens.")
+        config['menu'] = (None, "Navigation items, this can either be a menu.md file or a dict. " \
+                          "The former creates a 'mega menu' and the later uses dropdowns.")
         return config
 
     def postRender(self, root):
         """Called after rendering is complete."""
 
         if isinstance(self.translator.renderer, renderers.MaterializeRenderer):
-            header = anytree.search.find_by_attr(root, 'header')
-            nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
 
-            if self.get('topnav'):
+            # TODO: handle legacy menu items defined in renderer
+
+            menu = self.get('menu')
+            if isinstance(menu, str) and menu.endswith('menu.md'):
+                self._addMegaMenu(menu)
+
+            elif isinstance(menu, dict):
+                header = anytree.search.find_by_attr(self.translator.current.root, 'header')
+                nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
                 self._addTopNavigation(header, nav)
-
-            if self.get('sidenav'):
                 self._addSideNavigation(header, nav)
 
-    def _addTopNavigation(self, header, nav):
+    def _addMegaMenu(self, filename):
+        """Create a "mega menu" by parsing the *.menu.md file."""
+        header = anytree.search.find_by_attr(self.translator.current.root, 'header')
+        div = html.Tag(header, 'div', class_='menu-container')
+        menu = html.Tag(div, 'div', class_='menu')
+
+        root = self.translator.current.root
+        node = root.findall(filename)[0]
+        node.read()
+        ast = tokens.Token(None)
+        self.translator.reader.parse(ast, node.content)
+        self.translator.renderer.process(menu, ast)
+
+    def _addTopNavigation(self, nav):
         """Create navigation in the top bar."""
         ul = html.Tag(nav, 'ul', class_="right hide-on-med-and-down")
         self._createNavigation(ul)
 
-    def _addSideNavigation(self, header, nav):
+    def _addSideNavigation(self, nav):
         """Adds the hamburger menu for small screens."""
         id_ = uuid.uuid4()
 
@@ -59,10 +75,7 @@ class NavigationExtension(components.Extension):
         for key, value in self.get('items').iteritems():
 
             li = html.Tag(ul, 'li')
-            if isinstance(value, str) and value.endswith('.menu.md'):
-                self._buildMegaMenu(li, key, value)
-
-            elif isinstance(value, str):
+            if isinstance(value, str):
                 href = value if value.startswith('http') else self._findPage(value)
                 html.Tag(li, 'a', href=href, string=unicode(key))
 
@@ -96,21 +109,3 @@ class NavigationExtension(components.Extension):
             li = html.Tag(ul, 'li')
             href = value if value.startswith('http') else self._findPage(value)
             html.Tag(li, 'a', href=href, string=unicode(key))
-
-    def _buildMegaMenu(self, li, key, path):
-        root = self.translator.current.root
-        node = root.findall(path)[0]
-
-        id_ = uuid.uuid4()
-        a = html.Tag(li, 'a', class_='modal-trigger', href='#', string=unicode(key))
-        a['data-target'] = id_
-
-        header = anytree.search.find_by_attr(li.root, 'header')
-        modal = html.Tag(header, 'div', class_='modal moose-mega-menu',
-                         id_=id_)
-        modal_content = html.Tag(modal, 'div', class_='modal-content')
-
-        node.read()
-        ast = tokens.Token(None)
-        self.translator.reader.parse(ast, node.content)
-        self.translator.renderer.process(modal_content, ast)

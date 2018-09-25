@@ -304,6 +304,8 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'meta', close=False, charset="UTF-8")
         html.Tag(head, 'link', href=rel("contrib/materialize/materialize.min.css"), type="text/css",
                  rel="stylesheet", media="screen,projection")
+        html.Tag(head, 'link', href=rel("contrib/megamenu/megamenu.css"), type="text/css",
+                 rel="stylesheet")
         html.Tag(head, 'link', href=rel("contrib/katex/katex.min.css"), type="text/css",
                  rel="stylesheet")
         html.Tag(head, 'link', href=rel("contrib/prism/prism.min.css"), type="text/css",
@@ -312,6 +314,8 @@ class MaterializeRenderer(HTMLRenderer):
         html.Tag(head, 'script', type="text/javascript", src=rel("contrib/jquery/jquery.min.js"))
         html.Tag(head, 'script', type="text/javascript",
                  src=rel("contrib/materialize/materialize.min.js"))
+        html.Tag(head, 'script', type="text/javascript",
+                 src=rel("contrib/megamenu/megamenu.js"))
 
         html.Tag(head, 'script', type="text/javascript",
                  src=rel("contrib/clipboard/clipboard.min.js"))
