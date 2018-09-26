@@ -1,5 +1,6 @@
 :root {
     --inl-blue: rgba(0, 88, 151, 1.0);
+    --inl-blue-light: rgba(0, 104, 179, 1.0);
     --dark-blue: rgba(0, 44, 78, 1.0);
     --gray: rgba(117, 117, 117);
     --alert-error: #ef5350;
@@ -12,7 +13,7 @@
     --alert-construction-content: rgba(255, 114, 33, 0.1);
 }
 
-html {
+main {
     line-height: 1.5;
     color: rgba(0,0,0,1.0);
     font-size: 16px;
@@ -1018,4 +1019,60 @@ details[open] .moose-section-content {
     font-weight:400;
     margin-top:0;
     margin-bottom: 8px;
+}
+
+/* MEGA MENU */
+.menu-dropdown-icon:before{
+    content: "arrow_drop_down";
+    font-family: 'Material Icons';
+    background: transparent;
+    color:white;
+}
+
+.menu-mobile:after {
+    content: "menu";
+    font-family: 'Material Icons';
+    color: white;
+}
+
+.menu-container{
+    width: 100%;
+    background: var(--inl-blue);
+}
+
+.menu > ul > li {
+    color:white;
+    background: var(--inl-blue);
+    font-weight:300;
+    font-size:110%;
+}
+
+.menu > ul > li:hover {
+    color:black;
+    /*background: var(--inl-blue-light);*/
+}
+
+.menu-container .menu{
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.menu-container .menu > ul > li > p{
+    text-decoration: none;
+    padding: 1.5em 3em;
+    display: block;
+}
+
+.menu > ul > li > ul{
+    font-weight:500;
+    font-size:110%;
+}
+
+.menu > ul > li > ul > li > ul > li{
+    padding:0;
+}
+
+.menu > ul > li > ul > li > ul{
+    font-weight:300;
+    font-size:100%;
 }

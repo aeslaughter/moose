@@ -3,7 +3,7 @@ import uuid
 import anytree
 import logging
 from MooseDocs.base import components, renderers
-from MooseDocs.common import exceptions
+from MooseDocs.common import exceptions, insert_node_before, insert_node_after
 from MooseDocs.tree import tokens, html, page
 
 LOG = logging.getLogger(__name__)
@@ -52,12 +52,22 @@ class NavigationExtension(components.Extension):
         self.translator.reader.parse(ast, node.content)
         self.translator.renderer.process(menu, ast)
 
-        head = anytree.search.find_by_attr(header.root, 'head')
-        html.Tag(head, 'link', href=self.translator.relpath("contrib/megamenu/megamenu.css"),
-                 type="text/css", rel="stylesheet")
+        for child in menu.children:
+            child.addClass('moose-mega-menu-0')
 
-        html.Tag(head, 'script', type="text/javascript",
-                 src=self.translator.relpath("contrib/megamenu/megamenu.js"))
+        # Insert JS before jQuery
+        func = lambda n: n.get('src', '').endswith('jquery.min.js')
+        jquery = anytree.search.find(header.root, filter_=func)
+        megamenu_js = html.Tag(None, 'script', type="text/javascript",
+                               src=self.translator.relpath("contrib/megamenu/megamenu.js"))
+        insert_node_after(megamenu_js, jquery)
+
+        # Insert CSS after moose.css
+        func = lambda n: n.get('href', '').endswith('moose.css')
+        moose = anytree.search.find(header.root, filter_=func)
+        megamenu_css = html.Tag(None, 'link', type="text/css", rel="stylesheet",
+                                href=self.translator.relpath("contrib/megamenu/megamenu.css"))
+        insert_node_before(megamenu_css, moose)
 
 
     def _addTopNavigation(self, nav):

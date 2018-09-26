@@ -463,7 +463,6 @@ class RenderOrderedList(components.RenderComponent):
 
     def createMaterialize(self, token, parent): #pylint: disable=no-self-use
         tag = self.createHTML(token, parent)
-        tag.addClass('browser-default')
         tag['start'] = token.start
         return tag
 
@@ -476,7 +475,6 @@ class RenderUnorderedList(components.RenderComponent):
 
     def createMaterialize(self, token, parent): #pylint: disable=no-self-use
         tag = self.createHTML(token, parent)
-        tag.addClass('browser-default')
         return tag
 
     def createLatex(self, token, parent): #pylint: disable=no-self-use,unused-argument
