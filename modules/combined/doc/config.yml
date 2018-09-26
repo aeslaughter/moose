@@ -22,13 +22,17 @@ Renderer:
     name: MOOSE
     repo: https://github.com/idaholab/moose
     home: https://www.mooseframework.org
-    navigation: !include modules/combined/doc/navigation.yml
     google_analytics: True
 
 Extensions:
     navigation:
         type: MooseDocs.extensions.navigation
-        menu: main.menu.md
+        menu:
+            Getting Started: getting_started.menu.md
+            Documentation: documentation.menu.md
+            Help: help.menu.md
+            Wiki (deprecated): https://www.mooseframework.org/old/wiki
+            News: newsletter/index.md
     appsyntax:
         type: MooseDocs.extensions.appsyntax
         executable: ${MOOSE_DIR}/modules/combined

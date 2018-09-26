@@ -23,52 +23,38 @@ class NavigationExtension(components.Extension):
                           "The former creates a 'mega menu' and the later uses dropdowns.")
         return config
 
+    def extend(self, reader, renderer):
+
+        menu = self.get('menu')
+        if menu is None:
+            msg = "The navigation setting in the MaterializeRenderer is deprecated, " \
+                  "please update your code to use the 'menu' setting within the " \
+                  "MooseDocs.extensions.navigation extension."
+            LOG.warning(msg)
+            self.update(menu=self.translator.renderer.get('navigation', None))
+
     def postRender(self, root):
         """Called after rendering is complete."""
 
         if isinstance(self.translator.renderer, renderers.MaterializeRenderer):
-
-            # TODO: handle legacy menu items defined in renderer
-
-            menu = self.get('menu', None)
             header = anytree.search.find_by_attr(root, 'header')
+            nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
+            self._addTopNavigation(nav)
+            self._addSideNavigation(nav)
 
-            if isinstance(menu, str) and menu.endswith('menu.md'):
-                self._addMegaMenu(header, menu)
-
-            elif isinstance(menu, dict):
-                nav = html.Tag(html.Tag(header, 'nav'), 'div', class_='nav-wrapper container')
-                self._addTopNavigation(header, nav)
-                self._addSideNavigation(header, nav)
-
-    def _addMegaMenu(self, header, filename):
+    def _addMegaMenu(self, parent, filename):
         """Create a "mega menu" by parsing the *.menu.md file."""
-        div = html.Tag(header, 'div', class_='menu-container')
-        menu = html.Tag(div, 'div', class_='menu')
+
+        id_ = uuid.uuid4()
+        header = anytree.search.find_by_attr(parent.root, 'header')
+        div = html.Tag(header, 'div', id_=id_, class_='moose-mega-menu-content')
+        parent['data-target']  = id_
 
         node = self.translator.current.root.findall(filename)[0]
         node.read()
         ast = tokens.Token(None)
         self.translator.reader.parse(ast, node.content)
-        self.translator.renderer.process(menu, ast)
-
-        for child in menu.children:
-            child.addClass('moose-mega-menu-0')
-
-        # Insert JS before jQuery
-        func = lambda n: n.get('src', '').endswith('jquery.min.js')
-        jquery = anytree.search.find(header.root, filter_=func)
-        megamenu_js = html.Tag(None, 'script', type="text/javascript",
-                               src=self.translator.relpath("contrib/megamenu/megamenu.js"))
-        insert_node_after(megamenu_js, jquery)
-
-        # Insert CSS after moose.css
-        func = lambda n: n.get('href', '').endswith('moose.css')
-        moose = anytree.search.find(header.root, filter_=func)
-        megamenu_css = html.Tag(None, 'link', type="text/css", rel="stylesheet",
-                                href=self.translator.relpath("contrib/megamenu/megamenu.css"))
-        insert_node_before(megamenu_css, moose)
-
+        self.translator.renderer.process(div, ast)
 
     def _addTopNavigation(self, nav):
         """Create navigation in the top bar."""
@@ -84,15 +70,21 @@ class NavigationExtension(components.Extension):
         html.Tag(a, 'i', class_="material-icons", string=u'menu')
 
         ul = html.Tag(nav, 'ul', class_="sidenav", id_=id_)
-        self._createNavigation(ul)
+        self._createNavigation(ul, mega=False)
 
-    def _createNavigation(self, ul):
+    def _createNavigation(self, ul, mega=True):
         """Helper for creating navigation lists."""
 
-        for key, value in self.get('items').iteritems():
+        for key, value in self.get('menu').iteritems():
 
             li = html.Tag(ul, 'li')
-            if isinstance(value, str):
+            if isinstance(value, str) and value.endswith('menu.md') and mega:
+                li['class'] = 'moose-mega-menu-trigger'
+                a = html.Tag(li, 'a', string=unicode(key))
+                html.Tag(a, 'i', class_='material-icons right', string=u'arrow_drop_down')
+                self._addMegaMenu(li, value)
+
+            elif isinstance(value, str):
                 href = value if value.startswith('http') else self._findPage(value)
                 html.Tag(li, 'a', href=href, string=unicode(key))
 

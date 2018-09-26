@@ -25,7 +25,9 @@ Extensions:
         type: MooseDocs.extensions.autolink
     navigation:
         type: MooseDocs.extensions.navigation
-        menu: mega.menu.md
+        menu:
+            Getting Started: mega.menu.md
+            Google: https://google.com
 
 Translator:
     type: MooseDocs.base.Translator

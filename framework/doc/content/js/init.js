@@ -22,14 +22,45 @@
    //   onOpen: function(el) {var icons = $(el).find('i'); $(icons[0]).text('keyboard_arrow_up');},
    //   onClose: function(el) {var icons = $(el).find('i'); $(icons[0]).text('keyboard_arrow_down');}
       // });
-      $('.moose-mega-menu').modal({
-          startingTop: '32px',
-          endingTop: '64px',
-          opacity: '0.0'
-      });
     $('.sidenav').sidenav();
+
+    $('.moose-mega-menu-trigger, .moose-mega-menu-content').hover(
+        function(){
+            inMooseMegaMenuTrigger(this);
+        },
+        function(){
+            outMooseMegaMenuTrigger(this);
+        }
+    );
   }); // end of document ready
 })(jQuery); // end of jQuery name space
+
+function getMooseMegaMenu(element)
+{
+    var menu;
+    if (element.classList.contains('moose-mega-menu-content')){
+        menu = element;
+    }
+    else{
+        var id = element.getAttribute('data-target')
+        var menu = document.getElementById(id)
+    }
+    return menu;
+}
+
+function inMooseMegaMenuTrigger(element)
+{
+    var menu = getMooseMegaMenu(element);
+    menu.style.display = 'block'
+}
+
+function outMooseMegaMenuTrigger(element)
+{
+    var menu = getMooseMegaMenu(element);
+    menu.style.display = 'none'
+}
+
+
 
 var options = {
   shouldSort: true,
