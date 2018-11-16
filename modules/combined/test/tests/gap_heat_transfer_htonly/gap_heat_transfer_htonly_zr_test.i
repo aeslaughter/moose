@@ -122,7 +122,7 @@
     variable = temp
     boundary = 2
     diffusivity = thermal_conductivity
-    execute_on = 'initial timestep_end'
+    execute_on = 'timestep_end'
   [../]
 
   [./flux_right]
@@ -130,7 +130,7 @@
     variable = temp
     boundary = 3
     diffusivity = thermal_conductivity
-    execute_on = 'initial timestep_end'
+    execute_on = 'timestep_end'
   [../]
 []
 
