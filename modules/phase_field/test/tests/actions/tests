@@ -52,6 +52,7 @@
     type = Exodiff
     input = 'conserved_split_1var_variable_mob.i'
     exodiff = 'conserved_split_1var_variable_mob_out.e'
+    abs_zero = 1e-9
   [../]
   [./both_split_2vars]
     # Test conserved and nonconserved actions with split solve
