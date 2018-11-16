@@ -20,12 +20,14 @@
       exodiff = 'mobility_derivative_split_coupled_test_out.e'
   [../]
   [./mobility_derivative_direct_test]
+    skip = '#12502'
     type = 'Exodiff'
     input = 'mobility_derivative_direct_test.i'
     exodiff = 'mobility_derivative_direct_test_out.e'
     compiler = 'GCC CLANG'
   [../]
   [./mobility_derivative_direct_coupled_test]
+    skip = '#12502'
     type = 'Exodiff'
     input = 'mobility_derivative_direct_coupled_test.i'
     exodiff = 'mobility_derivative_direct_coupled_test_oversample.e'
