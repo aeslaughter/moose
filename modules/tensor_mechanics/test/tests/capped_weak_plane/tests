@@ -110,6 +110,7 @@
     type = Exodiff
     input = 'pull_and_shear_1step.i'
     exodiff = 'pull_and_shear_1step.e'
+    abs_zero = 1E-4
   [../]
   [./pull_and_shear]
     type = Exodiff
