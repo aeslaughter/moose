@@ -27,5 +27,6 @@
     input = 'inclusion.i'
     exodiff = 'inclusion_out.e'
     fparser_jit = True
+    abs_zero = 1e-8
   [../]
 []
