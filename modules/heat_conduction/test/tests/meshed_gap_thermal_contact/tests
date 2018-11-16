@@ -14,6 +14,7 @@
   [../]
 
   [./annulus]
+    skip = '#12499'
     type = 'Exodiff'
     input = 'meshed_annulus_thermal_contact.i'
     exodiff = 'meshed_annulus_thermal_contact_out.e'
