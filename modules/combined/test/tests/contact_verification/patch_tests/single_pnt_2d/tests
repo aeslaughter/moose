@@ -2,6 +2,7 @@
   issues = '#716'
   design = 'syntax/Contact/index.md source/MechanicalContactConstraint.md'
   [./glued_kin]
+    skip = '#12508'
     type = 'CSVDiff'
     input = 'single_point_2d.i'
     csvdiff = 'single_point_2d_out_glued_kin.csv'
