@@ -4,6 +4,7 @@ import vtk
 file0 = 'input_out.e'
 file1 = 'input_out.e-s002'
 variable = 'u'
+cells = 40
 range = [0, 10]
 
 # COARSE
@@ -27,10 +28,11 @@ mapper0.SetScalarRange(*range)
 
 actor0 = vtk.vtkActor()
 actor0.SetMapper(mapper0)
+actor0.GetProperty().SetEdgeVisibility(True)
 
 renderer0 = vtk.vtkRenderer()
 renderer0.AddViewProp(actor0)
-renderer0.SetViewport(0, 0, 0.5, 1)
+renderer0.SetViewport(0, 0, 0.33, 1)
 
 # FINE
 reader1 = vtk.vtkExodusIIReader()
@@ -53,15 +55,65 @@ mapper1.SetScalarRange(*range)
 
 actor1 = vtk.vtkActor()
 actor1.SetMapper(mapper1)
+actor1.GetProperty().SetEdgeVisibility(True)
 
 renderer1 = vtk.vtkRenderer()
 renderer1.AddViewProp(actor1)
-renderer1.SetViewport(0.5, 0, 1, 1)
+renderer1.SetViewport(0.66, 0, 1, 1)
 
+##############################################################################
+# PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
+
+# Get the data to be interpolated
+source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # data from file 0
+print source_data.GetPointData() # this is the data I want to interpolate
+
+# Build the structure to interpolate on to (this doesn't seem to work)
+output_grid = vtk.vtkUnstructuredGrid()
+reader1.GetOutput().GetBlock(0).GetBlock(0).DeepCopy(output_grid)
+#reader1.GetOutput().GetBlock(0).GetBlock(0).CopyStructure(output_grid)
+print output_grid.GetPointData()
+
+
+locator = vtk.vtkStaticPointLocator()
+locator.SetDataSet(source_data)
+locator.BuildLocator()
+
+gaussianKernel = vtk.vtkGaussianKernel()
+gaussianKernel.SetRadius(0.01)
+gaussianKernel.SetSharpness(4)
+#print ("Radius: {0}".format(gaussianKernel.GetRadius()))
+
+interpolator = vtk.vtkPointInterpolator()
+interpolator.SetInputData(output_grid)
+interpolator.SetSourceData(source_data)
+interpolator.SetKernel(gaussianKernel)
+interpolator.SetLocator(locator)
+interpolator.SetNullPointsStrategyToClosestPoint()
+interpolator.Update()
+
+geometry2 = vtk.vtkCompositeDataGeometryFilter()
+geometry2.SetInputConnection(0, interpolator.GetOutputPort())
+geometry2.Update()
+
+mapper2 = vtk.vtkPolyDataMapper()
+mapper2.SetInputConnection(geometry2.GetOutputPort())
+mapper2.SelectColorArray(variable)
+mapper2.SetScalarModeToUsePointFieldData()
+mapper2.InterpolateScalarsBeforeMappingOn()
+mapper2.SetScalarRange(*range)
+
+actor2 = vtk.vtkActor()
+actor2.SetMapper(mapper2)
+
+renderer2 = vtk.vtkRenderer()
+renderer2.AddActor(actor2)
+renderer2.SetViewport(0.33, 0, 0.66, 1)
 
 # Window and Interactor
 window = vtk.vtkRenderWindow()
 window.AddRenderer(renderer0)
+window.AddRenderer(renderer2)
 window.AddRenderer(renderer1)
 window.SetSize(1920, 1080)
 
