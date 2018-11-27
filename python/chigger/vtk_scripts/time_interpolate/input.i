@@ -27,7 +27,7 @@
 [Functions]
   [func]
     type = ParsedFunction
-    value = 'x*y*(t+1)'
+    value = 'x*y*(t+3)'
   []
 []
 
@@ -48,7 +48,7 @@
 
 [Executioner]
   type = Transient
-  start_time = -9
+  start_time = -7
   num_steps = 2
   dt = 9
 []

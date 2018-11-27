@@ -70,31 +70,36 @@ renderer1.SetViewport(0.66, 0, 1, 1)
 source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # Pc data from file 0 (filter source)
 print source_data.GetPointData() # this is the data I want to interpolate
 
-# Build the structure to interpolate on to (this doesn't seem to work)
-output_grid = vtk.vtkUnstructuredGrid() # output P to te interpolated on to
-reader1.GetOutput().GetBlock(0).GetBlock(0).DeepCopy(output_grid)
+# Build the structure to interpolate on to
+output_grid = vtk.vtkUnstructuredGrid() # output to be interpolated on to
+#output_grid.DeepCopy(reader1.GetOutput().GetBlock(0).GetBlock(0))
+output_grid.CopyStructure(reader1.GetOutput().GetBlock(0).GetBlock(0))
+
 print output_grid.GetPointData()
 
 locator = vtk.vtkStaticPointLocator()
-locator.SetDataSet(source_data)
+locator.SetDataSet(output_grid)
 locator.BuildLocator()
 
-kernel = vtk.vtkLineKernel()
+#kernel = vtk.vtkLinearKernel()
+kernel = vtk.vtkGaussianKernel()
+kernel.SetSharpness(4)
 
 interpolator = vtk.vtkPointInterpolator()
 interpolator.SetSourceData(source_data) # Pc data set to be probed by input points P
 interpolator.SetInputData(output_grid)
 interpolator.SetKernel(kernel)
-interpolator.SetLocator(locator)
-interpolator.SetNullPointsStrategyToClosestPoint()
+#interpolator.SetLocator(locator)
+#interpolator.SetNullPointsStrategyToClosestPoint()
 interpolator.Update()
 
-geometry2 = vtk.vtkCompositeDataGeometryFilter()
-geometry2.SetInputConnection(0, interpolator.GetOutputPort())
-geometry2.Update()
+#geometry2 = vtk.vtkCompositeDataGeometryFilter()
+#geometry2.SetInputConnection(0, interpolator.GetOutputPort())
+#geometry2.Update()
 
-mapper2 = vtk.vtkPolyDataMapper()
-mapper2.SetInputConnection(geometry2.GetOutputPort())
+#mapper2 = vtk.vtkPolyDataMapper()
+mapper2 = vtk.vtkDataSetMapper()
+mapper2.SetInputConnection(interpolator.GetOutputPort())
 mapper2.SelectColorArray(variable)
 mapper2.SetScalarModeToUsePointFieldData()
 mapper2.InterpolateScalarsBeforeMappingOn()
@@ -102,6 +107,7 @@ mapper2.SetScalarRange(*range)
 
 actor2 = vtk.vtkActor()
 actor2.SetMapper(mapper2)
+actor2.GetProperty().SetEdgeVisibility(True)
 
 renderer2 = vtk.vtkRenderer()
 renderer2.AddActor(actor2)
