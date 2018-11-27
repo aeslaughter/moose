@@ -4,10 +4,10 @@ import vtk
 file0 = 'input_out.e'
 file1 = 'input_out.e-s002'
 variable = 'u'
-cells = 40
 range = [0, 10]
 
-# COARSE
+##################################################################################
+# FILE 0: COARSE MESH WITH SOLUTION 0
 reader0 = vtk.vtkExodusIIReader()
 reader0.SetFileName(file0)
 reader0.UpdateInformation()
@@ -34,7 +34,9 @@ renderer0 = vtk.vtkRenderer()
 renderer0.AddViewProp(actor0)
 renderer0.SetViewport(0, 0, 0.33, 1)
 
-# FINE
+####################################################################################################
+# FILE 1: FINE MESH WITH SOLUTION 1
+
 reader1 = vtk.vtkExodusIIReader()
 reader1.SetFileName(file1)
 reader1.UpdateInformation()
@@ -61,33 +63,28 @@ renderer1 = vtk.vtkRenderer()
 renderer1.AddViewProp(actor1)
 renderer1.SetViewport(0.66, 0, 1, 1)
 
-##############################################################################
+####################################################################################################
 # PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
 
 # Get the data to be interpolated
-source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # data from file 0
+source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # Pc data from file 0 (filter source)
 print source_data.GetPointData() # this is the data I want to interpolate
 
 # Build the structure to interpolate on to (this doesn't seem to work)
-output_grid = vtk.vtkUnstructuredGrid()
+output_grid = vtk.vtkUnstructuredGrid() # output P to te interpolated on to
 reader1.GetOutput().GetBlock(0).GetBlock(0).DeepCopy(output_grid)
-#reader1.GetOutput().GetBlock(0).GetBlock(0).CopyStructure(output_grid)
 print output_grid.GetPointData()
-
 
 locator = vtk.vtkStaticPointLocator()
 locator.SetDataSet(source_data)
 locator.BuildLocator()
 
-gaussianKernel = vtk.vtkGaussianKernel()
-gaussianKernel.SetRadius(0.01)
-gaussianKernel.SetSharpness(4)
-#print ("Radius: {0}".format(gaussianKernel.GetRadius()))
+kernel = vtk.vtkLineKernel()
 
 interpolator = vtk.vtkPointInterpolator()
+interpolator.SetSourceData(source_data) # Pc data set to be probed by input points P
 interpolator.SetInputData(output_grid)
-interpolator.SetSourceData(source_data)
-interpolator.SetKernel(gaussianKernel)
+interpolator.SetKernel(kernel)
 interpolator.SetLocator(locator)
 interpolator.SetNullPointsStrategyToClosestPoint()
 interpolator.Update()
@@ -110,7 +107,9 @@ renderer2 = vtk.vtkRenderer()
 renderer2.AddActor(actor2)
 renderer2.SetViewport(0.33, 0, 0.66, 1)
 
+####################################################################################################
 # Window and Interactor
+
 window = vtk.vtkRenderWindow()
 window.AddRenderer(renderer0)
 window.AddRenderer(renderer2)
