@@ -67,7 +67,17 @@ renderer1.SetViewport(0.75, 0, 1, 1)
 # PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
 
 # Get the data to be interpolated
-source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # Pc data from file 0 (filter source)
+#source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # Pc data from file 0 (filter source)
+
+extract = vtk.vtkExtractBlock()
+extract.SetInputConnection(reader0.GetOutputPort())
+extract.AddIndex(0)
+extract.AddIndex(1)
+extract.Update()
+
+source_data = extract.GetOutput()
+
+
 
 # Build the structure to interpolate on to
 output_grid = vtk.vtkUnstructuredGrid() # output to be interpolated on to
@@ -112,10 +122,11 @@ renderer2.SetViewport(0.25, 0, 0.5, 1)
 
 # I can't get this to perform interpolation
 data = vtk.vtkInterpolateDataSetAttributes()
-data.AddInputData(0, reader1.GetOutput().GetBlock(0).GetBlock(0))
-data.AddInputData(1, interpolator.GetOutput())
+data.AddInputConnection(extract.GetOutputPort())
+data.AddInputConnection(interpolator.GetOutputPort())
 data.SetT(0.5)
 data.Update()
+print data.GetInputList()
 
 print reader1.GetOutput().GetBlock(0).GetBlock(0).GetPointData()
 print '-------------------------------------------------------'
