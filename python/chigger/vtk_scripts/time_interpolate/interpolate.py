@@ -32,7 +32,7 @@ actor0.GetProperty().SetEdgeVisibility(True)
 
 renderer0 = vtk.vtkRenderer()
 renderer0.AddViewProp(actor0)
-renderer0.SetViewport(0, 0, 0.33, 1)
+renderer0.SetViewport(0, 0, 0.25, 1)
 
 ####################################################################################################
 # FILE 1: FINE MESH WITH SOLUTION 1
@@ -61,21 +61,18 @@ actor1.GetProperty().SetEdgeVisibility(True)
 
 renderer1 = vtk.vtkRenderer()
 renderer1.AddViewProp(actor1)
-renderer1.SetViewport(0.66, 0, 1, 1)
+renderer1.SetViewport(0.75, 0, 1, 1)
 
 ####################################################################################################
 # PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
 
 # Get the data to be interpolated
 source_data = reader0.GetOutput().GetBlock(0).GetBlock(0) # Pc data from file 0 (filter source)
-print source_data.GetPointData() # this is the data I want to interpolate
 
 # Build the structure to interpolate on to
 output_grid = vtk.vtkUnstructuredGrid() # output to be interpolated on to
 #output_grid.DeepCopy(reader1.GetOutput().GetBlock(0).GetBlock(0))
 output_grid.CopyStructure(reader1.GetOutput().GetBlock(0).GetBlock(0))
-
-print output_grid.GetPointData()
 
 locator = vtk.vtkStaticPointLocator()
 locator.SetDataSet(output_grid)
@@ -111,7 +108,37 @@ actor2.GetProperty().SetEdgeVisibility(True)
 
 renderer2 = vtk.vtkRenderer()
 renderer2.AddActor(actor2)
-renderer2.SetViewport(0.33, 0, 0.66, 1)
+renderer2.SetViewport(0.25, 0, 0.5, 1)
+
+# I can't get this to perform interpolation
+data = vtk.vtkInterpolateDataSetAttributes()
+data.AddInputData(0, reader1.GetOutput().GetBlock(0).GetBlock(0))
+data.AddInputData(1, interpolator.GetOutput())
+data.SetT(0.5)
+data.Update()
+
+print reader1.GetOutput().GetBlock(0).GetBlock(0).GetPointData()
+print '-------------------------------------------------------'
+print interpolator.GetOutput().GetPointData()
+print '-------------------------------------------------------'
+print data.GetOutput().GetPointData() # THIS DOESN'T CONTAIN "u"
+print data.GetNumberOfInputPorts()
+
+mapper3 = vtk.vtkDataSetMapper()
+mapper3.SetInputConnection(data.GetOutputPort())
+mapper3.SelectColorArray(variable)
+mapper3.SetScalarModeToUsePointFieldData()
+mapper3.InterpolateScalarsBeforeMappingOn()
+mapper3.SetScalarRange(*range)
+
+actor3 = vtk.vtkActor()
+actor3.SetMapper(mapper3)
+actor3.GetProperty().SetEdgeVisibility(True)
+
+renderer3 = vtk.vtkRenderer()
+renderer3.AddActor(actor3)
+renderer3.SetViewport(0.5, 0, 0.75, 1)
+
 
 ####################################################################################################
 # Window and Interactor
@@ -119,6 +146,7 @@ renderer2.SetViewport(0.33, 0, 0.66, 1)
 window = vtk.vtkRenderWindow()
 window.AddRenderer(renderer0)
 window.AddRenderer(renderer2)
+window.AddRenderer(renderer3)
 window.AddRenderer(renderer1)
 window.SetSize(1920, 1080)
 
