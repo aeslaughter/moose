@@ -89,8 +89,8 @@ interpolator = vtk.vtkPointInterpolator()
 interpolator.SetSourceData(source_data) # Pc data set to be probed by input points P
 interpolator.SetInputData(output_grid)
 interpolator.SetKernel(kernel)
-#interpolator.SetLocator(locator)
-#interpolator.SetNullPointsStrategyToClosestPoint()
+interpolator.SetLocator(locator)
+interpolator.SetNullPointsStrategyToClosestPoint()
 interpolator.Update()
 
 #geometry2 = vtk.vtkCompositeDataGeometryFilter()
