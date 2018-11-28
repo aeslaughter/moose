@@ -122,8 +122,8 @@ renderer2.SetViewport(0.25, 0, 0.5, 1)
 
 # I can't get this to perform interpolation
 data = vtk.vtkInterpolateDataSetAttributes()
-data.AddInputConnection(extract.GetOutputPort())
-data.AddInputConnection(interpolator.GetOutputPort())
+data.AddInputData(reader1.GetOutput().GetBlock(0).GetBlock(0))
+data.AddInputData(interpolator.GetOutput())
 data.SetT(0.5)
 data.Update()
 print data.GetInputList()
