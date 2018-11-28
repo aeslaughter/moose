@@ -35,12 +35,10 @@ print interpolator.GetOutput().GetPointData()
 """
 
 n = data0.GetPointData().GetNumberOfTuples()
-data = vtk.vtkPointData()
-data.CopyStructure(data0.GetPointData())
-data.SetNumberOfTuples(n)
-data.InterpolateAllocate(data0.GetPointData())
 
-for i in xrange(data.GetNumberOfTuples()):
+data = vtk.vtkPointData()
+data.InterpolateAllocate(data0.GetPointData())
+for i in xrange(n):
     data.InterpolateTime(data0.GetPointData(),
                          data1.GetPointData(),
                          i,
@@ -49,6 +47,7 @@ for i in xrange(data.GetNumberOfTuples()):
 print data.GetAbstractArray(0).GetRange()
 
 
+# THIS WORKS
 data = vtk.vtkPointData()
 data.CopyStructure(data0.GetPointData())
 data.SetNumberOfTuples(n)
