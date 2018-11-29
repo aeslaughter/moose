@@ -25,17 +25,16 @@ reader1.Update()
 data1 = reader1.GetOutput().GetBlock(0).GetBlock(0)
 print data1.GetPointData().GetAbstractArray(0).GetRange() # [0, 14]
 
-"""
+# How do I get this working?
 interpolator = vtk.vtkInterpolateDataSetAttributes()
 interpolator.AddInputData(reader0.GetOutput().GetBlock(0).GetBlock(0))
 interpolator.AddInputData(reader1.GetOutput().GetBlock(0).GetBlock(0))
 interpolator.SetT(0.5)
 interpolator.Update()
-print interpolator.GetOutput().GetPointData()
-"""
+print interpolator.GetOutput().GetPointData().GetAbstractArray(0)#.GetRange() # [0, 9.5]
 
+# How do I get this working? This is what happens with the vtkInterpolateDataSetAttributes
 n = data0.GetPointData().GetNumberOfTuples()
-
 data = vtk.vtkPointData()
 data.InterpolateAllocate(data0.GetPointData())
 for i in xrange(n):
@@ -43,11 +42,9 @@ for i in xrange(n):
                          data1.GetPointData(),
                          i,
                          0.5)
+print data.GetAbstractArray(0).GetRange() # [0, 9.5]
 
-print data.GetAbstractArray(0).GetRange()
-
-
-# THIS WORKS
+# THIS WORKS!
 data = vtk.vtkPointData()
 data.CopyStructure(data0.GetPointData())
 data.SetNumberOfTuples(n)
@@ -56,4 +53,4 @@ for i in xrange(data.GetNumberOfTuples()):
                                               i, data0.GetPointData().GetAbstractArray(0),
                                               i, data1.GetPointData().GetAbstractArray(0),
                                               0.5)
-print data.GetAbstractArray(0).GetRange()
+print data.GetAbstractArray(0).GetRange() # [0, 9.5]
