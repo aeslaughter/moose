@@ -36,8 +36,17 @@ print interpolator.GetOutput().GetPointData().GetAbstractArray(0)#.GetRange() # 
 # How do I get this working? This is what happens with the vtkInterpolateDataSetAttributes
 n = data0.GetPointData().GetNumberOfTuples()
 data = vtk.vtkPointData()
-data.InterpolateAllocate(data0.GetPointData())
-for i in xrange(n):
+data.CopyStructure(data0.GetPointData())
+data.SetNumberOfTuples(n)
+#data.CopyAllOn()
+#data0.GetPointData().CopyAllOn()
+#data1.GetPointData().CopyAllOn()
+#print data0.GetPointData()
+#print data1.GetPointData()
+#data.SetNumberOfTuples(n)
+#data0.GetPointData().InterpolateAllocate(data)
+#data1.GetPointData().InterpolateAllocate(data)
+for i in xrange(data.GetNumberOfTuples()):
     data.InterpolateTime(data0.GetPointData(),
                          data1.GetPointData(),
                          i,
