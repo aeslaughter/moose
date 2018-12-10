@@ -25,6 +25,8 @@ reader1.Update()
 data1 = reader1.GetOutput().GetBlock(0).GetBlock(0)
 print data1.GetPointData().GetAbstractArray(0).GetRange() # [0, 14]
 
+data1.GetPointData().SetActiveScalars(variable)
+
 # How do I get this working?
 interpolator = vtk.vtkInterpolateDataSetAttributes()
 interpolator.AddInputData(reader0.GetOutput().GetBlock(0).GetBlock(0))
