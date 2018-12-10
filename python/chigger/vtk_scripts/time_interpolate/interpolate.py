@@ -68,12 +68,11 @@ fineRenderer.AddViewProp(fineActor)
 fineRenderer.SetViewport(0.75, 0, 1, 1)
 
 ####################################################################################################
-# PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
+# PROJECT SOLUTION FROM FILE 1 to GRID FROM FILE 0
 
 # Build the structure to interpolate onto
 coarseInterpolatedGrid = vtk.vtkUnstructuredGrid()
-
-coarseMultiBlock = vtk.vtkMultiBlockDataSet.SafeDownCast(coarseReader.GetOutput().GetBlock(0))
+coarseMultiBlock = vtk.vtkMultiBlockDataSet.SafeDownCast(fineReader.GetOutput().GetBlock(0))
 coarseInterpolatedGrid.DeepCopy(vtk.vtkUnstructuredGrid.SafeDownCast(coarseMultiBlock.GetBlock(0)))
 
 locator = vtk.vtkStaticPointLocator()
@@ -87,8 +86,8 @@ kernel.SetNumberOfPoints(10)
 kernel.SetSharpness(5.0)
 
 coarseInterpolator = vtk.vtkPointInterpolator()
-coarseInterpolator.SetSourceData(fineGeometry.GetOutput()) # Pc data set to be probed by input points P
-coarseInterpolator.SetInputData(coarseGeometry.GetOutput())
+coarseInterpolator.SetSourceData(coarseGeometry.GetOutput()) # Pc data set to be probed by input points P
+coarseInterpolator.SetInputData(fineGeometry.GetOutput())
 coarseInterpolator.SetKernel(kernel)
 coarseInterpolator.SetLocator(locator)
 coarseInterpolator.SetNullPointsStrategyToClosestPoint()
