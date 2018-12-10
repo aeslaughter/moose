@@ -68,12 +68,12 @@ fineRenderer.AddViewProp(fineActor)
 fineRenderer.SetViewport(0.75, 0, 1, 1)
 
 ####################################################################################################
-# PROJECT SOLUTION FROM FILE 1 to GRID FROM FILE 0
+# PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
 
 # Build the structure to interpolate onto
-coarseInterpolatedGrid = vtk.vtkUnstructuredGrid()
-coarseMultiBlock = vtk.vtkMultiBlockDataSet.SafeDownCast(fineReader.GetOutput().GetBlock(0))
-coarseInterpolatedGrid.DeepCopy(vtk.vtkUnstructuredGrid.SafeDownCast(coarseMultiBlock.GetBlock(0)))
+fineInterpolatedGrid = vtk.vtkUnstructuredGrid()
+fineMultiBlock = vtk.vtkMultiBlockDataSet.SafeDownCast(fineReader.GetOutput().GetBlock(0))
+fineInterpolatedGrid.DeepCopy(vtk.vtkUnstructuredGrid.SafeDownCast(fineMultiBlock.GetBlock(0)))
 
 locator = vtk.vtkStaticPointLocator()
 locator.SetDataSet(fineGeometry.GetOutput())
@@ -85,54 +85,57 @@ kernel.SetKernelFootprintToNClosest()
 kernel.SetNumberOfPoints(10)
 kernel.SetSharpness(5.0)
 
-coarseInterpolator = vtk.vtkPointInterpolator()
-coarseInterpolator.SetSourceData(coarseGeometry.GetOutput()) # Pc data set to be probed by input points P
-coarseInterpolator.SetInputData(fineGeometry.GetOutput())
-coarseInterpolator.SetKernel(kernel)
-coarseInterpolator.SetLocator(locator)
-coarseInterpolator.SetNullPointsStrategyToClosestPoint()
-coarseInterpolator.PassPointArraysOff()
-coarseInterpolator.Update()
+fineInterpolator = vtk.vtkPointInterpolator()
+fineInterpolator.SetSourceData(coarseGeometry.GetOutput()) # Pc data set to be probed by input points P
+fineInterpolator.SetInputData(fineGeometry.GetOutput())
+fineInterpolator.SetKernel(kernel)
+fineInterpolator.SetLocator(locator)
+fineInterpolator.SetNullPointsStrategyToClosestPoint()
+fineInterpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
+fineInterpolator.Update()
 
-coarseInterpolatorMapper = vtk.vtkDataSetMapper()
-coarseInterpolatorMapper.SetInputConnection(coarseInterpolator.GetOutputPort())
-coarseInterpolatorMapper.SelectColorArray(variable)
-coarseInterpolatorMapper.SetScalarModeToUsePointFieldData()
-coarseInterpolatorMapper.InterpolateScalarsBeforeMappingOn()
-coarseInterpolatorMapper.SetScalarRange(*range)
+fineInterpolatorMapper = vtk.vtkDataSetMapper()
+fineInterpolatorMapper.SetInputConnection(fineInterpolator.GetOutputPort())
+fineInterpolatorMapper.SelectColorArray(variable)
+fineInterpolatorMapper.SetScalarModeToUsePointFieldData()
+fineInterpolatorMapper.InterpolateScalarsBeforeMappingOn()
+fineInterpolatorMapper.SetScalarRange(*range)
 
-coarseInterpolatorActor = vtk.vtkActor()
-coarseInterpolatorActor.SetMapper(coarseInterpolatorMapper)
-coarseInterpolatorActor.GetProperty().SetEdgeVisibility(True)
+fineInterpolatorActor = vtk.vtkActor()
+fineInterpolatorActor.SetMapper(fineInterpolatorMapper)
+fineInterpolatorActor.GetProperty().SetEdgeVisibility(True)
 
-coarseInterpolatorRenderer = vtk.vtkRenderer()
-coarseInterpolatorRenderer.AddActor(coarseInterpolatorActor)
-coarseInterpolatorRenderer.SetViewport(0.25, 0, 0.5, 1)
+fineInterpolatorRenderer = vtk.vtkRenderer()
+fineInterpolatorRenderer.AddActor(fineInterpolatorActor)
+fineInterpolatorRenderer.SetViewport(0.25, 0, 0.5, 1)
 
-# I can't get this to perform interpolation
-coarseInterpolatedGrid.GetPointData().SetActiveScalars(variable)
-coarseInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
+#####################################################################################################
+# INTERPOLATE BETWEEN THE PROJECTED SOLUTION AND SOLUTION FROM FILE 1
 
-coarseInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
-coarseInterpolateAttributes.AddInputData(0, coarseInterpolatedGrid)
-coarseInterpolateAttributes.AddInputData(0, coarseInterpolator.GetOutput())
-coarseInterpolateAttributes.SetT(0.5)
-coarseInterpolateAttributes.Update()
+# THESE ARE REQUIRED!!!
+fineInterpolatedGrid.GetPointData().SetActiveScalars(variable)
+fineInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
 
-coarseInterpolateAttibutesMapper = vtk.vtkDataSetMapper()
-coarseInterpolateAttibutesMapper.SetInputConnection(coarseInterpolateAttributes.GetOutputPort())
-coarseInterpolateAttibutesMapper.SelectColorArray(variable)
-coarseInterpolateAttibutesMapper.SetScalarModeToUsePointFieldData()
-coarseInterpolateAttibutesMapper.InterpolateScalarsBeforeMappingOn()
-coarseInterpolateAttibutesMapper.SetScalarRange(*range)
+fineInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
+fineInterpolateAttributes.AddInputData(0, fineInterpolatedGrid)
+fineInterpolateAttributes.AddInputData(0, fineInterpolator.GetOutput())
+fineInterpolateAttributes.SetT(0.5)
+fineInterpolateAttributes.Update()
 
-coarseInterpolateAttibutesActor = vtk.vtkActor()
-coarseInterpolateAttibutesActor.SetMapper(coarseInterpolateAttibutesMapper)
-coarseInterpolateAttibutesActor.GetProperty().SetEdgeVisibility(True)
+fineInterpolateAttibutesMapper = vtk.vtkDataSetMapper()
+fineInterpolateAttibutesMapper.SetInputConnection(fineInterpolateAttributes.GetOutputPort())
+fineInterpolateAttibutesMapper.SelectColorArray(variable)
+fineInterpolateAttibutesMapper.SetScalarModeToUsePointFieldData()
+fineInterpolateAttibutesMapper.InterpolateScalarsBeforeMappingOn()
+fineInterpolateAttibutesMapper.SetScalarRange(*range)
 
-coarseInterpolateAttibutesMapperRenderer = vtk.vtkRenderer()
-coarseInterpolateAttibutesMapperRenderer.AddActor(coarseInterpolateAttibutesActor)
-coarseInterpolateAttibutesMapperRenderer.SetViewport(0.5, 0, 0.75, 1)
+fineInterpolateAttibutesActor = vtk.vtkActor()
+fineInterpolateAttibutesActor.SetMapper(fineInterpolateAttibutesMapper)
+fineInterpolateAttibutesActor.GetProperty().SetEdgeVisibility(True)
+
+fineInterpolateAttibutesMapperRenderer = vtk.vtkRenderer()
+fineInterpolateAttibutesMapperRenderer.AddActor(fineInterpolateAttibutesActor)
+fineInterpolateAttibutesMapperRenderer.SetViewport(0.5, 0, 0.75, 1)
 
 
 ####################################################################################################
@@ -140,8 +143,8 @@ coarseInterpolateAttibutesMapperRenderer.SetViewport(0.5, 0, 0.75, 1)
 
 window = vtk.vtkRenderWindow()
 window.AddRenderer(fineRenderer)
-window.AddRenderer(coarseInterpolatorRenderer)
-window.AddRenderer(coarseInterpolateAttibutesMapperRenderer)
+window.AddRenderer(fineInterpolatorRenderer)
+window.AddRenderer(fineInterpolateAttibutesMapperRenderer)
 window.AddRenderer(coarseRenderer)
 window.SetSize(1920, 1080)
 
