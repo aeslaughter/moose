@@ -18,3 +18,6 @@ import geometric
 import graphs
 import filters
 import observers
+
+import logging
+logging.basicConfig()
