@@ -33,7 +33,7 @@ class ChiggerObject(object):
     def __init__(self, **kwargs):
         super(ChiggerObject, self).__init__()
         self._options = getattr(self.__class__, 'validOptions')()
-        self._options.update(**kwargs)
+        self.setOptions(**kwargs)
         self._options.setDefault('name', self.__class__.__name__)
 
     #def __str__(self):
@@ -47,13 +47,13 @@ class ChiggerObject(object):
     #        title = self.__class__.__name__
     #    return title
 
-    def options(self):
-        """
-        Return the utils.Options object for this class. (public)
-        """
-        return self._options
+    #def options(self):
+    #    """
+    #    Return the utils.Options object for this class. (public)
+    #    """
+    #    return self._options
 
-    def update(self, *args, **kwargs):
+    def setOptions(self, *args, **kwargs):
         """
         A method for setting/updating an objects options. (public)
 

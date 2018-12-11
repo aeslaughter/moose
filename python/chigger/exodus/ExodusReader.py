@@ -121,8 +121,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         if not os.path.isfile(self.__filename):
             raise IOError("The file {} is not a valid filename.".format(self.__filename))
 
-        #self.__vtkreader0 = vtk.vtkExodusIIReader()
-        #self.__vtkreader1 = vtk.vtkExodusIIReader()
         self.__active = None                        # see utils.get_active_filenames
         self.__timeinfo = []                        # all the TimeInformation objects
         self.__fileinfo = collections.OrderedDict() # sorted FileInformation objects
@@ -135,8 +133,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         !!! DO NOT CALL THIS METHOD !!!
         """
-        print 'RequestInformation'
-
         filenames = self.__getActiveFilenames()
         if filenames == self.__active:
             return
