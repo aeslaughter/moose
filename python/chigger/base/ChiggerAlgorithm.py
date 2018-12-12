@@ -1,3 +1,4 @@
+import vtk
 import logging
 from ChiggerObject import ChiggerObject
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
@@ -9,6 +10,8 @@ class ChiggerAlgorithm(ChiggerObject):
     """
     A ChiggerObject that also handles setting the VTK modified status as options change.
     """
+    OptionsModifiedEvent = vtk.vtkCommand.UserEvent + 1
+
     def __init__(self, **kwargs):
         ChiggerObject.__init__(self, **kwargs)
 
@@ -20,6 +23,9 @@ class ChiggerAlgorithm(ChiggerObject):
         # Set the VTK modified time, this is needed to make sure the options for this class
         # are all older than the class itself.
         self.Modified()
+        self.AddObserver(vtk.vtkCommand.ModifiedEvent, self.applyOptions)
+
+
 
 
     def setOptions(self, *args, **kwargs):
@@ -27,3 +33,6 @@ class ChiggerAlgorithm(ChiggerObject):
         ChiggerObject.setOptions(self, *args, **kwargs)
         if self._options.modified() > self.GetMTime():
             self.Modified()
+
+
+    def applyOptions(self, *args):

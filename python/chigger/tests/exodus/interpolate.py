@@ -87,11 +87,11 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     #def Update(self):
     #    print 'Update"
-    def applyOptions(self):
+    #def applyOptions(self):
         # TODO: call this automatically ...
         # Can I use the RenderEvent to call this???
 
-        print 'here'
+    #    print 'here'
 
 
     def RequestInformation(self, request, inInfo, outInfo):
@@ -163,9 +163,6 @@ if __name__ == '__main__':
 
 
     result = ChiggerResultBase(reader)
-
-
-    print result.updateOptions()
 
 
     """
