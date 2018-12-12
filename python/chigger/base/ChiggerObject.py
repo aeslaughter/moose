@@ -7,7 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import logging
 import mooseutils
 from .. import utils
 
@@ -36,6 +36,8 @@ class ChiggerObject(object):
         self.setOptions(**kwargs)
         self._options.setDefault('name', self.__class__.__name__)
 
+        self.__log = logging.getLogger(self.__class__.__name__)
+
     #def __str__(self):
     #    return '{}:\n{}'.format(mooseutils.colorText(self.__class__.__name__, "GREY"),
     #                            self._options.string())
@@ -52,6 +54,11 @@ class ChiggerObject(object):
     #    Return the utils.Options object for this class. (public)
     #    """
     #    return self._options
+
+    def log(self, msg, *args, **kwargs):
+        lvl = kwargs.pop('level', logging.INFO)
+        print '{}: {}'.format(self.__class__.__name__, msg.format(args))
+        #self.__log(lvl, msg.format(args)) # TODO: This should work
 
     def setOptions(self, *args, **kwargs):
         """

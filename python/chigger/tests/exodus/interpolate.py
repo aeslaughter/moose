@@ -3,19 +3,100 @@ import vtk
 import mooseutils
 import chigger
 
+import logging
+
 
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 from chigger import base
 
 
 
+class ChiggerFilterBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+
+    __VTKFILTERTYPE__ = None
+
+    @staticmethod
+    def vtkFilterType(vtktype):
+        def create(cls):
+            cls.__VTKFILTERTYPE__ = vtktype
+            return cls
+        return create
+
+    @staticmethod
+    def validOptions():
+        opt = base.ChiggerAlgorithm.validOptions()
+        return opt
+
+    def __init__(self, **kwargs):
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
+        VTKPythonAlgorithmBase.__init__(self)
+
+        self.SetNumberOfInputPorts(1)
+        self.InputType = 'vtkMultiBlockDataSet'
+
+        self.SetNumberOfOutputPorts(1)
+        self.OutputType = 'vtkPolyData'
+
+
+        self._vtkfilter = self.__VTKFILTERTYPE__()
+
+    #def RequestInformation(self, request, inInfo, outInfo):
+    #    print 'RequestInformation', request
+
+    #    return 1
+
+
+    def RequestData(self, request, inInfo, outInfo):
+        self.log('RequestData')#, level=logging.DEBUG)
+
+
+        inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+        opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+
+        #print inInfo[0]
+        #import sys; sys.exit()
+
+
+        self._vtkfilter.SetInputData(inp)
+        self._vtkfilter.Update()
+        opt.ShallowCopy(self._vtkfilter.GetOutput())
+        return 1
+
+    def applyOptions(self):
+        pass
+
+
+@ChiggerFilterBase.vtkFilterType(vtk.vtkCompositeDataGeometryFilter)
+class GeometryFilter(ChiggerFilterBase):
+    pass
+
+
 #@chiggerOutputType("vtkMultiBlockDataSet")
 #@chigger.base.InputType("vtkMultiBlockDataSet")
+#@base.ChiggerAlgorithm.nInputPorts(1)
+#@base.ChiggerAlgorithm.inputType('vtkMultiBlockDataSet')
 class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+    # TODO: Handle multiple inputs with multiple ports
+
+
+    @staticmethod
+    def vtkActorType(vtktype):
+        def create(cls):
+            cls.__VTKACTORTYPE__ = vtktype
+            return cls
+        return create
+
+    @staticmethod
+    def vtkMapperType(vtktype):
+        def create(cls):
+            cls.__VTKMAPPERTYPE__ = vtktype
+            return cls
+        return create
+
 
     # TODO: Set this with decorators
-    __VTKACTORTYPE__ = vtk.vtkActor #None
-    __VTKMAPPERTYPE__ = vtk.vtkPolyDataMapper #None
+    __VTKACTORTYPE__ = None#vtk.vtkActor #None
+    __VTKMAPPERTYPE__ = None#vtk.vtkPolyDataMapper #None
 
     __FILTERS__ = []#
     __REQUIRED_FILTERS__ = []
@@ -26,20 +107,29 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return opt
 
     def __init__(self, *args, **kwargs):
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
-        VTKPythonAlgorithmBase.__init__(self,
-                                        nInputPorts=1,
-                                        inputType='vtkMultiBlockDataSet')#,
-                                        #nOutputPorts=1,
-                                        #outputType='vtkRenderer')
+        base.ChiggerAlgorithm.__init__(self,
+        #                               nInputPorts=1,
+        #                               inputType='vtkMultiBlockDataSet',
+                                       **kwargs)
+        VTKPythonAlgorithmBase.__init__(self)
+        #  VTKPythonAlgorithmBase.__init__(self,
+        #                                  nInputPorts=1,
+        #                                  inputType='vtkMultiBlockDataSet')#,
+        #                                  #nOutputPorts=1,
+        #                                  #outputType='vtkRenderer')
+
+        self.SetNumberOfInputPorts(len(args))
+        self.InputType = 'vtkMultiBlockDataSet'
+
 
         renderer = None #TODO: kwargs
 
 
 
-        self._geometry = vtk.vtkCompositeDataGeometryFilter()
+        #self._geometry = vtk.vtkCompositeDataGeometryFilter()
+        self._geometry = GeometryFilter()
         self._geometry.SetInputConnection(0, reader.GetOutputPort(0))
-        self._geometry.Update()
+        #self._geometry.Update()
 
 
 
@@ -49,10 +139,14 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             raise mooseutils.MooseException(msg.format(type(self._vtkmapper).__name__))
 
 
+
         self._vtkmapper.SetInputConnection(self._geometry.GetOutputPort())
 
 
+        self._vtkmapper.SelectColorArray('u')
+        self._vtkmapper.SetScalarModeToUsePointFieldData()
 
+        self._vtkmapper.InterpolateScalarsBeforeMappingOn()
 
         #self._vtkrenderer.SetInteractive(False)
 
@@ -85,40 +179,23 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #self._render_window = None
         #self.__highlight = None
 
-    #def Update(self):
-    #    print 'Update"
-    def applyOptions(self, obj, event):
-        # TODO: call this automatically ...
-        # Can I use the RenderEvent to call this???
-
-        print 'here'
+    def applyOptions(self):
+        """
+        """
+        pass
 
 
-    #def RequestInformation(self, request, inInfo, outInfo):
+    def RequestInformation(self, request, inInfo, outInfo):
+        raise NotImplementedError;
+        return 1
 
-        # TODO: can I create an observer that calls this ???
-
-    #    print 'REQUEST INFORMATION...'
-
-    #    return 1
-
-    #def RequestData(self, request, inInfo, outInfo):
-    #    print 'REQUEST DATA...'
-
-
-        #out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        #print out_data
-        #out_data.ShallowCopy(self._vtkrenderer)
-
-
-    #    return 1
+    def RequestData(self, request, inInfo, outInfo):
+        raise NotImplementedError;
+        return 1
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
         return self._vtkrenderer
-
-
-
 
     def getVTKActor(self):
         """
@@ -138,13 +215,16 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         return self._vtkmapper
 
-
-
+@ChiggerResultBase.vtkMapperType(vtk.vtkPolyDataMapper)
+@ChiggerResultBase.vtkActorType(vtk.vtkActor)
+class ExodusResult(ChiggerResultBase):
+    pass
 
 
 if __name__ == '__main__':
 
-
+    logging.basicConfig(level=logging.DEBUG)
+    LOG = logging.getLogger()
 
 
     variable = 'u'
@@ -153,10 +233,12 @@ if __name__ == '__main__':
     reader = chigger.exodus.ExodusReader(filename, time=2)
 
 
+   # print reader.GetOutputDataObject(0)
+
     #print 'call setOptions'
     #reader.setOptions(time=2)
 
-    result = ChiggerResultBase(reader)
+    result = ExodusResult(reader)
 
 
     """
@@ -188,6 +270,6 @@ if __name__ == '__main__':
     interactor.SetRenderWindow(window)
     interactor.Initialize()
 
-    # Show the result
+    ## Show the result
     window.Render()
     interactor.Start()

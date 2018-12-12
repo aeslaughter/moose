@@ -31,6 +31,8 @@ def lock_file(filename):
         yield
         fcntl.flock(f, fcntl.LOCK_UN)
 
+#@base.ChiggerAlgorithm.nOutputPorts(1)
+#@base.ChiggerAlgorithm.outputType('vtkMultiBlockDataSet')
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     A reader for an ExodusII file.
@@ -112,7 +114,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return opt
 
     def __init__(self, filename, **kwargs):
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
+        base.ChiggerAlgorithm.__init__(self,
+        #                               nInputPorts=0,
+        #                               nOutputPorts=1,
+        #                               outputType='vtkMultiBlockDataSet',
+                                       **kwargs)
         VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
                                         outputType='vtkMultiBlockDataSet')
 
