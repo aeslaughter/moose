@@ -68,7 +68,7 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
 
 
-        self._vtkrenderer = renderer if renderer != None else vtk.vtkRenderer()
+        self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
             msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
@@ -87,31 +87,31 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     #def Update(self):
     #    print 'Update"
-    #def applyOptions(self):
+    def applyOptions(self, obj, event):
         # TODO: call this automatically ...
         # Can I use the RenderEvent to call this???
 
-    #    print 'here'
+        print 'here'
 
 
-    def RequestInformation(self, request, inInfo, outInfo):
+    #def RequestInformation(self, request, inInfo, outInfo):
 
         # TODO: can I create an observer that calls this ???
 
-        print 'REQUEST INFORMATION...'
+    #    print 'REQUEST INFORMATION...'
 
-        return 1
+    #    return 1
 
-    def RequestData(self, request, inInfo, outInfo):
-        print 'REQUEST DATA...'
-
-
-        out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        print out_data
-        out_data.ShallowCopy(self._vtkrenderer)
+    #def RequestData(self, request, inInfo, outInfo):
+    #    print 'REQUEST DATA...'
 
 
-        return 1
+        #out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+        #print out_data
+        #out_data.ShallowCopy(self._vtkrenderer)
+
+
+    #    return 1
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
@@ -150,17 +150,11 @@ if __name__ == '__main__':
     variable = 'u'
     rng = [0, 14]
     filename = '../input/input_no_adapt_out.e'
-    reader = chigger.exodus.ExodusReader(filename)
+    reader = chigger.exodus.ExodusReader(filename, time=2)
 
 
-    reader.setOptions(time=2)
-
-
-
-
-
-
-
+    #print 'call setOptions'
+    #reader.setOptions(time=2)
 
     result = ChiggerResultBase(reader)
 

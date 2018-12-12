@@ -10,7 +10,8 @@ class ChiggerAlgorithm(ChiggerObject):
     """
     A ChiggerObject that also handles setting the VTK modified status as options change.
     """
-    OptionsModifiedEvent = vtk.vtkCommand.UserEvent + 1
+
+    #OptionsModifiedEvent = vtk.vtkCommand.UserEvent + 1
 
     def __init__(self, **kwargs):
         ChiggerObject.__init__(self, **kwargs)
@@ -22,11 +23,8 @@ class ChiggerAlgorithm(ChiggerObject):
 
         # Set the VTK modified time, this is needed to make sure the options for this class
         # are all older than the class itself.
-        self.Modified()
         self.AddObserver(vtk.vtkCommand.ModifiedEvent, self.applyOptions)
-
-
-
+        self.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
@@ -34,5 +32,5 @@ class ChiggerAlgorithm(ChiggerObject):
         if self._options.modified() > self.GetMTime():
             self.Modified()
 
-
-    def applyOptions(self, *args):
+    def applyOptions(self, obj, event):
+        print self.__class__.__name__, 'applyOptions', obj is self, event
