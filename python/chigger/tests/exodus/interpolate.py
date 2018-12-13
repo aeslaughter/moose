@@ -11,7 +11,7 @@ from chigger import base
 
 
 
-class ChiggerFilterBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+class ChiggerFilter(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     __VTKFILTERTYPE__ = None
 
@@ -25,6 +25,8 @@ class ChiggerFilterBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
+        opt.add('required', default=False, vtype=bool,
+                doc="When set to True this filter will be created automatically.")
         return opt
 
     def __init__(self, **kwargs):
@@ -37,14 +39,7 @@ class ChiggerFilterBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.SetNumberOfOutputPorts(1)
         self.OutputType = 'vtkPolyData'
 
-
         self._vtkfilter = self.__VTKFILTERTYPE__()
-
-    #def RequestInformation(self, request, inInfo, outInfo):
-    #    print 'RequestInformation', request
-
-    #    return 1
-
 
     def RequestData(self, request, inInfo, outInfo):
         self.log('RequestData')#, level=logging.DEBUG)
@@ -52,9 +47,6 @@ class ChiggerFilterBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-
-        #print inInfo[0]
-        #import sys; sys.exit()
 
 
         self._vtkfilter.SetInputData(inp)
@@ -66,8 +58,8 @@ class ChiggerFilterBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         pass
 
 
-@ChiggerFilterBase.vtkFilterType(vtk.vtkCompositeDataGeometryFilter)
-class GeometryFilter(ChiggerFilterBase):
+@ChiggerFilter.vtkFilterType(vtk.vtkCompositeDataGeometryFilter)
+class GeometryFilter(ChiggerFilter):
     pass
 
 
@@ -75,7 +67,8 @@ class GeometryFilter(ChiggerFilterBase):
 #@chigger.base.InputType("vtkMultiBlockDataSet")
 #@base.ChiggerAlgorithm.nInputPorts(1)
 #@base.ChiggerAlgorithm.inputType('vtkMultiBlockDataSet')
-class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+
+class ChiggerResult(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     # TODO: Handle multiple inputs with multiple ports
 
 
@@ -93,17 +86,28 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             return cls
         return create
 
+    @staticmethod
+    def addFilter(name, filtertype, required=False):
+        def create(cls):
+            cls.__FILTERS__.append((name, filtertype, required))
+            return cls
+        return create
 
-    # TODO: Set this with decorators
     __VTKACTORTYPE__ = None#vtk.vtkActor #None
     __VTKMAPPERTYPE__ = None#vtk.vtkPolyDataMapper #None
 
-    __FILTERS__ = []#
-    __REQUIRED_FILTERS__ = []
+    __FILTERS__ = list()#[]#('geometry', GeometryFilter, True)]#
 
     @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
+
+        for filter_name, filter_type, filter_required in ChiggerResult.__FILTERS__:
+            opt.add(filter_name, filter_type.validOptions())
+            if filter_required:
+                opt.get(filter_name).set('required', True)
+
+
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -124,11 +128,29 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         renderer = None #TODO: kwargs
 
+        self._filters = []
+
+
+
+        connected = False
+        for filter_name,filter_type, filter_required in self.__FILTERS__:
+
+            if not filter_required:
+                continue
+
+            self._filters.append(filter_type())
+
+            if not connected:
+                self._filters[-1].SetInputConnection(0, args[0].GetOutputPort(0))
+                connected = True
+
+            else:
+                self._filters[-1].SetInputConnection(0, self._filters[-2].GetOutputPort(0))
 
 
         #self._geometry = vtk.vtkCompositeDataGeometryFilter()
-        self._geometry = GeometryFilter()
-        self._geometry.SetInputConnection(0, reader.GetOutputPort(0))
+        #self._geometry = GeometryFilter()
+        #self._geometry.SetInputConnection(0, reader.GetOutputPort(0))
         #self._geometry.Update()
 
 
@@ -139,8 +161,14 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             raise mooseutils.MooseException(msg.format(type(self._vtkmapper).__name__))
 
 
+        if self._filters:
+            self._vtkmapper.SetInputConnection(self._filters[-1].GetOutputPort(0))
 
-        self._vtkmapper.SetInputConnection(self._geometry.GetOutputPort())
+        else:
+            self._vtkmapper.SetInputConnection(args[0].GetOutputPort(0))
+
+
+        #self._vtkmapper.SetInputConnection(self._geometry.GetOutputPort())
 
 
         self._vtkmapper.SelectColorArray('u')
@@ -215,9 +243,10 @@ class ChiggerResultBase(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         return self._vtkmapper
 
-@ChiggerResultBase.vtkMapperType(vtk.vtkPolyDataMapper)
-@ChiggerResultBase.vtkActorType(vtk.vtkActor)
-class ExodusResult(ChiggerResultBase):
+@ChiggerResult.vtkMapperType(vtk.vtkPolyDataMapper)
+@ChiggerResult.vtkActorType(vtk.vtkActor)
+@ChiggerResult.addFilter('geometry', GeometryFilter, required=True)
+class ExodusResult(ChiggerResult):
     pass
 
 
