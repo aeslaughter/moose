@@ -30,9 +30,10 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
     # List of filters, this is an internal item. Filters should be added with addFilter decorator
     __FILTERS__ = list()
+    __ACTIVE_FILTERS__ = set()
 
-    @staticmethod
-    def validOptions():
+    @classmethod
+    def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
 
         opt.add('interactive', default=True,
@@ -48,6 +49,12 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                 doc="The VTK camera to utilize for viewing the results.")
         opt.add('highlight_active', default=True, vtype=bool,
                 doc="When the result is activate enable/disable the 'highlighting'.")
+
+        for filter_type in cls.__FILTERS__:
+            opt.add(filter_type.FILTERNAME,
+                    filter_type.validOptions(),
+                    doc="Options for the '{}' filter.".format(filter_type.FILTERNAME))
+
         return opt
 
     @staticmethod
@@ -100,27 +107,20 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         """
 
         # Connect the filters
-        """
         filters = []
-        connected = False
-        for filter_name,filter_type, filter_required in self.__FILTERS__:
+        #connected = False
+        for filter_type in self.__FILTERS__:
 
-            if not filter_required:
-                continue
+            #if not filter_required:
+            #    continue
 
-            filters.append(filter_type(self))
+            filters.append(filter_type())
 
-            if not connected:
-                filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
-                connected = True
-            else:
-                filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
-        """
-
-        filters = []
-        filters.append(vtk.vtkCompositeDataGeometryFilter())
-        filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
-
+            #if not connected:
+            #    filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
+            #    connected = True
+            #else:
+            #    filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
 
         # Create mapper
         vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
@@ -129,10 +129,10 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             raise mooseutils.MooseException(msg.format(type(vtkmapper).__name__))
 
         # Connect mapper/filters into the pipeline
-        if filters:
-            vtkmapper.SetInputConnection(filters[-1].GetOutputPort(0))
-        else:
-            vtkmapper.SetInputConnection(inargs.GetOutputPort(0))
+        #if filters:
+        #    vtkmapper.SetInputConnection(filters[-1].GetOutputPort(0))
+        #else:
+        #    vtkmapper.SetInputConnection(inargs.GetOutputPort(0))
 
         # Create the actor
         vtkactor = self.VTKACTORTYPE() if self.VTKACTORTYPE else None
@@ -158,6 +158,51 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         """
         for actor in self._vtkactors:
             self._vtkrenderer.RemoveActor(actor)
+
+
+    def setOptions(self, *args, **kwargs):
+        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
+
+        for filter_type in self.__FILTERS__:
+            if filter_type.FILTERNAME in args:
+                self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
+
+
+    def applyOptions(self):
+
+        # Connect the filters
+        for inarg, vtkmapper, filters in zip(self._inputs, self._vtkmappers, self._filters):
+            self.__connectFilters(inarg, vtkmapper, filters)
+
+    def __connectFilters(self, inarg, vtkmapper, filters):
+
+        print self.__ACTIVE_FILTERS__
+
+        active = []
+        connected = False
+        for filter_obj in filters:
+            if filter_obj.FILTERNAME not in self.__ACTIVE_FILTERS__:
+                continue
+
+            active.append(filter_obj)
+
+            if not connected:
+                active[-1].SetInputConnection(0, inarg.GetOutputPort(0))
+                connected = True
+            else:
+                active[-1].SetInputConnection(0, active[-2].GetOutputPort(0))
+
+
+        # Connect mapper/filters into the pipeline
+        if active:
+            vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
+        else:
+            vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
+
+    #def __del__(self):
+
+     #   for f in self._filters:
+     #       f._ChiggerFilter__result = None
 
     #def getBounds(self):
     #    """

@@ -5,6 +5,14 @@ from ChiggerFilter import ChiggerFilter
 
 class ExtractBlockFilter(ChiggerFilter):
     VTKFILTERTYPE = vtk.vtkExtractBlock
+    FILTERNAME = 'extract'
+
+    @staticmethod
+    def validOptions():
+        opt = ChiggerFilter.validOptions()
+        opt.add('indices', vtype=list,
+                doc="The list of vtkMultiBlockDataSet indices to extract.")
+        return opt
 
     def __init__(self, *args, **kwargs):
         ChiggerFilter.__init__(self, *args, **kwargs)
@@ -22,31 +30,21 @@ class ExtractBlockFilter(ChiggerFilter):
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
 
-        result = self.getChiggerResult()
-        reader = result.getInput()
 
-        block_info = reader.getBlockInformation()
-        def get_indices(option, vtk_type):
-            """Helper to populate vtkExtractBlock object from selected blocks/sidesets/nodesets"""
-            indices = []
-            blocks = result.getOption(option)
-            if blocks:
-                for vtkid, item in block_info[vtk_type].iteritems():
-                    for name in blocks:
-                        if (item.name == str(name)) or (str(name) == vtkid):
-                            indices.append(item.multiblock_index)
-            return indices
+        extract_indices = self.getOption('indices')
+        if not extract_indices:
+            msg = "The 'indices' option was empty for the ExtractBlockFilter, " \
+                  "this filter is being bypassed."
+            self.log(msg, level=logging.ERROR)
+            opt.ShallowCopy(inp)
 
-        extract_indices = get_indices('block', chigger.exodus.ExodusReader.BLOCK)
-        extract_indices += get_indices('boundary', chigger.exodus.ExodusReader.SIDESET)
-        extract_indices += get_indices('nodeset', chigger.exodus.ExodusReader.NODESET)
+        else:
+            self._vtkfilter.RemoveAllIndices()
+            for index in extract_indices:
+                self._vtkfilter.AddIndex(index)
 
-        self._vtkfilter.RemoveAllIndices()
-        for index in extract_indices:
-            self._vtkfilter.AddIndex(index)
-
-        self._vtkfilter.SetInputData(inp)
-        self._vtkfilter.Update()
-        opt.ShallowCopy(self._vtkfilter.GetOutput())
+            self._vtkfilter.SetInputData(inp)
+            self._vtkfilter.Update()
+            opt.ShallowCopy(self._vtkfilter.GetOutput())
 
         return 1

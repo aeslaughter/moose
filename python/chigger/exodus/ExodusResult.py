@@ -16,8 +16,8 @@ from .. import base
 from .. import utils
 from .. import filters
 
-@base.addFilter('geometry', filters.GeometryFilter, required=True)
-#@base.addFilter('extract', filters.ExtractBlockFilter, required=True)
+@base.addFilter(filters.GeometryFilter, required=True)
+#@base.addFilter(filters.ExtractBlockFilter)
 class ExodusResult(base.ChiggerResult):
     """
     Result object to displaying ExodusII data from a single reader.
@@ -91,19 +91,39 @@ class ExodusResult(base.ChiggerResult):
         return bindings
 
     def applyOptions(self):
+        base.ChiggerResult.applyOptions(self)
 
         for vtkmapper in self._vtkmappers:
             vtkmapper.SelectColorArray('u')
             vtkmapper.SetScalarModeToUsePointFieldData()
             vtkmapper.InterpolateScalarsBeforeMappingOn()
 
+        # Update the block/boundary/nodeset settings to convert [] to all.
+        block_info = self._inputs[0].getBlockInformation()
+        for item in ['block', 'boundary', 'nodeset']:
+            opt = self.getOption(item)
+            if opt == []:
+                self.setOption(item, [item.name for item in \
+                                      block_info[getattr(ExodusReader, item.upper())].itervalues()])
 
-        #block_info = self._inputs[0].getBlockInformation()
-        #for item in ['block', 'boundary', 'nodeset']:
-        #    opt = self.getOption(item)
-        #    if opt == []:
-        #        self.setOption(item, [item.name for item in \
-        #                              block_info[getattr(ExodusReader, item.upper())].itervalues()])
+        # Update the extract indices
+        def get_indices(option, vtk_type):
+            """Helper to populate vtkExtractBlock object from selected blocks/sidesets/nodesets"""
+            indices = []
+            blocks = self.getOption(option)
+            if blocks:
+                for vtkid, item in block_info[vtk_type].iteritems():
+                    for name in blocks:
+                        if (item.name == str(name)) or (str(name) == vtkid):
+                            indices.append(item.multiblock_index)
+            return indices
+
+        extract_indices = get_indices('block', ExodusReader.BLOCK)
+        extract_indices += get_indices('boundary', ExodusReader.SIDESET)
+        extract_indices += get_indices('nodeset', ExodusReader.NODESET)
+
+        #for filters in filters:
+
 
 
     #def __init__(self, reader, **kwargs):

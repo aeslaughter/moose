@@ -3,6 +3,7 @@ from ChiggerFilter import ChiggerFilter
 
 class GeometryFilter(ChiggerFilter):
     VTKFILTERTYPE = vtk.vtkCompositeDataGeometryFilter
+    FILTERNAME = 'geometry'
 
     def __init__(self, *args, **kwargs):
         ChiggerFilter.__init__(self, *args, **kwargs)

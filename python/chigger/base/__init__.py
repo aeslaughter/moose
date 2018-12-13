@@ -52,9 +52,10 @@ def create_single_source_result(source_type):
     return ChiggerResultMeta
 
 
-def addFilter(name, filtertype, required=False):
+def addFilter(filtertype, required=False):
     """Decorator for adding filters."""
     def create(cls):
-        cls.__FILTERS__.append((name, filtertype, required))
+        cls.__FILTERS__.append(filtertype)
+        cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
         return cls
     return create
