@@ -28,13 +28,40 @@ class ExodusResult(base.ChiggerResult):
     @staticmethod
     def validOptions():
         opt = base.ChiggerResult.validOptions()
-        #opt += ExodusSource.validOptions()
-        opt.add('explode', None, "When multiple sources are being used (e.g., NemesisReader) "
-                                 "setting this to a value will cause the various sources to be "
-                                 "'exploded' away from the center of the entire object.",
-                vtype=float)
-        opt.add('local_range', False, "Use local range when computing the default data range.")
 
+        # Variable selection
+        opt.add('variable', vtype=str, doc="The nodal or elemental variable to render.")
+        opt.add('component', -1, vtype=int, allow=(-1, 0, 1, 2),
+                doc="The vector variable component to render (-1 plots the magnitude).")
+
+        # Data range
+        opt.add('range', vtype=float, size=2,
+                doc="The range of data to display on the volume and colorbar; range takes " \
+                    "precedence of min/max.")
+        opt.add('local_range', False, "Use local range when computing the default data range.")
+        opt.add('min', vtype=float, doc="The minimum range.")
+        opt.add('max', vtype=float, doc="The maximum range.")
+
+        # Subdomains/sidesets/nodesets
+        opt.add('nodeset', None, vtype=list,
+                doc="A list of nodeset ids or names to display, use [] to display all nodesets.")
+        opt.add('boundary', None, vtype=list,
+                doc="A list of boundary ids (sideset) ids or names to display, use [] to display " \
+                    "all sidesets.")
+        opt.add('block', [], vtype=list,
+                doc="A list of subdomain (block) ids or names to display, use [] to display all " \
+                    "blocks.")
+
+        opt.add('representation', 'surface', allow=('volume', 'surface', 'wireframe', 'points'),
+                doc="View volume representation.")
+
+        # Colormap
+        opt += base.ColorMap.validOptions()
+
+        opt.add('explode', None, vtype=float,
+                doc="When multiple sources are being used (e.g., NemesisReader) setting this to a "
+                    "value will cause the various sources to be 'exploded' away from the center of "
+                    "the entire object.")
         return opt
 
     @staticmethod
@@ -61,6 +88,16 @@ class ExodusResult(base.ChiggerResult):
                      desc="Decrease the timestep by 1.")
 
         return bindings
+
+    def applySettings(self):
+
+        for vtkmapper in self._vtkmappers:
+            vtkmapper.SelectColorArray('u')
+            vtkmapper.SetScalarModeToUsePointFieldData()
+            vtkmapper.InterpolateScalarsBeforeMappingOn()
+
+
+
 
     #def __init__(self, reader, **kwargs):
     #    base.ChiggerResult(reader, **kwargs)

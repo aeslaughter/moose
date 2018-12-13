@@ -52,7 +52,7 @@ class ExodusSource(base.ChiggerSource):
                 doc="A list of subdomain (block) ids or names to display, use [] to display all " \
                     "blocks.")
 
-        opt.add('representation', 'surface', allow=('surface', 'wireframe', 'points'),
+        opt.add('representation', 'surface', allow=('volume', 'surface', 'wireframe', 'points'),
                 doc="View volume representation.")
 
         opt.add('range', vtype=float, size=2,

@@ -34,6 +34,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     @staticmethod
     def validOptions():
         opt = ChiggerAlgorithm.validOptions()
+
         opt.add('interactive', default=True,
                 doc="Control if the object may be selected with key bindings.")
         opt.add('light', vtype=float,
@@ -63,7 +64,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     def __init__(self, *args, **kwargs):
         renderer = kwargs.pop('renderer', None)
         utils.KeyBindingMixin.__init__(self)
-        ChiggerAlgorithm.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self)
 
         # Initialize class members
@@ -86,6 +86,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         for arg in args:
             self.__addSource(arg)
+
+        ChiggerAlgorithm.__init__(self, **kwargs)
 
     def __addSource(self, inarg):
         """
@@ -112,8 +114,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             else:
                 filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
 
-        print self.__FILTERS__
-
         # Create mapper
         vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
         if (vtkmapper is not None) and not isinstance(vtkmapper, vtk.vtkAbstractMapper):
@@ -125,11 +125,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             vtkmapper.SetInputConnection(filters[-1].GetOutputPort(0))
         else:
             vtkmapper.SetInputConnection(inargs.GetOutputPort(0))
-
-        # TODO: Move
-        vtkmapper.SelectColorArray('u')
-        vtkmapper.SetScalarModeToUsePointFieldData()
-        vtkmapper.InterpolateScalarsBeforeMappingOn()
 
         # Create the actor
         vtkactor = self.VTKACTORTYPE() if self.VTKACTORTYPE else None

@@ -22,7 +22,7 @@ class RenderWindow(base.ChiggerObject):
     """
     Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
     """
-    RESULT_TYPE = base.ChiggerResultBase
+    __RESULTTYPE__ = base.ChiggerResult
 
     @staticmethod
     def validOptions():
@@ -84,6 +84,7 @@ class RenderWindow(base.ChiggerObject):
         self.setActive(None)
 
         # Create "chigger" watermark
+        """
         self.__watermark = annotations.ImageAnnotation(filename='chigger_white.png',
                                                        width=0.025,
                                                        horizontal_alignment='left',
@@ -91,6 +92,7 @@ class RenderWindow(base.ChiggerObject):
                                                        position=[0, 0])
         if kwargs.pop('chigger', False):
             self.append(self.__watermark)
+        """
 
     def __contains__(self, item):
         """
@@ -124,13 +126,13 @@ class RenderWindow(base.ChiggerObject):
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
             if isinstance(result, base.ResultGroup):
                 self.append(*result.getResults())
-            elif not isinstance(result, self.RESULT_TYPE):
+            elif not isinstance(result, self.__RESULTTYPE__):
                 n = result.__class__.__name__
-                t = self.RESULT_TYPE.__name__
+                t = self.__RESULTTYPE__.__name__
                 msg = 'The supplied result type of {} must be of type {}.'.format(n, t)
                 raise mooseutils.MooseException(msg)
             self._results.append(result)
-            result.init(self)
+            #result.init(self)
 
     def remove(self, *args):
         """
@@ -228,7 +230,7 @@ class RenderWindow(base.ChiggerObject):
         """
         Updates the child results and renders the results.
         """
-        super(RenderWindow, self).update(**kwargs)
+        #super(RenderWindow, self).update(**kwargs)
 
         # Setup interactor
         if self.isOptionValid('test') and self.getOption('test'):
@@ -256,9 +258,9 @@ class RenderWindow(base.ChiggerObject):
                 self._observers.add(main_observer)
 
         # Background settings
-        self._results[0].update(background=self._options.get('background'),
-                                background2=self._options.get('background2'),
-                                gradient_background=self._options.get('gradient_background'))
+        self._results[0].setOptions(background=self._options.get('background'),
+                                    background2=self._options.get('background2'),
+                                    gradient_background=self._options.get('gradient_background'))
 
         # vtkRenderWindow Settings
         if self.isOptionValid('offscreen'):
@@ -277,7 +279,7 @@ class RenderWindow(base.ChiggerObject):
             self.__vtkwindow.SetMultiSamples(self.getOption('multisamples'))
 
         if self.isOptionValid('size'):
-            self.__vtkwindow.SetSize(self.applyOption('size'))
+            self.__vtkwindow.SetSize(self.getOption('size'))
 
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
@@ -285,7 +287,7 @@ class RenderWindow(base.ChiggerObject):
             renderer = result.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
                 self.__vtkwindow.AddRenderer(renderer)
-            result.update()
+            #result.update()
             n = max(n, renderer.GetLayer() + 1)
 
         # TODO: set if changed only
@@ -304,8 +306,8 @@ class RenderWindow(base.ChiggerObject):
                     observer.init(self)
                     self._observers.add(observer)
 
-        for result in self._results:
-            result.update()
+        #for result in self._results:
+        #    result.update()
 
         self.__vtkwindow.Render()
 

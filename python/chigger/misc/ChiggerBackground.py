@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from .. import base
-class ChiggerBackground(base.ChiggerResultBase):
+class ChiggerBackground(base.ChiggerResult):
     """
     An empty vtkRenderer to serve as the background for other objects.
     """
@@ -31,22 +31,12 @@ class ChiggerBackground(base.ChiggerResultBase):
         opt.set('interactive', False)
         return opt
 
-    def __init__(self, **kwargs):
-        super(ChiggerBackground, self).__init__(**kwargs)
-
-
-    def update(self, **kwargs):
-        super(ChiggerBackground, self).update(**kwargs)
+    def applyOptions(self):
 
         if self.getOption('layer') != 0:
             msg = "The 'layer' option must be set to zero for background settings to apply."
             raise ValueError(msg)
 
-        if self.isOptionValid('background'):
-            self._vtkrenderer.SetBackground(self.applyOption('background'))
-
-        if self.isOptionValid('background2'):
-            self._vtkrenderer.SetBackground2(self.applyOption('background2'))
-
-        if self.isOptionValid('gradient_background'):
-            self._vtkrenderer.SetGradientBackground(self.applyOption('gradient_background'))
+        #self.setVTKOption(self._vtkrenderer.SetBackground, 'background')
+        #self.setVTKOption(self._vtkrenderer.SetBackground2, 'background2')
+        #self.setVTKOption(self._vtkrenderer.SetGradientBackground, 'gradient_background')

@@ -83,11 +83,11 @@ class ChiggerObject(object):
         else:
             self._options.update(**kwargs)
 
-    #def isOptionValid(self, name):
-    #    """
-    #    Test if the given option is valid (i.e., not None). (public)
-    #    """
-    #    return self._options.isOptionValid(name)
+    def isOptionValid(self, name):
+        """
+        Test if the given option is valid (i.e., not None). (public)
+        """
+        return self._options.isOptionValid(name)
 
     def getOption(self, name):
         """
@@ -102,21 +102,27 @@ class ChiggerObject(object):
             return None
         return self._options.get(name)
 
+    def setVTKOption(func, opt):
+        value = self.getOption(name)
+        if value is not None:
+            func(value)
+
+
     #def applyOption(self, name):
     #    """
     #    Returns the option and sets the apply
     #    """
     #    return self._options.applyOption(name)
 
-    #def setOption(self, name, value):
-    #    """
-    #    Set single option. (public)
+    def setOption(self, name, value):
+        """
+        Set single option. (public)
 
-    #    Inputs:
-    #        name[str]: The name of the option to retrieve
-    #        value: The value to set the option to
-    #    """
-    #    self._options.set(name, value)
+        Inputs:
+            name[str]: The name of the option to retrieve
+            value: The value to set the option to
+        """
+        self._options.set(name, value)
 
     #def setOptions(self, *args, **kwargs):
     #    """

@@ -61,7 +61,7 @@ class ChiggerAlgorithm(ChiggerObject):#, VTKPythonAlgorithmBase):
         if self._options.modified() > self.GetMTime():
             self.log('applyOptions()', level=logging.DEBUG)
             self.applyOptions()
-            self.log('Modified()', level=logging.DEBUG)
+            #self.log('Modified()', level=logging.DEBUG)
             self.Modified()
 
     def applyOptions(self):
