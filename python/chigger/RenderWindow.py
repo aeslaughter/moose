@@ -79,9 +79,12 @@ class RenderWindow(base.ChiggerObject):
         self.__active = None
         self.__highlight = None
 
-        self.__background = misc.ChiggerBackground()
-        self.append(self.__background, *args)
-        self.setActive(None)
+
+
+        self.append(*args)
+        #self.__background = misc.ChiggerBackground()
+        #self.append(self.__background, *args)
+        #self.setActive(None)
 
         # Create "chigger" watermark
         """
@@ -220,18 +223,35 @@ class RenderWindow(base.ChiggerObject):
 
         mooseutils.mooseDebug("{}.start()".format(self.__class__.__name__), color='MAGENTA')
 
-        self.update()
+        self.applyOptions()
 
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
-    def update(self, **kwargs):
+    def applyOptions(self):
         """
         Updates the child results and renders the results.
         """
         #super(RenderWindow, self).update(**kwargs)
 
+
+        #window = vtk.vtkRenderWindow()
+        for result in self._results:
+            result.applyOptions()
+            self.__vtkwindow.AddRenderer(result.getVTKRenderer())
+        self.__vtkwindow.SetSize(600, 600)
+
+        self.__vtkinteractor = vtk.vtkRenderWindowInteractor()
+        self.__vtkinteractor.SetRenderWindow(self.__vtkwindow)
+        self.__vtkinteractor.Initialize()
+
+        ## Show the result
+        self.__vtkwindow.Render()
+        #self.__vtkinteractor.Start()
+
+
+        """
         # Setup interactor
         if self.isOptionValid('test') and self.getOption('test'):
             self.__vtkwindow.OffScreenRenderingOn()
@@ -317,6 +337,8 @@ class RenderWindow(base.ChiggerObject):
                     result.getVTKRenderer().ResetCameraClippingRange()
                 else:
                     result.getVTKRenderer().ResetCamera()
+        """
+
 
     def resetCamera(self):
         """

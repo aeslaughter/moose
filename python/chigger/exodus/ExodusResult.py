@@ -89,7 +89,7 @@ class ExodusResult(base.ChiggerResult):
 
         return bindings
 
-    def applySettings(self):
+    def applyOptions(self):
 
         for vtkmapper in self._vtkmappers:
             vtkmapper.SelectColorArray('u')

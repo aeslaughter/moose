@@ -41,7 +41,6 @@ class KeyBindingMixin(object):
         return KeyBindings()
 
     def __init__(self):
-        super(KeyBindingMixin, self).__init__()
         self.__keybindings = self.validKeyBindings()
 
     def keyBindings(self):
