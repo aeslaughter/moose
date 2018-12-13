@@ -150,11 +150,11 @@ class ChiggerObject(object):
     #    """
     #    print '{}:{}={}'.format(self.title(), name, repr(self.getOption(name)))
 
-    #def printOptions(self):
-    #    """
-    #    Print a list of all available options for this object.
-    #    """
-    #    print self._options
+    def printOptions(self):
+        """
+        Print a list of all available options for this object.
+        """
+        print self._options
 
     #def printSetOptions(self):
     #    """

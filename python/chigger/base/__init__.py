@@ -50,3 +50,11 @@ def create_single_source_result(source_type):
         #    super(ChiggerResultMeta, self).update(**kwargs)
 
     return ChiggerResultMeta
+
+
+def addFilter(name, filtertype, required=False):
+    """Decorator for adding filters."""
+    def create(cls):
+        cls.__FILTERS__.append((name, filtertype, required))
+        return cls
+    return create

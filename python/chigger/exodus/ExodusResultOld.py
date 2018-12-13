@@ -7,28 +7,22 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-import vtk
-#from ExodusSource import ExodusSource
+
+from ExodusSource import ExodusSource
 from ExodusReader import ExodusReader
 from MultiAppExodusReader import MultiAppExodusReader
 import mooseutils
 from .. import base
 from .. import utils
-from .. import filters
 
-@base.addFilter('geometry', filters.GeometryFilter, required=True)
 class ExodusResult(base.ChiggerResult):
     """
     Result object to displaying ExodusII data from a single reader.
     """
-    VTKACTORTYPE = vtk.vtkActor
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper
-    INPUTTYPE = 'vtkMultiBlockDataSet'
-
     @staticmethod
     def validOptions():
         opt = base.ChiggerResult.validOptions()
-        #opt += ExodusSource.validOptions()
+        opt += ExodusSource.validOptions()
         opt.add('explode', None, "When multiple sources are being used (e.g., NemesisReader) "
                                  "setting this to a value will cause the various sources to be "
                                  "'exploded' away from the center of the entire object.",
@@ -62,27 +56,25 @@ class ExodusResult(base.ChiggerResult):
 
         return bindings
 
-    #def __init__(self, reader, **kwargs):
-    #    base.ChiggerResult(reader, **kwargs)
+    def __init__(self, reader, **kwargs):
 
-    #    self._reader = reader
+        self._reader = reader
 
-    #    # Build the ExodusSource objects
-    #    if isinstance(reader, ExodusReader):
-    #        sources = [ExodusSource(reader)]
-    #    elif isinstance(reader, MultiAppExodusReader):
-    #        sources = [ExodusSource(r) for r in reader]
-    #    else:
-    #        raise mooseutils.MooseException('The supplied object of type {} is not supported, '
-    #                                        'only ExodusReader and MultiAppExodusReader objects '
-    #                                        'may be utilized.'.format(reader.__class__.__name__))
+        # Build the ExodusSource objects
+        if isinstance(reader, ExodusReader):
+            sources = [ExodusSource(reader)]
+        elif isinstance(reader, MultiAppExodusReader):
+            sources = [ExodusSource(r) for r in reader]
+        else:
+            raise mooseutils.MooseException('The supplied object of type {} is not supported, '
+                                            'only ExodusReader and MultiAppExodusReader objects '
+                                            'may be utilized.'.format(reader.__class__.__name__))
 
-    #    # Supply the sources to the base class
-    #    #super(ExodusResult, self).__init__(*sources, **kwargs)
+        # Supply the sources to the base class
+        super(ExodusResult, self).__init__(*sources, **kwargs)
 
-    #    self.__outline_result = None
+        self.__outline_result = None
 
-    """
     def update(self, **kwargs):
         super(ExodusResult, self).update(**kwargs)
 
@@ -119,26 +111,25 @@ class ExodusResult(base.ChiggerResult):
                 c = src.getVTKActor().GetCenter()
                 d = (c[0]-m[0], c[1]-m[1], c[2]-m[2])
                 src.getVTKActor().AddPosition(d[0]*factor, d[1]*factor, d[2]*factor)
-    """
-    #def getRange(self, **kwargs):
-    #    """
-    #    Return the min/max range for the selected variables and blocks/boundary/nodeset.
 
-    #    NOTE: For the range to be restricted by block/boundary/nodest the reader must have
-    #          "squeeze=True", which can be much slower.
-    #    """
-    #    rngs = [src.getRange(**kwargs) for src in self._sources]
-    #    return utils.get_min_max(*rngs)
+    def getRange(self, **kwargs):
+        """
+        Return the min/max range for the selected variables and blocks/boundary/nodeset.
 
-    #def getCenter(self):
-    #    """
-    #    Return the center (based on the bounds) of all the objects.
-    #    """
-    #    b = self.getBounds()
-    #    return ((b[1]-b[0])/2., (b[3]-b[2])/2., (b[5]-b[4])/2.)
+        NOTE: For the range to be restricted by block/boundary/nodest the reader must have
+              "squeeze=True", which can be much slower.
+        """
+        rngs = [src.getRange(**kwargs) for src in self._sources]
+        return utils.get_min_max(*rngs)
 
+    def getCenter(self):
+        """
+        Return the center (based on the bounds) of all the objects.
+        """
+        b = self.getBounds()
+        return ((b[1]-b[0])/2., (b[3]-b[2])/2., (b[5]-b[4])/2.)
 
-    def _updateOpacity(self, window, binding): #pylint: disable=unuysed-argument
+    def _updateOpacity(self, window, binding): #pylint: disable=unused-argument
         opacity = self.getOption('opacity')
         if binding.shift:
             if opacity > 0.05:

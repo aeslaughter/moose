@@ -28,25 +28,32 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     # The type of input (as a string), see PythonAlgoritimBase
     INPUTTYPE = None
 
-    @staticmethod
-    def addFilter(name, filtertype, required=False):
-        """Decorator for adding filters."""
-        def create(cls):
-            cls.__FILTERS__.append((name, filtertype, required))
-            return cls
-        return create
-
     # List of filters, this is an internal item. Filters should be added with addFilter decorator
     __FILTERS__ = list()
 
     @staticmethod
     def validOptions():
         opt = ChiggerAlgorithm.validOptions()
+        opt.add('interactive', default=True,
+                doc="Control if the object may be selected with key bindings.")
+        opt.add('light', vtype=float,
+                doc="Add a headlight with the given intensity to the renderer.")
+        opt.add('layer', default=1, vtype=int,
+                doc="The VTK layer within the render window.")
+        opt.add('viewport', default=(0., 0., 1., 1.), vtype=float, size=4,
+                doc="A list given the viewport coordinates [x_min, y_min, x_max, y_max], in " \
+                    "relative position to the entire window (0 to 1).")
+        opt.add('camera', None, vtype=vtk.vtkCamera,
+                doc="The VTK camera to utilize for viewing the results.")
+        opt.add('highlight_active', default=True, vtype=bool,
+                doc="When the result is activate enable/disable the 'highlighting'.")
         return opt
 
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
+        bindings.add('c', ChiggerResult._printCamera,
+                     desc="Display the camera settings for this object.")
         bindings.add('o', lambda s, *args: ChiggerResultBase.printOptions(s),
                      desc="Display the available key, value options for this result.")
         bindings.add('o', lambda s, *args: ChiggerResultBase.printSetOptions(s), shift=True,
@@ -69,6 +76,9 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
             msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
+
+        # TODO: Restore interactive stuff...
+        #self._vtkrenderer.SetInteractive(value)
 
         # Setup VTKPythobnAlgorithmBase
         self.SetNumberOfInputPorts(len(args))
@@ -101,6 +111,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                 connected = True
             else:
                 filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
+
+        print self.__FILTERS__
 
         # Create mapper
         vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
@@ -183,6 +195,28 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
     def getFilters(self, index=-1):
         return self._filters[index]
+
+    #def setActive(self, value):
+    #    """
+    #    Activate method. This is an internal method, DO NOT USE!
+
+    #    Use RenderWindow.setActive() to activate/deactivate result objects.
+    #    """
+    #    self._vtkrenderer.SetInteractive(value)
+    #    if value and self.getOption('highlight_active'):
+    #        if self.__highlight is None:
+    #            self.__highlight = chigger.geometric.OutlineResult(self,
+    #                                                               interactive=False,
+    #                                                               color=(1, 0, 0),
+    #                                                               line_width=5)
+    #        self.getRenderWindow().append(self.__highlight)
+
+    #    elif self.__highlight is not None:
+    #        self.getRenderWindow().remove(self.__highlight)
+
+    def _printCamera(self, *args): #pylint: disable=unused-argument
+        """Keybinding callback."""
+        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 
     def __len__(self):
         """
