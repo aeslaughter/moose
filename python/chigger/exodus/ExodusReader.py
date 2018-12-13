@@ -282,24 +282,24 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     #    return self.__current
 
 
-    #def getBlockInformation(self):
-    #    """
-    #    Get the block (subdomain, nodeset, sideset) information. (public)
+    def getBlockInformation(self):
+        """
+        Get the block (subdomain, nodeset, sideset) information. (public)
 
-    #    Inputs:
-    #        check[bool]: (Default: True) When True, perform an update check and raise an exception
-    #                                     if object is not up-to-date. This should not be used.
+        Inputs:
+            check[bool]: (Default: True) When True, perform an update check and raise an exception
+                                         if object is not up-to-date. This should not be used.
 
-    #    Returns:
-    #        set: BlockInformation objects for all data types in this object (keys are "enum" values
-    #             found in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE)
-    #    """
-    #    self.update()
-    #    blockinfo = collections.defaultdict(dict)
-    #    for info in self.__blockinfo:
-    #        blockinfo[info.object_type][info.number] = info
+        Returns:
+            set: BlockInformation objects for all data types in this object (keys are "enum" values
+                 found in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE)
+        """
+        self.UpdateInformation()
+        blockinfo = collections.defaultdict(dict)
+        for info in self.__blockinfo:
+            blockinfo[info.object_type][info.number] = info
 
-    #    return blockinfo
+        return blockinfo
 
     #def getVariableInformation(self, var_types=None):
     #    """

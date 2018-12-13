@@ -98,6 +98,13 @@ class ExodusResult(base.ChiggerResult):
             vtkmapper.InterpolateScalarsBeforeMappingOn()
 
 
+        block_info = self._inputs[0].getBlockInformation()
+        print block_info
+        for item in ['block', 'boundary', 'nodeset']:
+            opt = self.getOption(item)
+            if opt == []:
+                self.setOption(item, [item.name for item in \
+                                      block_info[getattr(ExodusReader, item.upper())].itervalues()])
 
 
     #def __init__(self, reader, **kwargs):
