@@ -100,6 +100,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         """
 
         # Connect the filters
+        """
         filters = []
         connected = False
         for filter_name,filter_type, filter_required in self.__FILTERS__:
@@ -114,6 +115,12 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                 connected = True
             else:
                 filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
+        """
+
+        filters = []
+        filters.append(vtk.vtkCompositeDataGeometryFilter())
+        filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
+
 
         # Create mapper
         vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None

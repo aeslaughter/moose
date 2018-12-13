@@ -86,9 +86,10 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__active = None
         self.__highlight = None
 
-        self.__background = misc.ChiggerBackground()
-        self.append(self.__background, *args)
-        self.setActive(None)
+        #self.__background = misc.ChiggerBackground()
+        #self.append(self.__background, *args)
+        self.append(*args)
+        #self.setActive(None)
 
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -241,6 +242,11 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Updates the child results and renders the results.
         """
 
+        for result in self._results:
+            self.__vtkwindow.AddRenderer(result.getVTKRenderer())
+
+
+        """
         test = self.getOption('test')
         style = self.getOption('style')
         if test:
@@ -261,18 +267,19 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
             self.__vtkinteractor.RemoveObservers(vtk.vtkCommand.CharEvent)
-
+        """
             #main_observer = self.getOption('default_observer')
             #if main_observer is not None:
             #    main_observer.init(self)
             #    self._observers.add(main_observer)
 
         # Background settings
-        self._results[0].setOptions(background=self._options.get('background'),
-                                    background2=self._options.get('background2'),
-                                    gradient_background=self._options.get('gradient_background'))
+        #self._results[0].setOptions(background=self._options.get('background'),
+        #                            background2=self._options.get('background2'),
+        #                            gradient_background=self._options.get('gradient_background'))
 
         # vtkRenderWindow Settings
+        """
         if self.isOptionValid('offscreen'):
             self.__vtkwindow.SetOffScreenRendering(self.getOption('offscreen'))
 
@@ -302,6 +309,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # TODO: set if changed only
         self.__vtkwindow.SetNumberOfLayers(n)
+        """
 
         # Observers
         #if self.__vtkinteractor:
@@ -321,12 +329,14 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         self.__vtkwindow.Render()
 
+        """
         if self.getOption('reset_camera'):
             for result in self._results:
                 if result.isOptionValid('camera'):
                     result.getVTKRenderer().ResetCameraClippingRange()
                 else:
                     result.getVTKRenderer().ResetCamera()
+        """
 
     def resetCamera(self):
         """

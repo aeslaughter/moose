@@ -10,20 +10,20 @@ filename = '../input/input_no_adapt_out.e'
 
 reader = chigger.exodus.ExodusReader(filename, time=2)
 result = chigger.exodus.ExodusResult(reader)
-window = chigger.RenderWindow(result)
-window.start()
+#window = chigger.RenderWindow(result)
+#window.start()
 
 
 
 # Window and Interactor
-#window = vtk.vtkRenderWindow()
-#window.AddRenderer(result.getVTKRenderer())
-#window.SetSize(600, 600)
+window = vtk.vtkRenderWindow()
+window.AddRenderer(result.getVTKRenderer())
+window.SetSize(600, 600)
 #
-#interactor = vtk.vtkRenderWindowInteractor()
-#interactor.SetRenderWindow(window)
-#interactor.Initialize()
+interactor = vtk.vtkRenderWindowInteractor()
+interactor.SetRenderWindow(window)
+interactor.Initialize()
 #
 ### Show the result
-#window.Render()
-#interactor.Start()
+window.Render()
+interactor.Start()

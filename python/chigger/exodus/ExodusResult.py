@@ -17,7 +17,7 @@ from .. import utils
 from .. import filters
 
 @base.addFilter('geometry', filters.GeometryFilter, required=True)
-@base.addFilter('extract', filters.ExtractBlockFilter, required=True)
+#@base.addFilter('extract', filters.ExtractBlockFilter, required=True)
 class ExodusResult(base.ChiggerResult):
     """
     Result object to displaying ExodusII data from a single reader.
@@ -98,13 +98,12 @@ class ExodusResult(base.ChiggerResult):
             vtkmapper.InterpolateScalarsBeforeMappingOn()
 
 
-        block_info = self._inputs[0].getBlockInformation()
-        print block_info
-        for item in ['block', 'boundary', 'nodeset']:
-            opt = self.getOption(item)
-            if opt == []:
-                self.setOption(item, [item.name for item in \
-                                      block_info[getattr(ExodusReader, item.upper())].itervalues()])
+        #block_info = self._inputs[0].getBlockInformation()
+        #for item in ['block', 'boundary', 'nodeset']:
+        #    opt = self.getOption(item)
+        #    if opt == []:
+        #        self.setOption(item, [item.name for item in \
+        #                              block_info[getattr(ExodusReader, item.upper())].itervalues()])
 
 
     #def __init__(self, reader, **kwargs):
