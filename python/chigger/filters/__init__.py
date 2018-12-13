@@ -10,7 +10,7 @@
 
 import vtk
 from GeometryFilter import GeometryFilter
-
+from ExtractBlockFilter import ExtractBlockFilter
 
 from ContourFilter import ContourFilter
 from TransformFilter import TransformFilter

@@ -11,6 +11,7 @@
 import os
 import sys
 import vtk
+from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
 import base
 import annotations
@@ -18,7 +19,7 @@ import observers
 import misc
 import mooseutils
 
-class RenderWindow(base.ChiggerObject):
+class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
     """
@@ -26,7 +27,7 @@ class RenderWindow(base.ChiggerObject):
 
     @staticmethod
     def validOptions():
-        opt = base.ChiggerObject.validOptions()
+        opt = base.ChiggerAlgorithm.validOptions()
 
         opt.add('size', default=(960, 540), vtype=int, size=2,
                 doc="The size of the window, expects a list of two items")
@@ -72,19 +73,25 @@ class RenderWindow(base.ChiggerObject):
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
         self.__vtkinteractorstyle = None
 
-        super(RenderWindow, self).__init__(**kwargs)
+        VTKPythonAlgorithmBase.__init__(self)
+
+        self.SetNumberOfInputPorts(0)
+        self.SetNumberOfOutputPorts(0)
+
+
 
         self._results = []
         self._observers = set()
+
         self.__active = None
         self.__highlight = None
 
+        self.__background = misc.ChiggerBackground()
+        self.append(self.__background, *args)
+        self.setActive(None)
 
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
 
-        self.append(*args)
-        #self.__background = misc.ChiggerBackground()
-        #self.append(self.__background, *args)
-        #self.setActive(None)
 
         # Create "chigger" watermark
         """
@@ -233,34 +240,17 @@ class RenderWindow(base.ChiggerObject):
         """
         Updates the child results and renders the results.
         """
-        #super(RenderWindow, self).update(**kwargs)
 
-
-        #window = vtk.vtkRenderWindow()
-        for result in self._results:
-            result.applyOptions()
-            self.__vtkwindow.AddRenderer(result.getVTKRenderer())
-        self.__vtkwindow.SetSize(600, 600)
-
-        self.__vtkinteractor = vtk.vtkRenderWindowInteractor()
-        self.__vtkinteractor.SetRenderWindow(self.__vtkwindow)
-        self.__vtkinteractor.Initialize()
-
-        ## Show the result
-        self.__vtkwindow.Render()
-        #self.__vtkinteractor.Start()
-
-
-        """
-        # Setup interactor
-        if self.isOptionValid('test') and self.getOption('test'):
+        test = self.getOption('test')
+        style = self.getOption('style')
+        if test:
             self.__vtkwindow.OffScreenRenderingOn()
 
-        elif self.isOptionValid('style'):
+        elif style:
+
             if self.__vtkinteractor is None:
                 self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
 
-            style = self.getOption('style').lower()
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
@@ -272,10 +262,10 @@ class RenderWindow(base.ChiggerObject):
             self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
             self.__vtkinteractor.RemoveObservers(vtk.vtkCommand.CharEvent)
 
-            main_observer = self.getOption('default_observer')
-            if main_observer is not None:
-                main_observer.init(self)
-                self._observers.add(main_observer)
+            #main_observer = self.getOption('default_observer')
+            #if main_observer is not None:
+            #    main_observer.init(self)
+            #    self._observers.add(main_observer)
 
         # Background settings
         self._results[0].setOptions(background=self._options.get('background'),
@@ -314,17 +304,17 @@ class RenderWindow(base.ChiggerObject):
         self.__vtkwindow.SetNumberOfLayers(n)
 
         # Observers
-        if self.__vtkinteractor:
+        #if self.__vtkinteractor:
 
-            for observer in self.getOption('observers'):
-                if not isinstance(observer, observers.ChiggerObserver):
-                    msg = "The supplied observer of type {} must be a {} object."
-                    raise mooseutils.MooseException(msg.format(type(observer),
-                                                               observers.ChiggerObserver))
+        #    for observer in self.getOption('observers'):
+        #        if not isinstance(observer, observers.ChiggerObserver):
+        #            msg = "The supplied observer of type {} must be a {} object."
+        #            raise mooseutils.MooseException(msg.format(type(observer),
+        #                                                       observers.ChiggerObserver))
 
-                if observer not in self._observers:
-                    observer.init(self)
-                    self._observers.add(observer)
+        #        if observer not in self._observers:
+        #            observer.init(self)
+        #            self._observers.add(observer)
 
         #for result in self._results:
         #    result.update()
@@ -337,8 +327,6 @@ class RenderWindow(base.ChiggerObject):
                     result.getVTKRenderer().ResetCameraClippingRange()
                 else:
                     result.getVTKRenderer().ResetCamera()
-        """
-
 
     def resetCamera(self):
         """

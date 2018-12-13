@@ -67,6 +67,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         VTKPythonAlgorithmBase.__init__(self)
 
         # Initialize class members
+        self._inputs = list()
         self._filters = list()
         self._vtkmappers = list()
         self._vtkactors = list()
@@ -106,7 +107,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             if not filter_required:
                 continue
 
-            filters.append(filter_type())
+            filters.append(filter_type(self))
 
             if not connected:
                 filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
@@ -139,6 +140,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             self._vtkrenderer.AddActor(vtkactor)
 
         # Update the storage of the created objects
+        self._inputs.append(inarg)
         self._filters.append(filters)
         self._vtkmappers.append(vtkmapper)
         self._vtkactors.append(vtkactor)
@@ -165,6 +167,10 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     #    """
     #    rngs = [src.getRange(local=local) for src in self._sources]
     #    return utils.get_min_max(*rngs)
+
+
+    def getInput(self, index=-1):
+        return self._inputs[index]
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
