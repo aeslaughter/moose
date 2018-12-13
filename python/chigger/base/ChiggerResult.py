@@ -7,157 +7,182 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import vtk
+from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 import mooseutils
 from chigger import utils
-from ChiggerResultBase import ChiggerResultBase
-from ChiggerSourceBase import ChiggerSourceBase
+from ChiggerAlgorithm import ChiggerAlgorithm
 
-class ChiggerResult(ChiggerResultBase):
+class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
-    A ChiggerResult object capable of attaching an arbitrary number of ChiggerFilterSourceBase
-    objects to the vtkRenderer.
-
-    Any options supplied to this object are automatically passed down to the ChiggerFilterSourceBase
-    objects contained by this class, if the applicable. To have the settings of the contained source
-    objects appear in this objects option dump then simply add the settings to the static
-    validOptions method of the derived class. This is not done here because this class is designed
-    to accept arbitrary ChiggerFilterSourceBase object which may have varying settings, see
-    ExodusResult for an example of a single type implementation based on this class.
-
-    Inputs:
-        *sources: A tuple of ChiggerFilterSourceBase object to render.
-        **kwargs: see ChiggerResultBase
+    The ChiggerResult is the base class for creating renderered objects. This class
+    contains a single vtkRenderer to which many actors can be added.
     """
-    # The Base class type that this object to which its ownership is restricted.
-    SOURCE_TYPE = ChiggerSourceBase
+
+    # The type of vtkProp to create (this should be defined in child class)
+    VTKACTORTYPE = None
+
+    # The type of vtkAbstractMapper to create (this should be defined in child class)
+    VTKMAPPERTYPE = None
+
+    # The type of input (as a string), see PythonAlgoritimBase
+    INPUTTYPE = None
+
+    @staticmethod
+    def addFilter(name, filtertype, required=False):
+        """Decorator for adding filters."""
+        def create(cls):
+            cls.__FILTERS__.append((name, filtertype, required))
+            return cls
+        return create
+
+    # List of filters, this is an internal item. Filters should be added with addFilter decorator
+    __FILTERS__ = list()
 
     @staticmethod
     def validOptions():
-        opt = ChiggerResultBase.validOptions()
+        opt = ChiggerAlgorithm.validOptions()
         return opt
 
     @staticmethod
     def validKeyBindings():
-        bindings = ChiggerResultBase.validKeyBindings()
+        bindings = utils.KeyBindingMixin.validKeyBindings()
         bindings.add('o', lambda s, *args: ChiggerResultBase.printOptions(s),
                      desc="Display the available key, value options for this result.")
         bindings.add('o', lambda s, *args: ChiggerResultBase.printSetOptions(s), shift=True,
                      desc="Display the available key, value options as a 'setOptions' method call.")
         return bindings
 
-    def __init__(self, *sources, **kwargs):
-        super(ChiggerResult, self).__init__(renderer=kwargs.pop('renderer', None), **kwargs)
+    def __init__(self, *args, **kwargs):
+        renderer = kwargs.pop('renderer', None)
+        utils.KeyBindingMixin.__init__(self)
+        ChiggerAlgorithm.__init__(self, **kwargs)
+        VTKPythonAlgorithmBase.__init__(self)
 
-        self._sources = list()
-        for src in sources:
-            self._addSource(src)
+        # Initialize class members
+        self._filters = list()
+        self._vtkmappers = list()
+        self._vtkactors = list()
+        self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
 
-        self.setOptions(**kwargs)
+        # Verify renderer type
+        if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
+            msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
+            raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
-    def init(self, window):
+        # Setup VTKPythobnAlgorithmBase
+        self.SetNumberOfInputPorts(len(args))
+        self.InputType = self.INPUTTYPE
+
+        for arg in args:
+            self.__addSource(arg)
+
+    def __addSource(self, inarg):
         """
-        Initialize the result object with the RenderWindow.
+        Internal method for adding the necessary filters, mapper, and actor for the input.
+
+        Inputs:
+            inarg[vtkPythonAlgorithm]: An algorithm with an output port matching the class
+                                       member variable INPUTTYPE.
         """
-        super(ChiggerResult, self).init(window)
-        for src in self._sources:
-            self._vtkrenderer.AddActor(src.getVTKActor())
+
+        # Connect the filters
+        filters = []
+        connected = False
+        for filter_name,filter_type, filter_required in self.__FILTERS__:
+
+            if not filter_required:
+                continue
+
+            filters.append(filter_type())
+
+            if not connected:
+                filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
+                connected = True
+            else:
+                filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
+
+        # Create mapper
+        vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
+        if (vtkmapper is not None) and not isinstance(vtkmapper, vtk.vtkAbstractMapper):
+            msg = 'The supplied mapper is a {} but must be a vtk.vtkAbstractMapper type.'
+            raise mooseutils.MooseException(msg.format(type(vtkmapper).__name__))
+
+        # Connect mapper/filters into the pipeline
+        if filters:
+            vtkmapper.SetInputConnection(filters[-1].GetOutputPort(0))
+        else:
+            vtkmapper.SetInputConnection(inargs.GetOutputPort(0))
+
+        # TODO: Move
+        vtkmapper.SelectColorArray('u')
+        vtkmapper.SetScalarModeToUsePointFieldData()
+        vtkmapper.InterpolateScalarsBeforeMappingOn()
+
+        # Create the actor
+        vtkactor = self.VTKACTORTYPE() if self.VTKACTORTYPE else None
+        if (vtkactor is not None) and not isinstance(vtkactor, vtk.vtkProp):
+            msg = 'The supplied actor is a {} but must be a vtk.vtkProp type.'
+            raise mooseutils.MooseException(msg.format(type(vtkactor).__name__))
+
+        # Connect the mapper and actor and add the actor to the renderer
+        if vtkmapper is not None:
+            vtkactor.SetMapper(vtkmapper)
+        if vtkactor is not None:
+            self._vtkrenderer.AddActor(vtkactor)
+
+        # Update the storage of the created objects
+        self._filters.append(filters)
+        self._vtkmappers.append(vtkmapper)
+        self._vtkactors.append(vtkactor)
 
     def deinit(self):
         """
         Clean up the object prior to removal from RenderWindow.
         """
-        for src in self._sources:
-            self._vtkrenderer.RemoveActor(src.getVTKActor())
+        for actor in self._vtkactors:
+            self._vtkrenderer.RemoveActor(actor)
 
-    def getSources(self):
-        """
-        Return the list of ChiggerSource objects.
-        """
-        return self._sources
+    #def getBounds(self):
+    #    """
+    #    Return the bounding box of the results.
+    #    """
+    #    return utils.get_vtk_bounds_min_max(*[src.getBounds() for src in self._sources])
 
-    def _addSource(self, source):
-        """
-        Add a new chigger source object to the result.
-        """
-        if not isinstance(source, self.SOURCE_TYPE):
-            msg = 'The supplied source type of {} must be of type {}.'
-            raise mooseutils.MooseException(msg.format(source.__class__.__name__,
-                                                       self.SOURCE_TYPE.__name__))
+    #def getRange(self, local=False):
+    #    """
+    #    Return the min/max range for the selected variables and blocks/boundary/nodeset.
 
-        self._sources.append(source)
-        source.setVTKRenderer(self._vtkrenderer)
-        source._ChiggerSourceBase__result = self #pylint: disable=protected-access
+    #    NOTE: For the range to be restricted by block/boundary/nodest the reader must have
+    #          "squeeze=True", which can be much slower.
+    #    """
+    #    rngs = [src.getRange(local=local) for src in self._sources]
+    #    return utils.get_min_max(*rngs)
 
-    def getBounds(self):
-        """
-        Return the bounding box of the results.
-        """
-        return utils.get_vtk_bounds_min_max(*[src.getBounds() for src in self._sources])
+    def getVTKRenderer(self):
+        """Return the vtk.vtkRenderer object."""
+        return self._vtkrenderer
 
-    def setOptions(self, *args, **kwargs):
+    def getVTKActor(self, index=-1):
         """
-        Apply the supplied options to this object and the contained ChiggerFilterSourceBase objects.
-        (override)
+        Return the constructed vtk actor object. (public)
 
-        Inputs:
-            see ChiggerResultBase
+        Returns:
+            An object derived from vtk.vtkProp.
         """
-        super(ChiggerResult, self).setOptions(*args, **kwargs)
-        for src in self._sources:
-            valid = src.validOptions()
-            if args:
-                for sub in args:
-                    if sub in valid:
-                        src.setOptions(sub, **kwargs)
-            else:
-                for key, value in kwargs.iteritems():
-                    if key in src._options: #pylint: disable=protected-access
-                        src.setOption(key, value)
+        return self._vtkactors[index]
 
-    def setOption(self, key, value):
+    def getVTKMapper(self, index=-1):
         """
-        Set an individual option for this class and associated source objects.
-        """
-        super(ChiggerResult, self).setOption(key, value)
-        for src in self._sources:
-            if key in src._options: #pylint: disable=protected-access
-                src.setOption(key, value)
+        Return the constructed vtk mapper object. (public)
 
-    def update(self, **kwargs):
+        Returns:
+            An object derived from vtk.vtkAbstractMapper
         """
-        Update this object and the contained ChiggerFilterSourceBase objects. (override)
+        return self._vtkmappers[index]
 
-        Inputs:
-            see ChiggerResultBase
-        """
-        super(ChiggerResult, self).update(**kwargs)
-        for src in self._sources:
-            src.update(**kwargs)
-
-    def getRange(self, local=False):
-        """
-        Return the min/max range for the selected variables and blocks/boundary/nodeset.
-
-        NOTE: For the range to be restricted by block/boundary/nodest the reader must have
-              "squeeze=True", which can be much slower.
-        """
-        rngs = [src.getRange(local=local) for src in self._sources]
-        return utils.get_min_max(*rngs)
-
-    def __iter__(self):
-        """
-        Provides iteration access to the underlying source objects.
-        """
-        for src in self._sources:
-            yield src
-
-    def __getitem__(self, index):
-        """
-        Provide [] access to the source objects.
-        """
-        self.update()
-        return self._sources[index]
+    def getFilters(self, index=-1):
+        return self._filters[index]
 
     def __len__(self):
         """
