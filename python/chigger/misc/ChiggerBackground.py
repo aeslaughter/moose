@@ -37,6 +37,6 @@ class ChiggerBackground(base.ChiggerResult):
             msg = "The 'layer' option must be set to zero for background settings to apply."
             raise ValueError(msg)
 
-        #self.setVTKOption(self._vtkrenderer.SetBackground, 'background')
-        #self.setVTKOption(self._vtkrenderer.SetBackground2, 'background2')
-        #self.setVTKOption(self._vtkrenderer.SetGradientBackground, 'gradient_background')
+        #self.setVTKOption('background', self._vtkrenderer.SetBackground)
+        #self.setVTKOption('background2', self._vtkrenderer.SetBackground2)
+        #self.setVTKOption('gradient_background', self._vtkrenderer.SetGradientBackground)

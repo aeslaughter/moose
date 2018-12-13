@@ -56,6 +56,7 @@ def addFilter(filtertype, required=False):
     """Decorator for adding filters."""
     def create(cls):
         cls.__FILTERS__.append(filtertype)
-        cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
+        if required:
+            cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
         return cls
     return create

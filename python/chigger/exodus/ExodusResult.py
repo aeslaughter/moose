@@ -17,7 +17,7 @@ from .. import utils
 from .. import filters
 
 @base.addFilter(filters.GeometryFilter, required=True)
-#@base.addFilter(filters.ExtractBlockFilter)
+@base.addFilter(filters.ExtractBlockFilter)
 class ExodusResult(base.ChiggerResult):
     """
     Result object to displaying ExodusII data from a single reader.
@@ -91,12 +91,9 @@ class ExodusResult(base.ChiggerResult):
         return bindings
 
     def applyOptions(self):
-        base.ChiggerResult.applyOptions(self)
 
-        for vtkmapper in self._vtkmappers:
-            vtkmapper.SelectColorArray('u')
-            vtkmapper.SetScalarModeToUsePointFieldData()
-            vtkmapper.InterpolateScalarsBeforeMappingOn()
+        self.__ACTIVE_FILTERS__.add('extract')
+        base.ChiggerResult.applyOptions(self)
 
         # Update the block/boundary/nodeset settings to convert [] to all.
         block_info = self._inputs[0].getBlockInformation()
@@ -122,8 +119,15 @@ class ExodusResult(base.ChiggerResult):
         extract_indices += get_indices('boundary', ExodusReader.SIDESET)
         extract_indices += get_indices('nodeset', ExodusReader.NODESET)
 
-        #for filters in filters:
+        for filters in self._filters:
+            for fobject in filters:
+                if fobject.FILTERNAME == 'extract':
+                    fobject.setOption('indices', extract_indices)
 
+        for vtkmapper in self._vtkmappers:
+            vtkmapper.SelectColorArray('u')
+            vtkmapper.SetScalarModeToUsePointFieldData()
+            vtkmapper.InterpolateScalarsBeforeMappingOn()
 
 
     #def __init__(self, reader, **kwargs):

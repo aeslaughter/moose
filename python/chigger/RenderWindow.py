@@ -29,7 +29,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
 
-        opt.add('size', default=(960, 540), vtype=int, size=2,
+        opt.add('size', default=(1920, 1080), vtype=int, size=2,
                 doc="The size of the window, expects a list of two items")
         opt.add('style', default='interactive', vtype=str,
                 allow=('interactive', 'modal', 'interactive2D'),
@@ -78,18 +78,16 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.SetNumberOfInputPorts(0)
         self.SetNumberOfOutputPorts(0)
 
-
-
         self._results = []
         self._observers = set()
 
         self.__active = None
         self.__highlight = None
 
-        #self.__background = misc.ChiggerBackground()
-        #self.append(self.__background, *args)
-        self.append(*args)
-        #self.setActive(None)
+        self.__background = misc.ChiggerBackground()
+        self.append(self.__background, *args)
+        #self.append(*args)
+        self.setActive(None)
 
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -242,11 +240,10 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Updates the child results and renders the results.
         """
 
-        for result in self._results:
-            self.__vtkwindow.AddRenderer(result.getVTKRenderer())
+        #for result in self._results:
+        #    self.__vtkwindow.AddRenderer(result.getVTKRenderer())
 
 
-        """
         test = self.getOption('test')
         style = self.getOption('style')
         if test:
@@ -267,7 +264,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
             self.__vtkinteractor.RemoveObservers(vtk.vtkCommand.CharEvent)
-        """
+
             #main_observer = self.getOption('default_observer')
             #if main_observer is not None:
             #    main_observer.init(self)
@@ -279,24 +276,14 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #                            gradient_background=self._options.get('gradient_background'))
 
         # vtkRenderWindow Settings
-        """
-        if self.isOptionValid('offscreen'):
-            self.__vtkwindow.SetOffScreenRendering(self.getOption('offscreen'))
+        self.setVTKOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
+        self.setVTKOption('smoothing', self.__vtkwindow.SetLineSmoothing)
+        self.setVTKOption('smoothing', self.__vtkwindow.SetPolygonSmoothing)
+        self.setVTKOption('smoothing', self.__vtkwindow.SetPointSmoothing)
 
-        if self.isOptionValid('smoothing'):
-            smooth = self.getOption('smoothing')
-            self.__vtkwindow.SetLineSmoothing(smooth)
-            self.__vtkwindow.SetPolygonSmoothing(smooth)
-            self.__vtkwindow.SetPointSmoothing(smooth)
-
-        if self.isOptionValid('antialiasing'):
-            self.__vtkwindow.SetAAFrames(self.getOption('antialiasing'))
-
-        if self.isOptionValid('multisamples'):
-            self.__vtkwindow.SetMultiSamples(self.getOption('multisamples'))
-
-        if self.isOptionValid('size'):
-            self.__vtkwindow.SetSize(self.getOption('size'))
+        self.setVTKOption('antialiasing', self.__vtkwindow.SetAAFrames)
+        self.setVTKOption('multisamples', self.__vtkwindow.SetMultiSamples)
+        self.setVTKOption('size', self.__vtkwindow.SetSize)
 
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
@@ -304,12 +291,10 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             renderer = result.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
                 self.__vtkwindow.AddRenderer(renderer)
-            #result.update()
             n = max(n, renderer.GetLayer() + 1)
 
         # TODO: set if changed only
         self.__vtkwindow.SetNumberOfLayers(n)
-        """
 
         # Observers
         #if self.__vtkinteractor:

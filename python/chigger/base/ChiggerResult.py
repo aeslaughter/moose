@@ -169,14 +169,13 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
 
     def applyOptions(self):
+        ChiggerAlgorithm.applyOptions(self)
 
         # Connect the filters
         for inarg, vtkmapper, filters in zip(self._inputs, self._vtkmappers, self._filters):
             self.__connectFilters(inarg, vtkmapper, filters)
 
     def __connectFilters(self, inarg, vtkmapper, filters):
-
-        print self.__ACTIVE_FILTERS__
 
         active = []
         connected = False

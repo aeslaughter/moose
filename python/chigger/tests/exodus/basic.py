@@ -10,11 +10,11 @@ filename = '../input/input_no_adapt_out.e'
 
 reader = chigger.exodus.ExodusReader(filename, time=2)
 result = chigger.exodus.ExodusResult(reader)
-#window = chigger.RenderWindow(result)
-#window.start()
+window = chigger.RenderWindow(result)
+window.start()
 
 
-
+"""
 # Window and Interactor
 window = vtk.vtkRenderWindow()
 window.AddRenderer(result.getVTKRenderer())
@@ -27,3 +27,4 @@ interactor.Initialize()
 ### Show the result
 window.Render()
 interactor.Start()
+"""
