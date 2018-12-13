@@ -41,6 +41,10 @@ class ChiggerFilter(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         self._vtkfilter = self.__VTKFILTERTYPE__()
 
+    #def getVTKFilter(self):
+    #    return self._vtkfilter
+
+
     def RequestData(self, request, inInfo, outInfo):
         self.log('RequestData')#, level=logging.DEBUG)
 
@@ -93,8 +97,17 @@ class ChiggerResult(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             return cls
         return create
 
+    @staticmethod
+    def inputType(name):
+        def create(cls):
+            cls.__INPUTTYPE__ = name
+            return cls
+        return create
+
+
     __VTKACTORTYPE__ = None#vtk.vtkActor #None
     __VTKMAPPERTYPE__ = None#vtk.vtkPolyDataMapper #None
+    __INPUTTYPE__ = None
 
     __FILTERS__ = list()#[]#('geometry', GeometryFilter, True)]#
 
@@ -123,72 +136,14 @@ class ChiggerResult(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #                                  #outputType='vtkRenderer')
 
         self.SetNumberOfInputPorts(len(args))
-        self.InputType = 'vtkMultiBlockDataSet'
+        self.InputType = self.__INPUTTYPE__
 
 
         renderer = None #TODO: kwargs
 
-        self._filters = []
-
-
-
-        connected = False
-        for filter_name,filter_type, filter_required in self.__FILTERS__:
-
-            if not filter_required:
-                continue
-
-            self._filters.append(filter_type())
-
-            if not connected:
-                self._filters[-1].SetInputConnection(0, args[0].GetOutputPort(0))
-                connected = True
-
-            else:
-                self._filters[-1].SetInputConnection(0, self._filters[-2].GetOutputPort(0))
-
-
-        #self._geometry = vtk.vtkCompositeDataGeometryFilter()
-        #self._geometry = GeometryFilter()
-        #self._geometry.SetInputConnection(0, reader.GetOutputPort(0))
-        #self._geometry.Update()
-
-
-
-        self._vtkmapper = self.__VTKMAPPERTYPE__() if self.__VTKMAPPERTYPE__ else None
-        if (self._vtkmapper is not None) and not isinstance(self._vtkmapper, vtk.vtkAbstractMapper):
-            msg = 'The supplied mapper is a {} but must be a vtk.vtkAbstractMapper type.'
-            raise mooseutils.MooseException(msg.format(type(self._vtkmapper).__name__))
-
-
-        if self._filters:
-            self._vtkmapper.SetInputConnection(self._filters[-1].GetOutputPort(0))
-
-        else:
-            self._vtkmapper.SetInputConnection(args[0].GetOutputPort(0))
-
-
-        #self._vtkmapper.SetInputConnection(self._geometry.GetOutputPort())
-
-
-        self._vtkmapper.SelectColorArray('u')
-        self._vtkmapper.SetScalarModeToUsePointFieldData()
-
-        self._vtkmapper.InterpolateScalarsBeforeMappingOn()
-
-        #self._vtkrenderer.SetInteractive(False)
-
-
-        self._vtkactor = self.__VTKACTORTYPE__() if self.__VTKACTORTYPE__ else None
-        if (self._vtkactor is not None) and not isinstance(self._vtkactor, vtk.vtkProp):
-            msg = 'The supplied actor is a {} but must be a vtk.vtkProp type.'
-            raise mooseutils.MooseException(msg.format(type(self._vtkactor).__name__))
-
-
-        if self._vtkmapper is not None:
-            self._vtkactor.SetMapper(self._vtkmapper)
-
-
+        self._filters = list()
+        self._vtkmappers = list()
+        self._vtkactors = list()
 
         self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
@@ -196,10 +151,11 @@ class ChiggerResult(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
 
-        if self._vtkactor is not None:
-            self._vtkrenderer.AddActor(self._vtkactor)
+        for arg in args:
+            self.__addSource(arg)
 
 
+        # TODO: vtkRenderer.setInteractive
         #self._vtklight = vtk.vtkLight()
         #self._vtklight.SetLightTypeToHeadlight()
 
@@ -207,44 +163,102 @@ class ChiggerResult(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #self._render_window = None
         #self.__highlight = None
 
+    def __addSource(self, inarg):
+
+        filters = []
+        connected = False
+        for filter_name,filter_type, filter_required in self.__FILTERS__:
+
+            if not filter_required:
+                continue
+
+            filters.append(filter_type())
+
+            if not connected:
+                filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
+                connected = True
+
+            else:
+                filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
+
+
+
+
+        vtkmapper = self.__VTKMAPPERTYPE__() if self.__VTKMAPPERTYPE__ else None
+        if (vtkmapper is not None) and not isinstance(vtkmapper, vtk.vtkAbstractMapper):
+            msg = 'The supplied mapper is a {} but must be a vtk.vtkAbstractMapper type.'
+            raise mooseutils.MooseException(msg.format(type(vtkmapper).__name__))
+
+
+        if filters:
+            vtkmapper.SetInputConnection(filters[-1].GetOutputPort(0))
+
+        else:
+            vtkmapper.SetInputConnection(inargs.GetOutputPort(0))
+
+        # TODO: Move
+        vtkmapper.SelectColorArray('u')
+        vtkmapper.SetScalarModeToUsePointFieldData()
+        vtkmapper.InterpolateScalarsBeforeMappingOn()
+
+        vtkactor = self.__VTKACTORTYPE__() if self.__VTKACTORTYPE__ else None
+        if (vtkactor is not None) and not isinstance(vtkactor, vtk.vtkProp):
+            msg = 'The supplied actor is a {} but must be a vtk.vtkProp type.'
+            raise mooseutils.MooseException(msg.format(type(vtkactor).__name__))
+
+
+        if vtkmapper is not None:
+            vtkactor.SetMapper(vtkmapper)
+
+        if vtkactor is not None:
+            self._vtkrenderer.AddActor(vtkactor)
+
+
+        self._filters.append(filters)
+        self._vtkmappers.append(vtkmapper)
+        self._vtkactors.append(vtkactor)
+
     def applyOptions(self):
         """
         """
         pass
 
+    #def RequestInformation(self, request, inInfo, outInfo):
+    #    raise NotImplementedError;
+    #    return 1
 
-    def RequestInformation(self, request, inInfo, outInfo):
-        raise NotImplementedError;
-        return 1
-
-    def RequestData(self, request, inInfo, outInfo):
-        raise NotImplementedError;
-        return 1
+    #def RequestData(self, request, inInfo, outInfo):
+    #    raise NotImplementedError;
+    #    return 1
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
         return self._vtkrenderer
 
-    def getVTKActor(self):
+    def getVTKActor(self, index=-1):
         """
         Return the constructed vtk actor object. (public)
 
         Returns:
             An object derived from vtk.vtkProp.
         """
-        return self._vtkactor
+        return self._vtkactors[index]
 
-    def getVTKMapper(self):
+    def getVTKMapper(self, index=-1):
         """
         Return the constructed vtk mapper object. (public)
 
         Returns:
             An object derived from vtk.vtkAbstractMapper
         """
-        return self._vtkmapper
+        return self._vtkmappers[index]
+
+    def getFilters(self, index=-1):
+        return self._filters[index]
 
 @ChiggerResult.vtkMapperType(vtk.vtkPolyDataMapper)
 @ChiggerResult.vtkActorType(vtk.vtkActor)
+@ChiggerResult.inputType('vtkMultiBlockDataSet')
 @ChiggerResult.addFilter('geometry', GeometryFilter, required=True)
 class ExodusResult(ChiggerResult):
     pass
