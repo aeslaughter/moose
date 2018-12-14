@@ -10,6 +10,7 @@ filename = '../input/input_no_adapt_out.e'
 
 reader = chigger.exodus.ExodusReader(filename, time=2)
 result = chigger.exodus.ExodusResult(reader)
+result.setOptions('edges', visible=True)
 window = chigger.RenderWindow(result)
 window.start()
 

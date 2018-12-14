@@ -35,6 +35,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
+        opt.add('edges', utils.EdgeOptions.validOptions(), vtype=utils.Options, doc="Edge options.")
 
         opt.add('interactive', default=True,
                 doc="Control if the object may be selected with key bindings.")
@@ -49,6 +50,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                 doc="The VTK camera to utilize for viewing the results.")
         opt.add('highlight_active', default=True, vtype=bool,
                 doc="When the result is activate enable/disable the 'highlighting'.")
+        opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
+        opt.add('color', vtype=float, size=3, doc="The color of the object.")
 
         for filter_type in cls.__FILTERS__:
             opt.add(filter_type.FILTERNAME,
@@ -174,6 +177,13 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         # Connect the filters
         for inarg, vtkmapper, filters in zip(self._inputs, self._vtkmappers, self._filters):
             self.__connectFilters(inarg, vtkmapper, filters)
+
+        for vtkactor in self._vtkactors:
+            vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
+            self.setVTKOption('color', vtkactor.GetProperty().SetColor)
+
+        for vtkactor in self._vtkactors:
+            utils.EdgeOptions.applyOptions(vtkactor, self.getOption('edges'))
 
     def __connectFilters(self, inarg, vtkmapper, filters):
 

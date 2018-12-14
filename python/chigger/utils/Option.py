@@ -97,6 +97,8 @@ class Option(object):
     @property
     def modified(self):
         """Returns the applied status."""
+        if hasattr(self.__value, 'modified'):
+            return self.__value.modified()
         return self.__modified.GetMTime()
 
     @property

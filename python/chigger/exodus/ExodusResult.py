@@ -90,6 +90,16 @@ class ExodusResult(base.ChiggerResult):
 
         return bindings
 
+    def __init__(self, *args, **kwargs):
+
+        self.__current_variable = None
+        self._colormap = base.ColorMap()
+
+        base.ChiggerResult.__init__(self, *args, **kwargs)
+
+
+
+
     def applyOptions(self):
 
         self.__ACTIVE_FILTERS__.add('extract')
@@ -125,10 +135,11 @@ class ExodusResult(base.ChiggerResult):
                     fobject.setOption('indices', extract_indices)
 
         for vtkmapper in self._vtkmappers:
-            vtkmapper.SelectColorArray('u')
             vtkmapper.SetScalarModeToUsePointFieldData()
             vtkmapper.InterpolateScalarsBeforeMappingOn()
 
+
+        self.__updateVariable()
 
     #def __init__(self, reader, **kwargs):
     #    base.ChiggerResult(reader, **kwargs)
@@ -205,6 +216,183 @@ class ExodusResult(base.ChiggerResult):
     #    b = self.getBounds()
     #    return ((b[1]-b[0])/2., (b[3]-b[2])/2., (b[5]-b[4])/2.)
 
+
+    def __updateVariable(self):
+        """
+        Method to update the active variable to display on the object. (private)
+        """
+        def get_available_variables():
+            """
+            Returns a sting listing the available nodal and elemental variable names.
+            """
+            nvars = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL]).keys()
+            evars = self.__reader.getVariableInformation(var_types=[ExodusReader.ELEMENTAL]).keys()
+            msg = ["Nodal:"]
+            msg += [" " + var for var in nvars]
+            msg += ["\nElemental:"]
+            msg += [" " + var for var in evars]
+            return ''.join(msg)
+
+        # Define the active variable name
+        available = self._inputs[0].getVariableInformation(var_types=[ExodusReader.NODAL,
+                                                                       ExodusReader.ELEMENTAL])
+
+        # Case when no variable exists
+        if not available:
+            return
+
+        default = available[available.keys()[0]]
+        if not self.isOptionValid('variable'):
+            varinfo = default
+        else:
+            var_name = self.getOption('variable')
+            if var_name not in available:
+                msg = "The variable '{}' provided does not exist, using '{}', available " \
+                      "variables include:\n{}"
+                mooseutils.mooseError(msg.format(var_name, default.name, get_available_variables()))
+                varinfo = default
+            else:
+                varinfo = available[var_name]
+
+        # Update vtkMapper to the correct data mode
+        for vtkmapper in self._vtkmappers:
+            if varinfo.object_type == ExodusReader.ELEMENTAL:
+                vtkmapper.SetScalarModeToUseCellFieldData()
+            elif varinfo.object_type == ExodusReader.NODAL:
+                vtkmapper.SetScalarModeToUsePointFieldData()
+            else:
+                raise mooseutils.MooseException('Unknown variable type, not sure how you made it here.')
+
+        self.__current_variable = varinfo
+
+        # Colormap
+        if not self.getOption('color'):
+            self._colormap.setOptions(cmap=self.getOption('cmap'),
+                                      cmap_reverse=self.getOption('cmap_reverse'),
+                                      cmap_num_colors=self.getOption('cmap_num_colors'))
+            for vtkmapper in self._vtkmappers:
+                vtkmapper.SelectColorArray(varinfo.name)
+                vtkmapper.SetLookupTable(self._colormap())
+                vtkmapper.UseLookupTableScalarRangeOff()
+
+        # Component
+        component = -1 # Default component to utilize if not valid
+        if self.isOptionValid('component'):
+            component = self.getOption('component')
+
+        for vtkmapper in self._vtkmappers:
+            if component == -1:
+                vtkmapper.GetLookupTable().SetVectorModeToMagnitude()
+            else:
+                if component > varinfo.num_components:
+                    msg = 'Invalid component number ({}), the variable "{}" has {} components.'
+                    mooseutils.mooseError(msg.format(component, varinfo.name, varinfo.num_components))
+                vtkmapper.GetLookupTable().SetVectorModeToComponent()
+                vtkmapper.GetLookupTable().SetVectorComponent(component)
+
+        # Range
+        if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('range'):
+            mooseutils.mooseError('Both a "min" and/or "max" options has been set along with the '
+                                  '"range" option, the "range" is being utilized, the others are '
+                                  'ignored.')
+
+        # Range
+        rng = list(self.__getRange()) # Use range from all sources as the default
+        if self.isOptionValid('range'):
+            rng = self.getOption('range')
+        else:
+            if self.isOptionValid('min'):
+                rng[0] = self.getOption('min')
+            if self.isOptionValid('max'):
+                rng[1] = self.getOption('max')
+
+        if rng[0] > rng[1]:
+            mooseutils.mooseDebug("Minimum range greater than maximum:", rng[0], ">", rng[1],
+                                  ", the range/min/max settings are being ignored.")
+            rng = list(self.__getRange())
+
+        self.getVTKMapper().SetScalarRange(rng)
+
+    def getRange(self, local=False):
+        """
+        Return range of the active variable and blocks.
+        """
+        self.update()
+        if self.__current_variable is None:
+            return (None, None)
+        elif not local:
+            return self.__getRange()
+        else:
+            return self.__getLocalRange()
+
+    def __getRange(self):
+        """
+        Private version of range for the update method.
+        """
+        component = self.getOption('component')
+        pairs = []
+        for filters in self._filters:
+            filter_obj = None
+            for f in filters:
+                if f.FILTERNAME == 'extract':
+                    filter_obj = f
+                    break
+
+            filter_obj.Update() # required to get correct ranges from ExtractBlockFilter
+            data = filter_obj.GetOutputDataObject(0)
+            for i in range(data.GetNumberOfBlocks()):
+                current = data.GetBlock(i)
+                if isinstance(current, vtk.vtkCommonDataModelPython.vtkUnstructuredGrid):
+                    array = self.__getActiveArray(current)
+                    if array:
+                        pairs.append(array.GetRange(component))
+
+                elif isinstance(current, vtk.vtkCommonDataModelPython.vtkMultiBlockDataSet):
+                    for j in range(current.GetNumberOfBlocks()):
+                        array = self.__getActiveArray(current.GetBlock(j))
+                        if array:
+                            pairs.append(array.GetRange(component))
+
+        return utils.get_min_max(*pairs)
+
+    def __getLocalRange(self):
+        """
+        Determine the range of visible items.
+        """
+        component = self.getOption('component')
+        pairs = []
+        for vtkmapper in self._vtkmappers:
+            vtkmapper().Update() # required to have up-to-date ranges
+            data = vtkmapper.GetInput()
+            out = self.__getActiveArray(data)
+            if out is not None:
+                paris.append(out.GetRange(component))
+
+        return utils.get_min_max(*pairs)
+
+    def __getActiveArray(self, data):
+        """
+        Return the vtkArray for the current variable.
+
+        Inputs:
+            data[vtkUnstructuredGrid]: The VTK data object to extract array from.
+
+        see __GetRange and __GetBounds
+        """
+
+        name = self.__current_variable.name
+        if self.__current_variable.object_type == ExodusReader.ELEMENTAL:
+            for a in range(data.GetCellData().GetNumberOfArrays()):
+                if data.GetCellData().GetArrayName(a) == name:
+                    return data.GetCellData().GetAbstractArray(a)
+
+        elif self.__current_variable.object_type == ExodusReader.NODAL:
+            for a in range(data.GetPointData().GetNumberOfArrays()):
+                if data.GetPointData().GetArrayName(a) == name:
+                    return data.GetPointData().GetAbstractArray(a)
+        else:
+            raise mooseutils.MooseException('Unable to get the range for the '
+                                            'variable "{}"'.format(self.__current_variable.name))
 
     def _updateOpacity(self, window, binding): #pylint: disable=unuysed-argument
         opacity = self.getOption('opacity')

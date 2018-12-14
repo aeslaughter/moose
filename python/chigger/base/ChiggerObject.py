@@ -33,8 +33,8 @@ class ChiggerObject(object):
     def __init__(self, **kwargs):
         super(ChiggerObject, self).__init__()
         self._options = getattr(self.__class__, 'validOptions')()
+        kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
-        self._options.setDefault('name', self.__class__.__name__)
 
         self.__log = logging.getLogger(self.__class__.__name__)
 
@@ -74,9 +74,10 @@ class ChiggerObject(object):
         # Sub-options case
         if args:
             for sub in args:
-                if not self.options().hasOption(sub):
+                if not self._options.hasOption(sub):
                     msg = "The supplied sub-option '{}' does not exist.".format(sub)
                     mooseutils.mooseError(msg)
+                print sub, kwargs
                 self._options.get(sub).update(**kwargs)
 
         # Main options case

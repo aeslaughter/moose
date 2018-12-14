@@ -57,6 +57,7 @@ class ChiggerAlgorithm(ChiggerObject):#, VTKPythonAlgorithmBase):
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
+        print type(self), args, kwargs
         ChiggerObject.setOptions(self, *args, **kwargs)
         if self._options.modified() > self.GetMTime():
             self.log('applyOptions()', level=logging.DEBUG)

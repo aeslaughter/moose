@@ -301,24 +301,24 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         return blockinfo
 
-    #def getVariableInformation(self, var_types=None):
-    #    """
-    #    Information on available variables. (public)
+    def getVariableInformation(self, var_types=None):
+        """
+        Information on available variables. (public)
 
-    #    Inputs:
-    #        var_types[list]: List of variable types to return (default: ExodusReader.VARIABLE_TYPES)
+        Inputs:
+            var_types[list]: List of variable types to return (default: ExodusReader.VARIABLE_TYPES)
 
-    #    Returns:
-    #        OrderedDict: VariableInformation objects for all variables in the file.
-    #    """
-    #    if var_types is None:
-    #        var_types = ExodusReader.VARIABLE_TYPES
+        Returns:
+            OrderedDict: VariableInformation objects for all variables in the file.
+        """
+        if var_types is None:
+            var_types = ExodusReader.VARIABLE_TYPES
 
-    #    variables = collections.OrderedDict()
-    #    for name, var in self.__variableinfo.iteritems():
-    #        if var.object_type in var_types:
-    #            variables[name] = var
-    #    return variables
+        variables = collections.OrderedDict()
+        for name, var in self.__variableinfo.iteritems():
+            if var.object_type in var_types:
+                variables[name] = var
+        return variables
 
 #    def getVTKReader(self):
 #        """

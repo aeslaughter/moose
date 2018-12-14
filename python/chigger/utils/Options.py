@@ -92,7 +92,7 @@ class Options(object):
         if opt.value is None:
             opt.value = default
 
-    def isOptionValid(self, name, modified=None):
+    def isOptionValid(self, name):
         """
         Test if the given option is valid (i.e., !None). (public)
 
