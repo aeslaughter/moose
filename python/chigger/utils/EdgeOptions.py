@@ -24,7 +24,6 @@ def applyOptions(vtkactor, opt):
     vtkactor.RotateY(y)
     vtkactor.RotateZ(z)
 
-    print 'VISIBLE:', opt.get('visible')
     vtkactor.GetProperty().SetEdgeVisibility(opt.get('visible'))
     vtkactor.GetProperty().SetEdgeColor(opt.get('color'))
     vtkactor.GetProperty().SetLineWidth(opt.get('width'))

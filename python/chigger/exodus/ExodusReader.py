@@ -370,8 +370,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 mooseutils.mooseWarning("Timestep out of range:", timestep, 'not in', repr([0, n]))
                 self.setOption('timestep', 0)
                 idx = 0
-            elif timestep > n:
-                mooseutils.mooseWarning("Timestep out of range:", timestep, 'not in', repr([0, n]))
+            elif (timestep > n) or (timestep == -1):
+                if timestep != -1:
+                    mooseutils.mooseWarning("Timestep out of range:", timestep, 'not in', repr([0, n]))
                 self.setOption('timestep', n)
                 idx = n
 

@@ -225,12 +225,16 @@ class ExodusResult(base.ChiggerResult):
             """
             Returns a sting listing the available nodal and elemental variable names.
             """
-            nvars = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL]).keys()
-            evars = self.__reader.getVariableInformation(var_types=[ExodusReader.ELEMENTAL]).keys()
-            msg = ["Nodal:"]
-            msg += [" " + var for var in nvars]
-            msg += ["\nElemental:"]
-            msg += [" " + var for var in evars]
+            nvars = self._inputs[0].getVariableInformation(var_types=[ExodusReader.NODAL]).keys()
+            evars = self._inputs[0].getVariableInformation(var_types=[ExodusReader.ELEMENTAL]).keys()
+
+            msg = []
+            if nvars:
+                msg += ["Nodal:"]
+                msg += [" " + var for var in nvars]
+            if evars:
+                msg += ["\nElemental:"]
+                msg += [" " + var for var in evars]
             return ''.join(msg)
 
         # Define the active variable name
@@ -249,7 +253,7 @@ class ExodusResult(base.ChiggerResult):
             if var_name not in available:
                 msg = "The variable '{}' provided does not exist, using '{}', available " \
                       "variables include:\n{}"
-                mooseutils.mooseError(msg.format(var_name, default.name, get_available_variables()))
+                mooseutils.mooseWarning(msg.format(var_name, default.name, get_available_variables()))
                 varinfo = default
             else:
                 varinfo = available[var_name]
