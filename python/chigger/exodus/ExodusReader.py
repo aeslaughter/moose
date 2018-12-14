@@ -177,6 +177,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
+            vtkobject.SetTimeStep(time0.timestep)
             self.__updateOptions(vtkobject)
 
         else:
@@ -365,7 +366,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 return self.__timeinfo[idx], None
 
         elif timestep is not None:
+
             # Account for out-of-range timesteps
+            idx = timestep
             if (timestep < 0) and (timestep != -1):
                 mooseutils.mooseWarning("Timestep out of range:", timestep, 'not in', repr([0, n]))
                 self.setOption('timestep', 0)

@@ -12,6 +12,6 @@
 import chigger
 reader = chigger.exodus.ExodusReader('../input/mug_blocks_out.e')
 mug = chigger.exodus.ExodusResult(reader)
-window = chigger.RenderWindow(mug, size=(300,300), background=None, test=True)
+window = chigger.RenderWindow(mug, size=(300,300), background=None)
 window.write('transparent.png')
 window.start()

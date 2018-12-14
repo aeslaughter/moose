@@ -345,7 +345,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Writes the VTKWindow to an image.
         """
         mooseutils.mooseDebug('RenderWindow.write()', color='MAGENTA')
-        self.update(**kwargs)
 
         # Allowed extensions and the associated readers
         writers = dict()
@@ -355,7 +354,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         writers['.bmp'] = vtk.vtkBMPWriter
         writers['.jpg'] = vtk.vtkJPEGWriter
 
-        # Extract the extensionq
+        # Extract the extension
         _, ext = os.path.splitext(filename)
         if ext not in writers:
             w = ', '.join(writers.keys())

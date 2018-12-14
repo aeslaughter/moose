@@ -36,10 +36,10 @@ class ExodusResult(base.ChiggerResult):
                 doc="The vector variable component to render (-1 plots the magnitude).")
 
         # Data range
-        opt.add('range', vtype=float, size=2,
+        opt.add('lim', vtype=float, size=2,
                 doc="The range of data to display on the volume and colorbar; range takes " \
                     "precedence of min/max.")
-        opt.add('local_range', False, "Use local range when computing the default data range.")
+        opt.add('local_lim', False, "Use local range when computing the default data range.")
         opt.add('min', vtype=float, doc="The minimum range.")
         opt.add('max', vtype=float, doc="The maximum range.")
 
@@ -174,8 +174,8 @@ class ExodusResult(base.ChiggerResult):
 
         # Re-compute ranges for all sources
         rng = list(self.getRange(local=self.getOption('local_range')))
-        if self.isOptionValid('range'):
-            rng = self.getOption('range')
+        if self.isOptionValid('lim'):
+            rng = self.getOption('lim')
         else:
             if self.isOptionValid('min'):
                 rng[0] = self.getOption('min')
@@ -295,15 +295,17 @@ class ExodusResult(base.ChiggerResult):
                 vtkmapper.GetLookupTable().SetVectorComponent(component)
 
         # Range
-        if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('range'):
+        if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('lim'):
             mooseutils.mooseError('Both a "min" and/or "max" options has been set along with the '
                                   '"range" option, the "range" is being utilized, the others are '
                                   'ignored.')
 
         # Range
         rng = list(self.__getRange()) # Use range from all sources as the default
-        if self.isOptionValid('range'):
-            rng = self.getOption('range')
+        print 'RANGE:', rng
+
+        if self.isOptionValid('lim'):
+            rng = self.getOption('lim')
         else:
             if self.isOptionValid('min'):
                 rng[0] = self.getOption('min')
@@ -315,6 +317,7 @@ class ExodusResult(base.ChiggerResult):
                                   ", the range/min/max settings are being ignored.")
             rng = list(self.__getRange())
 
+        print 'RANGE:', rng
         self.getVTKMapper().SetScalarRange(rng)
 
     def getRange(self, local=False):

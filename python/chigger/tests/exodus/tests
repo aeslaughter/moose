@@ -1,4 +1,10 @@
 [Tests]
+  [basic]
+    type = ImageDiff
+    command = basic.py
+    cli_args = --test
+    imagediff = basic.png
+  []
   [./ExodusReader]
     type = PythonUnitTest
     input = test_ExodusReader.py
