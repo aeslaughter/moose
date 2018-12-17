@@ -301,9 +301,7 @@ class ExodusResult(base.ChiggerResult):
                                   'ignored.')
 
         # Range
-        rng = list(self.__getRange()) # Use range from all sources as the default
-        print 'RANGE:', rng
-
+        rng = list(self.getRange(local=self.getOption('local_lim')))
         if self.isOptionValid('lim'):
             rng = self.getOption('lim')
         else:
@@ -317,14 +315,15 @@ class ExodusResult(base.ChiggerResult):
                                   ", the range/min/max settings are being ignored.")
             rng = list(self.__getRange())
 
-        print 'RANGE:', rng
         self.getVTKMapper().SetScalarRange(rng)
 
     def getRange(self, local=False):
         """
         Return range of the active variable and blocks.
         """
-        self.update()
+        for reader in self._inputs:
+            reader.Update()
+
         if self.__current_variable is None:
             return (None, None)
         elif not local:
@@ -369,11 +368,11 @@ class ExodusResult(base.ChiggerResult):
         component = self.getOption('component')
         pairs = []
         for vtkmapper in self._vtkmappers:
-            vtkmapper().Update() # required to have up-to-date ranges
+            vtkmapper.Update() # required to have up-to-date ranges
             data = vtkmapper.GetInput()
             out = self.__getActiveArray(data)
             if out is not None:
-                paris.append(out.GetRange(component))
+                pairs.append(out.GetRange(component))
 
         return utils.get_min_max(*pairs)
 

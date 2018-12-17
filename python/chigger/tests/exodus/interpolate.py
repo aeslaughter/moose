@@ -1,11 +1,27 @@
 #!/usr/bin/env python
 import chigger
 
+# The file has two timesteps at 2 and 11, the data
+# ranges betweein [0, 5] and [0, 14], respectively.
+# Thus, at t=6.5 the range should be [0, 9.5].
 filename = '../input/input_no_adapt_out.e'
-reader = chigger.exodus.ExodusReader(filename, timestep=1)
-print reader.getTimes()
-result = chigger.exodus.ExodusResult(reader, lim=(0,4))
-result.setOptions('edges', visible=True)
+reader = chigger.exodus.ExodusReader(filename)
+result = chigger.exodus.ExodusResult(reader, lim=(0,14))
 window = chigger.RenderWindow(result, size=(300, 300))
-window.write('interpolate_2.png')
+
+# time = 2, timestep = 0
+reader.setOptions(timestep=-1)
+#print result.getRange() # [0, 5]
+#window.write('interpolate_2.png')
+
+# time = 11, timestep = 1
+#reader.setOptions(timestep=1)
+#print result.getRange() # [0, 14]
+#window.write('interpolate_11.png')
+
+# time = 6.5, timestep = N/A (interpolate)
+#reader.setOptions(time=6.5)
+#print result.getRange() # [0, 9.5]
+#window.write('interpolate_6-5.png') # time = 6.5
+
 window.start()

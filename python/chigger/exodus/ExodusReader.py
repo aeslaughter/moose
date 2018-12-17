@@ -141,7 +141,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         filenames = self.__getActiveFilenames()
         if filenames == self.__active:
-            return
+            return 1
 
         self.__active = filenames
         self.__updateInformation()
@@ -444,7 +444,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                                                                          modified=current_modified,
                                                                          vtkreader=vtkreader)
 
-        #Create a TimeInformation object for each timestep that indicates the correct file.
+        # Create a TimeInformation object for each timestep that indicates the correct file.
         self.__timeinfo = []
         timestep = 0
         for tinfo in self.__fileinfo.itervalues():

@@ -229,7 +229,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         mooseutils.mooseDebug("{}.start()".format(self.__class__.__name__), color='MAGENTA')
 
-        self.applyOptions()
+        #self.applyOptions()
 
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
