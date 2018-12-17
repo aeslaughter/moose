@@ -101,13 +101,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 doc="The displacement magnitude vector.")
         opt.add('variables', vtype=str, array=True,
                 doc="A tuple of  active variables, if not specified all variables are loaded.")
-        opt.add('nodeset', doc="A list of nodeset ids or names to display, use [] to display all "
-                               "nodesets.", vtype=list)
-        opt.add('boundary', doc="A list of boundary ids (sideset) ids or names to display, use "
-                                "[] to display all sidesets", vtype=list)
-        opt.add('block', doc="A list of subdomain (block) ids or names to display, by default if "
-                             "'nodeset' and 'sideset' are not specified all blocks are shown.",
-                vtype=list)
+        #opt.add('nodeset', doc="A list of nodeset ids or names to display, use [] to display all "
+        #                       "nodesets.", vtype=list)
+        #opt.add('boundary', doc="A list of boundary ids (sideset) ids or names to display, use "
+        #                        "[] to display all sidesets", vtype=list)
+        #opt.add('block', default=[], vtype=list,
+        #        doc="A list of subdomain (block) ids or names to display, by default if "
+        #            "'nodeset' and 'sideset' are not specified all blocks are shown.")
         opt.add('squeeze', default=False,
                 doc="Calls SetSqueezePoints on vtkExodusIIReader, according to the "
                     "VTK documentation setting this to False should be faster.")
@@ -273,12 +273,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         vtkreader.SetDisplacementMagnitude(self.getOption('displacement_magnitude'))
 
         # Set the geometric objects to load (i.e., subdomains, nodesets, sidesets)
-        active_blockinfo = self.__getActiveBlocks()
-        for data in self.__blockinfo:
-            if (not active_blockinfo) or (data in active_blockinfo):
-                vtkreader.SetObjectStatus(data.object_type, data.object_index, 1)
-            else:
-                vtkreader.SetObjectStatus(data.object_type, data.object_index, 0)
+        #active_blockinfo = self.__getActiveBlocks()
+        #for data in self.__blockinfo:
+        #    if (not active_blockinfo) or (data in active_blockinfo):
+        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 1)
+        #    else:
+        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 0)
 
         # According to the VTK documentation setting this to False (not the default) speeds
         # up data loading. In my testing I was seeing load times cut in half or more with
@@ -298,8 +298,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 1)
             else:
                 vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 0)
-
-
 
     def getFilename(self):
         """

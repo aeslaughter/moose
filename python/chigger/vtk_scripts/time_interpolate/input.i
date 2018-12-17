@@ -12,30 +12,48 @@
 []
 
 [AuxVariables]
-  [u]
+  [point]
+  []
+  [cell]
+    family = MONOMIAL
+    order = CONSTANT
   []
 []
 
 [AuxKernels]
-  [u]
+  [point]
     type = FunctionAux
     function = func
-    variable = u
+    variable = point
+  []
+  [cell]
+    type = FunctionAux
+    function = func2
+    variable = cell
   []
 []
 
 [Functions]
   [func]
     type = ParsedFunction
-    value = 'x*y*(t+3)'
+    value = 'x*y*t'
+  []
+  [func2]
+    type = ParsedFunction
+    value = 'x*x*y*y*t'
   []
 []
 
 [ICs]
-  [u]
+  [point]
     type = FunctionIC
     function = func
-    variable = u
+    variable = point
+  []
+  [cell]
+    type = FunctionIC
+    function = func2
+    variable = cell
   []
 []
 
@@ -45,12 +63,22 @@
   kernel_coverage_check = false
 []
 
+[Postprocessors]
+  [point_max]
+    type = NodalExtremeValue
+    variable = point
+  []
+  [cell_max]
+    type = ElementExtremeValue
+    variable = cell
+  []
+[]
 
 [Executioner]
   type = Transient
-  start_time = -7
+  start_time = -1
   num_steps = 2
-  dt = 9
+  dt = 2
 []
 
 [Adaptivity]
@@ -59,8 +87,8 @@
   [Markers]
     [box]
       type = BoxMarker
-      bottom_left = '0.2 0.2 0'
-      top_right = '0.5 0.7 0'
+      bottom_left = '0.5 0.5 0'
+      top_right = '0.9 0.9 0'
       inside = refine
       outside = do_nothing
     []
