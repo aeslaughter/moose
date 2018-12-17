@@ -173,11 +173,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             # Interpolation across files
             else:
-                pass
+                vtkobject = self.__adaptiveTimeInterpolate(time0, file0, time1, file1)
+                return 1
 
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
-            vtkobject.SetTimeStep(time0.timestep)
+            vtkobject.SetTimeStep(time0.index)
             self.__updateOptions(vtkobject)
 
         else:
@@ -188,6 +189,76 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         out_data.ShallowCopy(vtkobject.GetOutputDataObject(0))
         return 1
+
+    def __adaptiveTimeInterpolate(self, time0, file0, time1, file1):
+        """
+        Return result interpolated between the two differing files.
+        """
+        time = self.getOption('time')
+        variable = 'u'
+
+        n_cells_0 = file0.vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetNumberOfCells()
+        n_cells_1 = file1.vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetNumberOfCells()
+
+        if n_cells_0 > n_cells_1:
+            fine_reader = file0.vtkreader
+            coarse_reader = file1.vtkreader
+        else:
+            fine_reader = file1.vtkreader
+            coarse_reader = file0.vtkreader
+
+        coarse_geometry = vtk.vtkCompositeDataGeometryFilter()
+        coarse_geometry.SetInputConnection(0, coarse_reader.GetOutputPort(0))
+        coarse_geometry.Update()
+
+        fine_geometry = vtk.vtkCompositeDataGeometryFilter()
+        fine_geometry.SetInputConnection(0, fineReader.GetOutputPort(0))
+        fine_geometry.Update()
+
+        fine_geometry.GetOutput().GetPointData().SetActiveScalars(variable)
+
+
+        interp = vtk.vtkMultiBlockDataSet()
+        interp.DeepCopy(fine_reader.GetOutput())
+
+        locator = vtk.vtkStaticPointLocator()
+        locator.SetDataSet(fineGeometry.GetOutput())
+        locator.BuildLocator()
+
+        kernel = vtk.vtkGaussianKernel()
+        kernel.SetSharpness(4)
+        kernel.SetKernelFootprintToNClosest()
+        kernel.SetNumberOfPoints(10)
+        kernel.SetSharpness(5.0)
+
+
+        interpolator = vtk.vtkPointInterpolator()
+        interpolator.SetSourceData(coarse_geometry.GetOutput()) # Pc data set to be probed by input points P
+        interpolator.SetInputData(fine_geometry.GetOutput())
+        interpolator.SetKernel(kernel)
+        interpolator.SetLocator(locator)
+        interpolator.SetNullPointsStrategyToClosestPoint()
+        interpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
+        interpolator.Update()
+
+
+        interp.GetBlock(0).GetBlock(0).GetPointData().SetActiveScalars(variable)
+        interpolator.GetOutput().GetPointData().SetActiveScalars(variable)
+
+        fineInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
+        #fineInterpolateAttributes.AddInputData(0, fineInterpolatedGrid)
+        fineInterpolateAttributes.AddInputData(0, interp.GetBlock(0).GetBlock(0))
+        fineInterpolateAttributes.AddInputData(0, fineInterpolator.GetOutput())
+        fineInterpolateAttributes.SetT(0.5)
+        fineInterpolateAttributes.Update()
+
+
+        interp.GetBlock(0).GetBlock(0).DeepCopy(fineInterpolateAttributes.GetOutput())
+        return interp
+
+        #return vtkobject
+
+
 
     def __updateOptions(self, vtkreader):
         """
