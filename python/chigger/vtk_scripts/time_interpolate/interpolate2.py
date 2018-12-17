@@ -81,7 +81,7 @@ interpReader = vtk.vtkMultiBlockDataSetAlgorithm()
 interpReader.GetOutput().ShallowCopy(fineReader.GetOutput())
 
 
-def interpolate(variable, obj_type, j):
+def interpolate(variable, i, j):
 
     locator = vtk.vtkStaticPointLocator()
     locator.SetDataSet(fineGeometry.GetOutput())
@@ -104,12 +104,12 @@ def interpolate(variable, obj_type, j):
     fineInterpolator.Update()
 
 
-    interpReader.GetOutput().GetBlock(obj_type).GetBlock(j).GetPointData().SetActiveScalars(variable)
+    interpReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData().SetActiveScalars(variable)
     fineInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
 
     fineInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
     #fineInterpolateAttributes.AddInputData(0, fineInterpolatedGrid)
-    fineInterpolateAttributes.AddInputData(0, interpReader.GetOutput().GetBlock(0).GetBlock(0))
+    fineInterpolateAttributes.AddInputData(0, interpReader.GetOutput().GetBlock(i).GetBlock(j))
     fineInterpolateAttributes.AddInputData(0, fineInterpolator.GetOutput())
     fineInterpolateAttributes.SetT(0.5)
     fineInterpolateAttributes.Update()
