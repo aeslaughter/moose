@@ -13,7 +13,8 @@ coarseReader = vtk.vtkExodusIIReader()
 coarseReader.SetFileName(file0)
 coarseReader.UpdateInformation()
 coarseReader.SetTimeStep(0)
-coarseReader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1)
+#coarseReader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1)
+coarseReader.SetPointResultArrayStatus(variable, 1)
 coarseReader.Update()
 
 coarseGeometry = vtk.vtkCompositeDataGeometryFilter()
@@ -42,7 +43,8 @@ coarseRenderer.SetViewport(0, 0, 0.25, 1)
 fineReader = vtk.vtkExodusIIReader()
 fineReader.SetFileName(file1)
 fineReader.UpdateInformation()
-fineReader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1)
+fineReader.SetPointResultArrayStatus(variable, 1)
+#fineReader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1)
 fineReader.SetTimeStep(0)
 fineReader.Update()
 
@@ -76,7 +78,7 @@ fineRenderer.SetViewport(0.75, 0, 1, 1)
 #fineInterpolatedGrid.DeepCopy(vtk.vtkUnstructuredGrid.SafeDownCast(fineMultiBlock.GetBlock(0)))
 
 interpReader = vtk.vtkMultiBlockDataSetAlgorithm()
-interpReader.GetOutput().DeepCopy(fineReader.GetOutput())
+interpReader.GetOutput().ShallowCopy(fineReader.GetOutput())
 
 
 def interpolate(variable, obj_type, j):
@@ -98,7 +100,9 @@ def interpolate(variable, obj_type, j):
     fineInterpolator.SetLocator(locator)
     fineInterpolator.SetNullPointsStrategyToClosestPoint()
     fineInterpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
+    fineInterpolator.PassCellArraysOff()
     fineInterpolator.Update()
+
 
     interpReader.GetOutput().GetBlock(obj_type).GetBlock(j).GetPointData().SetActiveScalars(variable)
     fineInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
@@ -115,30 +119,49 @@ def interpolate(variable, obj_type, j):
     interpReader.GetOutput().GetBlock(obj_type).GetBlock(j).DeepCopy(fineInterpolateAttributes.GetOutput())
 
 
-for obj_type in [vtk.vtkExodusIIReader.ELEM_BLOCK, # 0 (MOOSE Subdomains)
-                 vtk.vtkExodusIIReader.FACE_BLOCK, # 1
-                 vtk.vtkExodusIIReader.EDGE_BLOCK, # 2
-                 vtk.vtkExodusIIReader.ELEM_SET,   # 3
-                 vtk.vtkExodusIIReader.SIDE_SET,   # 4 (MOOSE Boundaries)
-                 vtk.vtkExodusIIReader.FACE_SET,   # 5
-                 vtk.vtkExodusIIReader.EDGE_SET,   # 6
-                 vtk.vtkExodusIIReader.NODE_SET]:  # 7 (MOOSE Nodesets)
+
+for i in xrange(fineReader.GetOutput().GetNumberOfBlocks()):
+    for j in xrange(fineReader.GetOutput().GetBlock(i).GetNumberOfBlocks()):
+        data = fineReader.GetOutput().GetBlock(i).GetBlock(j)
+        if data is None:
+            continue
+
+        p_data = fineReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData()
+
+        for k in xrange(p_data.GetNumberOfArrays()):
+            name = p_data.GetArray(k).GetName()
+            if fineReader.GetPointResultArrayStatus(name):
+                interpolate(name, i, j)
+                #print 'NODE ACTIVE:', name
+
+
+"""
+for obj_type in [vtk.vtkExodusIIReader.NODAL,
+                 vtk.vtkExodusIIReader.GLOBAL,
+                 vtk.vtkExodusIIReader.EDGE_BLOCK,
+                 vtk.vtkExodusIIReader.FACE_BLOCK,
+                 vtk.vtkExodusIIReader.ELEM_BLOCK,
+                 vtk.vtkExodusIIReader.NODE_SET,
+                 vtk.vtkExodusIIReader.EDGE_SET,
+                 vtk.vtkExodusIIReader.FACE_SET,
+                 vtk.vtkExodusIIReader.SIDE_SET,
+                 vtk.vtkExodusIIReader.ELEM_SET]:
+
+    #fineReader.SetAllArrayStatus(obj_type, 1)
+    #coarseReader.SetAllArrayStatus(obj_type, 1)
     #n = fineReader.GetNumberOfObjects(obj_type)
     #print n, type(n)
     for j in xrange(fineReader.GetNumberOfObjects(obj_type)):
         name = fineReader.GetObjectName(obj_type, j)
         vtkid = fineReader.GetObjectId(obj_type, j)
-        active = fineReader.GetObjectArrayStatus(obj_type, j)
-
-        print name, active
-        #if active:
-        #    print 'ACTIVE:', name, vtkid
+        active = fineReader.GetObjectStatus(obj_type, j)
+        if active:
+            print 'ACTIVE:', obj_type, j
         #    print fineReader.GetOutput().GetBlock(obj_type).GetBlock(j)
-        #interpolate(name, obj_type, j)
+         #   interpolate(name, obj_type, j)
+"""
 
-
-    interpolate('u', 0, 0)
-
+#interpolate('u', 0, 0)
 
 
 
