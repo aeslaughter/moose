@@ -572,7 +572,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Overload the str function so that information is printed when print is called on the object.
         """
 
-        # Createa source object to extract ranges for variables
+        # Create source object to extract ranges for variables
         from ExodusSource import ExodusSource
         src = ExodusSource(self)
 

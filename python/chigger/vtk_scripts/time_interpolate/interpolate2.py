@@ -42,8 +42,8 @@ coarseRenderer.SetViewport(0, 0, 0.25, 1)
 fineReader = vtk.vtkExodusIIReader()
 fineReader.SetFileName(file1)
 fineReader.UpdateInformation()
-fineReader.SetTimeStep(0)
 fineReader.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1)
+fineReader.SetTimeStep(0)
 fineReader.Update()
 
 fineGeometry = vtk.vtkCompositeDataGeometryFilter()
@@ -79,10 +79,71 @@ interpReader = vtk.vtkMultiBlockDataSetAlgorithm()
 interpReader.GetOutput().DeepCopy(fineReader.GetOutput())
 
 
-#TODO: Create an algorithm that has this as an output...
-#interp = vtk.vtkMultiBlockDataSet()#vtk.vtkExodusIIReader()
-#interp.DeepCopy(fineReader.GetOutput())
+def interpolate(variable, obj_type, j):
 
+    locator = vtk.vtkStaticPointLocator()
+    locator.SetDataSet(fineGeometry.GetOutput())
+    locator.BuildLocator()
+
+    kernel = vtk.vtkGaussianKernel()
+    kernel.SetSharpness(4)
+    kernel.SetKernelFootprintToNClosest()
+    kernel.SetNumberOfPoints(10)
+    kernel.SetSharpness(5.0)
+
+    fineInterpolator = vtk.vtkPointInterpolator()
+    fineInterpolator.SetSourceData(coarseGeometry.GetOutput()) # Pc data set to be probed by input points P
+    fineInterpolator.SetInputData(fineGeometry.GetOutput())
+    fineInterpolator.SetKernel(kernel)
+    fineInterpolator.SetLocator(locator)
+    fineInterpolator.SetNullPointsStrategyToClosestPoint()
+    fineInterpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
+    fineInterpolator.Update()
+
+    interpReader.GetOutput().GetBlock(obj_type).GetBlock(j).GetPointData().SetActiveScalars(variable)
+    fineInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
+
+    fineInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
+    #fineInterpolateAttributes.AddInputData(0, fineInterpolatedGrid)
+    fineInterpolateAttributes.AddInputData(0, interpReader.GetOutput().GetBlock(0).GetBlock(0))
+    fineInterpolateAttributes.AddInputData(0, fineInterpolator.GetOutput())
+    fineInterpolateAttributes.SetT(0.5)
+    fineInterpolateAttributes.Update()
+
+    #print fineReader.GetOutput().GetBlock(0).GetBlock(0)
+    #print interp.GetBlock(0).GetBlock(0)
+    interpReader.GetOutput().GetBlock(obj_type).GetBlock(j).DeepCopy(fineInterpolateAttributes.GetOutput())
+
+
+for obj_type in [vtk.vtkExodusIIReader.ELEM_BLOCK, # 0 (MOOSE Subdomains)
+                 vtk.vtkExodusIIReader.FACE_BLOCK, # 1
+                 vtk.vtkExodusIIReader.EDGE_BLOCK, # 2
+                 vtk.vtkExodusIIReader.ELEM_SET,   # 3
+                 vtk.vtkExodusIIReader.SIDE_SET,   # 4 (MOOSE Boundaries)
+                 vtk.vtkExodusIIReader.FACE_SET,   # 5
+                 vtk.vtkExodusIIReader.EDGE_SET,   # 6
+                 vtk.vtkExodusIIReader.NODE_SET]:  # 7 (MOOSE Nodesets)
+    #n = fineReader.GetNumberOfObjects(obj_type)
+    #print n, type(n)
+    for j in xrange(fineReader.GetNumberOfObjects(obj_type)):
+        name = fineReader.GetObjectName(obj_type, j)
+        vtkid = fineReader.GetObjectId(obj_type, j)
+        active = fineReader.GetObjectArrayStatus(obj_type, j)
+
+        print name, active
+        #if active:
+        #    print 'ACTIVE:', name, vtkid
+        #    print fineReader.GetOutput().GetBlock(obj_type).GetBlock(j)
+        #interpolate(name, obj_type, j)
+
+
+    interpolate('u', 0, 0)
+
+
+
+
+
+"""
 locator = vtk.vtkStaticPointLocator()
 locator.SetDataSet(fineGeometry.GetOutput())
 locator.BuildLocator()
@@ -101,9 +162,11 @@ fineInterpolator.SetLocator(locator)
 fineInterpolator.SetNullPointsStrategyToClosestPoint()
 fineInterpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
 fineInterpolator.Update()
+"""
 
+"""
 fineInterpolatorMapper = vtk.vtkDataSetMapper()
-fineInterpolatorMapper.SetInputConnection(fineInterpolator.GetOutputPort())
+fineInterpolatorMapper.SetInputConnection(interpReader.GetOutputPort())
 fineInterpolatorMapper.SelectColorArray(variable)
 fineInterpolatorMapper.SetScalarModeToUsePointFieldData()
 fineInterpolatorMapper.InterpolateScalarsBeforeMappingOn()
@@ -116,10 +179,13 @@ fineInterpolatorActor.GetProperty().SetEdgeVisibility(True)
 fineInterpolatorRenderer = vtk.vtkRenderer()
 fineInterpolatorRenderer.AddActor(fineInterpolatorActor)
 fineInterpolatorRenderer.SetViewport(0.25, 0, 0.5, 1)
+"""
+
 
 #####################################################################################################
 # INTERPOLATE BETWEEN THE PROJECTED SOLUTION AND SOLUTION FROM FILE 1
 
+"""
 # THESE ARE REQUIRED!!!
 #fineInterpolatedGrid.GetPointData().SetActiveScalars(variable)
 interpReader.GetOutput().GetBlock(0).GetBlock(0).GetPointData().SetActiveScalars(variable)
@@ -137,6 +203,7 @@ fineInterpolateAttributes.Update()
 #print fineReader.GetOutput().GetBlock(0).GetBlock(0)
 #print interp.GetBlock(0).GetBlock(0)
 interpReader.GetOutput().GetBlock(0).GetBlock(0).DeepCopy(fineInterpolateAttributes.GetOutput())
+"""
 
 
 
@@ -170,7 +237,7 @@ fineInterpolateAttibutesMapperRenderer.SetViewport(0.5, 0, 0.75, 1)
 
 window = vtk.vtkRenderWindow()
 window.AddRenderer(fineRenderer)
-window.AddRenderer(fineInterpolatorRenderer)
+#window.AddRenderer(fineInterpolatorRenderer)
 window.AddRenderer(fineInterpolateAttibutesMapperRenderer)
 window.AddRenderer(coarseRenderer)
 window.SetSize(1920, 1080)
