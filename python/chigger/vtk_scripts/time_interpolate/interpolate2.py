@@ -17,12 +17,13 @@ coarseReader.SetTimeStep(0)
 coarseReader.SetPointResultArrayStatus(variable, 1)
 coarseReader.SetElementResultArrayStatus(variable, 1)
 coarseReader.SetGlobalResultArrayStatus(variable, 1)
+coarseReader.SetGenerateObjectIdCellArray(True)
 coarseReader.Update()
 
 if variable == 'cell':
     coarseCell2Point = vtk.vtkCellDataToPointData()
     coarseCell2Point.SetInputConnection(coarseReader.GetOutputPort(0))
-    coarseCell2Point.PassCellDataOn()
+    #coarseCell2Point.PassCellDataOn()
     coarseCell2Point.Update()
     coarseActiveReader = coarseCell2Point
 else:
@@ -75,7 +76,7 @@ fineReader.Update()
 if variable == 'cell':
     fineCell2Point = vtk.vtkCellDataToPointData()
     fineCell2Point.SetInputConnection(fineReader.GetOutputPort(0))
-    fineCell2Point.PassCellDataOn()
+    #fineCell2Point.PassCellDataOn()
     fineCell2Point.Update()
     fineActiveReader = fineCell2Point
 else:
@@ -163,17 +164,17 @@ def interpolate(variable, i, j, action):
     interpReader.GetOutput().GetBlock(i).GetBlock(j).DeepCopy(fineInterpolateAttributes.GetOutput())
 
 
-for i in xrange(fineActiveReader.GetOutput().GetNumberOfBlocks()):
-    for j in xrange(fineActiveReader.GetOutput().GetBlock(i).GetNumberOfBlocks()):
-        data = fineActiveReader.GetOutput().GetBlock(i).GetBlock(j)
+for i in xrange(fineReader.GetOutput().GetNumberOfBlocks()):
+    for j in xrange(fineReader.GetOutput().GetBlock(i).GetNumberOfBlocks()):
+        data = fineReader.GetOutput().GetBlock(i).GetBlock(j)
         if data is None:
             continue
 
         # POINT
-        p_data = fineActiveReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData()
+        p_data = fineReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData()
         for k in xrange(p_data.GetNumberOfArrays()):
             name = p_data.GetArray(k).GetName()
-            if fineActiveReader.GetPointResultArrayStatus(name):
+            if fineReader.GetPointResultArrayStatus(name):
                 interpolate(name, i, j, 'POINT')
 
         # CELL
