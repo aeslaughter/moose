@@ -3,7 +3,8 @@ import vtk
 
 file0 = 'input_out.e'
 file1 = 'input_out.e-s002'
-variable = 'cell'
+variable = 'cell'   # I need help with this
+#variable = 'point' # This works!
 range = [0, 3]
 
 ##################################################################################
@@ -94,6 +95,7 @@ interpReader = vtk.vtkMultiBlockDataSetAlgorithm()
 interpReader.GetOutput().DeepCopy(fineReader.GetOutput())
 
 def interpolate(variable, i, j, action):
+    # ACTION = "CELL" or "POINT"
 
     locator = vtk.vtkStaticPointLocator()# switching this to vtkSaticCellLocator doesn't work because vtkPoinInterpolator expects a AbstractPointLocator
     locator.SetDataSet(fineGeometry.GetOutput())
@@ -137,7 +139,6 @@ def interpolate(variable, i, j, action):
     interpReader.GetOutput().GetBlock(i).GetBlock(j).DeepCopy(fineInterpolateAttributes.GetOutput())
 
 
-
 for i in xrange(fineReader.GetOutput().GetNumberOfBlocks()):
     for j in xrange(fineReader.GetOutput().GetBlock(i).GetNumberOfBlocks()):
         data = fineReader.GetOutput().GetBlock(i).GetBlock(j)
@@ -159,7 +160,7 @@ for i in xrange(fineReader.GetOutput().GetNumberOfBlocks()):
                 interpolate(name, i, j, 'CELL')
 
         # GLOBAL
-
+        # TODO: Interpolate global data
 
 
 fineInterpolatorGeometry = vtk.vtkCompositeDataGeometryFilter()
