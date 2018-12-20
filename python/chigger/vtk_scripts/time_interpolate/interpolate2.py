@@ -19,8 +19,17 @@ coarseReader.SetElementResultArrayStatus(variable, 1)
 coarseReader.SetGlobalResultArrayStatus(variable, 1)
 coarseReader.Update()
 
+if variable == 'cell':
+    coarseCell2Point = vtk.vtkCellDataToPointData()
+    coarseCell2Point.SetInputConnection(coarseReader.GetOutputPort(0))
+    coarseCell2Point.PassCellDataOn()
+    coarseCell2Point.Update()
+    coarseActiveReader = coarseCell2Point
+else:
+    coarseActiveReader = coarseReader
+
 coarseGeometry = vtk.vtkCompositeDataGeometryFilter()
-coarseGeometry.SetInputConnection(0, coarseReader.GetOutputPort(0))
+coarseGeometry.SetInputConnection(0, coarseActiveReader.GetOutputPort(0))
 coarseGeometry.Update()
 
 #coarseGeometry.GetOutput().GetPointData().SetActiveScalars(variable)
@@ -30,10 +39,13 @@ coarseMapper = vtk.vtkPolyDataMapper()
 coarseMapper.SetInputConnection(coarseGeometry.GetOutputPort())
 coarseMapper.SelectColorArray(variable)
 
-if variable == 'cell':
-    coarseMapper.SetScalarModeToUseCellFieldData()
-elif variable == 'point':
-    coarseMapper.SetScalarModeToUsePointFieldData()
+
+
+
+#if variable == 'cell':
+#    coarseMapper.SetScalarModeToUseCellFieldData()
+#elif variable == 'point':
+coarseMapper.SetScalarModeToUsePointFieldData()
 
 
 coarseMapper.InterpolateScalarsBeforeMappingOn()
@@ -60,23 +72,32 @@ fineReader.SetGenerateObjectIdCellArray(True)
 fineReader.SetTimeStep(0)
 fineReader.Update()
 
+if variable == 'cell':
+    fineCell2Point = vtk.vtkCellDataToPointData()
+    fineCell2Point.SetInputConnection(fineReader.GetOutputPort(0))
+    fineCell2Point.PassCellDataOn()
+    fineCell2Point.Update()
+    fineActiveReader = fineCell2Point
+else:
+    fineActiveReader = fineReader
+
 fineGeometry = vtk.vtkCompositeDataGeometryFilter()
-fineGeometry.SetInputConnection(0, fineReader.GetOutputPort(0))
+fineGeometry.SetInputConnection(0, fineActiveReader.GetOutputPort(0))
 fineGeometry.Update()
 
-if variable == 'cell':
-    fineGeometry.GetOutput().GetCellData().SetActiveScalars(variable)
-elif variable == 'point':
-    fineGeometry.GetOutput().GetPointData().SetActiveScalars(variable)
+#if variable == 'cell':
+#    fineGeometry.GetOutput().GetCellData().SetActiveScalars(variable)
+#elif variable == 'point':
+fineGeometry.GetOutput().GetPointData().SetActiveScalars(variable)
 
 
 fineMapper = vtk.vtkPolyDataMapper()
 fineMapper.SetInputConnection(fineGeometry.GetOutputPort())
 fineMapper.SelectColorArray(variable)
-if variable == 'cell':
-    fineMapper.SetScalarModeToUseCellFieldData()
-elif variable == 'point':
-    fineMapper.SetScalarModeToUsePointFieldData()
+#if variable == 'cell':
+#    fineMapper.SetScalarModeToUseCellFieldData()
+#elif variable == 'point':
+fineMapper.SetScalarModeToUsePointFieldData()
 fineMapper.InterpolateScalarsBeforeMappingOn()
 fineMapper.SetScalarRange(*range)
 
@@ -92,6 +113,9 @@ fineRenderer.SetViewport(0.66, 0, 1, 1)
 # PROJECT SOLUTION FROM FILE 0 to GRID FROM FILE 1
 
 interpReader = vtk.vtkMultiBlockDataSetAlgorithm()
+#if variable == 'cell':
+#    interpReader.GetOutput().DeepCopy(fineCell2Point.GetOutput())
+#else:
 interpReader.GetOutput().DeepCopy(fineReader.GetOutput())
 
 def interpolate(variable, i, j, action):
@@ -115,20 +139,20 @@ def interpolate(variable, i, j, action):
     fineInterpolator.SetNullPointsStrategyToClosestPoint()
 
     # THIS IS REQUIRED!!!
-    if action == 'CELL':
-        fineInterpolator.PassCellArraysOff()
-    elif action == 'POINT':
-        fineInterpolator.PassPointArraysOff()
+    #if action == 'CELL':
+    #    fineInterpolator.PassCellArraysOff()
+    #elif action == 'POINT':
+    fineInterpolator.PassPointArraysOff()
 
     fineInterpolator.Update()
 
-    if action == 'CELL':
-        interpReader.GetOutput().GetBlock(i).GetBlock(j).GetCellData().SetActiveScalars(variable)
-        fineInterpolator.GetOutput().GetCellData().SetActiveScalars(variable)
+    #if action == 'CELL':
+    #    interpReader.GetOutput().GetBlock(i).GetBlock(j).GetCellData().SetActiveScalars(variable)
+    #    fineInterpolator.GetOutput().GetCellData().SetActiveScalars(variable)
 
-    elif action == 'POINT':
-        interpReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData().SetActiveScalars(variable)
-        fineInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
+    #elif action == 'POINT':
+    interpReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData().SetActiveScalars(variable)
+    fineInterpolator.GetOutput().GetPointData().SetActiveScalars(variable)
 
     fineInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
     fineInterpolateAttributes.AddInputData(0, interpReader.GetOutput().GetBlock(i).GetBlock(j))
@@ -139,25 +163,25 @@ def interpolate(variable, i, j, action):
     interpReader.GetOutput().GetBlock(i).GetBlock(j).DeepCopy(fineInterpolateAttributes.GetOutput())
 
 
-for i in xrange(fineReader.GetOutput().GetNumberOfBlocks()):
-    for j in xrange(fineReader.GetOutput().GetBlock(i).GetNumberOfBlocks()):
-        data = fineReader.GetOutput().GetBlock(i).GetBlock(j)
+for i in xrange(fineActiveReader.GetOutput().GetNumberOfBlocks()):
+    for j in xrange(fineActiveReader.GetOutput().GetBlock(i).GetNumberOfBlocks()):
+        data = fineActiveReader.GetOutput().GetBlock(i).GetBlock(j)
         if data is None:
             continue
 
         # POINT
-        p_data = fineReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData()
+        p_data = fineActiveReader.GetOutput().GetBlock(i).GetBlock(j).GetPointData()
         for k in xrange(p_data.GetNumberOfArrays()):
             name = p_data.GetArray(k).GetName()
-            if fineReader.GetPointResultArrayStatus(name):
+            if fineActiveReader.GetPointResultArrayStatus(name):
                 interpolate(name, i, j, 'POINT')
 
         # CELL
-        c_data = fineReader.GetOutput().GetBlock(i).GetBlock(j).GetCellData()
-        for k in xrange(c_data.GetNumberOfArrays()):
-            name = c_data.GetArray(k).GetName()
-            if fineReader.GetElementResultArrayStatus(name):
-                interpolate(name, i, j, 'CELL')
+        #c_data = fineReader.GetOutput().GetBlock(i).GetBlock(j).GetCellData()
+        #for k in xrange(c_data.GetNumberOfArrays()):
+        #    name = c_data.GetArray(k).GetName()
+        #    if fineReader.GetElementResultArrayStatus(name):
+        #        interpolate(name, i, j, 'CELL')
 
         # GLOBAL
         # TODO: Interpolate global data
@@ -171,10 +195,10 @@ fineInterpolateAttibutesMapper = vtk.vtkPolyDataMapper()
 fineInterpolateAttibutesMapper.SetInputConnection(fineInterpolatorGeometry.GetOutputPort(0))
 
 fineInterpolateAttibutesMapper.SelectColorArray(variable)
-if variable == 'cell':
-    fineInterpolateAttibutesMapper.SetScalarModeToUseCellFieldData()
-elif variable == 'point':
-    fineInterpolateAttibutesMapper.SetScalarModeToUsePointFieldData()
+#if variable == 'cell':
+#    fineInterpolateAttibutesMapper.SetScalarModeToUseCellFieldData()
+#elif variable == 'point':
+fineInterpolateAttibutesMapper.SetScalarModeToUsePointFieldData()
 
 fineInterpolateAttibutesMapper.InterpolateScalarsBeforeMappingOn()
 fineInterpolateAttibutesMapper.SetScalarRange(*range)
@@ -204,4 +228,14 @@ interactor.SetRenderWindow(window)
 interactor.Initialize()
 
 window.Render()
+
+window_filter = vtk.vtkWindowToImageFilter()
+window_filter.SetInput(window)
+window_filter.Update()
+
+writer = vtk.vtkPNGWriter()
+writer.SetFileName('{}.png'.format(variable))
+writer.SetInputData(window_filter.GetOutput())
+writer.Write()
+
 interactor.Start()
