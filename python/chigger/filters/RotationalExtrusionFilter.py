@@ -23,6 +23,7 @@ class RotationalExtrusionFilter(ChiggerFilterBase):
         opt = ChiggerFilterBase.getOptions()
         opt.add('angle', None, "Set the angle of rotation.", vtype=float)
         opt.add('resolution', None, "Set the rotational resolution.", vtype=int)
+        opt.add('translation', None, "Set the z-axis translation.", vtype=float)
         return opt
 
     def __init__(self, **kwargs):
@@ -40,3 +41,6 @@ class RotationalExtrusionFilter(ChiggerFilterBase):
 
         if self.isOptionValid('resolution'):
             self._vtkfilter.SetResolution(self.getOption('resolution'))
+
+        if self.isOptionValid('translation'):
+            self._vtkfilter.SetTranslation(self.getOption('translation'))
