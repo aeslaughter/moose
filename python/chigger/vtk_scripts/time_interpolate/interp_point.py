@@ -3,8 +3,8 @@ import vtk
 
 file0 = 'input_out.e'
 file1 = 'input_out.e-s002'
-variable = 'u'
-range = [0, 10]
+variable = 'point'
+range = [0, 3]
 
 ##################################################################################
 # FILE 0: COARSE MESH WITH SOLUTION 0
