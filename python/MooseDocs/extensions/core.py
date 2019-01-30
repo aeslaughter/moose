@@ -398,6 +398,9 @@ class RenderHeading(components.RenderComponent):
             latex.Command(sec, 'label', string=token.text(u'-').lower())
         return sec
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderCode(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         language = 'language-{}'.format(token['language'])
@@ -416,6 +419,9 @@ class RenderCode(components.RenderComponent):
                                  before_end='\n',
                                  escape=False,
                                  info=token.info)
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderShortcutLink(components.RenderComponent):
     def __init__(self, *args, **kwargs):
@@ -446,6 +452,9 @@ class RenderShortcutLink(components.RenderComponent):
                               info=token.info)
         return h
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
     def getShortcut(self, token):
         key = token['key']
         if key in self.__cache:
@@ -468,6 +477,9 @@ class RenderShortcut(components.RenderComponent):
     def createLatex(self, *args):
         pass
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderMonospace(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         code = html.Tag(parent, 'code')
@@ -479,6 +491,9 @@ class RenderMonospace(components.RenderComponent):
         latex.String(code, content=token['content'])
         return
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderBreak(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return html.String(parent, content=u' ')
@@ -486,11 +501,16 @@ class RenderBreak(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.String(parent, content=u' ')
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderLineBreak(components.RenderComponent):
     def createHTML(self, parent, token, page):
         return html.Tag(parent, 'br', close=False)
     def createLatex(self, parent, token, page):
         return latex.String(parent, content='\\\\')
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderLink(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -508,6 +528,9 @@ class RenderLink(components.RenderComponent):
                                 info=token.info)
         return cmd
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderParagraph(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return html.Tag(parent, 'p', token)
@@ -515,6 +538,9 @@ class RenderParagraph(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         latex.Command(parent, 'par', start='\n', end=' ', info=token.info)
         return parent
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderOrderedList(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
@@ -530,6 +556,9 @@ class RenderOrderedList(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'enumerate', after_begin='', info=token.info)
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderUnorderedList(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.Tag(parent, 'ul', token)
@@ -544,6 +573,9 @@ class RenderUnorderedList(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'itemize', after_begin='', info=token.info)
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderListItem(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.Tag(parent, 'li', token)
@@ -552,12 +584,18 @@ class RenderListItem(components.RenderComponent):
         latex.Command(parent, 'item', start='\n', end=' ')
         return parent
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderString(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.String(parent, content=token['content'], escape=token.get('escape', True))
 
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use
         return latex.String(parent, content=token['content'])
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderSpace(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -566,12 +604,18 @@ class RenderSpace(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use
         return latex.String(parent, content=u' '*token['count'])
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderQuote(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.Tag(parent, 'blockquote', token)
 
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Environment(parent, 'quote', after_begin='', info=token.info)
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderStrong(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -580,12 +624,18 @@ class RenderStrong(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'textbf', info=token.info)
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderEmphasis(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.Tag(parent, 'em', token)
 
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'emph', info=token.info)
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderUnderline(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -600,6 +650,9 @@ class RenderUnderline(components.RenderComponent):
                 return parent
 
         return latex.Command(parent, 'ul', info=token.info)
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderStrikethrough(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -616,6 +669,9 @@ class RenderStrikethrough(components.RenderComponent):
 
         return latex.Command(parent, 'st', info=token.info)
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderSuperscript(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.Tag(parent, 'sup', token)
@@ -623,12 +679,18 @@ class RenderSuperscript(components.RenderComponent):
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'textsuperscript', info=token.info)
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderSubscript(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
         return html.Tag(parent, 'sub', token)
 
     def createLatex(self, parent, token, page): #pylint: disable=no-self-use,unused-argument
         return latex.Command(parent, 'textsubscript', info=token.info)
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderPunctuation(RenderString):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -639,6 +701,9 @@ class RenderPunctuation(RenderString):
             return html.String(parent, content=u'&mdash;')
 
         return RenderString.createHTML(self, parent, token, page)
+
+    def createMoosedown(self, parent, token, page):
+        pass
 
 class RenderError(components.RenderComponent):
     def createHTML(self, parent, token, page): #pylint: disable=no-self-use
@@ -685,6 +750,9 @@ class RenderError(components.RenderComponent):
     def createLatex(self, parent, token, page):
         pass
 
+    def createMoosedown(self, parent, token, page):
+        pass
+
 class RenderDisabled(components.RenderComponent):
 
     def createLatex(self, parent, token, page):
@@ -692,3 +760,6 @@ class RenderDisabled(components.RenderComponent):
 
     def createHTML(self, parent, token, page):
         return html.Tag(parent, 'p', class_='moose-disabled')
+
+    def createMoosedown(self, parent, token, page):
+        pass

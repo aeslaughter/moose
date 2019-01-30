@@ -19,7 +19,7 @@ import anytree
 import MooseDocs
 from MooseDocs import common
 from MooseDocs.common import exceptions, mixins
-from MooseDocs.tree import html, latex, pages, tokens
+from MooseDocs.tree import html, latex, pages, tokens, moosedown
 
 LOG = logging.getLogger(__name__)
 
@@ -445,3 +445,11 @@ class JSONRenderer(Renderer):
         """Replacement for Component function (see _method)."""
         token.parent = parent
         return token
+
+class MoosedownRenderer(Renderer):
+    """Render formatted markdown"""
+    METHOD = 'createMoosedown'
+    EXTENSION = '.md'
+
+    def getRoot(self):
+        return moosedown.MooseDownBase('', None)
