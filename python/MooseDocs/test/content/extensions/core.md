@@ -26,7 +26,6 @@ for i in range(10):
 > culpa qui officia deserunt mollit anim id est laborum.
 
 ### Nested Quotations and Lists
-
 > This is a quotation that contains a quotation.
 >
 > > This should be a nested quotation.
@@ -40,17 +39,11 @@ for i in range(10):
 >   > 2. two
 
 ## Headings
-
 # One
-
 ## Two
-
 ### Three
-
 #### Four
-
 ##### Five
-
 ###### Six
 
 ## Heading with Style style=color:red;
@@ -149,9 +142,10 @@ for i in range(10):
 
 ## Shortcuts and Shortcut links.
 
-A popular search engine is [google].
+A popular search engine is [google], but I remember [yahoo].
 
 [google]: https://www.google.com
+[yahoo]: https://www.yahoo.com
 
 ## Inline formatting
 
