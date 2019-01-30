@@ -106,11 +106,15 @@ class TableCommandComponent(command.CommandComponent):
         return parent
 
 class TableComponent(components.TokenComponent):
-    RE = re.compile(r'(?:\A|\n{2,})^(?P<table>\|.*?)(?=\Z|\n{2,})',
+    RE = re.compile(r'\s*'               # capture whitespace
+                    r'^(?P<table>\|.*?)' # table content
+                    r'(?=\Z|^[^|]|^$)',  # end or line starting w/ character or emptyline
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+
     FORMAT_RE = re.compile(r'^(?P<format>\|[ \|:\-]+\|)$', flags=re.MULTILINE|re.UNICODE)
 
     def createToken(self, parent, info, page):
+
         content = info['table']
         table = Table(parent)
         head = None

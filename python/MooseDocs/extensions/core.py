@@ -135,10 +135,9 @@ class CoreExtension(components.Extension):
 #pylint: disable=missing-docstring
 
 class CodeBlock(components.TokenComponent):
-    RE = re.compile(r'(?:\A|\n{2,})^'         # start of string or empty line
-                    r'`{3}(?P<settings>.*?)$' # start of code with key=value settings
-                    r'(?P<code>.*?)^`{3}'     # code and end of fenced block
-                    r'(?=\n*\Z|\n{2,})',         # end of string or empty line
+    RE = re.compile(r'\s*'                     # capture leading whitespace
+                    r'^`{3}(?P<settings>.*?)$' # start of code with key=value settings
+                    r'(?P<code>.*?)^`{3}$',    # code and end of fenced block
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
     @staticmethod
@@ -156,10 +155,11 @@ class CodeBlock(components.TokenComponent):
                     **self.attributes)
 
 class QuoteBlock(components.TokenComponent):
-    RE = re.compile(r'(?:\A|\n{2,})'         # start of string or empty line
-                    r'(?P<quote>^>[ $].*?)'  # quote content
-                    r'(?=\n*\Z|\n{2,})',        # end of string or empty line
+    RE = re.compile(r'\s*'                         # capture leading whitespace
+                    r'(?P<quote>(?:^> {0,1}.*?)+)' # lines starting with "> "
+                    r'(?=^\S|\Z|^$)',              # to end, empty line, or char at start of line
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+
 
     def createToken(self, parent, info, page):
         content = []
@@ -183,11 +183,11 @@ class HeadingBlock(components.TokenComponent):
     # Heading Level One with=settings
     """
     TOKEN = Heading
-    RE = re.compile(r'(?:\A|\n{2,})'             # start of string or empty line
+    RE = re.compile(r'\s*'                       # capture leading whitespace
                     r'^(?P<level>#{1,6}) '       # match 1 to 6 #'s at the beginning of line
-                    r'(?P<inline>.*?) *'         # heading text that will be inline parsed
+                    r'(?P<inline>.*?)'           # heading text that will be inline parsed
                     r'(?P<settings>\s+\w+=.*?)?' # optional match key, value settings
-                    r'(?=\n*\Z|\n{2,})',         # match up to end of string or newline(s)
+                    r'(?=^\S|\Z)',               # to end, empty line, or char at start of line
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, parent, info, page):
@@ -219,19 +219,21 @@ class ListBlock(components.TokenComponent):
         return token
 
 class UnorderedListBlock(ListBlock):
-    RE = re.compile(r'(?:\A|\n{2,})'                   # start of string or empty line
-                    r'(?P<items>(?P<marker>^- ).*?)'   # all items
-                    r'(?=\n{3,}|\n*\Z|\n{2}^[^-\s])',  # stop with 2 empty or 1 not with marker
+    RE = re.compile(r'\s*'                                # capture leading whitespace
+                    r'(?P<items>(?:(?P<marker>^- ).*?)+)' # capture lines starting with "- "
+                    r'(?=^\S|\Z|\n{3,}\S)',               # to char at start, end, or 3 newlines
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
-    ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )', flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+    ITEM_RE = re.compile(r'^- (?P<item>.*?)(?=\Z|^- )',
+                         flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     TOKEN = u'UnorderedList'
 
 class OrderedListBlock(ListBlock):
     """Ordered lists."""
-    RE = re.compile(r'(?:\A|\n{2,})'                        # start of string or empty line
-                    r'(?P<items>(?P<marker>^[0-9]+\. ).*?)' # all items
-                    r'(?=\n{3,}|\n*\Z|\n{2}^[^[0-9\s])',    # stop with 2 empty or 1 not with marker
+    RE = re.compile(r'\s*'                                       # capture leading whitespace
+                    r'(?P<items>(?:(?P<marker>^[0-9]+\. ).*?)+)' # capture lines staring with "1. "
+                    r'(?=^\S|\Z|\n{3,}\S)',                      # to char at start, end, or 3 \n's
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
+
     ITEM_RE = re.compile(r'^[0-9]+\. (?P<item>.*?)(?=\Z|^[0-9]+\. )',
                          flags=re.MULTILINE|re.DOTALL|re.UNICODE)
     TOKEN = u'OrderedList'
@@ -252,18 +254,19 @@ class OrderedListBlock(ListBlock):
         return token
 
 class ShortcutBlock(components.TokenComponent):
-    RE = re.compile(r'(?:\A|\n{2,})^\[(?P<key>\w+)\]: ' # shortcut key
-                    r'(?P<link>.*?)'                    # shortcut link
-                    r'(?=\Z|\n{2,})',                   # stop new line or end of file
+    RE = re.compile(r'\s*'                   # capture whitespace
+                    r'^\[(?P<key>\w+)\]: '   # capture key within brackets "[key]: "
+                    r'(?P<link>.*?)'         # capture key replacement
+                    r'(?=^\S|\Z|^$)',        # to a char at start, end, or empty line
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, parent, info, page):
         return Shortcut(parent, key=info['key'], link=info['link'], string=info['key'])
 
 class ParagraphBlock(components.TokenComponent):
-    RE = re.compile(r'(?:\A|\n{2,})'   # start of string of empty line
-                    r'(?P<inline>.*?)' # content
-                    r'(?=\Z|\n{2,})',  # stop with end or empty line
+    RE = re.compile(r'\s*'               # capture whitespace
+                    '^(?P<inline>\S.*?)' # capture text beginning at start of a line up
+                    r'(?=\Z|^$)',        # to the end or an empty line
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, parent, info, page): #pylint: disable=unused-argument

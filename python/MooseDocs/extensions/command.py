@@ -132,27 +132,25 @@ class CommandBase(components.TokenComponent):
             comp.setTranslator(translator)
 
 class BlockInlineCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^'           # block begin with empty line
-                    r'!(?P<command>\w+)(?: |$)' # command followed by space or end of line
-                    r'(?P<subcommand>\S+)?'     # optional subcommand
-                    r' *(?P<settings>.*?)'      # optional settings, which can span lines
-                    r'(?P<block>^\S.*?)?'       # content begins when line starts with a character
-                    r'(?=\n*\Z|\n{2,})',        # ends with empty line or end of string
-                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)
-
-class BlockBlockCommand(CommandBase):
-    RE = re.compile(r'(?:\A|\n{2,})^'            # block begin with empty line
-                    r'!(?P<command>\w+)!(?: |$)' # command followed by space or end of line
+    RE = re.compile(r'\s*'                       # capture whitespace
+                    r'^!(?P<command>\w+)(?: |$)' # command followed by space or end of line
                     r'(?P<subcommand>\S+)?'      # optional subcommand
                     r' *(?P<settings>.*?)'       # optional settings, which can span lines
-                    r'(?P<block>^\S.*?)'         # content begins when line starts with a character
-                    r'(^!\1-end!)'               # content ends with the "end" command
-                    r'(?=\n*\Z|\n{2,})',         # ends with empty line or end of string
+                    r'(?P<block>(?:^\S.*?)+)?'   # content begins when line starts with a character
+                    r'(?=^\S|\Z|^$)',            # char at start of line, end, or empty line
                     flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class OlderInlineCommand(CommandBase):
     RE = re.compile(r'!{2}(?P<command>\w+) *(?P<subcommand>\w+)? *(?P<settings>.*?)!{2}',
                     flags=re.UNICODE)
+class BlockBlockCommand(CommandBase):
+    RE = re.compile(r'\s*'                        # capture whitespace
+                    r'^!(?P<command>\w+)!(?: |$)' # command followed by space or end of line
+                    r'(?P<subcommand>\S+)?'       # optional subcommand
+                    r' *(?P<settings>.*?)'        # optional settings, which can span lines
+                    r'(?P<block>^\S.*?)?'         # content begins when line starts with a character
+                    r'(^!\1-end!)',               # content ends with the "end" command
+                    flags=re.UNICODE|re.MULTILINE|re.DOTALL)
 
 class OldInlineCommand(CommandBase):
     RE = re.compile(r'\[(?P<command>\w+)!(?!(?P<subcommand>\w+)!)?(?P<inline>.*?)'
@@ -166,7 +164,6 @@ class InlineCommand(CommandBase):
         [command!subcommand key=value]
         [command!subcommand key=value](content in here)
     """
-
     RE = re.compile(r'\['                        # opening bracket "["
                     r'!(?P<command>\w+)'         # the primary command
                     r'(?:!(?P<subcommand>\w+))?' # optional subcommand
@@ -174,3 +171,7 @@ class InlineCommand(CommandBase):
                     r'\]'                        # closing bracket "]"
                     r'(?:\((?P<inline>.*?)\))?', # optional inline content
                     flags=re.UNICODE|re.DOTALL)
+
+class OldInlineCommand(CommandBase):
+    RE = re.compile(r'!{2}(?P<command>\w+) *(?P<subcommand>\w+)? *(?P<settings>.*?)!{2}',
+                    flags=re.UNICODE)
