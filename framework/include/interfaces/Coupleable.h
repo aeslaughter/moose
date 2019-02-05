@@ -915,7 +915,7 @@ private:
    * @param var_name the name of the vector variable for which to retrieve a default value
    * @return a pointer to the associated VectorVariableValue.
    */
-  VectorVariableValue * getVectorDefaultValue(const std::string & var_name);
+  VectorVariableValue * getDefaultVectorValue(const std::string & var_name);
 
   /// Maximum qps for any element in this system
   unsigned int _coupleable_max_qps;
@@ -1143,8 +1143,10 @@ Coupleable::getADDefaultValue(const std::string & var_name)
   return default_value_it->second;
 }
 
+
 template <>
 VariableValue * Coupleable::getADDefaultValue<RESIDUAL>(const std::string & var_name);
+
 
 template <ComputeStage compute_stage>
 ADVectorVariableValue *
@@ -1164,8 +1166,10 @@ Coupleable::getADDefaultVectorValue(const std::string & var_name)
   return default_value_it->second;
 }
 
+
 template <>
 VectorVariableValue * Coupleable::getADDefaultVectorValue<RESIDUAL>(const std::string & var_name);
+
 
 template <ComputeStage compute_stage>
 ADVariableGradient &
