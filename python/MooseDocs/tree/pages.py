@@ -72,6 +72,16 @@ class Page(mooseutils.AutoPropertyMixin):
         return '{}: {}, {}'.format(mooseutils.colorText(self.__class__.__name__, self.COLOR),
                                    self.local, self.source)
 
+class Text(Page):
+    COLOR = 'GREEN'
+    def __init__(self, content, **kwargs):
+        super(Text, self).__init__('text', source='text')
+        self.__content = content
+
+    @property
+    def content(self):
+        return self.__content
+
 class Directory(Page):
     """
     Directory nodes.

@@ -56,7 +56,7 @@ class Tag(NodeBase):
         """
         c = self.get('class', '').split(' ')
         c += args
-        self.set('class', ' '.join(c))
+        self.set('class', ' '.join(c).strip())
 
     def write(self):
         """Write the HTML as a string, e.g., <foo>...</foo>."""
