@@ -412,7 +412,8 @@ protected:
   friend class RankTwoTensorTempl;
   template <typename T2>
   friend class RankFourTensorTempl;
-  friend class RankThreeTensor;
+  template <typename T2>
+  friend class RankThreeTensorTempl;
 };
 
 template <typename T1, typename T2>
