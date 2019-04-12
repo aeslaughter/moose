@@ -65,6 +65,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         # Initialize class members
         self._sources = list()
         self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
+        self._vtkrenderer.SetDebug(True)
 
         # Verify renderer type
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
@@ -79,7 +80,11 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         self.InputType = self.VTKINPUTTYPE
 
         for arg in args:
-            self.__addSource(arg)
+            if arg.getVTKActor() is not None:
+                self._vtkrenderer.AddActor(arg.getVTKActor())
+
+            # Update the storage of the created objects
+            self._sources.append(arg)
 
         ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -137,8 +142,14 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
 
 
-    def __del__(self):
-        self.log('__del__()', level=logging.DEBUG)
+    #def __del__(self):
+    #    self.log('__del__()', level=logging.DEBUG)
+
+        #for src in self._sources:
+        #    self._vtkrenderer.RemoveActor(src.getVTKActor())
+        #self._sources = list()
+
+
      #   for f in self._filters:
      #       f._ChiggerFilter__result = None
 
@@ -158,31 +169,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     #    rngs = [src.getRange(local=local) for src in self._sources]
     #    return utils.get_min_max(*rngs)
 
-    def __addSource(self, inarg):
-        """
-        Internal method for adding the necessary filters, mapper, and actor for the input.
-
-        Inputs:
-            inarg[vtkPythonAlgorithm]: An algorithm with an output port matching the class
-                                       member variable VTKINPUTTYPE.
-        """
-
-        # Connect the filters
-        filters = []
-        #connected = False
-        for filter_type in self.__FILTERS__:
-            filters.append(filter_type())
-
-        if inarg.getVTKActor() is not None:
-            self._vtkrenderer.AddActor(inarg.getVTKActor())
-
-        # Update the storage of the created objects
-        self._sources.append(inarg)
-        #self._filters.append(filters)
-        #self._vtkmappers.append(vtkmapper)
-        #self._vtkactors.append(vtkactor)
-
-        #inarg.init(vtkactor, vtkmapper)
 
     def _printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""

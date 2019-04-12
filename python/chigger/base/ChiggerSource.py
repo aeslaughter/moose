@@ -7,7 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import logging
 import vtk
 from ChiggerAlgorithm import ChiggerAlgorithm
 from chigger import utils
@@ -101,32 +101,26 @@ class ChiggerSource(ChiggerAlgorithm):
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Connect the filters
-        self.__connectFilters(self._vtkmapper, self._filters)
+        self.__connectFilters()
 
-    def __connectFilters(self, vtkmapper, filters):
+    def __connectFilters(self):
 
-        active = []
-        connected = False
-        for filter_obj in filters:
-            if filter_obj.FILTERNAME not in self.__ACTIVE_FILTERS__:
-                continue
-
-            active.append(filter_obj)
-
-            if not connected:
-                active[-1].SetInputConnection(0, self.GetOutputPort(0))
-                connected = True
-            else:
-                active[-1].SetInputConnection(0, active[-2].GetOutputPort(0))
+        base_obj = self
+        for filter_obj in self._filters:
+            if filter_obj.FILTERNAME in self.__ACTIVE_FILTERS__:
+                filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
+                base_obj = filter_obj
 
 
         # Connect mapper/filters into the pipeline
-        if active:
-            vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
-        else:
-            vtkmapper.SetInputConnection(self.GetOutputPort(0))
+        self._vtkmapper.SetInputConnection(base_obj.GetOutputPort(0))
 
+    def __del__(self):
+        self.log('__del__()', level=logging.DEBUG)
 
+        # Delete the actor and mapper, this is needed to avoid a seg fault in VTK
+        self._vtkactor = None
+        self._vtkmapper = None
 
 
 #def RequestInformation(self, *args):

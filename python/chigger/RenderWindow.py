@@ -7,9 +7,9 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
 import os
 import sys
+import logging
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
@@ -143,29 +143,29 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self._results.append(result)
             #result.init(self)
 
-    def remove(self, *args):
-        """
-        Remove result object(s) from the window.
-        """
-        for result in args:
-            result.deinit()
-            if result.getVTKRenderer().GetActors().GetNumberOfItems() == 0:
-                self.__vtkwindow.RemoveRenderer(result.getVTKRenderer())
-            if result in self._results:
-                self._results.remove(result)
+    #def remove(self, *args):
+    #    """
+    #    Remove result object(s) from the window.
+    #    """
+    #    for result in args:
+    #        result.deinit()
+    #        if result.getVTKRenderer().GetActors().GetNumberOfItems() == 0:
+    #            self.__vtkwindow.RemoveRenderer(result.getVTKRenderer())
+    #        if result in self._results:
+    #            self._results.remove(result)
 
-        # Reset active if it was removed
-        #if self.__active and (self.__active not in self._results):
-        #    self.setActive(None)
+    #    # Reset active if it was removed
+    #    #if self.__active and (self.__active not in self._results):
+    #    #    self.setActive(None)
 
-        self.update()
+    #    self.update()
 
-    def clear(self):
-        """
-        Remove all objects from the render window.
-        """
-        self.remove(*self._results[1:])
-        self.update()
+    #def clear(self):
+    #    """
+    #    Remove all objects from the render window.
+    #    """
+    #    self.remove(*self._results[1:])
+    #    self.update()
 
     def setActive(self, result):
         """
@@ -229,8 +229,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         mooseutils.mooseDebug("{}.start()".format(self.__class__.__name__), color='MAGENTA')
 
-        #self.applyOptions()
-
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
@@ -281,7 +279,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.setVTKOption('smoothing', self.__vtkwindow.SetPolygonSmoothing)
         self.setVTKOption('smoothing', self.__vtkwindow.SetPointSmoothing)
 
-        self.setVTKOption('antialiasing', self.__vtkwindow.SetAAFrames)
+        #self.setVTKOption('antialiasing', self.__vtkwindow.SetAAFrames)
         self.setVTKOption('multisamples', self.__vtkwindow.SetMultiSamples)
         self.setVTKOption('size', self.__vtkwindow.SetSize)
 
@@ -387,3 +385,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Operator[] access into results objects.
         """
         return self._results[index]
+
+
+    #def __del__(self):
+    #    self.log('__del__()', level=logging.DEBUG)

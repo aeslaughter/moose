@@ -34,3 +34,7 @@ class ChiggerAlgorithm(ChiggerObject):#, VTKPythonAlgorithmBase):
 
     def applyOptions(self):
         pass
+
+
+    #def __del__(self):
+    #    self.log('__del__()', level=logging.DEBUG)
