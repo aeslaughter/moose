@@ -31,12 +31,13 @@ class ChiggerObject(object):
         return opt
 
     def __init__(self, **kwargs):
+        self.__log = logging.getLogger(self.__class__.__name__)
+
         super(ChiggerObject, self).__init__()
         self._options = getattr(self.__class__, 'validOptions')()
         kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
 
-        self.__log = logging.getLogger(self.__class__.__name__)
 
     #def __str__(self):
     #    return '{}:\n{}'.format(mooseutils.colorText(self.__class__.__name__, "GREY"),
@@ -57,8 +58,8 @@ class ChiggerObject(object):
 
     def log(self, msg, *args, **kwargs):
         lvl = kwargs.pop('level', logging.INFO)
-        print '{}: {}'.format(self.__class__.__name__, msg.format(args))
-        #self.__log(lvl, msg.format(args)) # TODO: This should work
+        #print '{}: {}'.format(self.__class__.__name__, msg.format(args))
+        self.__log.log(lvl, '{}: {}'.format(self.getOption('name'), msg.format(args)))
 
     def setOptions(self, *args, **kwargs):
         """

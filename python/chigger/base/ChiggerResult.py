@@ -7,6 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import logging
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 import mooseutils
@@ -19,14 +20,9 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     contains a single vtkRenderer to which many actors can be added.
     """
 
-    # The type of vtkProp to create (this should be defined in child class)
-    VTKACTORTYPE = None
 
-    # The type of vtkAbstractMapper to create (this should be defined in child class)
-    VTKMAPPERTYPE = None
-
-    # The type of input (as a string), see PythonAlgoritimBase
-    INPUTTYPE = None
+    # The type of input (as a string), see VTKPythonAlgoritimBase
+    VTKINPUTTYPE = None
 
     # List of filters, this is an internal item. Filters should be added with addFilter decorator
     __FILTERS__ = list()
@@ -35,10 +31,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
-        opt.add('edges', utils.EdgeOptions.validOptions(), vtype=utils.Options, doc="Edge options.")
 
-        opt.add('interactive', default=True,
-                doc="Control if the object may be selected with key bindings.")
         opt.add('light', vtype=float,
                 doc="Add a headlight with the given intensity to the renderer.")
         opt.add('layer', default=1, vtype=int,
@@ -48,10 +41,12 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                     "relative position to the entire window (0 to 1).")
         opt.add('camera', None, vtype=vtk.vtkCamera,
                 doc="The VTK camera to utilize for viewing the results.")
+
+
+        opt.add('interactive', default=True,
+                doc="Control if the object may be selected with key bindings.")
         opt.add('highlight_active', default=True, vtype=bool,
                 doc="When the result is activate enable/disable the 'highlighting'.")
-        opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
-        opt.add('color', vtype=float, size=3, doc="The color of the object.")
 
         for filter_type in cls.__FILTERS__:
             opt.add(filter_type.FILTERNAME,
@@ -77,10 +72,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         VTKPythonAlgorithmBase.__init__(self)
 
         # Initialize class members
-        self._inputs = list()
+        self._sources = list()
         self._filters = list()
-        self._vtkmappers = list()
-        self._vtkactors = list()
         self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
 
         # Verify renderer type
@@ -93,21 +86,19 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         # Setup VTKPythobnAlgorithmBase
         self.SetNumberOfInputPorts(len(args))
-        self.InputType = self.INPUTTYPE
+        self.InputType = self.VTKINPUTTYPE
 
         for arg in args:
             self.__addSource(arg)
 
         ChiggerAlgorithm.__init__(self, **kwargs)
 
-
-    def deinit(self):
-        """
-        Clean up the object prior to removal from RenderWindow.
-        """
-        for actor in self._vtkactors:
-            self._vtkrenderer.RemoveActor(actor)
-
+    #def deinit(self):
+    #    """
+    #    Clean up the object prior to removal from RenderWindow.
+    #    """
+    #    for actor in self._vtkactors:
+    #        self._vtkrenderer.RemoveActor(actor)
 
     def setOptions(self, *args, **kwargs):
         ChiggerAlgorithm.setOptions(self, *args, **kwargs)
@@ -121,38 +112,17 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         ChiggerAlgorithm.applyOptions(self)
 
         # Connect the filters
-        for inarg, vtkmapper, filters in zip(self._inputs, self._vtkmappers, self._filters):
-            self.__connectFilters(inarg, vtkmapper, filters)
-
-        for vtkactor in self._vtkactors:
-            vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
-            vtkactor.GetProperty().SetColor(self.getOption('color'))
-            utils.EdgeOptions.applyOptions(vtkactor, self.getOption('edges'))
-
-    def getInput(self, index=-1):
-        return self._inputs[index]
+        for inarg, filters in zip(self._sources, self._filters):
+            self.__connectFilters(inarg, inarg.getVTKMapper(), filters)
+            inarg.applyOptions()
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
         return self._vtkrenderer
 
-    def getVTKActor(self, index=-1):
-        """
-        Return the constructed vtk actor object. (public)
+    def getSource(self, index=-1):
+        return self._sources[index]
 
-        Returns:
-            An object derived from vtk.vtkProp.
-        """
-        return self._vtkactors[index]
-
-    def getVTKMapper(self, index=-1):
-        """
-        Return the constructed vtk mapper object. (public)
-
-        Returns:
-            An object derived from vtk.vtkAbstractMapper
-        """
-        return self._vtkmappers[index]
 
     def getFilters(self, index=-1):
         return self._filters[index]
@@ -200,8 +170,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         else:
             vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
 
-    #def __del__(self):
-
+    def __del__(self):
+        self.log('__del__()', level=logging.DEBUG)
      #   for f in self._filters:
      #       f._ChiggerFilter__result = None
 
@@ -227,56 +197,25 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         Inputs:
             inarg[vtkPythonAlgorithm]: An algorithm with an output port matching the class
-                                       member variable INPUTTYPE.
+                                       member variable VTKINPUTTYPE.
         """
 
         # Connect the filters
         filters = []
         #connected = False
         for filter_type in self.__FILTERS__:
-
-            #if not filter_required:
-            #    continue
-
             filters.append(filter_type())
 
-            #if not connected:
-            #    filters[-1].SetInputConnection(0, inarg.GetOutputPort(0))
-            #    connected = True
-            #else:
-            #    filters[-1].SetInputConnection(0, filters[-2].GetOutputPort(0))
-
-        # Create mapper
-        vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
-        if (vtkmapper is not None) and not isinstance(vtkmapper, vtk.vtkAbstractMapper):
-            msg = 'The supplied mapper is a {} but must be a vtk.vtkAbstractMapper type.'
-            raise mooseutils.MooseException(msg.format(type(vtkmapper).__name__))
-
-        # Connect mapper/filters into the pipeline
-        #if filters:
-        #    vtkmapper.SetInputConnection(filters[-1].GetOutputPort(0))
-        #else:
-        #    vtkmapper.SetInputConnection(inargs.GetOutputPort(0))
-
-        # Create the actor
-        vtkactor = self.VTKACTORTYPE() if self.VTKACTORTYPE else None
-        if (vtkactor is not None) and not isinstance(vtkactor, vtk.vtkProp):
-            msg = 'The supplied actor is a {} but must be a vtk.vtkProp type.'
-            raise mooseutils.MooseException(msg.format(type(vtkactor).__name__))
-
-        # Connect the mapper and actor and add the actor to the renderer
-        if vtkmapper is not None:
-            vtkactor.SetMapper(vtkmapper)
-        if vtkactor is not None:
-            self._vtkrenderer.AddActor(vtkactor)
+        if inarg.getVTKActor() is not None:
+            self._vtkrenderer.AddActor(inarg.getVTKActor())
 
         # Update the storage of the created objects
-        self._inputs.append(inarg)
+        self._sources.append(inarg)
         self._filters.append(filters)
-        self._vtkmappers.append(vtkmapper)
-        self._vtkactors.append(vtkactor)
+        #self._vtkmappers.append(vtkmapper)
+        #self._vtkactors.append(vtkactor)
 
-        inarg.init(vtkactor, vtkmapper, filters)
+        #inarg.init(vtkactor, vtkmapper)
 
     def _printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""

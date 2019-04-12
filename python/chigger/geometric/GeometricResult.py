@@ -4,11 +4,9 @@ from .. import base
 
 class GeometricResult(base.ChiggerResult):
 
-    VTKACTORTYPE = vtk.vtkActor
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper
     INPUTTYPE = 'vtkPolyData'
 
-    __FILTERS__ = set()
+    __FILTERS__ = list()
     __ACTIVE_FILTERS__ = set()
 
     @staticmethod
@@ -21,8 +19,8 @@ class GeometricResult(base.ChiggerResult):
         bindings = base.ChiggerResult.validKeyBindings()
         return bindings
 
-    def __init__(self, *args, **kwargs):
-        base.ChiggerResult.__init__(self, *args, **kwargs)
+    #def __init__(self, *args, **kwargs):
+    #    base.ChiggerResult.__init__(self, *args, **kwargs)
 
-    def applyOptions(self):
-        base.ChiggerResult.applyOptions(self)
+    #def applyOptions(self):
+    #    base.ChiggerResult.applyOptions(self)

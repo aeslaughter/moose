@@ -7,6 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import os
 
 from RenderWindow import RenderWindow
 import base
@@ -19,5 +20,8 @@ import graphs
 import filters
 import observers
 
+
 import logging
-logging.basicConfig()
+level = dict(critical=logging.CRITICAL, error=logging.ERROR, warning=logging.warning,
+             info=logging.INFO, debug=logging.DEBUG, notset=logging.NOTSET)
+logging.basicConfig(level=level[os.getenv('CHIGGER_LOG_LEVEL', 'INFO').lower()])

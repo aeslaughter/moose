@@ -1,4 +1,3 @@
-
 from Options import Options
 
 def validOptions():
@@ -11,7 +10,7 @@ def validOptions():
     opt.add('visible', default=False, doc="Enable/disable display of object edges.")
     opt.add('color', default=(1., 1., 1.), size=3, doc="Set the edge color.")
     opt.add('width', default=1, vtype=int, doc="The edge width, if None then no edges are shown.")
-    opt.add('point_size', default=1, vtype=int, doc="The point size, if None then no points are shown.")
+    opt.add('size', default=1, vtype=int, doc="The point size, if None then no points are shown.")
     return opt
 
 def applyOptions(vtkactor, opt):
@@ -27,4 +26,4 @@ def applyOptions(vtkactor, opt):
     vtkactor.GetProperty().SetEdgeVisibility(opt.get('visible'))
     vtkactor.GetProperty().SetEdgeColor(opt.get('color'))
     vtkactor.GetProperty().SetLineWidth(opt.get('width'))
-    vtkactor.GetProperty().SetPointSize(opt.get('point_size'))
+    vtkactor.GetProperty().SetPointSize(opt.get('size'))
