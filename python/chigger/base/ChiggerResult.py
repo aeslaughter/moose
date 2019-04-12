@@ -179,3 +179,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         The number of source objects.
         """
         return len(self._sources)
+
+    def __iter__(self):
+        for source in self._sources:
+            yield source

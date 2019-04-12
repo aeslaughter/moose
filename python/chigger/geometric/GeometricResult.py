@@ -6,9 +6,6 @@ class GeometricResult(base.ChiggerResult):
 
     INPUTTYPE = 'vtkPolyData'
 
-    __FILTERS__ = list()
-    __ACTIVE_FILTERS__ = set()
-
     @staticmethod
     def validOptions():
         opt = base.ChiggerResult.validOptions()

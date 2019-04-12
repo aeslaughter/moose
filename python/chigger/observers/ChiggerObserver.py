@@ -7,8 +7,12 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-from chigger.base import ChiggerObject
-class ChiggerObserver(ChiggerObject):
+import logging
+from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
+
+from .. import base
+
+class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     Base class for defining VTK observer functions.
 
@@ -16,23 +20,33 @@ class ChiggerObserver(ChiggerObject):
     """
     @staticmethod
     def validOptions():
-        opt = ChiggerObject.validOptions()
+        opt = base.ChiggerAlgorithm.validOptions()
         return opt
 
-    def __init__(self, **kwargs):
-        super(ChiggerObserver, self).__init__(**kwargs)
-        self._window = None
-
-    def init(self, window):
-        """
-        Initialize the observer, this is called by the RenderWindow automatically.
-
-        NOTE: This is an internal method, do not call it.
-        """
+    def __init__(self, window, **kwargs):
         self._window = window
+
+        VTKPythonAlgorithmBase.__init__(self)
+
+        self.SetNumberOfInputPorts(0)
+        self.SetNumberOfOutputPorts(0)
+
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
+
+    #def init(self, window):
+    #    """
+    #    Initialize the observer, this is called by the RenderWindow automatically.
+
+    #    NOTE: This is an internal method, do not call it.
+    #    """
+    #    self._window = window
 
     def terminate(self):
         """
         Terminate the render window.
         """
         self._window.getVTKInteractor().TerminateApp()
+
+    #def __del__(self):
+    #    self.log('__del__()', level=logging.DEBUG)
+    #    self._window = None

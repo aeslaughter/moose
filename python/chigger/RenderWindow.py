@@ -20,6 +20,7 @@ import misc
 import mooseutils
 
 class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+
     """
     Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
     """
@@ -51,14 +52,14 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 doc="Automatically reset the camera clipping range on update.")
 
         # Observers
-        opt.add('observers', default=[], vtype=list,
-                doc="A list of ChiggerObserver objects, once added they are not " \
-                    "removed. Hence, changing the observers in this list will not " \
-                    "remove existing objects.")
-        opt.add('default_observer',
-                default=observers.MainWindowObserver(),
-                vtype=observers.ChiggerObserver,
-                doc="Define the default observer for the window.")
+        #opt.add('observers', default=[], vtype=list,
+        #        doc="A list of ChiggerObserver objects, once added they are not " \
+        #            "removed. Hence, changing the observers in this list will not " \
+        #            "remove existing objects.")
+        #opt.add('default_observer',
+        #        default=observers.MainWindowObserver(),
+        #        vtype=observers.ChiggerObserver,
+        #        doc="Define the default observer for the window.")
 
         # Background settings
         background = misc.ChiggerBackground.validOptions()
@@ -79,15 +80,15 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.SetNumberOfOutputPorts(0)
 
         self._results = []
-        self._observers = set()
+        #self._observers = set()
 
-        self.__active = None
-        self.__highlight = None
+        #self.__active = None
+        #self.__highlight = None
 
         self.__background = misc.ChiggerBackground()
         self.append(self.__background, *args)
         #self.append(*args)
-        self.setActive(None)
+        #self.setActive(None)
 
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -103,11 +104,15 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self.append(self.__watermark)
         """
 
-    def __contains__(self, item):
-        """
-        'in' checks for result
-        """
-        return item in self._results
+    #def __contains__(self, item):
+    #    """
+    #    'in' checks for result
+    #    """
+    #    return item in self._results
+
+    def __iter__(self):
+        for r in self._results:
+            yield r
 
     def getVTKInteractor(self):
         """
@@ -131,6 +136,8 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         Append result object(s) to the window.
         """
+        #TODO: make this a private member
+
         for result in args:
             mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
             if isinstance(result, base.ResultGroup):
@@ -167,57 +174,57 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     #    self.remove(*self._results[1:])
     #    self.update()
 
-    def setActive(self, result):
-        """
-        Set the active result object for interaction.
-        """
+    #def setActive(self, result):
+    #    """
+    #    Set the active result object for interaction.
+    #    """
 
-        # Deactivate current active result, if it exists and differs
-        if (self.__active is not None) and (self.__active is not result):
-            self.__active.setActive(False)
+    #    # Deactivate current active result, if it exists and differs
+    #    if (self.__active is not None) and (self.__active is not result):
+    #        self.__active.setActive(False)
 
-        # Deactivate all results, this is done by using the background renderer
-        if result is None:
-            self.__active = None
-            self.__background.getVTKRenderer().SetInteractive(True)
-            if self.getVTKInteractorStyle():
-                self.getVTKInteractorStyle().SetCurrentRenderer(self.__background.getVTKRenderer())
-                self.getVTKInteractorStyle().SetEnabled(False)
+    #    # Deactivate all results, this is done by using the background renderer
+    #    if result is None:
+    #        self.__active = None
+    #        self.__background.getVTKRenderer().SetInteractive(True)
+    #        if self.getVTKInteractorStyle():
+    #            self.getVTKInteractorStyle().SetCurrentRenderer(self.__background.getVTKRenderer())
+    #            self.getVTKInteractorStyle().SetEnabled(False)
 
-        # Activate the supplied result
-        else:
-            self.__active = result
-            self.__background.getVTKRenderer().SetInteractive(False)
-            self.getVTKInteractorStyle().SetEnabled(True)
-            self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
-            self.__active.setActive(True)
-            #if self.getOption('highlight_active'):
-            #    print 'Activate: {}'.format(self.__active.title())
+    #    # Activate the supplied result
+    #    else:
+    #        self.__active = result
+    #        self.__background.getVTKRenderer().SetInteractive(False)
+    #        self.getVTKInteractorStyle().SetEnabled(True)
+    #        self.getVTKInteractorStyle().SetCurrentRenderer(self.__active.getVTKRenderer())
+    #        self.__active.setActive(True)
+    #        #if self.getOption('highlight_active'):
+    #        #    print 'Activate: {}'.format(self.__active.title())
 
-    def nextActive(self, reverse=False):
-        """
-        Highlight the next ChiggerResult object.
-        """
-        step = 1 if not reverse else -1
-        available = [result for result in self._results if result.getOption('interactive')]
-        if (self.__active is None) and step == 1:
-            self.setActive(available[0])
-        elif (self.__active is None) and step == -1:
-            self.setActive(available[-1])
-        else:
-            n = len(available)
-            index = available.index(self.__active)
-            index += step
-            if (index == n) or (index == -1):
-                self.setActive(None)
-            else:
-                self.setActive(available[index])
+    #def nextActive(self, reverse=False):
+    #    """
+    #    Highlight the next ChiggerResult object.
+    #    """
+    #    step = 1 if not reverse else -1
+    #    available = [result for result in self._results if result.getOption('interactive')]
+    #    if (self.__active is None) and step == 1:
+    #        self.setActive(available[0])
+    #    elif (self.__active is None) and step == -1:
+    #        self.setActive(available[-1])
+    #    else:
+    #        n = len(available)
+    #        index = available.index(self.__active)
+    #        index += step
+    #        if (index == n) or (index == -1):
+    #            self.setActive(None)
+    #        else:
+    #            self.setActive(available[index])
 
-    def getActive(self):
-        """
-        Return the active result object.
-        """
-        return self.__active
+    #def getActive(self):
+    #    """
+    #    Return the active result object.
+    #    """
+    #    return self.__active
 
     def start(self, timer=None):
         """
@@ -242,12 +249,12 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #    self.__vtkwindow.AddRenderer(result.getVTKRenderer())
 
 
-        test = self.getOption('test')
+        #test = self.getOption('test')
         style = self.getOption('style')
-        if test:
-            self.__vtkwindow.OffScreenRenderingOn()
+        #if test:
+        #    self.__vtkwindow.OffScreenRenderingOn()
 
-        elif style:
+        if style:
 
             if self.__vtkinteractor is None:
                 self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
@@ -257,8 +264,8 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleImage()
-            elif style == 'modal':
-                self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
+            #elif style == 'modal':
+            #    self.__vtkinteractorstyle = vtk.vtkInteractorStyleUser()
 
             self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
             self.__vtkinteractor.RemoveObservers(vtk.vtkCommand.CharEvent)
@@ -291,7 +298,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 self.__vtkwindow.AddRenderer(renderer)
             n = max(n, renderer.GetLayer() + 1)
 
-        # TODO: set if changed only
+        # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
 
         # Observers
@@ -306,9 +313,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #        if observer not in self._observers:
         #            observer.init(self)
         #            self._observers.add(observer)
-
-        #for result in self._results:
-        #    result.update()
 
         self.__vtkwindow.Render()
 
@@ -385,7 +389,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Operator[] access into results objects.
         """
         return self._results[index]
-
 
     #def __del__(self):
     #    self.log('__del__()', level=logging.DEBUG)

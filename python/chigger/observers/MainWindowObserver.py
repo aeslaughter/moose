@@ -7,6 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import logging
 import textwrap
 import vtk
 
@@ -34,32 +35,74 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
         return bindings
 
-    def __init__(self, **kwargs):
-        super(MainWindowObserver, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        ChiggerObserver.__init__(self, *args, **kwargs)
+        utils.KeyBindingMixin.__init__(self)
 
-        self.__outline_result = None
+        self.__current_actor_index = 0
+        self.__actors = list()
 
-    def init(self, *args, **kwargs):
-        """
-        Add the KeyPressEvent and MouseMoveEvent for this object.
-        """
-        super(MainWindowObserver, self).init(*args, **kwargs)
+    #def init(self, *args, **kwargs):
+    #    """
+    #    Add the KeyPressEvent and MouseMoveEvent for this object.
+    #    """
+    #    super(MainWindowObserver, self).init(*args, **kwargs)
+
+
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
                                                     self._onKeyPressEvent)
-        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.MouseMoveEvent,
-                                                    self._onMouseMoveEvent)
+        #self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.MouseMoveEvent,
+        #                                            self._onMouseMoveEvent)
+        #self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent,
+        #                                            self._onMouseLeftButtonEvent)
+
+    #    self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.DeleteEvent,
+    #                                                self._onDeleteEvent)
+
+
+
+    #def _onDeleteEvent(self, *args):
+    #    print 'delete...'
+
+    def applyOptions(self):
+        ChiggerObserver.applyOptions(self)
+
+        self.__actors = list()
+        for result in self._window:
+            for source in result:
+                self.__actors.append((result, source, source.getVTKActor()))
+
+        print self, self.__actors, len(self.__actors)
 
     def _nextResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "next" result object.
         """
-        window.nextActive()
+        for result in self._window:
+            for source in result:
+                self.__actors.append((result, source, source.getVTKActor()))
+
+
+        self.__current_actor_index += 1
+        if self.__current_actor_index == len(self.__actors):
+            self.__current_actor_index = 0
+
+        print self, self.__actors, len(self.__actors)
+
+
+        _, _, actor = self.__actors[self.__current_actor_index]
+        self._window.getVTKInteractorStyle().HighlightProp(actor)
 
     def _previousResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "previous" result object.
         """
-        window.nextActive(reverse=True)
+        self.__current_actor_index -= 1
+        if self.__current_actor_index == -1:
+            self.__current_actor_index = len(self.__actors) - 1
+
+        actor = self.__actors[self.__current_actor_index]
+        self._window.getVTKInteractorStyle().HighlightProp(actor)
 
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
@@ -109,20 +152,28 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         key = obj.GetKeySym().lower()
         shift = obj.GetShiftKey()
 
-        #for binding in self._window.getActive().getKeyBindings(key, shift):
+        # This objects bindings
         for binding in self.getKeyBindings(key, shift):
             binding.function(self, self._window, binding)
 
-        active = self._window.getActive()
-        if active:
-            for binding in active.getKeyBindings(key, shift):
-                binding.function(active, self._window, binding)
+        #if False:#self.__current_active_actor:
+        #    result, source = self.__source_result_lookup[self.__current_active_actor]
 
-        self._window.update()
+        #    # ChiggerResult bindings
+        #    for binding in result:
+        #        binding.function(self, self._window, binding)
+
+        #    # ChiggerSource bindings
+        #    for binding in source:
+        #        binding.function(self, self._window, binding)
+
 
     def _onMouseMoveEvent(self, obj, event): #pylint: disable=unused-argument
         """
         The function to be called by the vtkInteractor MouseMoveEvent (see init)
+        """
+        #print '_onMouseMoveEvent', obj, event
+
         """
         result = self._window.getActive()
         if (result is not None) and hasattr(result, 'onMouseMoveEvent'):
@@ -130,4 +181,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             sz = result.getVTKRenderer().GetSize()
             position = (loc[0]/float(sz[0]), loc[1]/float(sz[1]))
             result.onMouseMoveEvent(position)
-            self._window.update()
+            #self._window.update()
+        """
+
+    def _onMouseLeftButtonEvent(self, obj, event):
+        print '_onMouseLeftButtonEvent'#, obj, event
+
+
+    def __del__(self):
+        self.log('__del__()', level=logging.DEBUG)
