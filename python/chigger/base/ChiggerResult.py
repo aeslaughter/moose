@@ -20,13 +20,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     contains a single vtkRenderer to which many actors can be added.
     """
 
-
     # The type of input (as a string), see VTKPythonAlgoritimBase
     VTKINPUTTYPE = None
-
-    # List of filters, this is an internal item. Filters should be added with addFilter decorator
-    __FILTERS__ = list()
-    __ACTIVE_FILTERS__ = set()
 
     @classmethod
     def validOptions(cls):
@@ -48,10 +43,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         opt.add('highlight_active', default=True, vtype=bool,
                 doc="When the result is activate enable/disable the 'highlighting'.")
 
-        for filter_type in cls.__FILTERS__:
-            opt.add(filter_type.FILTERNAME,
-                    filter_type.validOptions(),
-                    doc="Options for the '{}' filter.".format(filter_type.FILTERNAME))
 
         return opt
 
@@ -73,7 +64,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         # Initialize class members
         self._sources = list()
-        self._filters = list()
         self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
 
         # Verify renderer type
@@ -100,13 +90,13 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     #    for actor in self._vtkactors:
     #        self._vtkrenderer.RemoveActor(actor)
 
-    def setOptions(self, *args, **kwargs):
-        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
+#def setOptions(self, *args, **kwargs):
+#    ChiggerAlgorithm.setOptions(self, *args, **kwargs)
 
-        for filter_type in self.__FILTERS__:
-            if filter_type.FILTERNAME in args:
-                self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
-
+#    for filter_type in self.__FILTERS__:
+#        if filter_type.FILTERNAME in args:
+#            self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
+#
 
     def applyOptions(self):
         ChiggerAlgorithm.applyOptions(self)
@@ -124,8 +114,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         return self._sources[index]
 
 
-    def getFilters(self, index=-1):
-        return self._filters[index]
+    #def getFilters(self, index=-1):
+    #    return self._filters[index]
 
     #def setActive(self, value):
     #    """
@@ -146,29 +136,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     #        self.getRenderWindow().remove(self.__highlight)
 
 
-
-    def __connectFilters(self, inarg, vtkmapper, filters):
-
-        active = []
-        connected = False
-        for filter_obj in filters:
-            if filter_obj.FILTERNAME not in self.__ACTIVE_FILTERS__:
-                continue
-
-            active.append(filter_obj)
-
-            if not connected:
-                active[-1].SetInputConnection(0, inarg.GetOutputPort(0))
-                connected = True
-            else:
-                active[-1].SetInputConnection(0, active[-2].GetOutputPort(0))
-
-
-        # Connect mapper/filters into the pipeline
-        if active:
-            vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
-        else:
-            vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
 
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)
@@ -211,7 +178,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         # Update the storage of the created objects
         self._sources.append(inarg)
-        self._filters.append(filters)
+        #self._filters.append(filters)
         #self._vtkmappers.append(vtkmapper)
         #self._vtkactors.append(vtkactor)
 

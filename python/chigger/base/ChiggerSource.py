@@ -20,11 +20,22 @@ class ChiggerSource(ChiggerAlgorithm):
     # The type of vtkAbstractMapper to create (this should be defined in child class)
     VTKMAPPERTYPE = None
 
+    # List of possible filters, this is an internal item. Filters are added with addFilter decorator
+    __FILTERS__ = list()
+
+    # List of active filters
+    __ACTIVE_FILTERS__ = set()
 
     @staticmethod
     def validOptions():
         opt = ChiggerAlgorithm.validOptions()
         opt += utils.ActorOptions.validOptions()
+
+        for filter_type in cls.__FILTERS__:
+            opt.add(filter_type.FILTERNAME,
+                    filter_type.validOptions(),
+                    doc="Options for the '{}' filter.".format(filter_type.FILTERNAME))
+
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -46,6 +57,9 @@ class ChiggerSource(ChiggerAlgorithm):
         if self._vtkmapper is not None:
             self._vtkactor.SetMapper(self._vtkmapper)
 
+        # Storage for the filter objects
+        self._filters = list()
+
         ChiggerAlgorithm.__init__(self, *args, **kwargs)
 
     def getVTKActor(self):
@@ -66,20 +80,54 @@ class ChiggerSource(ChiggerAlgorithm):
         """
         return self._vtkmapper
 
+    def getFilters(self):
+        return self._filters
+
+
     #def init(self, vtkactor, vtkmapper):
     #    self.__initialized = True
     #    self._vtkactor = vtkactor
     #    self._vtkmapper = vtkmapper
 
-    #def setOptions(self, *args, **kwargs):
-    #    if self.__initialized:
-    #        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
-    #    else:
-    #        ChiggerObject.setOptions(self, *args, **kwargs)
+    def setOptions(self, *args, **kwargs):
+        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
+
+        for filter_type in self.__FILTERS__:
+            if filter_type.FILTERNAME in args:
+                self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 
     def applyOptions(self):
         ChiggerAlgorithm.applyOptions(self)
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
+
+        # Connect the filters
+        self.__connectFilters(self._vtkmapper, self.__filters)
+
+    def __connectFilters(self, vtkmapper, filters):
+
+        active = []
+        connected = False
+        for filter_obj in filters:
+            if filter_obj.FILTERNAME not in self.__ACTIVE_FILTERS__:
+                continue
+
+            active.append(filter_obj)
+
+            if not connected:
+                active[-1].SetInputConnection(0, self.GetOutputPort(0))
+                connected = True
+            else:
+                active[-1].SetInputConnection(0, active[-2].GetOutputPort(0))
+
+
+        # Connect mapper/filters into the pipeline
+        if active:
+            vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
+        else:
+            vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
+
+
+
 
 #def RequestInformation(self, *args):
 #    return 1
