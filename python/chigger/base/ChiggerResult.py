@@ -126,9 +126,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         for vtkactor in self._vtkactors:
             vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
-            self.setVTKOption('color', vtkactor.GetProperty().SetColor)
-
-        for vtkactor in self._vtkactors:
+            vtkactor.GetProperty().SetColor(self.getOption('color'))
             utils.EdgeOptions.applyOptions(vtkactor, self.getOption('edges'))
 
     def getInput(self, index=-1):
@@ -277,6 +275,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         self._filters.append(filters)
         self._vtkmappers.append(vtkmapper)
         self._vtkactors.append(vtkactor)
+
+        inarg.init(vtkactor, vtkmapper, filters)
 
     def _printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""

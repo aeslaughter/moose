@@ -115,9 +115,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     def __init__(self, filename, **kwargs):
         base.ChiggerAlgorithm.__init__(self,
-        #                               nInputPorts=0,
-        #                               nOutputPorts=1,
-        #                               outputType='vtkMultiBlockDataSet',
                                        **kwargs)
         VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
                                         outputType='vtkMultiBlockDataSet')

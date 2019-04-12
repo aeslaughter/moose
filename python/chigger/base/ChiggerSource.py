@@ -11,6 +11,9 @@
 import vtk
 from ChiggerFilterSourceBase import ChiggerFilterSourceBase
 
+
+
+#TODO: remove
 class ChiggerSource(ChiggerFilterSourceBase):
     """
     The base class for all 3D objects.
