@@ -78,14 +78,7 @@ class ColorBar(base.ChiggerResult):
                                        AxisSource(),
                                        **kwargs)
 
-    def update(self, **kwargs):
-        """
-        Apply setting to create a colorbar.
-
-        Inputs:
-            see ChiggerResult
-        """
-        super(ColorBar, self).update(**kwargs)
+    def applyOptions(self):
 
         # Convenience names for the various sources
         plane, axis0, axis1 = self._sources #pylint: disable=unbalanced-tuple-unpacking

@@ -97,9 +97,6 @@ class ExodusResult(base.ChiggerResult):
 
         base.ChiggerResult.__init__(self, *args, **kwargs)
 
-
-
-
     def applyOptions(self):
 
         self.__ACTIVE_FILTERS__.add('extract')

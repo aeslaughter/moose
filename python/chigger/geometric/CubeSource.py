@@ -9,18 +9,17 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-import GeometricSourceMeta
-from .. import base
+from GeometricSourceBase import GeometricSourceBase
 
-BaseType = GeometricSourceMeta.create(base.ChiggerSource)
-class CubeSource(BaseType):
+class CubeSource(GeometricSourceBase):
     """
     Single CubeSource object.
     """
+    VTKSOURCETYPE = vtk.vtkCubeSource
 
     @staticmethod
     def validOptions():
-        opt = BaseType.validOptions()
+        opt = GeometricSourceBase.validOptions()
         opt.add("bounds", None, vtype=float, size=6,
                 doc="The bounding box for the cube [xmin, xmax, ymin, ymax, zmin, zmax]. This " \
                 "will overwrite the 'lengths' and 'center' options.")
@@ -29,23 +28,23 @@ class CubeSource(BaseType):
         opt.add('center', None, vtype=float, size=3, doc="The center of the box.")
         return opt
 
-    def __init__(self, **kwargs):
-        super(CubeSource, self).__init__(vtkgeometric_type=vtk.vtkCubeSource, **kwargs)
+    #def __init__(self, **kwargs):
+    #    GeometricSourceBase.__init__(self, **kwargs)
 
-    def update(self, **kwargs):
+    def applyOptions(self):
         """
         Set the options for this cube. (public)
         """
-        super(CubeSource, self).update(**kwargs)
+        GeometricSourceBase.applyOptions(self)
 
         if self.isOptionValid('center'):
-            self._vtksource.SetCenter(self.applyOption('center'))
+            self._vtksource.SetCenter(self.getOption('center'))
 
         if self.isOptionValid('lengths'):
-            x, y, z = self.applyOption('lengths')
+            x, y, z = self.getOption('lengths')
             self._vtksource.SetXLength(x)
             self._vtksource.SetYLength(y)
             self._vtksource.SetZLength(z)
 
         if self.isOptionValid('bounds'):
-            self._vtksource.SetBounds(*self.applyOption('bounds'))
+            self._vtksource.SetBounds(*self.getOption('bounds'))

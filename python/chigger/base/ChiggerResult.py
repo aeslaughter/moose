@@ -100,6 +100,129 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         ChiggerAlgorithm.__init__(self, **kwargs)
 
+
+    def deinit(self):
+        """
+        Clean up the object prior to removal from RenderWindow.
+        """
+        for actor in self._vtkactors:
+            self._vtkrenderer.RemoveActor(actor)
+
+
+    def setOptions(self, *args, **kwargs):
+        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
+
+        for filter_type in self.__FILTERS__:
+            if filter_type.FILTERNAME in args:
+                self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
+
+
+    def applyOptions(self):
+        ChiggerAlgorithm.applyOptions(self)
+
+        # Connect the filters
+        for inarg, vtkmapper, filters in zip(self._inputs, self._vtkmappers, self._filters):
+            self.__connectFilters(inarg, vtkmapper, filters)
+
+        for vtkactor in self._vtkactors:
+            vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
+            self.setVTKOption('color', vtkactor.GetProperty().SetColor)
+
+        for vtkactor in self._vtkactors:
+            utils.EdgeOptions.applyOptions(vtkactor, self.getOption('edges'))
+
+    def getInput(self, index=-1):
+        return self._inputs[index]
+
+    def getVTKRenderer(self):
+        """Return the vtk.vtkRenderer object."""
+        return self._vtkrenderer
+
+    def getVTKActor(self, index=-1):
+        """
+        Return the constructed vtk actor object. (public)
+
+        Returns:
+            An object derived from vtk.vtkProp.
+        """
+        return self._vtkactors[index]
+
+    def getVTKMapper(self, index=-1):
+        """
+        Return the constructed vtk mapper object. (public)
+
+        Returns:
+            An object derived from vtk.vtkAbstractMapper
+        """
+        return self._vtkmappers[index]
+
+    def getFilters(self, index=-1):
+        return self._filters[index]
+
+    #def setActive(self, value):
+    #    """
+    #    Activate method. This is an internal method, DO NOT USE!
+
+    #    Use RenderWindow.setActive() to activate/deactivate result objects.
+    #    """
+    #    self._vtkrenderer.SetInteractive(value)
+    #    if value and self.getOption('highlight_active'):
+    #        if self.__highlight is None:
+    #            self.__highlight = chigger.geometric.OutlineResult(self,
+    #                                                               interactive=False,
+    #                                                               color=(1, 0, 0),
+    #                                                               line_width=5)
+    #        self.getRenderWindow().append(self.__highlight)
+
+    #    elif self.__highlight is not None:
+    #        self.getRenderWindow().remove(self.__highlight)
+
+
+
+    def __connectFilters(self, inarg, vtkmapper, filters):
+
+        active = []
+        connected = False
+        for filter_obj in filters:
+            if filter_obj.FILTERNAME not in self.__ACTIVE_FILTERS__:
+                continue
+
+            active.append(filter_obj)
+
+            if not connected:
+                active[-1].SetInputConnection(0, inarg.GetOutputPort(0))
+                connected = True
+            else:
+                active[-1].SetInputConnection(0, active[-2].GetOutputPort(0))
+
+
+        # Connect mapper/filters into the pipeline
+        if active:
+            vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
+        else:
+            vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
+
+    #def __del__(self):
+
+     #   for f in self._filters:
+     #       f._ChiggerFilter__result = None
+
+    #def getBounds(self):
+    #    """
+    #    Return the bounding box of the results.
+    #    """
+    #    return utils.get_vtk_bounds_min_max(*[src.getBounds() for src in self._sources])
+
+    #def getRange(self, local=False):
+    #    """
+    #    Return the min/max range for the selected variables and blocks/boundary/nodeset.
+
+    #    NOTE: For the range to be restricted by block/boundary/nodest the reader must have
+    #          "squeeze=True", which can be much slower.
+    #    """
+    #    rngs = [src.getRange(local=local) for src in self._sources]
+    #    return utils.get_min_max(*rngs)
+
     def __addSource(self, inarg):
         """
         Internal method for adding the necessary filters, mapper, and actor for the input.
@@ -154,127 +277,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         self._filters.append(filters)
         self._vtkmappers.append(vtkmapper)
         self._vtkactors.append(vtkactor)
-
-    def deinit(self):
-        """
-        Clean up the object prior to removal from RenderWindow.
-        """
-        for actor in self._vtkactors:
-            self._vtkrenderer.RemoveActor(actor)
-
-
-    def setOptions(self, *args, **kwargs):
-        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
-
-        for filter_type in self.__FILTERS__:
-            if filter_type.FILTERNAME in args:
-                self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
-
-
-    def applyOptions(self):
-        ChiggerAlgorithm.applyOptions(self)
-
-        # Connect the filters
-        for inarg, vtkmapper, filters in zip(self._inputs, self._vtkmappers, self._filters):
-            self.__connectFilters(inarg, vtkmapper, filters)
-
-        for vtkactor in self._vtkactors:
-            vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
-            self.setVTKOption('color', vtkactor.GetProperty().SetColor)
-
-        for vtkactor in self._vtkactors:
-            utils.EdgeOptions.applyOptions(vtkactor, self.getOption('edges'))
-
-    def __connectFilters(self, inarg, vtkmapper, filters):
-
-        active = []
-        connected = False
-        for filter_obj in filters:
-            if filter_obj.FILTERNAME not in self.__ACTIVE_FILTERS__:
-                continue
-
-            active.append(filter_obj)
-
-            if not connected:
-                active[-1].SetInputConnection(0, inarg.GetOutputPort(0))
-                connected = True
-            else:
-                active[-1].SetInputConnection(0, active[-2].GetOutputPort(0))
-
-
-        # Connect mapper/filters into the pipeline
-        if active:
-            vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
-        else:
-            vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
-
-    #def __del__(self):
-
-     #   for f in self._filters:
-     #       f._ChiggerFilter__result = None
-
-    #def getBounds(self):
-    #    """
-    #    Return the bounding box of the results.
-    #    """
-    #    return utils.get_vtk_bounds_min_max(*[src.getBounds() for src in self._sources])
-
-    #def getRange(self, local=False):
-    #    """
-    #    Return the min/max range for the selected variables and blocks/boundary/nodeset.
-
-    #    NOTE: For the range to be restricted by block/boundary/nodest the reader must have
-    #          "squeeze=True", which can be much slower.
-    #    """
-    #    rngs = [src.getRange(local=local) for src in self._sources]
-    #    return utils.get_min_max(*rngs)
-
-
-    def getInput(self, index=-1):
-        return self._inputs[index]
-
-    def getVTKRenderer(self):
-        """Return the vtk.vtkRenderer object."""
-        return self._vtkrenderer
-
-    def getVTKActor(self, index=-1):
-        """
-        Return the constructed vtk actor object. (public)
-
-        Returns:
-            An object derived from vtk.vtkProp.
-        """
-        return self._vtkactors[index]
-
-    def getVTKMapper(self, index=-1):
-        """
-        Return the constructed vtk mapper object. (public)
-
-        Returns:
-            An object derived from vtk.vtkAbstractMapper
-        """
-        return self._vtkmappers[index]
-
-    def getFilters(self, index=-1):
-        return self._filters[index]
-
-    #def setActive(self, value):
-    #    """
-    #    Activate method. This is an internal method, DO NOT USE!
-
-    #    Use RenderWindow.setActive() to activate/deactivate result objects.
-    #    """
-    #    self._vtkrenderer.SetInteractive(value)
-    #    if value and self.getOption('highlight_active'):
-    #        if self.__highlight is None:
-    #            self.__highlight = chigger.geometric.OutlineResult(self,
-    #                                                               interactive=False,
-    #                                                               color=(1, 0, 0),
-    #                                                               line_width=5)
-    #        self.getRenderWindow().append(self.__highlight)
-
-    #    elif self.__highlight is not None:
-    #        self.getRenderWindow().remove(self.__highlight)
 
     def _printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
