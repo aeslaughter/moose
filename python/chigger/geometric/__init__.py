@@ -10,15 +10,21 @@
 from .. import base
 
 from CubeSource import CubeSource
+from GeometricResult import GeometricResult
+
+
+
+# NEED WORK
 from CylinderSource import CylinderSource
 from LineSource import LineSource
 
-import OutlineSourceMeta
-OutlineSource = OutlineSourceMeta.create(base.ChiggerSource)
-OutlineSource2D = OutlineSourceMeta.create(base.ChiggerSource2D)
 
-from OutlineResult import OutlineResult
-
-import PlaneSourceMeta
-PlaneSource = PlaneSourceMeta.create(base.ChiggerSource)
-PlaneSource2D = PlaneSourceMeta.create(base.ChiggerSource2D)
+#import OutlineSourceMeta
+#OutlineSource = OutlineSourceMeta.create(base.ChiggerSource)
+#OutlineSource2D = OutlineSourceMeta.create(base.ChiggerSource2D)
+#
+#from OutlineResult import OutlineResult
+#
+#import PlaneSourceMeta
+#PlaneSource = PlaneSourceMeta.create(base.ChiggerSource)
+#PlaneSource2D = PlaneSourceMeta.create(base.ChiggerSource2D)
