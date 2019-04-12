@@ -26,8 +26,8 @@ class ChiggerSource(ChiggerAlgorithm):
     # List of active filters
     __ACTIVE_FILTERS__ = set()
 
-    @staticmethod
-    def validOptions():
+    @classmethod
+    def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
         opt += utils.ActorOptions.validOptions()
 
@@ -101,7 +101,7 @@ class ChiggerSource(ChiggerAlgorithm):
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Connect the filters
-        self.__connectFilters(self._vtkmapper, self.__filters)
+        self.__connectFilters(self._vtkmapper, self._filters)
 
     def __connectFilters(self, vtkmapper, filters):
 
@@ -124,7 +124,7 @@ class ChiggerSource(ChiggerAlgorithm):
         if active:
             vtkmapper.SetInputConnection(active[-1].GetOutputPort(0))
         else:
-            vtkmapper.SetInputConnection(inarg.GetOutputPort(0))
+            vtkmapper.SetInputConnection(self.GetOutputPort(0))
 
 
 

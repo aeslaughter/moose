@@ -16,8 +16,9 @@ from .. import base
 from .. import utils
 from .. import filters
 
-@base.addFilter(filters.GeometryFilter, required=True)
-@base.addFilter(filters.ExtractBlockFilter)
+#TODO: MOVE TO ExodusSource
+#@base.addFilter(filters.GeometryFilter, required=True)
+#@base.addFilter(filters.ExtractBlockFilter)
 class ExodusResult(base.ChiggerResult):
     """
     Result object to displaying ExodusII data from a single reader.

@@ -98,13 +98,13 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 #            self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 #
 
-    def applyOptions(self):
-        ChiggerAlgorithm.applyOptions(self)
+    #def applyOptions(self):
+    #    ChiggerAlgorithm.applyOptions(self)
 
-        # Connect the filters
-        for inarg, filters in zip(self._sources, self._filters):
-            self.__connectFilters(inarg, inarg.getVTKMapper(), filters)
-            inarg.applyOptions()
+    #    # Connect the filters
+    #    for inarg, filters in zip(self._sources, self._filters):
+    #        self.__connectFilters(inarg, inarg.getVTKMapper(), filters)
+    #        inarg.applyOptions()
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
