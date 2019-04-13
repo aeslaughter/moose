@@ -42,10 +42,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.__current_actor_index = 0
         self.__actors = list()
 
-        window = self.GetInputAlgorithm()
+        self._window = self.GetInputAlgorithm()
 
 
-        window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
+        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
 
 
         #self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.MouseMoveEvent,

@@ -74,7 +74,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
         self.__vtkinteractorstyle = None
 
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self)
 
         self.SetNumberOfInputPorts(len(args)+1) # add one for background object
@@ -82,11 +81,18 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         self.SetNumberOfOutputPorts(0)
 
+        self._results = list()
         self.__background = misc.ChiggerBackground()
+        self._results.append(self.__background)
 
         self.SetInputConnection(0, self.__background.GetOutputPort(0))
+        for i, result in enumerate(args):
+            self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
+            self._results.append(result)
 
-        #self._results = []
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
+
+        #self._results = [self.__background] + list(args)
         #self._observers = set()
 
         #self.__active = None
