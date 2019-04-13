@@ -76,18 +76,20 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         VTKPythonAlgorithmBase.__init__(self)
 
-        self.SetNumberOfInputPorts(len(args)+1) # add one for background object
-        self.InputType = 'vtkPythonAlgorithm'
+        self.SetNumberOfInputPorts(0)
+        #self.SetNumberOfInputPorts(len(args)+1) # add one for background object
+        #self.InputType = 'vtkPythonAlgorithm'
 
         self.SetNumberOfOutputPorts(0)
+        #self.OutoutType = 'vtkPythonAlgorithm'
 
         self._results = list()
         self.__background = misc.ChiggerBackground()
         self._results.append(self.__background)
 
-        self.SetInputConnection(0, self.__background.GetOutputPort(0))
+        #self.SetInputConnection(0, self.__background.GetOutputPort(0))
         for i, result in enumerate(args):
-            self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
+            #self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
             self._results.append(result)
 
         base.ChiggerAlgorithm.__init__(self, **kwargs)
@@ -404,4 +406,5 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)
 
-        #self.__vtkinteractorstyle.RemoveAllObservers()
+    def _onKeyPressEvent(self, *args):
+        print 'foo'
