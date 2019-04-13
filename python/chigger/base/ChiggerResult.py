@@ -142,8 +142,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
 
 
-    #def __del__(self):
-    #    self.log('__del__()', level=logging.DEBUG)
+    def __del__(self):
+        self.log('__del__()', level=logging.DEBUG)
 
         #for src in self._sources:
         #    self._vtkrenderer.RemoveActor(src.getVTKActor())

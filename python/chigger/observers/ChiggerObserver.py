@@ -24,15 +24,22 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return opt
 
     def __init__(self, window, **kwargs):
-        self._window = window
+        #self._window = window
 
         VTKPythonAlgorithmBase.__init__(self)
-
-        self.SetNumberOfInputPorts(0)
-        self.SetNumberOfOutputPorts(0)
-
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
+        self.SetNumberOfInputPorts(1)
+        self.SetNumberOfOutputPorts(0)
+        self.InputType = 'vtkPythonAlgorithm'
+        self.SetInputConnection(window.GetOutputPort(0))
+
+
+    #def RequestData(self, request, inInfo, outInfo):
+
+        #inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+        #self.SetInputData(inp)
+    #    return 1
     #def init(self, window):
     #    """
     #    Initialize the observer, this is called by the RenderWindow automatically.
@@ -45,7 +52,7 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         Terminate the render window.
         """
-        self._window.getVTKInteractor().TerminateApp()
+        #self._window.getVTKInteractor().TerminateApp()
 
     #def __del__(self):
     #    self.log('__del__()', level=logging.DEBUG)

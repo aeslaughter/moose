@@ -390,5 +390,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         return self._results[index]
 
-    #def __del__(self):
-    #    self.log('__del__()', level=logging.DEBUG)
+    def __del__(self):
+        self.log('__del__()', level=logging.DEBUG)
+
+        #self.__vtkinteractorstyle.RemoveAllObservers()
