@@ -74,23 +74,28 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
         self.__vtkinteractorstyle = None
 
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self)
 
-        self.SetNumberOfInputPorts(0)
+        self.SetNumberOfInputPorts(len(args)+1) # add one for background object
+        self.InputType = 'vtkPythonAlgorithm'
+
         self.SetNumberOfOutputPorts(0)
 
-        self._results = []
+        self.__background = misc.ChiggerBackground()
+
+        self.SetInputConnection(0, self.__background.GetOutputPort(0))
+
+        #self._results = []
         #self._observers = set()
 
         #self.__active = None
         #self.__highlight = None
 
-        self.__background = misc.ChiggerBackground()
-        self.append(self.__background, *args)
+        #self.append(self.__background, *args)
         #self.append(*args)
         #self.setActive(None)
 
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
 
 
         # Create "chigger" watermark
@@ -132,23 +137,23 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         return self.__vtkwindow
 
-    def append(self, *args):
-        """
-        Append result object(s) to the window.
-        """
-        #TODO: make this a private member
+    #def _append(self, *args):
+    #    """
+    #    Append result object(s) to the window.
+    #    """
+    #    #TODO: make this a private member
 
-        for result in args:
-            mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
-            if isinstance(result, base.ResultGroup):
-                self.append(*result.getResults())
-            elif not isinstance(result, self.__RESULTTYPE__):
-                n = result.__class__.__name__
-                t = self.__RESULTTYPE__.__name__
-                msg = 'The supplied result type of {} must be of type {}.'.format(n, t)
-                raise mooseutils.MooseException(msg)
-            self._results.append(result)
-            #result.init(self)
+    #    for result in args:
+    #        mooseutils.mooseDebug('RenderWindow.append {}'.format(type(result).__name__))
+    #        if isinstance(result, base.ResultGroup):
+    #            self._append(*result.getResults())
+    #        elif not isinstance(result, self.__RESULTTYPE__):
+    #            n = result.__class__.__name__
+    #            t = self.__RESULTTYPE__.__name__
+    #            msg = 'The supplied result type of {} must be of type {}.'.format(n, t)
+    #            raise mooseutils.MooseException(msg)
+    #        self._results.append(result)
+    #        #result.init(self)
 
     #def remove(self, *args):
     #    """
