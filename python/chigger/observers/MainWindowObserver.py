@@ -40,12 +40,13 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         utils.KeyBindingMixin.__init__(self)
 
         self.__current_actor_index = 0
-        self.__actors = list()
+        #self.__actors = list()
 
-        self._window = self.GetInputAlgorithm()
+        window = self.GetInputAlgorithm()
 
 
-        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
+        window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
+                                                    self._onKeyPressEvent)
 
 
         #self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.MouseMoveEvent,
@@ -65,8 +66,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def applyOptions(self):
         ChiggerObserver.applyOptions(self)
 
+        #window = self.GetInputAlgorithm()
+
         #self.__actors = list()
-        #for result in self._window:
+        #for result in window:
         #    for source in result:
         #        self.__actors.append((result, source, source.getVTKActor()))
 
@@ -76,20 +79,22 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" result object.
         """
-        for result in self._window:
+        window = self.GetInputAlgorithm()
+        actors = list()
+        for result in window:
             for source in result:
-                self.__actors.append((result, source, source.getVTKActor()))
+                actors.append((result, source, source.getVTKActor()))
 
 
         self.__current_actor_index += 1
-        if self.__current_actor_index == len(self.__actors):
+        if self.__current_actor_index == len(actors):
             self.__current_actor_index = 0
 
        # print self, self.__actors, len(self.__actors)
 
 
-        _, _, actor = self.__actors[self.__current_actor_index]
-        self._window.getVTKInteractorStyle().HighlightProp(actor)
+        actor = actors[self.__current_actor_index]
+        window.getVTKInteractorStyle().HighlightProp(actor)
 
     def _previousResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
@@ -140,8 +145,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
                                           subsequent_indent=' '*(n + 2)))
 
-    @staticmethod
-    def _onKeyPressEvent(obj, event): #pylint: disable=unused-argument
+    def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """
         The function to be called by the vtkInteractor KeyPressEvent (see init).
 
@@ -151,11 +155,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         key = obj.GetKeySym().lower()
         shift = obj.GetShiftKey()
 
-        print key
-
         # This objects bindings
-        #for binding in self.getKeyBindings(key, shift):
-        #    binding.function(self, self._window, binding)
+        for binding in self.getKeyBindings(key, shift):
+            binding.function(self, self.GetInputAlgorithm(), binding)
 
         #if False:#self.__current_active_actor:
         #    result, source = self.__source_result_lookup[self.__current_active_actor]
