@@ -44,8 +44,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         #self.__actors = list()
 
         #window = self.GetInputAlgorithm()
-        self._window().getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
-                                                      self._onKeyPressEvent)
+        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
+                                                    self._onKeyPressEvent)
 
         #window.getVTKInteractor()._foo = window
         #window.getVTKInteractor().UnRegister(window)
@@ -87,7 +87,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         #window = self.GetInputAlgorithm()
         actors = list()
-        for result in self._window():
+        for result in self._window:
             for source in result:
                 actors.append((result, source, source.getVTKActor()))
 
@@ -99,7 +99,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
        ## print self, self.__actors, len(self.__actors)
 
         _, _, actor = actors[self.__current_actor_index]
-        self._window().getVTKInteractorStyle().HighlightProp(actor)
+        self._window.getVTKInteractorStyle().HighlightProp(actor)
 
     def _previousResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """

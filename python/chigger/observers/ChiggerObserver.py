@@ -25,7 +25,12 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return opt
 
     def __init__(self, window, **kwargs):
-        self._window = weakref.ref(window)
+
+        # Storing a direct reference (self._window = window) causes VTK to seg. fault. As far as I
+        # can tell this is due to a cyclic reference between the observers added to the VTK
+        # interactor objects. Using a weak reference with the self._window property allows this
+        # class to operate like desired.
+        self.__window_weakref = weakref.ref(window)
 
         #VTKPythonAlgorithmBase.__init__(self)
         #base.ChiggerAlgorithm.__init__(self, **kwargs)
@@ -48,6 +53,10 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     #    NOTE: This is an internal method, do not call it.
     #    """
     #    self._window = window
+
+    @property
+    def _window(self):
+        return self.__window_weakref()
 
     def terminate(self):
         """
