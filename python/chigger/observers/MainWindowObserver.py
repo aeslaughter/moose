@@ -8,6 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
+import weakref
 import textwrap
 import vtk
 
@@ -16,10 +17,29 @@ from ChiggerObserver import ChiggerObserver
 from .. import utils
 
 
+
+
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
     """
+    class ObjectRef(object):
+        def __init__(self, result, source):
+            self.__result_weakref = weakref.ref(result)
+            self.__source_weakref = weakref.ref(source)
+
+        @property
+        def result(self):
+            return self.__result_weakref()
+
+        @property
+        def source(self):
+            return self.__source_weakref()
+
+        @property
+        def actor(self):
+            return self.source.getVTKActor()
+
 
     @staticmethod
     def validOptions():
@@ -37,11 +57,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         return bindings
 
     def __init__(self, *args, **kwargs):
+
         ChiggerObserver.__init__(self, *args, **kwargs)
         utils.KeyBindingMixin.__init__(self)
-
-        self.__current_actor_index = 0
-        #self.__actors = list()
 
         #window = self.GetInputAlgorithm()
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
@@ -56,8 +74,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         #window.getVTKInteractor().AddObserver(vtk.vtkCommand.MouseMoveEvent,
         #                                      self._onMouseMoveEvent)
-        #self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent,
-        #                                            self._onMouseLeftButtonEvent)
+        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent,
+                                                    self._onMouseLeftButtonEvent)
 
     #    self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.DeleteEvent,
     #                                                self._onDeleteEvent)
@@ -68,49 +86,40 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     #def _onDeleteEvent(self, *args):
     #    print 'delete...'
 
-    def applyOptions(self):
-        ChiggerObserver.applyOptions(self)
+        self.__current_actor_index = 0
+        self.__objects = list()
+        for result in self._window:
+            for source in result:
+                self.__objects.append(MainWindowObserver.ObjectRef(result, source))
 
+
+
+    #def applyOptions(self):
+     #   ChiggerObserver.applyOptions(self)
+     #   self._initializeObjectList()
         #window = self.GetInputAlgorithm()
-
-        #self.__actors = list()
-        #for result in window:
-        #    for source in result:
-        #        self.__actors.append((result, source, source.getVTKActor()))
-
-        #print self, self.__actors, len(self.__actors)
 
     def _nextResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "next" result object.
         """
-
-        #window = self.GetInputAlgorithm()
-        actors = list()
-        for result in self._window:
-            for source in result:
-                actors.append((result, source, source.getVTKActor()))
-
-
         self.__current_actor_index += 1
-        if self.__current_actor_index == len(actors):
+        if self.__current_actor_index == len(self.__objects):
             self.__current_actor_index = 0
 
-       ## print self, self.__actors, len(self.__actors)
-
-        _, _, actor = actors[self.__current_actor_index]
-        self._window.getVTKInteractorStyle().HighlightProp(actor)
+        ref = self.__objects[self.__current_actor_index]
+        self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
 
     def _previousResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "previous" result object.
         """
-        #self.__current_actor_index -= 1
-        #if self.__current_actor_index == -1:
-        #    self.__current_actor_index = len(self.__actors) - 1
+        self.__current_actor_index -= 1
+        if self.__current_actor_index == -1:
+            self.__current_actor_index = len(self.__objects) - 1
 
-        #actor = self.__actors[self.__current_actor_index]
-        #self._window.getVTKInteractorStyle().HighlightProp(actor)
+        ref = self.__objects[self.__current_actor_index]
+        self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
 
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
