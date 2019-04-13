@@ -8,6 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
+import weakref
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
 from .. import base
@@ -24,15 +25,15 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return opt
 
     def __init__(self, window, **kwargs):
-        #self._window = window
+        self._window = weakref.ref(window)
 
-        VTKPythonAlgorithmBase.__init__(self)
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
+        #VTKPythonAlgorithmBase.__init__(self)
+        #base.ChiggerAlgorithm.__init__(self, **kwargs)
 
-        self.SetNumberOfInputPorts(1)
-        self.SetNumberOfOutputPorts(0)
-        self.InputType = 'vtkPythonAlgorithm'
-        self.SetInputConnection(window.GetOutputPort(0))
+        #self.SetNumberOfInputPorts(1)
+        #self.SetNumberOfOutputPorts(0)
+        #self.InputType = 'vtkPythonAlgorithm'
+        #self.SetInputConnection(window.GetOutputPort(0))
 
 
     #def RequestData(self, request, inInfo, outInfo):

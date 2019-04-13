@@ -20,12 +20,7 @@ geo = geometric.GeometricResult(box0, box1)
 
 window = chigger.RenderWindow(geo, size=(300,300))
 
-
-import vtk
-window.AddObserver(vtk.vtkCommand.KeyPressEvent,
-                                      window._onKeyPressEvent)
-
-#obs = chigger.observers.MainWindowObserver(window)
+obs = chigger.observers.MainWindowObserver(window)
 
 window.write('cube_source.png')
 window.start()

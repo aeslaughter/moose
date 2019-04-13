@@ -19,6 +19,23 @@ import observers
 import misc
 import mooseutils
 
+
+
+class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
+    def __init__(self, window):
+        vtk.vtkInteractorStyleJoystickCamera.__init__(self)
+
+        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
+
+        self._window = window
+        window.UnRegister(self)
+        #self.UnRegister(self._window)
+
+    @staticmethod
+    def _onKeyPressEvent(obj, event):
+        print obj._window
+
+
 class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     """
@@ -92,6 +109,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             #self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
             self._results.append(result)
 
+
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
         #self._results = [self.__background] + list(args)
@@ -103,6 +121,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #self.append(self.__background, *args)
         #self.append(*args)
         #self.setActive(None)
+
 
 
 
@@ -271,6 +290,8 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             if self.__vtkinteractor is None:
                 self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
+                #self.__vtkinteractor = ChiggerInteractor(self)
+                #self.__vtkinteractor.SetRenderWindow(self.__vtkwindow)
 
             self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
@@ -326,6 +347,8 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #        if observer not in self._observers:
         #            observer.init(self)
         #            self._observers.add(observer)
+
+        #self._observer.init(self)
 
         self.__vtkwindow.Render()
 
@@ -406,5 +429,5 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)
 
-    def _onKeyPressEvent(self, *args):
+    def _onKeyPressEvent(self, obj, event):
         print 'foo'
