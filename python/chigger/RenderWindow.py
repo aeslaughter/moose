@@ -110,6 +110,7 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self._results.append(result)
 
 
+        print self._results
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
         #self._results = [self.__background] + list(args)

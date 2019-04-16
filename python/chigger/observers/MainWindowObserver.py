@@ -15,7 +15,7 @@ import vtk
 import mooseutils
 from ChiggerObserver import ChiggerObserver
 from .. import utils
-
+from .. import geometric
 
 
 
@@ -77,20 +77,24 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent,
                                                     self._onMouseLeftButtonEvent)
 
-    #    self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.DeleteEvent,
-    #                                                self._onDeleteEvent)
-
     #def RequestData(self, request, inInfo, outInfo):
     #    self.log('RequestData', level=logging.DEBUG)
 
     #def _onDeleteEvent(self, *args):
     #    print 'delete...'
 
+        #self.__outline_source = geometric.OutlineSource()
+        self.__current_result_index = 0
         self.__current_actor_index = 0
-        self.__objects = list()
+        self.__sources = list()
+        self.__results = list()
         for result in self._window:
+            if result.interactive():
+                self.__results.append(weakref.ref(result))
             for source in result:
-                self.__objects.append(MainWindowObserver.ObjectRef(result, source))
+                self.__sources.append(MainWindowObserver.ObjectRef(result, source))
+
+
 
 
 
@@ -103,12 +107,27 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" result object.
         """
+        old = self.__results[self.__current_result_index]()
+        old.deactivate()
+
+
+        self.__current_result_index += 1
+        if self.__current_result_index == len(self.__results):
+            self.__current_result_index = 0
+
+        current = self.__results[self.__current_result_index]()
+        current.activate()
+
+        self._window.getVTKWindow().Render()
+
+        """
         self.__current_actor_index += 1
-        if self.__current_actor_index == len(self.__objects):
+        if self.__current_actor_index == len(self.__sources):
             self.__current_actor_index = 0
 
-        ref = self.__objects[self.__current_actor_index]
+        ref = self.__sources[self.__current_actor_index]
         self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
+        """
 
     def _previousResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
@@ -116,9 +135,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         self.__current_actor_index -= 1
         if self.__current_actor_index == -1:
-            self.__current_actor_index = len(self.__objects) - 1
+            self.__current_actor_index = len(self.__sources) - 1
 
-        ref = self.__objects[self.__current_actor_index]
+        ref = self.__sources[self.__current_actor_index]
         self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
 
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
@@ -140,24 +159,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if active is not None:
             print mooseutils.colorText('\n{} Keybindings:'.format(active.title()), 'YELLOW')
             self.__printKeyBindings(active.keyBindings())
-
-    @staticmethod
-    def __printKeyBindings(bindings):
-        """
-        Helper for printing keybindings.
-        """
-        n = 0
-        out = []
-        for key, value in bindings.iteritems():
-            tag = 'shift-{}'.format(key[0]) if key[1] else key[0]
-            desc = [item.description for item in value]
-            out.append([tag, '\n\n'.join(desc)])
-            n = max(n, len(tag))
-
-        for key, desc in out:
-            key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
-            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
-                                          subsequent_indent=' '*(n + 2)))
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """
@@ -204,7 +205,20 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def _onMouseLeftButtonEvent(self, obj, event):
         print '_onMouseLeftButtonEvent'#, obj, event
 
+    @staticmethod
+    def __printKeyBindings(bindings):
+        """
+        Helper for printing keybindings.
+        """
+        n = 0
+        out = []
+        for key, value in bindings.iteritems():
+            tag = 'shift-{}'.format(key[0]) if key[1] else key[0]
+            desc = [item.description for item in value]
+            out.append([tag, '\n\n'.join(desc)])
+            n = max(n, len(tag))
 
-   # def __del__(self):
-        #self.log('__del__()', level=logging.DEBUG)
-        # self._window = None
+        for key, desc in out:
+            key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
+            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
+                                          subsequent_indent=' '*(n + 2)))

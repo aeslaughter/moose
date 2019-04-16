@@ -13,6 +13,8 @@ class ChiggerBackground(base.ChiggerResult):
     """
     An empty vtkRenderer to serve as the background for other objects.
     """
+    __INTERACTIVE__ = False
+
     @staticmethod
     def validOptions():
         opt = base.ChiggerResultBase.validOptions()
@@ -28,7 +30,6 @@ class ChiggerBackground(base.ChiggerResult):
                 doc="Enable/disable the use of a gradient background.")
 
         opt.set('layer', 0)
-        opt.set('interactive', False)
         return opt
 
     def applyOptions(self):

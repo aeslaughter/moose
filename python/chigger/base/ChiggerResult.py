@@ -23,6 +23,8 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     # The type of input (as a string), see VTKPythonAlgoritimBase
     VTKINPUTTYPE = None
 
+    __INTERACTIVE__ = True
+
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
@@ -38,10 +40,16 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                 doc="The VTK camera to utilize for viewing the results.")
 
 
-        opt.add('interactive', default=True,
-                doc="Control if the object may be selected with key bindings.")
-        opt.add('highlight_active', default=True, vtype=bool,
-                doc="When the result is activate enable/disable the 'highlighting'.")
+        #TODO: N
+        if cls.__INTERACTIVE__:
+            from chigger import geometric
+            o = geometric.OutlineSource.validOptions()
+            o.update(color=(0,1,0), linewidth=2)
+            o.remove('bounds')
+            opt.add('interaction', o,
+                    doc="Options for controlling interaction style.")
+        #opt.add('highlight_active', default=True, vtype=bool,
+        #        doc="When the result is activate enable/disable the 'highlighting'.")
 
 
         return opt
@@ -72,19 +80,20 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
-        # TODO: Restore interactive stuff...
-        #self._vtkrenderer.SetInteractive(value)
+        # Initilize as not interactive (see self.activate/deactivate)
+        self._vtkrenderer.SetInteractive(False)
 
         # Setup VTKPythobnAlgorithmBase
         self.SetNumberOfInputPorts(len(args))
         self.InputType = self.VTKINPUTTYPE
 
         for arg in args:
-            if arg.getVTKActor() is not None:
-                self._vtkrenderer.AddActor(arg.getVTKActor())
+            self._add(arg)
 
-            # Update the storage of the created objects
-            self._sources.append(arg)
+        # Create outline object
+        from chigger import geometric
+        self.__outline_source = geometric.OutlineSource()
+
 
         ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -103,13 +112,27 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 #            self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 #
 
-    #def applyOptions(self):
-    #    ChiggerAlgorithm.applyOptions(self)
+    def _add(self, arg):
+        if arg.getVTKActor() is not None:
+            self._vtkrenderer.AddActor(arg.getVTKActor())
 
-    #    # Connect the filters
-    #    for inarg, filters in zip(self._sources, self._filters):
-    #        self.__connectFilters(inarg, inarg.getVTKMapper(), filters)
-    #        inarg.applyOptions()
+        self._sources.append(arg)
+
+    def _remove(self, arg):
+        if arg in self._sources:
+            self._sources.remove(arg)
+
+            if arg.getVTKActor() is not None:
+                self._vtkrenderer.RemoveActor(arg.getVTKActor())
+
+    def applyOptions(self):
+        ChiggerAlgorithm.applyOptions(self)
+
+
+        self._vtkrenderer.SetViewport(self.getOption('viewport'))
+
+        self._vtkrenderer.ResetCameraClippingRange()
+
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
@@ -117,6 +140,20 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
     def getSource(self, index=-1):
         return self._sources[index]
+
+    def activate(self):
+        bounds = utils.get_bounds(*self._sources)
+        self.__outline_source.update(self.getOption('interaction'))
+        self.__outline_source.setOptions(bounds=tuple(bounds))
+        self._add(self.__outline_source)
+        self._vtkrenderer.SetInteractive(True)
+
+    def deactivate(self):
+        self._remove(self.__outline_source)
+        self._vtkrenderer.SetInteractive(False)
+
+    def interactive(self):
+        return self.__INTERACTIVE__
 
 
     #def getFilters(self, index=-1):

@@ -58,8 +58,9 @@ class ChiggerObject(object):
 
     def log(self, msg, *args, **kwargs):
         lvl = kwargs.pop('level', logging.INFO)
+        obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
         #print '{}: {}'.format(self.__class__.__name__, msg.format(args))
-        self.__log.log(lvl, '{}: {}'.format(self.getOption('name'), msg.format(args)))
+        obj.log(lvl, '{}: {}'.format(self.getOption('name'), msg.format(args)))
 
     def setOptions(self, *args, **kwargs):
         """
@@ -78,7 +79,6 @@ class ChiggerObject(object):
                 if not self._options.hasOption(sub):
                     msg = "The supplied sub-option '{}' does not exist.".format(sub)
                     mooseutils.mooseError(msg)
-                print sub, kwargs
                 self._options.get(sub).update(**kwargs)
 
         # Main options case
@@ -109,12 +109,9 @@ class ChiggerObject(object):
         if value is not None:
             func(value)
 
+    def update(self, opt):
+        self._options.update(opt)
 
-    #def applyOption(self, name):
-    #    """
-    #    Returns the option and sets the apply
-    #    """
-    #    return self._options.applyOption(name)
 
     def setOption(self, name, value):
         """
