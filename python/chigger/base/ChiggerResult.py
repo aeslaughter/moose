@@ -142,7 +142,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         return self._sources[index]
 
     def activate(self):
-        bounds = utils.get_bounds(*self._sources)
+        bounds = self._vtkrenderer.ComputeVisiblePropBounds()
         self.__outline_source.update(self.getOption('interaction'))
         self.__outline_source.setOptions(bounds=tuple(bounds))
         self._add(self.__outline_source)
