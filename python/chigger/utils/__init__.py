@@ -22,6 +22,7 @@ import FontOptions
 import LegendOptions
 import ActorOptions
 from KeyBindingMixin import KeyBinding, KeyBindingMixin
+from ObserverMixin import ObserverMixin
 
 def get_active_filenames(basename, pattern=None):
     """

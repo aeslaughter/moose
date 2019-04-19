@@ -14,7 +14,8 @@ import mooseutils
 from chigger import utils
 from ChiggerAlgorithm import ChiggerAlgorithm
 
-class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmBase):
+
+class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     The ChiggerResult is the base class for creating renderered objects. This class
     contains a single vtkRenderer to which many actors can be added.
@@ -23,11 +24,10 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     # The type of input (as a string), see VTKPythonAlgoritimBase
     VTKINPUTTYPE = None
 
-    __INTERACTIVE__ = True
-
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
+        opt += utils.ObserverMixin.validOptions()
 
         opt.add('light', vtype=float,
                 doc="Add a headlight with the given intensity to the renderer.")
@@ -38,19 +38,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                     "relative position to the entire window (0 to 1).")
         opt.add('camera', None, vtype=vtk.vtkCamera,
                 doc="The VTK camera to utilize for viewing the results.")
-
-
-        #TODO: Make this a valid option???
-        if cls.__INTERACTIVE__:
-            from chigger import geometric
-            o = geometric.OutlineSource.validOptions()
-            o.update(color=(0,1,0), linewidth=2)
-            o.remove('bounds')
-            opt.add('interaction', o,
-                    doc="Options for controlling interaction style.")
-        #opt.add('highlight_active', default=True, vtype=bool,
-        #        doc="When the result is activate enable/disable the 'highlighting'.")
-
 
         return opt
 
@@ -73,7 +60,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         # Initialize class members
         self._sources = list()
         self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
-        self._vtkrenderer.SetDebug(True)
 
         # Verify renderer type
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
@@ -89,14 +75,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
 
         for arg in args:
             self._add(arg)
-
-        # Create outline object
-        self.__outline_source = None
-        if self.__INTERACTIVE__:
-            from chigger import geometric
-            self.__outline_source = geometric.OutlineSource()
-            self.__outline_source.interactive = False
-
 
         ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -131,7 +109,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     def applyOptions(self):
         ChiggerAlgorithm.applyOptions(self)
 
-
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
 
         self._vtkrenderer.ResetCameraClippingRange()
@@ -155,9 +132,6 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
         else:
             self._remove(self.__outline_source)
             self._vtkrenderer.SetInteractive(False)
-
-    def interactive(self):
-        return self.__INTERACTIVE__
 
 
     #def getFilters(self, index=-1):

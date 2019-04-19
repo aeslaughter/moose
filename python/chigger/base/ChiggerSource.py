@@ -12,7 +12,7 @@ import vtk
 from ChiggerAlgorithm import ChiggerAlgorithm
 from chigger import utils
 
-class ChiggerSource(ChiggerAlgorithm):
+class ChiggerSource(ChiggerAlgorithm, utils.ObserverMixin):
 
     # The type of vtkProp to create (this should be defined in child class)
     VTKACTORTYPE = None
@@ -26,11 +26,11 @@ class ChiggerSource(ChiggerAlgorithm):
     # List of active filters
     __ACTIVE_FILTERS__ = set()
 
-
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
         opt += utils.ActorOptions.validOptions()
+        opt += utils.ObserverMixin.validOptions()
 
         for filter_type in cls.__FILTERS__:
             opt.add(filter_type.FILTERNAME,
@@ -60,8 +60,6 @@ class ChiggerSource(ChiggerAlgorithm):
 
         # Storage for the filter objects
         self._filters = list()
-
-        self.interactive = True
 
         ChiggerAlgorithm.__init__(self, *args, **kwargs)
 

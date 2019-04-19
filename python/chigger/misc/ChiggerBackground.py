@@ -17,7 +17,8 @@ class ChiggerBackground(base.ChiggerResult):
 
     @staticmethod
     def validOptions():
-        opt = base.ChiggerResultBase.validOptions()
+        opt = base.ChiggerResult.validOptions()
+        opt.remove('interactive')
         opt.add('background', (0., 0., 0.), vtype=float, size=3,
                 doc="The background color, only applied when the 'layer' option is zero. A " \
                     "background result is automatically added when chigger.RenderWindow is " \
@@ -31,6 +32,9 @@ class ChiggerBackground(base.ChiggerResult):
 
         opt.set('layer', 0)
         return opt
+
+    def interactive(self):
+        return False
 
     def applyOptions(self):
 

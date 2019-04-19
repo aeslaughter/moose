@@ -53,10 +53,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('r', MainWindowObserver._selectResult, shift=True,
                      desc="Select the previous result object.")
 
-        bindings.add('s', MainWindowObserver._selectSource, desc="Select the next source object within the current result.")
-        bindings.add('s', MainWindowObserver._selectSource, shift=True,
-                     desc="Select the previous source object within the current result.")
-
         bindings.add('t', MainWindowObserver._deactivateResult, desc="Clear selection(s).")
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
         return bindings
@@ -89,15 +85,18 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     #    print 'delete...'
 
         #self.__outline_source = geometric.OutlineSource()
-        self.__current_result_index = 0
-        self.__results = list()
-        self.__current_source_index = 0
+        #self.__current_result_index = 0
+        #self.__results = list()
+        self.__result_outline_weakref = None#geometric.OutlineSource()
+        self.__source_outline_weakref = None#geometric.OutlineSource()
+
+
+        self.__current_source_index = -1
         self.__sources = list()
         for result in self._window:
-            if result.interactive():
-                self.__results.append(weakref.ref(result))
-            #for source in result:
-            #    self.__sources.append(MainWindowObserver.ObjectRef(result, source))
+            for source in result:
+                if result.interactive() and source.interactive():
+                    self.__sources.append(MainWindowObserver.ObjectRef(result, source))
 
 
 
@@ -113,43 +112,13 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         Keybinding callback: Activate the "next" result object.
         """
 
+
         # Deactivate current result and source
-        old = self.__results[self.__current_result_index]()
-        old.setActive(False)
+        current = self.__sources[self.__current_source_index]
+        if self.__result_outline_weakref:
+            current.result._remove(self.__result_outline_weakref())
+            current.result._remove(self.__source_outline_weakref())
 
-        # Locate the next result to select
-        if binding.shift:
-            self.__current_result_index -= 1
-            if self.__current_result_index == -1:
-                self.__current_result_index = len(self.__results) - 1
-        else:
-            self.__current_result_index += 1
-            if self.__current_result_index == len(self.__results):
-                self.__current_result_index = 0
-
-        # Activate the next result
-        current = self.__results[self.__current_result_index]()
-        current.setActive(True)
-
-        self.__sources = list()
-        for source in current:
-            if source.interactive:
-                self.__sources.append(weakref.ref(source))
-        self.__current_source_index = 0
-        self._window.getVTKInteractorStyle().HighlightProp(self.__sources[0]().getVTKActor())
-
-        self._window.getVTKWindow().Render()
-
-        """
-        self.__current_actor_index += 1
-        if self.__current_actor_index == len(self.__sources):
-            self.__current_actor_index = 0
-
-        ref = self.__sources[self.__current_actor_index]
-        self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
-        """
-
-    def _selectSource(self, window, binding):
         if binding.shift:
             self.__current_source_index -= 1
             if self.__current_source_index == -1:
@@ -159,8 +128,17 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             if self.__current_source_index == len(self.__sources):
                 self.__current_source_index = 0
 
-        actor = self.__sources[self.__current_source_index]().getVTKActor()
-        self._window.getVTKInteractorStyle().HighlightProp(actor)
+        current = self.__sources[self.__current_source_index]
+
+        bounds = current.result.getVTKRenderer().ComputeVisiblePropBounds()
+        current.result._add(geometric.OutlineSource(bounds=bounds))
+        self.__result_outline_weakref = weakref.ref(current.result._sources[-1])
+
+        bounds = current.source.getVTKMapper().GetBounds()
+        current.result._add(geometric.OutlineSource(bounds=bounds))
+        self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
+
+        self._window.getVTKWindow().Render()
 
 
 
@@ -168,8 +146,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Deactivate all results.
         """
-        old = self.__results[self.__current_result_index]()
-        old.setActive(False)
+        current = self.__sources[self.__current_source_index]
+        if self.__result_outline_weakref:
+            current.result._remove(self.__result_outline_weakref())
+            current.result._remove(self.__source_outline_weakref())
+            self.__result_outline_weakref = None
+            self.__source_outline_weakref = None
 
     def _printHelp(self, window, binding): #pylint: disable=unused-argument
         """

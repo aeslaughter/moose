@@ -109,8 +109,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             #self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
             self._results.append(result)
 
-
-        print self._results
         base.ChiggerAlgorithm.__init__(self, **kwargs)
 
         #self._results = [self.__background] + list(args)
