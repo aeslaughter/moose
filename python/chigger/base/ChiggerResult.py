@@ -40,7 +40,7 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
                 doc="The VTK camera to utilize for viewing the results.")
 
 
-        #TODO: N
+        #TODO: Make this a valid option???
         if cls.__INTERACTIVE__:
             from chigger import geometric
             o = geometric.OutlineSource.validOptions()
@@ -91,8 +91,11 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
             self._add(arg)
 
         # Create outline object
-        from chigger import geometric
-        self.__outline_source = geometric.OutlineSource()
+        self.__outline_source = None
+        if self.__INTERACTIVE__:
+            from chigger import geometric
+            self.__outline_source = geometric.OutlineSource()
+            self.__outline_source.interactive = False
 
 
         ChiggerAlgorithm.__init__(self, **kwargs)
@@ -141,16 +144,17 @@ class ChiggerResult(utils.KeyBindingMixin, ChiggerAlgorithm, VTKPythonAlgorithmB
     def getSource(self, index=-1):
         return self._sources[index]
 
-    def activate(self):
-        bounds = self._vtkrenderer.ComputeVisiblePropBounds()
-        self.__outline_source.update(self.getOption('interaction'))
-        self.__outline_source.setOptions(bounds=tuple(bounds))
-        self._add(self.__outline_source)
-        self._vtkrenderer.SetInteractive(True)
+    def setActive(self, value):
+        if value:
+            bounds = self._vtkrenderer.ComputeVisiblePropBounds()
+            self.__outline_source.update(self.getOption('interaction'))
+            self.__outline_source.setOptions(bounds=tuple(bounds))
+            self._add(self.__outline_source)
+            self._vtkrenderer.SetInteractive(True)
 
-    def deactivate(self):
-        self._remove(self.__outline_source)
-        self._vtkrenderer.SetInteractive(False)
+        else:
+            self._remove(self.__outline_source)
+            self._vtkrenderer.SetInteractive(False)
 
     def interactive(self):
         return self.__INTERACTIVE__

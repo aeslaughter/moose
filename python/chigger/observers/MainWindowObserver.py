@@ -49,9 +49,14 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('r', MainWindowObserver._nextResult, desc="Select the next result object.")
-        bindings.add('r', MainWindowObserver._previousResult, shift=True,
+        bindings.add('r', MainWindowObserver._selectResult, desc="Select the next result object.")
+        bindings.add('r', MainWindowObserver._selectResult, shift=True,
                      desc="Select the previous result object.")
+
+        bindings.add('s', MainWindowObserver._selectSource, desc="Select the next source object within the current result.")
+        bindings.add('s', MainWindowObserver._selectSource, shift=True,
+                     desc="Select the previous source object within the current result.")
+
         bindings.add('t', MainWindowObserver._deactivateResult, desc="Clear selection(s).")
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
         return bindings
@@ -85,14 +90,14 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         #self.__outline_source = geometric.OutlineSource()
         self.__current_result_index = 0
-        self.__current_actor_index = 0
-        self.__sources = list()
         self.__results = list()
+        self.__current_source_index = 0
+        self.__sources = list()
         for result in self._window:
             if result.interactive():
                 self.__results.append(weakref.ref(result))
-            for source in result:
-                self.__sources.append(MainWindowObserver.ObjectRef(result, source))
+            #for source in result:
+            #    self.__sources.append(MainWindowObserver.ObjectRef(result, source))
 
 
 
@@ -103,20 +108,35 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
      #   self._initializeObjectList()
         #window = self.GetInputAlgorithm()
 
-    def _nextResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
+    def _selectResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "next" result object.
         """
+
+        # Deactivate current result and source
         old = self.__results[self.__current_result_index]()
-        old.deactivate()
+        old.setActive(False)
 
+        # Locate the next result to select
+        if binding.shift:
+            self.__current_result_index -= 1
+            if self.__current_result_index == -1:
+                self.__current_result_index = len(self.__results) - 1
+        else:
+            self.__current_result_index += 1
+            if self.__current_result_index == len(self.__results):
+                self.__current_result_index = 0
 
-        self.__current_result_index += 1
-        if self.__current_result_index == len(self.__results):
-            self.__current_result_index = 0
-
+        # Activate the next result
         current = self.__results[self.__current_result_index]()
-        current.activate()
+        current.setActive(True)
+
+        self.__sources = list()
+        for source in current:
+            if source.interactive:
+                self.__sources.append(weakref.ref(source))
+        self.__current_source_index = 0
+        self._window.getVTKInteractorStyle().HighlightProp(self.__sources[0]().getVTKActor())
 
         self._window.getVTKWindow().Render()
 
@@ -129,22 +149,27 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
         """
 
-    def _previousResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
-        """
-        Keybinding callback: Activate the "previous" result object.
-        """
-        self.__current_actor_index -= 1
-        if self.__current_actor_index == -1:
-            self.__current_actor_index = len(self.__sources) - 1
+    def _selectSource(self, window, binding):
+        if binding.shift:
+            self.__current_source_index -= 1
+            if self.__current_source_index == -1:
+                self.__current_source_index = len(self.__sources) - 1
+        else:
+            self.__current_source_index += 1
+            if self.__current_source_index == len(self.__sources):
+                self.__current_source_index = 0
 
-        ref = self.__sources[self.__current_actor_index]
-        self._window.getVTKInteractorStyle().HighlightProp(ref.actor)
+        actor = self.__sources[self.__current_source_index]().getVTKActor()
+        self._window.getVTKInteractorStyle().HighlightProp(actor)
+
+
 
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all results.
         """
-        window.setActive(None)
+        old = self.__results[self.__current_result_index]()
+        old.setActive(False)
 
     def _printHelp(self, window, binding): #pylint: disable=unused-argument
         """
@@ -155,10 +180,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         print mooseutils.colorText('General Keybindings:', 'YELLOW')
         self.__printKeyBindings(self.keyBindings())
 
-        active = window.getActive()
-        if active is not None:
-            print mooseutils.colorText('\n{} Keybindings:'.format(active.title()), 'YELLOW')
-            self.__printKeyBindings(active.keyBindings())
+        #active = window.getActive()
+        #if active is not None:
+        #    print mooseutils.colorText('\n{} Keybindings:'.format(active.title()), 'YELLOW')
+        #    self.__printKeyBindings(active.keyBindings())
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """

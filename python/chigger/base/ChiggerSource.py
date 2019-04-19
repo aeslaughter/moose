@@ -26,6 +26,7 @@ class ChiggerSource(ChiggerAlgorithm):
     # List of active filters
     __ACTIVE_FILTERS__ = set()
 
+
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
@@ -60,6 +61,8 @@ class ChiggerSource(ChiggerAlgorithm):
         # Storage for the filter objects
         self._filters = list()
 
+        self.interactive = True
+
         ChiggerAlgorithm.__init__(self, *args, **kwargs)
 
     def getVTKActor(self):
@@ -82,6 +85,8 @@ class ChiggerSource(ChiggerAlgorithm):
 
     def getFilters(self):
         return self._filters
+
+
 
 
     #def init(self, vtkactor, vtkmapper):
