@@ -153,6 +153,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__result_outline_weakref = None
             self.__source_outline_weakref = None
 
+        self._window.getVTKWindow().Render()
+
+
     def _printHelp(self, window, binding): #pylint: disable=unused-argument
         """
         Keybinding callback: Display the available controls for this object.
@@ -161,6 +164,15 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         # Object name/type
         print mooseutils.colorText('General Keybindings:', 'YELLOW')
         self.__printKeyBindings(self.keyBindings())
+
+        current = self.__sources[self.__current_source_index]
+        if self.__result_outline_weakref:
+                print mooseutils.colorText('Current Result Keybindings:', 'YELLOW')
+                self.__printKeyBindings(current.result.keyBindings())
+
+        if self.__source_outline_weakref:
+            print mooseutils.colorText('Current Source Keybindings:', 'YELLOW')
+            self.__printKeyBindings(current.source.keyBindings())
 
         #active = window.getActive()
         #if active is not None:
@@ -180,6 +192,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         # This objects bindings
         for binding in self.getKeyBindings(key, shift):
             binding.function(self, self.GetInputAlgorithm(), binding)
+
+        current = self.__sources[self.__current_source_index]
+        if self.__result_outline_weakref:
+            for binding in current.result.keyBindings():
+                binding.function(self, self._window, binding)
+
 
         #if False:#self.__current_active_actor:
         #    result, source = self.__source_result_lookup[self.__current_active_actor]
