@@ -167,8 +167,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
-                print mooseutils.colorText('Current Result Keybindings:', 'YELLOW')
-                self.__printKeyBindings(current.result.keyBindings())
+            print mooseutils.colorText('Current Result Keybindings:', 'YELLOW')
+            self.__printKeyBindings(current.result.keyBindings())
 
         if self.__source_outline_weakref:
             print mooseutils.colorText('Current Source Keybindings:', 'YELLOW')
@@ -195,7 +195,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
-            for binding in current.result.keyBindings():
+            for binding in current.result.getKeyBindings(key, shift):
                 binding.function(self, self._window, binding)
 
 

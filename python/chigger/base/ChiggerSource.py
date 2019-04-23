@@ -12,7 +12,7 @@ import vtk
 from ChiggerAlgorithm import ChiggerAlgorithm
 from chigger import utils
 
-class ChiggerSource(ChiggerAlgorithm, utils.ObserverMixin):
+class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm):
 
     # The type of vtkProp to create (this should be defined in child class)
     VTKACTORTYPE = None
@@ -39,7 +39,14 @@ class ChiggerSource(ChiggerAlgorithm, utils.ObserverMixin):
 
         return opt
 
+    @staticmethod
+    def validKeyBindings():
+        bindings = utils.KeyBindingMixin.validKeyBindings()
+        return bindings
+
     def __init__(self, *args, **kwargs):
+        utils.KeyBindingMixin.__init__(self)
+
         #self.__initialized = False
 
         # Create mapper
