@@ -23,7 +23,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
     """
+
     class ObjectRef(object):
+        """
+        Helper object for storing result/source information. weakref is used to avoid this
+        class taking ownership of objects which can cause VTK to seg. fault.
+        """
         def __init__(self, result, source):
             self.__result_weakref = weakref.ref(result)
             self.__source_weakref = weakref.ref(source)
@@ -196,7 +201,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
             for binding in current.result.getKeyBindings(key, shift):
-                binding.function(self, self._window, binding)
+                binding.function(current.result, self._window, binding)
+
+        if self.__source_outline_weakref:
+            for binding in current.source.getKeyBindings(key, shift):
+                binding.function(current.source, self._window, binding)
 
 
         #if False:#self.__current_active_actor:

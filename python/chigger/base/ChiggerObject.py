@@ -155,17 +155,17 @@ class ChiggerObject(object):
     #    """
     #    print '{}:{}={}'.format(self.title(), name, repr(self.getOption(name)))
 
-    def printOptions(self):
+    def printOptions(self, *args):
         """
         Print a list of all available options for this object.
         """
         print self._options
 
-    #def printSetOptions(self):
-    #    """
-    #    Print python code for the 'setOptions' method.
-    #    """
-    #    output, sub_output = self._options.toScriptString()
-    #    print 'setOptions({})'.format(', '.join(output))
-    #    for key, value in sub_output.iteritems():
-    #        print 'setOptions({}, {})'.format(key, ', '.join(repr(value)))
+    def printSetOptions(self, *args):
+        """
+        Print python code for the 'setOptions' method.
+        """
+        output, sub_output = self._options.toScriptString()
+        print 'setOptions({})'.format(', '.join(output))
+        for key, value in sub_output.iteritems():
+            print 'setOptions({}, {})'.format(key, ', '.join(repr(value)))

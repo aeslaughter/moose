@@ -4,7 +4,7 @@ from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 from chigger import base
 
 
-class GeometricSourceBase(base.ChiggerSource, VTKPythonAlgorithmBase):
+class GeometricSourceBase(base.ChiggerSource):#, VTKPythonAlgorithmBase):
     """Base class for geometric objects that are passed into ChiggerResult objects."""
 
     VTKACTORTYPE = vtk.vtkActor
@@ -22,8 +22,12 @@ class GeometricSourceBase(base.ChiggerSource, VTKPythonAlgorithmBase):
         self._vtksource = self.VTKSOURCETYPE()
 
         base.ChiggerSource.__init__(self, **kwargs)
-        VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
-                                        outputType='vtkPolyData')
+        #VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
+        #                                outputType='vtkPolyData')
+
+        self.SetNumberOfInputPorts(0)
+        self.SetNumberOfOutputPorts(1)
+        self.OutputType = 'vtkPolyData'
 
 
     def RequestData(self, request, inInfo, outInfo):

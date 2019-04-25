@@ -44,18 +44,18 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('c', ChiggerResult._printCamera,
+        bindings.add('c', ChiggerResult.printCamera,
                      desc="Display the camera settings for this object.")
-        bindings.add('o', lambda s, *args: ChiggerResultBase.printOptions(s),
+        bindings.add('o', ChiggerResult.printOptions,
                      desc="Display the available key, value options for this result.")
-        bindings.add('o', lambda s, *args: ChiggerResultBase.printSetOptions(s), shift=True,
+        bindings.add('o', ChiggerResult.printSetOptions, shift=True,
                      desc="Display the available key, value options as a 'setOptions' method call.")
         return bindings
 
     def __init__(self, *args, **kwargs):
         renderer = kwargs.pop('renderer', None)
         utils.KeyBindingMixin.__init__(self)
-        VTKPythonAlgorithmBase.__init__(self)
+        #VTKPythonAlgorithmBase.__init__(self)
 
         # Initialize class members
         self._sources = list()
@@ -185,7 +185,7 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     #    return utils.get_min_max(*rngs)
 
 
-    def _printCamera(self, *args): #pylint: disable=unused-argument
+    def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 

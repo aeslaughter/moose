@@ -46,8 +46,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
 
     def __init__(self, *args, **kwargs):
         utils.KeyBindingMixin.__init__(self)
-
-        #self.__initialized = False
+        utils.ObserverMixin.__init__(self)
 
         # Create mapper
         self._vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None

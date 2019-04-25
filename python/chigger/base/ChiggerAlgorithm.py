@@ -6,18 +6,19 @@ from chigger import utils
 
 
 
-class ChiggerAlgorithm(ChiggerObject):#, VTKPythonAlgorithmBase):
+class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
     """
     A ChiggerObject that also handles setting the VTK modified status as options change.
     """
 
     def __init__(self, **kwargs):
 
-        if not isinstance(self, VTKPythonAlgorithmBase):
-            msg = "ChiggerAlgorithm based objects must also inherit from VTKPythonAlgorithmBase."
-            LOG.exception(msg)
+        #if not isinstance(self, VTKPythonAlgorithmBase):
+        #    msg = "ChiggerAlgorithm based objects must also inherit from VTKPythonAlgorithmBase."
+        #    LOG.exception(msg)
 
         ChiggerObject.__init__(self, **kwargs)
+        VTKPythonAlgorithmBase.__init__(self)
 
         # Set the VTK modified time, this is needed to make sure the options for this class
         # are all older than the class itself.
@@ -34,7 +35,3 @@ class ChiggerAlgorithm(ChiggerObject):#, VTKPythonAlgorithmBase):
 
     def applyOptions(self):
         pass
-
-
-    #def __del__(self):
-    #    self.log('__del__()', level=logging.DEBUG)
