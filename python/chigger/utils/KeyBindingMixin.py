@@ -9,6 +9,8 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import collections
 import copy
+import textwrap
+import mooseutils
 
 KeyBinding = collections.namedtuple('KeyBinding', 'key shift description function')
 
@@ -48,3 +50,21 @@ class KeyBindingMixin(object):
 
     def getKeyBindings(self, key, shift=False):
         return self.__keybindings.bindings.get((key, shift), set())
+
+    @staticmethod
+    def printKeyBindings(bindings):
+        """
+        Helper for printing keybindings.
+        """
+        n = 0
+        out = []
+        for key, value in bindings.iteritems():
+            tag = 'shift-{}'.format(key[0]) if key[1] else key[0]
+            desc = [item.description for item in value]
+            out.append([tag, '\n\n'.join(desc)])
+            n = max(n, len(tag))
+
+        for key, desc in out:
+            key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
+            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
+                                          subsequent_indent=' '*(n + 2)))

@@ -36,7 +36,7 @@ class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
         print obj._window
 
 
-class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+class Window(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     """
     Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
@@ -292,7 +292,6 @@ class RenderWindow(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 #self.__vtkinteractor = ChiggerInteractor(self)
                 #self.__vtkinteractor.SetRenderWindow(self.__vtkwindow)
 
-            self.setOption('style', None) # avoids calling this function unless it changes
             if style == 'interactive':
                 self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             elif style == 'interactive2d':

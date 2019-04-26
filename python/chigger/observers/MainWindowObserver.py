@@ -45,7 +45,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         def actor(self):
             return self.source.getVTKActor()
 
-
     @staticmethod
     def validOptions():
         opt = ChiggerObserver.validOptions()
@@ -67,34 +66,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         ChiggerObserver.__init__(self, *args, **kwargs)
         utils.KeyBindingMixin.__init__(self)
 
-        #window = self.GetInputAlgorithm()
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
                                                     self._onKeyPressEvent)
 
-        #window.getVTKInteractor()._foo = window
-        #window.getVTKInteractor().UnRegister(window)
-
-        #window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
-        #                                      window._onKeyPressEvent)
-
-
-        #window.getVTKInteractor().AddObserver(vtk.vtkCommand.MouseMoveEvent,
-        #                                      self._onMouseMoveEvent)
-        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent,
-                                                    self._onMouseLeftButtonEvent)
-
-    #def RequestData(self, request, inInfo, outInfo):
-    #    self.log('RequestData', level=logging.DEBUG)
-
-    #def _onDeleteEvent(self, *args):
-    #    print 'delete...'
-
-        #self.__outline_source = geometric.OutlineSource()
-        #self.__current_result_index = 0
-        #self.__results = list()
-        self.__result_outline_weakref = None#geometric.OutlineSource()
-        self.__source_outline_weakref = None#geometric.OutlineSource()
-
+        self.__result_outline_weakref = None
+        self.__source_outline_weakref = None
 
         self.__current_source_index = -1
         self.__sources = list()
@@ -103,20 +79,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                 if result.interactive() and source.interactive():
                     self.__sources.append(MainWindowObserver.ObjectRef(result, source))
 
-
-
-
-
-    #def applyOptions(self):
-     #   ChiggerObserver.applyOptions(self)
-     #   self._initializeObjectList()
-        #window = self.GetInputAlgorithm()
-
     def _selectResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "next" result object.
         """
-
 
         # Deactivate current result and source
         current = self.__sources[self.__current_source_index]
@@ -145,8 +111,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         self._window.getVTKWindow().Render()
 
-
-
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all results.
@@ -160,7 +124,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         self._window.getVTKWindow().Render()
 
-
     def _printHelp(self, window, binding): #pylint: disable=unused-argument
         """
         Keybinding callback: Display the available controls for this object.
@@ -168,21 +131,16 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         # Object name/type
         print mooseutils.colorText('General Keybindings:', 'YELLOW')
-        self.__printKeyBindings(self.keyBindings())
+        self.printKeyBindings(self.keyBindings())
 
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
-            print mooseutils.colorText('Current Result Keybindings:', 'YELLOW')
-            self.__printKeyBindings(current.result.keyBindings())
+            print mooseutils.colorText('Current Viewport Keybindings ({}):'.format(current.result.getOption('name')), 'YELLOW')
+            self.printKeyBindings(current.result.keyBindings())
 
         if self.__source_outline_weakref:
-            print mooseutils.colorText('Current Source Keybindings:', 'YELLOW')
-            self.__printKeyBindings(current.source.keyBindings())
-
-        #active = window.getActive()
-        #if active is not None:
-        #    print mooseutils.colorText('\n{} Keybindings:'.format(active.title()), 'YELLOW')
-        #    self.__printKeyBindings(active.keyBindings())
+            print mooseutils.colorText('Current Source Keybindings ({}):'.format(current.source.getOption('name')), 'YELLOW')
+            self.printKeyBindings(current.source.keyBindings())
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """
@@ -206,53 +164,3 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if self.__source_outline_weakref:
             for binding in current.source.getKeyBindings(key, shift):
                 binding.function(current.source, self._window, binding)
-
-
-        #if False:#self.__current_active_actor:
-        #    result, source = self.__source_result_lookup[self.__current_active_actor]
-
-        #    # ChiggerResult bindings
-        #    for binding in result:
-        #        binding.function(self, self._window, binding)
-
-        #    # ChiggerSource bindings
-        #    for binding in source:
-        #        binding.function(self, self._window, binding)
-
-
-    def _onMouseMoveEvent(self, obj, event): #pylint: disable=unused-argument
-        """
-        The function to be called by the vtkInteractor MouseMoveEvent (see init)
-        """
-        #print '_onMouseMoveEvent', obj, event
-
-        """
-        result = self._window.getActive()
-        if (result is not None) and hasattr(result, 'onMouseMoveEvent'):
-            loc = obj.GetEventPosition()
-            sz = result.getVTKRenderer().GetSize()
-            position = (loc[0]/float(sz[0]), loc[1]/float(sz[1]))
-            result.onMouseMoveEvent(position)
-            #self._window.update()
-        """
-
-    def _onMouseLeftButtonEvent(self, obj, event):
-        print '_onMouseLeftButtonEvent'#, obj, event
-
-    @staticmethod
-    def __printKeyBindings(bindings):
-        """
-        Helper for printing keybindings.
-        """
-        n = 0
-        out = []
-        for key, value in bindings.iteritems():
-            tag = 'shift-{}'.format(key[0]) if key[1] else key[0]
-            desc = [item.description for item in value]
-            out.append([tag, '\n\n'.join(desc)])
-            n = max(n, len(tag))
-
-        for key, desc in out:
-            key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
-            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
-                                          subsequent_indent=' '*(n + 2)))

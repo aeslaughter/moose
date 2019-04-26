@@ -7,11 +7,12 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import vtk
 import logging
 import mooseutils
 from .. import utils
 
-class ChiggerObject(object):
+class ChiggerObjectBase(object):
     """
     Base for all user-facing object in chigger.
 
@@ -32,34 +33,15 @@ class ChiggerObject(object):
 
     def __init__(self, **kwargs):
         self.__log = logging.getLogger(self.__class__.__name__)
-
         super(ChiggerObject, self).__init__()
         self._options = getattr(self.__class__, 'validOptions')()
         kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
 
-
-    #def __str__(self):
-    #    return '{}:\n{}'.format(mooseutils.colorText(self.__class__.__name__, "GREY"),
-    #                            self._options.string())
-
-    #def title(self):
-    #    if self.isOptionValid('name'):
-    #        title = '{} ({})'.format(self.getOption('name'), self.__class__.__name__)
-    #    else:
-    #        title = self.__class__.__name__
-    #    return title
-
-    #def options(self):
-    #    """
-    #    Return the utils.Options object for this class. (public)
-    #    """
-    #    return self._options
-
     def log(self, msg, *args, **kwargs):
+        """Helper for using logging package with class name prefix"""
         lvl = kwargs.pop('level', logging.INFO)
         obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
-        #print '{}: {}'.format(self.__class__.__name__, msg.format(args))
         obj.log(lvl, '{}: {}'.format(self.getOption('name'), msg.format(args)))
 
     def setOptions(self, *args, **kwargs):
@@ -95,7 +77,7 @@ class ChiggerObject(object):
         """
         Return the value of an option. (public)
 
-        Inputs:d
+        Inputs:
             name[str]: The name of the option to retrieve
         """
         if name not in self._options:
@@ -108,52 +90,6 @@ class ChiggerObject(object):
         value = self.getOption(name)
         if value is not None:
             func(value)
-
-    def update(self, opt):
-        self._options.update(opt)
-
-
-    def setOption(self, name, value):
-        """
-        Set single option. (public)
-
-        Inputs:
-            name[str]: The name of the option to retrieve
-            value: The value to set the option to
-        """
-        self._options.set(name, value)
-
-    #def setOptions(self, *args, **kwargs):
-    #    """
-    #    A method for setting/updating an objects options. (public)
-
-    #    Usage:
-    #       setOptions(sub0, sub1, ..., key0=value0, key1=value1, ...)
-    #       Updates all sub-options with the provided key value pairs
-
-    #       setOptions(key0=value0, key1=value1, ...)
-    #       Updates the main options with the provided key,value pairs
-    #    """
-    #    # Sub-options case
-    #    if args:
-    #        for sub in args:
-    #            if not self.options().hasOption(sub):
-    #                msg = "The supplied sub-option '{}' does not exist.".format(sub)
-    #                mooseutils.mooseError(msg)
-    #            self._options.get(sub).update(**kwargs)
-
-    #    # Main options case
-    #    else:
-    #        self._options.update(**kwargs)
-
-    #def printOption(self, name):
-    #    """
-    #    Print the title of the object with the setOptions key, value pair for the supplied option.
-
-    #    Inputs:
-    #        name[str]: The name of the option to display.
-    #    """
-    #    print '{}:{}={}'.format(self.title(), name, repr(self.getOption(name)))
 
     def printOptions(self, *args):
         """
@@ -169,3 +105,22 @@ class ChiggerObject(object):
         print 'setOptions({})'.format(', '.join(output))
         for key, value in sub_output.iteritems():
             print 'setOptions({}, {})'.format(key, ', '.join(repr(value)))
+
+
+class ChiggerObject(ChiggerObjectBase):
+    """Base class for objects that need options but are not in the VTk pipeline."""
+
+    def __init__(self, **kwargs):
+        ChiggerObjectBase.__init__(self, **kwargs)
+        self.__modified_time = vtk.vtkTimeStamp()
+        self.__modified_time.Modified()
+
+    def setOptions(self, *args, **kwargs):
+        """Set the supplied objects, if anything changes mark the class as modified for VTK."""
+        ChiggerObjectBase.setOptions(self, *args, **kwargs)
+        if self._options.modified() > self.__modified_time.GetMTime():
+            self.applyOptions()
+            self.__modified_time.Modified()
+
+    def applyOptions(self):
+        self.log('applyOptions()', level=logging.DEBUG)

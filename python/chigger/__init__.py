@@ -9,19 +9,29 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import os
 
-from RenderWindow import RenderWindow
+from Window import Window
+from Viewport import Viewport
+import annotations
 import base
 import utils
 import misc
-import annotations
 import exodus
 import geometric
 import graphs
 import filters
 import observers
 
-
 import logging
 level = dict(critical=logging.CRITICAL, error=logging.ERROR, warning=logging.warning,
              info=logging.INFO, debug=logging.DEBUG, notset=logging.NOTSET)
 logging.basicConfig(level=level[os.getenv('CHIGGER_LOG_LEVEL', 'INFO').lower()])
+
+
+def addFilter(filtertype, required=False):
+    """Decorator for adding filters."""
+    def create(cls):
+        cls.__FILTERS__.append(filtertype)
+        if required:
+            cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
+        return cls
+    return create

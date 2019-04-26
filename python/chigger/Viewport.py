@@ -11,11 +11,11 @@ import logging
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 import mooseutils
-from chigger import utils
-from ChiggerAlgorithm import ChiggerAlgorithm
+from . import utils
+from . import base
 
 
-class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm, VTKPythonAlgorithmBase):
+class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm):
     """
     The ChiggerResult is the base class for creating renderered objects. This class
     contains a single vtkRenderer to which many actors can be added.
@@ -26,7 +26,7 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
 
     @classmethod
     def validOptions(cls):
-        opt = ChiggerAlgorithm.validOptions()
+        opt = base.ChiggerAlgorithm.validOptions()
         opt += utils.ObserverMixin.validOptions()
 
         opt.add('light', vtype=float,
@@ -44,18 +44,17 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('c', ChiggerResult.printCamera,
+        bindings.add('c', Viewport.printCamera,
                      desc="Display the camera settings for this object.")
-        bindings.add('o', ChiggerResult.printOptions,
+        bindings.add('o', Viewport.printOptions,
                      desc="Display the available key, value options for this result.")
-        bindings.add('o', ChiggerResult.printSetOptions, shift=True,
+        bindings.add('o', Viewport.printSetOptions, shift=True,
                      desc="Display the available key, value options as a 'setOptions' method call.")
         return bindings
 
     def __init__(self, *args, **kwargs):
         renderer = kwargs.pop('renderer', None)
         utils.KeyBindingMixin.__init__(self)
-        #VTKPythonAlgorithmBase.__init__(self)
 
         # Initialize class members
         self._sources = list()
@@ -66,9 +65,6 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
             msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
-        # Initilize as not interactive (see self.activate/deactivate)
-        self._vtkrenderer.SetInteractive(False)
-
         # Setup VTKPythobnAlgorithmBase
         self.SetNumberOfInputPorts(len(args))
         self.InputType = self.VTKINPUTTYPE
@@ -76,22 +72,7 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         for arg in args:
             self._add(arg)
 
-        ChiggerAlgorithm.__init__(self, **kwargs)
-
-    #def deinit(self):
-    #    """
-    #    Clean up the object prior to removal from RenderWindow.
-    #    """
-    #    for actor in self._vtkactors:
-    #        self._vtkrenderer.RemoveActor(actor)
-
-#def setOptions(self, *args, **kwargs):
-#    ChiggerAlgorithm.setOptions(self, *args, **kwargs)
-
-#    for filter_type in self.__FILTERS__:
-#        if filter_type.FILTERNAME in args:
-#            self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
-#
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
 
     def _add(self, arg):
         if arg.getVTKActor() is not None:
@@ -107,12 +88,9 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
                 self._vtkrenderer.RemoveActor(arg.getVTKActor())
 
     def applyOptions(self):
-        ChiggerAlgorithm.applyOptions(self)
-
+        base.ChiggerAlgorithm.applyOptions(self)
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
-
         self._vtkrenderer.ResetCameraClippingRange()
-
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
@@ -120,70 +98,6 @@ class ChiggerResult(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
 
     def getSource(self, index=-1):
         return self._sources[index]
-
-    def setActive(self, value):
-        if value:
-            bounds = self._vtkrenderer.ComputeVisiblePropBounds()
-            self.__outline_source.update(self.getOption('interaction'))
-            self.__outline_source.setOptions(bounds=tuple(bounds))
-            self._add(self.__outline_source)
-            self._vtkrenderer.SetInteractive(True)
-
-        else:
-            self._remove(self.__outline_source)
-            self._vtkrenderer.SetInteractive(False)
-
-
-    #def getFilters(self, index=-1):
-    #    return self._filters[index]
-
-    #def setActive(self, value):
-    #    """
-    #    Activate method. This is an internal method, DO NOT USE!
-
-    #    Use RenderWindow.setActive() to activate/deactivate result objects.
-    #    """
-    #    self._vtkrenderer.SetInteractive(value)
-    #    if value and self.getOption('highlight_active'):
-    #        if self.__highlight is None:
-    #            self.__highlight = chigger.geometric.OutlineResult(self,
-    #                                                               interactive=False,
-    #                                                               color=(1, 0, 0),
-    #                                                               line_width=5)
-    #        self.getRenderWindow().append(self.__highlight)
-
-    #    elif self.__highlight is not None:
-    #        self.getRenderWindow().remove(self.__highlight)
-
-
-
-    def __del__(self):
-        self.log('__del__()', level=logging.DEBUG)
-
-        #for src in self._sources:
-        #    self._vtkrenderer.RemoveActor(src.getVTKActor())
-        #self._sources = list()
-
-
-     #   for f in self._filters:
-     #       f._ChiggerFilter__result = None
-
-    #def getBounds(self):
-    #    """
-    #    Return the bounding box of the results.
-    #    """
-    #    return utils.get_vtk_bounds_min_max(*[src.getBounds() for src in self._sources])
-
-    #def getRange(self, local=False):
-    #    """
-    #    Return the min/max range for the selected variables and blocks/boundary/nodeset.
-
-    #    NOTE: For the range to be restricted by block/boundary/nodest the reader must have
-    #          "squeeze=True", which can be much slower.
-    #    """
-    #    rngs = [src.getRange(local=local) for src in self._sources]
-    #    return utils.get_min_max(*rngs)
-
 
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
