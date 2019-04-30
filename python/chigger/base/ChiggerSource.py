@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
 import vtk
+import mooseutils
 from ChiggerAlgorithm import ChiggerAlgorithm
 from chigger import utils
 
@@ -102,6 +103,9 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     def getFilters(self):
         return self._filters
 
+    def getBounds(self):
+        return self._vtkmapper.GetBounds()
+
     def setOptions(self, *args, **kwargs):
         ChiggerAlgorithm.setOptions(self, *args, **kwargs)
 
@@ -158,7 +162,8 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
                 base_obj = filter_obj
 
         # Connect mapper/filters into the pipeline
-        self._vtkmapper.SetInputConnection(base_obj.GetOutputPort(0))
+        if self._vtkmapper:
+            self._vtkmapper.SetInputConnection(base_obj.GetOutputPort(0))
 
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)

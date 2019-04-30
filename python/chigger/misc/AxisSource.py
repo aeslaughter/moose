@@ -12,45 +12,55 @@ import vtk
 from .. import base
 from .. import utils
 
-class AxisSource(base.ChiggerFilterSourceBase):
+class AxisSource(base.ChiggerSource):
     """
-    Creates a Axis source for use with the ColorBar.
+    Creates an Axis with limits, ticks, etc.
     """
 
-    VTKACTOR_TYPE = vtk.vtkContextActor
+    VTKACTORTYPE = vtk.vtkAxisActor2D#vtk.vtkContextActor
+    VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D#None
 
     @staticmethod
     def validOptions():
-        opt = base.ChiggerFilterSourceBase.validOptions()
-        opt += utils.AxisOptions.validOptions()
+        opt = base.ChiggerSource.validOptions()
+        #opt += utils.AxisOptions.validOptions()
         return opt
 
     def __init__(self, **kwargs):
-        super(AxisSource, self).__init__(vtkactor_type=vtk.vtkContextActor, vtkmapper_type=None,
-                                         **kwargs)
 
-        self._vtksource = vtk.vtkAxis()
-        self._vtkactor.GetScene().AddItem(self._vtksource)
+        #self._vtksource = vtk.vtkAxis()
 
-    def getVTKSource(self):
-        """
-        Return the vtkAxis object.
-        """
-        return self._vtksource
+        base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData',  **kwargs)
 
-    def update(self, **kwargs):
+        #self._vtkactor.GetScene().AddItem(self._vtksource)
+
+    def applyOptions(self):
         """
         Update the vtkAxis with given settings. (override)
 
         Inputs:
             see ChiggerFilterSourceBase
         """
-        super(AxisSource, self).update(**kwargs)
-        utils.AxisOptions.setOptions(self._vtksource, self._options)
-        self._vtksource.Update()
+        base.ChiggerSource.applyOptions(self)
 
-    def getBounds(self):
 
-        p0 = self._vtksource.GetPosition1()
-        p1 = self._vtksource.GetPosition2()
-        return [p0[0], p1[0], p0[1], p1[1], 0, 0]
+        #self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
+        #self._vtkactor.GetPosition2Coordinate().SetCoordinateSystemToNormalizedViewport()
+
+        self._vtkactor.SetPoint1(0.5, 0.1)
+        self._vtkactor.SetPoint2(0.5, 0.9)
+
+        #self._vtkactor.GetScene().AddItem(self._vtksource)
+
+        #clr = (1,0,1)
+        #self._vtksource.GetTitleProperties().SetColor(*clr)
+        #self._vtksource.GetLabelProperties().SetColor(*clr)
+        #self._vtksource.GetPen().SetColorF(*clr)
+
+        #utils.AxisOptions.setOptions(self._vtksource, self._options)
+        #self._vtksource.Update()
+
+    #def getBounds(self):
+    #    p0 = self._vtksource.GetPosition1()
+    #    p1 = self._vtksource.GetPosition2()
+    #    return (p0[0], p1[0], p0[1], p1[1], 0, 0)

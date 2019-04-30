@@ -13,12 +13,14 @@ def validOptions():
     return opt
 
 def applyOptions(vtkactor, opt):
-    vtkactor.GetProperty().SetOpacity(opt.get('opacity'))
-    vtkactor.GetProperty().SetLineWidth(opt.get('linewidth'))
+    pass
 
-    color = opt.get('color')
-    if color is not None:
-        vtkactor.GetProperty().SetColor(color)
+    #vtkactor.GetProperty().SetOpacity(opt.get('opacity'))
+    #vtkactor.GetProperty().SetLineWidth(opt.get('linewidth'))
+
+    #color = opt.get('color')
+    #if color is not None:
+    #    vtkactor.GetProperty().SetColor(color)
 
 
     #EdgeOptions.applyOptions(vtkactor, opt['edges'])

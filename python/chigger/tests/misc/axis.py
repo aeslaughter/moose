@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 #pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
@@ -8,8 +9,14 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-from AxisSource import AxisSource
-#from ColorBar import ColorBar
-#from ChiggerBackground import ChiggerBackground
-#from VolumeAxesSource import VolumeAxesSource
-#from VolumeAxes import VolumeAxes
+import chigger
+from chigger import misc, observers
+
+ax0 = misc.AxisSource()
+result0 = chigger.Viewport(ax0)
+window = chigger.Window(result0, size=(600,300))
+
+obs = observers.MainWindowObserver(window)
+
+window.write('axis.png')
+window.start()

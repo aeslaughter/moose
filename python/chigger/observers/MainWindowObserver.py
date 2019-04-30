@@ -105,7 +105,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         current.result._add(geometric.OutlineSource(bounds=bounds))
         self.__result_outline_weakref = weakref.ref(current.result._sources[-1])
 
-        bounds = current.source.getVTKMapper().GetBounds()
+        bounds = current.source.getBounds()
         current.result._add(geometric.OutlineSource(bounds=bounds))
         self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
 
