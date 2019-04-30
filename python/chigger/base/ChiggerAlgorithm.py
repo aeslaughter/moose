@@ -11,13 +11,7 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     A base class for objects that require options and are a part of the VTK pipeline.
     """
 
-    def __init__(self, **kwargs):
-
-
-        nInputPorts = kwargs.pop('nInputPorts', 0)
-        nOutputPorts = kwargs.pop('nOutputPorts', 0)
-        outputType = kwargs.pop('outputType', None)
-        inputType = kwargs.pop('inputType', None)
+    def __init__(self, nInputPorts=0, nOutputPorts=0, outputType=None, inputType=None, **kwargs):
 
         VTKPythonAlgorithmBase.__init__(self)
 
