@@ -20,14 +20,7 @@ class GeometricSourceBase(base.ChiggerSource):#, VTKPythonAlgorithmBase):
 
     def __init__(self, **kwargs):
         self._vtksource = self.VTKSOURCETYPE()
-
-        base.ChiggerSource.__init__(self, **kwargs)
-        #VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
-        #                                outputType='vtkPolyData')
-
-        self.SetNumberOfInputPorts(0)
-        self.SetNumberOfOutputPorts(1)
-        self.OutputType = 'vtkPolyData'
+        base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData', **kwargs)
 
 
     def RequestData(self, request, inInfo, outInfo):

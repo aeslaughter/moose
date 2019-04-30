@@ -8,6 +8,6 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-from ImageAnnotation import ImageAnnotation
-from TextAnnotation import TextAnnotation
-from TimeAnnotation import TimeAnnotation
+#from ImageAnnotation import ImageAnnotation
+#from TextAnnotation import TextAnnotation
+#from TimeAnnotation import TimeAnnotation

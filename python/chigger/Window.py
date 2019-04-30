@@ -19,29 +19,26 @@ import observers
 import misc
 import mooseutils
 
+#class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
+#    def __init__(self, window):
+#        vtk.vtkInteractorStyleJoystickCamera.__init__(self)
+#
+#        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
+#
+#        self._window = window
+#        window.UnRegister(self)
+#
+#    @staticmethod
+#    def _onKeyPressEvent(obj, event):
+#        print obj._window
 
 
-class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
-    def __init__(self, window):
-        vtk.vtkInteractorStyleJoystickCamera.__init__(self)
-
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
-
-        self._window = window
-        window.UnRegister(self)
-        #self.UnRegister(self._window)
-
-    @staticmethod
-    def _onKeyPressEvent(obj, event):
-        print obj._window
-
-
-class Window(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+class Window(base.ChiggerObject):
 
     """
     Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
     """
-    __RESULTTYPE__ = base.ChiggerResult
+    ##__RESULTTYPE__ = base.ChiggerResult
 
     @staticmethod
     def validOptions():
@@ -79,37 +76,41 @@ class Window(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #        doc="Define the default observer for the window.")
 
         # Background settings
-        background = misc.ChiggerBackground.validOptions()
-        background.remove('layer')
-        background.remove('camera')
-        background.remove('viewport')
-        opt += background
+        #background = misc.ChiggerBackground.validOptions()
+        #background.remove('layer')
+        #background.remove('camera')
+        #background.remove('viewport')
+        #opt += background
         return opt
 
     def __init__(self, *args, **kwargs):
+
         self.__vtkwindow = kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
         self.__vtkinteractorstyle = None
 
-        VTKPythonAlgorithmBase.__init__(self)
+        ##VTKPythonAlgorithmBase.__init__(self)
 
-        self.SetNumberOfInputPorts(0)
         #self.SetNumberOfInputPorts(len(args)+1) # add one for background object
         #self.InputType = 'vtkPythonAlgorithm'
 
-        self.SetNumberOfOutputPorts(0)
         #self.OutoutType = 'vtkPythonAlgorithm'
 
         self._results = list()
-        self.__background = misc.ChiggerBackground()
-        self._results.append(self.__background)
+        #self.__background = misc.ChiggerBackground()
+        #self._results.append(self.__background)
 
         #self.SetInputConnection(0, self.__background.GetOutputPort(0))
         for i, result in enumerate(args):
             #self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
             self._results.append(result)
 
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
+        base.ChiggerObject.__init__(self, **kwargs)
+
+
+
+        #self.SetNumberOfInputPorts(0)
+        #self.SetNumberOfOutputPorts(0)
 
         #self._results = [self.__background] + list(args)
         #self._observers = set()
@@ -408,8 +409,8 @@ class Window(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # Build a filter for writing an image
         window_filter = vtk.vtkWindowToImageFilter()
         window_filter.SetInput(self.__vtkwindow)
-        if self.__background.getOption('background') is None:
-            window_filter.SetInputBufferTypeToRGBA()
+        #if self.__background.getOption('background') is None:
+        #    window_filter.SetInputBufferTypeToRGBA()
         window_filter.Update()
 
         # Write it

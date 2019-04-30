@@ -11,13 +11,13 @@ from .. import base
 
 from CubeSource import CubeSource
 from OutlineSource import OutlineSource
-from GeometricResult import GeometricResult
+#from GeometricResult import GeometricResult
 
 
 
 # NEED WORK
-from CylinderSource import CylinderSource
-from LineSource import LineSource
+#from CylinderSource import CylinderSource
+#from LineSource import LineSource
 
 
 

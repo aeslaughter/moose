@@ -33,7 +33,7 @@ class ChiggerObjectBase(object):
 
     def __init__(self, **kwargs):
         self.__log = logging.getLogger(self.__class__.__name__)
-        super(ChiggerObject, self).__init__()
+        #super(ChiggerObject, self).__init__()
         self._options = getattr(self.__class__, 'validOptions')()
         kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
@@ -111,8 +111,8 @@ class ChiggerObject(ChiggerObjectBase):
     """Base class for objects that need options but are not in the VTk pipeline."""
 
     def __init__(self, **kwargs):
-        ChiggerObjectBase.__init__(self, **kwargs)
         self.__modified_time = vtk.vtkTimeStamp()
+        ChiggerObjectBase.__init__(self, **kwargs)
         self.__modified_time.Modified()
 
     def setOptions(self, *args, **kwargs):

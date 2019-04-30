@@ -66,13 +66,11 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
         # Setup VTKPythobnAlgorithmBase
-        self.SetNumberOfInputPorts(len(args))
-        self.InputType = self.VTKINPUTTYPE
+        base.ChiggerAlgorithm.__init__(self, nInputPorts=len(args), inputType=self.VTKINPUTTYPE, **kwargs)
 
         for arg in args:
             self._add(arg)
 
-        base.ChiggerAlgorithm.__init__(self, **kwargs)
 
     def _add(self, arg):
         if arg.getVTKActor() is not None:

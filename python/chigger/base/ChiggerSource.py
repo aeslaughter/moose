@@ -56,7 +56,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         bindings = utils.KeyBindingMixin.validKeyBindings()
         return bindings
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         utils.KeyBindingMixin.__init__(self)
         utils.ObserverMixin.__init__(self)
 
@@ -79,7 +79,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         # Storage for the filter objects
         self._filters = list()
 
-        ChiggerAlgorithm.__init__(self, *args, **kwargs)
+        ChiggerAlgorithm.__init__(self, **kwargs)
 
     def getVTKActor(self):
         """
@@ -156,7 +156,6 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
             if filter_obj.FILTERNAME in self.__ACTIVE_FILTERS__:
                 filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
                 base_obj = filter_obj
-
 
         # Connect mapper/filters into the pipeline
         self._vtkmapper.SetInputConnection(base_obj.GetOutputPort(0))
