@@ -914,6 +914,11 @@ public:
                                                       MultiAppTransfer::DIRECTION direction) const;
 
   /**
+   * Return the complete warehouse for MultiAppTransfer object for the given direction
+   */
+  const ExecuteMooseObjectWarehouse<Transfer> & getMultiAppTransferWarehouse(MultiAppTransfer::DIRECTION direction) const;
+
+  /**
    * Execute MultiAppTransfers associate with execution flag and direction.
    * @param type The execution flag to execute.
    * @param direction The direction (to or from) to transfer.
@@ -1954,4 +1959,3 @@ FEProblemBase::allowOutput(bool state)
 {
   _app.getOutputWarehouse().allowOutput<T>(state);
 }
-
