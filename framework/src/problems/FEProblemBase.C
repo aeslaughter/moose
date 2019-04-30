@@ -3686,10 +3686,13 @@ FEProblemBase::addTransfer(const std::string & transfer_name,
     parameters.set<SystemBase *>("_sys") = _aux.get();
   }
 
-  // Handle the "SAME_AS_MULTIAPP" execute option
-  ExecFlagEnum & exec_enum = parameters.set<ExecFlagEnum>("execute_on", true);
-  if (exec_enum.contains(EXEC_SAME_AS_MULTIAPP))
+  // Handle the "SAME_AS_MULTIAPP" execute option. The get method is used to test for the
+  // flag so the set by user flag is not reset, calling set with the true flag causes the set
+  // by user status to be reset, which should only be done if the EXEC_SAME_AS_MULTIAPP is
+  // being applied to the object.
+  if (parameters.get<ExecFlagEnum>("execute_on").contains(EXEC_SAME_AS_MULTIAPP))
   {
+    ExecFlagEnum & exec_enum = parameters.set<ExecFlagEnum>("execute_on", true);
     std::shared_ptr<MultiApp> multiapp = getMultiApp(parameters.get<MultiAppName>("multi_app"));
     exec_enum = multiapp->getParam<ExecFlagEnum>("execute_on");
   }
@@ -3709,9 +3712,6 @@ FEProblemBase::addTransfer(const std::string & transfer_name,
   }
   else
     _transfers.addObject(transfer);
-
-  std::cout << "ADDING: " << transfer->name() << " " << transfer->getParam<ExecFlagEnum>("execute_on") << std::endl;
-
 }
 
 bool
