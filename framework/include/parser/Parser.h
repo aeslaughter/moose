@@ -267,4 +267,3 @@ private:
   std::string hitCLIFilter(std::string appname, const std::vector<std::string> & argv);
   void walkRaw(std::string fullpath, std::string nodepath, hit::Node * n);
 };
-
