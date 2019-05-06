@@ -76,11 +76,8 @@ class Window(base.ChiggerObject):
         #        doc="Define the default observer for the window.")
 
         # Background settings
-        #background = misc.ChiggerBackground.validOptions()
-        #background.remove('layer')
-        #background.remove('camera')
-        #background.remove('viewport')
-        #opt += background
+        background = misc.Background.validOptions()
+        opt.add('background', background, doc="Background settings.")
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -96,14 +93,13 @@ class Window(base.ChiggerObject):
 
         #self.OutoutType = 'vtkPythonAlgorithm'
 
-        self._results = list()
-        #self.__background = misc.ChiggerBackground()
-        #self._results.append(self.__background)
+        self.__results = list()
+        self.__background = misc.Background()
+        #self.__results.append(self.__background)
 
         #self.SetInputConnection(0, self.__background.GetOutputPort(0))
         for i, result in enumerate(args):
-            #self.SetInputConnection(i + 1, self.__background.GetOutputPort(0))
-            self._results.append(result)
+            self.__results.append(result)
 
         base.ChiggerObject.__init__(self, **kwargs)
 
@@ -112,7 +108,7 @@ class Window(base.ChiggerObject):
         #self.SetNumberOfInputPorts(0)
         #self.SetNumberOfOutputPorts(0)
 
-        #self._results = [self.__background] + list(args)
+        #self.__results = [self.__background] + list(args)
         #self._observers = set()
 
         #self.__active = None
@@ -140,10 +136,10 @@ class Window(base.ChiggerObject):
     #    """
     #    'in' checks for result
     #    """
-    #    return item in self._results
+    #    return item in self.__results
 
     def __iter__(self):
-        for r in self._results:
+        for r in self.__results:
             yield r
 
     def getVTKInteractor(self):
@@ -179,7 +175,7 @@ class Window(base.ChiggerObject):
     #            t = self.__RESULTTYPE__.__name__
     #            msg = 'The supplied result type of {} must be of type {}.'.format(n, t)
     #            raise mooseutils.MooseException(msg)
-    #        self._results.append(result)
+    #        self.__results.append(result)
     #        #result.init(self)
 
     #def remove(self, *args):
@@ -190,11 +186,11 @@ class Window(base.ChiggerObject):
     #        result.deinit()
     #        if result.getVTKRenderer().GetActors().GetNumberOfItems() == 0:
     #            self.__vtkwindow.RemoveRenderer(result.getVTKRenderer())
-    #        if result in self._results:
-    #            self._results.remove(result)
+    #        if result in self.__results:
+    #            self.__results.remove(result)
 
     #    # Reset active if it was removed
-    #    #if self.__active and (self.__active not in self._results):
+    #    #if self.__active and (self.__active not in self.__results):
     #    #    self.setActive(None)
 
     #    self.update()
@@ -203,7 +199,7 @@ class Window(base.ChiggerObject):
     #    """
     #    Remove all objects from the render window.
     #    """
-    #    self.remove(*self._results[1:])
+    #    self.remove(*self.__results[1:])
     #    self.update()
 
     #def setActive(self, result):
@@ -238,7 +234,7 @@ class Window(base.ChiggerObject):
     #    Highlight the next ChiggerResult object.
     #    """
     #    step = 1 if not reverse else -1
-    #    available = [result for result in self._results if result.getOption('interactive')]
+    #    available = [result for result in self.__results if result.getOption('interactive')]
     #    if (self.__active is None) and step == 1:
     #        self.setActive(available[0])
     #    elif (self.__active is None) and step == -1:
@@ -269,24 +265,26 @@ class Window(base.ChiggerObject):
         mooseutils.mooseDebug("{}.start()".format(self.__class__.__name__), color='MAGENTA')
 
         if self.__vtkinteractor:
+            self.__vtkwindow.Render()
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
+
 
     def applyOptions(self):
         """
         Updates the child results and renders the results.
         """
-
-        #for result in self._results:
+        base.ChiggerObject.applyOptions(self)
+        #for result in self.__results:
         #    self.__vtkwindow.AddRenderer(result.getVTKRenderer())
 
 
-        #test = self.getOption('test')
+        test = self.getOption('test')
         style = self.getOption('style')
-        #if test:
-        #    self.__vtkwindow.OffScreenRenderingOn()
+        if test:
+            self.__vtkwindow.OffScreenRenderingOn()
 
-        if style:
+        elif style:
 
             if self.__vtkinteractor is None:
                 self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
@@ -309,7 +307,7 @@ class Window(base.ChiggerObject):
             #    self._observers.add(main_observer)
 
         # Background settings
-        #self._results[0].setOptions(background=self._options.get('background'),
+        #self.__results[0].setOptions(background=self._options.get('background'),
         #                            background2=self._options.get('background2'),
         #                            gradient_background=self._options.get('gradient_background'))
 
@@ -323,9 +321,14 @@ class Window(base.ChiggerObject):
         self.setVTKOption('multisamples', self.__vtkwindow.SetMultiSamples)
         self.setVTKOption('size', self.__vtkwindow.SetSize)
 
+        # Background
+        if self.isOptionValid('background'):
+            self.__background._options.update(self.getOption('background'))
+            self.__results.append(self.__background)
+
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
-        for result in self._results:
+        for result in self.__results:
             renderer = result.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
                 self.__vtkwindow.AddRenderer(renderer)
@@ -333,6 +336,10 @@ class Window(base.ChiggerObject):
 
         # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
+
+        # Background
+        #print self.getOption('background')
+        #self.__background._options.update(self.getOption('background'))
 
         # Observers
         #if self.__vtkinteractor:
@@ -349,16 +356,20 @@ class Window(base.ChiggerObject):
 
         #self._observer.init(self)
 
-        self.__vtkwindow.Render()
+        #self.__vtkwindow.Render()
 
         """
         if self.getOption('reset_camera'):
-            for result in self._results:
+            for result in self.__results:
                 if result.isOptionValid('camera'):
                     result.getVTKRenderer().ResetCameraClippingRange()
                 else:
                     result.getVTKRenderer().ResetCamera()
         """
+
+    #def setOptions(self, *args, **kwargs):
+    #    base.ChiggerObject.setOptions(self, *args, **kwargs)
+    #    self.__background._options.update(self.getOption('background'))
 
     def resetCamera(self):
         """
@@ -367,20 +378,21 @@ class Window(base.ChiggerObject):
         Generally, this is not needed but in some cases when testing the camera needs to be reset
         for the image to look correct.
         """
-        for result in self._results:
+        for result in self.__results:
             result.getVTKRenderer().ResetCamera()
 
     def resetClippingRange(self):
         """
         Resets all the clipping range for open cameras.
         """
-        for result in self._results:
+        for result in self.__results:
             result.getVTKRenderer().ResetCameraClippingRange()
 
     def write(self, filename, dialog=False, **kwargs):
         """
         Writes the VTKWindow to an image.
         """
+        self.__vtkwindow.Render()
         mooseutils.mooseDebug('RenderWindow.write()', color='MAGENTA')
 
         # Allowed extensions and the associated readers
@@ -423,7 +435,7 @@ class Window(base.ChiggerObject):
         """
         Operator[] access into results objects.
         """
-        return self._results[index]
+        return self.__results[index]
 
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)

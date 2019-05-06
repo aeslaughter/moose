@@ -1,20 +1,20 @@
 [Tests]
-  [./solid]
+  [solid]
     type = ImageDiff
-    command = background.py
-    imagediff = background.png
+    command = solid.py
+    imagediff = solid.png
     cli_args = '--test'
-  [../]
-  [./gradient]
+  []
+  [gradient]
     type = ImageDiff
     command = gradient.py
     imagediff = gradient.png
     cli_args = '--test'
-  [../]
-  [./transparent]
+  []
+  [transparent]
     type = ImageDiff
     command = transparent.py
     imagediff = transparent.png
     cli_args = '--test'
-  [../]
+  []
 []

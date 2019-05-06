@@ -17,3 +17,6 @@ class OutlineSource(GeometricSourceBase):
         GeometricSourceBase.applyOptions(self)
         if self.isOptionValid('bounds'):
             self._vtksource.SetBounds(self.getOption('bounds'))
+
+
+#class OutlineSource2D(GeometricSourceBase)

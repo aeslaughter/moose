@@ -30,7 +30,7 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         opt += utils.ObserverMixin.validOptions()
 
         opt.add('light', vtype=float,
-                doc="Add a headlight with the given intensity to the renderer.")
+               doc="Add a headlight with the given intensity to the renderer.")
         opt.add('layer', default=1, vtype=int,
                 doc="The VTK layer within the render window.")
         opt.add('viewport', default=(0., 0., 1., 1.), vtype=float, size=4,
@@ -53,12 +53,12 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         return bindings
 
     def __init__(self, *args, **kwargs):
-        renderer = kwargs.pop('renderer', None)
         utils.KeyBindingMixin.__init__(self)
+        utils.ObserverMixin.__init__(self)
 
         # Initialize class members
         self._sources = list()
-        self._vtkrenderer = renderer if renderer is not None else vtk.vtkRenderer()
+        self._vtkrenderer = vtk.vtkRenderer()
 
         # Verify renderer type
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
