@@ -28,9 +28,6 @@ class CubeSource(GeometricSourceBase):
         opt.add('center', None, vtype=float, size=3, doc="The center of the box.")
         return opt
 
-    #def __init__(self, **kwargs):
-    #    GeometricSourceBase.__init__(self, **kwargs)
-
     def applyOptions(self):
         """
         Set the options for this cube. (public)

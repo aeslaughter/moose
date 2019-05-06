@@ -42,7 +42,6 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         opt.add('edge_width', vtype=int, doc="The edge width, if None then no edges are shown.")
         opt.add('point_size', vtype=int, doc="The point size, if None then no points are shown.")
         opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
-        opt.add('color', vtype=float, size=3, doc="The color of the object.")
         """
 
         for filter_type in cls.__FILTERS__:
@@ -120,38 +119,34 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         # Connect the filters
         self.__connectFilters()
 
-        """
-        if self.isOptionValid('orientation'):
-            self._vtkactor.SetOrientation(self.getOption('orientation'))
+        #if self.isOptionValid('orientation'):
+        #    self._vtkactor.SetOrientation(self.getOption('orientation'))
 
-        if self.isOptionValid('rotation'):
-            x, y, z = self.applyOption('rotation')
-            self._vtkactor.RotateX(x)
-            self._vtkactor.RotateY(y)
-            self._vtkactor.RotateZ(z)
+        #if self.isOptionValid('rotation'):
+        #    x, y, z = self.applyOption('rotation')
+        #    self._vtkactor.RotateX(x)
+        #    self._vtkactor.RotateY(y)
+        #    self._vtkactor.RotateZ(z)
 
-        if self.isOptionValid('edges') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetEdgeVisibility'):
-            self._vtkactor.GetProperty().SetEdgeVisibility(self.getOption('edges'))
+        #if self.isOptionValid('edges') and \
+        #   hasattr(self._vtkactor.GetProperty(), 'SetEdgeVisibility'):
+        #    self._vtkactor.GetProperty().SetEdgeVisibility(self.getOption('edges'))
 
-        if self.isOptionValid('edge_color') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetEdgeColor'):
-            self._vtkactor.GetProperty().SetEdgeColor(self.getOption('edge_color'))
+        #if self.isOptionValid('edge_color') and \
+        #   hasattr(self._vtkactor.GetProperty(), 'SetEdgeColor'):
+        #    self._vtkactor.GetProperty().SetEdgeColor(self.getOption('edge_color'))
 
-        if self.isOptionValid('edge_width') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetLineWidth'):
-            self._vtkactor.GetProperty().SetLineWidth(self.getOption('edge_width'))
+        #if self.isOptionValid('edge_width') and \
+        #   hasattr(self._vtkactor.GetProperty(), 'SetLineWidth'):
+        #    self._vtkactor.GetProperty().SetLineWidth(self.getOption('edge_width'))
 
-        if self.isOptionValid('point_size') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetPointSize'):
-            self._vtkactor.GetProperty().SetPointSize(self.getOptions('point_size'))
+        #if self.isOptionValid('point_size') and \
+        #   hasattr(self._vtkactor.GetProperty(), 'SetPointSize'):
+        #    self._vtkactor.GetProperty().SetPointSize(self.getOptions('point_size'))
 
-        if self.isOptionValid('opacity'):
-            self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
+        #if self.isOptionValid('opacity'):
+        #    self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
 
-        if self.isOptionValid('color'):
-            self._vtkactor.GetProperty().SetColor(self.getOption('color'))
-        """
 
     def __connectFilters(self):
 

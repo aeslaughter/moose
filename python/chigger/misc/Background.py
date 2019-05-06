@@ -39,11 +39,10 @@ class Background(Viewport):
 
     def applyOptions(self):
         Viewport.applyOptions(self)
-        #print 'Background::applyOptions;', 'color = ', self.getOption('color')
-        self.setVTKOption('color', self._vtkrenderer.SetBackground)
 
+        self._vtkrenderer.SetBackground(self.getOption('color'))
         if self.isOptionValid('color2'):
-            self.setVTKOption('color2', self._vtkrenderer.SetBackground2)
+            self._vtkrenderer.SetBackground2(self.getOption('color2'))
             self._vtkrenderer.SetGradientBackground(True)
         else:
             self._vtkrenderer.SetGradientBackground(False)

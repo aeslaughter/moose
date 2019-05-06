@@ -44,6 +44,9 @@ class ChiggerObjectBase(object):
         obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
         obj.log(lvl, '{}: {}'.format(self.getOption('name'), msg.format(args)))
 
+    def update(self, other):
+        self._options.update(other)
+
     def setOptions(self, *args, **kwargs):
         """
         A method for setting/updating an objects options. (public)
@@ -61,7 +64,8 @@ class ChiggerObjectBase(object):
                 if not self._options.hasOption(sub):
                     msg = "The supplied sub-option '{}' does not exist.".format(sub)
                     mooseutils.mooseError(msg)
-                self._options.get(sub).update(**kwargs)
+                else:
+                    self._options.get(sub).update(**kwargs)
 
         # Main options case
         else:
@@ -114,6 +118,12 @@ class ChiggerObject(ChiggerObjectBase):
         self.__modified_time = vtk.vtkTimeStamp()
         ChiggerObjectBase.__init__(self, **kwargs)
         self.__modified_time.Modified()
+
+    def update(self, other):
+        ChiggerObjectBase.update(self, other)
+        if self._options.modified() > self.__modified_time.GetMTime():
+            self.applyOptions()
+            self.__modified_time.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""

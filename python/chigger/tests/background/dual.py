@@ -10,8 +10,12 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import chigger
+left = chigger.misc.Background(color=(0,1,0), color2=(1,0,0), viewport=(0,0,0.5,1))
+right = chigger.misc.Background(color=(0.5,0.5,0.85), viewport=(0.5,0,1,1))
+
 box = chigger.geometric.CubeSource(center=(0.5,0.5,0.5), lengths=(1.,1.,1.), color=(0.25,0.5,0.75))
-geo = chigger.Viewport(box)
-window = chigger.Window(geo, size=(300,300), background=None)
-window.write('transparent.png')
+view = chigger.Viewport(box, layer=1)
+
+window = chigger.Window(left, right, view, size=(300,300), background=None)
+window.write('dual.png')
 window.start()

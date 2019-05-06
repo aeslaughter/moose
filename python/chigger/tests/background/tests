@@ -17,4 +17,10 @@
     imagediff = transparent.png
     cli_args = '--test'
   []
+  [dual]
+    type = ImageDiff
+    command = dual.py
+    imagediff = dual.png
+    cli_args = '--test'
+  []
 []

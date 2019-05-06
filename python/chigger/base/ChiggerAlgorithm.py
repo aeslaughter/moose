@@ -28,6 +28,12 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         # are all older than the class itself.
         self.Modified()
 
+    def update(self, other):
+        ChiggerObjectBase.update(self, other)
+        if self._options.modified() > self.GetMTime():
+            self.applyOptions()
+            self.Modified()
+
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setOptions(self, *args, **kwargs)

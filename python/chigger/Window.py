@@ -323,7 +323,7 @@ class Window(base.ChiggerObject):
 
         # Background
         if self.isOptionValid('background'):
-            self.__background._options.update(self.getOption('background'))
+            self.__background.update(self.getOption('background'))
             self.__results.append(self.__background)
 
         # Setup the result objects
@@ -421,8 +421,11 @@ class Window(base.ChiggerObject):
         # Build a filter for writing an image
         window_filter = vtk.vtkWindowToImageFilter()
         window_filter.SetInput(self.__vtkwindow)
-        #if self.__background.getOption('background') is None:
-        #    window_filter.SetInputBufferTypeToRGBA()
+
+        # If a Background object does not exist, allow the background to be transparent
+        has_background = any([isinstance(r, misc.Background) for r in self.__results])
+        if not has_background:
+            window_filter.SetInputBufferTypeToRGBA()
         window_filter.Update()
 
         # Write it
