@@ -12,6 +12,6 @@
 import chigger
 box = chigger.geometric.CubeSource(center=(0.5,0.5,0.5), lengths=(1.,1.,1.), color=(0.25,0.5,0.75))
 geo = chigger.Viewport(box)
-window = chigger.Window(geo, size=(300,300), background=None)
+window = chigger.Window(geo, size=(300,300), transparent=True)
 window.write('transparent.png')
 window.start()

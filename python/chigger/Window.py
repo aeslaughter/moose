@@ -77,10 +77,11 @@ class Window(base.ChiggerObject):
 
         # Background settings
         opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
-                doc="The primary background color, set to None to create a transparent background on output.")
+                doc="The primary background color.")
         opt.add('background2', None, vtype=float, size=3,
                 doc="The secondary background color, when specified a gradient style background is created.")
-
+        opt.add('transparent', False, vtype=bool,
+                doc="When True images created will use a transparent background.")
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -425,12 +426,8 @@ class Window(base.ChiggerObject):
         window_filter = vtk.vtkWindowToImageFilter()
         window_filter.SetInput(self.__vtkwindow)
 
-        # If a Background object does not exist, allow the background to be transparent
-        #has_background = any([isinstance(r, misc.Background) for r in self.__results])
-        #print 'has_background=', has_background, self.__results
-        #if not has_background:
-        #    print 'here'
-        if not self.isOptionValid('background'):
+        # Allow the background to be transparent
+        if self.getOption('transparent'):
             window_filter.SetInputBufferTypeToRGBA()
         window_filter.Update()
 
