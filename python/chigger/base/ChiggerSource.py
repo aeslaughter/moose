@@ -27,6 +27,11 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     # List of active filters
     __ACTIVE_FILTERS__ = set()
 
+    # Background options, by default the background color is black thus the default text colors
+    # are white. If the background is changed to white then the default text colors are then
+    # automatically changed to black
+    __BACKGROUND_OPTIONS__ = set()
+
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()

@@ -11,7 +11,9 @@
 import vtk
 from .. import base
 from .. import utils
+from ..Window import Window
 
+#@Window.addBackgroundOptions('color')
 class AxisSource(base.ChiggerSource):
     """
     Creates an Axis with limits, ticks, etc.
@@ -23,14 +25,22 @@ class AxisSource(base.ChiggerSource):
     @staticmethod
     def validOptions():
         opt = base.ChiggerSource.validOptions()
-        #opt += utils.AxisOptions.validOptions()
+
+        # Font Colors
+        opt.add('fontcolor', default=(1,1,1), vtype=float, size=3, doc="The color of the axis, ticks, and labels.")
+        #opt.add('axis_fontcolor', vtype=float, size=3, doc="The color of the axis, this overrides the value in 'fontcolor'.")
+
+        opt.add('title', vtype=str, doc="The title for the axis.")
+        opt += utils.FontOptions.validOptions('title')
+
+
         return opt
 
     def __init__(self, **kwargs):
 
         #self._vtksource = vtk.vtkAxis()
 
-        base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData',  **kwargs)
+        base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData', **kwargs)
 
         #self._vtkactor.GetScene().AddItem(self._vtksource)
 
@@ -43,12 +53,26 @@ class AxisSource(base.ChiggerSource):
         """
         base.ChiggerSource.applyOptions(self)
 
-
-        #self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
-        #self._vtkactor.GetPosition2Coordinate().SetCoordinateSystemToNormalizedViewport()
-
         self._vtkactor.SetPoint1(0.5, 0.1)
         self._vtkactor.SetPoint2(0.5, 0.9)
+
+        self.setOption('title', self._vtkactor.SetTitle)
+
+
+
+        if self.isOptionValid('fontcolor'):
+            clr = self.getOption('fontcolor')
+
+
+
+
+            #self._vtkactor.GetTitleTextProperty().SetColor(*clr)
+            #self._vtkactor.GetTitleTextProperty().SetShadow(False)
+            #self._vtkactor.GetTitleTextProperty().SetItalic(False)
+            #self._vtkactor.GetLabelTextProperty().SetColor(*clr)
+            #self._vtkactor.GetAxisLinesProperty().SetColorF(*clr)
+
+
 
         #self._vtkactor.GetScene().AddItem(self._vtksource)
 

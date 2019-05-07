@@ -90,10 +90,8 @@ class ChiggerObjectBase(object):
             return None
         return self._options.get(name)
 
-    def setVTKOption(self, name, func):
-        value = self.getOption(name)
-        if value is not None:
-            func(value)
+    def setOption(self, name, func):
+        self._options.setOption(name, func)
 
     def printOptions(self, *args):
         """

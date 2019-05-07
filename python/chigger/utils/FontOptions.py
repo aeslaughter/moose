@@ -10,22 +10,26 @@
 
 from Options import Options
 
-def validOptions(): #pylint: disable=invalid-name
+
+
+def validOptions(prefix=None): #pylint: disable=invalid-name
     """
     Returns options for vtk fonts.
     """
+    key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
+
     opt = Options()
-    opt.add('text_color', (1., 1., 1.), "The text color.", vtype=float, size=3)
-    opt.add('text_shadow', False, "Toggle text shadow.", vtype=bool)
-    opt.add('justification', 'left', "Set the font justification.", vtype=str,
+    opt.add(key('color'), (1., 1., 1.), doc="The text color.", vtype=float, size=3)
+    opt.add(key('shadow'), False, doc="Toggle text shadow.", vtype=bool)
+    opt.add(key('halign'), 'left', doc="Set the font justification.", vtype=str,
             allow=('left', 'center', 'right'))
-    opt.add('vertical_justification', 'bottom', "The vertical text justification.",
+    opt.add(key('valign'), 'bottom', doc="The vertical text justification.",
             allow=('bottom', 'middle', 'top'))
-    opt.add('text_opacity', 1., "The text opacity.", vtype=float)
-    opt.add('font_size', 24, "The text font size.", vtype=int)
+    opt.add(key('opacity'), 1., doc="The text opacity.", vtype=float)
+    opt.add(key('size'), 24, doc="The text font size.", vtype=int)
     return opt
 
-def applyOptions(tprop, options): #pylint: disable=invalid-name
+def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
     """
     Applies font options to vtkTextProperty object.
 
@@ -33,24 +37,25 @@ def applyOptions(tprop, options): #pylint: disable=invalid-name
         tprop: A vtk.vtkTextProperty object for applying options.
         options: The Options object containing the settings to apply.
     """
+    key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
-    if options.isOptionValid('text_color'):
-        tprop.SetColor(options.applyOption('text_color'))
+    opt.setOption(key('color'), tprop.SetColor, prefix=prefix)
+    opt.setOption(key('shadow'), tprop.SetShadow, prefix=prefix)
 
-    if options.isOptionValid('text_shadow'):
-        tprop.SetShadow(options.applyOption('text_shadow'))
 
+    """
     if options.isOptionValid('justification'):
-        idx = options.raw('justification').allow.index(options.applyOption('justification'))
+        idx = options.raw('justification').allow.index(options.get('justification'))
         tprop.SetJustification(idx)
 
     if options.isOptionValid('vertical_justification'):
         idx = options.raw('vertical_justification').allow.index(
-            options.applyOption('vertical_justification'))
+            options.get('vertical_justification'))
         tprop.SetVerticalJustification(idx)
 
-    if options.isOptionValid('text_opacity'):
-        tprop.SetOpacity(options.applyOption('text_opacity'))
+    if options.isOptionValid('opacity'):
+        tprop.SetOpacity(options.get('opacity'))
 
-    if options.isOptionValid('font_size'):
-        tprop.SetFontSize(options.applyOption('font_size'))
+    if options.isOptionValid('size'):
+        tprop.SetFontSize(options.get('size'))
+    """

@@ -41,6 +41,15 @@ class Window(base.ChiggerObject):
     ##__RESULTTYPE__ = base.ChiggerResult
 
     @staticmethod
+    def addBackgroundOptions(*args):
+        """Decorator for defining options that should adjust with background color."""
+        def create(cls):
+            cls.__BACKGROUND_OPTIONS__.update(args)
+            return cls
+        return create
+
+
+    @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
 
@@ -314,14 +323,14 @@ class Window(base.ChiggerObject):
         #                            gradient_background=self._options.get('gradient_background'))
 
         # vtkRenderWindow Settings
-        self.setVTKOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
-        self.setVTKOption('smoothing', self.__vtkwindow.SetLineSmoothing)
-        self.setVTKOption('smoothing', self.__vtkwindow.SetPolygonSmoothing)
-        self.setVTKOption('smoothing', self.__vtkwindow.SetPointSmoothing)
+        self.setOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
+        self.setOption('smoothing', self.__vtkwindow.SetLineSmoothing)
+        self.setOption('smoothing', self.__vtkwindow.SetPolygonSmoothing)
+        self.setOption('smoothing', self.__vtkwindow.SetPointSmoothing)
 
-        #self.setVTKOption('antialiasing', self.__vtkwindow.SetAAFrames)
-        self.setVTKOption('multisamples', self.__vtkwindow.SetMultiSamples)
-        self.setVTKOption('size', self.__vtkwindow.SetSize)
+        #self.setOption('antialiasing', self.__vtkwindow.SetAAFrames)
+        self.setOption('multisamples', self.__vtkwindow.SetMultiSamples)
+        self.setOption('size', self.__vtkwindow.SetSize)
 
         # Background
         #if self.isOptionValid('background'):
@@ -342,6 +351,18 @@ class Window(base.ChiggerObject):
         if self.isOptionValid('background'):
             self.__background.setOptions(background=self.getOption('background'),
                                          background2=self.getOption('background2'))
+
+
+        # Auto Background adjustments
+        if self.getOption('background') == (1,1,1):
+            for result in self.__results:
+                for src in result:
+                    for name in src.__BACKGROUND_OPTIONS__:
+                        value = src.getOption(name)
+                        if value == (1,1,1):
+                            srd.setOptions(**{value:(0,0,0)})
+
+
         #print self.getOption('background')
         #self.__background._options.update(self.getOption('background'))
 

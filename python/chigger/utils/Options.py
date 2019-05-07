@@ -138,6 +138,14 @@ class Options(object):
         else:
             opt.value = value
 
+    def setOption(self, name, func):
+        """
+        Helper for assign values to a function, if they option is valid
+        """
+        value = self.get(name)
+        if self.isOptionValid(name):
+            func(value)
+
     def get(self, name): #pylint: disable=redefined-builtin
         """
         Overload for accessing the parameter value by name with []

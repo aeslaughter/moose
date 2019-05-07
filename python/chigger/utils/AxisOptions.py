@@ -22,41 +22,48 @@ VTK_NOTATION_ENUM = [
 def validOptions():
     """Returns options for vtkAxis objects."""
     opt = Options()
-    opt.add('num_ticks', default=5, vtype=int, doc="The number of tick marks to place on the axis.")
-    opt.add('lim', vtype=float, size=2, doc="The axis extents.")
-    opt.add('font_color', (1, 1, 1), vtype=float, size=3,
-            doc="The color of the axis, ticks, and labels.")
-    opt.add('title', vtype=str, doc="The axis label.")
-    opt.add('font_size', vtype=int, doc="The axis title and label font sizes, in points.")
-    opt.add('title_font_size', vtype=int, doc="The axis title font size, in points.")
-    opt.add('tick_font_size', vtype=int, doc="The axis tick label font size, in points.")
-    opt.add('grid', True, vtype=bool, doc="Show/hide the grid lines for this axis.")
-    opt.add('grid_color', default=(0.25, 0.25, 0.25), vtype=float, size=3,
-            doc="The color for the grid lines.")
-    opt.add('precision', 3, vtype=int, doc="The axis numeric precision.")
-    opt.add('notation', vtype=str, doc="The type of notation, leave empty to let VTK decide.",
-            allow=('standard', 'scientific', 'fixed', 'printf'))
-    opt.add('ticks_visible', True, vtype=bool,
-            doc="Control visibility of tickmarks on colorbar axis.")
-    opt.add('axis_visible', True, vtype=bool,
-            doc="Control visibility of axis line on colorbar axis.")
-    opt.add('labels_visible', True, vtype=bool, doc="Control visibility of the numeric labels.")
-    opt.add('axis_position', 'left', vtype=str,
-            doc="Set the axis position (left, right, top, bottom)",
-            allow=('left', 'right', 'top', 'bottom'))
-    opt.add('axis_point1', (0, 0), vtype=float, size=2,
-            doc='Starting location of axis, in absolute viewport coordinates.')
-    opt.add('axis_point2', (0, 0), vtype=float, size=2,
-            doc='Ending location of axis, in absolute viewport coordinates.')
-    opt.add('axis_scale', 1, vtype=float, doc="The axis scaling factor.")
-    opt.add('zero_tol', 1e-10, vtype=float, doc="Tolerance for considering limits to be the same.")
+    opt.add('fontcolor', default=(1,1,1), vtype=float, size=3, doc="The color of the axis, ticks, and labels.")
+    opt.add('axis_fontcolor', vtype=float, size=3, doc="The color of the axis, this overrides the value in 'fontcolor'.")
+
     return opt
+
+    # opt.add('num_ticks', default=5, vtype=int, doc="The number of tick marks to place on the axis.")
+    # opt.add('lim', vtype=float, size=2, doc="The axis extents.")
+    # opt.add('font_color', (1, 1, 1), vtype=float, size=3,
+    #         doc="The color of the axis, ticks, and labels.")
+    # opt.add('title', vtype=str, doc="The axis label.")
+    # opt.add('font_size', vtype=int, doc="The axis title and label font sizes, in points.")
+    # opt.add('title_font_size', vtype=int, doc="The axis title font size, in points.")
+    # opt.add('tick_font_size', vtype=int, doc="The axis tick label font size, in points.")
+    # opt.add('grid', True, vtype=bool, doc="Show/hide the grid lines for this axis.")
+    # opt.add('grid_color', default=(0.25, 0.25, 0.25), vtype=float, size=3,
+    #         doc="The color for the grid lines.")
+    # opt.add('precision', 3, vtype=int, doc="The axis numeric precision.")
+    # opt.add('notation', vtype=str, doc="The type of notation, leave empty to let VTK decide.",
+    #         allow=('standard', 'scientific', 'fixed', 'printf'))
+    # opt.add('ticks_visible', True, vtype=bool,
+    #         doc="Control visibility of tickmarks on colorbar axis.")
+    # opt.add('axis_visible', True, vtype=bool,
+    #         doc="Control visibility of axis line on colorbar axis.")
+    # opt.add('labels_visible', True, vtype=bool, doc="Control visibility of the numeric labels.")
+    # opt.add('axis_position', 'left', vtype=str,
+    #         doc="Set the axis position (left, right, top, bottom)",
+    #         allow=('left', 'right', 'top', 'bottom'))
+    # opt.add('axis_point1', (0, 0), vtype=float, size=2,
+    #         doc='Starting location of axis, in absolute viewport coordinates.')
+    # opt.add('axis_point2', (0, 0), vtype=float, size=2,
+    #         doc='Ending location of axis, in absolute viewport coordinates.')
+    # opt.add('axis_scale', 1, vtype=float, doc="The axis scaling factor.")
+    # opt.add('zero_tol', 1e-10, vtype=float, doc="Tolerance for considering limits to be the same.")
 
 def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
     """
     Set the options for vtkAxis object.
     """
 
+    pass
+
+    """
     # Visibility
     if opt.isOptionValid('tick_visible'):
         vtkaxis.SetTicksVisible(opt.applyOption('ticks_visible'))
@@ -99,14 +106,16 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
     else:
         vtkaxis.SetBehavior(vtk.vtkAxis.AUTO)
         vtkaxis.SetCustomTickPositions(None, None)
+    """
 
     # Color
-    if opt.isOptionValid('font_color'):
-        clr = opt.applyOption('font_color')
+    if opt.isOptionValid('fontcolor'):
+        clr = opt.get('fontcolor')
         vtkaxis.GetTitleProperties().SetColor(*clr)
         vtkaxis.GetLabelProperties().SetColor(*clr)
         vtkaxis.GetPen().SetColorF(*clr)
 
+    """
     # Axis title
     if opt.isOptionValid('title'):
         vtkaxis.SetTitle(opt.applyOption('title'))
@@ -158,3 +167,4 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
 
     if opt.isOptionValid('axis_scale'):
         vtkaxis.SetScalingFactor(opt.applyOption('axis_scale'))
+    """
