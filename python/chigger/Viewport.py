@@ -31,14 +31,18 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
 
         opt.add('light', vtype=float,
                doc="Add a headlight with the given intensity to the renderer.")
-        opt.add('layer', vtype=int,
+        opt.add('layer', default=1, vtype=int,
                 doc="The VTK layer within the render window.")
         opt.add('viewport', default=(0., 0., 1., 1.), vtype=float, size=4,
                 doc="A list given the viewport coordinates [x_min, y_min, x_max, y_max], in " \
                     "relative position to the entire window (0 to 1).")
         opt.add('camera', None, vtype=vtk.vtkCamera,
                 doc="The VTK camera to utilize for viewing the results.")
-
+        opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
+                doc="The primary background color.")
+        opt.add('background2', None, vtype=float, size=3,
+                doc="The secondary background color, when supplied this creates a gradient " \
+                    "background")
         return opt
 
     @staticmethod
@@ -71,6 +75,8 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         for arg in args:
             self._add(arg)
 
+        #
+
 
     def _add(self, arg):
         if arg.getVTKActor() is not None:
@@ -91,10 +97,19 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
 
         if self.isOptionValid('layer'):
             layer = self.getOption('layer')
-            if layer < 1:
-                self.log("The 'layer' option must be greater than 1 but {} provided.", layer,
+            if layer < 0:
+                self.log("The 'layer' option must be zero or greater but {} provided.", layer,
                          level=logging.ERROR)
             self._vtkrenderer.SetLayer(layer)
+
+        self._vtkrenderer.SetBackground(self.getOption('background'))
+        if self.isOptionValid('background2'):
+            self._vtkrenderer.SetBackground2(self.getOption('background2'))
+            self._vtkrenderer.SetGradientBackground(True)
+        else:
+            self._vtkrenderer.SetGradientBackground(False)
+
+
         self._vtkrenderer.ResetCameraClippingRange()
 
     def getVTKRenderer(self):

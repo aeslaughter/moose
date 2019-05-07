@@ -18,4 +18,6 @@ class ObserverMixin(object):
         return opt
 
     def interactive(self):
-        return self.getOption('interactive').get('enabled')
+        if opt.isOptionValid('interactive'):
+            return self.getOption('interactive').get('enabled')
+        return False

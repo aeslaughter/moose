@@ -16,8 +16,8 @@ from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 import base
 import annotations
 import observers
-import misc
 import mooseutils
+from Viewport import Viewport
 
 #class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
 #    def __init__(self, window):
@@ -62,8 +62,8 @@ class Window(base.ChiggerObject):
                 doc="Set the number of multi-samples.")
         opt.add('antialiasing', default=0, vtype=int,
                 doc="Number of antialiasing frames to perform (set vtkRenderWindow::SetAAFrames).")
-        opt.add('reset_camera', vtype=bool, default=True,
-                doc="Automatically reset the camera clipping range on update.")
+        #opt.add('reset_camera', vtype=bool, default=True,
+        #        doc="Automatically reset the camera clipping range on update.")
 
         # Observers
         #opt.add('observers', default=[], vtype=list,
@@ -76,8 +76,11 @@ class Window(base.ChiggerObject):
         #        doc="Define the default observer for the window.")
 
         # Background settings
-        background = misc.Background.validOptions()
-        opt.add('background', background, doc="Background settings.")
+        opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
+                doc="The primary background color, set to None to create a transparent background on output.")
+        opt.add('background2', None, vtype=float, size=3,
+                doc="The secondary background color, when specified a gradient style background is created.")
+
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -94,8 +97,8 @@ class Window(base.ChiggerObject):
         #self.OutoutType = 'vtkPythonAlgorithm'
 
         self.__results = list()
-        self.__background = misc.Background()
-        #self.__results.append(self.__background)
+        self.__background = Viewport(layer=0)
+        self.__results.append(self.__background)
 
         #self.SetInputConnection(0, self.__background.GetOutputPort(0))
         for i, result in enumerate(args):
@@ -275,8 +278,6 @@ class Window(base.ChiggerObject):
         Updates the child results and renders the results.
         """
         base.ChiggerObject.applyOptions(self)
-        #for result in self.__results:
-        #    self.__vtkwindow.AddRenderer(result.getVTKRenderer())
 
 
         test = self.getOption('test')
@@ -322,9 +323,8 @@ class Window(base.ChiggerObject):
         self.setVTKOption('size', self.__vtkwindow.SetSize)
 
         # Background
-        if self.isOptionValid('background'):
-            self.__background.update(self.getOption('background'))
-            self.__results.append(self.__background)
+        #if self.isOptionValid('background'):
+        #    self.__background.update(self.getOption('background'))
 
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
@@ -338,6 +338,9 @@ class Window(base.ChiggerObject):
         self.__vtkwindow.SetNumberOfLayers(n)
 
         # Background
+        if self.isOptionValid('background'):
+            self.__background.setOptions(background=self.getOption('background'),
+                                         background2=self.getOption('background2'))
         #print self.getOption('background')
         #self.__background._options.update(self.getOption('background'))
 
@@ -423,8 +426,11 @@ class Window(base.ChiggerObject):
         window_filter.SetInput(self.__vtkwindow)
 
         # If a Background object does not exist, allow the background to be transparent
-        has_background = any([isinstance(r, misc.Background) for r in self.__results])
-        if not has_background:
+        #has_background = any([isinstance(r, misc.Background) for r in self.__results])
+        #print 'has_background=', has_background, self.__results
+        #if not has_background:
+        #    print 'here'
+        if not self.isOptionValid('background'):
             window_filter.SetInputBufferTypeToRGBA()
         window_filter.Update()
 

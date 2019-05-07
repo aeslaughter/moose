@@ -11,6 +11,6 @@
 
 import chigger
 window = chigger.Window(size=(300,300))
-window.setOptions('background', color=(0.25, 0.25, 0.25))
+window.setOptions('background', background=(0.25, 0.25, 0.25))
 window.write('solid.png')
 window.start()
