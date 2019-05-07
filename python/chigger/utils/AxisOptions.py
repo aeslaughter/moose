@@ -61,6 +61,7 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
     Set the options for vtkAxis object.
     """
 
+
     pass
 
     """

@@ -22,17 +22,20 @@ class AxisSource(base.ChiggerSource):
     VTKACTORTYPE = vtk.vtkAxisActor2D#vtk.vtkContextActor
     VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D#None
 
+    __FONTKEYS__ = utils.FontOptions.validOptions().keys()
+
     @staticmethod
     def validOptions():
         opt = base.ChiggerSource.validOptions()
 
         # Font Colors
-        opt.add('fontcolor', default=(1,1,1), vtype=float, size=3, doc="The color of the axis, ticks, and labels.")
-        #opt.add('axis_fontcolor', vtype=float, size=3, doc="The color of the axis, this overrides the value in 'fontcolor'.")
+        opt += utils.FontOptions.validOptions()
 
         opt.add('title', vtype=str, doc="The title for the axis.")
         opt += utils.FontOptions.validOptions('title')
 
+        opt += utils.FontOptions.validOptions('label')
+        #opt += utils.FontOptions.validOptions('axis')
 
         return opt
 
@@ -58,15 +61,16 @@ class AxisSource(base.ChiggerSource):
 
         self.setOption('title', self._vtkactor.SetTitle)
 
+        for name in self.__FONTKEYS__:
+            for subname in ['title', 'label']:
+                tname = '{}_{}'.format(subname, name)
+                if not self.isOptionValid(tname):
+                    self._options.set(tname, self._options.get(name))
 
+        utils.FontOptions.applyOptions(self._vtkactor.GetTitleTextProperty(), self._options, 'title')
+        utils.FontOptions.applyOptions(self._vtkactor.GetLabelTextProperty(), self._options, 'label')
 
-        if self.isOptionValid('fontcolor'):
-            clr = self.getOption('fontcolor')
-
-
-
-
-            #self._vtkactor.GetTitleTextProperty().SetColor(*clr)
+        #self._vtkactor.GetTitleTextProperty().SetColor(*clr)
             #self._vtkactor.GetTitleTextProperty().SetShadow(False)
             #self._vtkactor.GetTitleTextProperty().SetItalic(False)
             #self._vtkactor.GetLabelTextProperty().SetColor(*clr)

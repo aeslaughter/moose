@@ -344,7 +344,7 @@ class Window(base.ChiggerObject):
                 self.__vtkwindow.AddRenderer(renderer)
             n = max(n, renderer.GetLayer() + 1)
 
-        # Set the number of layers
+        # Set the Xbnumber of layers
         self.__vtkwindow.SetNumberOfLayers(n)
 
         # Background

@@ -12,11 +12,8 @@
 import chigger
 from chigger import misc, observers
 
-ax0 = misc.AxisSource(title='Axis Title', fontcolor=(0,1,0))
-result0 = chigger.Viewport(ax0)
-window = chigger.Window(result0, size=(600,300), background=(1,1,1))
-
-obs = observers.MainWindowObserver(window)
-
+ax = misc.AxisSource(title='Axis Title', fontcolor=(0,1,0))
+view = chigger.Viewport(ax)
+window = chigger.Window(view, size=(600,300), background=(1,1,1))
 window.write('axis.png')
 window.start()

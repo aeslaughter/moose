@@ -9,9 +9,6 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from Options import Options
-
-
-
 def validOptions(prefix=None): #pylint: disable=invalid-name
     """
     Returns options for vtk fonts.
@@ -19,14 +16,20 @@ def validOptions(prefix=None): #pylint: disable=invalid-name
     key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
     opt = Options()
-    opt.add(key('color'), (1., 1., 1.), doc="The text color.", vtype=float, size=3)
-    opt.add(key('shadow'), False, doc="Toggle text shadow.", vtype=bool)
-    opt.add(key('halign'), 'left', doc="Set the font justification.", vtype=str,
+    opt.add(key('fontcolor'), (1., 1., 1.), doc="The text color.", vtype=float, size=3)
+    opt.add(key('fontshadow'), False, doc="Toggle text shadow.", vtype=bool)
+    opt.add(key('fonthalign'), 'left', doc="Set the font justification.", vtype=str,
             allow=('left', 'center', 'right'))
-    opt.add(key('valign'), 'bottom', doc="The vertical text justification.",
+    opt.add(key('fontvalign'), 'bottom', doc="The vertical text justification.",
             allow=('bottom', 'middle', 'top'))
-    opt.add(key('opacity'), 1., doc="The text opacity.", vtype=float)
-    opt.add(key('size'), 24, doc="The text font size.", vtype=int)
+    opt.add(key('fontopacity'), 1., doc="The text opacity.", vtype=float)
+    opt.add(key('fontsize'), 24, doc="The text font size.", vtype=int)
+    opt.add(key('fontitalic'), False, doc="Toggle the text italics.")
+
+    if prefix:
+        for k in opt.keys():
+            opt.set(k, None)
+
     return opt
 
 def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
@@ -39,23 +42,19 @@ def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
     """
     key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
-    opt.setOption(key('color'), tprop.SetColor, prefix=prefix)
-    opt.setOption(key('shadow'), tprop.SetShadow, prefix=prefix)
+    opt.setOption(key('fontcolor'), tprop.SetColor)
+    opt.setOption(key('fontshadow'), tprop.SetShadow)
+    opt.setOption(key('fontopacity'), tprop.SetOpacity)
+    opt.setOption(key('fontsize'), tprop.SetFontSize)
+    opt.setOption(key('fontitalic'), tprop.SetItalic)
 
-
-    """
-    if options.isOptionValid('justification'):
-        idx = options.raw('justification').allow.index(options.get('justification'))
+    halign = key('fonthalign')
+    if opt.isOptionValid(halign):
+        idx = opt.raw(halign).allow.index(opt.get(halign))
         tprop.SetJustification(idx)
 
-    if options.isOptionValid('vertical_justification'):
-        idx = options.raw('vertical_justification').allow.index(
-            options.get('vertical_justification'))
+    valign = key('fontvalign')
+    if opt.isOptionValid(valign):
+        idx = opt.raw(valign).allow.index(
+            opt.get(valign))
         tprop.SetVerticalJustification(idx)
-
-    if options.isOptionValid('opacity'):
-        tprop.SetOpacity(options.get('opacity'))
-
-    if options.isOptionValid('size'):
-        tprop.SetFontSize(options.get('size'))
-    """
