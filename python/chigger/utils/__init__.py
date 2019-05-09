@@ -18,7 +18,7 @@ import mooseutils
 from Option import Option
 from Options import Options
 import AxisOptions
-import FontOptions
+import TextOptions
 import LegendOptions
 import ActorOptions
 from KeyBindingMixin import KeyBinding, KeyBindingMixin

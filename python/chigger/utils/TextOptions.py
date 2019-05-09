@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from Options import Options
-def validOptions(prefix=None): #pylint: disable=invalid-name
+def validOptions(prefix=None, defaults=False): #pylint: disable=invalid-name
     """
     Returns options for vtk fonts.
     """
@@ -26,9 +26,9 @@ def validOptions(prefix=None): #pylint: disable=invalid-name
     opt.add(key('fontsize'), 24, doc="The text font size.", vtype=int)
     opt.add(key('fontitalic'), False, doc="Toggle the text italics.")
 
-    if prefix:
+    if not defaults:
         for k in opt.keys():
-            opt.set(k, None)
+            opt.setDefault(k, None)
 
     return opt
 

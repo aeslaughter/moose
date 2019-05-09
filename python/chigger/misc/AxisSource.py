@@ -22,30 +22,35 @@ class AxisSource(base.ChiggerSource):
     VTKACTORTYPE = vtk.vtkAxisActor2D#vtk.vtkContextActor
     VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D#None
 
-    __FONTKEYS__ = utils.FontOptions.validOptions().keys()
+    __TEXTKEYS__ = utils.TextOptions.validOptions().keys()
 
     @staticmethod
     def validOptions():
         opt = base.ChiggerSource.validOptions()
 
-        # Font Colors
-        opt += utils.FontOptions.validOptions()
+        # Axis Line Options
+        opt += utils.ActorOptions.validOptions()
 
+        # Title and label Options
+        # This object includes general properties ('fontcolor', 'fontopacity', ...) as well as
+        # title and label specific properties ('title_fontcolor', ..., 'label_fontcolor'). The
+        # default 'fontcolor' and 'fontopacity' are removed to allow the the 'color' and 'opacity'
+        # to be the default for this options
         opt.add('title', vtype=str, doc="The title for the axis.")
-        opt += utils.FontOptions.validOptions('title')
+        opt += utils.TextOptions.validOptions()
+        opt += utils.TextOptions.validOptions(prefix='title', defaults=False)
+        opt += utils.TextOptions.validOptions(prefix='label', defaults=False)
+        opt.setDefault('fontcolor', None)
+        opt.setDefault('fontopacity', None)
 
-        opt += utils.FontOptions.validOptions('label')
-        #opt += utils.FontOptions.validOptions('axis')
+        # Position
+        opt.add('point1', vtype=float, size=2, doc="The starting position, in relative viewport coordinates, of the axis line.")
+        opt.add('point2', vtype=float, size=2, doc="The ending position, in relative viewport coordinates, of the axis line.")
 
         return opt
 
     def __init__(self, **kwargs):
-
-        #self._vtksource = vtk.vtkAxis()
-
         base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData', **kwargs)
-
-        #self._vtkactor.GetScene().AddItem(self._vtksource)
 
     def applyOptions(self):
         """
@@ -56,39 +61,23 @@ class AxisSource(base.ChiggerSource):
         """
         base.ChiggerSource.applyOptions(self)
 
-        self._vtkactor.SetPoint1(0.5, 0.1)
-        self._vtkactor.SetPoint2(0.5, 0.9)
-
+        self._vtkactor.SetPoint1(self.getOption('point1'))
+        self._vtkactor.SetPoint2(self.getOption('point2'))
         self.setOption('title', self._vtkactor.SetTitle)
 
-        for name in self.__FONTKEYS__:
+        # The default font color and opacity should match the 'color' and 'opactity' options
+        if not isOptionValid('fontcolor'):
+            self._options.set('fontcolor', self.getOption('color'))
+
+        if not isOptionValid('fontopacity'):
+            self._options.set('fontopacity', self.getOption('opacity'))
+
+        # Set the values of the title_
+        for name in self.__TEXTKEYS__:
             for subname in ['title', 'label']:
                 tname = '{}_{}'.format(subname, name)
                 if not self.isOptionValid(tname):
                     self._options.set(tname, self._options.get(name))
 
-        utils.FontOptions.applyOptions(self._vtkactor.GetTitleTextProperty(), self._options, 'title')
-        utils.FontOptions.applyOptions(self._vtkactor.GetLabelTextProperty(), self._options, 'label')
-
-        #self._vtkactor.GetTitleTextProperty().SetColor(*clr)
-            #self._vtkactor.GetTitleTextProperty().SetShadow(False)
-            #self._vtkactor.GetTitleTextProperty().SetItalic(False)
-            #self._vtkactor.GetLabelTextProperty().SetColor(*clr)
-            #self._vtkactor.GetAxisLinesProperty().SetColorF(*clr)
-
-
-
-        #self._vtkactor.GetScene().AddItem(self._vtksource)
-
-        #clr = (1,0,1)
-        #self._vtksource.GetTitleProperties().SetColor(*clr)
-        #self._vtksource.GetLabelProperties().SetColor(*clr)
-        #self._vtksource.GetPen().SetColorF(*clr)
-
-        #utils.AxisOptions.setOptions(self._vtksource, self._options)
-        #self._vtksource.Update()
-
-    #def getBounds(self):
-    #    p0 = self._vtksource.GetPosition1()
-    #    p1 = self._vtksource.GetPosition2()
-    #    return (p0[0], p1[0], p0[1], p1[1], 0, 0)
+        utils.TextOptions.applyOptions(self._vtkactor.GetTitleTextProperty(), self._options, 'title')
+        utils.TextOptions.applyOptions(self._vtkactor.GetLabelTextProperty(), self._options, 'label')
