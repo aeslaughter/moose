@@ -84,13 +84,13 @@ class Options(object):
         """
         return max(opt.modified for opt in self.__options.values())
 
-    def setDefault(self, name, default):
-        """
-        If the option is None, apply the default value.
-        """
-        opt = self.__options.get(name)
-        if opt.value is None:
-            opt.value = default
+    #def setDefault(self, name, default):
+    #    """
+    #    If the option is None, apply the default value.
+    #    """
+    #    opt = self.__options.get(name)
+    #    if opt.value is None:
+    #        opt.value = default
 
     def isOptionValid(self, name):
         """
@@ -102,23 +102,23 @@ class Options(object):
         opt = self.__options.get(name, None)
         return (opt is not None) and (opt.value is not None)
 
-    def isOptionDefault(self, name):
-        """
-        Return True if the supplied option is set to the default value.
+    #def isOptionDefault(self, name):
+    #    """
+    #    Return True if the supplied option is set to the default value.
 
-        Inputs:
-            name[str]: The name of the Option to test.
-        """
-        opt = self.__options.get(name, None)
-        if opt is None:
-            mooseutils.mooseWarning('No option with the name:', name)
-        return opt.value == opt.default
+    #    Inputs:
+    #        name[str]: The name of the Option to test.
+    #    """
+    #    opt = self.__options.get(name, None)
+    #    if opt is None:
+    #        mooseutils.mooseWarning('No option with the name:', name)
+    #    return opt.value == opt.default
 
-    def hasValidOptions(self):
-        """
-        Return True if any options are valid.
-        """
-        return any(self.isOptionValid(name) for name in self.keys())
+    #def hasValidOptions(self):
+    #    """
+    #    Return True if any options are valid.
+    #    """
+    #    return any(self.isOptionValid(name) for name in self.keys())
 
     def set(self, name, value):
         """
@@ -138,7 +138,7 @@ class Options(object):
         else:
             opt.value = value
 
-    def setOption(self, name, func):
+    def assign(self, name, func):
         """
         Helper for assign values to a function, if they option is valid
         """
@@ -161,14 +161,14 @@ class Options(object):
         else:
             return opt.value
 
-    def hasOption(self, name):
-        """
-        Test that the option exists.
+    #def hasOption(self, name):
+    #    """
+    #    Test that the option exists.
 
-        Inputs:
-            name[str]: The name of the Option to retrieve
-        """
-        return name in self.__options
+    #    Inputs:
+    #        name[str]: The name of the Option to retrieve
+    #    """
+    #    return name in self.__options
 
     def add(self, *args, **kwargs):
         """

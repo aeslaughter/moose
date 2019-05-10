@@ -11,6 +11,6 @@ def validOptions():
     return opt
 
 def applyOptions(vtkactor, opt):
-    opt.setOption('color', vtkactor.GetProperty().SetColor)
-    opt.setOption('opacity', vtkactor.GetProperty().SetOpacity)
-    opt.setOption('linewidth', vtkactor.GetProperty().SetLineWidth)
+    opt.assign('color', vtkactor.GetProperty().SetColor)
+    opt.assign('opacity', vtkactor.GetProperty().SetOpacity)
+    opt.assign('linewidth', vtkactor.GetProperty().SetLineWidth)

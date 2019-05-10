@@ -90,8 +90,11 @@ class ChiggerObjectBase(object):
             return None
         return self._options.get(name)
 
-    def setOption(self, name, func):
-        self._options.setOption(name, func)
+    def setOption(self, name, value):
+        self._options.set(name, value)
+
+    def assign(self, name, func):
+        self._options.assign(name, func)
 
     def printOptions(self, *args):
         """

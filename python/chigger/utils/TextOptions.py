@@ -42,11 +42,11 @@ def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
     """
     key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
-    opt.setOption(key('fontcolor'), tprop.SetColor)
-    opt.setOption(key('fontshadow'), tprop.SetShadow)
-    opt.setOption(key('fontopacity'), tprop.SetOpacity)
-    opt.setOption(key('fontsize'), tprop.SetFontSize)
-    opt.setOption(key('fontitalic'), tprop.SetItalic)
+    opt.assign(key('fontcolor'), tprop.SetColor)
+    opt.assign(key('fontshadow'), tprop.SetShadow)
+    opt.assign(key('fontopacity'), tprop.SetOpacity)
+    opt.assign(key('fontsize'), tprop.SetFontSize)
+    opt.assign(key('fontitalic'), tprop.SetItalic)
 
     halign = key('fonthalign')
     if opt.isOptionValid(halign):

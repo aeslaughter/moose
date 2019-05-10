@@ -30,7 +30,7 @@ class AxisSource(base.ChiggerSource):
 
         # Axis Line Options
         opt += utils.ActorOptions.validOptions()
-        opt.setDefault('linewidth', 2)
+        opt.set('linewidth', 2)
 
         # Title and label Options
         # This object includes general properties ('fontcolor', 'fontopacity', ...) as well as
@@ -38,6 +38,8 @@ class AxisSource(base.ChiggerSource):
         # default 'fontcolor' and 'fontopacity' are removed to allow the the 'color' and 'opacity'
         # to be the default for this options
         opt.add('title', vtype=str, doc="The title for the axis.")
+        opt.add('title_position', 0.5, vtype=float,
+                doc="Set the title position between 0 (start) and 1 (end).")
         opt += utils.TextOptions.validOptions()
         opt += utils.TextOptions.validOptions(prefix='title', unset=True)
         opt += utils.TextOptions.validOptions(prefix='label', unset=True)
@@ -48,6 +50,15 @@ class AxisSource(base.ChiggerSource):
         # Position
         opt.add('point1', vtype=float, size=2, doc="The starting position, in relative viewport coordinates, of the axis line.")
         opt.add('point2', vtype=float, size=2, doc="The ending position, in relative viewport coordinates, of the axis line.")
+
+        # Tick
+        # 'major' options
+        # 'minor' options
+        # 'adjust'
+
+
+
+
 
         return opt
 
@@ -64,9 +75,17 @@ class AxisSource(base.ChiggerSource):
         base.ChiggerSource.applyOptions(self)
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
+        # Location
         self._vtkactor.SetPoint1(*self.getOption('point1'))
         self._vtkactor.SetPoint2(*self.getOption('point2'))
-        self.setOption('title', self._vtkactor.SetTitle)
+
+        # Title
+        if self.isOptionValid('title'):
+            self._vtkactor.SetTitleVisibility(True)
+            self._vtkactor.SetTitle(self.getOption('title'))
+        else:
+            self._vtkactor.SetTitleVisibility(False)
+        self.assign('title_position', self._vtkactor.SetTitlePosition)
 
         # The default font color and opacity should match the 'color' and 'opactity' options
         if not self.isOptionValid('fontcolor'):
