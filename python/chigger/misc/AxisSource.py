@@ -30,6 +30,7 @@ class AxisSource(base.ChiggerSource):
 
         # Axis Line Options
         opt += utils.ActorOptions.validOptions()
+        opt.setDefault('linewidth', 2)
 
         # Title and label Options
         # This object includes general properties ('fontcolor', 'fontopacity', ...) as well as
@@ -38,10 +39,11 @@ class AxisSource(base.ChiggerSource):
         # to be the default for this options
         opt.add('title', vtype=str, doc="The title for the axis.")
         opt += utils.TextOptions.validOptions()
-        opt += utils.TextOptions.validOptions(prefix='title', defaults=False)
-        opt += utils.TextOptions.validOptions(prefix='label', defaults=False)
-        opt.setDefault('fontcolor', None)
-        opt.setDefault('fontopacity', None)
+        opt += utils.TextOptions.validOptions(prefix='title', unset=True)
+        opt += utils.TextOptions.validOptions(prefix='label', unset=True)
+        opt.set('fontcolor', None)
+        opt.set('fontopacity', None)
+        opt.set('fontitalic', False)
 
         # Position
         opt.add('point1', vtype=float, size=2, doc="The starting position, in relative viewport coordinates, of the axis line.")
@@ -60,16 +62,17 @@ class AxisSource(base.ChiggerSource):
             see ChiggerFilterSourceBase
         """
         base.ChiggerSource.applyOptions(self)
+        utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
-        self._vtkactor.SetPoint1(self.getOption('point1'))
-        self._vtkactor.SetPoint2(self.getOption('point2'))
+        self._vtkactor.SetPoint1(*self.getOption('point1'))
+        self._vtkactor.SetPoint2(*self.getOption('point2'))
         self.setOption('title', self._vtkactor.SetTitle)
 
         # The default font color and opacity should match the 'color' and 'opactity' options
-        if not isOptionValid('fontcolor'):
+        if not self.isOptionValid('fontcolor'):
             self._options.set('fontcolor', self.getOption('color'))
 
-        if not isOptionValid('fontopacity'):
+        if not self.isOptionValid('fontopacity'):
             self._options.set('fontopacity', self.getOption('opacity'))
 
         # Set the values of the title_

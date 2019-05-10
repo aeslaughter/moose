@@ -8,22 +8,9 @@ def validOptions():
     opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
     opt.add('color', vtype=float, size=3, doc="The color of the object.")
     opt.add('linewidth', 1, vtype=float, doc="The line width for the object.")
-
-    #opt.add('edges', EdgeOptions.validOptions(), vtype=Options, doc="Edge options.")
     return opt
 
 def applyOptions(vtkactor, opt):
-
     opt.setOption('color', vtkactor.GetProperty().SetColor)
     opt.setOption('opacity', vtkactor.GetProperty().SetOpacity)
     opt.setOption('linewidth', vtkactor.GetProperty().SetLineWidth)
-
-    #vtkactor.GetProperty().SetOpacity(opt.get('opacity'))
-    #vtkactor.GetProperty().SetLineWidth(opt.get('linewidth'))
-
-    #color = opt.get('color')
-    #if color is not None:
-    #    vtkactor.GetProperty().SetColor(color)
-
-
-    #EdgeOptions.applyOptions(vtkactor, opt['edges'])
