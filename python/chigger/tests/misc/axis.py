@@ -12,15 +12,15 @@
 import chigger
 from chigger import misc, observers
 
-ax = misc.AxisSource(title='Axis Title',
-                     title_position=0.75,
-                     point2=(0.25, 0.25),
-                     point1=(0.75, 0.75),
-                     range=(3,5.3423),
-                     adjust_range=True,
-                     linewidth=5,
-                     format='%5.5f',
-                     color=(0,0,0.8))
+ax = misc.AxisSource2D(title='Axis Title',
+                       title_position=0.75,
+                       point2=(0.25, 0.25),
+                       point1=(0.75, 0.75),
+                       range=(3,5.3423),
+                       adjust_range=True,
+                       linewidth=5,
+                       format='%5.5f',
+                       color=(0,0,0.8))
 ax.setOptions('major', offset=18)
 ax.setOptions('minor', number=3)
 

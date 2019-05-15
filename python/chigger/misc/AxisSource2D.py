@@ -15,7 +15,7 @@ from .. import utils
 from ..Window import Window
 
 #@Window.addBackgroundOptions('color')
-class AxisSource(base.ChiggerSource):
+class AxisSource2D(base.ChiggerSource):
     """
     Creates an Axis with limits, ticks, etc.
     """
