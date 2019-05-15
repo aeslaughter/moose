@@ -161,14 +161,14 @@ class Options(object):
         else:
             return opt.value
 
-    #def hasOption(self, name):
-    #    """
-    #    Test that the option exists.
+    def hasOption(self, name):
+        """
+        Test that the option exists.
 
-    #    Inputs:
-    #        name[str]: The name of the Option to retrieve
-    #    """
-    #    return name in self.__options
+        Inputs:
+            name[str]: The name of the Option to retrieve
+        """
+        return name in self.__options
 
     def add(self, *args, **kwargs):
         """
