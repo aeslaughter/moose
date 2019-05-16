@@ -146,6 +146,7 @@ public:
    * Set the input file name.
    */
   void setInputFileName(std::string input_file_name);
+  void setInputFileContent(std::string input) { _input_content = input; }
 
   /**
    * Returns the input file name that was set with setInputFileName
@@ -729,6 +730,9 @@ protected:
   /// Input file name used
   std::string _input_filename;
 
+  /// Input content (used by MultiApp for batch runs)
+  std::string _input_content;
+
   /// The output file basename
   std::string _output_file_base;
 
@@ -933,4 +937,3 @@ MooseApp::getParam(const std::string & name) const
 {
   return InputParameters::getParamHelper(name, _pars, static_cast<T *>(0));
 }
-

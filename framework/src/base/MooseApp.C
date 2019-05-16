@@ -743,7 +743,10 @@ MooseApp::setupOptions()
       _recover_suffix = getParam<std::string>("recoversuffix");
     }
 
-    _parser.parse(_input_filename);
+    if (!_input_content.empty())
+      _parser.parse(_input_filename, _input_content);
+    else
+      _parser.parse(_input_filename);
 
     if (isParamValid("mesh_only"))
     {

@@ -116,7 +116,10 @@ public:
    * Parse an input file consisting of hit syntax and setup objects
    * in the MOOSE derived application
    */
+  void setInputFileName(const std::string & input_filename);
+  std::string readInputFile();
   void parse(const std::string & input_filename);
+  void parse(const std::string & input_filename, const std::string & content);
 
   /**
    * This function attempts to extract values from the input file based on the contents of

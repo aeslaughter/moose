@@ -336,6 +336,9 @@ protected:
   /// The input file for each app's simulation
   std::vector<FileName> _input_files;
 
+  /// Input file content for each app
+  std::vector<std::string> _input_file_content;
+
   /// The output file basename for each multiapp
   std::string _output_base;
 

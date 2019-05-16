@@ -479,21 +479,33 @@ Parser::hitCLIFilter(std::string appname, const std::vector<std::string> & argv)
 }
 
 void
-Parser::parse(const std::string & input_filename)
+Parser::setInputFileName(const std::string & input_filename)
 {
-  // Save the filename
   char abspath[PATH_MAX + 1];
   realpath(input_filename.c_str(), abspath);
   _input_filename = std::string(abspath);
+}
 
-  // vector for initializing active blocks
-  std::vector<std::string> all = {"__all__"};
-
-  MooseUtils::checkFileReadable(_input_filename, true);
-
+std::string
+Parser::readInputFile()
+{
   std::ifstream f(_input_filename);
-  std::string input((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+  return std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+}
 
+void
+Parser::parse(const std::string & input_filename)
+{
+  setInputFileName(input_filename);
+  MooseUtils::checkFileReadable(_input_filename, true);
+  std::string input = readInputFile();
+  parse(_input_filename, input);
+}
+
+void
+Parser::parse(const std::string & input_filename, const std::string & input)
+{
+  setInputFileName(input_filename);
   try
   {
     _root.reset(hit::parse(_input_filename, input));
@@ -508,6 +520,9 @@ Parser::parse(const std::string & input_filename)
   {
     mooseError(err.what());
   }
+
+  // vector for initializing active blocks
+  std::vector<std::string> all = {"__all__"};
 
   // expand ${bla} parameter values and mark/include variables used in expansions as "used".  This
   // MUST occur before parameter extraction - otherwise parameters will get wrong values.

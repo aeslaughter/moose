@@ -217,6 +217,8 @@ MultiApp::init(unsigned int num)
   if ((_cli_args.size() > 1) && (_total_num_apps != _cli_args.size()))
     paramError("cli_args",
                "The number of items supplied must be 1 or equal to the number of sub apps.");
+
+  _input_file_content.resize(_total_num_apps);
 }
 
 void
@@ -652,6 +654,12 @@ MultiApp::createApp(unsigned int i, Real start_time)
   output_base << multiapp_name.str();
   app->setGlobalTimeOffset(start_time);
   app->setInputFileName(input_file);
+  if (_input_file_content[i].empty())
+  {
+    app->parser().setInputFileName(input_file);
+    _input_file_content[i] = app->parser().readInputFile();
+  }
+  app->setInputFileContent(_input_file_content[i]);
   app->setOutputFileBase(output_base.str());
   app->setOutputFileNumbers(_app.getOutputWarehouse().getFileNumbers());
   app->setRestart(_app.isRestarting());
