@@ -74,10 +74,6 @@ class AxisSource2D(base.ChiggerSource):
         opt.add('axis', True, vtype=bool, doc="Show/hide the axis line.")
         opt.add('format', vtype=str, doc="Label format in printf form.")
 
-
-        # TODO: Rename this to AxisSource2D
-
-
         return opt
 
     def __init__(self, **kwargs):
