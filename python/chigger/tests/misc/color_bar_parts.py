@@ -20,10 +20,9 @@ ax = misc.AxisSource2D(title='Axis Title',
                        adjust_range=True,
                        linewidth=5,
                        format='%5.5f',
-                       #major_nticks=7,
-                       major_offset=18,
-                       minor_nticks=3,
                        color=(0,0,0.8))
+ax.setOptions('major', offset=18)
+ax.setOptions('minor', number=3)
 
 view = chigger.Viewport(ax)
 window = chigger.Window(view, size=(1200,600), background=(1,1,1))

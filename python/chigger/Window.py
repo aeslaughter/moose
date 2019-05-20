@@ -323,14 +323,14 @@ class Window(base.ChiggerObject):
         #                            gradient_background=self._options.get('gradient_background'))
 
         # vtkRenderWindow Settings
-        self.assign('offscreen', self.__vtkwindow.SetOffScreenRendering)
-        self.assign('smoothing', self.__vtkwindow.SetLineSmoothing)
-        self.assign('smoothing', self.__vtkwindow.SetPolygonSmoothing)
-        self.assign('smoothing', self.__vtkwindow.SetPointSmoothing)
+        self.assignOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
+        self.assignOption('smoothing', self.__vtkwindow.SetLineSmoothing)
+        self.assignOption('smoothing', self.__vtkwindow.SetPolygonSmoothing)
+        self.assignOption('smoothing', self.__vtkwindow.SetPointSmoothing)
 
         #self.setOption('antialiasing', self.__vtkwindow.SetAAFrames)
-        self.assign('multisamples', self.__vtkwindow.SetMultiSamples)
-        self.assign('size', self.__vtkwindow.SetSize)
+        self.assignOption('multisamples', self.__vtkwindow.SetMultiSamples)
+        self.assignOption('size', self.__vtkwindow.SetSize)
 
         # Background
         #if self.isOptionValid('background'):

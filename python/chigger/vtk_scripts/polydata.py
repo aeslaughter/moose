@@ -53,7 +53,6 @@ mapper.SetScalarModeToUsePointFieldData()
 #mapper.SetScalarRange(0, 1)
 mapper.SetTransformCoordinate(coordinate)
 mapper.ColorByArrayComponent(name, 0)
-
 actor = vtk.vtkActor2D()
 actor.SetMapper(mapper)
 

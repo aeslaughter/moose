@@ -93,7 +93,7 @@ class ChiggerObjectBase(object):
     def setOption(self, name, value):
         self._options.set(name, value)
 
-    def assign(self, name, func):
+    def assignOption(self, name, func):
         self._options.assign(name, func)
 
     def printOptions(self, *args):

@@ -57,18 +57,13 @@ class AxisSource2D(base.ChiggerSource):
         opt.add('adjust_range', False, vtype=bool, doc="Adjust the range to 'nice' values.")
 
         # Major ticks
-        topt = utils.Options()
-        topt.add('visible', True, vtype=bool, doc="Toggle the tick marks on and off.")
-        topt.add('number', vtype=int, doc="The number of tick marks.")
-        topt.add('offset', vtype=int, doc="Offset between tick mark and label.")
-        topt.add('length', 16, vtype=int, doc="Length of the tick marks.")
-        opt.add('major', topt, "Major tick mark options.")
+        opt.add('major_nticks', vtype=int, doc="The number of tick marks.")
+        opt.add('major_offset', vtype=int, doc="Offset between tick mark and label.")
+        opt.add('major_length', 16, vtype=int, doc="Length of the tick marks.")
 
         # Minor ticks
-        topt = utils.Options()
-        topt.add('number', vtype=int, doc="The number of tick marks.")
-        topt.add('length', 8, vtype=int, doc="Length of the tick marks.")
-        opt.add('minor', topt, "Minor tick mark options.")
+        opt.add('minor_nticks', vtype=int, doc="The number of tick marks.")
+        opt.add('minor_length', 8, vtype=int, doc="Length of the tick marks.")
 
         # Axis
         opt.add('axis', True, vtype=bool, doc="Show/hide the axis line.")
@@ -99,7 +94,7 @@ class AxisSource2D(base.ChiggerSource):
             self._vtkactor.SetTitle(self.getOption('title'))
         else:
             self._vtkactor.SetTitleVisibility(False)
-        self.assign('title_position', self._vtkactor.SetTitlePosition)
+        self.assignOption('title_position', self._vtkactor.SetTitlePosition)
 
         # The default font color and opacity should match the 'color' and 'opactity' options
         if not self.isOptionValid('fontcolor'):
@@ -119,23 +114,27 @@ class AxisSource2D(base.ChiggerSource):
         utils.TextOptions.applyOptions(self._vtkactor.GetLabelTextProperty(), self._options, 'label')
 
         # Range
-        self.assign('range', self._vtkactor.SetRange)
-        self.assign('adjust_range', self._vtkactor.SetAdjustLabels)
+        self.assignOption('range', self._vtkactor.SetRange)
+        self.assignOption('adjust_range', self._vtkactor.SetAdjustLabels)
 
         # Major tick marks
-        major = self.getOption('major')
-        if major.isOptionValid('number') and self.getOption('adjust_range'):
-            self.log("The 'major/number' option is not applied if 'adjust_range' is enabled.", level=logging.WARNING)
-        major.assign('number', self._vtkactor.SetNumberOfLabels)
-        major.assign('length', self._vtkactor.SetTickLength)
-        major.assign('offset', self._vtkactor.SetTickOffset)
-        major.assign('visible', self._vtkactor.SetTickVisibility)
+        num = self.getOption('major_nticks')
+        if (num is not None) and self.getOption('adjust_range'):
+            self.log("The 'major_number' option is not applied if 'adjust_range' is enabled.", level=logging.WARNING)
+        if num is not None:
+            if (num > 0):
+                self._vtkactor.SetNumberOfLabels(num)
+                self._vtkactor.SetTickVisibility(True)
+            else:
+                self._vtkactor.SetTickVisibility(False)
+
+        self.assignOption('major_length', self._vtkactor.SetTickLength)
+        self.assignOption('major_offset', self._vtkactor.SetTickOffset)
 
         # Minor tick marks
-        minor = self.getOption('minor')
-        minor.assign('number', self._vtkactor.SetNumberOfMinorTicks)
-        minor.assign('length', self._vtkactor.SetMinorTickLength)
+        self.assignOption('minor_nticks', self._vtkactor.SetNumberOfMinorTicks)
+        self.assignOption('minor_length', self._vtkactor.SetMinorTickLength)
 
         # Axis Line
         self._vtkactor.SetAxisVisibility(self.getOption('linewidth') > 0)
-        self.assign('format', self._vtkactor.SetLabelFormat)
+        self.assignOption('format', self._vtkactor.SetLabelFormat)

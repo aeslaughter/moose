@@ -1,14 +1,54 @@
-import logging
 import vtk
-from chigger import base
+from .. import utils
+from GeometricSourceBase import GeometricSourceBase
 
-class Rectangle(base.ChiggerSource):
+class Rectangle(GeometricSourceBase):
     VTKACTORTYPE = vtk.vtkActor2D
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper
+    VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
+    VTKSOURCETYPE = vtk.vtkPlaneSource
 
-    def __init__(self, **kwargs):
-        base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData', **kwargs)
+    @staticmethod
+    def validOptions():
+        opt = GeometricSourceBase.validOptions()
+        opt += utils.ActorOptions.validOptions()
+        opt.add('origin', default=(0, 0, 0), vtype=float, size=3,
+                doc='Define the origin of the plane.')
+        opt.add('point1', default=(1, 0, 0), vtype=float, size=3,
+                doc='Define the first edge of the plane (origin->point1).')
+        opt.add('point2', default=(0, 1, 0), vtype=float, size=3,
+                doc='Define the second edge of the plane (origin->point2).')
+        opt.add('resolution', default=(1, 1), vtype=int, size=2,
+                doc="Define the number of subdivisions in the x- and y-direction of the plane.")
 
 
-    def RequestData(self, request, inInfo, outInfo):
-        pass
+        opt.add('point_data', None, vtype=vtk.vtkFloatArray,
+                doc="The VTK point data to attach to the vtkMapper for this object")
+
+        return opt
+
+    def __init__(self, *args, **kwargs):
+        GeometricSourceBase.__init__(self, *args, **kwargs)
+
+        coordinate = vtk.vtkCoordinate()
+        coordinate.SetCoordinateSystemToNormalizedDisplay()
+        self._vtkmapper.SetTransformCoordinate(coordinate)
+
+
+    def applyOptions(self):
+        """
+        Set the options for this cube. (public)
+        """
+        GeometricSourceBase.applyOptions(self)
+
+        self.assignOption('origin', self._vtksource.SetOrigin)
+        self.assignOption('point1', self._vtksource.SetPoint1)
+        self.assignOption('point2', self._vtksource.SetPoint2)
+
+        if self.isOptionValid('resolution'):
+            self._vtksource.SetResolution(*self.getOption('resolution'))
+
+        pdata = self.getOption('point_data')
+        if pdata is not None:
+            self._vtksource.Update()
+            self._vtksource.GetOutput().GetPointData().SetScalars(pdata)
+            self._vtkmapper.SetScalarRange(pdata.GetRange())
