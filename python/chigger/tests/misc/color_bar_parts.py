@@ -38,7 +38,7 @@ p0 = box.getOption('origin')
 p1 = box.getOption('point1')
 p2 = box.getOption('point2')
 
-primary1 = (p1[0]-p0[0]+p2[0], p1[1]-p0[1]+p2[1])
+primary1 = (p1[0]-p0[0]+p2[0]-0.001, p1[1]-p0[1]+p2[1])
 primary2 = (p1[0], p1[1])
 
 secondary1 = (p0[0], p0[1])
