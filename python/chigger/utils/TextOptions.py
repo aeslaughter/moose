@@ -25,7 +25,7 @@ def validOptions(prefix=None, unset=False): #pylint: disable=invalid-name
     opt.add(key('fontopacity'), 1., doc="The text opacity.", vtype=float)
     opt.add(key('fontsize'), 24, doc="The text font size.", vtype=int)
     opt.add(key('fontitalic'), False, doc="Toggle the text italics.")
-
+    opt.add(key('orientation'), vtype=int, doc="Text orientation in degrees.")
     if unset:
         for k in opt.keys():
             opt.set(k, None)
@@ -47,6 +47,9 @@ def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
     opt.assign(key('fontopacity'), tprop.SetOpacity)
     opt.assign(key('fontsize'), tprop.SetFontSize)
     opt.assign(key('fontitalic'), tprop.SetItalic)
+    opt.assign(key('orientation'), tprop.SetOrientation)
+
+    tprop.UseTightBoundingBoxOn()
 
     halign = key('fonthalign')
     if opt.isOptionValid(halign):

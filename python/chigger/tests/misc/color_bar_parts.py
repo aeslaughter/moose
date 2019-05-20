@@ -25,28 +25,30 @@ for i in range(n+1):
         data.SetValue(idx, 1-x[i])
         idx += 1
 
-box = geometric.Rectangle(origin=(0.1, 0.475, 0),
-                          point1=(0.1, 0.525, 0),
-                          point2=(0.9, 0.475, 0),
+box = geometric.Rectangle(origin=(0.3, 0.1, 0),
+                          point1=(0.3, 0.15, 0),
+                          point2=(0.9, 0.1, 0),
+                          rotate=45,
                           resolution=(1, 256),
                           point_data=data)
-box.printOptions()
-box.setOptions('transform', rotate=(90,0,0))
+#box.setOptions('transform', rotate=(90,0,0))
 
 
 p0 = box.getOption('origin')
-p1 = box.getOption('point1')
-p2 = box.getOption('point2')
+p1 = box._vtksource.GetPoint1()#getOption('point1')
+p2 = box._vtksource.GetPoint2()#getOption('point2')
 
-primary1 = (p1[0]-p0[0]+p2[0]-0.001, p1[1]-p0[1]+p2[1])
-primary2 = (p1[0], p1[1])
+offset = 0#.001
+primary1 = (p1[0]-p0[0]+p2[0]-offset, p1[1]-p0[1]+p2[1]-offset)
+primary2 = (p1[0]+offset, p1[1]+offset)
 
-secondary1 = (p0[0], p0[1])
-secondary2 = (p2[0], p2[1])
+secondary1 = (p0[0]+offset, p0[1]+offset)
+secondary2 = (p2[0]-offset, p2[1]-offset)
 
 
 ax0 = misc.AxisSource2D(title='Primary',
                         title_position=0.5,
+                        #title_orientation=45,
                         #point1=(0.899, 0.55),
                         #point2=(0.101, 0.55),
                         point1=primary1,
