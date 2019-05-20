@@ -25,10 +25,12 @@ for i in range(n+1):
         data.SetValue(idx, 1-x[i])
         idx += 1
 
+angle = 45
+
 box = geometric.Rectangle(origin=(0.3, 0.1, 0),
                           point1=(0.3, 0.15, 0),
                           point2=(0.9, 0.1, 0),
-                          rotate=45,
+                          rotate=angle,
                           resolution=(1, 256),
                           point_data=data)
 #box.setOptions('transform', rotate=(90,0,0))
@@ -37,6 +39,13 @@ box = geometric.Rectangle(origin=(0.3, 0.1, 0),
 p0 = box.getOption('origin')
 p1 = box._vtksource.GetPoint1()#getOption('point1')
 p2 = box._vtksource.GetPoint2()#getOption('point2')
+
+offset1 = geometric.Rectangle._rotatePoint((offset, 0, 0), p0, angle)
+p1 = (p1[0] - offset1[0], p1[1] - offset1[1])
+
+offset2 = geometric.Rectangle._rotatePoint((0, offset, 0), p0, angle)
+p2 = (p2[0] - offset2[0], p2[1] - offset2[1])
+
 
 offset = 0#.001
 primary1 = (p1[0]-p0[0]+p2[0]-offset, p1[1]-p0[1]+p2[1]-offset)
