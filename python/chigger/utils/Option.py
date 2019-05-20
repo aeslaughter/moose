@@ -46,7 +46,7 @@ class Option(object):
         self.__array = array     # create an array
         self.__size = size       # array size
 
-        if (self.__name is not None) and (not isinstance(self.__name, (str, unicode))):
+        if not isinstance(self.__name, (str, unicode)):
             msg = "The supplied 'name' argument must be a 'str' or 'unicode', but {} was provided."
             raise TypeError(msg.format(type(self.__name)))
 

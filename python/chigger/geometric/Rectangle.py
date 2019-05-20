@@ -1,7 +1,8 @@
 import vtk
-from .. import utils
+from .. import base, utils, filters
 from GeometricSourceBase import GeometricSourceBase
 
+@base.addFilter(filters.Transform)
 class Rectangle(GeometricSourceBase):
     VTKACTORTYPE = vtk.vtkActor2D
     VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D

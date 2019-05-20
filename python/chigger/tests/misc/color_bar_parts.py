@@ -8,23 +8,64 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import numpy as np
+import vtk
 import chigger
-from chigger import misc, observers
+from chigger import misc, geometric
 
-ax = misc.AxisSource2D(title='Axis Title',
-                       title_position=0.75,
-                       point2=(0.15, 0.25),
-                       point1=(0.75, 0.75),
-                       range=(1,5.3423),
-                       adjust_range=True,
-                       linewidth=5,
-                       format='%5.5f',
-                       color=(0,0,0.8))
-ax.setOptions('major', offset=18)
-ax.setOptions('minor', number=3)
+n = 256
+x = np.linspace(0, 1, n+1)
 
-view = chigger.Viewport(ax)
-window = chigger.Window(view, size=(1200,600), background=(1,1,1))
-window.write('axis.png')
+data = vtk.vtkFloatArray()
+data.SetName('point_data')
+data.SetNumberOfTuples((n+1)*2)
+idx = 0
+for i in range(n+1):
+    for j in range(2):
+        data.SetValue(idx, 1-x[i])
+        idx += 1
+
+box = geometric.Rectangle(origin=(0.1, 0.475, 0),
+                          point1=(0.1, 0.525, 0),
+                          point2=(0.9, 0.475, 0),
+                          resolution=(1, 256),
+                          point_data=data)
+box.printOptions()
+box.setOptions('transform', rotate=(90,0,0))
+
+
+p0 = box.getOption('origin')
+p1 = box.getOption('point1')
+p2 = box.getOption('point2')
+
+primary1 = (p1[0]-p0[0]+p2[0], p1[1]-p0[1]+p2[1])
+primary2 = (p1[0], p1[1])
+
+secondary1 = (p0[0], p0[1])
+secondary2 = (p2[0], p2[1])
+
+
+ax0 = misc.AxisSource2D(title='Primary',
+                        title_position=0.5,
+                        #point1=(0.899, 0.55),
+                        #point2=(0.101, 0.55),
+                        point1=primary1,
+                        point2=primary2,
+                        color=(0,0,0),
+                        range=(2000,1998),
+                        format='%.1f',
+                        axis=True)
+
+ax1 = misc.AxisSource2D(title='Secondary',
+                        title_position=0.5,
+                        point1=secondary1,
+                        point2=secondary2,
+                        color=(0,0,0),
+                        range=(1980,1998),
+                        format='%.1f',
+                        axis=True)
+
+view = chigger.Viewport(box, ax0, ax1)
+window = chigger.Window(view, size=(600,600), background=(1,1,1))
+window.write('color_bar_parts.png')
 window.start()

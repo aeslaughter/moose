@@ -9,15 +9,16 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from ChiggerFilterBase import ChiggerFilterBase
-class TransformFilter(ChiggerFilterBase):
-    """
-    Filter for computing and visualizing contours.
-    """
+from ChiggerFilter import ChiggerFilter
+class Transform(ChiggerFilter):
+
+    VTKFILTERTYPE = vtk.vtkTransformFilter
+    #FILTERNAME = 'transform'
+
 
     @staticmethod
     def validOptions():
-        opt = ChiggerFilterBase.validOptions()
+        opt = ChiggerFilter.validOptions()
         opt.add('scale', default=(1, 1, 1), vtype=float, size=3,
                 doc="The scale to apply in the x, y, z coordinate dimensions.")
         opt.add('translate', default=(0, 0, 0), vtype=float, size=3,
@@ -26,17 +27,21 @@ class TransformFilter(ChiggerFilterBase):
                 doc="Rotation to apply about the x, y, and z axis.")
         return opt
 
-    def __init__(self, **kwargs):
-        super(TransformFilter, self).__init__(vtkfilter_type=vtk.vtkTransformPolyDataFilter,
-                                              **kwargs)
-        self.__transform = vtk.vtkTransform()
-        self._vtkfilter.SetTransform(self.__transform)
+    def __init__(self, *args, **kwargs):
+        ChiggerFilter.__init__(self, *args, **kwargs)
+
+        self.SetNumberOfInputPorts(1)
+        self.InputType = 'vtkMultiBlockDataSet'
+
+        self.SetNumberOfOutputPorts(1)
+        self.OutputType = 'vtkPolyData'
+
 
     def update(self, **kwargs):
         """
         Computes the contour levels for the vtkContourFilter.
         """
-        super(TransformFilter, self).update(**kwargs)
+        super(Transform, self).update(**kwargs)
 
         if self.isOptionValid('scale'):
             inverse = self.__transform.GetInverse().GetScale()

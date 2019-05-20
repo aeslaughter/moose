@@ -11,3 +11,12 @@
 from ChiggerObject import ChiggerObject
 from ChiggerAlgorithm import ChiggerAlgorithm
 from ChiggerSource import ChiggerSource
+
+def addFilter(filtertype, required=False):
+    """Decorator for adding filters."""
+    def create(cls):
+        cls.__FILTERS__.append(filtertype)
+        if required:
+            cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
+        return cls
+    return create

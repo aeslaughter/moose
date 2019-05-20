@@ -50,9 +50,10 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         """
 
         for filter_type in cls.__FILTERS__:
-            opt.add(filter_type.FILTERNAME,
+            fname = filter_type.FILTERNAME or filter_type.__name__.lower()
+            opt.add(fname,
                     filter_type.validOptions(),
-                    doc="Options for the '{}' filter.".format(filter_type.FILTERNAME))
+                    doc="Options for the '{}' filter.".format(fname))
 
         return opt
 

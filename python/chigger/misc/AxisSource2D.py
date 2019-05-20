@@ -136,5 +136,5 @@ class AxisSource2D(base.ChiggerSource):
         self.assignOption('minor_length', self._vtkactor.SetMinorTickLength)
 
         # Axis Line
-        self._vtkactor.SetAxisVisibility(self.getOption('linewidth') > 0)
+        self.assignOption('axis', self._vtkactor.SetAxisVisibility)
         self.assignOption('format', self._vtkactor.SetLabelFormat)

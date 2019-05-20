@@ -25,13 +25,3 @@ import logging
 level = dict(critical=logging.CRITICAL, error=logging.ERROR, warning=logging.warning,
              info=logging.INFO, debug=logging.DEBUG, notset=logging.NOTSET)
 logging.basicConfig(level=level[os.getenv('CHIGGER_LOG_LEVEL', 'INFO').lower()])
-
-
-def addFilter(filtertype, required=False):
-    """Decorator for adding filters."""
-    def create(cls):
-        cls.__FILTERS__.append(filtertype)
-        if required:
-            cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
-        return cls
-    return create

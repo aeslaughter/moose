@@ -13,12 +13,10 @@ class ChiggerFilter(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
-        #opt.add('required', default=False, vtype=bool,
-        #        doc="When set to True this filter will be created automatically.")
         return opt
 
     def __init__(self, **kwargs):
-        kwargs['name'] = self.FILTERNAME
+        kwargs['name'] = self.FILTERNAME if self.FILTERNAME is not None else self.__class__.__name__.lower()
         base.ChiggerAlgorithm.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self)
 

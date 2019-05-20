@@ -22,7 +22,6 @@ class GeometricSourceBase(base.ChiggerSource):#, VTKPythonAlgorithmBase):
         self._vtksource = self.VTKSOURCETYPE()
         base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData', **kwargs)
 
-
     def RequestData(self, request, inInfo, outInfo):
         self.log('RequestData', level=logging.DEBUG)
 
