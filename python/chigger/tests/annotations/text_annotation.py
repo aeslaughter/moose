@@ -10,7 +10,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import chigger
-text = chigger.annotations.Text(text='This is a test.', orientation=45)
+text = chigger.annotations.Text(text='This is a test.', orientation=45, halign='center')
 vp = chigger.Viewport(text)
 window = chigger.Window(vp, size=(300,300), background=(1,1,1))
 window.write('text_annotation.png')
