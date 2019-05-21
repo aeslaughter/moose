@@ -52,7 +52,7 @@ def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
         tprop: A vtk.vtkTextProperty object for applying options.
         options: The Options object containing the settings to apply.
     """
-    #key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
+    key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
     opt.assign(key('color'), tprop.SetColor)
     opt.assign(key('shadow'), tprop.SetShadow)

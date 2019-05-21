@@ -17,16 +17,20 @@ class Text(base.ChiggerSource):
     Result object for adding text to window.
     """
     VTKACTORTYPE = vtk.vtkTextActor
+    #VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
+
 
     @staticmethod
     def validOptions():
         opt = base.ChiggerSource.validOptions()
         opt += utils.TextOptions.validOptions()
         opt.add('text', vtype=str, doc="The text to display.")
+        opt.add('position', vtype=float, size=2, doc="The text position in normalized viewport coordinates.")
         return opt
 
     def __init__(self, text=None, **kwargs):
         base.ChiggerSource.__init__(self, text=text, **kwargs)
+        self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
 
     def applyOptions(self):
         base.ChiggerSource.applyOptions(self)
@@ -34,3 +38,5 @@ class Text(base.ChiggerSource):
         self.assignOption('text', self._vtkactor.SetInput)
 
         utils.TextOptions.applyOptions(self._vtkactor.GetTextProperty(), self._options)
+
+        self.assignOption('position', self._vtkactor.SetPosition)

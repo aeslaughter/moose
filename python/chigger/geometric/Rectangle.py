@@ -33,7 +33,7 @@ class Rectangle(GeometricSourceBase):
         GeometricSourceBase.__init__(self, *args, **kwargs)
 
         coordinate = vtk.vtkCoordinate()
-        coordinate.SetCoordinateSystemToNormalizedDisplay()
+        coordinate.SetCoordinateSystemToNormalizedViewport()
         self._vtkmapper.SetTransformCoordinate(coordinate)
 
 
