@@ -96,8 +96,6 @@ class Axis2D(base.ChiggerSource):
         self._vtkactor.SetPoint1(*self.getOption('point1'))
         self._vtkactor.SetPoint2(*self.getOption('point2'))
 
-        print self._options
-
         # Title
         if self.isOptionValid('title'):
             self._vtkactor.SetTitleVisibility(True)

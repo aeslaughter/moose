@@ -28,7 +28,7 @@ for i in range(n+1):
 
 # origin, width, length, angle
 
-angle = 45
+angle = 15
 offset = 0.
 
 box = geometric.Rectangle(origin=(0.3, 0.2, 0),
@@ -39,8 +39,6 @@ box = geometric.Rectangle(origin=(0.3, 0.2, 0),
                           point_data=data)
 #box.setOptions('transform', rotate=(90,0,0))
 
-
-title = annotations.Text("Some Text")
 
 p0 = box.getOption('origin')
 p1 = box._vtksource.GetPoint1()#getOption('point1')
@@ -53,28 +51,48 @@ secondary1 = (p0[0], p0[1])
 secondary2 = (p2[0], p2[1])
 
 
-ax0 = misc.AxisSource2D(title='Primary',
-                        title_position=0.5,
-                        title_orientation=45,
-                        #point1=(0.899, 0.55),
-                        #point2=(0.101, 0.55),
-                        point1=primary1,
-                        point2=primary2,
-                        color=(0,0,0),
-                        range=(2000,1998),
-                        format='%.1f',
-                        axis=True)
+ax0 = misc.Axis2D(#title='Primary',
+                  title_position=0.5,
+                  title_orientation=45,
+                  #point1=(0.899, 0.55),
+                  #point2=(0.101, 0.55),
+                  point1=primary1,
+                  point2=primary2,
+                  color=(0,0,0),
+                  range=(2000,1998),
+                  format='%.1f',
+                  axis=True)
 
-ax1 = misc.AxisSource2D(title='Secondary',
-                        title_position=0.5,
-                        point1=secondary1,
-                        point2=secondary2,
-                        color=(0,0,0),
-                        range=(1980,1998),
-                        format='%.1f',
-                        axis=True)
+ax1 = misc.Axis2D(title='Secondary',
+                  title_position=0.5,
+                  point1=secondary1,
+                  point2=secondary2,
+                  color=(0,0,0),
+                  range=(1980,1998),
+                  format='%.1f',
+                  axis=True)
 
-view = chigger.Viewport(box, ax0, ax1, title)
+
+
+p0 = box.getOption('origin')
+p1 = box.getOption('point1')
+p2 = box.getOption('point2')
+
+voffset = 0.075
+primary1 = (p1[0]-p0[0]+p2[0], p1[1]-p0[1]+p2[1])
+primary2 = (p1[0], p1[1])
+
+title0_pos = (primary2[0] + (primary1[0] - primary2[0])/2.,
+              primary2[1] + (primary1[1] - primary2[1])/2. + voffset)
+
+title0_pos =  geometric.Rectangle._rotatePoint(title0_pos, p0, angle)
+
+
+title0 = annotations.Text('Primary', orientation=angle, halign='center', valign='bottom',
+                          position=title0_pos)
+print primary1, primary2, title0_pos
+
+view = chigger.Viewport(box, ax0, ax1, title0)
 window = chigger.Window(view, size=(600,600), background=(1,1,1))
 window.write('color_bar_parts.png')
 window.start()

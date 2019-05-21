@@ -10,7 +10,6 @@ def validOptions():
     return opt
 
 def applyOptions(vtkactor, opt):
-    print 'HERE'
     opt.assign('color', vtkactor.GetProperty().SetColor)
     opt.assign('opacity', vtkactor.GetProperty().SetOpacity)
     opt.assign('linewidth', vtkactor.GetProperty().SetLineWidth)

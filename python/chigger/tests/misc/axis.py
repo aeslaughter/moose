@@ -23,8 +23,7 @@ ax = misc.Axis2D(title='Axis Title',
                  #major_nticks=7,
                  major_offset=18,
                  minor_nticks=3,
-                 color=(0,0,1),
-                 title_orientation=45)
+                 color=(0,0,1))
 
 view = chigger.Viewport(ax)
 window = chigger.Window(view, size=(1200,600), background=(1,1,1))
