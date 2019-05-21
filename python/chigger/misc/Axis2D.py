@@ -16,14 +16,14 @@ from ..Window import Window
 
 #TODO: AxisSource2D -> Axis2D
 
-#@Window.addBackgroundOptions('color')
-class AxisSource2D(base.ChiggerSource):
+@base.backgroundOptions('color')
+class Axis2D(base.ChiggerSource):
     """
     Creates an Axis with limits, ticks, etc.
     """
 
     VTKACTORTYPE = vtk.vtkAxisActor2D#vtk.vtkContextActor
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D#None
+    #VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D#None
 
     __TEXTKEYS__ = utils.TextOptions.validOptions().keys()
 
@@ -33,7 +33,7 @@ class AxisSource2D(base.ChiggerSource):
 
         # Axis Line Options
         opt += utils.ActorOptions.validOptions()
-        opt.set('linewidth', 2)
+        opt.set('linewidth', 1)
 
         # Title and label Options
         # This object includes general properties ('fontcolor', 'fontopacity', ...) as well as
@@ -43,12 +43,15 @@ class AxisSource2D(base.ChiggerSource):
         opt.add('title', vtype=str, doc="The title for the axis.")
         opt.add('title_position', 0.5, vtype=float,
                 doc="Set the title position between 0 (start) and 1 (end).")
-        opt += utils.TextOptions.validOptions()
-        opt += utils.TextOptions.validOptions(prefix='title', unset=True)
-        opt += utils.TextOptions.validOptions(prefix='label', unset=True)
-        opt.set('fontcolor', None)
-        opt.set('fontopacity', None)
-        opt.set('fontitalic', False)
+        opt.append(utils.TextOptions.validOptions(), exclude=['opacity', 'color'])
+        opt.append(utils.TextOptions.validOptions(), prefix='title_', unset=True)
+        opt.append(utils.TextOptions.validOptions(), prefix='label_', unset=True)
+
+        #opt += utils.TextOptions.validOptions(prefix='title', unset=True)
+        #opt += utils.TextOptions.validOptions(prefix='label', unset=True)
+        #opt.set('fontcolor', None)
+        #opt.set('fontopacity', None)
+        #opt.set('fontitalic', False)
 
         # Position
         opt.add('point1', vtype=float, size=2, doc="The starting position, in relative viewport coordinates, of the axis line.")
@@ -75,6 +78,9 @@ class AxisSource2D(base.ChiggerSource):
 
     def __init__(self, **kwargs):
         base.ChiggerSource.__init__(self, nOutputPorts=1, outputType='vtkPolyData', **kwargs)
+        #self._vtkactor.UseFontSizeFromPropertyOn()
+
+
 
     def applyOptions(self):
         """
@@ -90,6 +96,8 @@ class AxisSource2D(base.ChiggerSource):
         self._vtkactor.SetPoint1(*self.getOption('point1'))
         self._vtkactor.SetPoint2(*self.getOption('point2'))
 
+        print self._options
+
         # Title
         if self.isOptionValid('title'):
             self._vtkactor.SetTitleVisibility(True)
@@ -99,11 +107,11 @@ class AxisSource2D(base.ChiggerSource):
         self.assignOption('title_position', self._vtkactor.SetTitlePosition)
 
         # The default font color and opacity should match the 'color' and 'opactity' options
-        if not self.isOptionValid('fontcolor'):
-            self._options.set('fontcolor', self.getOption('color'))
+        #if not self.isOptionValid('fontcolor'):
+        #    self._options.set('fontcolor', self.getOption('color'))
 
-        if not self.isOptionValid('fontopacity'):
-            self._options.set('fontopacity', self.getOption('opacity'))
+        #if not self.isOptionValid('fontopacity'):
+        #    self._options.set('fontopacity', self.getOption('opacity'))
 
         # Set the values of the title_
         for name in self.__TEXTKEYS__:

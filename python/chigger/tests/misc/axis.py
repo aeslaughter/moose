@@ -12,18 +12,18 @@
 import chigger
 from chigger import misc, observers
 
-ax = misc.AxisSource2D(title='Axis Title',
-                       title_position=0.75,
-                       point2=(0.15, 0.25),
-                       point1=(0.75, 0.75),
-                       range=(1,5.3423),
-                       adjust_range=True,
-                       linewidth=5,
-                       format='%5.5f',
-                       #major_nticks=7,
-                       major_offset=18,
-                       minor_nticks=3,
-                       color=(0,0,0.8))
+ax = misc.Axis2D(title='Axis Title',
+                 title_position=0.75,
+                 point2=(0.15, 0.25),
+                 point1=(0.75, 0.75),
+                 range=(1,5.3423),
+                 adjust_range=True,
+                 linewidth=5,
+                 format='%5.5f',
+                 #major_nticks=7,
+                 major_offset=18,
+                 minor_nticks=3,
+                 color=(0,0,1))
 
 view = chigger.Viewport(ax)
 window = chigger.Window(view, size=(1200,600), background=(1,1,1))

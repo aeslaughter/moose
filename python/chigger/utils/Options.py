@@ -8,6 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 from collections import OrderedDict
+import copy
 from Option import Option
 import mooseutils
 
@@ -225,6 +226,25 @@ class Options(object):
             for key in unused:
                 msg += ' '*1 + key
             mooseutils.mooseError(msg)
+
+    def append(self, other, exclude=[], prefix=None, unset=False):
+
+        for opt in other.__options.itervalues():
+            if opt.name not in exclude:
+                opt = copy.copy(opt)
+                if prefix:
+                    opt._Option__name = prefix + opt.name
+                if unset:
+                    opt.value = None
+
+                if opt.name in self.__options:
+                    mooseutils.mooseWarning('A parameter with the name', opt.name, 'already exists.')
+                    continue
+
+                self.__options[opt.name] = opt
+
+
+
 
     def string(self, **kwargs): #pylint: disable=unused-argument
         """
