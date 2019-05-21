@@ -16,7 +16,7 @@ def validOptions(prefix=None, unset=False): #pylint: disable=invalid-name
     key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
     opt = Options()
-    opt.add(key('fontcolor'), (1., 1., 1.), doc="The text color.", vtype=float, size=3)
+    opt.add(key('fontcolor'), None, doc="The text color.", vtype=float, size=3)
     opt.add(key('fontshadow'), False, doc="Toggle text shadow.", vtype=bool)
     opt.add(key('fonthalign'), 'left', doc="Set the font justification.", vtype=str,
             allow=('left', 'center', 'right'))

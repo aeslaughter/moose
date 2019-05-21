@@ -14,6 +14,8 @@ from .. import base
 from .. import utils
 from ..Window import Window
 
+#TODO: AxisSource2D -> Axis2D
+
 #@Window.addBackgroundOptions('color')
 class AxisSource2D(base.ChiggerSource):
     """

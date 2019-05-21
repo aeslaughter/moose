@@ -41,15 +41,6 @@ class Window(base.ChiggerObject):
     ##__RESULTTYPE__ = base.ChiggerResult
 
     @staticmethod
-    def addBackgroundOptions(*args):
-        """Decorator for defining options that should adjust with background color."""
-        def create(cls):
-            cls.__BACKGROUND_OPTIONS__.update(args)
-            return cls
-        return create
-
-
-    @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
 
@@ -354,13 +345,13 @@ class Window(base.ChiggerObject):
 
 
         # Auto Background adjustments
-        if self.getOption('background') == (1,1,1):
-            for result in self.__results:
-                for src in result:
-                    for name in src.__BACKGROUND_OPTIONS__:
-                        value = src.getOption(name)
-                        if value == (1,1,1):
-                            srd.setOptions(**{value:(0,0,0)})
+        background = self.getOption('background')
+        fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
+        for result in self.__results:
+            for src in result:
+                for name in src.__BACKGROUND_OPTIONS__:
+                    print name, fontcolor
+                    src.setOptions(**{name:fontcolor})
 
 
         #print self.getOption('background')

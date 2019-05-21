@@ -70,7 +70,7 @@ class Rectangle(GeometricSourceBase):
     @staticmethod
     def _rotatePoint(p, o, angle):
         angle = angle * np.pi / 180.
-        x = [0,0,0]
+        x = [0]*len(p)
         x[0] = math.cos(angle) * (p[0]-o[0]) - math.sin(angle) * (p[1]-o[1]) + o[0]
         x[1] = math.sin(angle) * (p[0]-o[0]) + math.cos(angle) * (p[1]-o[1]) + o[1]
         return tuple(x)

@@ -20,3 +20,11 @@ def addFilter(filtertype, required=False):
             cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
         return cls
     return create
+
+
+def backgroundOptions(*args):
+    """Decorator for adding automatic color settings for black/white background"""
+    def create(cls):
+        cls.__BACKGROUND_OPTIONS__.update(args)
+        return cls
+    return create
