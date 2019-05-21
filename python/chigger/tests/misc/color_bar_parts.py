@@ -11,7 +11,7 @@
 import numpy as np
 import vtk
 import chigger
-from chigger import misc, geometric, annotations
+from chigger import base, misc, geometric, annotations
 
 n = 256
 x = np.linspace(0, 1, n+1)
@@ -90,9 +90,11 @@ title0_pos =  geometric.Rectangle._rotatePoint(title0_pos, p0, angle)
 
 title0 = annotations.Text('Primary', orientation=angle, halign='center', valign='bottom',
                           position=title0_pos)
-print primary1, primary2, title0_pos
 
-view = chigger.Viewport(box, ax0, ax1, title0)
+comp = base.ChiggerCompositeSource(box, ax0, ax1, title0)
+
+
+view = chigger.Viewport(comp)
 window = chigger.Window(view, size=(600,600), background=(1,1,1))
 window.write('color_bar_parts.png')
 window.start()

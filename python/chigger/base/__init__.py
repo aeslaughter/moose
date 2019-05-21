@@ -11,6 +11,7 @@
 from ChiggerObject import ChiggerObject
 from ChiggerAlgorithm import ChiggerAlgorithm
 from ChiggerSource import ChiggerSource
+from ChiggerCompositeSource import ChiggerCompositeSource
 
 def addFilter(filtertype, required=False):
     """Decorator for adding filters."""

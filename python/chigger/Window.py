@@ -349,9 +349,15 @@ class Window(base.ChiggerObject):
         fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
         for result in self.__results:
             for src in result:
-                for name in src.__BACKGROUND_OPTIONS__:
-                    if not src.isOptionValid(name):
-                        src.setOptions(**{name:fontcolor})
+                if isinstance(src, base.ChiggerCompositeSource):
+                    for s in src._sources:
+                        for name in s.__BACKGROUND_OPTIONS__:
+                            if not s.isOptionValid(name):
+                                s.setOptions(**{name:fontcolor})
+                else:
+                    for name in src.__BACKGROUND_OPTIONS__:
+                        if not src.isOptionValid(name):
+                            src.setOptions(**{name:fontcolor})
 
 
         #print self.getOption('background')
