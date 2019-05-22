@@ -71,6 +71,8 @@ class Rectangle(GeometricSourceBase):
             self._vtksource.GetOutput().GetPointData().SetScalars(pdata)
             self._vtkmapper.SetScalarRange(pdata.GetRange())
 
-        self._colormap.setOptions(**self._options.toDict('cmap'))
+        self._colormap.setOptions(**self._options.toDict('cmap', 'cmap_reverse',
+                                                         'cmap_num_colors', 'cmap_range'))
         if self.isOptionValid('cmap'):
             self._vtkmapper.SetLookupTable(self._colormap())
+            self._vtkmapper.SetUseLookupTableScalarRange(True)

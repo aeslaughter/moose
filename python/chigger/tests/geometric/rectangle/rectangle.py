@@ -37,6 +37,8 @@ rect = chigger.geometric.Rectangle(origin=(0.25, 0.25, 0),
                                    #color=(1,0,0),
                                    linewidth=2,
                                    cmap='viridis',
+                                   cmap_reverse=True,
+                                   #cmap_range=(0,0.5),
                                    point_data=data)
 
 result = chigger.Viewport(rect)
