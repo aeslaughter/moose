@@ -35,10 +35,9 @@ rect = chigger.geometric.Rectangle(origin=(0.25, 0.25, 0),
                                    point2=(0.75, 0.25, 0),
                                    resolution=(n,m),
                                    #color=(1,0,0),
-                                   linewidth=2)
-                                   #cmap='viridis',
-                                   #data=data)
-rect.setPointData(data)
+                                   linewidth=2,
+                                   cmap='viridis',
+                                   point_data=data)
 
 result = chigger.Viewport(rect)
 window = chigger.Window(result, size=(300,300), background=(1,0.5,1))

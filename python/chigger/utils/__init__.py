@@ -153,6 +153,15 @@ def print_camera(camera, prefix='camera', precision=8):
                                          dump(precision, position), prefix + '.SetFocalPoint' + \
                                          dump(precision, focal)]
 
+def rotate_point(p, o, angle):
+    """Rotates a point counter clockwise about an origin."""
+    angle = angle * np.pi / 180.
+    x = [0]*len(p)
+    x[0] = math.cos(angle) * (p[0]-o[0]) - math.sin(angle) * (p[1]-o[1]) + o[0]
+    x[1] = math.sin(angle) * (p[0]-o[0]) + math.cos(angle) * (p[1]-o[1]) + o[1]
+    return tuple(x)
+
+
 def animate(pattern, output, delay=20, restart_delay=500, loop=True):
     """
     Runs ImageMagic convert to create an animate gif from a series of images.

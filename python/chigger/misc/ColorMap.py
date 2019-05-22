@@ -23,7 +23,7 @@ except ImportError:
 
 import vtk
 import mooseutils
-from ChiggerObject import ChiggerObject
+from .. import base
 
 def get_xml_table_values():
     """
@@ -41,7 +41,7 @@ def get_xml_table_values():
             data[child.attrib['name']] = child
     return data
 
-class ColorMap(ChiggerObject):
+class ColorMap(base.ChiggerObject):
     """
     Class for defining colormaps for use with ExodusResult objects.
 
@@ -52,7 +52,7 @@ class ColorMap(ChiggerObject):
 
     @staticmethod
     def validOptions():
-        opt = ChiggerObject.validOptions()
+        opt = base.ChiggerObject.validOptions()
         opt.add('cmap', default='default', vtype=str,
                 doc="The colormap name.")
         opt.add('cmap_reverse', default=False, vtype=bool,

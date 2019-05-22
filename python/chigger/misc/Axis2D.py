@@ -12,9 +12,6 @@ import logging
 import vtk
 from .. import base
 from .. import utils
-from ..Window import Window
-
-#TODO: AxisSource2D -> Axis2D
 
 @base.backgroundOptions('color')
 class Axis2D(base.ChiggerSource):

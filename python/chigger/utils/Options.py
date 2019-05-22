@@ -228,6 +228,9 @@ class Options(object):
             mooseutils.mooseError(msg)
 
     def append(self, other, exclude=[], prefix=None, unset=False):
+        """
+        Similar to __iadd__ but provides some additional control
+        """
 
         for opt in other.__options.itervalues():
             if opt.name not in exclude:
@@ -243,8 +246,12 @@ class Options(object):
 
                 self.__options[opt.name] = opt
 
-
-
+    def toDict(self, *keys):
+        """
+        Return a dict() from the supplied keys
+        """
+        keys = keys or self.__options.keys()
+        return {k:self.get(k) for k in keys}
 
     def string(self, **kwargs): #pylint: disable=unused-argument
         """

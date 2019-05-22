@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from Axis2D import Axis2D
+from ColorMap import ColorMap
 #from ColorBar import ColorBar
 #from ChiggerBackground import ChiggerBackground
 #from VolumeAxesSource import VolumeAxesSource

@@ -1,7 +1,7 @@
 import vtk
 import numpy as np
 import math
-from .. import base, utils, filters
+from .. import base, utils, misc, filters
 from GeometricSourceBase import GeometricSourceBase
 
 class Rectangle(GeometricSourceBase):
@@ -13,6 +13,7 @@ class Rectangle(GeometricSourceBase):
     def validOptions():
         opt = GeometricSourceBase.validOptions()
         opt += utils.ActorOptions.validOptions()
+        opt += misc.ColorMap.validOptions()
         opt.add('origin', default=(0, 0, 0), vtype=float, size=3,
                 doc='Define the origin of the plane.')
         opt.add('point1', default=(1, 0, 0), vtype=float, size=3,
@@ -30,6 +31,9 @@ class Rectangle(GeometricSourceBase):
         return opt
 
     def __init__(self, *args, **kwargs):
+
+        self._colormap = misc.ColorMap()
+
         GeometricSourceBase.__init__(self, *args, **kwargs)
 
         coordinate = vtk.vtkCoordinate()
@@ -50,8 +54,8 @@ class Rectangle(GeometricSourceBase):
             p2 = self.getOption('point2')
 
             self.assignOption('origin', self._vtksource.SetOrigin)
-            self._vtksource.SetPoint1(self._rotatePoint(p1, p0, angle))
-            self._vtksource.SetPoint2(self._rotatePoint(p2, p0, angle))
+            self._vtksource.SetPoint1(utils.rotate_point(p1, p0, angle))
+            self._vtksource.SetPoint2(utils.rotate_point(p2, p0, angle))
 
         else:
             self.assignOption('origin', self._vtksource.SetOrigin)
@@ -67,10 +71,6 @@ class Rectangle(GeometricSourceBase):
             self._vtksource.GetOutput().GetPointData().SetScalars(pdata)
             self._vtkmapper.SetScalarRange(pdata.GetRange())
 
-    @staticmethod
-    def _rotatePoint(p, o, angle):
-        angle = angle * np.pi / 180.
-        x = [0]*len(p)
-        x[0] = math.cos(angle) * (p[0]-o[0]) - math.sin(angle) * (p[1]-o[1]) + o[0]
-        x[1] = math.sin(angle) * (p[0]-o[0]) + math.cos(angle) * (p[1]-o[1]) + o[1]
-        return tuple(x)
+        self._colormap.setOptions(**self._options.toDict('cmap'))
+        if self.isOptionValid('cmap'):
+            self._vtkmapper.SetLookupTable(self._colormap())
