@@ -13,6 +13,10 @@ from ChiggerAlgorithm import ChiggerAlgorithm
 from ChiggerSource import ChiggerSource
 from ChiggerCompositeSource import ChiggerCompositeSource
 
+# "utils" would be the correct place for this, but it creates a cyclic dependency because it used
+# base ChiggerObject; "misc" has a similar problem and "misc" is reserved for source objects
+from ColorMap import ColorMap
+
 def addFilter(filtertype, required=False):
     """Decorator for adding filters."""
     def create(cls):

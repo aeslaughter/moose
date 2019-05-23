@@ -76,6 +76,9 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             self._add(arg)
 
     def _add(self, arg):
+        import weakref
+
+        arg._viewport = weakref.ref(self.getVTKRenderer())
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
                 self._vtkrenderer.AddActor(actor)
