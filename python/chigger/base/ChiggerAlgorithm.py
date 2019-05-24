@@ -18,9 +18,9 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         self.SetNumberOfInputPorts(nInputPorts)
         self.SetNumberOfOutputPorts(nOutputPorts)
         if outputType is not None:
-            self.outputType = outputType
+            self.OutputType = outputType
         if inputType is not None:
-            self.inputType = inputType
+            self.InputType = inputType
 
         ChiggerObjectBase.__init__(self, **kwargs)
 

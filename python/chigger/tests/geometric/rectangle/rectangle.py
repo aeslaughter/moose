@@ -43,7 +43,7 @@ rect = chigger.geometric.Rectangle(cmap='viridis',
                                    coordinate_system='viewport',
                                    point_data=data)
 """
-#result = chigger.Viewport()
+#view = chigger.Viewport()
 window = chigger.Window(size=(500,300), background=(1,0.5,1))
 window.write('rectangle.png')
 window.start()

@@ -70,8 +70,10 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
         # Setup VTKPythobnAlgorithmBase
-        base.ChiggerAlgorithm.__init__(self, nInputPorts=len(args), inputType=self.VTKINPUTTYPE,
-                                       nOutputPorts=1, outputType=vtk.vtkRenderer, **kwargs)
+        base.ChiggerAlgorithm.__init__(self, #nInputPorts=len(args), inputType=self.VTKINPUTTYPE,
+                                       nOutputPorts=1,
+                                       #outputType=None'vtk.vtkViewport',
+                                       **kwargs)
 
         for arg in args:
             self._add(arg)
@@ -99,10 +101,11 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
                 self._vtkrenderer.RemoveActor(arg.getVTKActor())
 
 
-    def RequestData(self, request, inInfo, outInfo):
-        base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
-        print request
-        return 1
+    #def RequestData(self, request, inInfo, outInfo):
+    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
+    #    opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+    #    print opt
+    #    return 1
 
 
     def applyOptions(self):

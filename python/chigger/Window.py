@@ -102,7 +102,8 @@ class Window(base.ChiggerAlgorithm):
         self.__viewports.append(self.__background)
         base.ChiggerAlgorithm.__init__(self,
                                        nInputPorts=len(args) + 1,
-                                       inputType=vtk.vtkRenderer, **kwargs)
+                                       #inputType=vtk.vtkRenderer,
+                                       **kwargs)
 
         self.SetInputConnection(0, self.__background.GetOutputPort())
         for i, view in enumerate(args):
