@@ -34,9 +34,8 @@ from Viewport import Viewport
 
 
 class Window(base.ChiggerAlgorithm):
-
     """
-    Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
+    Wrapper of vtkRenderWindow
     """
     ##__RESULTTYPE__ = base.ChiggerResult
 
@@ -84,7 +83,9 @@ class Window(base.ChiggerAlgorithm):
                 doc="When True images created will use a transparent background.")
         return opt
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *observers, **kwargs):
+        base.ChiggerAlgorithm.__init__(self, inputType='vtkRenderer', **kwargs)
+
 
         self.__vtkwindow = kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
@@ -98,13 +99,14 @@ class Window(base.ChiggerAlgorithm):
         #self.OutoutType = 'vtkPythonAlgorithm'
 
         self.__viewports = list()
-        self.__background = Viewport(name='__ChiggerWindowBackground__', layer=0)
-        self.__viewports.append(self.__background)
-        base.ChiggerAlgorithm.__init__(self,
-                                       nInputPorts=len(args) + 1,
-                                       #inputType=vtk.vtkRenderer,
-                                       **kwargs)
+        self.__background = Viewport(self, name='__ChiggerWindowBackground__', layer=0)
 
+        #self.__background = Viewport(layer=0)
+        #self.__results.append(self.__background)
+
+        #self.SetInputConnection(0, self.__background.GetOutputPort(0))
+        #for i, result in enumerate(args):
+        #    self.__results.append(result)
         self.SetInputConnection(0, self.__background.GetOutputPort())
         for i, view in enumerate(args):
             self.__viewports.append(view)
@@ -148,6 +150,9 @@ class Window(base.ChiggerAlgorithm):
     #    for view in self.__viewports:
     #        yield view
 
+    #def __iter__(self):
+    #    for r in self.__viewports:
+    #        yield r
 
     def getVTKInteractor(self):
         """
@@ -166,6 +171,15 @@ class Window(base.ChiggerAlgorithm):
         Return the vtkRenderWindow object.
         """
         return self.__vtkwindow
+
+
+    def add(self, viewport):
+        port = self.GetNumberOfInputPorts()
+        self.SetNumberOfInputPorts(port + 1)
+        self.SetInputConnection(port, viewport.GetOutputPort())
+
+    #    #TODO: Type checking
+        self.__viewports.append(viewport)
 
     #def _append(self, *args):
     #    """
@@ -261,22 +275,19 @@ class Window(base.ChiggerAlgorithm):
     #    """
     #    return self.__active
 
-    def start(self, timer=None):
+    def start(self):
         """
         Begin the interactive VTK session.
         """
-        self.log('start', level=logging.DEBUG)
+        self.log("start", level=logging.DEBUG)
         self.Update()
         if self.__vtkinteractor:
-            #self.__vtkwindow.Render()
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
-    #def RequestData(self, request, inInfo, outInfo):
-    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
-    #    print inInfo[0]
-    #    return 1
-
+    def RequestData(self, request, inInfo, outInfo):
+        base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
+        return 1
 
     def applyOptions(self):
         """
@@ -346,7 +357,6 @@ class Window(base.ChiggerAlgorithm):
         if self.isOptionValid('background'):
             self.__background.setOptions(background=self.getOption('background'),
                                          background2=self.getOption('background2'))
-
 
         # Auto Background adjustments
         background = self.getOption('background')

@@ -8,6 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
+import weakref
 import vtk
 import mooseutils
 from ChiggerAlgorithm import ChiggerAlgorithm
@@ -62,7 +63,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         bindings = utils.KeyBindingMixin.validKeyBindings()
         return bindings
 
-    def __init__(self, **kwargs):
+    def __init__(self, viewport, **kwargs):
         utils.KeyBindingMixin.__init__(self)
         utils.ObserverMixin.__init__(self)
 
@@ -85,7 +86,19 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         # Storage for the filter objects
         self._filters = list()
 
+        viewport.add(self)
         ChiggerAlgorithm.__init__(self, **kwargs)
+
+        # Store a reference without reference counting, the underlying VTK objects keep track of
+        # things and without the weakref here there is a circular reference between the vtkRenderer
+        # and vtkActor objects. The _viewport property should be used by objects that need
+        # information from the Viewport object.
+        self.__viewport_weakref = weakref.ref(viewport)
+
+    @property
+    def _viewport(self):
+        """Property so that self._viewport acts like the actual Viewport object."""
+        self.__viewport_weakref()
 
     def getVTKActor(self):
         """

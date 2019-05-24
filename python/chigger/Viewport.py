@@ -8,6 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
+import weakref
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 import mooseutils
@@ -56,9 +57,10 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
                      desc="Display the available key, value options as a 'setOptions' method call.")
         return bindings
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, window, **kwargs):
         utils.KeyBindingMixin.__init__(self)
         utils.ObserverMixin.__init__(self)
+        base.ChiggerAlgorithm.__init__(self, nOutputPorts=1, outputType='vtkRenderer', **kwargs)
 
         # Initialize class members
         self._sources = list()
@@ -70,15 +72,19 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
         # Setup VTKPythobnAlgorithmBase
-        base.ChiggerAlgorithm.__init__(self, #nInputPorts=len(args), inputType=self.VTKINPUTTYPE,
-                                       nOutputPorts=1,
-                                       #outputType=None'vtk.vtkViewport',
-                                       **kwargs)
 
-        for arg in args:
-            self._add(arg)
+        # Add the Viewport to the Window and store a reference without reference counting, the
+        # underlying VTK objects keep track of things and without the weakref here there is a
+        # circular reference between the vtkRenderer and vtkRenderWindow objects. The _window
+        # property should be used by objects that need information from the Window object.
+        window.add(self)
+        self.__window_weakref = weakref.ref(window)
 
-    def _add(self, arg):
+    def _window(self):
+        """Property so that self._window acts like the actual window object."""
+        return self.__window_weakref()
+
+    def add(self, arg):
 
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
@@ -90,7 +96,7 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
 
         self._sources.append(arg)
 
-    def _remove(self, arg):
+    def remove(self, arg):
         if arg in self._sources:
             self._sources.remove(arg)
 
@@ -148,3 +154,12 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
     def __iter__(self):
         for source in self._sources:
             yield source
+
+
+    #def RequestData(self, request, inInfo, outInfo):
+    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
+
+    #    print inInfo
+    #    print outInfo
+
+    #    return 1

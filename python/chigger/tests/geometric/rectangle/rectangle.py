@@ -13,7 +13,9 @@ import vtk
 import chigger
 import numpy as np
 
-"""
+window = chigger.Window(size=(500,300), background=(1,0.2,1))
+view = chigger.Viewport(window, name='foo')
+
 n = 1000
 m = 1
 
@@ -27,7 +29,7 @@ for i in range(n+1):
         data.SetValue(idx, 1-ydata[i])
         idx += 1
 
-rect = chigger.geometric.Rectangle(cmap='viridis',
+rect = chigger.geometric.Rectangle(view, cmap='viridis',
                                    origin=(100, 100, 0),
                                    point1=(150, 100, 0),
                                    point2=(100, 200, 0),
@@ -42,8 +44,7 @@ rect = chigger.geometric.Rectangle(cmap='viridis',
                                    #cmap_range=(0,0.5),
                                    coordinate_system='viewport',
                                    point_data=data)
-"""
-#view = chigger.Viewport()
-window = chigger.Window(size=(500,300), background=(1,0.5,1))
+
 window.write('rectangle.png')
+"""
 window.start()

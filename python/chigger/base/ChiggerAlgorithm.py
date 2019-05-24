@@ -12,7 +12,7 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     """
 
     def __init__(self, nInputPorts=0, nOutputPorts=0, outputType=None, inputType=None, **kwargs):
-
+        ChiggerObjectBase.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self)
 
         self.SetNumberOfInputPorts(nInputPorts)
@@ -22,11 +22,10 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         if inputType is not None:
             self.InputType = inputType
 
-        ChiggerObjectBase.__init__(self, **kwargs)
 
         # Set the VTK modified time, this is needed to make sure the options for this class
         # are all older than the class itself.
-        self.Modified()
+        #self.Modified()
 
     def update(self, other):
         ChiggerObjectBase.update(self, other)
