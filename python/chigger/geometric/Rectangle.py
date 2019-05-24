@@ -34,10 +34,8 @@ class Rectangle(GeometricSourceBase):
         return opt
 
     def __init__(self, *args, **kwargs):
-
-        self._colormap = base.ColorMap()
-
         GeometricSourceBase.__init__(self, *args, **kwargs)
+        self._colormap = base.ColorMap()
 
         #coordinate = vtk.vtkCoordinate()
         #coordinate.SetCoordinateSystemToNormalizedViewport()

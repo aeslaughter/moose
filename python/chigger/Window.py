@@ -33,7 +33,8 @@ from Viewport import Viewport
 #        print obj._window
 
 
-class Window(base.ChiggerObject):
+#class Window(base.ChiggerObject):
+class Window(base.ChiggerAlgorithm):
 
     """
     Wrapper of VTK RenderWindow for use with ChiggerResultBase objects.
@@ -84,7 +85,9 @@ class Window(base.ChiggerObject):
                 doc="When True images created will use a transparent background.")
         return opt
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *observers, **kwargs):
+        base.ChiggerAlgorithm.__init__(self, inputType='vtkRenderer', **kwargs)
+
 
         self.__vtkwindow = kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
@@ -97,15 +100,16 @@ class Window(base.ChiggerObject):
 
         #self.OutoutType = 'vtkPythonAlgorithm'
 
-        self.__results = list()
-        self.__background = Viewport(layer=0)
-        self.__results.append(self.__background)
+        self.__viewports = list()
+        self.__background = Viewport(self, name='__ChiggerWindowBackground__', layer=0)
+
+        #self.__background = Viewport(layer=0)
+        #self.__results.append(self.__background)
 
         #self.SetInputConnection(0, self.__background.GetOutputPort(0))
-        for i, result in enumerate(args):
-            self.__results.append(result)
+        #for i, result in enumerate(args):
+        #    self.__results.append(result)
 
-        base.ChiggerObject.__init__(self, **kwargs)
 
 
 
@@ -143,7 +147,7 @@ class Window(base.ChiggerObject):
     #    return item in self.__results
 
     def __iter__(self):
-        for r in self.__results:
+        for r in self.__viewports:
             yield r
 
     def getVTKInteractor(self):
@@ -163,6 +167,15 @@ class Window(base.ChiggerObject):
         Return the vtkRenderWindow object.
         """
         return self.__vtkwindow
+
+
+    def add(self, viewport):
+        port = self.GetNumberOfInputPorts()
+        self.SetNumberOfInputPorts(port + 1)
+        self.SetInputConnection(port, viewport.GetOutputPort())
+
+    #    #TODO: Type checking
+        self.__viewports.append(viewport)
 
     #def _append(self, *args):
     #    """
@@ -258,18 +271,15 @@ class Window(base.ChiggerObject):
     #    """
     #    return self.__active
 
-    def start(self, timer=None):
+    def start(self):
         """
         Begin the interactive VTK session.
         """
-        if timer:
-            msg = "The timer argument is deprecated, please use the 'observers' setting."
-            mooseutils.mooseWarning(msg)
+        self.log("start", level=logging.DEBUG)
 
-        mooseutils.mooseDebug("{}.start()".format(self.__class__.__name__), color='MAGENTA')
-
+        self.Update()
+        self.__vtkwindow.Render()
         if self.__vtkinteractor:
-            self.__vtkwindow.Render()
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
@@ -278,7 +288,7 @@ class Window(base.ChiggerObject):
         """
         Updates the child results and renders the results.
         """
-        base.ChiggerObject.applyOptions(self)
+        base.ChiggerAlgorithm.applyOptions(self)
 
 
         test = self.getOption('test')
@@ -329,8 +339,8 @@ class Window(base.ChiggerObject):
 
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
-        for result in self.__results:
-            renderer = result.getVTKRenderer()
+        for view in self.__viewports:
+            renderer = view.getVTKRenderer()
             if not self.__vtkwindow.HasRenderer(renderer):
                 self.__vtkwindow.AddRenderer(renderer)
             n = max(n, renderer.GetLayer() + 1)
@@ -343,12 +353,11 @@ class Window(base.ChiggerObject):
             self.__background.setOptions(background=self.getOption('background'),
                                          background2=self.getOption('background2'))
 
-
         # Auto Background adjustments
         background = self.getOption('background')
         fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
-        for result in self.__results:
-            for src in result:
+        for view in self.__viewports:
+            for src in view:
                 if isinstance(src, base.ChiggerCompositeSource):
                     for s in src._sources:
                         for name in s.__BACKGROUND_OPTIONS__:
@@ -400,15 +409,15 @@ class Window(base.ChiggerObject):
         Generally, this is not needed but in some cases when testing the camera needs to be reset
         for the image to look correct.
         """
-        for result in self.__results:
-            result.getVTKRenderer().ResetCamera()
+        for view in self.__viewports:
+            view.getVTKRenderer().ResetCamera()
 
     def resetClippingRange(self):
         """
         Resets all the clipping range for open cameras.
         """
-        for result in self.__results:
-            result.getVTKRenderer().ResetCameraClippingRange()
+        for view in self.__viewport:
+            view.getVTKRenderer().ResetCameraClippingRange()
 
     def write(self, filename, dialog=False, **kwargs):
         """
@@ -455,11 +464,11 @@ class Window(base.ChiggerObject):
         writer.SetInputData(window_filter.GetOutput())
         writer.Write()
 
-    def __getitem__(self, index):
-        """
-        Operator[] access into results objects.
-        """
-        return self.__results[index]
+    #def __getitem__(self, index):
+    #    """
+    #    Operator[] access into results objects.
+    #    """
+    #    return self.__viewports[index]
 
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)
