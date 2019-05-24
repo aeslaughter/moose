@@ -31,15 +31,24 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     def update(self, other):
         ChiggerObjectBase.update(self, other)
         if self._options.modified() > self.GetMTime():
-            self.applyOptions()
+            #self.applyOptions()
             self.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setOptions(self, *args, **kwargs)
         if self._options.modified() > self.GetMTime():
-            self.applyOptions()
+            #self.applyOptions()
             self.Modified()
 
     def applyOptions(self):
-        self.log('applyOptions()', level=logging.DEBUG)
+        self.log('applyOptions', level=logging.DEBUG)
+
+    def RequestInformation(self, request, inInfo, outInfo):
+        self.log('RequestInformation', level=logging.DEBUG)
+        return 1
+
+    def RequestData(self, request, inInfo, outInfo):
+        self.log('RequestData', level=logging.DEBUG)
+        self.applyOptions()
+        return 1

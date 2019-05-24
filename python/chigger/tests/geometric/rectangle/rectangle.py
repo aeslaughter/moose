@@ -13,6 +13,7 @@ import vtk
 import chigger
 import numpy as np
 
+"""
 n = 1000
 m = 1
 
@@ -41,8 +42,8 @@ rect = chigger.geometric.Rectangle(cmap='viridis',
                                    #cmap_range=(0,0.5),
                                    coordinate_system='viewport',
                                    point_data=data)
-
-result = chigger.Viewport(rect)
-window = chigger.Window(result, size=(500,300), background=(1,0.5,1))
+"""
+#result = chigger.Viewport()
+window = chigger.Window(size=(500,300), background=(1,0.5,1))
 window.write('rectangle.png')
 window.start()

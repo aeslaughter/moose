@@ -70,15 +70,14 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
 
         # Setup VTKPythobnAlgorithmBase
-        base.ChiggerAlgorithm.__init__(self, nInputPorts=len(args), inputType=self.VTKINPUTTYPE, **kwargs)
+        base.ChiggerAlgorithm.__init__(self, nInputPorts=len(args), inputType=self.VTKINPUTTYPE,
+                                       nOutputPorts=1, outputType=vtk.vtkRenderer, **kwargs)
 
         for arg in args:
             self._add(arg)
 
     def _add(self, arg):
-        import weakref
 
-        arg._viewport = weakref.ref(self.getVTKRenderer())
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
                 self._vtkrenderer.AddActor(actor)
@@ -99,6 +98,13 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             elif arg.getVTKActor() is not None:
                 self._vtkrenderer.RemoveActor(arg.getVTKActor())
 
+
+    def RequestData(self, request, inInfo, outInfo):
+        base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
+        print request
+        return 1
+
+
     def applyOptions(self):
         base.ChiggerAlgorithm.applyOptions(self)
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
@@ -116,7 +122,6 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
             self._vtkrenderer.SetGradientBackground(True)
         else:
             self._vtkrenderer.SetGradientBackground(False)
-
 
         self._vtkrenderer.ResetCameraClippingRange()
 
