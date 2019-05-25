@@ -341,6 +341,7 @@ class Window(base.ChiggerAlgorithm):
 
         elif style:
 
+            # TODO: Create  object in constructor, just setup things here based on 'style'
             if self.__vtkinteractor is None:
                 self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
                 #self.__vtkinteractor = ChiggerInteractor(self)
