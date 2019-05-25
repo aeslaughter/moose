@@ -67,8 +67,8 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         utils.KeyBindingMixin.__init__(self)
         utils.ObserverMixin.__init__(self)
         ChiggerAlgorithm.__init__(self,
-                                  outputType='vtkDataObject',
-                                  nOutputPorts=1,
+                                  #outputType='vtkDataObject',
+                                  #nOutputPorts=1,
                                   **kwargs)
 
         # Create mapper
