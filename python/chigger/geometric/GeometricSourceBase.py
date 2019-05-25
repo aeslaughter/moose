@@ -26,9 +26,7 @@ class GeometricSourceBase(base.ChiggerSource):#, VTKPythonAlgorithmBase):
 
     def RequestData(self, request, inInfo, outInfo):
         super(GeometricSourceBase, self).RequestData(request, inInfo, outInfo)
-
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-
         self._vtksource.Update()
         opt.ShallowCopy(self._vtksource.GetOutput())
         return 1

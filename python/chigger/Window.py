@@ -293,7 +293,7 @@ class Window(base.ChiggerAlgorithm):
         """
         self.log("start", level=logging.DEBUG)
         self.Update()
-        self.__vtkwindow.Render()
+        #self.__vtkwindow.Render()
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
@@ -306,6 +306,22 @@ class Window(base.ChiggerAlgorithm):
         if self.isOptionValid('background'):
             self.__viewports[0].setOptions(background=self.getOption('background'),
                                            background2=self.getOption('background2'))
+
+        # Auto Background adjustments
+        background = self.getOption('background')
+        fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
+        for view in self.__viewports:
+            for src in view:
+                if isinstance(src, base.ChiggerCompositeSource):
+                    for s in src._sources:
+                        for name in s.__BACKGROUND_OPTIONS__:
+                            if not s.isOptionValid(name):
+                                s.setOptions(**{name:fontcolor})
+                else:
+                    for name in src.__BACKGROUND_OPTIONS__:
+                        if not src.isOptionValid(name):
+                            src.setOptions(**{name:fontcolor})
+
 
     #def RequestData(self, request, inInfo, outInfo):
     #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
@@ -362,21 +378,6 @@ class Window(base.ChiggerAlgorithm):
 
         # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
-
-        # Auto Background adjustments
-        background = self.getOption('background')
-        fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
-        for view in self.__viewports:
-            for src in view:
-                if isinstance(src, base.ChiggerCompositeSource):
-                    for s in src._sources:
-                        for name in s.__BACKGROUND_OPTIONS__:
-                            if not s.isOptionValid(name):
-                                s.setOptions(**{name:fontcolor})
-                else:
-                    for name in src.__BACKGROUND_OPTIONS__:
-                        if not src.isOptionValid(name):
-                            src.setOptions(**{name:fontcolor})
 
 
         #self.__vtkwindow.Start()
@@ -437,7 +438,6 @@ class Window(base.ChiggerAlgorithm):
         Writes the VTKWindow to an image.
         """
         self.log('write', level=logging.DEBUG)
-        self.Update()
 
         # Allowed extensions and the associated readers
         writers = dict()
@@ -465,10 +465,13 @@ class Window(base.ChiggerAlgorithm):
         window_filter.SetInput(self.__vtkwindow)
 
         # Allow the background to be transparent
-        #if self.getOption('transparent'):
-        #    window_filter.SetInputBufferTypeToRGBA()
+        if self.getOption('transparent'):
+            window_filter.SetInputBufferTypeToRGBA()
 
+        self.Update()
+        self.__vtkwindow.Render()
         window_filter.Update()
+
 
         # Write it
         writer = writers[ext]()
