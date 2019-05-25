@@ -11,9 +11,9 @@
 import vtk
 from GeometricSourceBase import GeometricSourceBase
 
-class CubeSource(GeometricSourceBase):
+class Cube(GeometricSourceBase):
     """
-    Single CubeSource object.
+    Single Cube object.
     """
     VTKSOURCETYPE = vtk.vtkCubeSource
 

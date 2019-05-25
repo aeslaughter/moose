@@ -84,10 +84,10 @@ class Window(base.ChiggerAlgorithm):
         return opt
 
     def __init__(self, *observers, **kwargs):
-        base.ChiggerAlgorithm.__init__(self, inputType='vtkRenderer', **kwargs)
+        base.ChiggerAlgorithm.__init__(self, inputType='vtkDataObject', **kwargs)
 
 
-        self.__vtkwindow = kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
+        self.__vtkwindow = vtk.vtkRenderWindow()#kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
         self.__vtkinteractorstyle = None
 
@@ -99,7 +99,9 @@ class Window(base.ChiggerAlgorithm):
         #self.OutoutType = 'vtkPythonAlgorithm'
 
         self.__viewports = list()
-        self.__background = Viewport(self, name='__ChiggerWindowBackground__', layer=0)
+
+        #self.__background = Viewport(self, name='__ChiggerWindowBackground__', layer=0)
+        Viewport(self, name='__ChiggerWindowBackground__', layer=0)
 
         #self.__background = Viewport(layer=0)
         #self.__results.append(self.__background)
@@ -107,10 +109,10 @@ class Window(base.ChiggerAlgorithm):
         #self.SetInputConnection(0, self.__background.GetOutputPort(0))
         #for i, result in enumerate(args):
         #    self.__results.append(result)
-        self.SetInputConnection(0, self.__background.GetOutputPort())
-        for i, view in enumerate(args):
-            self.__viewports.append(view)
-            self.SetInputConnection(i+1, view.GetOutputPort())
+        #self.SetInputConnection(0, self.__background.GetOutputPort())
+        #for i, view in enumerate(args):
+        #    self.__viewports.append(view)
+        #    self.SetInputConnection(i+1, view.GetOutputPort())
 
 
         #self.SetNumberOfInputPorts(0)
@@ -139,6 +141,11 @@ class Window(base.ChiggerAlgorithm):
         if kwargs.pop('chigger', False):
             self.append(self.__watermark)
         """
+
+    def add(self, view):
+        n_ports = self.GetNumberOfInputPorts()
+        self.SetInputConnection(n_ports, view.GetOutputPort())
+        self.__viewports.append(view)
 
     #def __contains__(self, item):
     #    """
@@ -180,6 +187,11 @@ class Window(base.ChiggerAlgorithm):
 
     #    #TODO: Type checking
         self.__viewports.append(viewport)
+
+        renderer = viewport.getVTKRenderer()
+        if not self.__vtkwindow.HasRenderer(renderer):
+            self.__vtkwindow.AddRenderer(renderer)
+
 
     #def _append(self, *args):
     #    """
@@ -281,13 +293,23 @@ class Window(base.ChiggerAlgorithm):
         """
         self.log("start", level=logging.DEBUG)
         self.Update()
+        self.__vtkwindow.Render()
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
-    def RequestData(self, request, inInfo, outInfo):
-        base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
-        return 1
+
+
+    def setupObject(self):
+        base.ChiggerAlgorithm.setupObject(self)
+
+        if self.isOptionValid('background'):
+            self.__viewports[0].setOptions(background=self.getOption('background'),
+                                           background2=self.getOption('background2'))
+
+    #def RequestData(self, request, inInfo, outInfo):
+    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
+    #    return 1
 
     def applyOptions(self):
         """
@@ -323,11 +345,6 @@ class Window(base.ChiggerAlgorithm):
             #    main_observer.init(self)
             #    self._observers.add(main_observer)
 
-        # Background settings
-        #self.__viewports[0].setOptions(background=self._options.get('background'),
-        #                            background2=self._options.get('background2'),
-        #                            gradient_background=self._options.get('gradient_background'))
-
         # vtkRenderWindow Settings
         self.assignOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
         self.assignOption('smoothing', self.__vtkwindow.SetLineSmoothing)
@@ -338,25 +355,13 @@ class Window(base.ChiggerAlgorithm):
         self.assignOption('multisamples', self.__vtkwindow.SetMultiSamples)
         self.assignOption('size', self.__vtkwindow.SetSize)
 
-        # Background
-        #if self.isOptionValid('background'):
-        #    self.__background.update(self.getOption('background'))
-
         # Setup the result objects
         n = self.__vtkwindow.GetNumberOfLayers()
         for view in self.__viewports:
-            renderer = view.getVTKRenderer()
-            if not self.__vtkwindow.HasRenderer(renderer):
-                self.__vtkwindow.AddRenderer(renderer)
-            n = max(n, renderer.GetLayer() + 1)
+            n = max(n, view.getVTKRenderer().GetLayer() + 1)
 
-        # Set the Xbnumber of layers
+        # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
-
-        # Background
-        if self.isOptionValid('background'):
-            self.__background.setOptions(background=self.getOption('background'),
-                                         background2=self.getOption('background2'))
 
         # Auto Background adjustments
         background = self.getOption('background')
@@ -373,6 +378,9 @@ class Window(base.ChiggerAlgorithm):
                         if not src.isOptionValid(name):
                             src.setOptions(**{name:fontcolor})
 
+
+        #self.__vtkwindow.Start()
+        #print self.__vtkwindow
 
         #print self.getOption('background')
         #self.__background._options.update(self.getOption('background'))
@@ -428,8 +436,8 @@ class Window(base.ChiggerAlgorithm):
         """
         Writes the VTKWindow to an image.
         """
-        self.__vtkwindow.Render()
-        mooseutils.mooseDebug('RenderWindow.write()', color='MAGENTA')
+        self.log('write', level=logging.DEBUG)
+        self.Update()
 
         # Allowed extensions and the associated readers
         writers = dict()
@@ -442,11 +450,9 @@ class Window(base.ChiggerAlgorithm):
         # Extract the extension
         _, ext = os.path.splitext(filename)
         if ext not in writers:
-            w = ', '.join(writers.keys())
-            msg = "The filename must end with one of the following extensions: {}.".format(w)
-            mooseutils.mooseError(msg, dialog=dialog)
+            msg = "The filename must end with one of the following extensions: {}."
+            log(msg, ', '.join(writers.keys()), level=logging.ERROR)
             return
-
         # Check that the directory exists
         dirname = os.path.dirname(filename)
         if (len(dirname) > 0) and (not os.path.isdir(dirname)):
@@ -459,8 +465,9 @@ class Window(base.ChiggerAlgorithm):
         window_filter.SetInput(self.__vtkwindow)
 
         # Allow the background to be transparent
-        if self.getOption('transparent'):
-            window_filter.SetInputBufferTypeToRGBA()
+        #if self.getOption('transparent'):
+        #    window_filter.SetInputBufferTypeToRGBA()
+
         window_filter.Update()
 
         # Write it

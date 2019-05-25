@@ -25,26 +25,30 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
 
         # Set the VTK modified time, this is needed to make sure the options for this class
         # are all older than the class itself.
-        #self.Modified()
+        self.Modified()
 
-    def update(self, other):
-        ChiggerObjectBase.update(self, other)
-        if self._options.modified() > self.GetMTime():
-            #self.applyOptions()
-            self.Modified()
+    #def update(self, other):
+    #    ChiggerObjectBase.update(self, other)
+    #    if self._options.modified() > self.GetMTime():
+    #        #self.applyOptions()
+    #        self.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setOptions(self, *args, **kwargs)
         if self._options.modified() > self.GetMTime():
-            #self.applyOptions()
             self.Modified()
 
     def applyOptions(self):
         self.log('applyOptions', level=logging.DEBUG)
 
+    def setupObject(self):
+        self.log('setupObject', level=logging.DEBUG)
+
+
     def RequestInformation(self, request, inInfo, outInfo):
         self.log('RequestInformation', level=logging.DEBUG)
+        self.setupObject()
         return 1
 
     def RequestData(self, request, inInfo, outInfo):

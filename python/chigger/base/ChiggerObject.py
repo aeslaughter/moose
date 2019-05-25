@@ -44,8 +44,8 @@ class ChiggerObjectBase(object):
         obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
         obj.log(lvl, '{}: {}'.format(self.getOption('name'), msg.format(args)))
 
-    def update(self, other):
-        self._options.update(other)
+    #def updateOptions(self, other):
+    #    self._options.update(other)
 
     def setOptions(self, *args, **kwargs):
         """
@@ -111,6 +111,8 @@ class ChiggerObjectBase(object):
         for key, value in sub_output.iteritems():
             print 'setOptions({}, {})'.format(key, ', '.join(repr(value)))
 
+    def __del__(self):
+        self.log('__del__()', level=logging.DEBUG)
 
 class ChiggerObject(ChiggerObjectBase):
     """Base class for objects that need options but are not in the VTk pipeline."""

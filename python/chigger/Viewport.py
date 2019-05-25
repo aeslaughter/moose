@@ -60,7 +60,10 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
     def __init__(self, window, **kwargs):
         utils.KeyBindingMixin.__init__(self)
         utils.ObserverMixin.__init__(self)
-        base.ChiggerAlgorithm.__init__(self, nOutputPorts=1, outputType='vtkRenderer', **kwargs)
+        base.ChiggerAlgorithm.__init__(self,
+                                       inputType='vtkDataObject',
+                                       nOutputPorts=1,
+                                       outputType='vtkDataObject', **kwargs)
 
         # Initialize class members
         self._sources = list()
@@ -78,13 +81,18 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         # circular reference between the vtkRenderer and vtkRenderWindow objects. The _window
         # property should be used by objects that need information from the Window object.
         window.add(self)
-        self.__window_weakref = weakref.ref(window)
+        self.__window_weakref = None# weakref.ref(window)
 
     def _window(self):
         """Property so that self._window acts like the actual window object."""
         return self.__window_weakref()
 
     def add(self, arg):
+
+        port = self.GetNumberOfInputPorts()
+        self.SetNumberOfInputPorts(port + 1)
+        self.SetInputConnection(port, arg.GetOutputPort())
+
 
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():

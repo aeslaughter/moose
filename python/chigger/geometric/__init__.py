@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 from .. import base
 
-from CubeSource import CubeSource       #TODO: Rename to Cube
+from Cube import Cube
 from OutlineSource import OutlineSource #TODO: Rename to Outline
 
 from Rectangle import Rectangle

@@ -14,8 +14,9 @@ import chigger
 import numpy as np
 
 window = chigger.Window(size=(500,300), background=(1,0.2,1))
-view = chigger.Viewport(window, name='foo')
+#view = chigger.Viewport(window, name='foo')
 
+"""
 n = 1000
 m = 1
 

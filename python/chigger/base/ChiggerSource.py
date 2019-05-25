@@ -66,6 +66,10 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     def __init__(self, viewport, **kwargs):
         utils.KeyBindingMixin.__init__(self)
         utils.ObserverMixin.__init__(self)
+        ChiggerAlgorithm.__init__(self,
+                                  outputType='vtkDataObject',
+                                  nOutputPorts=1,
+                                  **kwargs)
 
         # Create mapper
         self._vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
@@ -86,8 +90,8 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         # Storage for the filter objects
         self._filters = list()
 
+        # Add this ChiggerSource object to the viewport
         viewport.add(self)
-        ChiggerAlgorithm.__init__(self, **kwargs)
 
         # Store a reference without reference counting, the underlying VTK objects keep track of
         # things and without the weakref here there is a circular reference between the vtkRenderer
@@ -180,7 +184,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
             self._vtkmapper.SetInputConnection(base_obj.GetOutputPort(0))
 
     def __del__(self):
-        self.log('__del__()', level=logging.DEBUG)
+        ChiggerAlgorithm.__del__(self)
 
         # Delete the actor and mapper, this is needed to avoid a seg fault in VTK
         self._vtkactor = None
