@@ -107,4 +107,13 @@ public:
 
   // Not defined
   virtual Real average() const;
+
+  // DEPRECATED
+  virtual Real value(Real t, const Point & p);
+  virtual RealVectorValue vectorValue(Real t, const Point & p);
+  virtual RealVectorValue vectorCurl(Real t, const Point & p);
+  virtual RealGradient gradient(Real t, const Point & p);
+  virtual Real timeDerivative(Real t, const Point & p);
+  virtual Real integral();
+  virtual Real average();
 };

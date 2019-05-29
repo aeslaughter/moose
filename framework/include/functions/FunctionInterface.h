@@ -60,6 +60,10 @@ public:
    */
   const Function & getFunctionByName(const FunctionName & name) const;
 
+  // DEPRECATED
+  Function & getFunction(const std::string & name);
+  Function & getFunctionByName(const FunctionName & name);
+
 private:
   /// Parameters of the object with this interface
   const InputParameters & _fni_params;

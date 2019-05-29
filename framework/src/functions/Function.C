@@ -78,3 +78,49 @@ Function::average() const
   mooseError("Average method not defined for function ", name());
   return 0;
 }
+
+// DEPRECATED
+Real
+Function::value(Real /*t*/, const Point & /*p*/)
+{
+  return 0.0;
+}
+
+RealGradient
+Function::gradient(Real /*t*/, const Point & /*p*/)
+{
+  return RealGradient(0, 0, 0);
+}
+
+Real
+Function::timeDerivative(Real /*t*/, const Point & /*p*/)
+{
+  mooseError("timeDerivative method not defined for function ", name());
+  return 0;
+}
+
+RealVectorValue
+Function::vectorValue(Real /*t*/, const Point & /*p*/)
+{
+  return RealVectorValue(0, 0, 0);
+}
+
+RealVectorValue
+Function::vectorCurl(Real /*t*/, const Point & /*p*/)
+{
+  return RealVectorValue(0, 0, 0);
+}
+
+Real
+Function::integral()
+{
+  mooseError("Integral method not defined for function ", name());
+  return 0;
+}
+
+Real
+Function::average()
+{
+  mooseError("Average method not defined for function ", name());
+  return 0;
+}

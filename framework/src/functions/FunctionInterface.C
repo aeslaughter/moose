@@ -37,3 +37,20 @@ FunctionInterface::getFunctionByName(const FunctionName & name) const
 {
   return _fni_feproblem.getFunction(name, _fni_tid);
 }
+
+// DEPRECATED
+Function &
+FunctionInterface::getFunction(const std::string & name)
+{
+  mooseDeprecated("The virtual methods in Function classes should be updated to be const and the "
+                  "reference to Function should be const.");
+  return _fni_feproblem.getFunction(_fni_params.get<FunctionName>(name), _fni_tid);
+}
+
+Function &
+FunctionInterface::getFunctionByName(const FunctionName & name)
+{
+  mooseDeprecated("The virtual methods in Function classes should be updated to be const and the "
+                  "reference to Function should be const.");
+  return _fni_feproblem.getFunction(name, _fni_tid);
+}
