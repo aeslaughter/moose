@@ -10,9 +10,9 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import chigger
-reader = chigger.exodus.ExodusReader('../../input/mug_blocks_out.e')
-mug = chigger.exodus.ExodusResult(reader, variable='diffused', cmap='viridis')
-outline = chigger.geometric.OutlineResult(mug, color=(1,0,0), edge_width=3)
-window = chigger.RenderWindow(mug, outline, size=(300,300), test=True)
-window.write('outline.png')
+window = chigger.Window(size=(300,300))
+viewport = chigger.Viewport(window)
+rect = chigger.geometric.Rectangle(viewport, bounds=(0.25, 0.5, 0.25, 0.75))
+outline = chigger.geometric.Outline2D(viewport, bounds=rect.getBounds(), color=(1,0,0), linewidth=3)
+window.write('outline2D.png')
 window.start()
