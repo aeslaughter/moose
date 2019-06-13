@@ -14,12 +14,17 @@ class Rectangle(GeometricSourceBase):
         opt = GeometricSourceBase.validOptions()
         opt += utils.ActorOptions.validOptions()
         opt += base.ColorMap.validOptions()
-        opt.add('origin', default=(0, 0, 0), vtype=float, size=3,
-                doc='Define the origin of the plane.')
-        opt.add('point1', default=(1, 0, 0), vtype=float, size=3,
-                doc='Define the first edge of the plane (origin->point1).')
-        opt.add('point2', default=(0, 1, 0), vtype=float, size=3,
-                doc='Define the second edge of the plane (origin->point2).')
+
+        opt.add("bounds", None, vtype=float, size=4,
+                doc="The bounding box for the cube [xmin, xmax, ymin, ymax].")
+
+        # TODO: Do I need the ability to make diamonds and stuff???
+        #opt.add('origin', default=(0, 0, 0), vtype=float, size=3,
+        #        doc='Define the origin of the plane.')
+        #opt.add('point1', default=(1, 0, 0), vtype=float, size=3,
+        #        doc='Define the first edge of the plane (origin->point1).')
+        #opt.add('point2', default=(0, 1, 0), vtype=float, size=3,
+        #        doc='Define the second edge of the plane (origin->point2).')
         opt.add('resolution', default=(1, 1), vtype=int, size=2,
                 doc="Define the number of subdivisions in the x- and y-direction of the plane.")
 
@@ -42,6 +47,10 @@ class Rectangle(GeometricSourceBase):
         #coordinate.SetCoordinateSystemToViewport()
         #self._vtkmapper.SetTransformCoordinate(coordinate)
 
+    def getBounds(self):
+        bnds = self.getOption('bounds')
+        return (bnds[0], bnds[1], bnds[2], bnds[3], 0, 0)
+
 
     def applyOptions(self):
         """
@@ -57,9 +66,16 @@ class Rectangle(GeometricSourceBase):
         else:
             coordinate.SetCoordinateSystemToViewport()
 
-        p0 = self.getOption('origin')
-        p1 = self.getOption('point1')
-        p2 = self.getOption('point2')
+        bnds = self.getOption('bounds')
+
+
+        p0 = (bnds[0], bnds[2], 0)
+        p1 = (bnds[0], bnds[3], 0)
+        p2 = (bnds[1], bnds[2], 0)
+
+        #p0 = self.getOption('origin')
+        #p1 = self.getOption('point1')
+        #p2 = self.getOption('point2')
 
         angle = self.getOption('rotate')
         if angle > 0:

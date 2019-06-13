@@ -50,8 +50,8 @@ class ColorBar(base.ChiggerCompositeSource):
         #             desc="Decrease the font size by 1 point (when result is selected).")
         return bindings
 
-    def __init__(self, **kwargs):
-        super(ColorBar, self).__init__(geometric.Rectangle(), **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ColorBar, self).__init__(geometric.Rectangle(*args), **kwargs)
 
 
     def applyOptions(self):

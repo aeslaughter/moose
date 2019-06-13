@@ -10,9 +10,10 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import chigger
-from chigger import misc
+from chigger import misc, observers
 
 window = chigger.Window(size=(1200, 600), background=(0,1,1))
+observer = observers.MainWindowObserver(window)
 view = chigger.Viewport(window)
 misc.ColorBar(view, rotate=0)
 

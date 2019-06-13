@@ -9,11 +9,11 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
 import weakref
-from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
+#from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
 from .. import base
 
-class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
+class ChiggerObserver(base.ChiggerObject):
     """
     Base class for defining VTK observer functions.
 
@@ -21,10 +21,12 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     @staticmethod
     def validOptions():
-        opt = base.ChiggerAlgorithm.validOptions()
+        opt = base.ChiggerObject.validOptions()
         return opt
 
     def __init__(self, window, **kwargs):
+        print 'ChiggerObserver', window
+        base.ChiggerObject.__init__(self, **kwargs)
 
         # Storing a direct reference (self._window = window) causes VTK to seg. fault. As far as I
         # can tell this is due to a cyclic reference between the observers added to the VTK
@@ -32,7 +34,6 @@ class ChiggerObserver(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # class to operate like desired.
         self.__window_weakref = weakref.ref(window)
 
-        #VTKPythonAlgorithmBase.__init__(self)
         #base.ChiggerAlgorithm.__init__(self, **kwargs)
 
         #self.SetNumberOfInputPorts(1)

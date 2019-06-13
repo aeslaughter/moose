@@ -18,6 +18,8 @@ from .. import utils
 from .. import geometric
 
 
+#TODO: result -> viewport
+
 
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
@@ -71,6 +73,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         self.__result_outline_weakref = None
         self.__source_outline_weakref = None
+        self.__current_source_index = None
+
+    def _initializeSources(self):
+
+        if self.__current_source_index is not None:
+            return
 
         self.__current_source_index = -1
         self.__sources = list()
@@ -102,11 +110,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         current = self.__sources[self.__current_source_index]
 
         bounds = current.result.getVTKRenderer().ComputeVisiblePropBounds()
-        current.result._add(geometric.OutlineSource(bounds=bounds))
+        geometric.OutlineSource(current.result, bounds=bounds)
         self.__result_outline_weakref = weakref.ref(current.result._sources[-1])
 
         bounds = current.source.getBounds()
-        current.result._add(geometric.OutlineSource(bounds=bounds))
+        geometric.OutlineSource(current.result, bounds=bounds)
         self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
 
         self._window.getVTKWindow().Render()
@@ -149,12 +157,13 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         Inputs:
             obj, event: Required by VTK.
         """
+        self._initializeSources()
         key = obj.GetKeySym().lower()
         shift = obj.GetShiftKey()
 
         # This objects bindings
         for binding in self.getKeyBindings(key, shift):
-            binding.function(self, self.GetInputAlgorithm(), binding)
+            binding.function(self, self._window, binding)
 
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:

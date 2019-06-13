@@ -10,7 +10,7 @@
 from .. import base
 
 from Cube import Cube
-from OutlineSource import OutlineSource #TODO: Rename to Outline
+from Outline import Outline, Outline2D
 
 from Rectangle import Rectangle
 

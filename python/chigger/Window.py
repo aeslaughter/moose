@@ -86,9 +86,9 @@ class Window(base.ChiggerAlgorithm):
     def __init__(self, *observers, **kwargs):
         base.ChiggerAlgorithm.__init__(self, inputType='vtkDataObject', **kwargs)
 
-
         self.__vtkwindow = vtk.vtkRenderWindow()#kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
-        self.__vtkinteractor = kwargs.pop('vtkinteractor', None)
+        self.__vtkinteractor = kwargs.pop('vtkinteractor', self.__vtkwindow.MakeRenderWindowInteractor())
+        print 'Window()'
         self.__vtkinteractorstyle = None
 
         ##VTKPythonAlgorithmBase.__init__(self)
@@ -153,9 +153,9 @@ class Window(base.ChiggerAlgorithm):
     #    """
     #    return item in self.__viewports
 
-    #def __iter__(self):
-    #    for view in self.__viewports:
-    #        yield view
+    def __iter__(self):
+        for view in self.__viewports:
+            yield view
 
     #def __iter__(self):
     #    for r in self.__viewports:
@@ -342,8 +342,8 @@ class Window(base.ChiggerAlgorithm):
         elif style:
 
             # TODO: Create  object in constructor, just setup things here based on 'style'
-            if self.__vtkinteractor is None:
-                self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
+            #if self.__vtkinteractor is None:
+            #    self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
                 #self.__vtkinteractor = ChiggerInteractor(self)
                 #self.__vtkinteractor.SetRenderWindow(self.__vtkwindow)
 
