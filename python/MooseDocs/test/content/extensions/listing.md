@@ -46,3 +46,7 @@ void function();
 !listing moose/test/tests/kernels/simple_diffusion/simple_diffusion.i block=Mesh Kernels prefix=xxxxx
 
 !listing moose/test/tests/kernels/simple_diffusion/simple_diffusion.i block=Kernels/diff indent=4 header=[AuxKernels] footer=[./]
+
+## Test Specification
+
+!listing test/tests/misc/should_execute/tests block=dont
