@@ -1,9 +1,14 @@
 [Tests]
+  issues = '#3702'
+  design = 'OutputWarehouse.md'
+
   [./limit]
     # Test the postprocessor limiting functions operate correctly
     type = 'Exodiff'
     input = 'postprocessor.i'
     exodiff = 'postprocessor_exodus.e postprocessor_exodus2.e'
+
+    requirement = "The system shall support the ability to limit postprocessor variables to certain output objects by name."
   [../]
   [./invalid_outputs]
     # Test that an invalid outputer name in the "output" parameter is caught
@@ -11,21 +16,29 @@
     input = 'postprocessor_invalid.i'
     expect_err = "The output object 'garbage' is not a defined output object"
     cli_args = 'Postprocessors/num_dofs/outputs=garbage'
+
+    requirement = "The system shall error if an invalid output object name is supplied when attempting to limit postprocessor data output."
   [../]
   [./console]
     # Test that "outputs=console" is working correctly with multiple execute_on items
     type = 'CSVDiff'
     input = 'postprocessor_console.i'
     csvdiff = 'postprocessor_console_out.csv'
+
+    requirement = "The system shall support the ability to limit postprocessor variables to screen output."
   [../]
   [./show_hide]
     type = 'CSVDiff'
     input = 'show_hide.i'
     csvdiff = 'show_hide_out.csv'
+
+    requirement = "The system shall support the ability to govern the ability to output or suppress output of postprocessor data by name."
   [../]
   [./test_hidden_shown]
     type = 'RunException'
     input = 'output_pps_hidden_shown_check.i'
     expect_err = 'Output\(s\) specified to be both shown and hidden: elem_56'
+
+    requirement = "The system shall error if postprocessor names are supplied to conflicting options for governing postprocessor data output."
   [../]
 []

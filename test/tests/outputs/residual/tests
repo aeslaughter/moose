@@ -1,8 +1,12 @@
 [Tests]
+  issues = '#1690'
+  design = 'VariableResidualNormsDebugOutput.md'
   [./test]
     type = 'Exodiff'
     input = 'output_residual_test.i'
     exodiff = 'out.e'
     expect_out = '|residual|_2 of individual variables:'
+
+    requirement = "The system shall include the ability to report the norm of the residual for each of the solution variables."
   [../]
 []
