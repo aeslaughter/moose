@@ -42,11 +42,22 @@ class TestPlugin2(base.PeacockPlugin):
 
 
 
+class Peacock(base.PeacockWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.addTab('One', TestPlugin())
+        self.addTab('Two', TestPlugin2(), TestPlugin2())
+
 if __name__ == '__main__':
 
     # Create a Qt application
     app = QtWidgets.QApplication(sys.argv)
 
+    window = Peacock()
+    window.show()
+
+    """
     #app.setStyleSheet(qdarkstyle.load_stylesheet_pyside())
     #with open('macaw.qss', 'r') as fid:
     #    style = fid.read()
@@ -70,6 +81,7 @@ if __name__ == '__main__':
     #window.setMenuBar(menu_bar)
 
     window.show()
+    """
     # Enter Qt application main loop
     app.exec_()
     sys.exit()
