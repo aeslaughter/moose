@@ -15,7 +15,7 @@ class TestPlugin(base.PeacockPlugin):
         self.setWidget(self._button)
 
     def _onButtonClicked(self, args):
-        print('HELLO 0')
+        print('TestPlugin:HELLO')
         self.pressed.emit("Pressed Button 1")
 
 
@@ -34,11 +34,11 @@ class TestPlugin2(base.PeacockPlugin):
         #qobject.clicked.connect(self._callbackButton)
 
     def _onButtonClicked(self, *args):
-        print('HELLO 1')
+        print('TestPlugin2:HELLO')
 #    pass
 
     def onPressed(self, incoming):
-        print('2', incoming)
+        print(incoming, "from", '2')
 
 
 

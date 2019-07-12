@@ -61,9 +61,9 @@ class PeacockWindow(QtWidgets.QMainWindow):
         widgets = []
         for key, value in plugin.__dict__.items():
             if isinstance(value, QtWidgets.QWidget):
-                name = key.strip('_').title()
-                value.setObjectName(name)
                 widgets.append(value)
+                if not value.objectName():
+                    value.setObjectName(key.strip('_').title())
 
         for widget in widgets:
             setup_name = '_setup{}'.format(widget.objectName())
