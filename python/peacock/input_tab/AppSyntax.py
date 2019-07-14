@@ -2,7 +2,7 @@ import sys
 from PySide2 import QtCore, QtWidgets
 from .. import base
 
-import MooseDocs
+from MooseDocs import tree
 
 #from peacock import base
 
@@ -18,7 +18,10 @@ class AppSyntax(base.PeacockPlugin):
 
     def _onExecutableChanged(self, exe):
 
-        syntax = MooseDocs.tree.app_syntax(exe)
+
+
+        exe = "/Users/slauae/projects/moose/test/moose_test-devel"
+        syntax = tree.app_syntax(exe)
 
 
         print(syntax)

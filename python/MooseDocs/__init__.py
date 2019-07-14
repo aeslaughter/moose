@@ -20,9 +20,10 @@ except ImportError as e:
     MSG += "version 2.4.0 or greater. If you are using the MOOSE environment package\n"
     MSG += "you can upgrade by running the following command.\n"
     MSG += "    pip install --upgrade --user anytree"
-    print MSG
+    print(MSG)
     sys.exit(1)
 
+"""
 import mooseutils
 
 # Markdown component types TODO: Move these to reader
@@ -43,9 +44,10 @@ FILE_EXT = ('.md', '.jpg', '.jpeg', '.gif', '.png', '.svg', '.webm', '.ogv', '.m
 # Setup MOOSE_DIR/ROOT_DIR
 MOOSE_DIR = os.getenv('MOOSE_DIR', None)
 if MOOSE_DIR is None:
-    print "The MOOSE_DIR environment must be set, this should be set within moosedocs.py."
+    print("The MOOSE_DIR environment must be set, this should be set within moosedocs.py.")
     sys.exit(1)
 
 # List all files with git, this is done here to avoid running this command many times
 PROJECT_FILES = mooseutils.git_ls_files(ROOT_DIR)
 PROJECT_FILES.update(mooseutils.git_ls_files(MOOSE_DIR))
+"""
