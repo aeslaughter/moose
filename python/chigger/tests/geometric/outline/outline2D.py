@@ -13,6 +13,7 @@ import chigger
 window = chigger.Window(size=(300,300))
 viewport = chigger.Viewport(window)
 rect = chigger.geometric.Rectangle(viewport, bounds=(0.25, 0.5, 0.25, 0.75))
-outline = chigger.geometric.Outline2D(viewport, bounds=rect.getBounds(), color=(1,0,0), linewidth=3)
+outline = chigger.geometric.Outline2D(viewport, bounds=(0.25, 0.5, 0.25, 0.75), color=(1,0,0), linewidth=3)
+
 window.write('outline2D.png')
 window.start()

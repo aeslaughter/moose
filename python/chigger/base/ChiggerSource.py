@@ -102,7 +102,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     @property
     def _viewport(self):
         """Property so that self._viewport acts like the actual Viewport object."""
-        self.__viewport_weakref()
+        return self.__viewport_weakref()
 
     def getVTKActor(self):
         """

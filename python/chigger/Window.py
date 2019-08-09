@@ -323,6 +323,9 @@ class Window(base.ChiggerAlgorithm):
                             src.setOptions(**{name:fontcolor})
 
 
+        self.assignOption('size', self.__vtkwindow.SetSize)
+
+
     #def RequestData(self, request, inInfo, outInfo):
     #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
     #    return 1

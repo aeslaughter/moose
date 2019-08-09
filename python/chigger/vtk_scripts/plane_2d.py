@@ -24,6 +24,7 @@ mapper2.SetInputConnection(outline.GetOutputPort())
 
 actor2 = vtk.vtkActor2D()
 actor2.SetMapper(mapper2)
+actor2.GetProperty().SetColor(1,0.2,0.1)
 
 renderer = vtk.vtkRenderer()
 renderer.AddActor(actor)
@@ -36,7 +37,7 @@ window.SetSize(400, 400)
 
 interactor = vtk.vtkRenderWindowInteractor()
 interactor.SetRenderWindow(window)
-interactor.GetInteractorStyle().HighlightProp(actor)
+#interactor.GetInteractorStyle().HighlightProp(actor)
 interactor.Initialize()
 
 # Show the result

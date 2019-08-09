@@ -91,12 +91,14 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" result object.
         """
-
+        print binding
+        """
         # Deactivate current result and source
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
-            current.result._remove(self.__result_outline_weakref())
-            current.result._remove(self.__source_outline_weakref())
+            pass
+            #current.result._remove(self.__result_outline_weakref())
+            #urrent.result._remove(self.__source_outline_weakref())
 
         if binding.shift:
             self.__current_source_index -= 1
@@ -110,15 +112,15 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         current = self.__sources[self.__current_source_index]
 
         bounds = current.result.getVTKRenderer().ComputeVisiblePropBounds()
-        geometric.OutlineSource(current.result, bounds=bounds)
+        geometric.Outline(current.result, bounds=bounds)
         self.__result_outline_weakref = weakref.ref(current.result._sources[-1])
 
         bounds = current.source.getBounds()
-        geometric.OutlineSource(current.result, bounds=bounds)
+        geometric.Outline(current.result, bounds=bounds)
         self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
 
         self._window.getVTKWindow().Render()
-
+        """
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all results.
