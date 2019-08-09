@@ -128,6 +128,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
         """
         window.Update()
+        window.getVTKWindow().Render()
         #viewport.getVTKRenderer().Render()
 
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
