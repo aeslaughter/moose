@@ -25,7 +25,6 @@ class ChiggerObserver(base.ChiggerObject):
         return opt
 
     def __init__(self, window, **kwargs):
-        print 'ChiggerObserver', window
         base.ChiggerObject.__init__(self, **kwargs)
 
         # Storing a direct reference (self._window = window) causes VTK to seg. fault. As far as I
@@ -63,6 +62,7 @@ class ChiggerObserver(base.ChiggerObject):
         """
         Terminate the render window.
         """
+        pass
         #self._window.getVTKInteractor().TerminateApp()
 
     #def __del__(self):

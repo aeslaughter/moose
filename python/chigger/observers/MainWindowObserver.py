@@ -36,8 +36,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__source_weakref = weakref.ref(source)
 
         @property
-        def result(self):
-            return self.__result_weakref()
+        def viewport(self):
+            return self.__viewport_weakref()
 
         @property
         def source(self):
@@ -55,9 +55,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('r', MainWindowObserver._selectResult, desc="Select the next result object.")
-        bindings.add('r', MainWindowObserver._selectResult, shift=True,
-                     desc="Select the previous result object.")
+        bindings.add('v', MainWindowObserver._selectViewport, desc="Select the next viewport.")
+        bindings.add('v', MainWindowObserver._selectViewport, shift=True,
+                     desc="Select the previous viewport.")
 
         bindings.add('t', MainWindowObserver._deactivateResult, desc="Clear selection(s).")
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
@@ -71,10 +71,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
                                                     self._onKeyPressEvent)
 
-        self.__result_outline_weakref = None
-        self.__source_outline_weakref = None
-        self.__current_source_index = None
+        #self.__viewport_outline_weakref = None
+        #self.__source_outline_weakref = None
+        #self.__current_source_index = None
 
+    """
     def _initializeSources(self):
 
         if self.__current_source_index is not None:
@@ -86,12 +87,19 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             for source in result:
                 if result.interactive() and source.interactive():
                     self.__sources.append(MainWindowObserver.ObjectRef(result, source))
+    """
 
-    def _selectResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
+    def _selectViewport(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "next" result object.
         """
-        print binding
+        self.log('Select Viewport', level=logging.DEBUG)
+
+        viewports = window.viewports()
+        vindex = -1
+
+        viewport = viewports[vindex]
+        geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1, 1, 0), linewidth=6)
         """
         # Deactivate current result and source
         current = self.__sources[self.__current_source_index]
@@ -118,9 +126,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bounds = current.source.getBounds()
         geometric.Outline(current.result, bounds=bounds)
         self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
-
-        self._window.getVTKWindow().Render()
         """
+        window.Update()
+        #viewport.getVTKRenderer().Render()
+
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all results.
@@ -132,7 +141,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__result_outline_weakref = None
             self.__source_outline_weakref = None
 
-        self._window.getVTKWindow().Render()
+        self._window.Update()
 
     def _printHelp(self, window, binding): #pylint: disable=unused-argument
         """
@@ -159,7 +168,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         Inputs:
             obj, event: Required by VTK.
         """
-        self._initializeSources()
+        #self._initializeSources()
         key = obj.GetKeySym().lower()
         shift = obj.GetShiftKey()
 
@@ -167,6 +176,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         for binding in self.getKeyBindings(key, shift):
             binding.function(self, self._window, binding)
 
+        """
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
             for binding in current.result.getKeyBindings(key, shift):
@@ -175,3 +185,4 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if self.__source_outline_weakref:
             for binding in current.source.getKeyBindings(key, shift):
                 binding.function(current.source, self._window, binding)
+        """

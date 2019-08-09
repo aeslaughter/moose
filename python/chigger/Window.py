@@ -142,10 +142,12 @@ class Window(base.ChiggerAlgorithm):
             self.append(self.__watermark)
         """
 
-    def add(self, view):
-        n_ports = self.GetNumberOfInputPorts()
-        self.SetInputConnection(n_ports, view.GetOutputPort())
-        self.__viewports.append(view)
+
+
+    #def add(self, view):
+    #    n_ports = self.GetNumberOfInputPorts()
+    #    self.SetInputConnection(n_ports, view.GetOutputPort())
+    #    self.__viewports.append(view)
 
     #def __contains__(self, item):
     #    """
@@ -153,9 +155,12 @@ class Window(base.ChiggerAlgorithm):
     #    """
     #    return item in self.__viewports
 
-    def __iter__(self):
-        for view in self.__viewports:
-            yield view
+    def viewports(self):
+        return self.__viewports
+
+    #def __iter__(self):
+    #    for view in self.__viewports:
+    #        yield view
 
     #def __iter__(self):
     #    for r in self.__viewports:
