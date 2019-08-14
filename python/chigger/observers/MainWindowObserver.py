@@ -74,7 +74,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         #self.__viewport_outline_weakref = None
         #self.__source_outline_weakref = None
         self.__current_viewport_index = -1
-        self.__viewport_outline = None
+        self.__current_viewport_outline = None
         #self.__sources = list()]
         #self.__current_index = None
 
@@ -99,27 +99,24 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         self.log('Select Viewport', level=logging.DEBUG)
 
-        if self.__viewport_outline is not None:
-            self.__viewport_outline.remove()
-            self.__viewport_outline = None
+        if self.__current_viewport_outline is not None:
+            self.__current_viewport_outline.remove()
+            self.__current_viewport_outline = None
 
         N = len(window.viewports())
         if binding.shift:
             self.__current_viewport_index -= 1
-            if self.__current_source_index == -1:
-                self.__current_source_index = len(self.__sources) - 1
+            if self.__current_viewport_index < 0:
+                self.__current_viewport_index = N - 1
         else:
-            self.__current_source_index += 1
-            if self.__current_source_index == len(self.__sources):
-                self.__current_source_index = 0
+            self.__current_viewport_index += 1
+            if self.__current_viewport_index == N:
+                self.__current_viewport_index = 0
 
 
-
-        viewports = window.viewports()
-        vindex = -1
-
-        viewport = viewports[vindex]
-        self.__viewport_outline = geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1, 1, 0), linewidth=6)
+\\
+        viewport = window.viewports()[self.__current_viewport_index]
+        self.__current_viewport_outline = geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1, 1, 0), linewidth=6)
         """
         # Deactivate current result and source
         current = self.__sources[self.__current_source_index]
