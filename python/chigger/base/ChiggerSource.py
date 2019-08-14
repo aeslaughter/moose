@@ -105,7 +105,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         return self.__viewport_weakref()
 
     def remove(self):
-        self.__viewport.remove(self)
+        self._viewport.remove(self)
 
     def getVTKActor(self):
         """

@@ -149,9 +149,9 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
     def getSource(self, index=-1):
         return self._sources[index]
 
-    def printCamera(self, *args): #pylint: disable=unused-argument
-        """Keybinding callback."""
-        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
+    def getBounds(self):
+        bnds = self.getOption('viewport')
+        return (bnds[0], bnds[2], bnds[1], bnds[3])
 
     def __len__(self):
         """
@@ -163,6 +163,12 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         for source in self._sources:
             yield source
 
+
+
+
+    def printCamera(self, *args): #pylint: disable=unused-argument
+        """Keybinding callback."""
+        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
 
     #def RequestData(self, request, inInfo, outInfo):
     #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)

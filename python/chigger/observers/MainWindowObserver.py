@@ -73,7 +73,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         #self.__viewport_outline_weakref = None
         #self.__source_outline_weakref = None
-        self.__current_viewport_index = -1
+        self.__current_viewport_index = None
         self.__current_viewport_outline = None
         #self.__sources = list()]
         #self.__current_index = None
@@ -104,19 +104,23 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_viewport_outline = None
 
         N = len(window.viewports())
-        if binding.shift:
+        if self.__current_viewport_index is None:
+            self.__current_viewport_index = N - 1 if binding.shift else 0
+        elif binding.shift:
             self.__current_viewport_index -= 1
             if self.__current_viewport_index < 0:
-                self.__current_viewport_index = N - 1
+                self.__current_viewport_index = None
         else:
             self.__current_viewport_index += 1
             if self.__current_viewport_index == N:
-                self.__current_viewport_index = 0
+                self.__current_viewport_index = None
 
 
-\\
-        viewport = window.viewports()[self.__current_viewport_index]
-        self.__current_viewport_outline = geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1, 1, 0), linewidth=6)
+        if self.__current_viewport_index is not None:
+            viewport = window.viewports()[self.__current_viewport_index]
+            self.__current_viewport_outline = geometric.Outline2D(viewport,
+                                                                  bounds=(0,1,0,1),
+                                                                  color=(1, 1, 0), linewidth=6)
         """
         # Deactivate current result and source
         current = self.__sources[self.__current_source_index]
