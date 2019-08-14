@@ -31,8 +31,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         Helper object for storing result/source information. weakref is used to avoid this
         class taking ownership of objects which can cause VTK to seg. fault.
         """
-        def __init__(self, result, source):
-            self.__result_weakref = weakref.ref(result)
+        def __init__(self, viewport, source):
+            self.__viewport_weakref = weakref.ref(viewport)
             self.__source_weakref = weakref.ref(source)
 
         @property
@@ -73,7 +73,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         #self.__viewport_outline_weakref = None
         #self.__source_outline_weakref = None
-        #self.__current_source_index = None
+        self.__current_viewport_index = -1
+        self.__viewport_outline = None
+        #self.__sources = list()]
+        #self.__current_index = None
+
 
     """
     def _initializeSources(self):
@@ -95,11 +99,27 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         self.log('Select Viewport', level=logging.DEBUG)
 
+        if self.__viewport_outline is not None:
+            self.__viewport_outline.remove()
+            self.__viewport_outline = None
+
+        N = len(window.viewports())
+        if binding.shift:
+            self.__current_viewport_index -= 1
+            if self.__current_source_index == -1:
+                self.__current_source_index = len(self.__sources) - 1
+        else:
+            self.__current_source_index += 1
+            if self.__current_source_index == len(self.__sources):
+                self.__current_source_index = 0
+
+
+
         viewports = window.viewports()
         vindex = -1
 
         viewport = viewports[vindex]
-        geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1, 1, 0), linewidth=6)
+        self.__viewport_outline = geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1, 1, 0), linewidth=6)
         """
         # Deactivate current result and source
         current = self.__sources[self.__current_source_index]

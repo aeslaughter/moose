@@ -104,6 +104,9 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
         """Property so that self._viewport acts like the actual Viewport object."""
         return self.__viewport_weakref()
 
+    def remove(self):
+        self.__viewport.remove(self)
+
     def getVTKActor(self):
         """
         Return the constructed vtk actor object. (public)
