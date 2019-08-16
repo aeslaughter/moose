@@ -23,26 +23,30 @@ def get_options():
 
     parser.add_argument('-d', '--directory', type=str, default=mooseutils.git_root_dir(),
                         help="The directory to search.")
-    parser.add_argument('-r', '--remote', type=str, default='origin',
-                        help="The name of the git remote to compare against.")
-    parser.add_argument('-b', '--branch', type=str, default='devel',
-                        help="The name of the branch to compare against.")
     parser.add_argument('--specs', type=list, default=['tests'],
                         help="The name of the specification files to consider.")
     parser.add_argument('--skip', nargs='+', default=[],
                         help="Partial directory paths to ignore.")
     parser.add_argument('--duplicates', action='store_true',
                         help='Enable duplicate requirement check')
+
+    parser.add_argument('--diff', type=bool, default=True,
+                        help='Only check test specifications from the curreng git-diff')
+    parser.add_argument('-r', '--remote', type=str, default='origin',
+                        help="The name of the git remote to compare against (requires --diff=true).")
+    parser.add_argument('-b', '--branch', type=str, default='devel',
+                        help="The name of the branch to compare against (requires --diff=true).")
+
     return parser.parse_args()
 
 if __name__ == '__main__':
 
     opt = get_options()
 
-    cmd = ['git', 'fetch', opt.remote]
-    subprocess.call(cmd)
-
-    count = mooseutils.sqa_check(opt.directory, opt.remote, opt.branch, opt.specs, opt.skip)
+    if opt.diff:
+        count = mooseutils.sqa_check_diff(opt.directory, opt.remote, opt.branch, opt.specs, opt.skip)
+    else:
+        count = mooseutils.sqa_check(opt.directory, opt.specs, opt.skip)
 
     if opt.duplicates:
         count += mooseutils.sqa_check_requirement_duplicates(opt.directory, opt.specs, opt.skip)

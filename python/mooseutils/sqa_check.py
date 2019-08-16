@@ -12,7 +12,7 @@ import os
 import collections
 import subprocess
 from hit_load import hit_load
-from mooseutils import git_root_dir, colorText
+from mooseutils import git_root_dir, git_ls_files, colorText
 
 def check_requirement(filename):
     """Check spec file for requirement documentation."""
@@ -42,7 +42,17 @@ def check_requirement(filename):
         return 1
     return 0
 
-def sqa_check(working_dir=os.getcwd(), remote='origin', branch='devel', specs=['tests'], skip=[]):
+def sqa_check(working_dir=os.getcwd(), specs=['tests'], skip=[]):
+    """Check test specifications all include requirements."""
+
+    for filename in git_ls_files(working_dir):
+        if os.path.isfile(filename) and (os.path.basename(filename) in specs) and \
+           not any(s in filename for s in skip):
+            count += check_requirement(os.path.join(root, filename))
+
+    return count
+
+def sqa_check_diff(working_dir=os.getcwd(), remote='origin', branch='devel', specs=['tests'], skip=[]):
     """Check that test specifications that were modified include requirements."""
 
     # Fetch
