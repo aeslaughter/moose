@@ -174,14 +174,14 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         print mooseutils.colorText('General Keybindings:', 'YELLOW')
         self.printKeyBindings(self.keyBindings())
 
-        current = self.__sources[self.__current_source_index]
-        if self.__result_outline_weakref:
-            print mooseutils.colorText('Current Viewport Keybindings ({}):'.format(current.result.getOption('name')), 'YELLOW')
-            self.printKeyBindings(current.result.keyBindings())
+        if self.__current_viewport_index is not None:
+            viewport = window.viewports()[self.__current_viewport_index]
+            print mooseutils.colorText('Current Viewport Keybindings ({}):'.format(viewport.name()), 'YELLOW')
+            self.printKeyBindings(viewport.keyBindings())
 
-        if self.__source_outline_weakref:
-            print mooseutils.colorText('Current Source Keybindings ({}):'.format(current.source.getOption('name')), 'YELLOW')
-            self.printKeyBindings(current.source.keyBindings())
+        #if self.__source_outline_weakref:
+        #    print mooseutils.colorText('Current Source Keybindings ({}):'.format(current.source.getOption('name')), 'YELLOW')
+        #    self.printKeyBindings(current.source.keyBindings())
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """

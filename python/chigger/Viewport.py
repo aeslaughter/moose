@@ -149,9 +149,9 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
     def getSource(self, index=-1):
         return self._sources[index]
 
-    def getBounds(self):
-        bnds = self.getOption('viewport')
-        return (bnds[0], bnds[2], bnds[1], bnds[3])
+   # def getBounds(self):
+   #     bnds = self.getOption('viewport')
+   #     return (bnds[0], bnds[2], bnds[1], bnds[3])
 
     def __len__(self):
         """

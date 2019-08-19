@@ -48,6 +48,10 @@ class ChiggerObjectBase(object):
         else:
             obj.log(lvl, ' {}'.format(msg.format(args)))
 
+    def name(self):
+        return self.getOption('name')
+
+
     #def updateOptions(self, other):
     #    self._options.update(other)
 
