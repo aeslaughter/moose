@@ -48,6 +48,7 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
 
     @staticmethod
     def validKeyBindings():
+
         bindings = utils.KeyBindingMixin.validKeyBindings()
         bindings.add('c', Viewport.printCamera,
                      desc="Display the camera settings for this object.")
@@ -57,14 +58,25 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
                      desc="Display the available key, value options as a 'setOptions' method call.")
 
         bindings.add('right', Viewport._setViewport, args=(0, 0.025),
-                     desc="Increase the viewport in the x-direction")
+                     desc="Increase the viewport x-min value.")
         bindings.add('left', Viewport._setViewport, args=(0, -0.025),
-                     desc="Increase the viewport in the x-direction")
+                     desc="Increase the viewport x-min value.")
 
         bindings.add('right', Viewport._setViewport, args=(2, 0.025), shift=True,
-                     desc="Decrease the viewport in the x-direction")
+                     desc="Decrease the viewport x-max value.")
         bindings.add('left', Viewport._setViewport, args=(2, -0.025), shift=True,
-                     desc="Decrease the viewport in the x-direction")
+                     desc="Decrease the viewport x-max value")
+
+        bindings.add('up', Viewport._setViewport, args=(1, 0.025),
+                     desc="Increase the viewport y-min value.")
+        bindings.add('down', Viewport._setViewport, args=(1, -0.025),
+                     desc="Increase the viewport y-min value.")
+
+        bindings.add('up', Viewport._setViewport, args=(3, 0.025), shift=True,
+                     desc="Decrease the viewport y-max value.")
+        bindings.add('down', Viewport._setViewport, args=(3, -0.025), shift=True,
+                     desc="Decrease the viewport y-max value")
+
 
         return bindings
 
