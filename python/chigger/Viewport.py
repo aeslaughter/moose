@@ -16,7 +16,7 @@ from . import utils
 from . import base
 
 
-class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm):
+class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     """
     The ChiggerResult is the base class for creating renderered objects. This class
     contains a single vtkRenderer to which many actors can be added.
@@ -28,7 +28,7 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
     @classmethod
     def validOptions(cls):
         opt = base.ChiggerAlgorithm.validOptions()
-        opt += utils.ObserverMixin.validOptions()
+        opt += utils.KeyBindingMixin.validOptions()
 
         opt.add('light', vtype=float,
                doc="Add a headlight with the given intensity to the renderer.")
@@ -82,7 +82,6 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
 
     def __init__(self, window, **kwargs):
         utils.KeyBindingMixin.__init__(self)
-        utils.ObserverMixin.__init__(self)
         base.ChiggerAlgorithm.__init__(self,
                                        inputType='vtkDataObject',
                                        nOutputPorts=1,
@@ -169,6 +168,9 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         """Return the vtk.vtkRenderer object."""
         return self._vtkrenderer
 
+    def sources(self):
+        return self._sources
+
     def getSource(self, index=-1):
         return self._sources[index]
 
@@ -213,7 +215,6 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
 
         y_min = round(c[1], 3) if (c[1] >= 0 and c[1] < c[3]) else y_min
         y_max = round(c[3], 3) if (c[3] <= 1 and c[1] < c[3]) else y_max
-
 
         self.setOptions(viewport=(x_min, y_min, x_max, y_max))
         self.printOption('viewport')

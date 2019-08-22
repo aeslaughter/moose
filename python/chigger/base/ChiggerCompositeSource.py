@@ -1,12 +1,12 @@
 from ChiggerObject import ChiggerObject
 from .. import utils
 
-class ChiggerCompositeSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerObject):
+class ChiggerCompositeSource(utils.KeyBindingMixin, ChiggerObject):
 
     @staticmethod
     def validOptions():
         opt = ChiggerObject.validOptions()
-        opt += utils.ObserverMixin.validOptions()
+        opt += utils.KeyBindingMixin.validOptions()
         return opt
 
     @staticmethod

@@ -47,3 +47,7 @@ class Outline2D(GeometricSourceBase):
             coordinate.SetCoordinateSystemToViewport()
 
         self._vtksource.SetBounds(bnds[0], bnds[1], bnds[2], bnds[3], 0, 0)
+
+    def getBounds(self):
+        bnds = self._vtksource.GetBounds()
+        return (bnds[0], bnds[1], bnds[2], bnds[3])

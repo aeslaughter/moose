@@ -21,28 +21,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
     """
-
-    class ObjectRef(object):
-        """
-        Helper object for storing result/source information. weakref is used to avoid this
-        class taking ownership of objects which can cause VTK to seg. fault.
-        """
-        def __init__(self, viewport, source):
-            self.__viewport_weakref = weakref.ref(viewport)
-            self.__source_weakref = weakref.ref(source)
-
-        @property
-        def viewport(self):
-            return self.__viewport_weakref()
-
-        @property
-        def source(self):
-            return self.__source_weakref()
-
-        @property
-        def actor(self):
-            return self.source.getVTKActor()
-
     @staticmethod
     def validOptions():
         opt = ChiggerObserver.validOptions()
@@ -51,11 +29,16 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('v', MainWindowObserver._selectViewport, desc="Select the next viewport.")
-        bindings.add('v', MainWindowObserver._selectViewport, shift=True, args=(True,),
+        bindings.add('v', MainWindowObserver._nextViewport, desc="Select the next viewport.")
+        bindings.add('v', MainWindowObserver._nextViewport, shift=True, args=(True,),
                      desc="Select the previous viewport.")
 
-        bindings.add('t', MainWindowObserver._deactivateResult, desc="Clear selection(s).")
+        bindings.add('s', MainWindowObserver._nextSource,
+                     desc="Select the next source in the current viewport.")
+        bindings.add('s', MainWindowObserver._nextSource, shift=True, args=(True,),
+                     desc="Select the previous source in the current viewport.")
+
+        bindings.add('t', MainWindowObserver._deactivate, desc="Clear selection(s).")
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
         return bindings
 
@@ -67,31 +50,21 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
                                                     self._onKeyPressEvent)
 
-        #self.__viewport_outline_weakref = None
-        #self.__source_outline_weakref = None
         self.__current_viewport_index = None
         self.__current_viewport_outline = None
-        #self.__sources = list()]
-        #self.__current_index = None
 
+        self.__current_source_index = None
+        self.__current_source_outline = None
 
-    """
-    def _initializeSources(self):
+    def _availableViewports(self):
+        return [viewport for viewport in self._window.viewports() if viewport.interactive]
 
-        if self.__current_source_index is not None:
-            return
+    def _availableSources(self, viewport):
+        return [source for viewport in viewport.sources() if viewport.interactive]
 
-        self.__current_source_index = -1
-        self.__sources = list()
-        for result in self._window:
-            for source in result:
-                if result.interactive() and source.interactive():
-                    self.__sources.append(MainWindowObserver.ObjectRef(result, source))
-    """
-
-    def _selectViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
+    def _nextViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
         """
-        Keybinding callback: Activate the "next" result object.
+        Keybinding callback: Activate the "next" viewport object.
         """
         self.log('Select Viewport', level=logging.DEBUG)
 
@@ -99,7 +72,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_viewport_outline.remove()
             self.__current_viewport_outline = None
 
-        N = len(self._window.viewports())
+        viewports = self._availableViewports()
+        N = len(viewports)
         if self.__current_viewport_index is None:
             self.__current_viewport_index = N - 1 if decrease else 0
         elif decrease:
@@ -111,48 +85,62 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             if self.__current_viewport_index == N:
                 self.__current_viewport_index = None
 
-
         if self.__current_viewport_index is not None:
-            viewport = self._window.viewports()[self.__current_viewport_index]
+            viewport = viewports[self.__current_viewport_index]
             self.__current_viewport_outline = geometric.Outline2D(viewport,
                                                                   bounds=(0,1,0,1),
                                                                   color=(1, 1, 0), linewidth=6)
-        """
-        # Deactivate current result and source
-        current = self.__sources[self.__current_source_index]
-        if self.__result_outline_weakref:
-            pass
-            #current.result._remove(self.__result_outline_weakref())
-            #urrent.result._remove(self.__source_outline_weakref())
 
-        if binding.shift:
+    def _nextSource(self, decrease=False):
+        """
+        Keybinding callback: Activate the "next" source object in the current viewport
+        """
+        self.log('Select Source', level=logging.DEBUG)
+
+        if self.__current_viewport_outline is None:
+            return
+
+        if self.__current_source_outline is not None:
+            self.__current_source_outline.remove()
+            self.__current_source_outline = None
+
+        viewport = self._avaialbleViewports()[self.__current_viewport_index]
+        N = len(viewport)
+        if self.__current_source_index is None:
+            self.__current_source_index = N - 1 if decrease else 0
+        elif decrease:
             self.__current_source_index -= 1
-            if self.__current_source_index == -1:
-                self.__current_source_index = len(self.__sources) - 1
+            if self.__current_source_index < 0:
+                self.__current_source_index = None
         else:
             self.__current_source_index += 1
-            if self.__current_source_index == len(self.__sources):
-                self.__current_source_index = 0
+            if self.__current_source_index == N:
+                self.__current_source_index = None
 
-        current = self.__sources[self.__current_source_index]
+        if self.__current_source_index is not None:
+            source = self._availableSources(viewport)[self.__current_source_index]
+            bnds = source.getBounds()
+            if len(bnds) == 4:
+                self.__current_source_outline = geometric.Outline2D(viewport,
+                                                                    bounds=bnds,
+                                                                    color=(1, 0, 0), linewidth=6)
+            else:
+                self.__current_source_outline = geometric.Outline(viewport,
+                                                                  bounds=bnds,
+                                                                  color=(1, 0, 0), linewidth=6)
 
-        bounds = current.result.getVTKRenderer().ComputeVisiblePropBounds()
-        geometric.Outline(current.result, bounds=bounds)
-        self.__result_outline_weakref = weakref.ref(current.result._sources[-1])
 
-        bounds = current.source.getBounds()
-        geometric.Outline(current.result, bounds=bounds)
-        self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
-        """
-        self._window.Update()
-        self._window.getVTKWindow().Render()
-        #viewport.getVTKRenderer().Render()
-
-    def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
+    def _deactivate(self): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all results.
         """
-        print 'DEACTIVATE'
+        if self.__current_viewport_outline is not None:
+            self.__current_viewport_outline.remove()
+            self.__current_viewport_outline = None
+
+        if self.__current_source_outline is not None:
+            self.__current_source_outline.remove()
+            self.__current_source_outline = None
 
     def _printHelp(self): #pylint: disable=unused-argument
         """
@@ -168,9 +156,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             print mooseutils.colorText('Current Viewport Keybindings ({}):'.format(viewport.name()), 'YELLOW')
             self.printKeyBindings(viewport.keyBindings())
 
-        #if self.__source_outline_weakref:
-        #    print mooseutils.colorText('Current Source Keybindings ({}):'.format(current.source.getOption('name')), 'YELLOW')
-        #    self.printKeyBindings(current.source.keyBindings())
+        if self.__current_source_index is not None:
+            viewport = self._window.viewports()[self.__current_viewport_index]
+            source = viewport.sources()[self.__current_source_index]
+            print mooseutils.colorText('Current Source Keybindings ({}):'.format(viewport.name()), 'YELLOW')
+            self.printKeyBindings(source.keyBindings())
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """
@@ -189,18 +179,16 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         # Viewport options
         if self.__current_viewport_index is not None:
-            viewport = self._window.viewports()[self.__current_viewport_index]
+            viewport = self._availableViewports()[self.__current_viewport_index]
             for binding in viewport.getKeyBindings(key, shift):
                 binding.function(viewport, *binding.args)
-        """
-        current = self.__sources[self.__current_source_index]
-        if self.__result_outline_weakref:
-            for binding in current.result.getKeyBindings(key, shift):
-                binding.function(current.result, self._window, binding)
 
-        if self.__source_outline_weakref:
-            for binding in current.source.getKeyBindings(key, shift):
-                binding.function(current.source, self._window, binding)
-        """
+        # Source options
+        if self.__current_source_index is not None:
+            viewport = self._availableViewports()[self.__current_viewport_index]
+            source = self._availableSources(viewport)[self.__current_source_index]
+            for binding in source.getKeyBindings(key, shift):
+                binding.function(source, *binding.args)
+
         self._window.Update()
         self._window.getVTKWindow().Render()

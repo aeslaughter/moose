@@ -14,7 +14,7 @@ import mooseutils
 from ChiggerAlgorithm import ChiggerAlgorithm
 from chigger import utils
 
-class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm):
+class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
 
     # The type of vtkProp to create (this should be defined in child class)
     VTKACTORTYPE = None
@@ -37,7 +37,7 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
         opt += utils.ActorOptions.validOptions()
-        opt += utils.ObserverMixin.validOptions()
+        opt += utils.KeyBindingMixin.validOptions()
 
         """
         opt.add('orientation', vtype=float, size=3, doc="The orientation of the object.")
@@ -65,7 +65,6 @@ class ChiggerSource(utils.KeyBindingMixin, utils.ObserverMixin, ChiggerAlgorithm
 
     def __init__(self, viewport, **kwargs):
         utils.KeyBindingMixin.__init__(self)
-        utils.ObserverMixin.__init__(self)
         ChiggerAlgorithm.__init__(self,
                                   #outputType='vtkDataObject',
                                   #nOutputPorts=1,

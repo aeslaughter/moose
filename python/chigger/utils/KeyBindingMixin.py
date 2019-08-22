@@ -38,6 +38,12 @@ class KeyBindingMixin(object):
     """
     Class for inheriting key binding support for an object.
     """
+    @staticmethod
+    def validOptions():
+        from . import Options
+        opt = Options()
+        opt.add('interactive', True, doc="Toggle indicating if the object is interactive.")
+        return opt
 
     @staticmethod
     def validKeyBindings():
@@ -69,3 +75,10 @@ class KeyBindingMixin(object):
             key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
             print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
                                           subsequent_indent=' '*(n + 2)))
+
+
+    def interactive(self):
+        """
+        Return the interactive state for the object.
+        """
+        return self.getOption('interactive')

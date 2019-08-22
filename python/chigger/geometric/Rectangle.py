@@ -49,7 +49,7 @@ class Rectangle(GeometricSourceBase):
 
     def getBounds(self):
         bnds = self.getOption('bounds')
-        return (bnds[0], bnds[1], bnds[2], bnds[3], 0, 0)
+        return (bnds[0], bnds[1], bnds[2], bnds[3])
 
 
     def applyOptions(self):
