@@ -17,10 +17,6 @@ from ChiggerObserver import ChiggerObserver
 from .. import utils
 from .. import geometric
 
-
-#TODO: result -> viewport
-
-
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
@@ -56,7 +52,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
         bindings.add('v', MainWindowObserver._selectViewport, desc="Select the next viewport.")
-        bindings.add('v', MainWindowObserver._selectViewport, shift=True,
+        bindings.add('v', MainWindowObserver._selectViewport, shift=True, args=(True,),
                      desc="Select the previous viewport.")
 
         bindings.add('t', MainWindowObserver._deactivateResult, desc="Clear selection(s).")
@@ -93,7 +89,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                     self.__sources.append(MainWindowObserver.ObjectRef(result, source))
     """
 
-    def _selectViewport(self, window, binding): #pylint: disable=no-self-use, unused-argument
+    def _selectViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Activate the "next" result object.
         """
@@ -103,10 +99,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_viewport_outline.remove()
             self.__current_viewport_outline = None
 
-        N = len(window.viewports())
+        N = len(self._window.viewports())
         if self.__current_viewport_index is None:
-            self.__current_viewport_index = N - 1 if binding.shift else 0
-        elif binding.shift:
+            self.__current_viewport_index = N - 1 if decrease else 0
+        elif decrease:
             self.__current_viewport_index -= 1
             if self.__current_viewport_index < 0:
                 self.__current_viewport_index = None
@@ -117,7 +113,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
 
         if self.__current_viewport_index is not None:
-            viewport = window.viewports()[self.__current_viewport_index]
+            viewport = self._window.viewports()[self.__current_viewport_index]
             self.__current_viewport_outline = geometric.Outline2D(viewport,
                                                                   bounds=(0,1,0,1),
                                                                   color=(1, 1, 0), linewidth=6)
@@ -148,24 +144,17 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         geometric.Outline(current.result, bounds=bounds)
         self.__source_outline_weakref = weakref.ref(current.result._sources[-1])
         """
-        window.Update()
-        window.getVTKWindow().Render()
+        self._window.Update()
+        self._window.getVTKWindow().Render()
         #viewport.getVTKRenderer().Render()
 
     def _deactivateResult(self, window, binding): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all results.
         """
-        current = self.__sources[self.__current_source_index]
-        if self.__result_outline_weakref:
-            current.result._remove(self.__result_outline_weakref())
-            current.result._remove(self.__source_outline_weakref())
-            self.__result_outline_weakref = None
-            self.__source_outline_weakref = None
+        print 'DEACTIVATE'
 
-        self._window.Update()
-
-    def _printHelp(self, window, binding): #pylint: disable=unused-argument
+    def _printHelp(self): #pylint: disable=unused-argument
         """
         Keybinding callback: Display the available controls for this object.
         """
@@ -175,7 +164,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.printKeyBindings(self.keyBindings())
 
         if self.__current_viewport_index is not None:
-            viewport = window.viewports()[self.__current_viewport_index]
+            viewport = self._window.viewports()[self.__current_viewport_index]
             print mooseutils.colorText('Current Viewport Keybindings ({}):'.format(viewport.name()), 'YELLOW')
             self.printKeyBindings(viewport.keyBindings())
 
@@ -196,8 +185,13 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         # This objects bindings
         for binding in self.getKeyBindings(key, shift):
-            binding.function(self, self._window, binding)
+            binding.function(self, *binding.args)
 
+        # Viewport options
+        if self.__current_viewport_index is not None:
+            viewport = self._window.viewports()[self.__current_viewport_index]
+            for binding in viewport.getKeyBindings(key, shift):
+                binding.function(viewport, *binding.args)
         """
         current = self.__sources[self.__current_source_index]
         if self.__result_outline_weakref:
@@ -208,3 +202,5 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             for binding in current.source.getKeyBindings(key, shift):
                 binding.function(current.source, self._window, binding)
         """
+        self._window.Update()
+        self._window.getVTKWindow().Render()

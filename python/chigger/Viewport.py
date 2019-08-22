@@ -55,6 +55,17 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
                      desc="Display the available key, value options for this result.")
         bindings.add('o', Viewport.printSetOptions, shift=True,
                      desc="Display the available key, value options as a 'setOptions' method call.")
+
+        bindings.add('right', Viewport._setViewport, args=(0, 0.025),
+                     desc="Increase the viewport in the x-direction")
+        bindings.add('left', Viewport._setViewport, args=(0, -0.025),
+                     desc="Increase the viewport in the x-direction")
+
+        bindings.add('right', Viewport._setViewport, args=(2, 0.025), shift=True,
+                     desc="Decrease the viewport in the x-direction")
+        bindings.add('left', Viewport._setViewport, args=(2, -0.025), shift=True,
+                     desc="Decrease the viewport in the x-direction")
+
         return bindings
 
     def __init__(self, window, **kwargs):
@@ -163,12 +174,39 @@ class Viewport(utils.KeyBindingMixin, utils.ObserverMixin, base.ChiggerAlgorithm
         for source in self._sources:
             yield source
 
-
-
-
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
         print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
+
+
+    def increaseXmin(self, *args):
+        self._setViewport(0, 0.05)
+
+    def decreaseXmin(self, *args):
+        self._setViewport(0, -0.05)
+
+    def increaseXmax(self, *args):
+        self._setViewport(2, 0.05)
+
+    def decreaseXmax(self, *args):
+        self._setViewport(2, -0.05)
+
+    def _setViewport(self, index, increment):
+        x_min, y_min, x_max, y_max = self.getOption('viewport')
+        c = list(self.getOption('viewport'))
+        c[index] += increment
+
+        x_min = round(c[0], 3) if (c[0] >= 0 and c[0] < c[2]) else x_min
+        x_max = round(c[2], 3) if (c[2] <= 1 and c[0] < c[2]) else x_max
+
+        y_min = round(c[1], 3) if (c[1] >= 0 and c[1] < c[3]) else y_min
+        y_max = round(c[3], 3) if (c[3] <= 1 and c[1] < c[3]) else y_max
+
+
+        self.setOptions(viewport=(x_min, y_min, x_max, y_max))
+        self.printOption('viewport')
+        #print self.getOption('viewport')
+
 
     #def RequestData(self, request, inInfo, outInfo):
     #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)

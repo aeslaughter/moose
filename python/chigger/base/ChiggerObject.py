@@ -104,6 +104,9 @@ class ChiggerObjectBase(object):
     def assignOption(self, name, func):
         self._options.assign(name, func)
 
+    def printOption(self, key):
+        print '{}={}'.format(key, repr(self.getOption(key)))
+
     def printOptions(self, *args):
         """
         Print a list of all available options for this object.

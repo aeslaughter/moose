@@ -12,7 +12,7 @@ import copy
 import textwrap
 import mooseutils
 
-KeyBinding = collections.namedtuple('KeyBinding', 'key shift description function')
+KeyBinding = collections.namedtuple('KeyBinding', 'key shift description function args')
 
 class KeyBindings(object):
     """
@@ -25,13 +25,14 @@ class KeyBindings(object):
     def __init__(self):
         self.bindings = collections.OrderedDict()
 
-    def add(self, key, func, shift=False, desc=None):
+    def add(self, key, func, shift=False, desc=None, args=None):
         """
         Add a keybinding.
         """
+        args = args or tuple()
         if (key, shift) not in self.bindings:
             self.bindings[(key, shift)] = set()
-        self.bindings[(key, shift)].add(KeyBinding(key, shift, desc, func))
+        self.bindings[(key, shift)].add(KeyBinding(key, shift, desc, func, args))
 
 class KeyBindingMixin(object):
     """
