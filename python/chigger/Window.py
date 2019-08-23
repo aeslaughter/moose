@@ -158,6 +158,9 @@ class Window(base.ChiggerAlgorithm):
     def viewports(self):
         return self.__viewports
 
+    def background(self):
+        return self.__viewports[0]
+
     #def __iter__(self):
     #    for view in self.__viewports:
     #        yield view
@@ -370,6 +373,10 @@ class Window(base.ChiggerAlgorithm):
             #    main_observer.init(self)
             #    self._observers.add(main_observer)
 
+
+        #self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
+
+
         # vtkRenderWindow Settings
         self.assignOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
         self.assignOption('smoothing', self.__vtkwindow.SetLineSmoothing)
@@ -388,6 +395,7 @@ class Window(base.ChiggerAlgorithm):
         # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
 
+        self.__vtkinteractorstyle.SetDefaultRenderer(self.__viewports[0].getVTKRenderer())
 
         #self.__vtkwindow.Start()
         #print self.__vtkwindow

@@ -50,9 +50,14 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
                                                     self._onKeyPressEvent)
 
+        self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonPressEvent,
+                                                    self._onLeftButtonPressEvent)
+
+
         self.__current_viewport_index = None
         self.__current_viewport_outline = None
 
+        self.__current_source = None
         self.__current_source_index = None
         self.__current_source_outline = None
 
@@ -192,3 +197,59 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         self._window.Update()
         self._window.getVTKWindow().Render()
+
+
+    def _onLeftButtonPressEvent(self, obj, event):
+
+
+        pos = self._window.getVTKInteractor().GetEventPosition()
+        vtk_renderer = self._window.getVTKInteractor().FindPokedRenderer(*pos)
+        props = vtk_renderer.PickProp(*pos)
+
+        print props
+
+        #TODO: Check for more than one???
+        #props.GetNumberOfItems()
+        if props is not None:
+            prop = props.GetFirstNode().GetViewProp()
+            viewport, source = self._getSource(prop)
+
+            if self.__current_source is not source:
+                self._deactivateSource()
+
+            self._activateSource(viewport, source)
+        else:
+            self._deactivateSource()
+
+    def _getSource(self, prop):
+        for viewport in self._window.viewports():
+            for source in viewport.sources():
+                if source.getVTKActor() is prop:
+                    return viewport, source
+        return None
+
+    def _activateSource(self, viewport, source):
+        import chigger
+
+        if self.__current_source_outline is None:
+            bnds = source.getBounds()
+            obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
+            self.__current_source = source
+            self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0), linewidth=6)
+
+            self._window.Update()
+            self._window.getVTKWindow().Render()
+            self._window.getVTKInteractorStyle().SetDefaultRenderer(viewport.getVTKRenderer())
+            self._window.getVTKInteractorStyle().SetCurrentRenderer(viewport.getVTKRenderer())
+
+
+    def _deactivateSource(self):
+        if self.__current_source_outline is not None:
+            self.__current_source_outline.remove()
+            self.__current_source_outline = None
+            self.__current_source = None
+
+            self._window.Update()
+            self._window.getVTKWindow().Render()
+            self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
+            self._window.getVTKInteractorStyle().SetCurrentRenderer(None)
