@@ -10,10 +10,13 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
     def __init__(self, source):
         self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
         self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
+        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPressEvent)
+        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMoveEvent)
 
         super(Chigger2DInteractorStyle, self).__init__()
 
         self._source = source
+        self._move_origin = None
 
     def onMouseWheelForward(self, obj, event):
         self.zoom(self.ZOOM_FACTOR)
@@ -23,17 +26,42 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
         self.zoom(-self.ZOOM_FACTOR)
         obj.GetInteractor().GetRenderWindow().Render()
 
+    def onKeyPressEvent(self, obj, event):
+        key = obj.GetKeySym().lower()
+        if key == 'shift_l':
+            self._shift_origin = obj.GetInteractor().GetEventPosition()
 
-    def zoom(self, value):
+    def onMouseMoveEvent(self, obj, event):
+        if obj.GetShiftKey():
+            if self._move_origin == None:
+                self._move_origin = obj.GetInteractor().GetEventPosition()
+            else:
+                pos = obj.GetInteractor().GetEventPosition()
+                self.move(pos[0] - self._move_origin[0], pos[1] - self._move_origin[1])
+                obj.GetInteractor().GetRenderWindow().Render()
+                self._move_origin = pos
+
+    def zoom(self, factor):
 
         origin = self._source.GetOrigin()
-        self._source.SetOrigin([origin[0] + value, origin[1] + value, 0])
+        self._source.SetOrigin([origin[0] + factor, origin[1] + factor, 0])
 
         p = self._source.GetPoint1()
-        self._source.SetPoint1([p[0] + value, p[1] - value, 0])
+        self._source.SetPoint1([p[0] + factor, p[1] - factor, 0])
 
         p = self._source.GetPoint2()
-        self._source.SetPoint2([p[0] - value, p[1] + value, 0])
+        self._source.SetPoint2([p[0] - factor, p[1] + factor, 0])
+
+    def move(self, dx, dy):
+
+        origin = self._source.GetOrigin()
+        self._source.SetOrigin([origin[0] + dx, origin[1] + dy, 0])
+
+        p = self._source.GetPoint1()
+        self._source.SetPoint1([p[0] + dx, p[1] + dy, 0])
+
+        p = self._source.GetPoint2()
+        self._source.SetPoint2([p[0] + dx, p[1] + dy, 0])
 
 
 source1 = vtk.vtkPlaneSource()
