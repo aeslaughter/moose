@@ -104,7 +104,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_source_outline.remove()
             self.__current_source_outline = None
 
-        viewport = self._avaialbleViewports()[self.__current_viewport_index]
+        viewport = self._availableViewports()[self.__current_viewport_index]
         N = len(viewport)
         if self.__current_source_index is None:
             self.__current_source_index = N - 1 if decrease else 0
