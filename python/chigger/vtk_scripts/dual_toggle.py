@@ -27,7 +27,7 @@ def create_renderer(view):
 
 # Create some geometry for the left and right sides
 left = create_renderer([0,0,0.5,1])
-right = create_renderer([0.5,0,1,1])
+right = left#create_renderer([0.5,0,1,1])
 
 background = vtk.vtkRenderer()
 background.SetLayer(0)

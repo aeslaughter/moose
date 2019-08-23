@@ -213,11 +213,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if props is not None:
             prop = props.GetFirstNode().GetViewProp()
             viewport, source = self._getSource(prop)
-
             if self.__current_source is not source:
                 self._deactivateSource()
 
             self._activateSource(viewport, source)
+
         else:
             self._deactivateSource()
 
@@ -229,8 +229,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         return None
 
     def _activateSource(self, viewport, source):
-        import chigger
-
         if self.__current_source_outline is None:
             bnds = source.getBounds()
             obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
