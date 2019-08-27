@@ -200,6 +200,11 @@ class Window(base.ChiggerAlgorithm):
         if not self.__vtkwindow.HasRenderer(renderer):
             self.__vtkwindow.AddRenderer(renderer)
 
+        #renderer = viewport.getVTKRenderer2D()
+        #if not self.__vtkwindow.HasRenderer(renderer):
+        #    self.__vtkwindow.AddRenderer(renderer)
+
+
 
     #def _append(self, *args):
     #    """

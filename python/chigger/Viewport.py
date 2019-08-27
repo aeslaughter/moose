@@ -90,6 +90,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         # Initialize class members
         self._sources = list()
         self._vtkrenderer = vtk.vtkRenderer()
+        self._vtkrenderer2d = vtk.vtkRenderer()
 
         # Verify renderer type
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
@@ -118,11 +119,18 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
-                self._vtkrenderer.AddActor(actor)
+                if False:#isinstance(actor, vtk.vtkActor2D):
+                    self._vtkrenderer2d.AddActor(actor)
+                else:
+                    self._vtkrenderer.AddActor(actor)
 
         else:
-            if arg.getVTKActor() is not None:
-                self._vtkrenderer.AddActor(arg.getVTKActor())
+            actor = arg.getVTKActor()
+            if actor is not None:
+                if False:#isinstance(actor, vtk.vtkActor2D):
+                    self._vtkrenderer2d.AddActor(actor)
+                else:
+                    self._vtkrenderer.AddActor(actor)
 
         self._sources.append(arg)
 
@@ -147,6 +155,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     def applyOptions(self):
         base.ChiggerAlgorithm.applyOptions(self)
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
+        self._vtkrenderer2d.SetViewport(self.getOption('viewport'))
 
         if self.isOptionValid('layer'):
             layer = self.getOption('layer')
@@ -154,6 +163,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
                 self.log("The 'layer' option must be zero or greater but {} provided.", layer,
                          level=logging.ERROR)
             self._vtkrenderer.SetLayer(layer)
+            self._vtkrenderer2d.SetLayer(layer)
 
         self._vtkrenderer.SetBackground(self.getOption('background'))
         if self.isOptionValid('background2'):
@@ -167,6 +177,10 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
         return self._vtkrenderer
+
+    def getVTKRenderer2D(self):
+        """Return the vtk.vtkRenderer object used for 2D actors."""
+        return self._vtkrenderer2d
 
     def sources(self):
         return self._sources
