@@ -1,30 +1,28 @@
 import vtk
-from GeometricSourceBase import GeometricSourceBase
+from GeometricSource import GeometricSource, GeometricSource2D
 
-class Outline(GeometricSourceBase):
+class Outline(GeometricSource):
 
     VTKSOURCETYPE = vtk.vtkOutlineSource
 
     @staticmethod
     def validOptions():
-        opt = GeometricSourceBase.validOptions()
+        opt = GeometricSource.validOptions()
         opt.add('bounds', None, vtype=float, size=6,
                 doc="The bounding box of the object to outline: [xmin, xmax, ymin, ymax, zmin, zmax].")
         return opt
 
     def applyOptions(self):
-        GeometricSourceBase.applyOptions(self)
+        GeometricSource.applyOptions(self)
         self.assignOption('bounds', self._vtksource.SetBounds)
 
 
-class Outline2D(GeometricSourceBase):
-    VTKACTORTYPE = vtk.vtkActor2D
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
+class Outline2D(GeometricSource2D):
     VTKSOURCETYPE = vtk.vtkOutlineSource
 
     @staticmethod
     def validOptions():
-        opt = GeometricSourceBase.validOptions()
+        opt = GeometricSource2D.validOptions()
         opt.add('bounds', None, vtype=float, size=4,
                 doc="The bounding box of the object to outline: [xmin, xmax, ymin, ymax].")
 
@@ -34,10 +32,10 @@ class Outline2D(GeometricSourceBase):
         return opt
 
     def applyOptions(self):
-        GeometricSourceBase.applyOptions(self)
+        GeometricSource.applyOptions(self)
         bnds = self.getOption('bounds')
 
-        # TODO: This shows up in both the Rectangle (need GeometricSourceBase2D)
+        # TODO: This shows up in the Rectangle (need GeometricSource2D)
         if self._vtkmapper.GetTransformCoordinate() is None:
             self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())
         coordinate = self._vtkmapper.GetTransformCoordinate()

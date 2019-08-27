@@ -2,16 +2,14 @@ import vtk
 import numpy as np
 import math
 from .. import base, utils, filters
-from GeometricSourceBase import GeometricSourceBase
+from GeometricSource import GeometricSource2D
 
-class Rectangle(GeometricSourceBase):
-    VTKACTORTYPE = vtk.vtkActor2D
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
+class Rectangle(GeometricSource2D):
     VTKSOURCETYPE = vtk.vtkPlaneSource
 
     @staticmethod
     def validOptions():
-        opt = GeometricSourceBase.validOptions()
+        opt = GeometricSource2D.validOptions()
         opt += utils.ActorOptions.validOptions()
         opt += base.ColorMap.validOptions()
 
@@ -39,24 +37,18 @@ class Rectangle(GeometricSourceBase):
         return opt
 
     def __init__(self, *args, **kwargs):
-        GeometricSourceBase.__init__(self, *args, **kwargs)
+        GeometricSource2D.__init__(self, *args, **kwargs)
         self._colormap = base.ColorMap()
-
-        #coordinate = vtk.vtkCoordinate()
-        #coordinate.SetCoordinateSystemToNormalizedViewport()
-        #coordinate.SetCoordinateSystemToViewport()
-        #self._vtkmapper.SetTransformCoordinate(coordinate)
 
     def getBounds(self):
         bnds = self.getOption('bounds')
         return (bnds[0], bnds[1], bnds[2], bnds[3])
 
-
     def applyOptions(self):
         """
         Set the options for this cube. (public)
         """
-        GeometricSourceBase.applyOptions(self)
+        GeometricSource2D.applyOptions(self)
 
         if self._vtkmapper.GetTransformCoordinate() is None:
             self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())
@@ -67,15 +59,9 @@ class Rectangle(GeometricSourceBase):
             coordinate.SetCoordinateSystemToViewport()
 
         bnds = self.getOption('bounds')
-
-
         p0 = (bnds[0], bnds[2], 0)
         p1 = (bnds[0], bnds[3], 0)
         p2 = (bnds[1], bnds[2], 0)
-
-        #p0 = self.getOption('origin')
-        #p1 = self.getOption('point1')
-        #p2 = self.getOption('point2')
 
         angle = self.getOption('rotate')
         if angle > 0:

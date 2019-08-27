@@ -10,9 +10,8 @@
 from .. import base
 
 from Cube import Cube
-from Outline import Outline, Outline2D
-
 from Rectangle import Rectangle
+from Outline import Outline, Outline2D
 
 
 

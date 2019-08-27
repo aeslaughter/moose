@@ -9,9 +9,9 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from GeometricSourceBase import GeometricSourceBase
+from GeometricSource import GeometricSource
 
-class Cube(GeometricSourceBase):
+class Cube(GeometricSource):
     """
     Single Cube object.
     """
@@ -19,7 +19,7 @@ class Cube(GeometricSourceBase):
 
     @staticmethod
     def validOptions():
-        opt = GeometricSourceBase.validOptions()
+        opt = GeometricSource.validOptions()
         opt.add("bounds", None, vtype=float, size=6,
                 doc="The bounding box for the cube [xmin, xmax, ymin, ymax, zmin, zmax]. This " \
                 "will overwrite the 'lengths' and 'center' options.")
@@ -32,7 +32,7 @@ class Cube(GeometricSourceBase):
         """
         Set the options for this cube. (public)
         """
-        GeometricSourceBase.applyOptions(self)
+        GeometricSource.applyOptions(self)
 
         if self.isOptionValid('center'):
             self._vtksource.SetCenter(self.getOption('center'))
