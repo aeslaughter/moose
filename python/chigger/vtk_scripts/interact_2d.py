@@ -4,6 +4,9 @@ Script to demonstrate toggling interaction between two actors on one renderer.
 """
 import vtk
 
+class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
+    pass
+
 class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
     ZOOM_FACTOR = 2
 
@@ -75,8 +78,18 @@ mapper1.SetInputConnection(source1.GetOutputPort())
 actor1 = vtk.vtkActor2D()
 actor1.SetMapper(mapper1)
 
+source2 = vtk.vtkCubeSource()
+source2.SetBounds(0,1,0,1,0,1)
+
+mapper2 = vtk.vtkPolyDataMapper()
+mapper2.SetInputConnection(source2.GetOutputPort())
+
+actor2 = vtk.vtkActor()
+actor2.SetMapper(mapper2)
+
 renderer = vtk.vtkRenderer()
 renderer.AddActor(actor1)
+renderer.AddActor(actor2)
 
 window = vtk.vtkRenderWindow()
 window.SetSize(600, 600)
@@ -85,8 +98,9 @@ window.AddRenderer(renderer)
 interactor = vtk.vtkRenderWindowInteractor()
 interactor.SetRenderWindow(window)
 
-style = Chigger2DInteractorStyle(source1)
-interactor.SetInteractorStyle(style)
+style1 = Chigger2DInteractorStyle(source1)
+style2 = Chigger3DInteractorStyle()
+interactor.SetInteractorStyle(style1)
 interactor.Initialize()
 
 

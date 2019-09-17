@@ -14,9 +14,8 @@ import chigger
 import numpy as np
 
 window = chigger.Window(size=(500,300), background=(1,0.2,1))
-#view = chigger.Viewport(window, name='foo')
+view = chigger.Viewport(window)
 
-"""
 n = 1000
 m = 1
 
@@ -31,9 +30,10 @@ for i in range(n+1):
         idx += 1
 
 rect = chigger.geometric.Rectangle(view, cmap='viridis',
-                                   origin=(100, 100, 0),
-                                   point1=(150, 100, 0),
-                                   point2=(100, 200, 0),
+                                   bounds=(100, 200, 100, 200),
+                                   #origin=(100, 100, 0),
+                                   #point1=(150, 100, 0),
+                                   #point2=(100, 200, 0),
                                    #origin=(0.25, 0.25, 0),
                                    #point1=(0.25, 0.75, 0),
                                    #point2=(0.3, 0.25, 0),
@@ -46,6 +46,5 @@ rect = chigger.geometric.Rectangle(view, cmap='viridis',
                                    coordinate_system='viewport',
                                    point_data=data)
 
-window.write('rectangle.png')
-"""
+#window.write('rectangle.png')
 window.start()
