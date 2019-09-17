@@ -17,6 +17,87 @@ from ChiggerObserver import ChiggerObserver
 from .. import utils
 from .. import geometric
 
+
+class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
+    pass
+
+class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
+    ZOOM_FACTOR = 0.01
+
+    def __init__(self):
+        self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
+        self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
+        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPressEvent)
+        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMoveEvent)
+
+        super(Chigger2DInteractorStyle, self).__init__()
+
+        self._source = None
+        self._outline = None
+        self._move_origin = None
+
+    def setSource(self, source, outline):
+        self._source = source
+        self._outline = outline
+
+    def onMouseWheelForward(self, obj, event):
+        self._source.zoom(self.ZOOM_FACTOR)
+        bnds = self._source.getBounds()
+        self._outline.setOptions(bounds=bnds)
+
+        #self.zoom(self.ZOOM_FACTOR)
+        obj.GetInteractor().GetRenderWindow().Render()
+
+    def onMouseWheelBackward(self, obj, event):
+        self._source.zoom(-self.ZOOM_FACTOR)
+        bnds = self._source.getBounds()
+        self._outline.setOptions(bounds=bnds)
+
+        #self.zoom(-self.ZOOM_FACTOR)
+        obj.GetInteractor().GetRenderWindow().Render()
+
+    def onKeyPressEvent(self, obj, event):
+        key = obj.GetKeySym().lower()
+        if key == 'shift_l':
+            self._shift_origin = obj.GetInteractor().GetEventPosition()
+
+    def onMouseMoveEvent(self, obj, event):
+        if obj.GetShiftKey():
+            if self._move_origin == None:
+                self._move_origin = obj.GetInteractor().GetEventPosition()
+            else:
+                pos = obj.GetInteractor().GetEventPosition()
+                dx = pos[0] - self._move_origin[0]
+                dy = pos[1] - self._move_origin[1]
+                self._source.move(dx, dy)
+                obj.GetInteractor().GetRenderWindow().Render()
+                self._move_origin = pos
+
+    def zoom(self, factor):
+        pass
+
+    def move(self, dx, dy):
+        pass
+
+
+class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
+    def __init__(self, window):
+        super(ChiggerInteractor, self).__init__()
+        #vtk.vtkInteractorStyleJoystickCamera.__init__(self)
+
+        #self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
+
+        #self._window = window
+        #window.UnRegister(self)
+
+    #@staticmethod
+    #def _onKeyPressEvent(obj, event):
+    #    print obj._window
+
+
+
+
+
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
@@ -53,13 +134,15 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.LeftButtonPressEvent,
                                                     self._onLeftButtonPressEvent)
 
-
         self.__current_viewport_index = None
         self.__current_viewport_outline = None
 
         self.__current_source = None
         self.__current_source_index = None
         self.__current_source_outline = None
+
+        self.__style_2d = Chigger2DInteractorStyle()
+        self.__style_3d = Chigger3DInteractorStyle()
 
     def _availableViewports(self):
         return [viewport for viewport in self._window.viewports() if viewport.interactive]
@@ -206,8 +289,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         vtk_renderer = self._window.getVTKInteractor().FindPokedRenderer(*pos)
         props = vtk_renderer.PickProp(*pos)
 
-        print props
-
         #TODO: Check for more than one???
         #props.GetNumberOfItems()
         if props is not None:
@@ -237,9 +318,15 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
             self._window.Update()
             self._window.getVTKWindow().Render()
-            self._window.getVTKInteractorStyle().SetDefaultRenderer(viewport.getVTKRenderer())
-            self._window.getVTKInteractorStyle().SetCurrentRenderer(viewport.getVTKRenderer())
 
+            if isinstance(source.getVTKActor(), vtk.vtkActor2D):
+                self.__style_2d.setSource(source, self.__current_source_outline)
+                self._window.getVTKInteractor().SetInteractorStyle(self.__style_2d)
+            else:
+                self._window.getVTKInteractor().SetInteractorStyle(self.__style_3d)
+
+            #self._window.getVTKInteractorStyle().SetDefaultRenderer(viewport.getVTKRenderer())
+            #self._window.getVTKInteractorStyle().SetCurrentRenderer(viewport.getVTKRenderer())
 
     def _deactivateSource(self):
         if self.__current_source_outline is not None:
@@ -249,5 +336,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
             self._window.Update()
             self._window.getVTKWindow().Render()
-            self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
-            self._window.getVTKInteractorStyle().SetCurrentRenderer(None)
+            self._window.getVTKInteractor().SetInteractorStyle(None)
+
+            #self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
+            #self._window.getVTKInteractorStyle().SetCurrentRenderer(None)

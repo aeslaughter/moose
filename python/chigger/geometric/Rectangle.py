@@ -88,3 +88,18 @@ class Rectangle(GeometricSource2D):
         if self.isOptionValid('cmap'):
             self._vtkmapper.SetLookupTable(self._colormap())
             self._vtkmapper.SetUseLookupTableScalarRange(True)
+
+    def zoom(self, factor):
+        bnds = self.getOption('bounds')
+        print bnds
+        bnds = (bnds[0] + factor, bnds[1] - factor, bnds[2] + factor, bnds[3] - factor)
+        print bnds
+        self.setOptions(bounds=bnds)
+
+        #self._vtksource.SetOrigin([origin[0] + factor, origin[1] + factor, 0])
+
+        #p = self._vtksource.GetPoint1()
+        #self._vtksource.SetPoint1([p[0] + factor, p[1] - factor, 0])
+
+        #p = self._vtksource.GetPoint2()
+        #self._vtksource.SetPoint2([p[0] - factor, p[1] + factor, 0])

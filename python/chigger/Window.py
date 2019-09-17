@@ -19,18 +19,6 @@ import observers
 import mooseutils
 from Viewport import Viewport
 
-#class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
-#    def __init__(self, window):
-#        vtk.vtkInteractorStyleJoystickCamera.__init__(self)
-#
-#        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
-#
-#        self._window = window
-#        window.UnRegister(self)
-#
-#    @staticmethod
-#    def _onKeyPressEvent(obj, event):
-#        print obj._window
 
 
 class Window(base.ChiggerAlgorithm):
@@ -355,7 +343,9 @@ class Window(base.ChiggerAlgorithm):
         if test:
             self.__vtkwindow.OffScreenRenderingOn()
 
-        elif style:
+
+
+        elif False: #TODO: No interaction w/o observer???
 
             # TODO: Create  object in constructor, just setup things here based on 'style'
             #if self.__vtkinteractor is None:
@@ -378,7 +368,8 @@ class Window(base.ChiggerAlgorithm):
             #    main_observer.init(self)
             #    self._observers.add(main_observer)
 
-
+        #self.__vtkwindow.SetInteractorStyle(None)
+        self.__vtkwindow.GetInteractor().SetInteractorStyle(None)
         #self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
 
 
@@ -400,7 +391,7 @@ class Window(base.ChiggerAlgorithm):
         # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
 
-        self.__vtkinteractorstyle.SetDefaultRenderer(self.__viewports[0].getVTKRenderer())
+       # self.__vtkinteractorstyle.SetDefaultRenderer(self.__viewports[0].getVTKRenderer())
 
         #self.__vtkwindow.Start()
         #print self.__vtkwindow

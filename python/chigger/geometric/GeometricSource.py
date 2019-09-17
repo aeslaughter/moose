@@ -32,3 +32,26 @@ class GeometricSource(base.ChiggerSource):
 class GeometricSource2D(GeometricSource):
     VTKACTORTYPE = vtk.vtkActor2D
     VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
+
+
+    def zoom(self, factor):
+
+        origin = self._vtksource.GetOrigin()
+        self._vtksource.SetOrigin([origin[0] + factor, origin[1] + factor, 0])
+
+        p = self._vtksource.GetPoint1()
+        self._vtksource.SetPoint1([p[0] + factor, p[1] - factor, 0])
+
+        p = self._vtksource.GetPoint2()
+        self._vtksource.SetPoint2([p[0] - factor, p[1] + factor, 0])
+
+    def move(self, dx, dy):
+
+        origin = self._vtksource.GetOrigin()
+        self._vtksource.SetOrigin([origin[0] + dx, origin[1] + dy, 0])
+
+        p = self._vtksource.GetPoint1()
+        self._vtksource.SetPoint1([p[0] + dx, p[1] + dy, 0])
+
+        p = self._vtksource.GetPoint2()
+        self._vtksource.SetPoint2([p[0] + dx, p[1] + dy, 0])
