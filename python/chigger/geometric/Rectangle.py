@@ -6,6 +6,7 @@ from GeometricSource import GeometricSource2D
 
 class Rectangle(GeometricSource2D):
     VTKSOURCETYPE = vtk.vtkPlaneSource
+    PRECISION = 5
 
     @staticmethod
     def validOptions():
@@ -91,9 +92,12 @@ class Rectangle(GeometricSource2D):
 
     def zoom(self, factor):
         bnds = self.getOption('bounds')
-        bnds = (bnds[0] + factor, bnds[1] - factor, bnds[2] + factor, bnds[3] - factor)
+        bnds = (round(bnds[0] + factor, self.PRECISION),
+                round(bnds[1] - factor, self.PRECISION),
+                round(bnds[2] + factor, self.PRECISION),
+                round(bnds[3] - factor, self.PRECISION))
         self.setOptions(bounds=bnds)
-
+        self.printOption('bounds')
 
     def move(self, dx, dy):
         if self.getOption('coordinate_system') == 'normalized_viewport':
@@ -102,5 +106,9 @@ class Rectangle(GeometricSource2D):
             dy = dy/float(sz[1])
 
         bnds = self.getOption('bounds')
-        bnds = (bnds[0] + dx, bnds[1] + dx, bnds[2] + dy, bnds[3] + dy)
+        bnds = (round(bnds[0] + dx, self.PRECISION),
+                round(bnds[1] + dx, self.PRECISION),
+                round(bnds[2] + dy, self.PRECISION),
+                round(bnds[3] + dy, self.PRECISION))
         self.setOptions(bounds=bnds)
+        self.printOption('bounds')

@@ -12,6 +12,7 @@
 import chigger
 window = chigger.Window(size=(800, 800))
 chigger.observers.MainWindowObserver(window)
+
 left = chigger.Viewport(window, viewport=(0, 0, 0.5, 1))
 right = chigger.Viewport(window, viewport=(0.5, 0, 1, 1))
 

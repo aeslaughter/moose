@@ -103,17 +103,17 @@ class Options(object):
         opt = self.__options.get(name, None)
         return (opt is not None) and (opt.value is not None)
 
-    #def isOptionDefault(self, name):
-    #    """
-    #    Return True if the supplied option is set to the default value.
+    def isOptionDefault(self, name):
+        """
+        Return True if the supplied option is set to the default value.
 
-    #    Inputs:
-    #        name[str]: The name of the Option to test.
-    #    """
-    #    opt = self.__options.get(name, None)
-    #    if opt is None:
-    #        mooseutils.mooseWarning('No option with the name:', name)
-    #    return opt.value == opt.default
+        Inputs:
+            name[str]: The name of the Option to test.
+        """
+        opt = self.__options.get(name, None)
+        if opt is None:
+            mooseutils.mooseWarning('No option with the name:', name)
+        return opt.value == opt.default
 
     #def hasValidOptions(self):
     #    """
@@ -284,5 +284,25 @@ class Options(object):
                 else:
                     r = repr(opt)
                 output.append('{}={}'.format(key, r))
+
+        return output, sub_output
+
+    def getNonDefaultOptions(self, **kwargs):
+        output = []
+        sub_output = dict()
+        for key in self.keys():
+            opt = self.get(key)
+
+            if isinstance(opt, Options):
+                items, _ = opt.getNonDefaultOptions()
+                if items:
+                    sub_output[key] = items
+
+            elif not self.isOptionDefault(key):
+                if key in kwargs:
+                    r = kwargs[key]
+                else:
+                    r = repr(opt)
+                output.append(key)
 
         return output, sub_output

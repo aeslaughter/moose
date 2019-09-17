@@ -38,6 +38,9 @@ class ChiggerObjectBase(object):
         #kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
 
+        import traceback
+        self._traceback = traceback.extract_stack()
+
     def log(self, msg, *args, **kwargs):
         """Helper for using logging package with class name prefix"""
         lvl = kwargs.pop('level', logging.INFO)

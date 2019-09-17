@@ -7,6 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import re
 import logging
 import weakref
 import textwrap
@@ -19,7 +20,8 @@ from .. import geometric
 
 
 class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
-    pass
+    def __init__(self):
+        super(Chigger3DInteractorStyle, self).__init__()
 
 class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
     ZOOM_FACTOR = 0.01
@@ -53,7 +55,7 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
     def onMouseWheelForward(self, obj, event):
         if not obj.GetShiftKey():
             factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
-            self.zoom(factor)
+            self._callSourceMethod('zoom', factor)
             bnds = self._source.getBounds()
             self._outline.setOptions(bounds=bnds)
             obj.GetInteractor().GetRenderWindow().Render()
@@ -61,7 +63,7 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
     def onMouseWheelBackward(self, obj, event):
         if not obj.GetShiftKey():
             factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
-            self.zoom(-factor)
+            self._callSourceMethod('zoom', -factor)
             bnds = self._source.getBounds()
             self._outline.setOptions(bounds=bnds)
             obj.GetInteractor().GetRenderWindow().Render()
@@ -73,36 +75,34 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
 
     def onKeyRelease(self, obj, event):
         key = obj.GetKeySym().lower()
-        print 'Release', key
         if key == 'shift_l':
             self._move_origin = None
 
     def onMouseMove(self, obj, event):
         if (self._move_origin is not None) and self._left_button_down:
             pos = obj.GetInteractor().GetEventPosition()
-            dx = pos[0] - self._move_origin[0]
-            dy = pos[1] - self._move_origin[1]
+            if pos != self._move_origin:
+                dx = pos[0] - self._move_origin[0]
+                dy = pos[1] - self._move_origin[1]
 
-            self._source.move(dx, dy)
-            bnds = self._source.getBounds()
-            self._outline.setOptions(bounds=bnds)
-            obj.GetInteractor().GetRenderWindow().Render()
-            self._move_origin = pos
+                self._callSourceMethod('move', dx, dy)
+                bnds = self._source.getBounds()
+                self._outline.setOptions(bounds=bnds)
+                obj.GetInteractor().GetRenderWindow().Render()
+                self._move_origin = pos
 
-    def move(self, dx, dy):
-        func = getattr(self._source, 'move', None)
+    def _callSourceMethod(self, method, *args, **kwargs):
+        func = getattr(self._source, method, None)
         if func is not None:
-            func(dx, dy)
+            func(*args, **kwargs)
 
-    def zoom(self, factor):
-        func = getattr(self._source, 'zoom', None)
-        if func is not None:
-            func(factor)
 
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
     """
+    RE = re.compile(r"(?P<key>[^\s=]+)=(?P<value>.*?)(?=(?:,\s[^\s=]+=|\Z)|\)\Z)")
+
     @staticmethod
     def validOptions():
         opt = ChiggerObserver.validOptions()
@@ -122,6 +122,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         bindings.add('t', MainWindowObserver._deactivate, desc="Clear selection(s).")
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
+
+        bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file.")
+
         return bindings
 
     def __init__(self, *args, **kwargs):
@@ -343,6 +346,30 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self._window.getVTKWindow().Render()
             self._window.getVTKInteractor().SetInteractorStyle(None)
 
+    def _writeChanges(self):
+        if self.__current_source is None:
+            return
 
-            #self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
-            #self._window.getVTKInteractorStyle().SetCurrentRenderer(None)
+        trace = self.__current_source._traceback[0]
+        filename = trace[0]
+        line = trace[1]
+
+        output, sub_output = self.__current_source._options.getNonDefaultOptions()
+        def sub_func(match):
+            key = match.group('key')
+            value = match.group('value')
+            if key in output:
+                return '{}={}'.format(key, repr(self.__current_source.getOption(key)))
+            return match.group(0)
+
+        with open(filename, 'r') as fid:
+            lines = fid.readlines()
+
+        content = self.RE.sub(sub_func, trace[3])
+        lines[line-1] = '{}\n'.format(content)
+
+        print ''.join(lines)
+
+
+        #with open(filename, 'w+') as fid:
+        #    fid.writelines(lines)
