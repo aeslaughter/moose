@@ -27,76 +27,77 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
     def __init__(self):
         self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
         self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPressEvent)
-        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMoveEvent)
-
+        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPress)
+        self.AddObserver(vtk.vtkCommand.KeyReleaseEvent, self.onKeyRelease)
+        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMove)
+        self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.onLeftButtonPress)
+        self.AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent, self.onLeftButtonRelease)
         super(Chigger2DInteractorStyle, self).__init__()
 
         self._source = None
         self._outline = None
         self._move_origin = None
+        self._left_button_down = None
 
     def setSource(self, source, outline):
         self._source = source
         self._outline = outline
+        self._left_button_down = True # method is called with the left-mouse button down
+
+    def onLeftButtonPress(self, obj, event):
+        self._left_button_down = True
+
+    def onLeftButtonRelease(self, obj, event):
+        self._left_button_down = False
 
     def onMouseWheelForward(self, obj, event):
-        self._source.zoom(self.ZOOM_FACTOR)
-        bnds = self._source.getBounds()
-        self._outline.setOptions(bounds=bnds)
-
-        #self.zoom(self.ZOOM_FACTOR)
-        obj.GetInteractor().GetRenderWindow().Render()
+        if not obj.GetShiftKey():
+            factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
+            self.zoom(factor)
+            bnds = self._source.getBounds()
+            self._outline.setOptions(bounds=bnds)
+            obj.GetInteractor().GetRenderWindow().Render()
 
     def onMouseWheelBackward(self, obj, event):
-        self._source.zoom(-self.ZOOM_FACTOR)
-        bnds = self._source.getBounds()
-        self._outline.setOptions(bounds=bnds)
+        if not obj.GetShiftKey():
+            factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
+            self.zoom(-factor)
+            bnds = self._source.getBounds()
+            self._outline.setOptions(bounds=bnds)
+            obj.GetInteractor().GetRenderWindow().Render()
 
-        #self.zoom(-self.ZOOM_FACTOR)
-        obj.GetInteractor().GetRenderWindow().Render()
-
-    def onKeyPressEvent(self, obj, event):
+    def onKeyPress(self, obj, event):
         key = obj.GetKeySym().lower()
         if key == 'shift_l':
-            self._shift_origin = obj.GetInteractor().GetEventPosition()
+            self._move_origin = obj.GetInteractor().GetEventPosition()
 
-    def onMouseMoveEvent(self, obj, event):
-        if obj.GetShiftKey():
-            if self._move_origin == None:
-                self._move_origin = obj.GetInteractor().GetEventPosition()
-            else:
-                pos = obj.GetInteractor().GetEventPosition()
-                dx = pos[0] - self._move_origin[0]
-                dy = pos[1] - self._move_origin[1]
-                self._source.move(dx, dy)
-                obj.GetInteractor().GetRenderWindow().Render()
-                self._move_origin = pos
+    def onKeyRelease(self, obj, event):
+        key = obj.GetKeySym().lower()
+        print 'Release', key
+        if key == 'shift_l':
+            self._move_origin = None
 
-    def zoom(self, factor):
-        pass
+    def onMouseMove(self, obj, event):
+        if (self._move_origin is not None) and self._left_button_down:
+            pos = obj.GetInteractor().GetEventPosition()
+            dx = pos[0] - self._move_origin[0]
+            dy = pos[1] - self._move_origin[1]
+
+            self._source.move(dx, dy)
+            bnds = self._source.getBounds()
+            self._outline.setOptions(bounds=bnds)
+            obj.GetInteractor().GetRenderWindow().Render()
+            self._move_origin = pos
 
     def move(self, dx, dy):
-        pass
+        func = getattr(self._source, 'move', None)
+        if func is not None:
+            func(dx, dy)
 
-
-class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
-    def __init__(self, window):
-        super(ChiggerInteractor, self).__init__()
-        #vtk.vtkInteractorStyleJoystickCamera.__init__(self)
-
-        #self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
-
-        #self._window = window
-        #window.UnRegister(self)
-
-    #@staticmethod
-    #def _onKeyPressEvent(obj, event):
-    #    print obj._window
-
-
-
-
+    def zoom(self, factor):
+        func = getattr(self._source, 'zoom', None)
+        if func is not None:
+            func(factor)
 
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
@@ -330,6 +331,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
     def _deactivateSource(self):
         if self.__current_source_outline is not None:
+
+            if isinstance(self.__current_source.getVTKActor(), vtk.vtkActor2D):
+                self.__style_2d.setSource(None, None)
+
             self.__current_source_outline.remove()
             self.__current_source_outline = None
             self.__current_source = None
@@ -337,6 +342,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self._window.Update()
             self._window.getVTKWindow().Render()
             self._window.getVTKInteractor().SetInteractorStyle(None)
+
 
             #self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
             #self._window.getVTKInteractorStyle().SetCurrentRenderer(None)

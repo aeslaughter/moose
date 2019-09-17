@@ -20,6 +20,61 @@ import mooseutils
 from Viewport import Viewport
 
 
+class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
+    pass
+
+class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
+    ZOOM_FACTOR = 2
+
+    def __init__(self, source):
+        self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
+        self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
+        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPressEvent)
+        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMoveEvent)
+
+        super(Chigger2DInteractorStyle, self).__init__()
+
+        self._source = source
+        self._move_origin = None
+
+    def onMouseWheelForward(self, obj, event):
+        self.zoom(self.ZOOM_FACTOR)
+        obj.GetInteractor().GetRenderWindow().Render()
+
+    def onMouseWheelBackward(self, obj, event):
+        self.zoom(-self.ZOOM_FACTOR)
+        obj.GetInteractor().GetRenderWindow().Render()
+
+    def onKeyPressEvent(self, obj, event):
+        key = obj.GetKeySym().lower()
+        if key == 'shift_l':
+            self._shift_origin = obj.GetInteractor().GetEventPosition()
+
+    def onMouseMoveEvent(self, obj, event):
+        if obj.GetShiftKey():
+            if self._move_origin == None:
+                self._move_origin = obj.GetInteractor().GetEventPosition()
+            else:
+                pos = obj.GetInteractor().GetEventPosition()
+                self.move(pos[0] - self._move_origin[0], pos[1] - self._move_origin[1])
+                obj.GetInteractor().GetRenderWindow().Render()
+                self._move_origin = pos
+
+
+class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
+    def __init__(self, window):
+        super(ChiggerInteractor, self).__init__()
+        #vtk.vtkInteractorStyleJoystickCamera.__init__(self)
+
+        #self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
+
+        #self._window = window
+        #window.UnRegister(self)
+
+    #@staticmethod
+    #def _onKeyPressEvent(obj, event):
+    #    print obj._window
+
 
 class Window(base.ChiggerAlgorithm):
     """
@@ -343,9 +398,10 @@ class Window(base.ChiggerAlgorithm):
         if test:
             self.__vtkwindow.OffScreenRenderingOn()
 
+        # TODO: Allow some basic interaction and have MainWindowObserver unset it, to allow
+        #       for default VTK interaction if the observer is not used
+        elif False:
 
-
-        elif False: #TODO: No interaction w/o observer???
 
             # TODO: Create  object in constructor, just setup things here based on 'style'
             #if self.__vtkinteractor is None:
@@ -368,10 +424,6 @@ class Window(base.ChiggerAlgorithm):
             #    main_observer.init(self)
             #    self._observers.add(main_observer)
 
-        #self.__vtkwindow.SetInteractorStyle(None)
-        self.__vtkwindow.GetInteractor().SetInteractorStyle(None)
-        #self._window.getVTKInteractorStyle().SetDefaultRenderer(self._window.background().getVTKRenderer())
-
 
         # vtkRenderWindow Settings
         self.assignOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
@@ -390,8 +442,6 @@ class Window(base.ChiggerAlgorithm):
 
         # Set the number of layers
         self.__vtkwindow.SetNumberOfLayers(n)
-
-       # self.__vtkinteractorstyle.SetDefaultRenderer(self.__viewports[0].getVTKRenderer())
 
         #self.__vtkwindow.Start()
         #print self.__vtkwindow
