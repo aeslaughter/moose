@@ -30,7 +30,6 @@ class ExtractBlockFilter(ChiggerFilter):
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
 
-
         extract_indices = self.getOption('indices')
         if not extract_indices:
             msg = "The 'indices' option was empty for the ExtractBlockFilter, " \

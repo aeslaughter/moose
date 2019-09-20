@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import logging
 import weakref
+import collections
 import vtk
 import mooseutils
 from ChiggerAlgorithm import ChiggerAlgorithm
@@ -87,7 +88,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
             self._vtkactor.SetMapper(self._vtkmapper)
 
         # Storage for the filter objects
-        self._filters = list()
+        self._filters = collections.OrderedDict()
 
         # Add this ChiggerSource object to the viewport
         viewport.add(self)
@@ -97,6 +98,8 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         # and vtkActor objects. The _viewport property should be used by objects that need
         # information from the Viewport object.
         self.__viewport_weakref = weakref.ref(viewport)
+
+        self.__connectFilters()
 
     @property
     def _viewport(self):
@@ -147,7 +150,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Connect the filters
-        self.__connectFilters()
+        #self.__connectFilters()
 
         #if self.isOptionValid('orientation'):
         #    self._vtkactor.SetOrientation(self.getOption('orientation'))
@@ -177,14 +180,22 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         #if self.isOptionValid('opacity'):
         #    self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
 
-
     def __connectFilters(self):
 
+        for filter_type in self.__FILTERS__:
+            fname = filter_type.FILTERNAME
+            if (fname in self.__ACTIVE_FILTERS__) and (fname not in self._filters):
+                self._filters[fname] = filter_type()
+                self.Modified()
+            elif (fname not in self.__ACTIVE_FILTERS__) and (fname in self._filters):
+                self._filters.pop(fname)
+                self.Modified()
+
         base_obj = self
-        for filter_obj in self._filters:
-            if filter_obj.FILTERNAME in self.__ACTIVE_FILTERS__:
-                filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
-                base_obj = filter_obj
+        for fname, filter_obj in self._filters.iteritems():
+            self.log('{} --> {}'.format(type(base_obj), type(filter_obj)), level=logging.DEBUG)
+            filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
+            base_obj = filter_obj
 
         # Connect mapper/filters into the pipeline
         if self._vtkmapper:

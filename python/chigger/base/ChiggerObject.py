@@ -9,6 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
 import logging
+import traceback
 import mooseutils
 from .. import utils
 
@@ -38,8 +39,8 @@ class ChiggerObjectBase(object):
         #kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
 
-        import traceback
-        self._traceback = traceback.extract_stack()
+        self._init_traceback = traceback.extract_stack()
+        self._set_options_tracebacks = dict()
 
     def log(self, msg, *args, **kwargs):
         """Helper for using logging package with class name prefix"""
@@ -77,6 +78,7 @@ class ChiggerObjectBase(object):
                     mooseutils.mooseError(msg)
                 else:
                     self._options.get(sub).update(**kwargs)
+                    self._set_options_tracebacks[sub] = traceback.extract_stack()
 
         # Main options case
         else:

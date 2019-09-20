@@ -400,7 +400,7 @@ class ExodusResult(base.ChiggerResult):
 
     def _updateOpacity(self, window, binding): #pylint: disable=unuysed-argument
         opacity = self.getOption('opacity')
-        if binding.shift:
+        if binding.shif
             if opacity > 0.05:
                 opacity -= 0.05
         else:

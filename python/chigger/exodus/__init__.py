@@ -8,11 +8,11 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#from ExodusReader import ExodusReader
+from .ExodusReader import ExodusReader
 #from MultiAppExodusReader import MultiAppExodusReader
 #from NemesisReader import NemesisReader
 #
-#from ExodusSource import ExodusSource
+from .ExodusSource import ExodusSource
 #from ExodusColorBar import ExodusColorBar
 #
 #from ExodusResult import ExodusResult

@@ -192,7 +192,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Return result interpolated between the two differing files.
         """
         time = self.getOption('time')
-        variable = 'u'
+        variable = self.getOption('variable')
 
         n_cells_0 = file0.vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetNumberOfCells()
         n_cells_1 = file1.vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetNumberOfCells()
@@ -238,7 +238,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         interpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
         interpolator.Update()
 
-
         interp.GetBlock(0).GetBlock(0).GetPointData().SetActiveScalars(variable)
         interpolator.GetOutput().GetPointData().SetActiveScalars(variable)
 
@@ -252,10 +251,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         interp.GetBlock(0).GetBlock(0).DeepCopy(fineInterpolateAttributes.GetOutput())
         return interp
-
-        #return vtkobject
-
-
 
     def __updateOptions(self, vtkreader):
         """

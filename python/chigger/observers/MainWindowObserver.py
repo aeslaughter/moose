@@ -350,7 +350,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if self.__current_source is None:
             return
 
-        trace = self.__current_source._traceback[0]
+        trace = self.__current_source._init_traceback[0]
         filename = trace[0]
         line = trace[1]
 
