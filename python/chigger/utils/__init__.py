@@ -51,6 +51,9 @@ def get_active_filenames(basename, pattern=None):
 
     return output
 
+def interp(x, xp, fp):
+    return np.interp(x, xp, fp)
+
 def copy_adaptive_exodus_test_files(testbase):
     """
     A helper for copying test Exodus files.

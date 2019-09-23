@@ -5,8 +5,13 @@ import chigger
 # ranges betweein [0, 5] and [0, 14], respectively.
 # Thus, at t=6.5 the range should be [0, 9.5].
 filename = '../input/input_no_adapt_out.e'
+
+
+window = chigger.Window(size=(400, 400))
+viewport = chigger.Viewport(window)
+
 reader = chigger.exodus.ExodusReader(filename)
-result = chigger.exodus.ExodusResult(reader, lim=(0,14))
+source = chigger.exodus.ExodusSource(viewport)
 window = chigger.RenderWindow(result, size=(300, 300))
 
 # time = 2, timestep = 0

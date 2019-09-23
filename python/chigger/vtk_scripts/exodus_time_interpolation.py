@@ -5,7 +5,7 @@ import vtk
 specifiedTime = 1.5
 
 # Input file and variable
-filename = os.path.abspath('input_out.e')
+filename = os.path.abspath('../tests/input/input_out.e')
 nodal_var = 'u'
 
 # time = 0, timestep=0

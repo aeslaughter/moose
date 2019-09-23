@@ -7,7 +7,7 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import sys
 import os
 import collections
 import bisect
@@ -136,11 +136,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         !!! DO NOT CALL THIS METHOD !!!
         """
-        filenames = self.__getActiveFilenames()
-        if filenames == self.__active:
-            return 1
-
-        self.__active = filenames
+        self.__updateActiveFilenames()
         self.__updateInformation()
         return 1
 
@@ -170,126 +166,20 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             # Interpolation across files
             else:
-                vtkobject = self.__adaptiveTimeInterpolate(time0, file0, time1, file1)
-                return 1
+                self.log("Support for time interpolation across adaptive time steps is not supported.",
+                         level='CRITICAL')
+                return 0
 
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
             vtkobject.SetTimeStep(time0.index)
             self.__updateOptions(vtkobject)
 
-        else:
-            "not possible..."
-
         # Update the Reader and output port
         vtkobject.Update()
         out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         out_data.ShallowCopy(vtkobject.GetOutputDataObject(0))
         return 1
-
-    def __adaptiveTimeInterpolate(self, time0, file0, time1, file1):
-        """
-        Return result interpolated between the two differing files.
-        """
-        time = self.getOption('time')
-        variable = self.getOption('variable')
-
-        n_cells_0 = file0.vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetNumberOfCells()
-        n_cells_1 = file1.vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetNumberOfCells()
-
-        if n_cells_0 > n_cells_1:
-            fine_reader = file0.vtkreader
-            coarse_reader = file1.vtkreader
-        else:
-            fine_reader = file1.vtkreader
-            coarse_reader = file0.vtkreader
-
-        coarse_geometry = vtk.vtkCompositeDataGeometryFilter()
-        coarse_geometry.SetInputConnection(0, coarse_reader.GetOutputPort(0))
-        coarse_geometry.Update()
-
-        fine_geometry = vtk.vtkCompositeDataGeometryFilter()
-        fine_geometry.SetInputConnection(0, fineReader.GetOutputPort(0))
-        fine_geometry.Update()
-
-        fine_geometry.GetOutput().GetPointData().SetActiveScalars(variable)
-
-
-        interp = vtk.vtkMultiBlockDataSet()
-        interp.DeepCopy(fine_reader.GetOutput())
-
-        locator = vtk.vtkStaticPointLocator()
-        locator.SetDataSet(fineGeometry.GetOutput())
-        locator.BuildLocator()
-
-        kernel = vtk.vtkGaussianKernel()
-        kernel.SetSharpness(4)
-        kernel.SetKernelFootprintToNClosest()
-        kernel.SetNumberOfPoints(10)
-        kernel.SetSharpness(5.0)
-
-
-        interpolator = vtk.vtkPointInterpolator()
-        interpolator.SetSourceData(coarse_geometry.GetOutput()) # Pc data set to be probed by input points P
-        interpolator.SetInputData(fine_geometry.GetOutput())
-        interpolator.SetKernel(kernel)
-        interpolator.SetLocator(locator)
-        interpolator.SetNullPointsStrategyToClosestPoint()
-        interpolator.PassPointArraysOff() # THIS IS REQUIRED!!!
-        interpolator.Update()
-
-        interp.GetBlock(0).GetBlock(0).GetPointData().SetActiveScalars(variable)
-        interpolator.GetOutput().GetPointData().SetActiveScalars(variable)
-
-        fineInterpolateAttributes = vtk.vtkInterpolateDataSetAttributes()
-        #fineInterpolateAttributes.AddInputData(0, fineInterpolatedGrid)
-        fineInterpolateAttributes.AddInputData(0, interp.GetBlock(0).GetBlock(0))
-        fineInterpolateAttributes.AddInputData(0, fineInterpolator.GetOutput())
-        fineInterpolateAttributes.SetT(0.5)
-        fineInterpolateAttributes.Update()
-
-
-        interp.GetBlock(0).GetBlock(0).DeepCopy(fineInterpolateAttributes.GetOutput())
-        return interp
-
-    def __updateOptions(self, vtkreader):
-        """
-        (Private) Apply options to the supplied vtkExodusIIReader.
-
-        This method is needed because in some instances when temporal interpolation occurs two
-        separate objects are used.
-        """
-
-        # Displacement Settings
-        vtkreader.SetApplyDisplacements(self.getOption('displacements'))
-        vtkreader.SetDisplacementMagnitude(self.getOption('displacement_magnitude'))
-
-        # Set the geometric objects to load (i.e., subdomains, nodesets, sidesets)
-        #active_blockinfo = self.__getActiveBlocks()
-        #for data in self.__blockinfo:
-        #    if (not active_blockinfo) or (data in active_blockinfo):
-        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 1)
-        #    else:
-        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 0)
-
-        # According to the VTK documentation setting this to False (not the default) speeds
-        # up data loading. In my testing I was seeing load times cut in half or more with
-        # "squeezing" disabled. I am leaving this as an option just in case we discover some
-        # reason it shouldn't be disabled.
-        vtkreader.SetSqueezePoints(self.getOption('squeeze'))
-
-        # Set the data arrays to load
-        #
-        # If the object has not been initialized then all of the variables should be enabled
-        # so that the block and variable information are complete when populated. After this
-        # only the variables listed in the 'variables' options, if any, are activated, which
-        # reduces loading times. If 'variables' is not given, all the variables are loaded.
-        variables = self.getOption('variables')
-        for vinfo in self.__variableinfo.itervalues():
-            if (not variables) or (vinfo.name in variables):
-                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 1)
-            else:
-                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 0)
 
     def getFilename(self):
         """
@@ -304,33 +194,65 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             list: A list of all times.
         """
+        self.__updateActiveFilenames()
         self.UpdateInformation()
         return [t.time for t in self.__timeinfo if t.time != None]
 
-    #def getGlobalData(self, variable):
-    #    """
-    #    Access the global (i.e., Postprocessor) data contained in the Exodus file. (public)
+    def getGlobalData(self, variable):
+        """
+        Access the global (i.e., Postprocessor) data contained in the Exodus file. (public)
 
-    #    Inputs: variable[str]: An available and active (in 'variables' setting) GLOBAL variable
-    #    name.
+        Inputs:
+            variable[str]: An available and active (in 'variables' setting) GLOBAL variable name.
 
-    #    Returns: float: The global data (Postprocessor value) for the current timestep and defined
-    #    variable.
+        Returns:
+            float: The global data (Postprocessor value) for the current timestep and defined
+                   variable.
+        """
+        self.__updateActiveFilenames()
+        self.UpdateInformation()
+        self.Update()
 
-    #    Note: This function can also return the "Info_Records", which in MOOSE contains input file
-    #    and other information from MOOSE, in this case a list of strings is returned.
-    #    reader.GetFieldData('Info_Records') """
+        if not self.__hasVariable(self.GLOBAL, variable):
+            self.log("The supplied global variable, '{}', does not exist in {}.", variable,
+                     self.__filename, level='ERROR')
+            return sys.float_info.min
 
-    #    self.update()
-    #    field_data = self.__vtkreader.GetOutput().GetBlock(0).GetBlock(0).GetFieldData()
-    #    varinfo = self.__variableinfo[variable]
+        time0, time1 = self.__getTimeInformation()
+        # Time Interpolation
+        if (time0 is not None) and (time1 is not None):
+            file0 = self.__fileinfo[time0.filename]
+            file1 = self.__fileinfo[time1.filename]
 
-    #    if varinfo.object_type != self.GLOBAL:
-    #        msg = 'The variable "{}" must be a global variable.'.format(variable)
-    #        raise mooseutils.MooseException(msg)
+            vtkobject0 = self.__fileinfo[time0.filename].vtkreader
+            vtkobject0.SetAllArrayStatus(self.GLOBAL, 0)
+            vtkobject0.SetAllArrayStatus(self.ELEMENTAL, 0)
+            vtkobject0.SetAllArrayStatus(self.NODAL, 0)
+            vtkobject0.SetGlobalResultArrayStatus(variable, 1)
 
-    #    vtk_array = field_data.GetAbstractArray(variable)
-    #    return vtk_array.GetComponent(self.__current.index, 0)
+            vtkobject1 = self.__fileinfo[time1.filename].vtkreader
+            vtkobject1.SetAllArrayStatus(self.GLOBAL, 0)
+            vtkobject1.SetAllArrayStatus(self.ELEMENTAL, 0)
+            vtkobject1.SetAllArrayStatus(self.NODAL, 0)
+            vtkobject1.SetGlobalResultArrayStatus(variable, 1)
+
+            vtkobject0.Update()
+            g0 = vtkobject0.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
+
+            vtkobject1.Update()
+            g1 = vtkobject1.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time1.index, 0)
+
+            return utils.interp(self.getOption('time'), [time0.time, time1.time], [g0, g1])
+
+        elif (time0 is not None):
+            vtkobject = self.__fileinfo[time0.filename].vtkreader
+            vtkobject.SetTimeStep(time0.index)
+            vtkobject.SetAllArrayStatus(self.GLOBAL, 0)
+            vtkobject.SetAllArrayStatus(self.ELEMENTAL, 0)
+            vtkobject.SetAllArrayStatus(self.NODAL, 0)
+            vtkobject.SetGlobalResultArrayStatus(variable, 1)
+            g0 = vtkobject.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
+            return g0
 
     def getTimeInformation(self):
         """
@@ -344,6 +266,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                      the two information objects contain the information for the two data sets
                      that will be used for interpolation.
         """
+        self.__updateActiveFilenames()
         self.UpdateInformation()
         return self.__getTimeInformation()
 
@@ -359,6 +282,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             set: BlockInformation objects for all data types in this object (keys are "enum" values
                  found in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE)
         """
+        self.__updateActiveFilenames()
         self.UpdateInformation()
         blockinfo = collections.defaultdict(dict)
         for info in self.__blockinfo:
@@ -376,6 +300,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             OrderedDict: VariableInformation objects for all variables in the file.
         """
+        self.__updateActiveFilenames()
+        self.UpdateInformation()
+
         if var_types is None:
             var_types = ExodusReader.VARIABLE_TYPES
 
@@ -385,14 +312,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 variables[name] = var
         return variables
 
-#    def getVTKReader(self):
-#        """
-#        Return the underlying vtkExodusIIReader object. (public)
-#
-#        Generally, this should not be utilized. This method exists for connecting output ports with
-#        the ExodusSource.
-#        """
-#        return self.__vtkreader
+    def __hasVariable(self, var_type, var_name):
+        """
+        Return True if the supplied variable name for the given type exists.
+        """
+        return var_name in self.getVariableInformation((var_type,))
 
     def __getTimeInformation(self):
         """
@@ -447,6 +371,51 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Default to last timestep
         return self.__timeinfo[-1], None
+
+    def __updateOptions(self, vtkreader):
+        """
+        (Private) Apply options to the supplied vtkExodusIIReader.
+
+        This method is needed because in some instances when temporal interpolation occurs two
+        separate objects are used.
+        """
+
+        # Displacement Settings
+        vtkreader.SetApplyDisplacements(self.getOption('displacements'))
+        vtkreader.SetDisplacementMagnitude(self.getOption('displacement_magnitude'))
+
+        ## Set the geometric objects to load (i.e., subdomains, nodesets, sidesets)
+        #active_blockinfo = self.__getActiveBlocks()
+        #for data in self.__blockinfo:
+        #    if (not active_blockinfo) or (data in active_blockinfo):
+        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 1)
+        #    else:
+        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 0)
+
+        # According to the VTK documentation setting this to False (not the default) speeds
+        # up data loading. In my testing I was seeing load times cut in half or more with
+        # "squeezing" disabled. I am leaving this as an option just in case we discover some
+        # reason it shouldn't be disabled.
+        vtkreader.SetSqueezePoints(self.getOption('squeeze'))
+
+        # Set the data arrays to load
+        #
+        # If the object has not been initialized then all of the variables should be enabled
+        # so that the block and variable information are complete when populated. After this
+        # only the variables listed in the 'variables' options, if any, are activated, which
+        # reduces loading times. If 'variables' is not given, all the variables are loaded.
+        variables = self.getOption('variables')
+        for vinfo in self.__variableinfo.itervalues():
+            if (not variables) or (vinfo.name in variables):
+                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 1)
+            else:
+                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 0)
+
+    def __updateActiveFilenames(self):
+        filenames = self.__getActiveFilenames()
+        if self.__active != filenames:
+            self.__active = filenames
+            self.Modified()
 
     def __getActiveFilenames(self):
         """

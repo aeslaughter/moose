@@ -48,13 +48,13 @@ class ChiggerObjectBase(object):
         """Helper for using logging package with class name prefix"""
         lvl = kwargs.pop('level', logging.INFO)
         if isinstance(lvl, str):
-            lvl = ChiggerObjectBase.__LOG_LEVEL__[lvl]
+            lvl = ChiggerObjectBase.__LOG_LEVEL__[lvl.lower()]
         obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
         name = self.getOption('name')
         if name:
-            obj.log(lvl, '({}): {}'.format(self.getOption('name'), msg.format(args)))
+            obj.log(lvl, '({}): {}'.format(self.getOption('name'), msg.format(*args)))
         else:
-            obj.log(lvl, ' {}'.format(msg.format(args)))
+            obj.log(lvl, ' {}'.format(msg.format(*args)))
 
     def name(self):
         return self.getOption('name')
