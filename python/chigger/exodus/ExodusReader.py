@@ -337,11 +337,15 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         The current time information. (public)
 
         Returns:
-            ExodusReader.TimeInformation: A collections.namedtuple with the current timestep, time,
-                                          filename and local time index for the file.
+            tuple(): The returned tuple() has two entries, the first entry will contain a
+                     collections.namedtuple with the current timestep, time, filename and local
+                     time index for the file. If the supplied option "time" or "timestep" is between
+                     the times available in the data then a second value will be returned, where
+                     the two information objects contain the information for the two data sets
+                     that will be used for interpolation.
         """
         self.UpdateInformation()
-        return self.__current
+        return self.__getTimeInformation()
 
     def getBlockInformation(self):
         """
@@ -421,7 +425,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Locate index less than or equal to the desired time
             idx = bisect.bisect_right(times, time) - 1
             if self.getOption('time_interpolation'):
-                return self.__timeinfo[idx-1], self.__timeinfo[idx]
+                return self.__timeinfo[idx], self.__timeinfo[idx+1]
             else:
                 return self.__timeinfo[idx], None
 
@@ -430,12 +434,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Account for out-of-range timesteps
             idx = timestep
             if (timestep < 0) and (timestep != -1):
-                mooseutils.mooseWarning("Timestep out of range:", timestep, 'not in', repr([0, n]))
+                self.log("Timestep out of range: {} not in {}.", timestep, repr([0, n]), level='WARNING')
                 self.setOption('timestep', 0)
                 idx = 0
             elif (timestep > n) or (timestep == -1):
                 if timestep != -1:
-                    mooseutils.mooseWarning("Timestep out of range:", timestep, 'not in', repr([0, n]))
+                    self.log("Timestep out of range: {} not in {}.", timestep, repr([0, n]), level='WARNING')
                 self.setOption('timestep', n)
                 idx = n
 
@@ -555,58 +559,3 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             self.__variableinfo = collections.OrderedDict(sorted(unsorted.items(),
                                                                  key=lambda x: x[0].lower()))
-
-    def __str__(self):
-        """
-        Overload the str function so that information is printed when print is called on the object.
-        """
-
-        # Create source object to extract ranges for variables
-        from ExodusSource import ExodusSource
-        src = ExodusSource(self)
-
-        self.update()
-
-        # The string to return
-        out = ''
-
-        # Time
-        out += '\n{}: {}'.format(mooseutils.colorText('Timesteps', 'GREEN'), len(self.getTimes()))
-        out += '\n{}: {}\n'.format(mooseutils.colorText('    Times', 'GREEN'), self.getTimes())
-
-        # Variables
-        variables = [(ExodusReader.NODAL, 'Nodal Variables'),
-                     (ExodusReader.ELEMENTAL, 'Elemental Variables'),
-                     (ExodusReader.GLOBAL, 'Postprocessors')]
-        for vartype, vartitle in variables:
-            out += '\n{}:\n'.format(mooseutils.colorText(vartitle, 'GREEN'))
-            for varinfo in self.getVariableInformation([vartype]).itervalues():
-                out += '  {}\n'.format(mooseutils.colorText(varinfo.name, 'CYAN'))
-                out += '{:>16}: {}\n'.format('components', varinfo.num_components)
-
-                if vartype in (ExodusReader.NODAL, ExodusReader.ELEMENTAL):
-                    src.setOption('variable', varinfo.name)
-                    if varinfo.num_components == 1:
-                        rng = src.getRange()
-                        out += '{:>16}: {}\n'.format('range', rng)
-                    else:
-                        for j in range(-1, varinfo.num_components):
-                            src.setOption('component', j)
-                            rng = src.getRange()
-                            if j == -1:
-                                out += '{:>10} ({}): {}\n'.format('range', 'all', rng)
-                            else:
-                                out += '{:>12} ({}): {}\n'.format('range', j, rng)
-
-        # Blocks
-        blockinfo = self.getBlockInformation()
-        for vtkenum, name in [(ExodusReader.BLOCK, 'Subdomains'),
-                              (ExodusReader.BOUNDARY, 'Boundaries'),
-                              (ExodusReader.NODESET, 'Nodesets')]:
-            out += '\n{}:\n'.format(mooseutils.colorText(name, 'GREEN'))
-            for info in blockinfo[vtkenum].itervalues():
-                if info.name != info.number:
-                    out += '  {} ({})\n'.format(info.name, info.number)
-                else:
-                    out += '  {}\n'.format(info.number)
-        return out

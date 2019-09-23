@@ -20,6 +20,8 @@ class ChiggerObjectBase(object):
     The primary purpose is to provide a method for getting key, value
     options and consistent update methods.
     """
+    __LOG_LEVEL__ = dict(critical=logging.CRITICAL, error=logging.ERROR, warning=logging.warning,
+                         info=logging.INFO, debug=logging.DEBUG, notset=logging.NOTSET)
 
     @staticmethod
     def validOptions():
@@ -45,6 +47,8 @@ class ChiggerObjectBase(object):
     def log(self, msg, *args, **kwargs):
         """Helper for using logging package with class name prefix"""
         lvl = kwargs.pop('level', logging.INFO)
+        if isinstance(lvl, str):
+            lvl = ChiggerObjectBase.__LOG_LEVEL__[lvl]
         obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
         name = self.getOption('name')
         if name:

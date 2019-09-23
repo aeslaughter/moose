@@ -63,7 +63,8 @@ class TestExodusReader(unittest.TestCase):
 
         # Current Time
         reader.setOptions(timestep=None, time=1.01)
-        tdata = reader.getTimeInformation()
+        print reader.getTimes()
+        tdata, _ = reader.getTimeInformation()
         self.assertAlmostEqual(tdata.time, 1)
         self.assertEqual(tdata.timestep, 10)
         self.assertEqual(tdata.index, 10)
