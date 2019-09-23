@@ -50,7 +50,7 @@ class TestExodusReader(unittest.TestCase):
 
     def testSingle(self):
         """
-        Test reading of a single Exodus file.
+        Test reading of a single Exodus file, with default options
         """
         reader = chigger.exodus.ExodusReader(self.single)
         reader.Update()
@@ -63,12 +63,16 @@ class TestExodusReader(unittest.TestCase):
 
         # Current Time
         reader.setOptions(timestep=None, time=1.01)
-        print reader.getTimes()
-        tdata, _ = reader.getTimeInformation()
-        self.assertAlmostEqual(tdata.time, 1)
-        self.assertEqual(tdata.timestep, 10)
-        self.assertEqual(tdata.index, 10)
-        self.assertEqual(tdata.filename, self.single)
+        tdata0, tdata1 = reader.getTimeInformation()
+        self.assertAlmostEqual(tdata0.time, 1)
+        self.assertEqual(tdata0.timestep, 10)
+        self.assertEqual(tdata0.index, 10)
+        self.assertEqual(tdata0.filename, self.single)
+
+        self.assertAlmostEqual(tdata1.time, 1.1)
+        self.assertEqual(tdata1.timestep, 11)
+        self.assertEqual(tdata1.index, 11)
+        self.assertEqual(tdata1.filename, self.single)
 
         # Blocks
         blockinfo = reader.getBlockInformation()
