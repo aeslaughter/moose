@@ -53,7 +53,7 @@ class TestExodusReader(unittest.TestCase):
         Test reading of a single Exodus file.
         """
         reader = chigger.exodus.ExodusReader(self.single)
-        reader.update()
+        reader.Update()
 
         # Times
         times = reader.getTimes()
@@ -63,7 +63,7 @@ class TestExodusReader(unittest.TestCase):
 
         # Current Time
         reader.setOptions(timestep=None, time=1.01)
-        tdata = reader.getTimeData()
+        tdata = reader.getTimeInformation()
         self.assertAlmostEqual(tdata.time, 1)
         self.assertEqual(tdata.timestep, 10)
         self.assertEqual(tdata.index, 10)

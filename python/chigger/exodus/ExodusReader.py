@@ -332,17 +332,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     #    vtk_array = field_data.GetAbstractArray(variable)
     #    return vtk_array.GetComponent(self.__current.index, 0)
 
-    #def getTimeData(self):
-    #    """
-    #    The current time information. (public)
+    def getTimeInformation(self):
+        """
+        The current time information. (public)
 
-    #    Returns:
-    #        ExodusReader.TimeData: A collections.namedtuple with the current timestep, time,
-    #                               filename and local time index for the file.
-    #    """
-    #    self.update()
-    #    return self.__current
-
+        Returns:
+            ExodusReader.TimeInformation: A collections.namedtuple with the current timestep, time,
+                                          filename and local time index for the file.
+        """
+        self.UpdateInformation()
+        return self.__current
 
     def getBlockInformation(self):
         """
