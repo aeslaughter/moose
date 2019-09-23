@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
@@ -13,6 +13,7 @@ import os
 import unittest
 import shutil
 import time
+import logging
 import mooseutils
 import chigger
 
@@ -294,13 +295,16 @@ class TestExodusReader(unittest.TestCase):
         """
         Test for error messages.
         """
+        import sys
+        print(sys.version_info)
         # Invalid filename
         #with self.assertRaisesRegexp(IOError, 'The file foo.e is not a valid filename.'):
         #    chigger.exodus.ExodusReader('foo.e')
-
         reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
-        #with self.assertRaisesRegexp(mooseutils.MooseException, 'The variable "convected" must be a global variable.'):
-        reader.getGlobalData('convected')
+        logger = getattr(reader, '__log', logging.getLogger(reader.__class__.__name__))
+        with self.assertLogs(logger) as l:
+            reader.getGlobalData('convected')
+        self.assertEqual(l.output, [])
 
     def testReload(self):
         """
@@ -319,8 +323,6 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(reader.getTimes(), [0.0, 0.1])
 
     def testVariableReload(self):
-        print '\n'
-
         filenames = ['../input/simple_diffusion_out.e', '../input/simple_diffusion_new_var_out.e']
         common = 'common.e'
         shutil.copy(filenames[0], common)
