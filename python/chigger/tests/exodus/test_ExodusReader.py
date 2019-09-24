@@ -47,8 +47,8 @@ class TestExodusReader(unittest.TestCase):
         for fname in cls.testfiles:
             if os.path.exists(fname):
                 os.remove(fname)
-        if os.path.exists(cls.single):
-            os.remove(cls.single)
+        #if os.path.exists(cls.single):
+        #    os.remove(cls.single)
         if os.path.exists(cls.vector):
             os.remove(cls.vector)
         if os.path.exists(cls.interpolate):

@@ -68,6 +68,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     NODAL = vtk.vtkExodusIIReader.NODAL
     ELEMENTAL = vtk.vtkExodusIIReader.ELEM_BLOCK
     GLOBAL = vtk.vtkExodusIIReader.GLOBAL
+    #GLOBAL = vtk.vtkExodusIIReader.GLOBAL_TEMPORAL
     VARIABLE_TYPES = [ELEMENTAL, NODAL, GLOBAL]
 
     # Information data structures
@@ -126,7 +127,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__timeinfo = []                               # all the TimeInformation objects
         self.__fileinfo = collections.OrderedDict()        # sorted FileInformation objects
         self.__blockinfo = set()                           # BlockInformation objects
-        self.__variableinfo = set()                       # VariableInformation objects
+        self.__variableinfo = None                         # VariableInformation objects
         self.__active_variables = set()                    # Variables from 'variables' option
 
     def RequestInformation(self, request, inInfo, outInfo):
@@ -246,10 +247,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
             vtkobject.SetTimeStep(time0.index)
-            vtkobject.SetAllArrayStatus(self.GLOBAL, 0)
-            vtkobject.SetAllArrayStatus(self.ELEMENTAL, 0)
-            vtkobject.SetAllArrayStatus(self.NODAL, 0)
-            vtkobject.SetGlobalResultArrayStatus(variable, 1)
+
+            vtkobject.SetAllArrayStatus(self.GLOBAL, 1)
+
+            #vtkobject.SetAllArrayStatus(self.ELEMENTAL, 0)
+            #vtkobject.SetAllArrayStatus(self.NODAL, 0)
+            #vtkobject.SetGlobalResultArrayStatus(variable, 1)
+            print(time0.filename)
+            print(self.getVariableInformation())
+            print(vtkobject.GetOutput().GetBlock(0).GetBlock(0).GetFieldData())
+            print(vtkobject.GetOutput())
             g0 = vtkobject.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
             return g0
 
@@ -435,13 +442,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # so that the block and variable information are complete when populated. After this
         # only the variables listed in the 'variables' options, if any, are activated, which
         # reduces loading times. If 'variables' is not given, all the variables are loaded.
-        if self.__active_variables:
-            self.SetAllArrayStatus(ExodusReader.NODAL, 0)
-            self.SetAllArrayStatus(ExodusReader.ELEMENTAL, 0)
-            self.SetAllArrayStatus(ExodusReader.GLOBAL, 0)
-            for var, vtypes in self.__active_variables.items():
-                for vtype in vtypes:
-                    vtkreader.SetObjectArrayStatus(vtype, var, 1)
+        #if self.__active_variables:
+        #    self.SetAllArrayStatus(ExodusReader.NODAL, 0)
+        #    self.SetAllArrayStatus(ExodusReader.ELEMENTAL, 0)
+        #    self.SetAllArrayStatus(ExodusReader.GLOBAL, 0)
+        #    for var, vtypes in self.__active_variables.items():
+        #        for vtype in vtypes:
+        #            vtkreader.SetObjectArrayStatus(vtype, var, 1)
 
     def __updateActiveFilenames(self):
         filenames = self.__getActiveFilenames()
@@ -481,7 +488,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Update file, time, block, and variable information.
         """
         # Re-move any old files in timeinfo dict()
-        for fname in self.__fileinfo.keys():
+        for fname in list(self.__fileinfo.keys()):
             if fname not in self.__active:
                 self.__fileinfo.pop(fname)
 
@@ -512,7 +519,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # Create a TimeInformation object for each timestep that indicates the correct file.
         self.__timeinfo = []
         timestep = 0
-        for tinfo in self.__fileinfo.itervalues():
+        for tinfo in self.__fileinfo.values():
             for i, t in enumerate(tinfo.times):
                 tdata = ExodusReader.TimeInformation(timestep=timestep, time=t,
                                                      filename=tinfo.filename,
