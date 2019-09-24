@@ -225,21 +225,14 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             file1 = self.__fileinfo[time1.filename]
 
             vtkobject0 = self.__fileinfo[time0.filename].vtkreader
-            vtkobject0.SetAllArrayStatus(self.GLOBAL, 0)
-            vtkobject0.SetAllArrayStatus(self.ELEMENTAL, 0)
-            vtkobject0.SetAllArrayStatus(self.NODAL, 0)
-            vtkobject0.SetGlobalResultArrayStatus(variable, 1)
+            vtkobject0.SetTimeStep(time0.index)
+            vtkobject0.Update()
 
             vtkobject1 = self.__fileinfo[time1.filename].vtkreader
-            vtkobject1.SetAllArrayStatus(self.GLOBAL, 0)
-            vtkobject1.SetAllArrayStatus(self.ELEMENTAL, 0)
-            vtkobject1.SetAllArrayStatus(self.NODAL, 0)
-            vtkobject1.SetGlobalResultArrayStatus(variable, 1)
-
-            vtkobject0.Update()
-            g0 = vtkobject0.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
-
+            vtkobject1.SetTimeStep(time1.index)
             vtkobject1.Update()
+
+            g0 = vtkobject0.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
             g1 = vtkobject1.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time1.index, 0)
 
             return utils.interp(self.getOption('time'), [time0.time, time1.time], [g0, g1])
@@ -247,16 +240,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
             vtkobject.SetTimeStep(time0.index)
-
-            vtkobject.SetAllArrayStatus(self.GLOBAL, 1)
-
-            #vtkobject.SetAllArrayStatus(self.ELEMENTAL, 0)
-            #vtkobject.SetAllArrayStatus(self.NODAL, 0)
-            #vtkobject.SetGlobalResultArrayStatus(variable, 1)
-            print(time0.filename)
-            print(self.getVariableInformation())
-            print(vtkobject.GetOutput().GetBlock(0).GetBlock(0).GetFieldData())
-            print(vtkobject.GetOutput())
+            vtkobject.Update()
             g0 = vtkobject.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
             return g0
 
@@ -442,13 +426,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # so that the block and variable information are complete when populated. After this
         # only the variables listed in the 'variables' options, if any, are activated, which
         # reduces loading times. If 'variables' is not given, all the variables are loaded.
-        #if self.__active_variables:
-        #    self.SetAllArrayStatus(ExodusReader.NODAL, 0)
-        #    self.SetAllArrayStatus(ExodusReader.ELEMENTAL, 0)
-        #    self.SetAllArrayStatus(ExodusReader.GLOBAL, 0)
-        #    for var, vtypes in self.__active_variables.items():
-        #        for vtype in vtypes:
-        #            vtkreader.SetObjectArrayStatus(vtype, var, 1)
+        if self.__active_variables:
+            self.SetAllArrayStatus(ExodusReader.NODAL, 0)
+            self.SetAllArrayStatus(ExodusReader.ELEMENTAL, 0)
+            self.SetAllArrayStatus(ExodusReader.GLOBAL, 0)
+            for var, vtypes in self.__active_variables.items():
+                for vtype in vtypes:
+                    vtkreader.SetObjectArrayStatus(vtype, var, 1)
+        else:
+            for vinfo in self.__variableinfo.values():
+                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 1)
 
     def __updateActiveFilenames(self):
         filenames = self.__getActiveFilenames()
