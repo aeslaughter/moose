@@ -25,7 +25,7 @@ class ExtractBlockFilter(ChiggerFilter):
 
 
     def RequestData(self, request, inInfo, outInfo):
-        self.log('RequestData', level=logging.DEBUG)
+        self.debug('RequestData')
 
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
@@ -34,7 +34,7 @@ class ExtractBlockFilter(ChiggerFilter):
         if not extract_indices:
             msg = "The 'indices' option was empty for the ExtractBlockFilter, " \
                   "this filter is being bypassed."
-            self.log(msg, level=logging.ERROR)
+            self.error(msg)
             opt.ShallowCopy(inp)
 
         else:

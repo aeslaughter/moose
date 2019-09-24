@@ -155,8 +155,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         if self.isOptionValid('layer'):
             layer = self.getOption('layer')
             if layer < 0:
-                self.log("The 'layer' option must be zero or greater but {} provided.", layer,
-                         level=logging.ERROR)
+                self.error("The 'layer' option must be zero or greater but {} provided.", layer)
             self._vtkrenderer.SetLayer(layer)
 
         self._vtkrenderer.SetBackground(self.getOption('background'))

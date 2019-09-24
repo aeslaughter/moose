@@ -22,7 +22,7 @@ class ChiggerFilter(base.ChiggerAlgorithm):
         self._vtkfilter = self.VTKFILTERTYPE()
 
     def RequestData(self, request, inInfo, outInfo):
-        self.log('RequestData', level=logging.DEBUG)
+        self.debug('RequestData')
 
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
@@ -36,4 +36,4 @@ class ChiggerFilter(base.ChiggerAlgorithm):
         pass
 
     def __del__(self):
-        self.log('__del__()', level=logging.DEBUG)
+        self.debug('__del__()')

@@ -193,7 +193,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
 
         base_obj = self
         for fname, filter_obj in self._filters.items():
-            self.log('{} --> {}'.format(type(base_obj), type(filter_obj)), level=logging.DEBUG)
+            self.debug('{} --> {}'.format(type(base_obj), type(filter_obj)))
             filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
             base_obj = filter_obj
 

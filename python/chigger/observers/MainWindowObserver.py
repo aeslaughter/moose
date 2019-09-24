@@ -158,7 +158,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" viewport object.
         """
-        self.log('Select Viewport', level=logging.DEBUG)
+        self.debug('Select Viewport')
 
         if self.__current_viewport_outline is not None:
             self.__current_viewport_outline.remove()
@@ -187,7 +187,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" source object in the current viewport
         """
-        self.log('Select Source', level=logging.DEBUG)
+        self.debug('Select Source')
 
         if self.__current_viewport_outline is None:
             return

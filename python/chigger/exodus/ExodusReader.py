@@ -31,6 +31,20 @@ def lock_file(filename):
         yield
         fcntl.flock(f, fcntl.LOCK_UN)
 
+@mooseutils.addProperty('name', ptype=str, required=True)
+@mooseutils.addProperty('object_type', ptype=int, required=True)
+@mooseutils.addProperty('num_components', ptype=int, required=True)
+@mooseutils.addProperty('active', ptype=bool, default=True)
+class VarInfo(mooseutils.AutoPropertyMixin):
+    """Storage for variable information."""
+
+    @property
+    def fullname(self):
+        return '{}::{}'.format(self.name, ExodusReader.VARIABLE_TYPES_NAMES[self.object_type])
+
+    def __repr__(self):
+        return '{} (name={}, ptype={}, num_components={}, active={})'.format(self.fullname, self.name, self.object_type, self.num_components, self.active)
+
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     A reader for an ExodusII file.
@@ -68,16 +82,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     NODAL = vtk.vtkExodusIIReader.NODAL
     ELEMENTAL = vtk.vtkExodusIIReader.ELEM_BLOCK
     GLOBAL = vtk.vtkExodusIIReader.GLOBAL
-    #GLOBAL = vtk.vtkExodusIIReader.GLOBAL_TEMPORAL
     VARIABLE_TYPES = [ELEMENTAL, NODAL, GLOBAL]
+    VARIABLE_TYPES_NAMES = {NODAL:'NODAL', ELEMENTAL:'ELEMENTAL', GLOBAL:'GLOBAL'}
 
     # Information data structures
     BlockInformation = collections.namedtuple('BlockInformation',
                                               ['name', 'object_type', 'object_index', 'number',
                                                'multiblock_index'])
-    VariableInformation = collections.namedtuple('VariableInformation',
-                                                 ['name', 'object_type',
-                                                  'num_components'])
     FileInformation = collections.namedtuple('FileInformation',
                                              ['filename', 'times', 'modified', 'vtkreader'])
     TimeInformation = collections.namedtuple('TimeInformation',
@@ -127,8 +138,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__timeinfo = []                               # all the TimeInformation objects
         self.__fileinfo = collections.OrderedDict()        # sorted FileInformation objects
         self.__blockinfo = set()                           # BlockInformation objects
-        self.__variableinfo = None                         # VariableInformation objects
-        self.__active_variables = set()                    # Variables from 'variables' option
+        self.__variableinfo = list()                       # VariableInformation objects
 
     def RequestInformation(self, request, inInfo, outInfo):
         """
@@ -166,8 +176,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             # Interpolation across files
             else:
-                self.log("Support for time interpolation across adaptive time steps is not supported.",
-                         level='CRITICAL')
+                self.error("Support for time interpolation across adaptive time steps is not supported.")
                 return 0
 
         elif (time0 is not None):
@@ -219,6 +228,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             return sys.float_info.min
 
         time0, time1 = self.__getTimeInformation()
+
         # Time Interpolation
         if (time0 is not None) and (time1 is not None):
             file0 = self.__fileinfo[time0.filename]
@@ -296,17 +306,20 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         if var_types is None:
             var_types = ExodusReader.VARIABLE_TYPES
 
-        variables = collections.OrderedDict()
-        for name, var in self.__variableinfo.items():
+        variables = list()
+        for var in self.__variableinfo:
             if var.object_type in var_types:
-                variables[name] = var
+                variables.append(var)
         return variables
 
     def __hasVariable(self, var_type, var_name):
         """
         Return True if the supplied variable name for the given type exists.
         """
-        return var_name in self.getVariableInformation((var_type,))
+        for var in self.__variableinfo:
+            if (var.object_type == var_type) and (var.name == var_name):
+                return True
+        return False
 
     def __getTimeInformation(self):
         """
@@ -348,12 +361,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Account for out-of-range timesteps
             idx = timestep
             if (timestep < 0) and (timestep != -1):
-                self.log("Timestep out of range: {} not in {}.", timestep, repr([0, n]), level='WARNING')
+                self.warning("Timestep out of range: {} not in {}.", timestep, repr([0, n]))
                 self.setOption('timestep', 0)
                 idx = 0
             elif (timestep > n) or (timestep == -1):
                 if timestep != -1:
-                    self.log("Timestep out of range: {} not in {}.", timestep, repr([0, n]), level='WARNING')
+                    self.warning("Timestep out of range: {} not in {}.", timestep, repr([0, n]))
                 self.setOption('timestep', n)
                 idx = n
 
@@ -361,38 +374,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Default to last timestep
         return self.__timeinfo[-1], None
-
-    def applyOptions(self):
-        """
-        """
-        super(ExodusReader, self).applyOptions()
-
-        variables = self.getOption('variables')
-        self.__active_variables = collections.defaultdict(set)
-        if variables is not None:
-            for var in variables:
-                self.__updateActiveVariable(var)
-
-    def __updateActiveVariable(self, var):
-
-        var_types = ExodusReader.VARIABLE_TYPES
-        x = var.split("::")
-        if (len(x) == 2) and (x[1] == 'NODAL'):
-            var_types = [ExodusReader.NODAL]
-        elif (len(x) == 2) and (x[1] == 'ELEMENTAL'):
-            var_types = [ExodusReader.ELEMENTAL]
-        elif (len(x) == 2) and (x[1] == 'GLOBAL'):
-            var_types = [ExodusReader.GLOBAL]
-        elif len(x) == 2:
-            self.log("Unknown variable prefix '::{}', must be 'NODAL', 'ELEMENTAL', or 'GLOBAL'", x[1], level='ERROR')
-
-        for vtype in var_types:
-            if self.__hasVariable(vtype, var):
-                self.__active_variables[var].add(vtype)
-
-        for name, vtype in self.__active_variables:
-            if len(vtype) > 1:
-                self.log("The variable name '{}' is used to represent multiple data types, use the '::NODAL', '::ELEMENTAL', or '::GLOBAL' prefix to limit the loading to a certain type.", var, level='WARNING')
 
     def __updateOptions(self, vtkreader):
         """
@@ -426,16 +407,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # so that the block and variable information are complete when populated. After this
         # only the variables listed in the 'variables' options, if any, are activated, which
         # reduces loading times. If 'variables' is not given, all the variables are loaded.
-        if self.__active_variables:
-            self.SetAllArrayStatus(ExodusReader.NODAL, 0)
-            self.SetAllArrayStatus(ExodusReader.ELEMENTAL, 0)
-            self.SetAllArrayStatus(ExodusReader.GLOBAL, 0)
-            for var, vtypes in self.__active_variables.items():
-                for vtype in vtypes:
-                    vtkreader.SetObjectArrayStatus(vtype, var, 1)
-        else:
-            for vinfo in self.__variableinfo.values():
-                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, 1)
+        for vinfo in self.__variableinfo:
+            vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, vinfo.active)
 
     def __updateActiveFilenames(self):
         filenames = self.__getActiveFilenames()
@@ -541,16 +514,47 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                     self.__blockinfo.add(binfo)
 
             # Loop over all variable types
-            unsorted = dict()
+            unsorted = set()
             for variable_type in ExodusReader.VARIABLE_TYPES:
                 for i in range(vtkreader.GetNumberOfObjectArrays(variable_type)):
                     var_name = vtkreader.GetObjectArrayName(variable_type, i)
                     if var_name is not None:
                         num = vtkreader.GetNumberOfObjectArrayComponents(variable_type, i)
-                        vinfo = ExodusReader.VariableInformation(name=var_name,
-                                                                 object_type=variable_type,
-                                                                 num_components=num)
-                        unsorted[var_name] = vinfo
+                        vinfo = VarInfo(name=var_name, object_type=variable_type, num_components=num)
+                        unsorted.add(vinfo)
 
-            self.__variableinfo = collections.OrderedDict(sorted(unsorted.items(),
-                                                                 key=lambda x: x[0].lower()))
+            self.__variableinfo = sorted(unsorted, key=lambda x: '{}-{}'.format(x.name.lower(), x.object_type))
+
+        # Update active variables
+        variables = self.getOption('variables')
+        if variables is not None:
+            self.__activeVariableCheck(variables)
+            for var in self.__variableinfo:
+                var.active = (var.name in variables) or (var.fullname in variables)
+        else:
+            for var in self.__variableinfo:
+                var.active = True
+
+    def __activeVariableCheck(self, variables):
+        """Helper for handling variable type suffix."""
+
+        active_variables = collections.defaultdict(set)
+        for var in variables:
+            x = var.split("::")
+            var_types = ExodusReader.VARIABLE_TYPES
+            if (len(x) == 2) and (x[1] == 'NODAL'):
+                var_types = [ExodusReader.NODAL]
+            elif (len(x) == 2) and (x[1] == 'ELEMENTAL'):
+                var_types = [ExodusReader.ELEMENTAL]
+            elif (len(x) == 2) and (x[1] == 'GLOBAL'):
+                var_types = [ExodusReader.GLOBAL]
+            elif len(x) == 2:
+                self.error("Unknown variable prefix '::{}', must be 'NODAL', 'ELEMENTAL', or 'GLOBAL'", x[1])
+
+            for vtype in var_types:
+                if self.__hasVariable(vtype, var):
+                    active_variables[var].add(vtype)
+
+            for name, vtype in active_variables.items():
+                if len(vtype) > 1:
+                    self.warning("The variable name '{0}' exists with multiple data types ('{1}'), use the variable type as a prefix (e.g., '{0}::{2}') to limit the loading to a certain type.", var, ', '.join(self.VARIABLE_TYPES_NAMES[v] for v in vtype), self.VARIABLE_TYPES_NAMES[list(vtype)[0]])

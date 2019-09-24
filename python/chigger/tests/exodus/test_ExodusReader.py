@@ -39,6 +39,9 @@ class TestExodusReader(unittest.TestCase):
         cls.interpolate = "{}_interpolate.e".format(cls.__name__)
         shutil.copyfile(os.path.abspath('../input/input_no_adapt_out.e'), cls.interpolate)
 
+        cls.duplicate = "{}_duplicate.e".format(cls.__name__)
+        shutil.copyfile(os.path.abspath('../input/duplicate_name_out.e'), cls.duplicate)
+
     @classmethod
     def tearDownClass(cls):
         """
@@ -47,12 +50,14 @@ class TestExodusReader(unittest.TestCase):
         for fname in cls.testfiles:
             if os.path.exists(fname):
                 os.remove(fname)
-        #if os.path.exists(cls.single):
-        #    os.remove(cls.single)
+        if os.path.exists(cls.single):
+            os.remove(cls.single)
         if os.path.exists(cls.vector):
             os.remove(cls.vector)
         if os.path.exists(cls.interpolate):
             os.remove(cls.interpolate)
+        if os.path.exists(cls.duplicate):
+            os.remove(cls.duplicate)
 
     def testSingle(self):
         """
@@ -81,9 +86,9 @@ class TestExodusReader(unittest.TestCase):
 
         # Blocks
         blockinfo = reader.getBlockInformation()
-        self.assertEqual(blockinfo[reader.BLOCK].keys(), ['1', '76'])
-        self.assertEqual(blockinfo[reader.NODESET].keys(), ['1', '2'])
-        self.assertEqual(blockinfo[reader.SIDESET].keys(), ['1', '2'])
+        self.assertEqual(sorted(list(blockinfo[reader.BLOCK].keys())), ['1', '76',])
+        self.assertEqual(sorted(list(blockinfo[reader.NODESET].keys())), ['1', '2'])
+        self.assertEqual(sorted(list(blockinfo[reader.SIDESET].keys())), ['1', '2'])
         self.assertEqual(blockinfo[reader.SIDESET]['2'].name, 'top')
         self.assertEqual(blockinfo[reader.SIDESET]['2'].object_type, 3)
         self.assertEqual(blockinfo[reader.SIDESET]['2'].object_index, 1)
@@ -91,21 +96,21 @@ class TestExodusReader(unittest.TestCase):
 
         # Variable Info
         varinfo = reader.getVariableInformation()
-        self.assertEqual(varinfo.keys(), ['aux_elem', 'convected', 'diffused', 'func_pp'])
+        self.assertEqual(sorted(list(varinfo.keys())), ['aux_elem', 'convected', 'diffused', 'func_pp'])
 
         # Elemental Variables
         elemental = reader.getVariableInformation(var_types=[reader.ELEMENTAL])
-        self.assertEqual(elemental.keys(), ['aux_elem'])
+        self.assertEqual(sorted(list(elemental.keys())), ['aux_elem'])
         self.assertEqual(elemental['aux_elem'].num_components, 1)
 
         # Nodal Variables
         elemental = reader.getVariableInformation(var_types=[reader.NODAL])
-        self.assertEqual(elemental.keys(), ['convected', 'diffused'])
+        self.assertEqual(sorted(list(elemental.keys())), ['convected', 'diffused'])
         self.assertEqual(elemental['diffused'].num_components, 1)
 
         # Global Variables
         gvars = reader.getVariableInformation(var_types=[reader.GLOBAL])
-        self.assertEqual(gvars.keys(), ['func_pp'])
+        self.assertEqual(list(gvars.keys()), ['func_pp'])
         self.assertEqual(gvars['func_pp'].num_components, 1)
 
     def testSingleNoInterpolation(self):
@@ -256,7 +261,7 @@ class TestExodusReader(unittest.TestCase):
         """
         reader = chigger.exodus.ExodusReader(self.vector)
         variables = reader.getVariableInformation()
-        self.assertEqual(variables.keys(), ['u', 'vel_'])
+        self.assertEqual(sorted(list(variables.keys())), ['u', 'vel_'])
         self.assertEqual(variables['vel_'].num_components, 2)
 
     def testAdaptivity(self):
@@ -295,16 +300,15 @@ class TestExodusReader(unittest.TestCase):
         """
         Test for error messages.
         """
-        import sys
-        print(sys.version_info)
         # Invalid filename
-        #with self.assertRaisesRegexp(IOError, 'The file foo.e is not a valid filename.'):
-        #    chigger.exodus.ExodusReader('foo.e')
+        with self.assertRaisesRegexp(IOError, 'The file foo.e is not a valid filename.'):
+            chigger.exodus.ExodusReader('foo.e')
+
         reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
         logger = getattr(reader, '__log', logging.getLogger(reader.__class__.__name__))
         with self.assertLogs(logger) as l:
             reader.getGlobalData('convected')
-        self.assertEqual(l.output, [])
+        self.assertIn("The supplied global variable, 'convected', does not ", l.output[0])
 
     def testReload(self):
         """
@@ -338,6 +342,52 @@ class TestExodusReader(unittest.TestCase):
         self.assertIn('aux', variables)
         self.assertIn('u', variables)
         self.assertIn('New_0', variables)
+
+    def testVariableNameDuplicate(self):
+
+        # Basic read
+        reader = chigger.exodus.ExodusReader(self.duplicate)
+        variables = reader.getVariableInformation()
+        self.assertEqual(len(variables), 3)
+
+        self.assertEqual(variables[0].name, 'variable')
+        self.assertEqual(variables[0].fullname, 'variable::ELEMENTAL')
+        self.assertEqual(variables[0].num_components, 1)
+        self.assertEqual(variables[0].object_type, chigger.exodus.ExodusReader.ELEMENTAL)
+        self.assertTrue(variables[0].active)
+
+        self.assertEqual(variables[1].name, 'variable')
+        self.assertEqual(variables[1].fullname, 'variable::GLOBAL')
+        self.assertEqual(variables[1].num_components, 1)
+        self.assertEqual(variables[1].object_type, chigger.exodus.ExodusReader.GLOBAL)
+        self.assertTrue(variables[1].active)
+
+        self.assertEqual(variables[2].name, 'variable')
+        self.assertEqual(variables[2].fullname, 'variable::NODAL')
+        self.assertEqual(variables[2].num_components, 1)
+        self.assertEqual(variables[2].object_type, chigger.exodus.ExodusReader.NODAL)
+        self.assertTrue(variables[2].active)
+
+        # Check for warning if just 'variables' is provided
+        logger = getattr(reader, '__log', logging.getLogger(reader.__class__.__name__))
+        with self.assertLogs(logger) as l:
+            reader.setOptions(variables=('variable',))
+            variables = reader.getVariableInformation()
+        self.assertIn("The variable name 'variable' exists with", l.output[0])
+
+        # Check active state with suffix supplied
+        reader.setOptions(variables=('variable::NODAL',))
+        variables = reader.getVariableInformation()
+        self.assertFalse(variables[0].active)
+        self.assertFalse(variables[1].active)
+        self.assertTrue(variables[2].active)
+
+        # Check for error if bad suffix given
+        with self.assertLogs(logger) as l:
+            reader.setOptions(variables=('variable::WRONG',))
+            variables = reader.getVariableInformation()
+        self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2)

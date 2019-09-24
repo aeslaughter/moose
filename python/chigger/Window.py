@@ -346,7 +346,7 @@ class Window(base.ChiggerAlgorithm):
         """
         Begin the interactive VTK session.
         """
-        self.log("start", level=logging.DEBUG)
+        self.debug("start")
         self.Update()
         #self.__vtkwindow.Render()
         if self.__vtkinteractor:
@@ -548,7 +548,7 @@ class Window(base.ChiggerAlgorithm):
     #    return self.__viewports[index]
 
     def __del__(self):
-        self.log('__del__()', level=logging.DEBUG)
+        self.debug('__del__()')
 
     def _onKeyPressEvent(self, obj, event):
         print('foo')

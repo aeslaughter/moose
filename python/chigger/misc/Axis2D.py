@@ -125,7 +125,7 @@ class Axis2D(base.ChiggerSource):
         # Major tick marks
         num = self.getOption('major_nticks')
         if (num is not None) and self.getOption('adjust_range'):
-            self.log("The 'major_number' option is not applied if 'adjust_range' is enabled.", level=logging.WARNING)
+            self.warning("The 'major_number' option is not applied if 'adjust_range' is enabled.")
         if num is not None:
             if (num > 0):
                 self._vtkactor.SetNumberOfLabels(num)

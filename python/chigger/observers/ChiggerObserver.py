@@ -63,8 +63,3 @@ class ChiggerObserver(base.ChiggerObject):
         Terminate the render window.
         """
         pass
-        #self._window.getVTKInteractor().TerminateApp()
-
-    #def __del__(self):
-    #    self.log('__del__()', level=logging.DEBUG)
-    #    self._window = None

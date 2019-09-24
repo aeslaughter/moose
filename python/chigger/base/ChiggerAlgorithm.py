@@ -40,17 +40,17 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
             self.Modified()
 
     def applyOptions(self):
-        self.log('applyOptions', level=logging.DEBUG)
+        self.debug('applyOptions')
 
     def setupObject(self):
-        self.log('setupObject', level=logging.DEBUG)
+        self.debug('setupObject')
 
     def RequestInformation(self, request, inInfo, outInfo):
-        self.log('RequestInformation', level=logging.DEBUG)
+        self.debug('RequestInformation')
         self.setupObject()
         return 1
 
     def RequestData(self, request, inInfo, outInfo):
-        self.log('RequestData', level=logging.DEBUG)
+        self.debug('RequestData')
         self.applyOptions()
         return 1

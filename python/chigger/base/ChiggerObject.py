@@ -44,17 +44,26 @@ class ChiggerObjectBase(object):
         self._init_traceback = traceback.extract_stack()
         self._set_options_tracebacks = dict()
 
-    def log(self, msg, *args, **kwargs):
+    def _log(self, lvl, msg, *args):
         """Helper for using logging package with class name prefix"""
-        lvl = kwargs.pop('level', logging.INFO)
-        if isinstance(lvl, str):
-            lvl = ChiggerObjectBase.__LOG_LEVEL__[lvl.lower()]
         obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
         name = self.getOption('name')
         if name:
             obj.log(lvl, '({}): {}'.format(self.getOption('name'), msg.format(*args)))
         else:
             obj.log(lvl, ' {}'.format(msg.format(*args)))
+
+    def info(self, *args):
+        self._log(logging.INFO, *args)
+
+    def warning(self, *args):
+        self._log(logging.WARNING, *args)
+
+    def error(self, *args):
+        self._log(logging.ERROR, *args)
+
+    def debug(self, *args):
+        self._log(logging.DEBUG, *args)
 
     def name(self):
         return self.getOption('name')
@@ -132,7 +141,7 @@ class ChiggerObjectBase(object):
             print('setOptions({}, {})'.format(key, ', '.join(repr(value))))
 
     def __del__(self):
-        self.log('__del__()', level=logging.DEBUG)
+        self.debug('__del__()')
 
 class ChiggerObject(ChiggerObjectBase):
     """Base class for objects that need options but are not in the VTK pipeline."""
@@ -156,4 +165,4 @@ class ChiggerObject(ChiggerObjectBase):
             self.__modified_time.Modified()
 
     def applyOptions(self):
-        self.log('applyOptions()', level=logging.DEBUG)
+        self.debug('applyOptions()')
