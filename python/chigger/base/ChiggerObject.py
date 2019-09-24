@@ -135,7 +135,7 @@ class ChiggerObjectBase(object):
         self.log('__del__()', level=logging.DEBUG)
 
 class ChiggerObject(ChiggerObjectBase):
-    """Base class for objects that need options but are not in the VTk pipeline."""
+    """Base class for objects that need options but are not in the VTK pipeline."""
 
     def __init__(self, **kwargs):
         self.__modified_time = vtk.vtkTimeStamp()

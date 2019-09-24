@@ -31,8 +31,6 @@ def lock_file(filename):
         yield
         fcntl.flock(f, fcntl.LOCK_UN)
 
-#@base.ChiggerAlgorithm.nOutputPorts(1)
-#@base.ChiggerAlgorithm.outputType('vtkMultiBlockDataSet')
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     A reader for an ExodusII file.
@@ -124,11 +122,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         if not os.path.isfile(self.__filename):
             raise IOError("The file {} is not a valid filename.".format(self.__filename))
 
-        self.__active = None                        # see utils.get_active_filenames
-        self.__timeinfo = []                        # all the TimeInformation objects
-        self.__fileinfo = collections.OrderedDict() # sorted FileInformation objects
-        self.__blockinfo = set()                    # BlockInformation objects
-        self.__variableinfo = set()                 # VariableInformation objects
+        self.__active = None                               # see utils.get_active_filenames
+        self.__timeinfo = []                               # all the TimeInformation objects
+        self.__fileinfo = collections.OrderedDict()        # sorted FileInformation objects
+        self.__blockinfo = set()                           # BlockInformation objects
+        self.__variableinfo = set()                       # VariableInformation objects
+        self.__active_variables = set()                    # Variables from 'variables' option
 
     def RequestInformation(self, request, inInfo, outInfo):
         """
@@ -371,6 +370,38 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Default to last timestep
         return self.__timeinfo[-1], None
+
+    def applyOptions(self):
+        """
+        """
+        super(ExodusReader, self).applyOptions()
+
+        variables = self.getOption('variables')
+        self.__active_variables = collections.defaultdict(set)
+        if variables is not None:
+            for var in variables:
+                self.__updateActiveVariable(var)
+
+    def __updateActiveVariable(self, var):
+
+        var_types = ExodusReader.VARIABLE_TYPES
+        x = var.split("::")
+        if (len(x) == 2) and (x[1] == 'NODAL'):
+            var_types = [ExodusReader.NODAL]
+        elif (len(x) == 2) and (x[1] == 'ELEMENTAL'):
+            var_types = [ExodusReader.ELEMENTAL]
+        elif (len(x) == 2) and (x[1] == 'GLOBAL'):
+            var_types = [ExodusReader.GLOBAL]
+        elif len(x) == 2:
+            self.log("Unknown variable prefix '::{}', must be 'NODAL', 'ELEMENTAL', or 'GLOBAL'", x[1], level='ERROR')
+
+        for vtype in var_types:
+            if self.__hasVariable(vtype, var):
+                self.__active_variables[var].add(vtype)
+
+        for name, vtype in self.__active_variables:
+            if len(vtype) > 1:
+                self.log("The variable name '{}' is used to represent multiple data types, use the '::NODAL', '::ELEMENTAL', or '::GLOBAL' prefix to limit the loading to a certain type.", var, level='WARNING')
 
     def __updateOptions(self, vtkreader):
         """
