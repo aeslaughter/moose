@@ -12,12 +12,12 @@ import sys
 import logging
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
-
-import base
-import annotations
-import observers
 import mooseutils
-from Viewport import Viewport
+
+from . import base
+from . import annotations
+from . import observers
+from .Viewport import Viewport
 
 
 class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
@@ -131,7 +131,6 @@ class Window(base.ChiggerAlgorithm):
 
         self.__vtkwindow = vtk.vtkRenderWindow()#kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = kwargs.pop('vtkinteractor', self.__vtkwindow.MakeRenderWindowInteractor())
-        print 'Window()'
         self.__vtkinteractorstyle = None
 
         ##VTKPythonAlgorithmBase.__init__(self)
@@ -552,4 +551,4 @@ class Window(base.ChiggerAlgorithm):
         self.log('__del__()', level=logging.DEBUG)
 
     def _onKeyPressEvent(self, obj, event):
-        print 'foo'
+        print('foo')

@@ -14,7 +14,7 @@ import textwrap
 import vtk
 
 import mooseutils
-from ChiggerObserver import ChiggerObserver
+from .ChiggerObserver import ChiggerObserver
 from .. import utils
 from .. import geometric
 
@@ -240,18 +240,18 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
 
         # Object name/type
-        print mooseutils.colorText('General Keybindings:', 'YELLOW')
+        print(mooseutils.colorText('General Keybindings:', 'YELLOW'))
         self.printKeyBindings(self.keyBindings())
 
         if self.__current_viewport_index is not None:
             viewport = self._window.viewports()[self.__current_viewport_index]
-            print mooseutils.colorText('Current Viewport Keybindings ({}):'.format(viewport.name()), 'YELLOW')
+            print(mooseutils.colorText('Current Viewport Keybindings ({}):'.format(viewport.name()), 'YELLOW'))
             self.printKeyBindings(viewport.keyBindings())
 
         if self.__current_source_index is not None:
             viewport = self._window.viewports()[self.__current_viewport_index]
             source = viewport.sources()[self.__current_source_index]
-            print mooseutils.colorText('Current Source Keybindings ({}):'.format(viewport.name()), 'YELLOW')
+            print(mooseutils.colorText('Current Source Keybindings ({}):'.format(viewport.name()), 'YELLOW'))
             self.printKeyBindings(source.keyBindings())
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
@@ -368,7 +368,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         content = self.RE.sub(sub_func, trace[3])
         lines[line-1] = '{}\n'.format(content)
 
-        print ''.join(lines)
+        print(''.join(lines))
 
 
         #with open(filename, 'w+') as fid:

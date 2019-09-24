@@ -21,9 +21,9 @@ class Option(object):
     that can be changed (without demangling) is the assigned value, via the value setter.
 
     Inputs:
-        name[str|unicode]: The name of the option.
+        name[str]: The name of the option.
         default[]: The default value, if "vtype" is set the type must match.
-        doc[str|unicode]: A documentation string, which is used in the option dump.
+        doc[str]: A documentation string, which is used in the option dump.
         vtype[type]: The python type that this option is to be restricted.
         allow[tuple]: A tuple of allowed values, if vtype is set the types within must match.
         array[bool]: Define the option as an "array", which if 'vtype' is set restricts the
@@ -46,12 +46,12 @@ class Option(object):
         self.__array = array     # create an array
         self.__size = size       # array size
 
-        if not isinstance(self.__name, (str, unicode)):
-            msg = "The supplied 'name' argument must be a 'str' or 'unicode', but {} was provided."
+        if not isinstance(self.__name, str):
+            msg = "The supplied 'name' argument must be a 'str', but {} was provided."
             raise TypeError(msg.format(type(self.__name)))
 
-        if (self.__doc is not None) and (not isinstance(self.__doc, (str, unicode))):
-            msg = "The supplied 'doc' argument must be a 'str' or 'unicode', but {} was provided."
+        if (self.__doc is not None) and (not isinstance(self.__doc, str)):
+            msg = "The supplied 'doc' argument must be a 'str', but {} was provided."
             raise TypeError(msg.format(type(self.__doc)))
 
         if (self.__vtype is not None) and (not isinstance(self.__vtype, type)):

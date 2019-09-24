@@ -194,7 +194,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
-        print '\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera()))
+        print('\n'.join(utils.print_camera(self._vtkrenderer.GetActiveCamera())))
 
     def increaseXmin(self, *args):
         self._setViewport(0, 0.05)

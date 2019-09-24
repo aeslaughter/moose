@@ -9,9 +9,9 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 from .. import base
 
-from Cube import Cube
-from Rectangle import Rectangle
-from Outline import Outline, Outline2D
+from .Cube import Cube
+from .Rectangle import Rectangle
+from .Outline import Outline, Outline2D
 
 
 

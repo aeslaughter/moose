@@ -1,4 +1,4 @@
-from ChiggerObject import ChiggerObject
+from .ChiggerObject import ChiggerObject
 from .. import utils
 
 class ChiggerCompositeSource(utils.KeyBindingMixin, ChiggerObject):

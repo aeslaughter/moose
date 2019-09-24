@@ -11,7 +11,6 @@ import numpy as np
 import vtk
 from .. import base, geometric, utils
 
-
 class ColorBar(base.ChiggerCompositeSource):
     """
     A generic colorbar, that can be rotated and contain dual axis.

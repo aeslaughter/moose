@@ -2,7 +2,7 @@ import vtk
 import numpy as np
 import math
 from .. import base, utils, filters
-from GeometricSource import GeometricSource2D
+from .GeometricSource import GeometricSource2D
 
 class Rectangle(GeometricSource2D):
     VTKSOURCETYPE = vtk.vtkPlaneSource

@@ -65,7 +65,7 @@ class KeyBindingMixin(object):
         """
         n = 0
         out = []
-        for key, value in bindings.iteritems():
+        for key, value in bindings.items():
             tag = 'shift-{}'.format(key[0]) if key[1] else key[0]
             desc = [item.description for item in value]
             out.append([tag, '\n\n'.join(desc)])
@@ -73,8 +73,8 @@ class KeyBindingMixin(object):
 
         for key, desc in out:
             key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
-            print '\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
-                                          subsequent_indent=' '*(n + 2)))
+            print('\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
+                                          subsequent_indent=' '*(n + 2))))
 
 
     def interactive(self):

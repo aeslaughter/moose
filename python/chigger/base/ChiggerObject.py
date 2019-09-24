@@ -114,22 +114,22 @@ class ChiggerObjectBase(object):
         self._options.assign(name, func)
 
     def printOption(self, key):
-        print '{}={}'.format(key, repr(self.getOption(key)))
+        print('{}={}'.format(key, repr(self.getOption(key))))
 
     def printOptions(self, *args):
         """
         Print a list of all available options for this object.
         """
-        print self._options
+        print(self._options)
 
     def printSetOptions(self, *args):
         """
         Print python code for the 'setOptions' method.
         """
         output, sub_output = self._options.toScriptString()
-        print 'setOptions({})'.format(', '.join(output))
-        for key, value in sub_output.iteritems():
-            print 'setOptions({}, {})'.format(key, ', '.join(repr(value)))
+        print('setOptions({})'.format(', '.join(output)))
+        for key, value in sub_output.items():
+            print('setOptions({}, {})'.format(key, ', '.join(repr(value))))
 
     def __del__(self):
         self.log('__del__()', level=logging.DEBUG)

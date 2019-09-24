@@ -9,17 +9,17 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import os
 
-from Window import Window
-from Viewport import Viewport
-import annotations
-import base
-import utils
-import misc
-import exodus
-import geometric
-import graphs
-import filters
-import observers
+from .Window import Window
+from .Viewport import Viewport
+from . import annotations
+from . import base
+from . import utils
+from . import misc
+from . import exodus
+from . import geometric
+from . import graphs
+from . import filters
+from . import observers
 
 import logging
 level = dict(critical=logging.CRITICAL, error=logging.ERROR, warning=logging.warning,

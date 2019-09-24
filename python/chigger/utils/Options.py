@@ -9,8 +9,8 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 from collections import OrderedDict
 import copy
-from Option import Option
 import mooseutils
+from .Option import Option
 
 class Options(object):
     """
@@ -43,11 +43,11 @@ class Options(object):
         """
         return self.string()
 
-    def iteritems(self):
+    def items(self):
         """
         Provides dict() functionality.
         """
-        return self.__options.iteritems()
+        return self.__options.items()
 
     def itervalues(self):
         """
@@ -214,7 +214,7 @@ class Options(object):
                         unused.add(key)
 
         # Update from kwargs
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             if k in self.__options:
                 self.set(k, v)
             else:

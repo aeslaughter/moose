@@ -1,5 +1,4 @@
-from Options import Options
-#from EdgeOptions import EdgeOptions
+from .Options import Options
 
 def validOptions():
     """Returns options for edge properties for vtkActor objects."""

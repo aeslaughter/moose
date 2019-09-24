@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from ChiggerFilter import ChiggerFilter
+from .ChiggerFilter import ChiggerFilter
 class Transform(ChiggerFilter):
 
     VTKFILTERTYPE = vtk.vtkTransformFilter

@@ -22,6 +22,6 @@ mug = chigger.exodus.ExodusResult(reader, block=None, boundary=('1',), variable=
                                   cmap='coolwarm', camera=camera)
 window = chigger.RenderWindow(mug, size=(300,300), test=True)
 window.write('boundary_numeric.png')
-#for key, value in reader.getBlockInformation().iteritems():
+#for key, value in reader.getBlockInformation().items():
 #    print key, value
 window.start()

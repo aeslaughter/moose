@@ -16,13 +16,13 @@ import subprocess
 import numpy as np
 import vtk
 import mooseutils
-from Option import Option
-from Options import Options
-import AxisOptions
-import TextOptions
-import LegendOptions
-import ActorOptions
-from KeyBindingMixin import KeyBinding, KeyBindingMixin
+from .Option import Option
+from .Options import Options
+from . import AxisOptions
+from . import TextOptions
+from . import LegendOptions
+from . import ActorOptions
+from .KeyBindingMixin import KeyBinding, KeyBindingMixin
 
 def get_active_filenames(basename, pattern=None):
     """
@@ -135,7 +135,7 @@ def print_camera(camera, prefix='camera', precision=8):
     Prints vtkCamera object to screen.
     """
     if not isinstance(camera, vtk.vtkCamera):
-        print "You must supply a vtkCarmera object."
+        print("You must supply a vtkCarmera object.")
         return
 
     view_up = camera.GetViewUp()
@@ -217,6 +217,6 @@ def img2mov(pattern, output, ffmpeg='ffmpeg', duration=60, framerate=None, bitra
     cmd += [output]
 
     c = ' '.join(cmd)
-    print '{0}\n{1}\n{0}'.format('-'*(len(c)), c)
+    print('{0}\n{1}\n{0}'.format('-'*(len(c)), c))
     if not dry_run:
         subprocess.call(cmd)

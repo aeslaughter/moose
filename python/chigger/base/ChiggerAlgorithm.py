@@ -1,6 +1,6 @@
 import vtk
 import logging
-from ChiggerObject import ChiggerObjectBase
+from .ChiggerObject import ChiggerObjectBase
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 from chigger import utils
 

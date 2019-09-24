@@ -1,5 +1,5 @@
 import vtk
-from GeometricSource import GeometricSource, GeometricSource2D
+from .GeometricSource import GeometricSource, GeometricSource2D
 
 class Outline(GeometricSource):
 

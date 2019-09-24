@@ -10,7 +10,7 @@
 
 import glob
 import mooseutils
-from ExodusReader import ExodusReader
+from .ExodusReader import ExodusReader
 from .. import base
 
 class MultiAppExodusReader(base.ChiggerObject):

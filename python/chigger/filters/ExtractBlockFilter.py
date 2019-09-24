@@ -1,7 +1,7 @@
 import logging
 import vtk
 import chigger
-from ChiggerFilter import ChiggerFilter
+from .ChiggerFilter import ChiggerFilter
 
 class ExtractBlockFilter(ChiggerFilter):
     VTKFILTERTYPE = vtk.vtkExtractBlock

@@ -12,8 +12,8 @@ import weakref
 import collections
 import vtk
 import mooseutils
-from ChiggerAlgorithm import ChiggerAlgorithm
-from chigger import utils
+from .ChiggerAlgorithm import ChiggerAlgorithm
+from .. import utils
 
 class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
 
@@ -133,7 +133,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
     def getBounds(self):
         self.Update()
         if isinstance(self._vtkmapper, vtk.vtkPolyDataMapper2D):
-            print '2D bounds needs something to do this in general'
+            print('2D bounds needs something to do this in general')
             return None
         else:
             return self._vtkmapper.GetBounds()
@@ -192,7 +192,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
                 self.Modified()
 
         base_obj = self
-        for fname, filter_obj in self._filters.iteritems():
+        for fname, filter_obj in self._filters.items():
             self.log('{} --> {}'.format(type(base_obj), type(filter_obj)), level=logging.DEBUG)
             filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
             base_obj = filter_obj

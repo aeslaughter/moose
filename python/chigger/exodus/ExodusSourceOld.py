@@ -220,7 +220,7 @@ class ExodusSource(base.ChiggerSource):
             indices = []
             if self.isOptionValid(option):
                 blocks = self.getOption(option)
-                for vtkid, item in block_info[vtk_type].iteritems():
+                for vtkid, item in block_info[vtk_type].items():
                     for name in blocks:
                         if (item.name == str(name)) or (str(name) == vtkid):
                             indices.append(item.multiblock_index)

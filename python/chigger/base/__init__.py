@@ -8,14 +8,14 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-from ChiggerObject import ChiggerObject
-from ChiggerAlgorithm import ChiggerAlgorithm
-from ChiggerSource import ChiggerSource
-from ChiggerCompositeSource import ChiggerCompositeSource
+from .ChiggerObject import ChiggerObject
+from .ChiggerAlgorithm import ChiggerAlgorithm
+from .ChiggerSource import ChiggerSource
+from .ChiggerCompositeSource import ChiggerCompositeSource
 
 # "utils" would be the correct place for this, but it creates a cyclic dependency because it used
 # base ChiggerObject; "misc" has a similar problem and "misc" is reserved for source objects
-from ColorMap import ColorMap
+from .ColorMap import ColorMap
 
 def addFilter(filtertype, required=False):
     """Decorator for adding filters."""

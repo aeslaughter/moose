@@ -9,6 +9,6 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from GeometryFilter import GeometryFilter
-from ExtractBlockFilter import ExtractBlockFilter
-from Transform import Transform
+from .GeometryFilter import GeometryFilter
+from .ExtractBlockFilter import ExtractBlockFilter
+from .Transform import Transform

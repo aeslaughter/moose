@@ -117,7 +117,7 @@ class ExodusResult(base.ChiggerResult):
             indices = []
             blocks = self.getOption(option)
             if blocks:
-                for vtkid, item in block_info[vtk_type].iteritems():
+                for vtkid, item in block_info[vtk_type].items():
                     for name in blocks:
                         if (item.name == str(name)) or (str(name) == vtkid):
                             indices.append(item.multiblock_index)

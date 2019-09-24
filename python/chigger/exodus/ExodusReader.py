@@ -306,7 +306,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             var_types = ExodusReader.VARIABLE_TYPES
 
         variables = collections.OrderedDict()
-        for name, var in self.__variableinfo.iteritems():
+        for name, var in self.__variableinfo.items():
             if var.object_type in var_types:
                 variables[name] = var
         return variables
@@ -439,7 +439,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self.SetAllArrayStatus(ExodusReader.NODAL, 0)
             self.SetAllArrayStatus(ExodusReader.ELEMENTAL, 0)
             self.SetAllArrayStatus(ExodusReader.GLOBAL, 0)
-            for var, vtypes in self.__active_variables.iteritems():
+            for var, vtypes in self.__active_variables.items():
                 for vtype in vtypes:
                     vtkreader.SetObjectArrayStatus(vtype, var, 1)
 
