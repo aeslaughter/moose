@@ -223,8 +223,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.Update()
 
         if not self.__hasVariable(self.GLOBAL, variable):
-            self.log("The supplied global variable, '{}', does not exist in {}.", variable,
-                     self.__filename, level='ERROR')
+            self.error("The supplied global variable, '{}', does not exist in {}.", variable,
+                       self.__filename)
             return sys.float_info.min
 
         time0, time1 = self.__getTimeInformation()

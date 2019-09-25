@@ -96,22 +96,22 @@ class TestExodusReader(unittest.TestCase):
 
         # Variable Info
         varinfo = reader.getVariableInformation()
-        self.assertEqual(sorted(list(varinfo.keys())), ['aux_elem', 'convected', 'diffused', 'func_pp'])
+        self.assertEqual([v.name for v in varinfo], ['aux_elem', 'convected', 'diffused', 'func_pp'])
 
         # Elemental Variables
         elemental = reader.getVariableInformation(var_types=[reader.ELEMENTAL])
-        self.assertEqual(sorted(list(elemental.keys())), ['aux_elem'])
-        self.assertEqual(elemental['aux_elem'].num_components, 1)
+        self.assertEqual([v.name for v in elemental], ['aux_elem'])
+        self.assertEqual(elemental[0].num_components, 1)
 
         # Nodal Variables
-        elemental = reader.getVariableInformation(var_types=[reader.NODAL])
-        self.assertEqual(sorted(list(elemental.keys())), ['convected', 'diffused'])
-        self.assertEqual(elemental['diffused'].num_components, 1)
+        nodal = reader.getVariableInformation(var_types=[reader.NODAL])
+        self.assertEqual([v.name for v in nodal], ['convected', 'diffused'])
+        self.assertEqual(nodal[1].num_components, 1)
 
         # Global Variables
         gvars = reader.getVariableInformation(var_types=[reader.GLOBAL])
-        self.assertEqual(list(gvars.keys()), ['func_pp'])
-        self.assertEqual(gvars['func_pp'].num_components, 1)
+        self.assertEqual([v.name for v in gvars], ['func_pp'])
+        self.assertEqual(gvars[0].num_components, 1)
 
     def testSingleNoInterpolation(self):
         """
@@ -261,8 +261,8 @@ class TestExodusReader(unittest.TestCase):
         """
         reader = chigger.exodus.ExodusReader(self.vector)
         variables = reader.getVariableInformation()
-        self.assertEqual(sorted(list(variables.keys())), ['u', 'vel_'])
-        self.assertEqual(variables['vel_'].num_components, 2)
+        self.assertEqual([v.name for v in variables], ['u', 'vel_'])
+        self.assertEqual(variables[1].num_components, 2)
 
     def testAdaptivity(self):
         """
@@ -301,7 +301,7 @@ class TestExodusReader(unittest.TestCase):
         Test for error messages.
         """
         # Invalid filename
-        with self.assertRaisesRegexp(IOError, 'The file foo.e is not a valid filename.'):
+        with self.assertRaisesRegex(IOError, 'The file foo.e is not a valid filename.'):
             chigger.exodus.ExodusReader('foo.e')
 
         reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
@@ -332,16 +332,16 @@ class TestExodusReader(unittest.TestCase):
         shutil.copy(filenames[0], common)
         reader = chigger.exodus.ExodusReader(common)
         variables = reader.getVariableInformation()
-        self.assertIn('aux', variables)
-        self.assertIn('u', variables)
-        self.assertNotIn('New_0', variables)
+        self.assertIn('aux', [v.name for v in variables])
+        self.assertIn('u', [v.name for v in variables])
+        self.assertNotIn('New_0', [v.name for v in variables])
 
         time.sleep(1.5) # make sure modified time is different (MacOS requires > 1s)
         shutil.copy(filenames[1], common)
         variables = reader.getVariableInformation()
-        self.assertIn('aux', variables)
-        self.assertIn('u', variables)
-        self.assertIn('New_0', variables)
+        self.assertIn('aux', [v.name for v in variables])
+        self.assertIn('u', [v.name for v in variables])
+        self.assertIn('New_0', [v.name for v in variables])
 
     def testVariableNameDuplicate(self):
 
