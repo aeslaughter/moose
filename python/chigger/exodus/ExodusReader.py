@@ -46,6 +46,7 @@ class VarInfo(mooseutils.AutoPropertyMixin):
         return '{} (name={}, ptype={}, num_components={}, active={})'.format(self.fullname, self.name, self.object_type, self.num_components, self.active)
 
 FileInfo = collections.namedtuple('FileInformation', ['filename', 'times', 'modified', 'vtkreader'])
+TimeInfo = collections.namedtuple('TimeInformation', ['timestep', 'time', 'filename', 'index'])
 
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
@@ -76,7 +77,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     # "Enum" values for Subdomains, Sidesets, and Nodesets
     BLOCK = vtk.vtkExodusIIReader.ELEM_BLOCK
     SIDESET = vtk.vtkExodusIIReader.SIDE_SET
-    BOUNDARY = vtk.vtkExodusIIReader.SIDE_SET
+    #BOUNDARY = vtk.vtkExodusIIReader.SIDE_SET
     NODESET = vtk.vtkExodusIIReader.NODE_SET
     BLOCK_TYPES = [BLOCK, SIDESET, NODESET]
 
@@ -85,14 +86,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     ELEMENTAL = vtk.vtkExodusIIReader.ELEM_BLOCK
     GLOBAL = vtk.vtkExodusIIReader.GLOBAL
     VARIABLE_TYPES = [ELEMENTAL, NODAL, GLOBAL]
-    VARIABLE_TYPES_NAMES = {NODAL:'NODAL', ELEMENTAL:'ELEMENTAL', GLOBAL:'GLOBAL'}
+
+    #VARIABLE_TYPES_NAMES = {NODAL:'NODAL', ELEMENTAL:'ELEMENTAL', GLOBAL:'GLOBAL'}
 
     # Information data structures
     BlockInformation = collections.namedtuple('BlockInformation',
                                               ['name', 'object_type', 'object_index', 'number',
                                                'multiblock_index'])
-    TimeInformation = collections.namedtuple('TimeInformation',
-                                             ['timestep', 'time', 'filename', 'index'])
 
     @staticmethod
     def validOptions():
@@ -151,12 +151,17 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self.error("The file {} is not a valid filename.", self.__filename)
             return 0
 
-        # Complete list of filenames with adaptive suffixes (-s002, ...)
-        self.__filenames = self.__getActiveFilenames(filename)
+        # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
+        # block information only needs to be updated if the file list changed
+        filenames = self.__getActiveFilenames(self.getOption('filename'))
+        if self.__filenames != filenames:
+            self.__filenames = filenames
 
-        # Build FileInfo object for each timestep
-        self.__updateFileInformation()
+            # Build FileInfo object for each filename
+            self.__updateFileInformation()
 
+            # Build TimeInfo object for each timestep
+            self.__updateTimeInformation()
 
 
         #self.__updateActiveFilenames()
@@ -217,8 +222,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             list: A list of all times.
         """
-        #self.__updateActiveFilenames()
-        #self.UpdateInformation()
+        self.updateInformation()
         return [t.time for t in self.__timeinfo if t.time != None]
 
     def getGlobalData(self, variable):
@@ -284,8 +288,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                      the two information objects contain the information for the two data sets
                      that will be used for interpolation.
         """
-        #self.__updateActiveFilenames()
-        #self.UpdateInformation()
+        self.updateInformation()
         return self.__getTimeInformation()
 
     def getBlockInformation(self):
@@ -376,12 +379,10 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             idx = timestep
             if (timestep < 0) and (timestep != -1):
                 self.warning("Timestep out of range: {} not in {}.", timestep, repr([0, n]))
-                self.setOption('timestep', 0)
                 idx = 0
             elif (timestep > n) or (timestep == -1):
                 if timestep != -1:
                     self.warning("Timestep out of range: {} not in {}.", timestep, repr([0, n]))
-                self.setOption('timestep', n)
                 idx = n
 
             return self.__timeinfo[idx], None
@@ -424,13 +425,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         for vinfo in self.__variableinfo:
             vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, vinfo.active)
 
-    def updateActiveFilenames(self):
-
-
-        filenames = self.__getActiveFilenames(self.getOption('filename'))
-        if self.__filenames != filenames:
-            self.__filenames = filenames
-            self.Modified()
+    #def updateActiveFilenames(self):
+    #    filenames = self.__getActiveFilenames(self.getOption('filename'))
+    #    if self.__filenames != filenames:
+    #        self.__filenames = filenames
+    #        self.Modified()
 
     def __getActiveFilenames(self, filename):
         """
@@ -460,7 +459,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return output
 
     def __updateFileInformation(self):
-        """Helper that creates dict() that contains a FileInfo object for each timestep."""
+        """Helper that creates dict() that contains a FileInfo object for each file."""
+        self.debug('__updateFileInformation')
 
         # Re-move any old files in timeinfo dict()
         for fname in list(self.__fileinfo.keys()):
@@ -492,25 +492,27 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                                                      vtkreader=vtkreader)
 
 
+    def __updateTimeInformation(self):
+        """Create a TimeInfo object for each timestep that indicates the correct file."""
+        self.debug('__updateTimeInformation')
 
-    def __updateInformation(self):
-        """
-        Update file, time, block, and variable information.
-        """
-
-        # Create a Time Information object for each timestep that indicates the correct file.
         self.__timeinfo = []
         timestep = 0
         for tinfo in self.__fileinfo.values():
             for i, t in enumerate(tinfo.times):
-                tdata = ExodusReader.TimeInformation(timestep=timestep, time=t,
-                                                     filename=tinfo.filename,
-                                                     index=i)
+                tdata = TimeInfo(timestep=timestep, time=t, filename=tinfo.filename, index=i)
                 self.__timeinfo.append(tdata)
                 timestep += 1
 
-        # Queries the base file for the subdomain, sideset, nodeset, and variable, it is assumed
-        # that all files contain the same variables and blocks, as it should.
+
+    def __updateBlockInformation(self):
+        """
+        Queries the base file for the subdomain, sideset, nodeset, and variable, it is assumed
+        that all files contain the same variables and blocks, as it should.
+        """
+
+        # TODO: use self.__fileinfo[self.__filenames[0][0]]
+
         with lock_file(self.__filename):
             index = 0 # Index to be used with the vtkExtractBlock::AddIndex method
 
@@ -534,6 +536,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                                                           object_index=j,
                                                           multiblock_index=index)
                     self.__blockinfo.add(binfo)
+
+
+
+    def __updateInformation(self):
+        """
+        Update file, time, block, and variable information.
+        """
 
             # Loop over all variable types
             unsorted = set()

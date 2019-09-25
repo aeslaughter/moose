@@ -70,16 +70,18 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
         self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
 
-        # Get FileInfo, this should trigger a call via the VTK pipeline RequestInformation
+        # Get FileInfo dict, this should trigger a call via the VTK pipeline RequestInformation
         with self.assertLogs(level=logging.DEBUG) as l:
             finfo = reader.getFileInformation()
 
-        self.assertEqual(len(l.output), 3)
+        self.assertEqual(len(l.output), 5)
         self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[1], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: onRequestInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: __updateFileInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: __updateTimeInformation')
 
-        # Get FileInfo, this should NOT trigger a call to the VTK pipeline RequestInformation
+        # Get FileInfo dict, this should NOT trigger a call to the VTK pipeline RequestInformation
         with self.assertLogs(level=logging.DEBUG) as l:
             finfo = reader.getFileInformation()
 
@@ -99,6 +101,76 @@ class TestExodusReader(unittest.TestCase):
         f = finfo[self.single]
         self.assertEqual(f.filename, self.single)
         self.assertEqual(len(f.times), 21)
+
+    def testTimeInformation(self):
+        """Test the TimeInfo objects"""
+
+        # Create ExodusReader
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader = chigger.exodus.ExodusReader(self.single)
+
+        self.assertEqual(len(l.output), 2)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+
+        # Get TimeInfo list, this should trigger a call via the VTK pipeline RequestInformation
+        with self.assertLogs(level=logging.DEBUG) as l:
+            tinfo = reader.getTimeInformation()
+
+        self.assertEqual(len(l.output), 5)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: RequestInformation')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: onRequestInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: __updateFileInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: __updateTimeInformation')
+
+        # Get TimeInfo list, this should NOT trigger a call to the VTK pipeline RequestInformation
+        with self.assertLogs(level=logging.DEBUG) as l:
+            tinfo = reader.getTimeInformation()
+
+        self.assertEqual(len(l.output), 1)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
+
+        self.assertEqual(len(tinfo), 2)
+        self.assertIsNone(tinfo[1])
+        self.assertEqual(tinfo[0].timestep, 20)
+        self.assertAlmostEqual(tinfo[0].time, 2)
+        self.assertEqual(tinfo[0].filename, self.single)
+        self.assertEqual(tinfo[0].index, 20)
+
+        # Change the time, the __update* methods should NOT be called because the files didn't change
+        reader.setOption('time', 1)
+        with self.assertLogs(level=logging.DEBUG) as l:
+            tinfo = reader.getTimeInformation()
+
+        self.assertEqual(len(l.output), 3)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: RequestInformation')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: onRequestInformation')
+
+        self.assertEqual(len(tinfo), 2)
+        self.assertEqual(tinfo[0].timestep, 10)
+        self.assertAlmostEqual(tinfo[0].time, 1)
+        self.assertEqual(tinfo[0].filename, self.single)
+        self.assertEqual(tinfo[0].index, 10)
+
+        self.assertEqual(tinfo[1].timestep, 11)
+        self.assertAlmostEqual(tinfo[1].time, 1.1)
+        self.assertEqual(tinfo[1].filename, self.single)
+        self.assertEqual(tinfo[1].index, 11)
+
+        # Delete the object
+        with self.assertLogs(level=logging.DEBUG) as l:
+            del reader
+        self.assertEqual(len(l.output), 1)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: __del__()')
+
+    def testBlockInformation(self):
+        """Test the TimeInfo objects"""
+
+        # Create ExodusReader
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader = chigger.exodus.ExodusReader(self.single)
 
 
     def testSingle(self):
