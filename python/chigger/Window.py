@@ -495,11 +495,11 @@ class Window(base.ChiggerAlgorithm):
         for view in self.__viewports:
             view.getVTKRenderer().ResetCameraClippingRange()
 
-    def write(self, filename, dialog=False, **kwargs):
+    def write(self, filename, **kwargs):
         """
         Writes the VTKWindow to an image.
         """
-        self.log('write', level=logging.DEBUG)
+        self.debug('write')
 
         # Allowed extensions and the associated readers
         writers = dict()
@@ -513,13 +513,12 @@ class Window(base.ChiggerAlgorithm):
         _, ext = os.path.splitext(filename)
         if ext not in writers:
             msg = "The filename must end with one of the following extensions: {}."
-            log(msg, ', '.join(writers.keys()), level=logging.ERROR)
+            self.error(msg, ', '.join(writers.keys()))
             return
         # Check that the directory exists
         dirname = os.path.dirname(filename)
         if (len(dirname) > 0) and (not os.path.isdir(dirname)):
-            msg = "The directory does not exist: {}".format(dirname)
-            mooseutils.mooseError(msg, dialog=dialog)
+            self.error("The directory does not exist: {}", dirname)
             return
 
         # Build a filter for writing an image

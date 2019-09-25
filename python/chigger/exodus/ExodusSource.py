@@ -16,11 +16,8 @@ from .. import base
 from .. import utils
 from .. import filters
 
-#TODO: using self.log instead of mooseutils.message
-
-#TODO: filters.addFilter(...)
 @base.addFilter(filters.GeometryFilter, required=True)
-#@base.addFilter(filters.ExtractBlockFilter, required=False)
+@base.addFilter(filters.ExtractBlockFilter, required=True)
 class ExodusSource(base.ChiggerSource):
     """
     Result object to displaying ExodusII data from a single reader.
@@ -149,8 +146,8 @@ class ExodusSource(base.ChiggerSource):
         extract_indices += get_indices('boundary', ExodusReader.SIDESET)
         extract_indices += get_indices('nodeset', ExodusReader.NODESET)
 
-        #fobject = self._filters['extract']
-        #fobject.setOption('indices', extract_indices)
+        fobject = self._filters['extract']
+        fobject.setOption('indices', extract_indices)
 
         self._vtkmapper.SetScalarModeToUsePointFieldData()
         self._vtkmapper.InterpolateScalarsBeforeMappingOn()
@@ -241,16 +238,16 @@ class ExodusSource(base.ChiggerSource):
             """
             Returns a sting listing the available nodal and elemental variable names.
             """
-            nvars = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL]).keys()
-            evars = self.__reader.getVariableInformation(var_types=[ExodusReader.ELEMENTAL]).keys()
+            nvars = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL])
+            evars = self.__reader.getVariableInformation(var_types=[ExodusReader.ELEMENTAL])
 
             msg = []
             if nvars:
                 msg += ["Nodal:"]
-                msg += [" " + var for var in nvars]
+                msg += [" " + var.name for var in nvars]
             if evars:
                 msg += ["\nElemental:"]
-                msg += [" " + var for var in evars]
+                msg += [" " + var.name for var in evars]
             return ''.join(msg)
 
         # Define the active variable name
@@ -261,18 +258,26 @@ class ExodusSource(base.ChiggerSource):
         if not available:
             return
 
-        default = available[available.keys()[0]]
+        default = available[0]
         if not self.isOptionValid('variable'):
             varinfo = default
         else:
             var_name = self.getOption('variable')
-            if var_name not in available:
+            varinfo = None
+            for var in available:
+                if var_name in (var.name, var.fullname):
+                    varinfo = var
+            if varinfo is None:
                 msg = "The variable '{}' provided does not exist, using '{}', available " \
                       "variables include:\n{}"
-                mooseutils.mooseWarning(msg.format(var_name, default.name, get_available_variables()))
+                self.warning(msg, var_name, default.name, get_available_variables())
                 varinfo = default
-            else:
-                varinfo = available[var_name]
+
+        # Make sure the variable is active
+        if not varinfo.active:
+            msg = "The selected variable '{}' is not active on the ExodusReader"
+            self.error(msg, varinfo.name)
+            return
 
         # Update vtkMapper to the correct data mode
         if varinfo.object_type == ExodusReader.ELEMENTAL:
@@ -314,7 +319,6 @@ class ExodusSource(base.ChiggerSource):
                                   'ignored.')
 
         # Range
-        """
         rng = list(self.getRange(local=self.getOption('local_lim')))
         if self.isOptionValid('lim'):
             rng = self.getOption('lim')
@@ -325,12 +329,12 @@ class ExodusSource(base.ChiggerSource):
                 rng[1] = self.getOption('max')
 
         if rng[0] > rng[1]:
-            mooseutils.mooseDebug("Minimum range greater than maximum:", rng[0], ">", rng[1],
-                                  ", the range/min/max settings are being ignored.")
+            self.debug("Minimum range greater than maximum: {} > {}, the range/min/max settings are being ignored.", *rng)
             rng = list(self.__getRange())
 
+        print('RANGE', rng)
         self._vtkmapper.SetScalarRange(rng)
-        """
+
     def getRange(self, local=False):
         """
         Return range of the active variable and blocks.
@@ -355,16 +359,16 @@ class ExodusSource(base.ChiggerSource):
 
         filter_obj = self._filters['extract']
 
-        filter_obj.Update() # required to get correct ranges from ExtractBlockFilter
-        data = filter_obj.GetOutputDataObject(0)
+        #filter_obj.Update() # required to get correct ranges from ExtractBlockFilter
+        data = self.GetOutputDataObject(0)
         for i in range(data.GetNumberOfBlocks()):
             current = data.GetBlock(i)
-            if isinstance(current, vtk.vtkCommonDataModelPython.vtkUnstructuredGrid):
+            if isinstance(current, vtk.vtkUnstructuredGrid):
                 array = self.__getActiveArray(current)
                 if array:
                     pairs.append(array.GetRange(component))
 
-            elif isinstance(current, vtk.vtkCommonDataModelPython.vtkMultiBlockDataSet):
+            elif isinstance(current, vtk.vtkMultiBlockDataSet):
                 for j in range(current.GetNumberOfBlocks()):
                     array = self.__getActiveArray(current.GetBlock(j))
                     if array:
@@ -381,18 +385,6 @@ class ExodusSource(base.ChiggerSource):
         data = self._vtkmapper.GetInput()
         out = self.__getActiveArray(data)
         return out.GetRange(component)
-
-        """
-        pairs = []
-        for vtkmapper in self._vtkmappers:
-            vtkmapper.Update() # required to have up-to-date ranges
-            data = vtkmapper.GetInput()
-            out = self.__getActiveArray(data)
-            if out is not None:
-                pairs.append(out.GetRange(component))
-
-        return utils.get_min_max(*pairs)
-        """
 
     def __getActiveArray(self, data):
         """
@@ -415,8 +407,7 @@ class ExodusSource(base.ChiggerSource):
                 if data.GetPointData().GetArrayName(a) == name:
                     return data.GetPointData().GetAbstractArray(a)
         else:
-            raise mooseutils.MooseException('Unable to get the range for the '
-                                            'variable "{}"'.format(self.__current_variable.name))
+            self.error('Unable to get the range for the variable "{}"', self.__current_variable.name)
 
     def _updateOpacity(self, window, binding): #pylint: disable=unuysed-argument
         opacity = self.getOption('opacity')
