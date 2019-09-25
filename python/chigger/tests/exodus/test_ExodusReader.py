@@ -59,6 +59,48 @@ class TestExodusReader(unittest.TestCase):
         if os.path.exists(cls.duplicate):
             os.remove(cls.duplicate)
 
+    def testFileInformation(self):
+        """Test that the file information is updated correctly."""
+
+        # Create ExodusReader
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader = chigger.exodus.ExodusReader(self.single)
+
+        self.assertEqual(len(l.output), 2)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+
+        # Get FileInfo, this should trigger a call via the VTK pipeline RequestInformation
+        with self.assertLogs(level=logging.DEBUG) as l:
+            finfo = reader.getFileInformation()
+
+        self.assertEqual(len(l.output), 3)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: RequestInformation')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: onRequestInformation')
+
+        # Get FileInfo, this should NOT trigger a call to the VTK pipeline RequestInformation
+        with self.assertLogs(level=logging.DEBUG) as l:
+            finfo = reader.getFileInformation()
+
+        self.assertEqual(len(l.output), 1)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
+
+        # Delete the object
+        with self.assertLogs(level=logging.DEBUG) as l:
+            del reader
+        self.assertEqual(len(l.output), 1)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: __del__()')
+
+        # Check that the file information is valid
+        self.assertEqual(len(finfo), 1)
+        self.assertIn(self.single, finfo)
+
+        f = finfo[self.single]
+        self.assertEqual(f.filename, self.single)
+        self.assertEqual(len(f.times), 21)
+
+
     def testSingle(self):
         """
         Test reading of a single Exodus file, with default options
@@ -305,8 +347,7 @@ class TestExodusReader(unittest.TestCase):
             chigger.exodus.ExodusReader('foo.e')
 
         reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
-        logger = getattr(reader, '__log', logging.getLogger(reader.__class__.__name__))
-        with self.assertLogs(logger) as l:
+        with self.assertLogs() as l:
             reader.getGlobalData('convected')
         self.assertIn("The supplied global variable, 'convected', does not ", l.output[0])
 
@@ -369,8 +410,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertTrue(variables[2].active)
 
         # Check for warning if just 'variables' is provided
-        logger = getattr(reader, '__log', logging.getLogger(reader.__class__.__name__))
-        with self.assertLogs(logger) as l:
+        with self.assertLogs() as l:
             reader.setOptions(variables=('variable',))
             variables = reader.getVariableInformation()
         self.assertIn("The variable name 'variable' exists with", l.output[0])
@@ -383,7 +423,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertTrue(variables[2].active)
 
         # Check for error if bad suffix given
-        with self.assertLogs(logger) as l:
+        with self.assertLogs() as l:
             reader.setOptions(variables=('variable::WRONG',))
             variables = reader.getVariableInformation()
         self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])

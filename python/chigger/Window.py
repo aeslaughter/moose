@@ -529,10 +529,8 @@ class Window(base.ChiggerAlgorithm):
         if self.getOption('transparent'):
             window_filter.SetInputBufferTypeToRGBA()
 
-        self.Update()
         self.__vtkwindow.Render()
         window_filter.Update()
-
 
         # Write it
         writer = writers[ext]()

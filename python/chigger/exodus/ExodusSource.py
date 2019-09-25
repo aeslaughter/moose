@@ -108,19 +108,16 @@ class ExodusSource(base.ChiggerSource):
 
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        #for filter_obj in self._filters:
+        #for filter_obj in self._filters.values():
         #    filter_obj.Update()
         opt.ShallowCopy(inp)
         return 1
 
 
-
     def applyOptions(self):
-
 
         #self.__ACTIVE_FILTERS__.add('extract')
         base.ChiggerSource.applyOptions(self)
-
 
         # Update the block/boundary/nodeset settings to convert [] to all.
         block_info = self.__reader.getBlockInformation()
@@ -314,9 +311,9 @@ class ExodusSource(base.ChiggerSource):
 
         # Range
         if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('lim'):
-            mooseutils.mooseError('Both a "min" and/or "max" options has been set along with the '
-                                  '"range" option, the "range" is being utilized, the others are '
-                                  'ignored.')
+            self.error('Both a "min" and/or "max" options has been set along with the '
+                       '"range" option, the "range" is being utilized, the others are '
+                       'ignored.')
 
         # Range
         rng = list(self.getRange(local=self.getOption('local_lim')))
@@ -330,22 +327,19 @@ class ExodusSource(base.ChiggerSource):
 
         if rng[0] > rng[1]:
             self.debug("Minimum range greater than maximum: {} > {}, the range/min/max settings are being ignored.", *rng)
-            rng = list(self.__getRange())
+            rng = list(self.getRange(local=self.getOption('local_lim')))
 
-        print('RANGE', rng)
         self._vtkmapper.SetScalarRange(rng)
 
     def getRange(self, local=False):
         """
         Return range of the active variable and blocks.
         """
-        self.__reader.Update()
+        #self.__reader.Update()
         #$for reader in self._inputs:
         #    reader.Update()
 
-        if self.__current_variable is None:
-            return (None, None)
-        elif not local:
+        if not local:
             return self.__getRange()
         else:
             return self.__getLocalRange()
@@ -355,6 +349,15 @@ class ExodusSource(base.ChiggerSource):
         Private version of range for the update method.
         """
         component = self.getOption('component')
+        self._vtkmapper.Update()
+        data = self._vtkmapper.GetInput()
+        out = self.__getActiveArray(data)
+        return out.GetRange(component)
+
+
+
+
+        """
         pairs = []
 
         filter_obj = self._filters['extract']
@@ -375,13 +378,13 @@ class ExodusSource(base.ChiggerSource):
                         pairs.append(array.GetRange(component))
 
         return utils.get_min_max(*pairs)
-
+        """
     def __getLocalRange(self):
         """
         Determine the range of visible items.
         """
         component = self.getOption('component')
-        self._vtkmapper.Update()
+        #self._vtkmapper.Update()
         data = self._vtkmapper.GetInput()
         out = self.__getActiveArray(data)
         return out.GetRange(component)

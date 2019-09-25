@@ -22,35 +22,53 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         if inputType is not None:
             self.InputType = inputType
 
-
         # Set the VTK modified time, this is needed to make sure the options for this class
         # are all older than the class itself.
         self.Modified()
 
-    #def update(self, other):
-    #    ChiggerObjectBase.update(self, other)
-    #    if self._options.modified() > self.GetMTime():
-    #        #self.applyOptions()
-    #        self.Modified()
+    def updateInformation(self):
+        self.debug('updateInformation')
+        self.UpdateInformation()
+
+    def updateData(self):
+        self.debug('updateData')
+        self.Update()
+
+    def setOption(self, name, value):
+        self._options.set(name, value)
+        if self._options.modified() > self.GetMTime():
+            self.debug('setOption::Modified')
+            self.Modified()
+
+    def assignOption(self, name, func):
+        self._options.assign(name, func)
+        if self._options.modified() > self.GetMTime():
+            self.debug('assignOption::Modified')
+            self.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setOptions(self, *args, **kwargs)
         if self._options.modified() > self.GetMTime():
+            self.debug('setOptions::Modified')
             self.Modified()
 
-    def applyOptions(self):
-        self.debug('applyOptions')
+    def onRequestInformation(self):
+        self.debug('onRequestInformation')
 
-    def setupObject(self):
-        self.debug('setupObject')
+    def onRequestData(self):
+        self.debug('onRequestData')
 
     def RequestInformation(self, request, inInfo, outInfo):
         self.debug('RequestInformation')
-        self.setupObject()
-        return 1
+        retcode = self.onRequestInformation()
+        if retcode is None:
+            retcode = 1
+        return retcode
 
     def RequestData(self, request, inInfo, outInfo):
         self.debug('RequestData')
-        self.applyOptions()
-        return 1
+        retcode = self.onRequestData(inInfo, outInfo)
+        if retcode is None:
+            retcode = 1
+        return retcode

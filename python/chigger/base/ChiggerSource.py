@@ -131,7 +131,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         return self._filters
 
     def getBounds(self):
-        self.Update()
+        #self.Update()
         if isinstance(self._vtkmapper, vtk.vtkPolyDataMapper2D):
             print('2D bounds needs something to do this in general')
             return None

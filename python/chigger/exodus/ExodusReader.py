@@ -45,6 +45,8 @@ class VarInfo(mooseutils.AutoPropertyMixin):
     def __repr__(self):
         return '{} (name={}, ptype={}, num_components={}, active={})'.format(self.fullname, self.name, self.object_type, self.num_components, self.active)
 
+FileInfo = collections.namedtuple('FileInformation', ['filename', 'times', 'modified', 'vtkreader'])
+
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
     A reader for an ExodusII file.
@@ -89,14 +91,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     BlockInformation = collections.namedtuple('BlockInformation',
                                               ['name', 'object_type', 'object_index', 'number',
                                                'multiblock_index'])
-    FileInformation = collections.namedtuple('FileInformation',
-                                             ['filename', 'times', 'modified', 'vtkreader'])
     TimeInformation = collections.namedtuple('TimeInformation',
                                              ['timestep', 'time', 'filename', 'index'])
 
     @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
+        opt.add('filename', vtype=str, doc="The filename to load, this is typically set via the constructor.")
         opt.add('time', vtype=float,
                 doc="The time to view, if not specified the 'timestep' is used.")
         opt.add("timestep", default=-1, vtype=int,
@@ -123,39 +124,53 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                     "VTK documentation setting this to False should be faster.")
         return opt
 
-    def __init__(self, filename, **kwargs):
+    def __init__(self, filename=None, **kwargs):
+        kwargs.setdefault('filename', filename)
         base.ChiggerAlgorithm.__init__(self,
                                        **kwargs)
         VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
                                         outputType='vtkMultiBlockDataSet')
 
-        # Set the filename for the reader.
-        self.__filename = filename
-        if not os.path.isfile(self.__filename):
-            raise IOError("The file {} is not a valid filename.".format(self.__filename))
+        self.__filenames = list()                   # see utils.get_active_filenames
+        self.__timeinfo = list()                    # all the TimeInfo objects
+        self.__fileinfo = collections.OrderedDict() # sorted FileInfo objects
+        self.__blockinfo = set()                    # BlockInfo objects
+        self.__variableinfo = list()                # VarInfo objects
 
-        self.__active = None                               # see utils.get_active_filenames
-        self.__timeinfo = []                               # all the TimeInformation objects
-        self.__fileinfo = collections.OrderedDict()        # sorted FileInformation objects
-        self.__blockinfo = set()                           # BlockInformation objects
-        self.__variableinfo = list()                       # VariableInformation objects
-
-    def RequestInformation(self, request, inInfo, outInfo):
+    def onRequestInformation(self):
         """
         (VTK Method) This is called when the VTK UpdateInformation() method is called.
 
         !!! DO NOT CALL THIS METHOD !!!
         """
-        self.__updateActiveFilenames()
-        self.__updateInformation()
-        return 1
+        super(ExodusReader, self).onRequestInformation()
 
-    def RequestData(self, request, inInfo, outInfo):
+        # The file to load
+        filename = self.getOption('filename')
+        if not os.path.isfile(filename):
+            self.error("The file {} is not a valid filename.", self.__filename)
+            return 0
+
+        # Complete list of filenames with adaptive suffixes (-s002, ...)
+        self.__filenames = self.__getActiveFilenames(filename)
+
+        # Build FileInfo object for each timestep
+        self.__updateFileInformation()
+
+
+
+        #self.__updateActiveFilenames()
+        #self.__updateInformation()
+
+    def onRequestData(self, inInfo, outInfo):
         """
         (VTK Method) This is called when the VTK Update() method is called.
 
         !!! DO NOT CALL THIS METHOD !!!
         """
+        super(ExodusReader, self).onRequestData()
+
+
         vtkobject = None
 
         # Initialize the current time data
@@ -188,7 +203,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         vtkobject.Update()
         out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         out_data.ShallowCopy(vtkobject.GetOutputDataObject(0))
-        return 1
 
     def getFilename(self):
         """
@@ -203,8 +217,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             list: A list of all times.
         """
-        self.__updateActiveFilenames()
-        self.UpdateInformation()
+        #self.__updateActiveFilenames()
+        #self.UpdateInformation()
         return [t.time for t in self.__timeinfo if t.time != None]
 
     def getGlobalData(self, variable):
@@ -218,9 +232,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             float: The global data (Postprocessor value) for the current timestep and defined
                    variable.
         """
-        self.__updateActiveFilenames()
-        self.UpdateInformation()
-        self.Update()
+        #self.__updateActiveFilenames()
+        #self.UpdateInformation()
+        #self.Update()
 
         if not self.__hasVariable(self.GLOBAL, variable):
             self.error("The supplied global variable, '{}', does not exist in {}.", variable,
@@ -254,6 +268,10 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             g0 = vtkobject.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
             return g0
 
+    def getFileInformation(self):
+        self.updateInformation()
+        return self.__fileinfo
+
     def getTimeInformation(self):
         """
         The current time information. (public)
@@ -266,24 +284,20 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                      the two information objects contain the information for the two data sets
                      that will be used for interpolation.
         """
-        self.__updateActiveFilenames()
-        self.UpdateInformation()
+        #self.__updateActiveFilenames()
+        #self.UpdateInformation()
         return self.__getTimeInformation()
 
     def getBlockInformation(self):
         """
         Get the block (subdomain, nodeset, sideset) information. (public)
 
-        Inputs:
-            check[bool]: (Default: True) When True, perform an update check and raise an exception
-                                         if object is not up-to-date. This should not be used.
-
         Returns:
             set: BlockInformation objects for all data types in this object (keys are "enum" values
                  found in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE)
         """
-        self.__updateActiveFilenames()
-        self.UpdateInformation()
+        #self.__updateActiveFilenames()
+        #self.UpdateInformation()
         blockinfo = collections.defaultdict(dict)
         for info in self.__blockinfo:
             blockinfo[info.object_type][info.number] = info
@@ -300,8 +314,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             OrderedDict: VariableInformation objects for all variables in the file.
         """
-        self.__updateActiveFilenames()
-        self.UpdateInformation()
+        #self.__updateActiveFilenames()
+        #self.UpdateInformation()
 
         if var_types is None:
             var_types = ExodusReader.VARIABLE_TYPES
@@ -410,13 +424,15 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         for vinfo in self.__variableinfo:
             vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, vinfo.active)
 
-    def __updateActiveFilenames(self):
-        filenames = self.__getActiveFilenames()
-        if self.__active != filenames:
-            self.__active = filenames
+    def updateActiveFilenames(self):
+
+
+        filenames = self.__getActiveFilenames(self.getOption('filename'))
+        if self.__filenames != filenames:
+            self.__filenames = filenames
             self.Modified()
 
-    def __getActiveFilenames(self):
+    def __getActiveFilenames(self, filename):
         """
         The active ExodusII file(s). (private)
 
@@ -424,9 +440,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             list: Contains tuples (filename, modified time) of active file(s).
         """
         if self.getOption('adaptive'):
-            return utils.get_active_filenames(self.__filename, self.__filename + '-s*')
+            return utils.get_active_filenames(filename, filename + '-s*')
         else:
-            return utils.get_active_filenames(self.__filename)
+            return utils.get_active_filenames(filename)
 
     def __getActiveBlocks(self):
         """
@@ -443,18 +459,17 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                         output.append(data)
         return output
 
-    def __updateInformation(self):
-        """
-        Update file, time, block, and variable information.
-        """
+    def __updateFileInformation(self):
+        """Helper that creates dict() that contains a FileInfo object for each timestep."""
+
         # Re-move any old files in timeinfo dict()
         for fname in list(self.__fileinfo.keys()):
-            if fname not in self.__active:
+            if fname not in self.__filenames:
                 self.__fileinfo.pop(fname)
 
         # Loop through each file and determine the times
         key = vtk.vtkStreamingDemandDrivenPipeline.TIME_STEPS()
-        for filename, current_modified in self.__active:
+        for filename, current_modified in self.__filenames:
 
             tinfo = self.__fileinfo.get(filename, None)
             if tinfo and (tinfo.modified == current_modified):
@@ -471,12 +486,19 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
                 if not times:
                     times = [None] # When --mesh-only is used, not time information is written
-                self.__fileinfo[filename] = ExodusReader.FileInformation(filename=filename,
-                                                                         times=times,
-                                                                         modified=current_modified,
-                                                                         vtkreader=vtkreader)
+                self.__fileinfo[filename] = FileInfo(filename=filename,
+                                                     times=times,
+                                                     modified=current_modified,
+                                                     vtkreader=vtkreader)
 
-        # Create a TimeInformation object for each timestep that indicates the correct file.
+
+
+    def __updateInformation(self):
+        """
+        Update file, time, block, and variable information.
+        """
+
+        # Create a Time Information object for each timestep that indicates the correct file.
         self.__timeinfo = []
         timestep = 0
         for tinfo in self.__fileinfo.values():

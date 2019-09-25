@@ -36,17 +36,18 @@ class ChiggerObjectBase(object):
 
     def __init__(self, **kwargs):
         self.__log = logging.getLogger(self.__class__.__name__)
-        #super(ChiggerObject, self).__init__()
         self._options = getattr(self.__class__, 'validOptions')()
-        #kwargs.setdefault('name', self.__class__.__name__)
         self.setOptions(**kwargs)
 
         self._init_traceback = traceback.extract_stack()
         self._set_options_tracebacks = dict()
 
+    def getLogger(self):
+        return getattr(self, '__log', logging.getLogger(self.__class__.__name__))
+
     def _log(self, lvl, msg, *args):
         """Helper for using logging package with class name prefix"""
-        obj = getattr(self, '__log', logging.getLogger(self.__class__.__name__))
+        obj = self.getLogger()
         name = self.getOption('name')
         if name:
             obj.log(lvl, '({}): {}'.format(self.getOption('name'), msg.format(*args)))
@@ -83,6 +84,8 @@ class ChiggerObjectBase(object):
            setOptions(key0=value0, key1=value1, ...)
            Updates the main options with the provided key,value pairs
         """
+        self.debug('setOptions')
+
         # Sub-options case
         if args:
             for sub in args:
@@ -144,18 +147,18 @@ class ChiggerObjectBase(object):
         self.debug('__del__()')
 
 class ChiggerObject(ChiggerObjectBase):
-    """Base class for objects that need options but are not in the VTK pipeline."""
+    """Base class for objects that need options but are NOT in the VTK pipeline."""
 
     def __init__(self, **kwargs):
         self.__modified_time = vtk.vtkTimeStamp()
         ChiggerObjectBase.__init__(self, **kwargs)
         self.__modified_time.Modified()
 
-    def update(self, other):
-        ChiggerObjectBase.update(self, other)
-        if self._options.modified() > self.__modified_time.GetMTime():
-            self.applyOptions()
-            self.__modified_time.Modified()
+    #def update(self, other):
+    #    ChiggerObjectBase.update(self, other)
+    #    if self._options.modified() > self.__modified_time.GetMTime():
+    #        self.applyOptions()
+    #        self.__modified_time.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
@@ -163,6 +166,3 @@ class ChiggerObject(ChiggerObjectBase):
         if self._options.modified() > self.__modified_time.GetMTime():
             self.applyOptions()
             self.__modified_time.Modified()
-
-    def applyOptions(self):
-        self.debug('applyOptions()')
