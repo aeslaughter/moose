@@ -69,9 +69,27 @@ class ChiggerObjectBase(object):
     def name(self):
         return self.getOption('name')
 
-
     #def updateOptions(self, other):
     #    self._options.update(other)
+
+    def isOptionValid(self, name):
+        """
+        Test if the given option is valid (i.e., not None). (public)
+        """
+        return self._options.isOptionValid(name)
+
+    def getOption(self, name):
+        """
+        Return the value of an option. (public)
+
+        Inputs:
+            name[str]: The name of the option to retrieve
+        """
+        if name not in self._options:
+            msg = "The {} object does not contain the '{}' option."
+            mooseutils.mooseWarning(msg.format(self.getOption('name'), name))
+            return None
+        return self._options.get(name)
 
     def setOptions(self, *args, **kwargs):
         """
@@ -100,31 +118,15 @@ class ChiggerObjectBase(object):
         else:
             self._options.update(**kwargs)
 
-    def isOptionValid(self, name):
-        """
-        Test if the given option is valid (i.e., not None). (public)
-        """
-        return self._options.isOptionValid(name)
-
-    def getOption(self, name):
-        """
-        Return the value of an option. (public)
-
-        Inputs:
-            name[str]: The name of the option to retrieve
-        """
-        if name not in self._options:
-            msg = "The {} object does not contain the '{}' option."
-            mooseutils.mooseWarning(msg.format(self.getOption('name'), name))
-            return None
-        return self._options.get(name)
-
     def setOption(self, name, value):
+        self.debug('setOption')
         self._options.set(name, value)
 
     def assignOption(self, name, func):
+        self.debug('assignOption')
         self._options.assign(name, func)
 
+    # TODO: ??? Move these to utils.show_options(obj, format=...)
     def printOption(self, key):
         print('{}={}'.format(key, repr(self.getOption(key))))
 
@@ -164,5 +166,4 @@ class ChiggerObject(ChiggerObjectBase):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setOptions(self, *args, **kwargs)
         if self._options.modified() > self.__modified_time.GetMTime():
-            self.applyOptions()
             self.__modified_time.Modified()

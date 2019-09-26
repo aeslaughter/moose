@@ -46,11 +46,25 @@ class VarInfo(mooseutils.AutoPropertyMixin):
         return '{}::{}'.format(self.name, ExodusReader.VARIABLE_TYPES_NAMES[self.object_type])
 
     def __repr__(self):
-        return '{} (name={}, ptype={}, num_components={}, active={})'.format(self.fullname, self.name, self.object_type, self.num_components, self.active)
+        return '{} (name={}, object_type={}, num_components={}, active={})'.format(self.fullname, self.name, self.object_type, self.num_components, self.active)
+
+@mooseutils.addProperty('name', ptype=str, required=True)
+@mooseutils.addProperty('number', ptype=int, required=True)
+@mooseutils.addProperty('object_type', ptype=int, required=True)
+@mooseutils.addProperty('object_index', ptype=int, required=True)
+@mooseutils.addProperty('multiblock_index', ptype=int, required=True)
+@mooseutils.addProperty('active', ptype=bool, default=True)
+class BlockInfo(mooseutils.AutoPropertyMixin):
+    """
+    Storage for block information.
+
+    This is a stand-alone class to allow for the 'active' property to be altered.
+    """
+    def __repr__(self):
+        return '{} (name={}, number={}, object_type={}, object_index={}, multiblock_index={}, active={})'.format(self.name, self.number, self.object_type, self.object_index, self.multiblock_index, self.active)
 
 FileInfo = collections.namedtuple('FileInformation', ['filename', 'times', 'modified', 'vtkreader'])
 TimeInfo = collections.namedtuple('TimeInformation', ['timestep', 'time', 'filename', 'index'])
-BlockInfo = collections.namedtuple('BlockInformation', ['name', 'object_type', 'object_index', 'number', 'multiblock_index'])
 
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
@@ -89,57 +103,66 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     ELEMENTAL = vtk.vtkExodusIIReader.ELEM_BLOCK
     GLOBAL = vtk.vtkExodusIIReader.GLOBAL
     VARIABLE_TYPES = [ELEMENTAL, NODAL, GLOBAL]
+    VARIABLE_TYPES_NAMES = {ELEMENTAL:'ELEMENTAL', NODAL:'NODAL', GLOBAL:'GLOBAL'}
 
     @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
         opt.add('filename', vtype=str, doc="The filename to load, this is typically set via the constructor.")
+
         opt.add('time', vtype=float,
                 doc="The time to view, if not specified the 'timestep' is used.")
         opt.add("timestep", default=-1, vtype=int,
                 doc="The simulation timestep, this is ignored if 'time' is set (-1 for latest.)")
+
         opt.add("adaptive", default=True, vtype=bool,
                 doc="Load adaptive files (*.e-s* files).")
+
         opt.add('time_interpolation', default=True, vtype=bool,
                 doc="Enable/disable automatic time interpolation.")
+
         opt.add('displacements', default=True, vtype=bool,
                 doc="Enable the viewing of displacements.")
         opt.add('displacement_magnitude', default=1.0, vtype=float,
                 doc="The displacement magnitude vector.")
-        opt.add('variables', vtype=str, array=True,
-                doc="A tuple of  active variables, if not specified all variables are loaded.")
-        #opt.add('nodeset', doc="A list of nodeset ids or names to display, use [] to display all "
-        #                       "nodesets.", vtype=list)
-        #opt.add('sideset', doc="A list of boundary ids (sideset) ids or names to display, use "
-        #                        "[] to display all sidesets", vtype=list)
-        #opt.add('block', default=[], vtype=list,
-        #        doc="A list of subdomain (block) ids or names to display, by default if "
-        #            "'nodeset' and 'sideset' are not specified all blocks are shown.")
+
         opt.add('squeeze', default=False,
                 doc="Calls SetSqueezePoints on vtkExodusIIReader, according to the "
                     "VTK documentation setting this to False should be faster.")
+
+        opt.add('variables', vtype=str, array=True,
+                doc="A tuple of  active variables, if not specified all variables are loaded.")
+
+        opt.add('blocks', vtype=list,
+                doc="A list of subdomain (block) ids or names to load, by default all are loaded. "
+                    "If 'blocks', 'nodesets', or 'sidesets' is set, the default for the others "
+                    "becomes unloaded.")
+        opt.add('nodesets', vtype=list,
+                doc="A list of nodeset ids to load, by default all are loaded. "
+                    "If 'blocks', 'nodesets', or 'sidesets' is set, the default for the others "
+                    "becomes unloaded.")
+        opt.add('sidesets', vtype=list,
+                doc="A list of boundary ids (sideset) to load, by default all are loaded."
+                    "If 'blocks', 'nodesets', or 'sidesets' is set, the default for the others "
+                    "becomes unloaded.")
         return opt
 
     def __init__(self, filename=None, **kwargs):
         kwargs.setdefault('filename', filename)
-        base.ChiggerAlgorithm.__init__(self,
-                                       **kwargs)
-        VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1,
-                                        outputType='vtkMultiBlockDataSet')
+        base.ChiggerAlgorithm.__init__(self, **kwargs)
+        VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1, outputType='vtkMultiBlockDataSet')
 
-        self.__filenames = list()                   # see utils.get_active_filenames
-        self.__timeinfo = list()                    # all the TimeInfo objects
-        self.__fileinfo = collections.OrderedDict() # sorted FileInfo objects
+        self.__filenames = list()                   # current list of files
+        self.__timeinfo = list()                    # TimeInfo objects
+        self.__fileinfo = collections.OrderedDict() # FileInfo objects
         self.__blockinfo = set()                    # BlockInfo objects
         self.__variableinfo = list()                # VarInfo objects
 
-    def onRequestInformation(self):
+    def _onRequestInformation(self):
+        """(override,protected)
+        Do not call this method, call updateInformation.
         """
-        (VTK Method) This is called when the VTK UpdateInformation() method is called.
-
-        !!! DO NOT CALL THIS METHOD !!!
-        """
-        super(ExodusReader, self).onRequestInformation()
+        super(ExodusReader, self)._onRequestInformation()
 
         # The file to load
         filename = self.getOption('filename')
@@ -166,20 +189,19 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self.__updateVariableInformation()
 
         # Update active blocks, etc.
+        self.__updateActiveBlocks()
 
         # Update active variables
+        self.__updateActiveVariables()
 
-
-    def onRequestData(self, inInfo, outInfo):
+    def _onRequestData(self, inInfo, outInfo):
+        """(override, protected)
+        Do not call this method, call updateData.
         """
-        (VTK Method) This is called when the VTK Update() method is called.
-
-        !!! DO NOT CALL THIS METHOD !!!
-        """
-        super(ExodusReader, self).onRequestData()
+        super(ExodusReader, self)._onRequestData()
 
         # Initialize the current time data
-        time0, time1 = self.getCurrentTimeInformation()
+        time0, time1 = self.__getCurrentTimeInformation()
 
         # Time Interpolation
         if (time0 is not None) and (time1 is not None):
@@ -188,7 +210,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             # Interpolation on same file
             if file0.vtkreader is file1.vtkreader:
-                self.__updateOptions(file0.vtkreader)
+                self.__onRequestDataHelper(file0.vtkreader)
 
                 vtkobject = vtk.vtkTemporalInterpolator()
                 vtkobject.SetInputConnection(0, file0.vtkreader.GetOutputPort(0))
@@ -202,7 +224,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
             vtkobject.SetTimeStep(time0.index)
-            self.__updateOptions(vtkobject)
+            self.__onRequestDataHelper(vtkobject)
 
         # Update the Reader and output port
         vtkobject.Update()
@@ -210,13 +232,13 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         out_data.ShallowCopy(vtkobject.GetOutputDataObject(0))
 
     def getFilename(self):
-        """
+        """(public)
         Return the filename supplied to this reader.
         """
         return self.__filename
 
     def getTimes(self):
-        """
+        """(public)
         All times for the current Exodus file(s). (public)
 
         Returns:
@@ -226,7 +248,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return [t.time for t in self.__timeinfo if t.time != None]
 
     def getGlobalData(self, variable):
-        """
+        """(public)
         Access the global (i.e., Postprocessor) data contained in the Exodus file. (public)
 
         Inputs:
@@ -235,17 +257,15 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             float: The global data (Postprocessor value) for the current timestep and defined
                    variable.
-        """
-        #self.__updateActiveFilenames()
-        #self.UpdateInformation()
-        #self.Update()
-
+        """(public)
+        self.updateInformation()
+        self.updateData()
         if not self.__hasVariable(self.GLOBAL, variable):
             self.error("The supplied global variable, '{}', does not exist in {}.", variable,
                        self.__filename)
             return sys.float_info.min
 
-        time0, time1 = self.__getTimeInformation()
+        time0, time1 = self.__getCurrentTimeInformation()
 
         # Time Interpolation
         if (time0 is not None) and (time1 is not None):
@@ -273,7 +293,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             return g0
 
     def getFileInformation(self):
-        """
+        """(public)
         The complete set of file information. (public)
 
         Returns:
@@ -283,7 +303,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return self.__fileinfo
 
     def getTimeInformation(self):
-        """
+        """(public)
         The complete time information. (public)
 
         Returns:
@@ -293,7 +313,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         return self.__timeinfo
 
     def getCurrentTimeInformation(self):
-        """
+        """(public)
         Gets the current TimeInfo object(s) using the 'time' and 'timestep' options.
 
         Returns:
@@ -303,6 +323,37 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 those that bracket the desired value.
         """
         self.updateInformation()
+        return self.__getCurrentTimeInformation()
+
+    def getBlockInformation(self):
+        """(public)
+        Get the block (subdomain, nodeset, sideset) information. (public)
+
+        Returns:
+            dict: The keys are the object type id from VTK (see MULTIBLOCK_INDEX_TO_OBJECTTYPE),
+                  the values are a list of BlockInfo objects.
+        """
+        self.updateInformation()
+        return self.__blockinfo
+
+    def getVariableInformation(self):
+        """(public)
+        Information on available variables. (public)
+
+        Inputs:
+            var_types[list]: List of variable types to return (default: ExodusReader.VARIABLE_TYPES)
+
+        Returns:
+            dict: The keys are the variable type id from VTK (see VARIABLE_TYPES), the values are
+                  a list of VarInfo objects.
+        """
+        self.updateInformation()
+        return self.__variableinfo
+
+    def __getCurrentTimeInformation(self):
+        """(private)
+        getCurrentTimeInformation, without updateInformation call.
+        """
         time = self.getOption('time')
         timestep = self.getOption('timestep')
 
@@ -348,33 +399,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # Default to last timestep
         return self.__timeinfo[-1], None
 
-    def getBlockInformation(self):
-        """
-        Get the block (subdomain, nodeset, sideset) information. (public)
-
-        Returns:
-            dict: The keys are the object type id from VTK (see MULTIBLOCK_INDEX_TO_OBJECTTYPE),
-                  the values are a list of BlockInfo objects.
-        """
-        self.updateInformation()
-        return self.__blockinfo
-
-    def getVariableInformation(self):
-        """
-        Information on available variables. (public)
-
-        Inputs:
-            var_types[list]: List of variable types to return (default: ExodusReader.VARIABLE_TYPES)
-
-        Returns:
-            dict: The keys are the variable type id from VTK (see VARIABLE_TYPES), the values are
-                  a list of VarInfo objects.
-        """
-        self.updateInformation()
-        return self.__variableinfo
-
     def __hasVariable(self, var_type, var_name):
-        """
+        """(private)
         Return True if the supplied variable name for the given type exists.
         """
         for var in self.__variableinfo[var_type]:
@@ -382,25 +408,29 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 return True
         return False
 
-    def __updateOptions(self, vtkreader):
-        """
-        (Private) Apply options to the supplied vtkExodusIIReader.
+    def __onRequestDataHelper(self, vtkreader):
+        """(private)
+        Apply options to the current vtkExodusIIReader objects.
 
-        This method is needed because in some instances when temporal interpolation occurs two
-        separate objects are used.
+        Ideally, the content of this method would be implemented in the _onUpdateInformation, but
+        but because of temporal interpolation which can have two vtkExodusIIReader objects a
+        separate method is required. A separate method could be called during _onUpdateInformation,
+        but to eliminate the duplication of the time logic it is called in _onUpdateData.
         """
+
+        # Variable Status
+        for var_group in self.__variableinfo.values():
+            for vinfo in var_group:
+                vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, vinfo.active)
+
+        # Block Status
+        for blk_group in self.__blockinfo.values():
+            for binfo in blk_group:
+                vtkreader.SetObjectStatus(binfo.object_type, binfo.object_index, binfo.active)
 
         # Displacement Settings
         vtkreader.SetApplyDisplacements(self.getOption('displacements'))
         vtkreader.SetDisplacementMagnitude(self.getOption('displacement_magnitude'))
-
-        ## Set the geometric objects to load (i.e., subdomains, nodesets, sidesets)
-        #active_blockinfo = self.__getActiveBlocks()
-        #for data in self.__blockinfo:
-        #    if (not active_blockinfo) or (data in active_blockinfo):
-        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 1)
-        #    else:
-        #        vtkreader.SetObjectStatus(data.object_type, data.object_index, 0)
 
         # According to the VTK documentation setting this to False (not the default) speeds
         # up data loading. In my testing I was seeing load times cut in half or more with
@@ -408,17 +438,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # reason it shouldn't be disabled.
         vtkreader.SetSqueezePoints(self.getOption('squeeze'))
 
-        # Set the data arrays to load
-        #
-        # If the object has not been initialized then all of the variables should be enabled
-        # so that the block and variable information are complete when populated. After this
-        # only the variables listed in the 'variables' options, if any, are activated, which
-        # reduces loading times. If 'variables' is not given, all the variables are loaded.
-        for vinfo in self.__variableinfo:
-            vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, vinfo.active)
-
     def __getActiveFilenames(self, filename):
-        """
+        """(private)
         The active ExodusII file(s). (private)
 
         Returns:
@@ -430,7 +451,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             return utils.get_active_filenames(filename)
 
     def __updateFileInformation(self):
-        """
+        """(private)
         Helper that creates dict() that contains a FileInfo object for each file.
         g"""
         self.debug('__updateFileInformation')
@@ -459,7 +480,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 times = [vtkinfo.Get(key, i) for i in steps]
 
                 if not times:
-                    times = [None] # When --mesh-only is used, not time information is written
+                    times = [None] # When --mesh-only is used, no time information is written
                 self.__fileinfo[filename] = FileInfo(filename=filename,
                                                      times=times,
                                                      modified=current_modified,
@@ -467,7 +488,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
 
     def __updateTimeInformation(self):
-        """
+        """(private)
         Create a TimeInfo object for each timestep that indicates the correct file.
         """
         self.debug('__updateTimeInformation')
@@ -481,7 +502,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 timestep += 1
 
     def __updateBlockInformation(self):
-        """
+        """(private)
         Queries the base file for the available blocks, sideset, and nodesets. It is assumed
         that all files contain the same blocks, etc.
         """
@@ -490,7 +511,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__blockinfo = collections.defaultdict(list)
         finfo = self.__fileinfo[self.getOption('filename')]
         with lock_file(finfo.filename):
-            index = 0 # index to be used with the vtkExtractBlock::AddIndex method
+            index = 0                   # index to be used with the vtkExtractBlock::AddIndex method
             vtkreader = finfo.vtkreader # the vtkExodusIIReader object for the first file
 
             # Loop over all blocks of the vtk.MultiBlockDataSet
@@ -503,49 +524,82 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                     if name.startswith('Unnamed'):
                         name = str(vtkid)
 
-                    binfo = BlockInfo(object_type=obj_type,
-                                      name=name,
+                    binfo = BlockInfo(name=name,
                                       number=vtkid,
+                                      object_type=obj_type,
                                       object_index=j,
                                       multiblock_index=index)
                     self.__blockinfo[obj_type].append(binfo)
 
     def __updateVariableInformation(self):
-        """
+        """(private)
         Queries the base file for the available variables, it is assumed that all files contain the
         same variables.
         """
         self.debug('__updateVariableInformation')
+        finfo = self.__fileinfo[self.getOption('filename')]
 
         self.__variableinfo = dict()
-        for variable_type in ExodusReader.VARIABLE_TYPES:
-            unsorted = set()
-            for i in range(vtkreader.GetNumberOfObjectArrays(variable_type)):
-                var_name = vtkreader.GetObjectArrayName(variable_type, i)
-                if var_name is not None:
-                    num = vtkreader.GetNumberOfObjectArrayComponents(variable_type, i)
-                    vinfo = VarInfo(name=var_name, object_type=variable_type, num_components=num)
-                    unsorted.add(vinfo)
+        with lock_file(finfo.filename):
+            vtkreader = finfo.vtkreader # the vtkExodusIIReader object for the first file
+            for variable_type in ExodusReader.VARIABLE_TYPES:
+                unsorted = set()
+                for i in range(vtkreader.GetNumberOfObjectArrays(variable_type)):
+                    var_name = vtkreader.GetObjectArrayName(variable_type, i)
+                    if var_name is not None:
+                        num = vtkreader.GetNumberOfObjectArrayComponents(variable_type, i)
+                        vinfo = VarInfo(name=var_name, object_type=variable_type, num_components=num)
+                        unsorted.add(vinfo)
 
-            self.__variableinfo[var_type] = sorted(unsorted, key=lambda x: '{}-{}'.format(x.name.lower(), x.object_type))
+                self.__variableinfo[variable_type] = sorted(unsorted, key=lambda x: '{}-{}'.format(x.name.lower(), x.object_type))
 
-    def __updateInformation(self):
+    def __updateActiveVariables(self):
+        """(private)
+        Set the data arrays (variables) to load.
         """
-        Update file, time, block, and variable information.
-        """
-
-        # Update active variables
+        self.debug('__updateActiveVariables')
         variables = self.getOption('variables')
         if variables is not None:
             self.__activeVariableCheck(variables)
-            for var in self.__variableinfo:
-                var.active = (var.name in variables) or (var.fullname in variables)
+            for var_group in self.__variableinfo.values():
+                for var in var_group:
+                    var.active = (var.name in variables) or (var.fullname in variables)
         else:
-            for var in self.__variableinfo:
-                var.active = True
+            for var_group in self.__variableinfo.values():
+                for var in var_group:
+                    var.active = True
+
+    def __updateActiveBlocks(self):
+        """(private)
+        Set the geometric arrays (variables) to load.
+        """
+        self.debug('__updateActiveBlocks')
+        b = self.getOption('blocks')
+        n = self.getOption('nodesets')
+        s = self.getOption('sidesets')
+        self.__setActiveBlocks(b, (n, s), self.__blockinfo[ExodusReader.BLOCK])
+        self.__setActiveBlocks(n, (b, s), self.__blockinfo[ExodusReader.NODESET])
+        self.__setActiveBlocks(s, (b, n), self.__blockinfo[ExodusReader.SIDESET])
+
+    @staticmethod
+    def __setActiveBlocks(blocks, others, blk_info):
+        """(static,private)
+        see __updateActiveBlocks
+        """
+        if blocks is not None:
+            for blk in blk_info:
+                blk.active = (blk.name in blocks) or (blk.number in blocks) or (str(blk.number) in blocks)
+        elif any([o is not None for o in others]):
+            for blk in blk_info:
+                blk.active = False
+        else:
+            for blk in blk_info:
+                blk.active = True
 
     def __activeVariableCheck(self, variables):
-        """Helper for handling variable type suffix."""
+        """(private)
+        Helper for handling variable type suffix.
+        """
 
         active_variables = collections.defaultdict(set)
         for var in variables:

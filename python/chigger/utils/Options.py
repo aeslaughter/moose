@@ -143,8 +143,8 @@ class Options(object):
         """
         Helper for assign values to a function, if they option is valid
         """
-        value = self.get(name)
         if self.isOptionValid(name):
+            value = self.get(name)
             func(value)
 
     def get(self, name): #pylint: disable=redefined-builtin

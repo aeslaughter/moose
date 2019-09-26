@@ -4,8 +4,6 @@ from .ChiggerObject import ChiggerObjectBase
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 from chigger import utils
 
-
-
 class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     """
     A base class for objects that require options and are a part of the VTK pipeline.
@@ -34,16 +32,10 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         self.debug('updateData')
         self.Update()
 
-    def setOption(self, name, value):
-        self._options.set(name, value)
+    def setOption(self, *args, **kwargs):
+        ChiggerObjectBase.setOption(self, *args, **kwargs)
         if self._options.modified() > self.GetMTime():
             self.debug('setOption::Modified')
-            self.Modified()
-
-    def assignOption(self, name, func):
-        self._options.assign(name, func)
-        if self._options.modified() > self.GetMTime():
-            self.debug('assignOption::Modified')
             self.Modified()
 
     def setOptions(self, *args, **kwargs):
@@ -53,22 +45,22 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
             self.debug('setOptions::Modified')
             self.Modified()
 
-    def onRequestInformation(self):
-        self.debug('onRequestInformation')
+    def _onRequestInformation(self):
+        self.debug('_onRequestInformation')
 
-    def onRequestData(self):
-        self.debug('onRequestData')
+    def _onRequestData(self):
+        self.debug('_onRequestData')
 
     def RequestInformation(self, request, inInfo, outInfo):
         self.debug('RequestInformation')
-        retcode = self.onRequestInformation()
+        retcode = self._onRequestInformation()
         if retcode is None:
             retcode = 1
         return retcode
 
     def RequestData(self, request, inInfo, outInfo):
         self.debug('RequestData')
-        retcode = self.onRequestData(inInfo, outInfo)
+        retcode = self._onRequestData(inInfo, outInfo)
         if retcode is None:
             retcode = 1
         return retcode
