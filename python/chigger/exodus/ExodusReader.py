@@ -36,8 +36,11 @@ def lock_file(filename):
 @mooseutils.addProperty('num_components', ptype=int, required=True)
 @mooseutils.addProperty('active', ptype=bool, default=True)
 class VarInfo(mooseutils.AutoPropertyMixin):
-    """Storage for variable information."""
+    """
+    Storage for variable information.
 
+    This is a stand-alone class to allow for the 'active' property to be altered.
+    """
     @property
     def fullname(self):
         return '{}::{}'.format(self.name, ExodusReader.VARIABLE_TYPES_NAMES[self.object_type])
@@ -47,6 +50,7 @@ class VarInfo(mooseutils.AutoPropertyMixin):
 
 FileInfo = collections.namedtuple('FileInformation', ['filename', 'times', 'modified', 'vtkreader'])
 TimeInfo = collections.namedtuple('TimeInformation', ['timestep', 'time', 'filename', 'index'])
+BlockInfo = collections.namedtuple('BlockInformation', ['name', 'object_type', 'object_index', 'number', 'multiblock_index'])
 
 class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """
@@ -64,12 +68,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     # to make the linkage between the connectivity and the point/field data stored.
     #
     # vtkThe MultiBlockDataSet (vtkExodusIIReader::GetOutput()) is ordered according to
-    # vtkExodusIIReader::cont_types, which is the order used here.
+    # vtkExodusIIReader::ObjectType values in the order used here.
     MULTIBLOCK_INDEX_TO_OBJECTTYPE = [vtk.vtkExodusIIReader.ELEM_BLOCK, # 0 (MOOSE Subdomains)
                                       vtk.vtkExodusIIReader.FACE_BLOCK, # 1
                                       vtk.vtkExodusIIReader.EDGE_BLOCK, # 2
                                       vtk.vtkExodusIIReader.ELEM_SET,   # 3
-                                      vtk.vtkExodusIIReader.SIDE_SET,   # 4 (MOOSE Boundaries)
+                                      vtk.vtkExodusIIReader.SIDE_SET,   # 4 (MOOSE Sidesets)
                                       vtk.vtkExodusIIReader.FACE_SET,   # 5
                                       vtk.vtkExodusIIReader.EDGE_SET,   # 6
                                       vtk.vtkExodusIIReader.NODE_SET]   # 7 (MOOSE Nodesets)
@@ -77,7 +81,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     # "Enum" values for Subdomains, Sidesets, and Nodesets
     BLOCK = vtk.vtkExodusIIReader.ELEM_BLOCK
     SIDESET = vtk.vtkExodusIIReader.SIDE_SET
-    #BOUNDARY = vtk.vtkExodusIIReader.SIDE_SET
     NODESET = vtk.vtkExodusIIReader.NODE_SET
     BLOCK_TYPES = [BLOCK, SIDESET, NODESET]
 
@@ -86,13 +89,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     ELEMENTAL = vtk.vtkExodusIIReader.ELEM_BLOCK
     GLOBAL = vtk.vtkExodusIIReader.GLOBAL
     VARIABLE_TYPES = [ELEMENTAL, NODAL, GLOBAL]
-
-    #VARIABLE_TYPES_NAMES = {NODAL:'NODAL', ELEMENTAL:'ELEMENTAL', GLOBAL:'GLOBAL'}
-
-    # Information data structures
-    BlockInformation = collections.namedtuple('BlockInformation',
-                                              ['name', 'object_type', 'object_index', 'number',
-                                               'multiblock_index'])
 
     @staticmethod
     def validOptions():
@@ -114,7 +110,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 doc="A tuple of  active variables, if not specified all variables are loaded.")
         #opt.add('nodeset', doc="A list of nodeset ids or names to display, use [] to display all "
         #                       "nodesets.", vtype=list)
-        #opt.add('boundary', doc="A list of boundary ids (sideset) ids or names to display, use "
+        #opt.add('sideset', doc="A list of boundary ids (sideset) ids or names to display, use "
         #                        "[] to display all sidesets", vtype=list)
         #opt.add('block', default=[], vtype=list,
         #        doc="A list of subdomain (block) ids or names to display, by default if "
@@ -163,9 +159,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Build TimeInfo object for each timestep
             self.__updateTimeInformation()
 
+            # Build BlockInfo from the first file
+            self.__updateBlockInformation()
 
-        #self.__updateActiveFilenames()
-        #self.__updateInformation()
+            # Build VarInfo from the first file
+            self.__updateVariableInformation()
+
+        # Update active blocks, etc.
+
+        # Update active variables
+
 
     def onRequestData(self, inInfo, outInfo):
         """
@@ -175,11 +178,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         super(ExodusReader, self).onRequestData()
 
-
-        vtkobject = None
-
         # Initialize the current time data
-        time0, time1 = self.__getTimeInformation()
+        time0, time1 = self.getCurrentTimeInformation()
 
         # Time Interpolation
         if (time0 is not None) and (time1 is not None):
@@ -273,91 +273,48 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             return g0
 
     def getFileInformation(self):
+        """
+        The complete set of file information. (public)
+
+        Returns:
+            dict: Keys are the filename and items are FileInfo objects.
+        """
         self.updateInformation()
         return self.__fileinfo
 
     def getTimeInformation(self):
         """
-        The current time information. (public)
+        The complete time information. (public)
 
         Returns:
-            tuple(): The returned tuple() has two entries, the first entry will contain a
-                     collections.namedtuple with the current timestep, time, filename and local
-                     time index for the file. If the supplied option "time" or "timestep" is between
-                     the times available in the data then a second value will be returned, where
-                     the two information objects contain the information for the two data sets
-                     that will be used for interpolation.
+            list: List of TimeInfo objects.
         """
         self.updateInformation()
-        return self.__getTimeInformation()
+        return self.__timeinfo
 
-    def getBlockInformation(self):
+    def getCurrentTimeInformation(self):
         """
-        Get the block (subdomain, nodeset, sideset) information. (public)
+        Gets the current TimeInfo object(s) using the 'time' and 'timestep' options.
 
         Returns:
-            set: BlockInformation objects for all data types in this object (keys are "enum" values
-                 found in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE)
+            tuple(TimeInfo, TimeInfo|None): The current TimeInfo object(s), if the selected timestep
+                or time matches exactly the first entry contains the current object and the second
+                will be None. If it doesn't match exact the two TimeInfo objects returned will be
+                those that bracket the desired value.
         """
-        #self.__updateActiveFilenames()
-        #self.UpdateInformation()
-        blockinfo = collections.defaultdict(dict)
-        for info in self.__blockinfo:
-            blockinfo[info.object_type][info.number] = info
-
-        return blockinfo
-
-    def getVariableInformation(self, var_types=None):
-        """
-        Information on available variables. (public)
-
-        Inputs:
-            var_types[list]: List of variable types to return (default: ExodusReader.VARIABLE_TYPES)
-
-        Returns:
-            OrderedDict: VariableInformation objects for all variables in the file.
-        """
-        #self.__updateActiveFilenames()
-        #self.UpdateInformation()
-
-        if var_types is None:
-            var_types = ExodusReader.VARIABLE_TYPES
-
-        variables = list()
-        for var in self.__variableinfo:
-            if var.object_type in var_types:
-                variables.append(var)
-        return variables
-
-    def __hasVariable(self, var_type, var_name):
-        """
-        Return True if the supplied variable name for the given type exists.
-        """
-        for var in self.__variableinfo:
-            if (var.object_type == var_type) and (var.name == var_name):
-                return True
-        return False
-
-    def __getTimeInformation(self):
-        """
-        Helper for getting the current TimeData object using the 'time' and 'timestep' options.
-        (private)
-
-        Returns:
-            TimeData: The current TimeData object.
-        """
+        self.updateInformation()
         time = self.getOption('time')
         timestep = self.getOption('timestep')
 
-        # Timestep
+        # "time" option
         n = len(self.__timeinfo) - 1
         if time is not None:
             times = [t.time for t in self.__timeinfo]
 
             # Error if supplied time is out of range
             if (time > times[-1]) or (time < times[0]):
-                mooseutils.mooseWarning("Time out of range,", time, "not in",
-                                        repr([times[0], times[-1]]), ", using the latest timestep.")
+                self.warning("Time out of range, {} not in {}, using the latest timestep.",
+                             time, repr([times[0], times[-1]]))
 
             # Exact match
             try:
@@ -373,6 +330,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             else:
                 return self.__timeinfo[idx], None
 
+        # "timestep" option
         elif timestep is not None:
 
             # Account for out-of-range timesteps
@@ -389,6 +347,40 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Default to last timestep
         return self.__timeinfo[-1], None
+
+    def getBlockInformation(self):
+        """
+        Get the block (subdomain, nodeset, sideset) information. (public)
+
+        Returns:
+            dict: The keys are the object type id from VTK (see MULTIBLOCK_INDEX_TO_OBJECTTYPE),
+                  the values are a list of BlockInfo objects.
+        """
+        self.updateInformation()
+        return self.__blockinfo
+
+    def getVariableInformation(self):
+        """
+        Information on available variables. (public)
+
+        Inputs:
+            var_types[list]: List of variable types to return (default: ExodusReader.VARIABLE_TYPES)
+
+        Returns:
+            dict: The keys are the variable type id from VTK (see VARIABLE_TYPES), the values are
+                  a list of VarInfo objects.
+        """
+        self.updateInformation()
+        return self.__variableinfo
+
+    def __hasVariable(self, var_type, var_name):
+        """
+        Return True if the supplied variable name for the given type exists.
+        """
+        for var in self.__variableinfo[var_type]:
+            if (var.name == var_name) or (var.fullname == var_name):
+                return True
+        return False
 
     def __updateOptions(self, vtkreader):
         """
@@ -425,12 +417,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         for vinfo in self.__variableinfo:
             vtkreader.SetObjectArrayStatus(vinfo.object_type, vinfo.name, vinfo.active)
 
-    #def updateActiveFilenames(self):
-    #    filenames = self.__getActiveFilenames(self.getOption('filename'))
-    #    if self.__filenames != filenames:
-    #        self.__filenames = filenames
-    #        self.Modified()
-
     def __getActiveFilenames(self, filename):
         """
         The active ExodusII file(s). (private)
@@ -443,28 +429,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         else:
             return utils.get_active_filenames(filename)
 
-    def __getActiveBlocks(self):
-        """
-        Get a list of active blocks/boundary/nodesets. (private)
-
-        Returns an empty list if all should be enabled.
-        """
-        output = []
-        for param in ['block', 'boundary', 'nodeset']:
-            blocks = self.getOption(param)
-            if blocks is not None:
-                for data in self.__blockinfo:
-                    if data.name in blocks:
-                        output.append(data)
-        return output
-
     def __updateFileInformation(self):
-        """Helper that creates dict() that contains a FileInfo object for each file."""
+        """
+        Helper that creates dict() that contains a FileInfo object for each file.
+        g"""
         self.debug('__updateFileInformation')
 
         # Re-move any old files in timeinfo dict()
+        filenames = [f[0] for f in self.__filenames]
         for fname in list(self.__fileinfo.keys()):
-            if fname not in self.__filenames:
+            if fname not in filenames:
                 self.__fileinfo.pop(fname)
 
         # Loop through each file and determine the times
@@ -493,7 +467,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
 
     def __updateTimeInformation(self):
-        """Create a TimeInfo object for each timestep that indicates the correct file."""
+        """
+        Create a TimeInfo object for each timestep that indicates the correct file.
+        """
         self.debug('__updateTimeInformation')
 
         self.__timeinfo = []
@@ -504,21 +480,18 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 self.__timeinfo.append(tdata)
                 timestep += 1
 
-
     def __updateBlockInformation(self):
         """
-        Queries the base file for the subdomain, sideset, nodeset, and variable, it is assumed
-        that all files contain the same variables and blocks, as it should.
+        Queries the base file for the available blocks, sideset, and nodesets. It is assumed
+        that all files contain the same blocks, etc.
         """
+        self.debug('__updateBlockInformation')
 
-        # TODO: use self.__fileinfo[self.__filenames[0][0]]
-
-        with lock_file(self.__filename):
-            index = 0 # Index to be used with the vtkExtractBlock::AddIndex method
-
-            vtkreader = vtk.vtkExodusIIReader()
-            vtkreader.SetFileName(self.__filename)
-            vtkreader.UpdateInformation()
+        self.__blockinfo = collections.defaultdict(list)
+        finfo = self.__fileinfo[self.getOption('filename')]
+        with lock_file(finfo.filename):
+            index = 0 # index to be used with the vtkExtractBlock::AddIndex method
+            vtkreader = finfo.vtkreader # the vtkExodusIIReader object for the first file
 
             # Loop over all blocks of the vtk.MultiBlockDataSet
             for obj_type in ExodusReader.MULTIBLOCK_INDEX_TO_OBJECTTYPE:
@@ -526,35 +499,40 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 for j in range(vtkreader.GetNumberOfObjects(obj_type)):
                     index += 1
                     name = vtkreader.GetObjectName(obj_type, j)
-                    vtkid = str(vtkreader.GetObjectId(obj_type, j))
+                    vtkid = vtkreader.GetObjectId(obj_type, j)
                     if name.startswith('Unnamed'):
-                        name = vtkid
+                        name = str(vtkid)
 
-                    binfo = ExodusReader.BlockInformation(object_type=obj_type,
-                                                          name=name,
-                                                          number=vtkid,
-                                                          object_index=j,
-                                                          multiblock_index=index)
-                    self.__blockinfo.add(binfo)
+                    binfo = BlockInfo(object_type=obj_type,
+                                      name=name,
+                                      number=vtkid,
+                                      object_index=j,
+                                      multiblock_index=index)
+                    self.__blockinfo[obj_type].append(binfo)
 
+    def __updateVariableInformation(self):
+        """
+        Queries the base file for the available variables, it is assumed that all files contain the
+        same variables.
+        """
+        self.debug('__updateVariableInformation')
 
+        self.__variableinfo = dict()
+        for variable_type in ExodusReader.VARIABLE_TYPES:
+            unsorted = set()
+            for i in range(vtkreader.GetNumberOfObjectArrays(variable_type)):
+                var_name = vtkreader.GetObjectArrayName(variable_type, i)
+                if var_name is not None:
+                    num = vtkreader.GetNumberOfObjectArrayComponents(variable_type, i)
+                    vinfo = VarInfo(name=var_name, object_type=variable_type, num_components=num)
+                    unsorted.add(vinfo)
+
+            self.__variableinfo[var_type] = sorted(unsorted, key=lambda x: '{}-{}'.format(x.name.lower(), x.object_type))
 
     def __updateInformation(self):
         """
         Update file, time, block, and variable information.
         """
-
-            # Loop over all variable types
-            unsorted = set()
-            for variable_type in ExodusReader.VARIABLE_TYPES:
-                for i in range(vtkreader.GetNumberOfObjectArrays(variable_type)):
-                    var_name = vtkreader.GetObjectArrayName(variable_type, i)
-                    if var_name is not None:
-                        num = vtkreader.GetNumberOfObjectArrayComponents(variable_type, i)
-                        vinfo = VarInfo(name=var_name, object_type=variable_type, num_components=num)
-                        unsorted.add(vinfo)
-
-            self.__variableinfo = sorted(unsorted, key=lambda x: '{}-{}'.format(x.name.lower(), x.object_type))
 
         # Update active variables
         variables = self.getOption('variables')
