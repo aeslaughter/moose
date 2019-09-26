@@ -440,7 +440,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
     def __getActiveFilenames(self, filename):
         """(private)
-        The active ExodusII file(s). (private)
+        The active ExodusII file(s).
 
         Returns:
             list: Contains tuples (filename, modified time) of active file(s).
@@ -453,7 +453,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     def __updateFileInformation(self):
         """(private)
         Helper that creates dict() that contains a FileInfo object for each file.
-        g"""
+        """
         self.debug('__updateFileInformation')
 
         # Re-move any old files in timeinfo dict()
@@ -577,19 +577,27 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         b = self.getOption('blocks')
         n = self.getOption('nodesets')
         s = self.getOption('sidesets')
-        self.__setActiveBlocks(b, (n, s), self.__blockinfo[ExodusReader.BLOCK])
-        self.__setActiveBlocks(n, (b, s), self.__blockinfo[ExodusReader.NODESET])
-        self.__setActiveBlocks(s, (b, n), self.__blockinfo[ExodusReader.SIDESET])
+        self.__setActiveBlocks('blocks', b, (n, s), self.__blockinfo[ExodusReader.BLOCK])
+        self.__setActiveBlocks('nodesets', n, (b, s), self.__blockinfo[ExodusReader.NODESET])
+        self.__setActiveBlocks('sidesets', s, (b, n), self.__blockinfo[ExodusReader.SIDESET])
 
-    @staticmethod
-    def __setActiveBlocks(blocks, others, blk_info):
-        """(static,private)
+    def __setActiveBlocks(self, cmd, blocks, others, blk_info):
+        """(private)
         see __updateActiveBlocks
         """
         if blocks is not None:
+            # Error check
+            available = set([blk.name for blk in blk_info] + [blk.number for blk in blk_info] + [str(blk.number) for blk in blk_info])
+            blk_set = set(blocks)
+            blk_set.difference_update(available)
+            if blk_set:
+                self.warning("The following items in '{}' do not exist: {}", cmd, repr(blk_set))
+
+            # Set active status
             for blk in blk_info:
                 blk.active = (blk.name in blocks) or (blk.number in blocks) or (str(blk.number) in blocks)
-        elif any([o is not None for o in others]):
+
+        elif (blocks is None) and any([(o is not None) for o in others]):
             for blk in blk_info:
                 blk.active = False
         else:

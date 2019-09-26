@@ -275,7 +275,8 @@ class TestExodusReader(unittest.TestCase):
         """Test the BlockInfo objects"""
 
         # Create ExodusReader
-        reader = chigger.exodus.ExodusReader(self.single)
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader = chigger.exodus.ExodusReader(self.single)
 
         # Get BlockInfo dict, this should trigger a call via the VTK pipeline RequestInformation
         with self.assertLogs(level=logging.DEBUG) as l:
@@ -394,7 +395,7 @@ class TestExodusReader(unittest.TestCase):
 
         # Test setting 'nodesets'
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(nodesets=['top'])
+            reader.setOptions(nodesets=[2])
             binfo = reader.getBlockInformation()
 
         self.assertEqual(len(l.output), 7)
@@ -420,6 +421,87 @@ class TestExodusReader(unittest.TestCase):
 
         with self.assertLogs(level=logging.DEBUG) as l:
             reader.updateData()
+
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.ELEM_BLOCK, 0))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.ELEM_BLOCK, 1))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.SIDE_SET, 0))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.SIDE_SET, 1))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 0))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
+
+        # Test setting 'sidesets'
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader.setOptions(sidesets=['bottom'])
+            binfo = reader.getBlockInformation()
+
+        self.assertEqual(len(l.output), 7)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
+        self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateActiveBlocks')
+        self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateActiveVariables')
+
+        blk_binfo = binfo[chigger.exodus.ExodusReader.BLOCK]
+        self.assertTrue(blk_binfo[0].active)
+        self.assertFalse(blk_binfo[1].active)
+
+        blk_binfo = binfo[chigger.exodus.ExodusReader.SIDESET]
+        self.assertTrue(blk_binfo[0].active)
+        self.assertFalse(blk_binfo[1].active)
+
+        blk_binfo = binfo[chigger.exodus.ExodusReader.NODESET]
+        self.assertFalse(blk_binfo[0].active)
+        self.assertTrue(blk_binfo[1].active)
+
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader.updateData()
+
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.ELEM_BLOCK, 0))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.ELEM_BLOCK, 1))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.SIDE_SET, 0))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.SIDE_SET, 1))
+        self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 0))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
+
+        # Test un-setting
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader.setOptions(blocks=None, sidesets=None, nodesets=None)
+            binfo = reader.getBlockInformation()
+            reader.updateData()
+
+        self.assertEqual(len(l.output), 10)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
+        self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateActiveBlocks')
+        self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateActiveVariables')
+        self.assertEqual(l.output[7], 'DEBUG:ExodusReader: updateData')
+        self.assertEqual(l.output[8], 'DEBUG:ExodusReader: RequestData')
+        self.assertEqual(l.output[9], 'DEBUG:ExodusReader: _onRequestData')
+
+        blk_binfo = binfo[chigger.exodus.ExodusReader.BLOCK]
+        self.assertTrue(blk_binfo[0].active)
+        self.assertTrue(blk_binfo[1].active)
+
+        blk_binfo = binfo[chigger.exodus.ExodusReader.SIDESET]
+        self.assertTrue(blk_binfo[0].active)
+        self.assertTrue(blk_binfo[1].active)
+
+        blk_binfo = binfo[chigger.exodus.ExodusReader.NODESET]
+        self.assertTrue(blk_binfo[0].active)
+        self.assertTrue(blk_binfo[1].active)
+
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.ELEM_BLOCK, 0))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.ELEM_BLOCK, 1))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.SIDE_SET, 0))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.SIDE_SET, 1))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 0))
+        self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
+
 
 
     def testVariableInformation(self):

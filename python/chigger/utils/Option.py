@@ -128,6 +128,8 @@ class Option(object):
         """
 
         if val is None:
+            if self.__value is not None:
+                self.__modified.Modified()
             self.__value = None
             return
 
