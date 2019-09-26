@@ -502,6 +502,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 0))
         self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
 
+        # TODO: Need to test warnings
 
 
     def testVariableInformation(self):
