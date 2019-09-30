@@ -502,7 +502,10 @@ class TestExodusReader(unittest.TestCase):
         self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 0))
         self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
 
+    def testWarnings(self):
+        pass
         # TODO: Need to test warnings
+
 
 
     def testVariableInformation(self):
@@ -515,16 +518,18 @@ class TestExodusReader(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as l:
             vinfo = reader.getVariableInformation()
 
-        self.assertEqual(len(l.output), 7)
+        self.assertEqual(len(l.output), 9)
         self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[1], 'DEBUG:ExodusReader: RequestInformation')
-        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: onRequestInformation')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: _onRequestInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: __updateFileInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: __updateTimeInformation')
         self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateBlockInformation')
         self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateVariableInformation')
+        self.assertEqual(l.output[7], 'DEBUG:ExodusReader: __updateActiveBlocks')
+        self.assertEqual(l.output[8], 'DEBUG:ExodusReader: __updateActiveVariables')
 
-        # Get BlockInfo list, this should trigger a call via the VTK pipeline RequestInformation
+        # Get VariableInfo list, this should trigger a call via the VTK pipeline RequestInformation
         with self.assertLogs(level=logging.DEBUG) as l:
             vinfo = reader.getVariableInformation()
 
@@ -559,7 +564,29 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(g_vinfo[0].num_components, 1)
         self.assertTrue(g_vinfo[0].active)
 
-        # TODO: Test 'variables=...'
+        # Test 'variables=...'
+        with self.assertLogs(level=logging.DEBUG) as l:
+            reader.setOptions(variables=('convected',))
+            vinfo = reader.getVariableInformation()
+
+        self.assertEqual(len(l.output), 7)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
+        self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateActiveBlocks')
+        self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateActiveVariables')
+
+        e_vinfo = vinfo[chigger.exodus.ExodusReader.ELEMENTAL]
+        self.assertFalse(e_vinfo[0].active)
+
+        n_vinfo = vinfo[chigger.exodus.ExodusReader.NODAL]
+        self.assertTrue(n_vinfo[0].active)
+        self.assertFalse(n_vinfo[1].active)
+
+        g_vinfo = vinfo[chigger.exodus.ExodusReader.GLOBAL]
+        self.assertFalse(g_vinfo[0].active)
 
     def testSingle(self):
         """
@@ -575,7 +602,7 @@ class TestExodusReader(unittest.TestCase):
 
         # Current Time
         reader.setOptions(timestep=None, time=1.01)
-        tdata0, tdata1 = reader.getTimeInformation()
+        tdata0, tdata1 = reader.getCurrentTimeInformation()
         self.assertAlmostEqual(tdata0.time, 1)
         self.assertEqual(tdata0.timestep, 10)
         self.assertEqual(tdata0.index, 10)
@@ -588,9 +615,9 @@ class TestExodusReader(unittest.TestCase):
 
         # Blocks
         blockinfo = reader.getBlockInformation()
-        self.assertEqual(sorted(list(blockinfo[reader.BLOCK].keys())), ['1', '76',])
-        self.assertEqual(sorted(list(blockinfo[reader.NODESET].keys())), ['1', '2'])
-        self.assertEqual(sorted(list(blockinfo[reader.SIDESET].keys())), ['1', '2'])
+        self.assertEqual([b.name for b in blockinfo[reader.BLOCK]], ['1', '76',])
+        self.assertEqual([b.name for b in blockinfo[reader.NODESET]], ['1', '2'])
+        self.assertEqual([b.name for b in blockinfo[reader.SIDESET]], ['1', '2'])
         self.assertEqual(blockinfo[reader.SIDESET]['2'].name, 'top')
         self.assertEqual(blockinfo[reader.SIDESET]['2'].object_type, 3)
         self.assertEqual(blockinfo[reader.SIDESET]['2'].object_index, 1)
@@ -629,7 +656,7 @@ class TestExodusReader(unittest.TestCase):
 
         # Current Time
         reader.setOptions(timestep=None, time=1.01, time_interpolation=False)
-        tdata0, tdata1 = reader.getTimeInformation()
+        tdata0, tdata1 = reader.getCurrentTimeInformation()
 
         self.assertAlmostEqual(tdata0.time, 1)
         self.assertEqual(tdata0.timestep, 10)
@@ -777,7 +804,7 @@ class TestExodusReader(unittest.TestCase):
 
         # Time
         reader.setOptions(timestep=None, time=1.01)
-        tdata, tdata1 = reader.getTimeInformation()
+        tdata, tdata1 = reader.getCurrentTimeInformation()
         self.assertIsNone(tdata1)
         self.assertAlmostEqual(tdata.time, 1)
         self.assertEqual(tdata.timestep, 2)
@@ -790,7 +817,7 @@ class TestExodusReader(unittest.TestCase):
             mooseutils.touch(self.testfiles[i])
 
         reader.setOptions(time=None, timestep=-1)
-        tdata, tdata1 = reader.getTimeInformation()
+        tdata, tdata1 = reader.getCurrentTimeInformation()
         self.assertIsNone(tdata1)
         self.assertEqual(reader.getTimes(), [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0])
         self.assertAlmostEqual(tdata.time, 3.0)
@@ -851,23 +878,26 @@ class TestExodusReader(unittest.TestCase):
         variables = reader.getVariableInformation()
         self.assertEqual(len(variables), 3)
 
-        self.assertEqual(variables[0].name, 'variable')
-        self.assertEqual(variables[0].fullname, 'variable::ELEMENTAL')
-        self.assertEqual(variables[0].num_components, 1)
-        self.assertEqual(variables[0].object_type, chigger.exodus.ExodusReader.ELEMENTAL)
-        self.assertTrue(variables[0].active)
+        e_vars = variables[chigger.exodus.ExodusReader.ELEMENTAL]
+        self.assertEqual(e_vars[0].name, 'variable')
+        self.assertEqual(e_vars[0].fullname, 'variable::ELEMENTAL')
+        self.assertEqual(e_vars[0].num_components, 1)
+        self.assertEqual(e_vars[0].object_type, chigger.exodus.ExodusReader.ELEMENTAL)
+        self.assertTrue(e_vars[0].active)
 
-        self.assertEqual(variables[1].name, 'variable')
-        self.assertEqual(variables[1].fullname, 'variable::GLOBAL')
-        self.assertEqual(variables[1].num_components, 1)
-        self.assertEqual(variables[1].object_type, chigger.exodus.ExodusReader.GLOBAL)
-        self.assertTrue(variables[1].active)
+        g_vars = variables[chigger.exodus.ExodusReader.GLOBAL]
+        self.assertEqual(g_vars[0].name, 'variable')
+        self.assertEqual(g_vars[0].fullname, 'variable::GLOBAL')
+        self.assertEqual(g_vars[0].num_components, 1)
+        self.assertEqual(g_vars[0].object_type, chigger.exodus.ExodusReader.GLOBAL)
+        self.assertTrue(g_vars[0].active)
 
-        self.assertEqual(variables[2].name, 'variable')
-        self.assertEqual(variables[2].fullname, 'variable::NODAL')
-        self.assertEqual(variables[2].num_components, 1)
-        self.assertEqual(variables[2].object_type, chigger.exodus.ExodusReader.NODAL)
-        self.assertTrue(variables[2].active)
+        n_vars = variables[chigger.exodus.ExodusReader.NODAL]
+        self.assertEqual(n_vars[0].name, 'variable')
+        self.assertEqual(n_vars[0].fullname, 'variable::NODAL')
+        self.assertEqual(n_vars[0].num_components, 1)
+        self.assertEqual(n_vars[0].object_type, chigger.exodus.ExodusReader.NODAL)
+        self.assertTrue(n_vars[0].active)
 
         # Check for warning if just 'variables' is provided
         with self.assertLogs() as l:
@@ -878,9 +908,9 @@ class TestExodusReader(unittest.TestCase):
         # Check active state with suffix supplied
         reader.setOptions(variables=('variable::NODAL',))
         variables = reader.getVariableInformation()
-        self.assertFalse(variables[0].active)
-        self.assertFalse(variables[1].active)
-        self.assertTrue(variables[2].active)
+        self.assertFalse(variables[chigger.exodus.ExodusReader.ELEMENTAL][0].active)
+        self.assertFalse(variables[chigger.exodus.ExodusReader.GLOBAL][0].active)
+        self.assertTrue(variables[chigger.exodus.ExodusReader.NODAL][0].active)
 
         # Check for error if bad suffix given
         with self.assertLogs() as l:

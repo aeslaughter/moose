@@ -257,7 +257,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             float: The global data (Postprocessor value) for the current timestep and defined
                    variable.
-        """(public)
+        """
         self.updateInformation()
         self.updateData()
         if not self.__hasVariable(self.GLOBAL, variable):
