@@ -157,6 +157,18 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__fileinfo = collections.OrderedDict() # FileInfo objects
         self.__blockinfo = set()                    # BlockInfo objects
         self.__variableinfo = list()                # VarInfo objects
+        self.__reinit_information = True            # flag for re-computing info for Time, etc.
+
+    def updateInformation(self):
+        """(override, public)
+        Override updateInformation to mark the reader as modified if the filenames have been altered.
+        """
+        filenames = self.__getActiveFilenames(self.getOption('filename'))
+        if self.__filenames != filenames:
+            self.__filenames = filenames
+            self.__reinit_information = True
+            self.Modified()
+        base.ChiggerAlgorithm.updateInformation(self)
 
     def _onRequestInformation(self):
         """(override,protected)
@@ -167,14 +179,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # The file to load
         filename = self.getOption('filename')
         if not os.path.isfile(filename):
-            self.error("The file {} is not a valid filename.", self.__filename)
+            self.error("The file {} is not a valid filename.", filename)
             return 0
 
         # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
         # block information only needs to be updated if the file list changed
-        filenames = self.__getActiveFilenames(self.getOption('filename'))
-        if self.__filenames != filenames:
-            self.__filenames = filenames
+        if self.__reinit_information:
 
             # Build FileInfo object for each filename
             self.__updateFileInformation()
@@ -188,7 +198,10 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Build VarInfo from the first file
             self.__updateVariableInformation()
 
-        # Update active blocks, etc.
+            # Reset flag, see updateInformation
+            self.__reinit_information = False
+
+            # Update active blocks, etc.
         self.__updateActiveBlocks()
 
         # Update active variables
@@ -262,7 +275,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.updateData()
         if not self.__hasVariable(self.GLOBAL, variable):
             self.error("The supplied global variable, '{}', does not exist in {}.", variable,
-                       self.__filename)
+                       self.getOption('filename'))
             return sys.float_info.min
 
         time0, time1 = self.__getCurrentTimeInformation()
@@ -591,7 +604,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             blk_set = set(blocks)
             blk_set.difference_update(available)
             if blk_set:
-                self.warning("The following items in '{}' do not exist: {}", cmd, repr(blk_set))
+                self.warning("The following items in '{}' do not exist: {}", cmd, ', '.join(blk_set))
 
             # Set active status
             for blk in blk_info:

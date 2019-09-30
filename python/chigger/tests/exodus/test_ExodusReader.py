@@ -503,10 +503,69 @@ class TestExodusReader(unittest.TestCase):
         self.assertTrue(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
 
     def testWarnings(self):
-        pass
-        # TODO: Need to test warnings
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, time=1000)
+            reader.updateInformation()
+            reader.updateData()
+        self.assertIn("Time out of range, 1000.0 not in", l.output[0])
 
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, timestep=-2)
+            reader.updateInformation()
+            reader.updateData()
+        self.assertIn("Timestep out of range: -2 not in", l.output[0])
 
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, timestep=42)
+            reader.updateInformation()
+            reader.updateData()
+        self.assertIn("Timestep out of range: 42 not in", l.output[0])
+
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, blocks=['nope'])
+            reader.updateInformation()
+        self.assertIn("The following items in 'blocks' do not exist: nope", l.output[0])
+
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, nodesets=['nope'])
+            reader.updateInformation()
+        self.assertIn("The following items in 'nodesets' do not exist: nope", l.output[0])
+
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, sidesets=['nope'])
+            reader.updateInformation()
+        self.assertIn("The following items in 'sidesets' do not exist: nope", l.output[0])
+
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.duplicate, variables=('variable',))
+            reader.updateInformation()
+        self.assertIn("The variable name 'variable' exists with multiple", l.output[0])
+
+    def testErrors(self):
+        """
+        Test for error messages.
+        """
+        # Invalid filename
+        with self.assertLogs(level=logging.ERROR) as l:
+            reader = chigger.exodus.ExodusReader('foo.e')
+            reader.updateInformation()
+        self.assertIn("The file foo.e is not a valid filename.", l.output[0])
+
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
+            reader.getGlobalData('convected')
+        self.assertIn("The supplied global variable, 'convected', does not ", l.output[0])
+
+        with self.assertLogs() as l:
+            reader.setOptions(variables=('convected::WRONG',))
+            reader.updateInformation()
+        self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
+
+        with self.assertLogs() as l:
+            reader = chigger.exodus.ExodusReader(self.multiple, time=1.12345)
+            reader.updateInformation()
+            reader.updateData()
+        self.assertIn("Support for time interpolation across adaptive time steps is not supported.", l.output[0])
 
     def testVariableInformation(self):
         """Test the VarInfo objects"""
@@ -617,30 +676,17 @@ class TestExodusReader(unittest.TestCase):
         blockinfo = reader.getBlockInformation()
         self.assertEqual([b.name for b in blockinfo[reader.BLOCK]], ['1', '76',])
         self.assertEqual([b.name for b in blockinfo[reader.NODESET]], ['1', '2'])
-        self.assertEqual([b.name for b in blockinfo[reader.SIDESET]], ['1', '2'])
-        self.assertEqual(blockinfo[reader.SIDESET]['2'].name, 'top')
-        self.assertEqual(blockinfo[reader.SIDESET]['2'].object_type, 3)
-        self.assertEqual(blockinfo[reader.SIDESET]['2'].object_index, 1)
-        self.assertEqual(blockinfo[reader.SIDESET]['2'].multiblock_index, 9)
+        self.assertEqual([b.name for b in blockinfo[reader.SIDESET]], ['bottom', 'top'])
+        self.assertEqual(blockinfo[reader.SIDESET][1].name, 'top')
+        self.assertEqual(blockinfo[reader.SIDESET][1].object_type, 3)
+        self.assertEqual(blockinfo[reader.SIDESET][1].object_index, 1)
+        self.assertEqual(blockinfo[reader.SIDESET][1].multiblock_index, 9)
 
         # Variable Info
         varinfo = reader.getVariableInformation()
-        self.assertEqual([v.name for v in varinfo], ['aux_elem', 'convected', 'diffused', 'func_pp'])
-
-        # Elemental Variables
-        elemental = reader.getVariableInformation(var_types=[reader.ELEMENTAL])
-        self.assertEqual([v.name for v in elemental], ['aux_elem'])
-        self.assertEqual(elemental[0].num_components, 1)
-
-        # Nodal Variables
-        nodal = reader.getVariableInformation(var_types=[reader.NODAL])
-        self.assertEqual([v.name for v in nodal], ['convected', 'diffused'])
-        self.assertEqual(nodal[1].num_components, 1)
-
-        # Global Variables
-        gvars = reader.getVariableInformation(var_types=[reader.GLOBAL])
-        self.assertEqual([v.name for v in gvars], ['func_pp'])
-        self.assertEqual(gvars[0].num_components, 1)
+        self.assertEqual([v.name for v in varinfo[reader.ELEMENTAL]], ['aux_elem'])
+        self.assertEqual([v.name for v in varinfo[reader.NODAL]], ['convected', 'diffused'])
+        self.assertEqual([v.name for v in varinfo[reader.GLOBAL]], ['func_pp'])
 
     def testSingleNoInterpolation(self):
         """
@@ -668,8 +714,8 @@ class TestExodusReader(unittest.TestCase):
     def testTimeInterpolation(self):
         reader = chigger.exodus.ExodusReader(self.interpolate)
 
-        reader.UpdateInformation()
-        reader.Update()
+        reader.updateInformation()
+        reader.updateData()
         data = reader.GetOutputDataObject(0).GetBlock(0).GetBlock(0)
 
         # Time = 10
@@ -790,8 +836,8 @@ class TestExodusReader(unittest.TestCase):
         """
         reader = chigger.exodus.ExodusReader(self.vector)
         variables = reader.getVariableInformation()
-        self.assertEqual([v.name for v in variables], ['u', 'vel_'])
-        self.assertEqual(variables[1].num_components, 2)
+        self.assertEqual([v.name for v in variables[chigger.exodus.ExodusReader.NODAL]], ['u', 'vel_'])
+        self.assertEqual(variables[chigger.exodus.ExodusReader.NODAL][1].num_components, 2)
 
     def testAdaptivity(self):
         """
@@ -825,19 +871,6 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(tdata.index, 0)
         self.assertEqual(tdata.filename, self.multiple + '-s006')
 
-    def testErrors(self):
-        """
-        Test for error messages.
-        """
-        # Invalid filename
-        with self.assertRaisesRegex(IOError, 'The file foo.e is not a valid filename.'):
-            chigger.exodus.ExodusReader('foo.e')
-
-        reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
-        with self.assertLogs() as l:
-            reader.getGlobalData('convected')
-        self.assertIn("The supplied global variable, 'convected', does not ", l.output[0])
-
     def testReload(self):
         """
         Test the file reloading is working.
@@ -860,16 +893,16 @@ class TestExodusReader(unittest.TestCase):
         shutil.copy(filenames[0], common)
         reader = chigger.exodus.ExodusReader(common)
         variables = reader.getVariableInformation()
-        self.assertIn('aux', [v.name for v in variables])
-        self.assertIn('u', [v.name for v in variables])
-        self.assertNotIn('New_0', [v.name for v in variables])
+        self.assertIn('aux', [v.name for v in variables[chigger.exodus.ExodusReader.ELEMENTAL]])
+        self.assertIn('u', [v.name for v in variables[chigger.exodus.ExodusReader.NODAL]])
+        self.assertNotIn('New_0', [v.name for v in variables[chigger.exodus.ExodusReader.NODAL]])
 
         time.sleep(1.5) # make sure modified time is different (MacOS requires > 1s)
         shutil.copy(filenames[1], common)
         variables = reader.getVariableInformation()
-        self.assertIn('aux', [v.name for v in variables])
-        self.assertIn('u', [v.name for v in variables])
-        self.assertIn('New_0', [v.name for v in variables])
+        self.assertIn('aux', [v.name for v in variables[chigger.exodus.ExodusReader.ELEMENTAL]])
+        self.assertIn('u', [v.name for v in variables[chigger.exodus.ExodusReader.NODAL]])
+        self.assertIn('New_0', [v.name for v in variables[chigger.exodus.ExodusReader.NODAL]])
 
     def testVariableNameDuplicate(self):
 
