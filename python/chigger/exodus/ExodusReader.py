@@ -239,6 +239,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             vtkobject.SetTimeStep(time0.index)
             self.__onRequestDataHelper(vtkobject)
 
+        else:
+            return 0
+
         # Update the Reader and output port
         vtkobject.Update()
         out_data = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
@@ -379,6 +382,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             if (time > times[-1]) or (time < times[0]):
                 self.warning("Time out of range, {} not in {}, using the latest timestep.",
                              time, repr([times[0], times[-1]]))
+                return None, None
 
             # Exact match
             try:

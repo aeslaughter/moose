@@ -19,7 +19,7 @@ import vtk
 
 class TestExodusReader(unittest.TestCase):
     """
-    Test use of MooseDataFrame for loading/reloading csv files.
+    Test use of ExodusReader.
     """
     @classmethod
     def setUpClass(cls):
