@@ -73,14 +73,20 @@ class ChiggerObjectBase(object):
     #    self._options.update(other)
 
     def isOptionValid(self, name):
-        """
-        Test if the given option is valid (i.e., not None). (public)
+        """(public)
+        Test if the given option is valid (i.e., not None).
         """
         return self._options.isOptionValid(name)
 
-    def getOption(self, name):
+    def isOptionDefault(self, name):
+        """(public)
+        Check if the option is set to the default value.
         """
-        Return the value of an option. (public)
+        return self._options.isOptionDefault(name)
+
+    def getOption(self, name):
+        """(public)
+        Return the value of an option.
 
         Inputs:
             name[str]: The name of the option to retrieve

@@ -29,8 +29,8 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
     # List of active filters
     __ACTIVE_FILTERS__ = set()
 
-    # Background options, by default the background color is black thus the default text colors
-    # are white. If the background is changed to white then the default text colors are then
+    # Background options, by default the background color is black thus the default text colors are
+    # white. If the background is changed to white then the default text colors are then
     # automatically changed to black
     __BACKGROUND_OPTIONS__ = set()
 
@@ -44,11 +44,6 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         opt.add('orientation', vtype=float, size=3, doc="The orientation of the object.")
         opt.add('rotation', default=(0., 0., 0.), vtype=float, size=3,
                 doc="The rotation of the object about x, y, z axes.")
-        opt.add('edges', default=False, doc="Enable/disable display of object edges.")
-        opt.add('edge_color', default=(1., 1., 1.), size=3, doc="Set the edge color.")
-        opt.add('edge_width', vtype=int, doc="The edge width, if None then no edges are shown.")
-        opt.add('point_size', vtype=int, doc="The point size, if None then no points are shown.")
-        opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
         """
 
         for filter_type in cls.__FILTERS__:
@@ -66,10 +61,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
 
     def __init__(self, viewport, **kwargs):
         utils.KeyBindingMixin.__init__(self)
-        ChiggerAlgorithm.__init__(self,
-                                  #outputType='vtkDataObject',
-                                  #nOutputPorts=1,
-                                  **kwargs)
+        ChiggerAlgorithm.__init__(self, **kwargs)
 
         # Create mapper
         self._vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
@@ -144,7 +136,6 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
 
     def _onRequestInformation(self):
         ChiggerAlgorithm._onRequestInformation(self)
-
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Connect the filters

@@ -8,10 +8,10 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
-#from ExodusSource import ExodusSource
+import mooseutils
+
 from .ExodusReader import ExodusReader
 from .MultiAppExodusReader import MultiAppExodusReader
-import mooseutils
 from .. import base
 from .. import utils
 from .. import filters
@@ -20,7 +20,13 @@ from .. import filters
 @base.addFilter(filters.ExtractBlockFilter, required=True)
 class ExodusSource(base.ChiggerSource):
     """
-    Result object to displaying ExodusII data from a single reader.
+    Source object to displaying ExodusII data from a reader. The reader and source objects are
+    separate to allow for one reader to be used with many sources, which is more efficient.
+
+    Inputs:
+        viewport[chigger.Viewport]: The viewport object that the source should be rendered.
+        reader[chigger.exodus.ExodusReader]: The reader object containing the data to be rendered.
+        kwargs: Key-value pair options.
     """
     VTKACTORTYPE = vtk.vtkActor
     VTKMAPPERTYPE = vtk.vtkPolyDataMapper
@@ -50,9 +56,6 @@ class ExodusSource(base.ChiggerSource):
         opt.add('blocks', [], vtype=list,
                 doc="A list of subdomain (block) ids or names to display, use [] to display all " \
                     "blocks.")
-
-        opt.add('representation', 'surface', allow=('volume', 'surface', 'wireframe', 'points'),
-                doc="View volume representation.")
 
         # Colormap
         opt += base.ColorMap.validOptions()
@@ -103,6 +106,7 @@ class ExodusSource(base.ChiggerSource):
         self.SetInputConnection(self.__reader.GetOutputPort())
 
 
+
         # TODO: Check 'blocks', etc. and warn if set
         # TODO: Check 'variables' set
 
@@ -138,6 +142,10 @@ class ExodusSource(base.ChiggerSource):
         self._vtkmapper.UseLookupTableScalarRangeOff()
 
     def _onRequestData(self, inInfo, outInfo):
+        """(protected, override)
+        Passes the reader data to the output port to allow for filters to be applied and
+        updates the range of the vtkMapper based on the available data or the user supplied options.
+        """
         base.ChiggerSource._onRequestData(self, inInfo, outInfo)
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
@@ -146,6 +154,9 @@ class ExodusSource(base.ChiggerSource):
         self.__setDataRange(opt)
 
     def __setDataRange(self, out_data):
+        """(private)
+        Computes the range from the data and applies the user specified range settings.
+        """
 
         rng = self.__getDataRange(out_data)
         if self.isOptionValid('lim'):
@@ -163,7 +174,9 @@ class ExodusSource(base.ChiggerSource):
         self._vtkmapper.SetScalarRange(rng)
 
     def __getDataRange(self, out_data):
-        """Return the range of all active blocks for the specified variable."""
+        """(private)
+        Return the range of all active blocks for the current variable and component.
+        """
 
         variable = self.getOption('variable')
         component = self.getOption('component')
