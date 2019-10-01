@@ -108,16 +108,15 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         #self._vtkrenderer.InteractiveOff()
 
 
-    def _window(self):
-        """Property so that self._window acts like the actual window object."""
-        return self.__window_weakref()
+    #def _window(self):
+    #    """Property so that self._w#indow acts like the actual window object."""
+    #    return self.__window_weakref()
 
     def add(self, arg):
 
         port = self.GetNumberOfInputPorts()
         self.SetNumberOfInputPorts(port + 1)
         self.SetInputConnection(port, arg.GetOutputPort())
-
 
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
@@ -148,8 +147,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     #    return 1
 
 
-    def applyOptions(self):
-        base.ChiggerAlgorithm.applyOptions(self)
+    def _onUpdateInformation(self):
+        base.ChiggerAlgorithm._onUpdateInformation(self)
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
 
         if self.isOptionValid('layer'):

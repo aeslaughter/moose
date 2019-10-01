@@ -22,12 +22,11 @@ class GeometricSource(base.ChiggerSource):
                                     nOutputPorts=1, outputType='vtkPolyData',
                                     **kwargs)
 
-    def RequestData(self, request, inInfo, outInfo):
-        super(GeometricSource, self).RequestData(request, inInfo, outInfo)
+    def _onRequestData(self, inInfo, outInfo):
+        base.ChiggerSource._onRequestData(self, inInfo, outInfo)
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         self._vtksource.Update()
         opt.ShallowCopy(self._vtksource.GetOutput())
-        return 1
 
 class GeometricSource2D(GeometricSource):
     VTKACTORTYPE = vtk.vtkActor2D

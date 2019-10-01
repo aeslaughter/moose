@@ -157,18 +157,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__fileinfo = collections.OrderedDict() # FileInfo objects
         self.__blockinfo = set()                    # BlockInfo objects
         self.__variableinfo = list()                # VarInfo objects
-        self.__reinit_information = True            # flag for re-computing info for Time, etc.
-
-    def updateInformation(self):
-        """(override, public)
-        Override updateInformation to mark the reader as modified if the filenames have been altered.
-        """
-        filenames = self.__getActiveFilenames(self.getOption('filename'))
-        if self.__filenames != filenames:
-            self.__filenames = filenames
-            self.__reinit_information = True
-            self.Modified()
-        base.ChiggerAlgorithm.updateInformation(self)
 
     def _onRequestInformation(self):
         """(override,protected)
@@ -184,7 +172,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
         # block information only needs to be updated if the file list changed
-        if self.__reinit_information:
+        filenames = self.__getActiveFilenames(self.getOption('filename'))
+        if self.__filenames != filenames:
+            self.__filenames = filenames
 
             # Build FileInfo object for each filename
             self.__updateFileInformation()
@@ -198,9 +188,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Build VarInfo from the first file
             self.__updateVariableInformation()
 
-            # Reset flag, see updateInformation
-            self.__reinit_information = False
-
             # Update active blocks, etc.
         self.__updateActiveBlocks()
 
@@ -211,7 +198,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """(override, protected)
         Do not call this method, call updateData.
         """
-        super(ExodusReader, self)._onRequestData()
+        base.ChiggerAlgorithm._onRequestData(self, inInfo, outInfo)
 
         # Initialize the current time data
         time0, time1 = self.__getCurrentTimeInformation()

@@ -99,8 +99,6 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         # information from the Viewport object.
         self.__viewport_weakref = weakref.ref(viewport)
 
-        self.__connectFilters()
-
     @property
     def _viewport(self):
         """Property so that self._viewport acts like the actual Viewport object."""
@@ -131,7 +129,6 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         return self._filters
 
     def getBounds(self):
-        #self.Update()
         if isinstance(self._vtkmapper, vtk.vtkPolyDataMapper2D):
             print('2D bounds needs something to do this in general')
             return None
@@ -145,12 +142,13 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
             if filter_type.FILTERNAME in args:
                 self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 
-    def applyOptions(self):
-        ChiggerAlgorithm.applyOptions(self)
+    def _onRequestInformation(self):
+        ChiggerAlgorithm._onRequestInformation(self)
+
         utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Connect the filters
-        #self.__connectFilters()
+        self.__connectFilters()
 
         #if self.isOptionValid('orientation'):
         #    self._vtkactor.SetOrientation(self.getOption('orientation'))
@@ -181,6 +179,7 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         #    self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
 
     def __connectFilters(self):
+        self.debug('__connectFilters')
 
         for filter_type in self.__FILTERS__:
             fname = filter_type.FILTERNAME

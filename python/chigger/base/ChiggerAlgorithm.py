@@ -48,7 +48,7 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     def _onRequestInformation(self):
         self.debug('_onRequestInformation')
 
-    def _onRequestData(self):
+    def _onRequestData(self, inInfo, outInfo):
         self.debug('_onRequestData')
 
     def RequestInformation(self, request, inInfo, outInfo):

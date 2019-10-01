@@ -28,11 +28,11 @@ class Cube(GeometricSource):
         opt.add('center', None, vtype=float, size=3, doc="The center of the box.")
         return opt
 
-    def applyOptions(self):
+    def _onUpdateInformation(self):
         """
         Set the options for this cube. (public)
         """
-        GeometricSource.applyOptions(self)
+        GeometricSource._onUpdateInformation(self)
 
         if self.isOptionValid('center'):
             self._vtksource.SetCenter(self.getOption('center'))

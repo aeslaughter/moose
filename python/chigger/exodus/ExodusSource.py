@@ -103,22 +103,28 @@ class ExodusSource(base.ChiggerSource):
         self.SetInputConnection(self.__reader.GetOutputPort())
 
 
-    def RequestData(self, request, inInfo, outInfo):
-        super(ExodusSource, self).RequestData(request, inInfo, outInfo)
+    def _onRequestData(self, inInfo, outInfo):
+        base.ChiggerSource._onRequestData(self, inInfo, outInfo)
 
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-        #for filter_obj in self._filters.values():
-        #    filter_obj.Update()
         opt.ShallowCopy(inp)
-        return 1
 
-
-    def applyOptions(self):
+    def _onRequestInformation(self):
 
         #self.__ACTIVE_FILTERS__.add('extract')
-        base.ChiggerSource.applyOptions(self)
+        base.ChiggerSource._onRequestInformation(self)
 
+        # Update the block/boundary/nodeset settings to convert [] to all.
+        extract_indices = []
+        block_info = self.__reader.getBlockInformation()
+        for binfo in block_info.values():
+            for b in binfo:
+                if b.active:
+                    extract_indices.append(b.multiblock_index)
+
+
+        """
         # Update the block/boundary/nodeset settings to convert [] to all.
         block_info = self.__reader.getBlockInformation()
         for item in ['block', 'boundary', 'nodeset']:
@@ -142,6 +148,7 @@ class ExodusSource(base.ChiggerSource):
         extract_indices = get_indices('block', ExodusReader.BLOCK)
         extract_indices += get_indices('boundary', ExodusReader.SIDESET)
         extract_indices += get_indices('nodeset', ExodusReader.NODESET)
+        """
 
         fobject = self._filters['extract']
         fobject.setOption('indices', extract_indices)
@@ -149,7 +156,7 @@ class ExodusSource(base.ChiggerSource):
         self._vtkmapper.SetScalarModeToUsePointFieldData()
         self._vtkmapper.InterpolateScalarsBeforeMappingOn()
 
-        self.__updateVariable()
+        #self.__updateVariable()
 
     #def __init__(self, reader, **kwargs):
     #    base.ChiggerSource(reader, **kwargs)
@@ -235,8 +242,7 @@ class ExodusSource(base.ChiggerSource):
             """
             Returns a sting listing the available nodal and elemental variable names.
             """
-            nvars = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL])
-            evars = self.__reader.getVariableInformation(var_types=[ExodusReader.ELEMENTAL])
+            nvars = self.__reader.getVariableInformation()
 
             msg = []
             if nvars:
@@ -248,8 +254,7 @@ class ExodusSource(base.ChiggerSource):
             return ''.join(msg)
 
         # Define the active variable name
-        available = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL,
-                                                                    ExodusReader.ELEMENTAL])
+        available = self.__reader.getVariableInformation()
 
         # Case when no variable exists
         if not available:
@@ -316,6 +321,7 @@ class ExodusSource(base.ChiggerSource):
                        'ignored.')
 
         # Range
+        """
         rng = list(self.getRange(local=self.getOption('local_lim')))
         if self.isOptionValid('lim'):
             rng = self.getOption('lim')
@@ -330,6 +336,7 @@ class ExodusSource(base.ChiggerSource):
             rng = list(self.getRange(local=self.getOption('local_lim')))
 
         self._vtkmapper.SetScalarRange(rng)
+        """
 
     def getRange(self, local=False):
         """
