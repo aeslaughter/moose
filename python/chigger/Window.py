@@ -347,7 +347,8 @@ class Window(base.ChiggerAlgorithm):
         Begin the interactive VTK session.
         """
         self.debug("start")
-        self.Update()
+        self.updateInformation()
+        self.updateData()
         #self.__vtkwindow.Render()
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
@@ -355,7 +356,7 @@ class Window(base.ChiggerAlgorithm):
 
 
 
-    def setupObject(self):
+    def _onUpdateInformation(self):
         base.ChiggerAlgorithm.setupObject(self)
 
         if self.isOptionValid('background'):
@@ -379,17 +380,6 @@ class Window(base.ChiggerAlgorithm):
 
 
         self.assignOption('size', self.__vtkwindow.SetSize)
-
-
-    #def RequestData(self, request, inInfo, outInfo):
-    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
-    #    return 1
-
-    def applyOptions(self):
-        """
-        Updates the child results and renders the results.
-        """
-        base.ChiggerAlgorithm.applyOptions(self)
 
 
         test = self.getOption('test')

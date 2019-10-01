@@ -110,7 +110,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         opt = base.ChiggerAlgorithm.validOptions()
         opt.add('filename', vtype=str, doc="The filename to load, this is typically set via the constructor.")
 
-        opt.add('time', vtype=float,
+        opt.add('time', vtype=(int, float),
                 doc="The time to view, if not specified the 'timestep' is used.")
         opt.add("timestep", default=-1, vtype=int,
                 doc="The simulation timestep, this is ignored if 'time' is set (-1 for latest.)")
@@ -133,16 +133,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         opt.add('variables', vtype=str, array=True,
                 doc="A tuple of  active variables, if not specified all variables are loaded.")
 
-        opt.add('blocks', vtype=list,
-                doc="A list of subdomain (block) ids or names to load, by default all are loaded. "
+        opt.add('blocks', vtype=(int, str), array=True, default=tuple(),
+                doc="A tuple of subdomain (block) ids or names to load, by default all are loaded. "
                     "If 'blocks', 'nodesets', or 'sidesets' is set, the default for the others "
                     "becomes unloaded.")
-        opt.add('nodesets', vtype=list,
-                doc="A list of nodeset ids to load, by default all are loaded. "
+        opt.add('nodesets', vtype=(int, str), array=True, default=tuple(),
+                doc="A tuple of nodeset ids to load, by default all are loaded. "
                     "If 'blocks', 'nodesets', or 'sidesets' is set, the default for the others "
                     "becomes unloaded.")
-        opt.add('sidesets', vtype=list,
-                doc="A list of boundary ids (sideset) to load, by default all are loaded."
+        opt.add('sidesets', vtype=(int, str), array=True, default=tuple(),
+                doc="A tuple of boundary ids (sideset) to load, by default all are loaded."
                     "If 'blocks', 'nodesets', or 'sidesets' is set, the default for the others "
                     "becomes unloaded.")
         return opt
@@ -263,7 +263,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         self.updateInformation()
         self.updateData()
-        if not self.__hasVariable(self.GLOBAL, variable):
+        if not self.hasVariable(self.GLOBAL, variable):
             self.error("The supplied global variable, '{}', does not exist in {}.", variable,
                        self.getOption('filename'))
             return sys.float_info.min
@@ -403,8 +403,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         # Default to last timestep
         return self.__timeinfo[-1], None
 
-    def __hasVariable(self, var_type, var_name):
-        """(private)
+    def hasVariable(self, var_type, var_name):
+        """(public)
         Return True if the supplied variable name for the given type exists.
         """
         for var in self.__variableinfo[var_type]:
@@ -589,7 +589,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """(private)
         see __updateActiveBlocks
         """
-        if blocks is not None:
+        if blocks:
             # Error check
             available = set([blk.name for blk in blk_info] + [blk.number for blk in blk_info] + [str(blk.number) for blk in blk_info])
             blk_set = set(blocks)
@@ -601,7 +601,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             for blk in blk_info:
                 blk.active = (blk.name in blocks) or (blk.number in blocks) or (str(blk.number) in blocks)
 
-        elif (blocks is None) and any([(o is not None) for o in others]):
+        elif blocks is None or any([bool(o) for o in others]):
             for blk in blk_info:
                 blk.active = False
         else:
@@ -627,7 +627,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 self.error("Unknown variable prefix '::{}', must be 'NODAL', 'ELEMENTAL', or 'GLOBAL'", x[1])
 
             for vtype in var_types:
-                if self.__hasVariable(vtype, var):
+                if self.hasVariable(vtype, var):
                     active_variables[var].add(vtype)
 
             for name, vtype in active_variables.items():

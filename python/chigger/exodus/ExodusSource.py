@@ -43,12 +43,12 @@ class ExodusSource(base.ChiggerSource):
         opt.add('max', vtype=float, doc="The maximum range.")
 
         # Subdomains/sidesets/nodesets
-        opt.add('nodeset', None, vtype=list,
+        opt.add('nodesets', None, vtype=list,
                 doc="A list of nodeset ids or names to display, use [] to display all nodesets.")
-        opt.add('boundary', None, vtype=list,
-                doc="A list of boundary ids (sideset) ids or names to display, use [] to display " \
+        opt.add('sidesets', None, vtype=list,
+                doc="A list of sidesets (boundary) ids or names to display, use [] to display " \
                     "all sidesets.")
-        opt.add('block', [], vtype=list,
+        opt.add('blocks', [], vtype=list,
                 doc="A list of subdomain (block) ids or names to display, use [] to display all " \
                     "blocks.")
 
@@ -103,6 +103,9 @@ class ExodusSource(base.ChiggerSource):
         self.SetInputConnection(self.__reader.GetOutputPort())
 
 
+        # TODO: Check 'blocks', etc. and warn if set
+
+
     def _onRequestData(self, inInfo, outInfo):
         base.ChiggerSource._onRequestData(self, inInfo, outInfo)
 
@@ -111,9 +114,16 @@ class ExodusSource(base.ChiggerSource):
         opt.ShallowCopy(inp)
 
     def _onRequestInformation(self):
-
-        #self.__ACTIVE_FILTERS__.add('extract')
         base.ChiggerSource._onRequestInformation(self)
+
+        # Update the block/boundary/nodeset settings on the reader
+        self.__updateActiveBlocks()
+
+        # Update the variable settings on the reader
+        self.__updateActiveVariables()
+
+
+        self.__reader.updateInformation()
 
         # Update the block/boundary/nodeset settings to convert [] to all.
         extract_indices = []
@@ -123,6 +133,8 @@ class ExodusSource(base.ChiggerSource):
                 if b.active:
                     extract_indices.append(b.multiblock_index)
 
+        fobject = self._filters['extract']
+        fobject.setOption('indices', extract_indices)
 
         """
         # Update the block/boundary/nodeset settings to convert [] to all.
@@ -150,13 +162,55 @@ class ExodusSource(base.ChiggerSource):
         extract_indices += get_indices('nodeset', ExodusReader.NODESET)
         """
 
-        fobject = self._filters['extract']
-        fobject.setOption('indices', extract_indices)
 
-        self._vtkmapper.SetScalarModeToUsePointFieldData()
         self._vtkmapper.InterpolateScalarsBeforeMappingOn()
 
         #self.__updateVariable()
+
+
+    def __updateActiveBlocks(self):
+        self.debug('__updateActiveBlocks')
+
+        block_info = self.__reader.getBlockInformation()
+        self.__setActiveBlocksHelper('blocks', block_info[ExodusReader.BLOCK])
+        self.__setActiveBlocksHelper('sidesets', block_info[ExodusReader.SIDESET])
+        self.__setActiveBlocksHelper('nodesets', block_info[ExodusReader.NODESET])
+
+    def __updateActiveVariables(self):
+        self.debug('__updateActiveVariables')
+
+        vname = self.getOption('variable')
+        has_nodal = self.__reader.hasVariable(ExodusReader.NODAL, vname)
+        has_elemental = self.__reader.hasVariable(ExodusReader.ELEMENTAL, vname)
+
+        if has_nodal and has_elemental:
+            self.warning("The supplied variable name '{0}' exists as both a nodal and elemental variable, use '{0}::NODAL' or '{0}::ELEMENTAL' to indicate which is desired. The nodal version is being used.", vname)
+            vfullname = '{}::NODAL'.format(vname)
+            self._vtkmapper.SetScalarModeToUsePointFieldData()
+
+        elif has_nodal:
+            vfullname = '{}::NODAL'.format(vname)
+            self._vtkmapper.SetScalarModeToUsePointFieldData()
+
+        elif has_elemental:
+            vfullname = '{}::ELEMENTAL'.format(vname)
+            self._vtkmapper.SetScalarModeToUseCellFieldData()
+
+        else:
+            vinfo = self.__reader.getVariableInformation()
+            velem = ', '.join([v.name for v in vinfo[ExodusReader.ELEMENTAL]])
+            vnodal = ', '.join([v.name for v in vinfo[ExodusReader.NODAL]])
+            vfullname = None
+            self.error("The supplied variable name '{}' does not exist on the supplied reader. The following variables are available:\n  Elemental: {}\n  Nodal: {}.", vname, velem, vnodal)
+
+
+        if vfullname is not None:
+            current = self.__reader.getOption('variables')
+            current = current + (vfullname,) if current is not None else (vfullname,)
+            self.__reader.setOption('variables', current)
+            self._vtkmapper.SelectColorArray(vname)
+
+
 
     #def __init__(self, reader, **kwargs):
     #    base.ChiggerSource(reader, **kwargs)
@@ -177,6 +231,21 @@ class ExodusSource(base.ChiggerSource):
     #    #super(ExodusSource, self).__init__(*sources, **kwargs)
 
     #    self.__outline_result = None
+
+    def __setActiveBlocksHelper(self, param, binfo):
+
+        local = self.getOption(param)
+        if local == []:
+            local = tuple([b.name for b in binfo])
+
+        if local is not None:
+            self.__reader.setOption(param, self.__reader.getOption(param) + local)
+
+
+
+
+
+
 
     """
     def update(self, **kwargs):

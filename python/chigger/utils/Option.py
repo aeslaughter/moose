@@ -35,6 +35,10 @@ class Option(object):
     def __init__(self, name, default=None, doc=None, vtype=None, allow=None, size=None,
                  array=False):
 
+        # Force vtype to be a tuple to allow multipe types to be defined
+        if isinstance(vtype, type):
+            vtype = (vtype,)
+
         self.__name = name       # option name
         self.__value = None      # current value
         self.__default = default # default value
@@ -46,6 +50,7 @@ class Option(object):
         self.__array = array     # create an array
         self.__size = size       # array size
 
+
         if not isinstance(self.__name, str):
             msg = "The supplied 'name' argument must be a 'str', but {} was provided."
             raise TypeError(msg.format(type(self.__name)))
@@ -54,7 +59,7 @@ class Option(object):
             msg = "The supplied 'doc' argument must be a 'str', but {} was provided."
             raise TypeError(msg.format(type(self.__doc)))
 
-        if (self.__vtype is not None) and (not isinstance(self.__vtype, type)):
+        if (self.__vtype is not None) and (any(not isinstance(v, type) for v in self.__vtype)):
             msg = "The supplied 'vtype' argument must be a 'type', but {} was provided."
             raise TypeError(msg.format(type(self.__vtype)))
 
