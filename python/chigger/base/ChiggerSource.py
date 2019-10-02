@@ -15,7 +15,7 @@ import mooseutils
 from .ChiggerAlgorithm import ChiggerAlgorithm
 from .. import utils
 
-class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
+class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
 
     # The type of vtkProp to create (this should be defined in child class)
     VTKACTORTYPE = None
@@ -37,8 +37,21 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
-        opt += utils.ActorOptions.validOptions()
+       # opt += utils.ActorOptions.validOptions()
         opt += utils.KeyBindingMixin.validOptions()
+
+
+        opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
+        opt.add('color', vtype=(float, int), size=3, doc="The color of the object.")
+        opt.add('linewidth', 1, vtype=(int, float), doc="The line width for the object.")
+
+
+        opt.add('lines_as_tubes', default=False, vtype=bool,
+                doc="Toggle rendering 1D lines as tubes.")
+
+        opt.add('pointsize', default=1, vtype=(float, int),
+                doc="The point size to utilized.")
+
 
         # TODO: Use utils.EdgeOptions, obj.setOptions('edges', ...)
         # TODO: Restore these
@@ -143,6 +156,14 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         # Connect the filters
         self.__connectFilters()
 
+
+        self.assignOption('color', self._vtkactor.GetProperty().SetColor)
+        self.assignOption('opacity', self._vtkactor.GetProperty().SetOpacity)
+        self.assignOption('linewidth', self._vtkactor.GetProperty().SetLineWidth)
+        self.assignOption('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
+        self.assignOption('pointsize', self._vtkactor.GetProperty().SetPointSize)
+
+
         #if self.isOptionValid('orientation'):
         #    self._vtkactor.SetOrientation(self.getOption('orientation'))
 
@@ -199,3 +220,49 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         # Delete the actor and mapper, this is needed to avoid a seg fault in VTK
         self._vtkactor = None
         self._vtkmapper = None
+
+class ChiggerSource(ChiggerSourceBase):
+
+    VTKACTORTYPE = vtk.vtkActor
+
+    @classmethod
+    def validOptions(cls):
+        opt = ChiggerSourceBase.validOptions()
+
+        opt.add('representation', default='surface', allow=('surface', 'wireframe', 'points'),
+                doc="View volume representation.")
+
+        opt.add('edges', default=False, vtype=bool,
+                doc="Enable edges on the rendered object.")
+        opt.add('edgecolor', default=(0.5,)*3, array=True, size=3, vtype=float,
+                doc="The color of the edges, 'edges=True' must be set.")
+        opt.add('edgewidth', default=1, vtype=(float, int),
+                doc="The width of the edges, 'edges=True' must be set.")
+
+        return opt
+
+
+    def _onRequestInformation(self):
+        ChiggerSourceBase._onRequestInformation(self)
+
+        rep = self.getOption('representation')
+        if rep == 'surface':
+            self._vtkactor.GetProperty().SetRepresentationToSurface()
+        elif rep == 'wireframe':
+            self._vtkactor.GetProperty().SetRepresentationToWireframe()
+        elif rep == 'points':
+            self._vtkactor.GetProperty().SetRepresentationToPoints()
+
+        self.assignOption('edges', self._vtkactor.GetProperty().SetEdgeVisibility)
+        self.assignOption('edgecolor', self._vtkactor.GetProperty().SetEdgeColor)
+        self.assignOption('edgewidth', self._vtkactor.GetProperty().SetLineWidth)
+
+
+
+class ChiggerSource2D(ChiggerSourceBase):
+    VTKACTORTYPE = vtk.vtkActor2D
+
+    @classmethod
+    def validOptions(cls):
+        opt = ChiggerSourceBase.validOptions()
+        return opt
