@@ -356,8 +356,8 @@ class Window(base.ChiggerAlgorithm):
 
 
 
-    def _onUpdateInformation(self):
-        base.ChiggerAlgorithm.setupObject(self)
+    def _onRequestInformation(self):
+        base.ChiggerAlgorithm._onRequestInformation(self)
 
         if self.isOptionValid('background'):
             self.__viewports[0].setOptions(background=self.getOption('background'),

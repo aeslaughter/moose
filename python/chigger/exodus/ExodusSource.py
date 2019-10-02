@@ -16,8 +16,6 @@ from .. import base
 from .. import utils
 from .. import filters
 
-@base.addFilter(filters.GeometryFilter, required=True)
-@base.addFilter(filters.ExtractBlockFilter, required=True)
 class ExodusSource(base.ChiggerSource):
     """
     Source object to displaying ExodusII data from a reader. The reader and source objects are
@@ -105,7 +103,8 @@ class ExodusSource(base.ChiggerSource):
 
         self.SetInputConnection(self.__reader.GetOutputPort())
 
-
+        self._addFilter(filters.ExtractBlockFilter, True)
+        self._addFilter(filters.GeometryFilter, True)
 
         # TODO: Check 'blocks', etc. and warn if set
         # TODO: Check 'variables' set

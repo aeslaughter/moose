@@ -10,22 +10,12 @@
 
 from .ChiggerObject import ChiggerObject
 from .ChiggerAlgorithm import ChiggerAlgorithm
-from .ChiggerSource import ChiggerSource
+from .ChiggerSource import ChiggerSource, ChiggerSource2D
 from .ChiggerCompositeSource import ChiggerCompositeSource
 
-# "utils" would be the correct place for this, but it creates a cyclic dependency because it used
-# base ChiggerObject; "misc" has a similar problem and "misc" is reserved for source objects
+# "utils" would be the correct place for this, but it creates a cyclic dependency because it uses
+# base.ChiggerObject; "misc" has a similar problem and "misc" is reserved for source objects
 from .ColorMap import ColorMap
-
-def addFilter(filtertype, required=False):
-    """Decorator for adding filters."""
-    def create(cls):
-        cls.__FILTERS__.append(filtertype)
-        if required:
-            cls.__ACTIVE_FILTERS__.add(filtertype.FILTERNAME)
-        return cls
-    return create
-
 
 def backgroundOptions(*args):
     """Decorator for adding automatic color settings for black/white background"""

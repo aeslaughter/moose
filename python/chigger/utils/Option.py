@@ -147,10 +147,12 @@ class Option(object):
         if self.__array:
             for v in val:
                 if self.__vtype is not None:
-                    try:
-                        v = self.__vtype(v)
-                    except (ValueError, TypeError):
-                        pass
+                    for vtype in self.__vtype:
+                        try:
+                            v = vtype(v)
+                            break
+                        except (ValueError, TypeError):
+                            pass
 
                 if (self.__vtype is not None) and not isinstance(v, self.__vtype):
                     msg = "The values within '{}' must be of type {} but {} provided."
@@ -166,10 +168,12 @@ class Option(object):
 
         else:
             if self.__vtype is not None:
-                try:
-                    val = self.__vtype(val)
-                except (ValueError, TypeError):
-                    pass
+                for vtype in self.__vtype:
+                    try:
+                        val = vtype(val)
+                        break
+                    except (ValueError, TypeError):
+                        pass
 
             if (self.__vtype is not None) and not isinstance(val, self.__vtype):
                 msg = "'{}' must be of type {} but {} provided."

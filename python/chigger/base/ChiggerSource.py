@@ -15,6 +15,17 @@ import mooseutils
 from .ChiggerAlgorithm import ChiggerAlgorithm
 from .. import utils
 
+@mooseutils.addProperty('filter_type', required=True)
+@mooseutils.addProperty('active', ptype=bool, default=True)
+class FilterInfo(mooseutils.AutoPropertyMixin):
+    """
+    Storage for Filter object information.
+
+    This is a stand-alone class to allow for the 'active' property to be altered.
+    """
+    pass
+
+
 class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
 
     # The type of vtkProp to create (this should be defined in child class)
@@ -24,15 +35,16 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     VTKMAPPERTYPE = None
 
     # List of possible filters, this is an internal item. Filters are added with addFilter decorator
-    __FILTERS__ = list()
+    #__FILTERS__ = list()
 
     # List of active filters
-    __ACTIVE_FILTERS__ = set()
+    #__ACTIVE_FILTERS__ = set()
 
     # Background options, by default the background color is black thus the default text colors are
     # white. If the background is changed to white then the default text colors are then
     # automatically changed to black
     __BACKGROUND_OPTIONS__ = set()
+
 
     @classmethod
     def validOptions(cls):
@@ -46,27 +58,15 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         opt.add('linewidth', 1, vtype=(int, float), doc="The line width for the object.")
 
 
-        opt.add('lines_as_tubes', default=False, vtype=bool,
-                doc="Toggle rendering 1D lines as tubes.")
-
         opt.add('pointsize', default=1, vtype=(float, int),
                 doc="The point size to utilized.")
 
-
-        # TODO: Use utils.EdgeOptions, obj.setOptions('edges', ...)
         # TODO: Restore these
         """
         opt.add('orientation', vtype=float, size=3, doc="The orientation of the object.")
         opt.add('rotation', default=(0., 0., 0.), vtype=float, size=3,
                 doc="The rotation of the object about x, y, z axes.")
         """
-
-        for filter_type in cls.__FILTERS__:
-            fname = filter_type.FILTERNAME or filter_type.__name__.lower()
-            opt.add(fname,
-                    filter_type.validOptions(),
-                    doc="Options for the '{}' filter.".format(fname))
-
         return opt
 
     @staticmethod
@@ -75,6 +75,12 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         return bindings
 
     def __init__(self, viewport, **kwargs):
+
+        # Storage for the available filters for this object, this needs to be before the base
+        # class __init__ because the setOptions command of this class attempts to apply options to
+        # the filters.
+        self.__filter_info = list()
+
         utils.KeyBindingMixin.__init__(self)
         ChiggerAlgorithm.__init__(self, **kwargs)
 
@@ -94,7 +100,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         if self._vtkmapper is not None:
             self._vtkactor.SetMapper(self._vtkmapper)
 
-        # Storage for the filter objects
+        # Storage for the filter object instances
         self._filters = collections.OrderedDict()
 
         # Add this ChiggerSource object to the viewport
@@ -110,6 +116,14 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     def _viewport(self):
         """Property so that self._viewport acts like the actual Viewport object."""
         return self.__viewport_weakref()
+
+    def _addFilter(self, filter_type, active=False):
+        self.__filter_info.append(FilterInfo(filter_type=filter_type, active=active))
+
+        fname = filter_type.FILTERNAME
+        self._options.add(fname, filter_type.validOptions(),
+                          doc="Options for the '{}' filter.".format(fname))
+
 
     def remove(self):
         self._viewport.remove(self)
@@ -145,8 +159,11 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     def setOptions(self, *args, **kwargs):
         ChiggerAlgorithm.setOptions(self, *args, **kwargs)
 
-        for filter_type in self.__FILTERS__:
-            if filter_type.FILTERNAME in args:
+        for finfo in self.__filter_info:
+            if finfo.filter_type.FILTERNAME in args:
+                finfo.active = True
+
+
                 self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 
     def _onRequestInformation(self):
@@ -156,51 +173,20 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         # Connect the filters
         self.__connectFilters()
 
-
         self.assignOption('color', self._vtkactor.GetProperty().SetColor)
         self.assignOption('opacity', self._vtkactor.GetProperty().SetOpacity)
         self.assignOption('linewidth', self._vtkactor.GetProperty().SetLineWidth)
-        self.assignOption('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
         self.assignOption('pointsize', self._vtkactor.GetProperty().SetPointSize)
-
-
-        #if self.isOptionValid('orientation'):
-        #    self._vtkactor.SetOrientation(self.getOption('orientation'))
-
-        #if self.isOptionValid('rotation'):
-        #    x, y, z = self.applyOption('rotation')
-        #    self._vtkactor.RotateX(x)
-        #    self._vtkactor.RotateY(y)
-        #    self._vtkactor.RotateZ(z)
-
-        #if self.isOptionValid('edges') and \
-        #   hasattr(self._vtkactor.GetProperty(), 'SetEdgeVisibility'):
-        #    self._vtkactor.GetProperty().SetEdgeVisibility(self.getOption('edges'))
-
-        #if self.isOptionValid('edge_color') and \
-        #   hasattr(self._vtkactor.GetProperty(), 'SetEdgeColor'):
-        #    self._vtkactor.GetProperty().SetEdgeColor(self.getOption('edge_color'))
-
-        #if self.isOptionValid('edge_width') and \
-        #   hasattr(self._vtkactor.GetProperty(), 'SetLineWidth'):
-        #    self._vtkactor.GetProperty().SetLineWidth(self.getOption('edge_width'))
-
-        #if self.isOptionValid('point_size') and \
-        #   hasattr(self._vtkactor.GetProperty(), 'SetPointSize'):
-        #    self._vtkactor.GetProperty().SetPointSize(self.getOptions('point_size'))
-
-        #if self.isOptionValid('opacity'):
-        #    self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
 
     def __connectFilters(self):
         self.debug('__connectFilters')
 
-        for filter_type in self.__FILTERS__:
-            fname = filter_type.FILTERNAME
-            if (fname in self.__ACTIVE_FILTERS__) and (fname not in self._filters):
-                self._filters[fname] = filter_type()
+        for finfo in self.__filter_info:
+            fname = finfo.filter_type.FILTERNAME
+            if (finfo.active) and (fname not in self._filters):
+                self._filters[fname] = finfo.filter_type()
                 self.Modified()
-            elif (fname not in self.__ACTIVE_FILTERS__) and (fname in self._filters):
+            elif (not finfo.active) and (fname in self._filters):
                 self._filters.pop(fname)
                 self.Modified()
 
@@ -239,8 +225,10 @@ class ChiggerSource(ChiggerSourceBase):
         opt.add('edgewidth', default=1, vtype=(float, int),
                 doc="The width of the edges, 'edges=True' must be set.")
 
-        return opt
+        opt.add('lines_as_tubes', default=False, vtype=bool,
+                doc="Toggle rendering 1D lines as tubes.")
 
+        return opt
 
     def _onRequestInformation(self):
         ChiggerSourceBase._onRequestInformation(self)
@@ -257,7 +245,7 @@ class ChiggerSource(ChiggerSourceBase):
         self.assignOption('edgecolor', self._vtkactor.GetProperty().SetEdgeColor)
         self.assignOption('edgewidth', self._vtkactor.GetProperty().SetLineWidth)
 
-
+        self.assignOption('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
 
 class ChiggerSource2D(ChiggerSourceBase):
     VTKACTORTYPE = vtk.vtkActor2D
