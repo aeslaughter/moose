@@ -15,6 +15,7 @@ def validOptions():
 
 def applyOptions(vtkactor, opt):
 
+    """
     if opt.isOptionValid('orientation'):
         vtkactor.SetOrientation(opt.get('orientation'))
 
@@ -22,6 +23,7 @@ def applyOptions(vtkactor, opt):
     vtkactor.RotateX(x)
     vtkactor.RotateY(y)
     vtkactor.RotateZ(z)
+    """
 
     vtkactor.GetProperty().SetEdgeVisibility(opt.get('visible'))
     vtkactor.GetProperty().SetEdgeColor(opt.get('color'))

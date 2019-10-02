@@ -1,10 +1,11 @@
+import vtk
 from .Options import Options
 
-def validOptions():
+def validOptions(actor_type=vtk.vtkActor):
     """Returns options for edge properties for vtkActor objects."""
     opt = Options()
     opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
-    opt.add('color', vtype=float, size=3, doc="The color of the object.")
+    opt.add('color', vtype=(float, int), size=3, doc="The color of the object.")
     opt.add('linewidth', 1, vtype=(int, float), doc="The line width for the object.")
 
     opt.add('representation', default='surface', allow=('surface', 'wireframe', 'points'),
@@ -23,9 +24,6 @@ def validOptions():
     opt.add('pointsize', default=1, vtype=(float, int),
             doc="The point size to utilized.")
 
-    opt.add('opacity', default=1, vtype=(float, int),
-            doc="The opacity of the rendered object.")
-
     return opt
 
 def applyOptions(vtkactor, opt):
@@ -33,17 +31,18 @@ def applyOptions(vtkactor, opt):
     opt.assign('opacity', vtkactor.GetProperty().SetOpacity)
     opt.assign('linewidth', vtkactor.GetProperty().SetLineWidth)
 
-    rep = opt.get('representation')
-    if rep == 'surface':
-        vtkactor.GetProperty().SetRepresentationToSurface()
-    elif rep == 'wireframe':
-        vtkactor.GetProperty().SetRepresentationToWireframe()
-    elif rep == 'points':
-        vtkactor.GetProperty().SetRepresentationToPoints()
+    if isinstance(vtkactor, vtk.vtkActor):
+        rep = opt.get('representation')
+        if rep == 'surface':
+            vtkactor.GetProperty().SetRepresentationToSurface()
+        elif rep == 'wireframe':
+            vtkactor.GetProperty().SetRepresentationToWireframe()
+        elif rep == 'points':
+            vtkactor.GetProperty().SetRepresentationToPoints()
 
     opt.assign('edges', vtkactor.GetProperty().SetEdgeVisibility)
     opt.assign('edgecolor', vtkactor.GetProperty().SetEdgeColor)
-    opt.assign('edgewidth', vtkactor.GetProperty().SetEdgeWidth)
+    opt.assign('edgewidth', vtkactor.GetProperty().SetLineWidth)
 
     opt.assign('lines_as_tubes', vtkactor.GetProperty().SetRenderLinesAsTubes)
 

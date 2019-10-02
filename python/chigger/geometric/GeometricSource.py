@@ -31,3 +31,9 @@ class GeometricSource(base.ChiggerSource):
 class GeometricSource2D(GeometricSource):
     VTKACTORTYPE = vtk.vtkActor2D
     VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
+
+    @staticmethod
+    def validOptions():
+        opt = GeometricSource.validOptions()
+        opt.remove('representation')
+        return opt

@@ -40,6 +40,8 @@ class ChiggerSource(utils.KeyBindingMixin, ChiggerAlgorithm):
         opt += utils.ActorOptions.validOptions()
         opt += utils.KeyBindingMixin.validOptions()
 
+        # TODO: Use utils.EdgeOptions, obj.setOptions('edges', ...)
+        # TODO: Restore these
         """
         opt.add('orientation', vtype=float, size=3, doc="The orientation of the object.")
         opt.add('rotation', default=(0., 0., 0.), vtype=float, size=3,

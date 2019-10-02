@@ -342,7 +342,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_source_outline = None
             self.__current_source = None
 
-            self._window.Update()
+            #self._window.Update()
             self._window.getVTKWindow().Render()
             self._window.getVTKInteractor().SetInteractorStyle(None)
 

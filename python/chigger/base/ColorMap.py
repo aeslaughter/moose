@@ -59,7 +59,7 @@ class ColorMap(ChiggerObject):
                 doc="Reverse the order of colormap.")
         opt.add('cmap_num_colors', default=256, vtype=int,
                 doc="Number of colors to use (matplotlib only).")
-        opt.add('cmap_range', default=(0, 1), vtype=float, size=2,
+        opt.add('cmap_range', default=(0, 1), vtype=(float, int), size=2,
                 doc="Set the data range for the color map to display.")
         return opt
 
@@ -102,8 +102,9 @@ class ColorMap(ChiggerObject):
         else:
             raise mooseutils.MooseException("Unknown colormap:", name)
 
-        if self.isOptionValid('cmap_range'):
-            vtktable.SetRange(*self.getOption('cmap_range'))
+        #if self.isOptionValid('cmap_range'):
+        #    vtktable.SetRange(*self.getOption('cmap_range'))
+        vtktable.SetRange(0,1)
         vtktable.Build()
         return vtktable
 
