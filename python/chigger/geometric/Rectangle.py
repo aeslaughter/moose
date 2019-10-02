@@ -45,11 +45,11 @@ class Rectangle(GeometricSource2D):
         bnds = self.getOption('bounds')
         return (bnds[0], bnds[1], bnds[2], bnds[3])
 
-    def applyOptions(self):
+    def _onRequestInformation(self):
         """
         Set the options for this cube. (public)
         """
-        GeometricSource2D.applyOptions(self)
+        GeometricSource2D._onRequestInformation(self)
 
         if self._vtkmapper.GetTransformCoordinate() is None:
             self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())

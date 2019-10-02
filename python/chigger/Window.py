@@ -349,12 +349,10 @@ class Window(base.ChiggerAlgorithm):
         self.debug("start")
         self.updateInformation()
         self.updateData()
-        #self.__vtkwindow.Render()
+        self.__vtkwindow.Render()
         if self.__vtkinteractor:
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
-
-
 
     def _onRequestInformation(self):
         base.ChiggerAlgorithm._onRequestInformation(self)
