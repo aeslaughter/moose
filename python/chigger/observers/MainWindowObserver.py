@@ -212,6 +212,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if self.__current_source_index is not None:
             source = self._availableSources(viewport)[self.__current_source_index]
             bnds = source.getBounds()
+
             if len(bnds) == 4:
                 self.__current_source_outline = geometric.Outline2D(viewport,
                                                                     bounds=bnds,
@@ -287,8 +288,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
 
     def _onLeftButtonPressEvent(self, obj, event):
-
-
         pos = self._window.getVTKInteractor().GetEventPosition()
         vtk_renderer = self._window.getVTKInteractor().FindPokedRenderer(*pos)
         props = vtk_renderer.PickProp(*pos)
@@ -317,6 +316,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if self.__current_source_outline is None:
             bnds = source.getBounds()
             obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
+            print("BOUNDS:", bnds)
             self.__current_source = source
             self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0), linewidth=6)
 

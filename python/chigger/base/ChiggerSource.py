@@ -150,11 +150,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         return self._filters
 
     def getBounds(self):
-        if isinstance(self._vtkmapper, vtk.vtkPolyDataMapper2D):
-            print('2D bounds needs something to do this in general')
-            return None
-        else:
-            return self._vtkmapper.GetBounds()
+        pass
 
     def setOptions(self, *args, **kwargs):
         ChiggerAlgorithm.setOptions(self, *args, **kwargs)
@@ -247,6 +243,10 @@ class ChiggerSource(ChiggerSourceBase):
 
         self.assignOption('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
 
+    def getBounds(self):
+        return self._vtkmapper.GetBounds()
+
+
 class ChiggerSource2D(ChiggerSourceBase):
     VTKACTORTYPE = vtk.vtkActor2D
 
@@ -254,3 +254,6 @@ class ChiggerSource2D(ChiggerSourceBase):
     def validOptions(cls):
         opt = ChiggerSourceBase.validOptions()
         return opt
+    def getBounds(self):
+        print('2D bounds needs something to do this in general')
+        return None

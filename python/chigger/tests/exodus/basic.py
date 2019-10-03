@@ -3,7 +3,7 @@ import chigger
 
 
 window = chigger.Window()
-#observer = chigger.observers.MainWindowObserver(window)
+observer = chigger.observers.MainWindowObserver(window)
 viewport = chigger.Viewport(window)
 
 reader = chigger.exodus.ExodusReader('../input/mug_blocks_out.e')

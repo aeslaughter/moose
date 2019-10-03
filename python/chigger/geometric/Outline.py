@@ -12,8 +12,8 @@ class Outline(GeometricSource):
                 doc="The bounding box of the object to outline: [xmin, xmax, ymin, ymax, zmin, zmax].")
         return opt
 
-    def applyOptions(self):
-        GeometricSource.applyOptions(self)
+    def _onRequestInformation(self):
+        GeometricSource._onRequestInformation(self)
         self.assignOption('bounds', self._vtksource.SetBounds)
 
 
@@ -31,8 +31,8 @@ class Outline2D(GeometricSource2D):
 
         return opt
 
-    def applyOptions(self):
-        GeometricSource.applyOptions(self)
+    def _onRequestInformation(self):
+        GeometricSource._onRequestInformation(self)
         bnds = self.getOption('bounds')
 
         # TODO: This shows up in the Rectangle (need GeometricSource2D)
