@@ -155,6 +155,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
 
     def _availableViewports(self):
+
         return [viewport for viewport in self._window.viewports() if viewport.interactive]
 
     def _availableSources(self, viewport):

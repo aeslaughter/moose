@@ -207,4 +207,5 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         y_max = round(c[3], 3) if (c[3] <= 1 and c[1] < c[3]) else y_max
 
         self.setOptions(viewport=(x_min, y_min, x_max, y_max))
+        self.updateInformation()
         self.printOption('viewport')
