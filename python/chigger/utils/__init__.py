@@ -21,7 +21,6 @@ from .Options import Options
 from . import AxisOptions
 from . import TextOptions
 from . import LegendOptions
-from . import ActorOptions
 from .KeyBindingMixin import KeyBinding, KeyBindingMixin
 
 def get_active_filenames(basename, pattern=None):

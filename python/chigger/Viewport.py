@@ -77,26 +77,20 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         bindings.add('down', Viewport._setViewport, args=(3, -0.025), shift=True,
                      desc="Decrease the viewport y-max value")
 
-
         return bindings
 
     def __init__(self, window, **kwargs):
         utils.KeyBindingMixin.__init__(self)
-        base.ChiggerAlgorithm.__init__(self,
-                                       inputType='vtkDataObject',
-                                       nOutputPorts=1,
-                                       outputType='vtkDataObject', **kwargs)
+        base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0, **kwargs)
 
         # Initialize class members
-        self._sources = list()
+        self.__sources = list()
         self._vtkrenderer = vtk.vtkRenderer()
 
         # Verify renderer type
         if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
             msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
             raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
-
-        # Setup VTKPythobnAlgorithmBase
 
         # Add the Viewport to the Window and store a reference without reference counting, the
         # underlying VTK objects keep track of things and without the weakref here there is a
@@ -105,7 +99,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         window.add(self)
         #self.__window_weakref = None# weakref.ref(window)
 
-        #self._vtkrenderer.InteractiveOff()
+        self._vtkrenderer.InteractiveOff()
 
 
     #def _window(self):
@@ -113,10 +107,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     #    return self.__window_weakref()
 
     def add(self, arg):
-
-        port = self.GetNumberOfInputPorts()
-        self.SetNumberOfInputPorts(port + 1)
-        self.SetInputConnection(port, arg.GetOutputPort())
 
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
@@ -127,11 +117,11 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
             if actor is not None:
                 self._vtkrenderer.AddActor(actor)
 
-        self._sources.append(arg)
+        self.__sources.append(arg)
 
     def remove(self, arg):
-        if arg in self._sources:
-            self._sources.remove(arg)
+        if arg in self.__sources:
+            self.__sources.remove(arg)
 
             if isinstance(arg, base.ChiggerCompositeSource):
                 for actor in arg.getVTKActors():
@@ -146,9 +136,19 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     #    print opt
     #    return 1
 
+    def updateInformation(self):
+        base.ChiggerAlgorithm.updateInformation(self)
+        for source in self.__sources:
+            source.updateInformation()
 
-    def _onUpdateInformation(self):
-        base.ChiggerAlgorithm._onUpdateInformation(self)
+    def updateData(self):
+        base.ChiggerAlgorithm.updateData(self)
+        for source in self.__sources:
+            source.updateData()
+
+
+    def _onRequestInformation(self):
+        base.ChiggerAlgorithm._onRequestInformation(self)
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
 
         if self.isOptionValid('layer'):
@@ -164,17 +164,18 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         else:
             self._vtkrenderer.SetGradientBackground(False)
 
-        self._vtkrenderer.ResetCameraClippingRange()
+        #self._vtkrenderer.ResetCameraClippingRange()
+        self._vtkrenderer.ResetCamera()
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
         return self._vtkrenderer
 
     def sources(self):
-        return self._sources
+        return self.__sources
 
     def getSource(self, index=-1):
-        return self._sources[index]
+        return self.__sources[index]
 
    # def getBounds(self):
    #     bnds = self.getOption('viewport')
@@ -184,10 +185,10 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         """
         The number of source objects.
         """
-        return len(self._sources)
+        return len(self.__sources)
 
     def __iter__(self):
-        for source in self._sources:
+        for source in self.__sources:
             yield source
 
     def printCamera(self, *args): #pylint: disable=unused-argument
@@ -219,13 +220,3 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
         self.setOptions(viewport=(x_min, y_min, x_max, y_max))
         self.printOption('viewport')
-        #print self.getOption('viewport')
-
-
-    #def RequestData(self, request, inInfo, outInfo):
-    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
-
-    #    print inInfo
-    #    print outInfo
-
-    #    return 1

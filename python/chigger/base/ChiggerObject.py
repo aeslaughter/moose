@@ -125,11 +125,11 @@ class ChiggerObjectBase(object):
             self._options.update(**kwargs)
 
     def setOption(self, name, value):
-        self.debug('setOption')
+        #self.debug('setOption')
         self._options.set(name, value)
 
     def assignOption(self, name, func):
-        self.debug('assignOption')
+        #self.debug('assignOption')
         self._options.assign(name, func)
 
     # TODO: ??? Move these to utils.show_options(obj, format=...)

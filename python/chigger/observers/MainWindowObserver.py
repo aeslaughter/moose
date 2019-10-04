@@ -211,21 +211,15 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         if self.__current_source_index is not None:
             source = self._availableSources(viewport)[self.__current_source_index]
-            bnds = source.getBounds()
+            if self.__current_source is not source:
+                self._deactivateSource()
 
-            if len(bnds) == 4:
-                self.__current_source_outline = geometric.Outline2D(viewport,
-                                                                    bounds=bnds,
-                                                                    color=(1, 0, 0), linewidth=6)
-            else:
-                self.__current_source_outline = geometric.Outline(viewport,
-                                                                  bounds=bnds,
-                                                                  color=(1, 0, 0), linewidth=6)
+            self._activateSource(viewport, source)
 
 
     def _deactivate(self): #pylint: disable=no-self-use, unused-argument
         """
-        Keybinding callback: Deactivate all results.
+        Keybinding callback: Deactivate all viewports.
         """
         if self.__current_viewport_outline is not None:
             self.__current_viewport_outline.remove()
@@ -316,7 +310,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         if self.__current_source_outline is None:
             bnds = source.getBounds()
             obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
-            print("BOUNDS:", bnds)
             self.__current_source = source
             self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0), linewidth=6)
 
@@ -328,9 +321,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                 self._window.getVTKInteractor().SetInteractorStyle(self.__style_2d)
             else:
                 self._window.getVTKInteractor().SetInteractorStyle(self.__style_3d)
-
-            #self._window.getVTKInteractorStyle().SetDefaultRenderer(viewport.getVTKRenderer())
-            #self._window.getVTKInteractorStyle().SetCurrentRenderer(viewport.getVTKRenderer())
 
     def _deactivateSource(self):
         if self.__current_source_outline is not None:
@@ -369,7 +359,5 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         lines[line-1] = '{}\n'.format(content)
 
         print(''.join(lines))
-
-
         #with open(filename, 'w+') as fid:
         #    fid.writelines(lines)

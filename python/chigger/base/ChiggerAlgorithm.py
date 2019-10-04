@@ -20,8 +20,8 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         if inputType is not None:
             self.InputType = inputType
 
-        # Set the VTK modified time, this is needed to make sure the options for this class
-        # are all older than the class itself.
+        # Set the VTK modified time, this is needed to make sure the options for this class are all
+        # older than the class itself.
         self.Modified()
 
     def updateInformation(self):

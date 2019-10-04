@@ -49,7 +49,6 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     @classmethod
     def validOptions(cls):
         opt = ChiggerAlgorithm.validOptions()
-       # opt += utils.ActorOptions.validOptions()
         opt += utils.KeyBindingMixin.validOptions()
 
 
@@ -164,7 +163,6 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
 
     def _onRequestInformation(self):
         ChiggerAlgorithm._onRequestInformation(self)
-        utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Connect the filters
         self.__connectFilters()
@@ -253,7 +251,23 @@ class ChiggerSource2D(ChiggerSourceBase):
     @classmethod
     def validOptions(cls):
         opt = ChiggerSourceBase.validOptions()
+
+        opt.add('coordinate_system', 'normalized_viewport', vtype=str,
+                allow=('normalized_viewport', 'viewport'), doc="Set the input coordinate system.")
+
+
         return opt
+
     def getBounds(self):
-        print('2D bounds needs something to do this in general')
-        return None
+        raise NotImplementedError('2D objects must return the bounds as [xmin, xmax, ymin, ymax].')
+
+    def _onRequestInformation(self):
+        ChiggerSourceBase._onRequestInformation(self)
+
+        if self._vtkmapper.GetTransformCoordinate() is None:
+            self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())
+        coordinate = self._vtkmapper.GetTransformCoordinate()
+        if self.getOption('coordinate_system') == 'normalized_viewport':
+            coordinate.SetCoordinateSystemToNormalizedViewport()
+        else:
+            coordinate.SetCoordinateSystemToViewport()

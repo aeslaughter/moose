@@ -18,5 +18,5 @@ viewport = chigger.Viewport(window)
 box0 = geometric.Cube(viewport, center=(0.5,0.5,0.5), lengths=(1.,1.,1.), color=(0.25,0.5,0.75))
 box1 = geometric.Cube(viewport, center=(0.25,0.25,0.25), lengths=(3.,2.,1.), color=(1,0.5,0.5))
 
-window.write('cube_source.png')
+#window.write('cube.png')
 window.start()

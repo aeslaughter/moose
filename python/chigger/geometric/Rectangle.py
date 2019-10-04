@@ -11,7 +11,6 @@ class Rectangle(GeometricSource2D):
     @staticmethod
     def validOptions():
         opt = GeometricSource2D.validOptions()
-        opt += utils.ActorOptions.validOptions()
         opt += base.ColorMap.validOptions()
 
         opt.add("bounds", None, vtype=float, size=4,
@@ -32,9 +31,6 @@ class Rectangle(GeometricSource2D):
         opt.add('point_data', None, vtype=vtk.vtkFloatArray,
                 doc="The VTK point data to attach to the vtkMapper for this object")
 
-        opt.add('coordinate_system', 'normalized_viewport', vtype=str,
-                allow=('normalized_viewport', 'viewport'), doc="Set the input coordinate system.")
-
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -50,14 +46,6 @@ class Rectangle(GeometricSource2D):
         Set the options for this cube. (public)
         """
         GeometricSource2D._onRequestInformation(self)
-
-        if self._vtkmapper.GetTransformCoordinate() is None:
-            self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())
-        coordinate = self._vtkmapper.GetTransformCoordinate()
-        if self.getOption('coordinate_system') == 'normalized_viewport':
-            coordinate.SetCoordinateSystemToNormalizedViewport()
-        else:
-            coordinate.SetCoordinateSystemToViewport()
 
         bnds = self.getOption('bounds')
         p0 = (bnds[0], bnds[2], 0)

@@ -29,7 +29,6 @@ class Axis2D(base.ChiggerSource):
         opt = base.ChiggerSource.validOptions()
 
         # Axis Line Options
-        opt += utils.ActorOptions.validOptions()
         opt.set('linewidth', 1)
 
         # Title and label Options
@@ -87,7 +86,6 @@ class Axis2D(base.ChiggerSource):
             see ChiggerFilterSourceBase
         """
         base.ChiggerSource.applyOptions(self)
-        utils.ActorOptions.applyOptions(self._vtkactor, self._options)
 
         # Location
         self._vtkactor.SetPoint1(*self.getOption('point1'))
