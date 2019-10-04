@@ -165,7 +165,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
             self._vtkrenderer.SetGradientBackground(False)
 
         #self._vtkrenderer.ResetCameraClippingRange()
-        self._vtkrenderer.ResetCamera()
 
     def getVTKRenderer(self):
         """Return the vtk.vtkRenderer object."""
@@ -174,22 +173,11 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     def sources(self):
         return self.__sources
 
-    def getSource(self, index=-1):
-        return self.__sources[index]
-
-   # def getBounds(self):
-   #     bnds = self.getOption('viewport')
-   #     return (bnds[0], bnds[2], bnds[1], bnds[3])
-
-    def __len__(self):
-        """
-        The number of source objects.
-        """
-        return len(self.__sources)
-
-    def __iter__(self):
-        for source in self.__sources:
-            yield source
+    #def __del__(self):
+    #    base.ChiggerAlgorithm.__del__(self)
+        #for source in self.__sources:
+        #    del source
+    #    self.__sources = None
 
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""

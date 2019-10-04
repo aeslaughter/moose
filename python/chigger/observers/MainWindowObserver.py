@@ -148,6 +148,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.__style_2d = Chigger2DInteractorStyle()
         self.__style_3d = Chigger3DInteractorStyle()
 
+    #def __del__(self):
+    #    ChiggerObserver.__del__(self)
+    #    self.__current_source = None
+    #    self.__current_outline = None
+
+
     def _availableViewports(self):
         return [viewport for viewport in self._window.viewports() if viewport.interactive]
 
@@ -182,6 +188,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_viewport_outline = geometric.Outline2D(viewport,
                                                                   bounds=(0,1,0,1),
                                                                   color=(1, 1, 0), linewidth=6)
+            viewport.updateData()
 
     def _nextSource(self, decrease=False):
         """

@@ -255,7 +255,6 @@ class ChiggerSource2D(ChiggerSourceBase):
         opt.add('coordinate_system', 'normalized_viewport', vtype=str,
                 allow=('normalized_viewport', 'viewport'), doc="Set the input coordinate system.")
 
-
         return opt
 
     def getBounds(self):

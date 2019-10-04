@@ -159,8 +159,11 @@ class Window(base.ChiggerAlgorithm):
             view.updateData()
             view.getVTKRenderer().ResetCamera()
 
-#    def viewports(self):
-#        return self.__viewports
+    def viewports(self):
+        """(public)
+        Access to the Viewport objects.
+        """
+        return self.__viewports
 
 #    def background(self):
 #        return self.__viewports[0]
@@ -195,6 +198,12 @@ class Window(base.ChiggerAlgorithm):
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
+    #def __del__(self):
+    #    base.ChiggerAlgorithm.__del__(self)
+    #    for view in self.__viewports:
+    #        del view
+    #    self.__viewports = None
+
     def _onRequestInformation(self):
         base.ChiggerAlgorithm._onRequestInformation(self)
 
@@ -209,10 +218,11 @@ class Window(base.ChiggerAlgorithm):
                                            background2=self.getOption('background2'))
 
         # Auto Background adjustments
+        """
         background = self.getOption('background')
         fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
         for view in self.__viewports:
-            for src in view:
+            for src in view.sources():
                 if isinstance(src, base.ChiggerCompositeSource):
                     for s in src._sources:
                         for name in s.__BACKGROUND_OPTIONS__:
@@ -222,7 +232,7 @@ class Window(base.ChiggerAlgorithm):
                     for name in src.__BACKGROUND_OPTIONS__:
                         if not src.isOptionValid(name):
                             src.setOptions(**{name:fontcolor})
-
+        """
 
         self.assignOption('size', self.__vtkwindow.SetSize)
 
@@ -377,8 +387,6 @@ class Window(base.ChiggerAlgorithm):
     #    """
     #    return self.__viewports[index]
 
-    def __del__(self):
-        self.debug('__del__()')
 
     def _onKeyPressEvent(self, obj, event):
         print('foo')

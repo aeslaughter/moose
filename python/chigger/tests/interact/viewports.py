@@ -10,8 +10,12 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import chigger
-window = chigger.Window(size=(300,300))
-viewport = chigger.Viewport(window)
-outline = chigger.geometric.Outline2D(viewport, bounds=(0, 1, 0, 1), color=(1,1,0), linewidth=5)
-#window.write('outline2D.png')
+window = chigger.Window(size=(800, 800))
+chigger.observers.MainWindowObserver(window)
+
+a = chigger.Viewport(window, viewport=(0, 0, 0.5, 0.5))
+b = chigger.Viewport(window, viewport=(0.5, 0, 1, 0.5))
+c = chigger.Viewport(window, viewport=(0.5, 0.5, 1, 1))
+d = chigger.Viewport(window, viewport=(0, 0.5, 0.5, 1))
+
 window.start()
