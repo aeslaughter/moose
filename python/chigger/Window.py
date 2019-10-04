@@ -21,9 +21,17 @@ from .Viewport import Viewport
 
 
 class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
+    """
+    Default 3D interaction for chigger.
+    """
     pass
 
 class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
+    """
+    Default 2D interaction for chigger.
+
+    This style allows 2D interaction to mimic the zoom and translate functionality of the 3D version.
+    """
     ZOOM_FACTOR = 2
 
     def __init__(self, source):
@@ -60,27 +68,10 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
                 obj.GetInteractor().GetRenderWindow().Render()
                 self._move_origin = pos
 
-
-class ChiggerInteractor(vtk.vtkRenderWindowInteractor):
-    def __init__(self, window):
-        super(ChiggerInteractor, self).__init__()
-        #vtk.vtkInteractorStyleJoystickCamera.__init__(self)
-
-        #self.AddObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
-
-        #self._window = window
-        #window.UnRegister(self)
-
-    #@staticmethod
-    #def _onKeyPressEvent(obj, event):
-    #    print obj._window
-
-
 class Window(base.ChiggerAlgorithm):
     """
     Wrapper of vtkRenderWindow
     """
-    ##__RESULTTYPE__ = base.ChiggerResult
 
     @staticmethod
     def validOptions():
@@ -104,8 +95,6 @@ class Window(base.ChiggerAlgorithm):
                 doc="Set the number of multi-samples.")
         opt.add('antialiasing', default=0, vtype=int,
                 doc="Number of antialiasing frames to perform (set vtkRenderWindow::SetAAFrames).")
-        #opt.add('reset_camera', vtype=bool, default=True,
-        #        doc="Automatically reset the camera clipping range on update.")
 
         # Background settings
         opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
@@ -124,7 +113,8 @@ class Window(base.ChiggerAlgorithm):
         self.__vtkinteractorstyle = None
         self.__viewports = list()
 
-        Viewport(self, name='__ChiggerWindowBackground__', layer=0)
+        # Add the background
+        Viewport(self, name='__ChiggerWindowBackground__', layer=0, interactive=False)
 
         # Create "chigger" watermark
         """
@@ -136,6 +126,9 @@ class Window(base.ChiggerAlgorithm):
         """
 
     def add(self, viewport):
+        """(public)
+
+        """
         #port = self.GetNumberOfInputPorts()
         #self.SetNumberOfInputPorts(port + 1)
         #self.SetInputConnection(port, viewport.GetOutputPort())
