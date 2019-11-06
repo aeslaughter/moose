@@ -20,6 +20,8 @@ class HeatConductionApp : public MooseApp
 {
 public:
   HeatConductionApp(const InputParameters & parameters);
+
+  static InputParameters validParams();
   virtual ~HeatConductionApp();
 
   static void registerApps();

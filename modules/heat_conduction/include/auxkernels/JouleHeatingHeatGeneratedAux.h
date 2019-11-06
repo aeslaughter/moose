@@ -24,6 +24,8 @@ class JouleHeatingHeatGeneratedAux : public AuxKernel
 public:
   JouleHeatingHeatGeneratedAux(const InputParameters & parameters);
 
+  static InputParameters validParams();
+
 protected:
   virtual Real computeValue();
 
