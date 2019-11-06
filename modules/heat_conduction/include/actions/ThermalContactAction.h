@@ -17,6 +17,8 @@ class ThermalContactAction : public Action
 {
 public:
   ThermalContactAction(const InputParameters & params);
+
+  static InputParameters validParams();
   virtual void act() override;
 
 protected:
