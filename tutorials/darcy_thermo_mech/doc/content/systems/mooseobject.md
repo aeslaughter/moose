@@ -104,13 +104,12 @@ ADCustomObject<compute_stage>::validParams()
     params.addParam<Real>("scale", 1, "A scale factor for use when doing something.");
     params.addClassDescription("The ADCustomObject does something with a scale parameter.");
     params;
-)
+}
 
 template <ComputeStage compute_stage>
 ADCustomObject<compute_stage>::ADCustomObject(const InputParameters & parameters)
   : ADBaseObject<compute_stage>(parameters),
     _scale(getParam<Real>("scale"))
-
 {
 }
 
