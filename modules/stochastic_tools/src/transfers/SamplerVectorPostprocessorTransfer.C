@@ -8,26 +8,28 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 // StochasticTools includes
-#include "SamplerPostprocessorTransfer.h"
+#include "SamplerVectorPostprocessorTransfer.h"
 #include "SamplerFullSolveMultiApp.h"
 #include "SamplerTransientMultiApp.h"
 #include "SamplerReceiver.h"
 #include "StochasticResults.h"
 #include "Sampler.h"
 
-registerMooseObject("StochasticToolsApp", SamplerPostprocessorTransfer);
+registerMooseObject("StochasticToolsApp", SamplerVectorPostprocessorTransfer);
 
-defineLegacyParams(SamplerPostprocessorTransfer);
+defineLegacyParams(SamplerVectorPostprocessorTransfer);
 
 InputParameters
-SamplerPostprocessorTransfer::validParams()
+SamplerVectorPostprocessorTransfer::validParams()
 {
   InputParameters params = StochasticToolsTransfer::validParams();
   params.addClassDescription("Transfers data from Postprocessors on the sub-application to a "
                              "VectorPostprocessor on the master application.");
-  params.addRequiredParam<PostprocessorName>(
-      "postprocessor", "The name of the Postprocessors on the sub-app to transfer from/to.");
-  params.addRequiredParam<VectorPostprocessorName>("vector_postprocessor",
+  params.addRequiredParam<VectorPostprocessorName>(
+      "from_vector_postprocessor", "The name of the VectorPostprocessor on the sub-app to transfer from.");
+  params.addRequiredParam<std::vector<std::string>>(
+    "from_vector_names", "The name of the vectors of the VectorPostprocessor on the sub-app to transfer from.");
+  params.addRequiredParam<VectorPostprocessorName>("to_vector_postprocessor",
                                                    "The name of the VectorPostprocessor in "
                                                    "the master application to transfer values "
                                                    "into.");
@@ -36,27 +38,25 @@ SamplerPostprocessorTransfer::validParams()
   return params;
 }
 
-SamplerPostprocessorTransfer::SamplerPostprocessorTransfer(const InputParameters & parameters)
+SamplerVectorPostprocessorTransfer::SamplerVectorPostprocessorTransfer(const InputParameters & parameters)
   : StochasticToolsTransfer(parameters),
-    _sub_pp_name(getParam<PostprocessorName>("postprocessor")),
-    _master_vpp_name(getParam<VectorPostprocessorName>("vector_postprocessor"))
+    _sub_vpp_name(getParam<VectorPostprocessorName>("from_vector_postprocessor")),
+    _master_vpp_name(getParam<VectorPostprocessorName>("to_vector_postprocessor"))
 {
 }
 
 void
-SamplerPostprocessorTransfer::initialSetup()
+SamplerVectorPostprocessorTransfer::initialSetup()
 {
   auto & uo = _fe_problem.getUserObjectTempl<UserObject>(_master_vpp_name);
   _results = dynamic_cast<StochasticResults *>(&uo);
 
   if (!_results)
     mooseError("The 'results' object must be a 'StochasticResults' object.");
-
-  _results->init(*_sampler_ptr);
 }
 
 void
-SamplerPostprocessorTransfer::initializeFromMultiapp()
+SamplerVectorPostprocessorTransfer::initializeFromMultiapp()
 {
   VectorPostprocessorValue & vpp =
       _fe_problem.getVectorPostprocessorValue(_master_vpp_name, _sampler_ptr->name(), false);
@@ -71,7 +71,7 @@ SamplerPostprocessorTransfer::initializeFromMultiapp()
 }
 
 void
-SamplerPostprocessorTransfer::executeFromMultiapp()
+SamplerVectorPostprocessorTransfer::executeFromMultiapp()
 {
   VectorPostprocessorValue & vpp =
       _fe_problem.getVectorPostprocessorValue(_master_vpp_name, _sampler_ptr->name(), false);
@@ -88,12 +88,12 @@ SamplerPostprocessorTransfer::executeFromMultiapp()
 }
 
 void
-SamplerPostprocessorTransfer::finalizeFromMultiapp()
+SamplerVectorPostprocessorTransfer::finalizeFromMultiapp()
 {
 }
 
 void
-SamplerPostprocessorTransfer::execute()
+SamplerVectorPostprocessorTransfer::execute()
 {
   VectorPostprocessorValue & vpp =
       _fe_problem.getVectorPostprocessorValue(_master_vpp_name, _sampler_ptr->name(), false);
