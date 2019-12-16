@@ -1,0 +1,11 @@
+[Tests]
+  issues = ''
+  design = 'Adaptivity/index.md'
+  [block_restricted]
+    type = Exodiff
+    input = block_restricted.i
+    exodiff = block_restricted_out.e
+
+    requirement = "The system shall support finite element mesh adaptivity that is limited to a subdomain."
+  []
+[]
