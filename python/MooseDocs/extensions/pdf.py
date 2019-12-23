@@ -35,6 +35,7 @@ class PDFExtension(command.CommandExtension):
         return config
 
     def initMetaData(self, page, meta):
+        #page['pdf-active'] = True
         meta.initData('pdf-active', True)
 
     def extend(self, reader, renderer):
@@ -132,7 +133,7 @@ class PDFExtension(command.CommandExtension):
         doc = latex.Environment(main, 'document', end='\n')
         for node in moosetree.iterate(root, lambda n: 'page' in n):
             page = node['page']
-            if self.translator.getMetaData(page, 'active'):
+            if page.get('active', True):
                 cmd = latex.Command(doc, 'input', start='\n')
                 latex.String(cmd, content=str(page.destination), escape=False)
 

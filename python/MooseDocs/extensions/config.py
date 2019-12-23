@@ -28,10 +28,6 @@ class ConfigExtension(command.CommandExtension):
         command.CommandExtension.__init__(self, *args, **kwargs)
         self.__configurations = collections.defaultdict(dict)
 
-    def initMetaData(self, page, meta):
-        """Initialize the page as active."""
-        meta.initData('active', True)
-
     def postRead(self, content, page, meta):
         """Updates configuration items."""
         if content:
@@ -51,7 +47,7 @@ class ConfigExtension(command.CommandExtension):
         _, ext = os.path.splitext(page.destination)
         extensions = eval(settings.get('extensions'))
         if extensions and ext in extensions:
-            meta.setData('active', False)
+            page['active'] = False
 
     def preTokenize(self, ast, page, meta, reader):
         for key, value in self.__configurations[page.uid].items():

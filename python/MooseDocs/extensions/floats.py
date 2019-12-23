@@ -124,15 +124,15 @@ class FloatExtension(components.Extension):
             renderer.addPackage('caption', labelsep='period')
 
     def initMetaData(self, page, meta):
-        meta.initData('counts', collections.defaultdict(int))
+        page['counts'] = collections.defaultdict(int)
 
     def postTokenize(self, ast, page, meta, reader):
         """Set float number for each counter."""
         for node in moosetree.iterate(ast, lambda n: n.name == 'FloatCaption'):
             prefix = node.get('prefix', None)
             if prefix is not None:
-                meta.getData('counts')[prefix] += 1
-                node['number'] = meta.getData('counts')[prefix]
+                page['counts'][prefix] += 1
+                node['number'] = page['counts'][prefix]
             key = node.get('key')
             if key:
                 shortcut = core.Shortcut(ast.root, key=key, link='#{}'.format(key))

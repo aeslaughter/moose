@@ -210,7 +210,7 @@ class Executioner(mixins.ConfigObject, mixins.TranslatorObject):
         self.translator.executeExtensionFunction('postRead', node, args=(content, node, meta))
 
         ast = self.translator.reader.getRoot()
-        if meta.getData('active', True):
+        if node.get('active', True):
             self.translator.callFunction(self.translator.reader, 'preTokenize', node, args=(ast, node, meta))
             self.translator.executeExtensionFunction('preTokenize', node,
                                                      args=(ast, node, meta, self.translator.reader))
@@ -228,7 +228,7 @@ class Executioner(mixins.ConfigObject, mixins.TranslatorObject):
         """Perform rendering and call all associated callbacks for the supplied page."""
 
         result = self.translator.renderer.getRoot()
-        if meta.getData('active', True):
+        if node.get('active', True):
             self.translator.callFunction(self.translator.renderer, 'preRender', node,
                                     args=(result, node, meta))
             self.translator.executeExtensionFunction('preRender', node,

@@ -43,7 +43,7 @@ class KatexExtension(command.CommandExtension):
         self.macros = None
 
     def initMetaData(self, page, meta):
-        meta.initData('labels', set())
+        page['labels'] = set()
 
     def extend(self, reader, renderer):
         """
@@ -88,7 +88,7 @@ class KatexExtension(command.CommandExtension):
                                   string='{} ({})'.format(self.get('prefix'), count),
                                   link='#{}'.format(node['bookmark']))
 
-        meta.setData('labels', labels)
+        page['labels'] = labels
 
 class KatexBlockEquationCommand(command.CommandComponent):
     COMMAND = 'equation'
@@ -222,7 +222,7 @@ class RenderLatexEquation(components.RenderComponent):
 class RenderEquationLink(core.RenderShortcutLink):
 
     def createLatex(self, parent, token, page):
-        labels = self.translator.getMetaData(page, 'labels')
+        labels = page['labels']
         key = token['key']
         if key in labels:
             latex.String(parent, content=self.extension['prefix'] + '~', escape=False)
