@@ -103,7 +103,7 @@ class NavigationExtension(components.Extension):
         iname = os.path.join(dest, 'js', 'search_index.js')
         items = []
 
-        for page in content:
+        for page in self.translator.pages:
             meta = self.translator.getMetaData(page, 'search')
             if meta is None:
                 continue

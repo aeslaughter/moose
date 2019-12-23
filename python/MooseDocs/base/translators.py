@@ -75,7 +75,7 @@ class Translator(mixins.ConfigObject):
                 common.check_type('extensions', ext, Extension)
 
         self.__initialized = False
-        self.__content = content
+        self.__content = content # TODO: Move this as an argument passed into init()
         self.__extensions = extensions
         self.__reader = reader
         self.__renderer = renderer
@@ -108,9 +108,9 @@ class Translator(mixins.ConfigObject):
         return self.__renderer
 
     @property
-    def content(self):
+    def pages(self):
         """Return the content."""
-        return self.__content
+        return self.__executioner.getPages()
 
     @property
     def executioner(self):
@@ -122,9 +122,12 @@ class Translator(mixins.ConfigObject):
         """Return the destination directory."""
         return self.get('destination')
 
-    def addContent(self, page):
+    def addPage(self, page):
         """Add an additional page to the list of available pages."""
-        self.__content.append(page)
+        page.base = self.get("destination")
+        if isinstance(page, pages.Source):
+            page.output_extension = self.__renderer.EXTENSION
+        self.__executioner.addPage(page)
 
     def update(self, **kwargs):
         """Update configuration and handle destination."""
@@ -188,11 +191,11 @@ class Translator(mixins.ConfigObject):
             if items is None:
                 func = lambda p: (p.local == arg) or \
                                  (not exact and p.local.endswith(os.sep + arg.lstrip(os.sep)))
-                items = [page for page in self.__content if func(page)]
+                items = [page for page in self.pages if func(page)]
                 self.__page_cache[arg] = items
 
         else:
-            items = [page for page in self.__content if arg(page)]
+            items = [page for page in self.pages if arg(page)]
 
         return items
 
@@ -267,7 +270,7 @@ class Translator(mixins.ConfigObject):
 
         # Initialize the extension and call the extend method, then set the extension object
         # on each of the extensions.
-        destination = self.get("destination")
+        #destination = self.get("destination")
         for ext in self.__extensions:
             common.check_type('extensions', ext, MooseDocs.base.components.Extension)
             ext.setTranslator(self)
@@ -297,11 +300,10 @@ class Translator(mixins.ConfigObject):
         self.executeExtensionFunction('init', None)
         LOG.info('Executing extension init() methods complete [%s sec.]', time.time() - t)
 
-        # Initialize the Page objects
-        for node in self.__content:
-            node.base = destination
-            if isinstance(node, pages.Source):
-                node.output_extension = self.__renderer.EXTENSION
+        # Add supplied Page objects
+        for page in self.__content:
+            self.addPage(page)
+        self.__content = None
 
     def execute(self, num_threads=1, nodes=None):
         """Perform build for all pages, see executioners."""
@@ -330,7 +332,7 @@ class Translator(mixins.ConfigObject):
         """Builds a list of markdown files, including the short-hand version for error reports."""
 
         self.__markdown_file_list = set()
-        for local in [page.local for page in self.__content if isinstance(page, pages.Source)]:
+        for local in [page.local for page in self.__executioner._page_data.values() if isinstance(page, pages.Source)]:
             self.__markdown_file_list.add(local)
             parts = local.split(os.path.sep)
             n = len(parts)

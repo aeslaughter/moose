@@ -89,11 +89,18 @@ class Executioner(mixins.ConfigObject, mixins.TranslatorObject):
     def __init__(self, **kwargs):
         mixins.ConfigObject.__init__(self, **kwargs)
         mixins.TranslatorObject.__init__(self)
+        self._page_data = dict()
         self._meta_data = dict()
         self._tree_data = dict()
         self._result_data = dict()
         self._ast_available = False
         self._result_available = False
+
+    def addPage(self, page):
+        self._page_data[page.uid] = page
+
+    def getPages(self):
+        return self._page_data.values()
 
     def isSyntaxTreeAvailable(self):
         """Returns True if the AST creation is complete."""
@@ -172,10 +179,10 @@ class Executioner(mixins.ConfigObject, mixins.TranslatorObject):
 
         LOG.info('Executing preExecute methods...')
         t = time.time()
-        self.translator.executeExtensionFunction('preExecute', None, args=(self.translator.content,))
+        self.translator.executeExtensionFunction('preExecute', None, args=(None,))
         LOG.info('Finished preExecute methods [%s sec.]', time.time() - t)
 
-        nodes = nodes or self.translator.content
+        nodes = nodes or self._page_data.values()
         source_nodes = [n for n in nodes if isinstance(n, pages.Source)]
         other_nodes = [n for n in nodes if not isinstance(n, pages.Source)]
 
@@ -196,7 +203,7 @@ class Executioner(mixins.ConfigObject, mixins.TranslatorObject):
 
         LOG.info('Executing postExecute methods...')
         t = time.time()
-        self.translator.executeExtensionFunction('postExecute', None, args=(self.translator.content,))
+        self.translator.executeExtensionFunction('postExecute', None, args=(None,))
         LOG.info('Finished postExecute methods [%s sec.]', time.time() - t)
 
         LOG.info('Total Time [%s sec.]', time.time() - total)
@@ -298,6 +305,7 @@ class ParallelBarrier(Executioner):
         super(ParallelBarrier, self).__init__(*args, **kwargs)
         self._manager = multiprocessing.Manager()
         self._meta_data = self._manager.dict()
+        #self._page_data = self._manager.dict()
         self._tree_data = self._manager.dict()
         self._result_data = self._manager.dict()
 
@@ -341,6 +349,8 @@ class ParallelBarrier(Executioner):
         with self.translator.LOCK:
             self._tree_data.update(local_ast)
             self._meta_data.update(local_meta)
+            for n in noces:
+            self._page_data[n.uid] = .update([(n.uid, n) for n in nodes])
 
         barrier.wait()
         self._ast_available.value = True
@@ -353,6 +363,7 @@ class ParallelBarrier(Executioner):
 
         with self.translator.LOCK:
             self._result_data.update(local_result)
+            #self._page_data.update([(n.uid, n) for n in nodes])
 
         self._result_available.value = True
 

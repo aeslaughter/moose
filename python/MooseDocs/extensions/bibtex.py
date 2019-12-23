@@ -59,7 +59,7 @@ class BibtexExtension(command.CommandExtension):
         self.__database = BibliographyData()
 
         bib_files = []
-        for node in content:
+        for node in self.translator.pages:
             if node.source.endswith('.bib'):
                 bib_files.append(node.source)
 

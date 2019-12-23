@@ -43,7 +43,6 @@ class ConfigExtension(command.CommandExtension):
     @staticmethod
     def __configPageDisable(page, meta, settings):
         """Activate/deactivate based on extension."""
-
         _, ext = os.path.splitext(page.destination)
         extensions = eval(settings.get('extensions'))
         if extensions and ext in extensions:
