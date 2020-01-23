@@ -69,7 +69,7 @@ def _get_local_civet_jobs(location, logger=None):
             jobs.add(Job(int(match.group('number')), filename, JobFileStatus.LOCAL, None))
     return sorted(jobs, key=lambda j: j.number)
 
-def _get_remote_civet_jobs(hashes, site, repo, cache=DEFAULT_JOBS_CACHE, logger=None):
+def get_remote_civet_jobs(hashes, site, repo, cache=DEFAULT_JOBS_CACHE, logger=None, auth=None):
     """
     Get a list of Job objects for the supplied git SHA1 strings.
     """
@@ -77,19 +77,14 @@ def _get_remote_civet_jobs(hashes, site, repo, cache=DEFAULT_JOBS_CACHE, logger=
     jobs = set()
     for sha1 in hashes:
         url = '{}/sha_events/{}/{}'.format(site, repo, sha1)
-
-        if sys.version_info[0] == 3:
-            pid = urllib.request.urlopen(url)
-        else:
-            pid = urllib2.urlopen(url)
-
+        pid = urllib.request.urlopen(url)
         page = pid.read().decode('utf8')
         for match in JOB_RE.finditer(page):
-            job = jobs.add(_download_job(int(match.group('job')), site, cache, logger))
+            job = jobs.add(_download_job(int(match.group('job')), site, cache, logger, auth))
 
     return sorted(jobs, key=lambda j: j.number)
 
-def _download_job(job, site, cache, logger):
+def _download_job(job, site, cache, logger, auth):
     """
     Download, if it doesn't already exist, the raw data file from CIVET testing given a Job object.
     """
@@ -108,10 +103,12 @@ def _download_job(job, site, cache, logger):
 
     else:
         try:
-            if sys.version_info[0] == 3:
-                response = urllib.request.urlopen(url)
+            if auth is not None:
+                request = urllib.request.Request(url)
+                request.add_header("Authorization", "Basic %s" % auth.decode('utf-8'))
+                response = urllib.request.urlopen(request)
             else:
-                response = urllib2.urlopen(url)
+                response = urllib.request.urlopen(url)
 
             if response.code == 200:
                 if logger:
@@ -184,7 +181,7 @@ def get_civet_results(local=list(),
             _update_database_from_job(job, database, possible)
 
     for site, repo in sites:
-        jobs = _get_remote_civet_jobs(hashes, site, repo, cache=cache, logger=logger)
+        jobs = get_remote_civet_jobs(hashes, site, repo, cache=cache, logger=logger)
         for job in jobs:
             _update_database_from_job(job, database, possible)
     return database
