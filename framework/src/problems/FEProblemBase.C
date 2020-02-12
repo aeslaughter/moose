@@ -2888,8 +2888,7 @@ FEProblemBase::addMaterialHelper(std::vector<MaterialWarehouse *> warehouses,
       const std::string & base = parameters.get<std::string>("_moose_base");
       MooseObjectParameterName name(MooseObjectName(base, material->name()), "*");
       MooseObjectParameterName face_name(MooseObjectName(base, face_material->name()), "*");
-      MooseObjectParameterName neighbor_name(MooseObjectName(base, neighbor_material->name()),
-                                             "*");
+      MooseObjectParameterName neighbor_name(MooseObjectName(base, neighbor_material->name()), "*");
 
       _app.getInputParameterWarehouse().addControllableParameterConnection(name, face_name, false);
       _app.getInputParameterWarehouse().addControllableParameterConnection(
