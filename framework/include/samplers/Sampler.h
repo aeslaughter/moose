@@ -121,6 +121,7 @@ protected:
    */
   void setNumberOfRows(dof_id_type n_rows);
   void setNumberOfCols(dof_id_type n_cols);
+  void setNumberOfMats(dof_id_type n_mats);
   ///@}
 
   /**
@@ -243,6 +244,9 @@ private:
 
   /// Total number of columns in the sample matrix
   dof_id_type _n_cols;
+
+  /// Total number of matrices
+  dof_id_type _n_mats;
 
   /// Iterator index for getNextLocalRow method
   dof_id_type _next_local_row;

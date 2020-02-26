@@ -59,6 +59,7 @@ Sampler::Sampler(const InputParameters & parameters)
     _seed(getParam<unsigned int>("seed")),
     _n_rows(0),
     _n_cols(0),
+    _n_mats(1),
     _next_local_row_requires_state_restore(true),
     _initialized(false),
     _limit_get_global_samples(getParam<dof_id_type>("limit_get_global_samples")),
@@ -124,6 +125,17 @@ Sampler::setNumberOfCols(dof_id_type n_cols)
         "this method should be called in the constructor of the Sampler object.");
 
   _n_cols = n_cols;
+}
+
+void
+Sampler::setNumberOfMats(dof_id_type n_mats)
+{
+  if (_initialized)
+    mooseError(
+        "The 'setNumberOfMats()' method can not be called after the Sampler has been initialized; "
+        "this method should be called in the constructor of the Sampler object.");
+
+  _n_mats = n_mats;
 }
 
 void
