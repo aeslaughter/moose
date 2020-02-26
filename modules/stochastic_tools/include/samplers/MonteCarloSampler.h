@@ -27,7 +27,7 @@ public:
 
 protected:
   /// Return the sample for the given row and column
-  virtual Real computeSample(dof_id_type row_index, dof_id_type col_index);
+  virtual Real computeSample(dof_id_type row_index, dof_id_type col_index, dof_id_type mat_index);
 
   /// Storage for distribution objects to be utilized
   std::vector<Distribution const *> _distributions;

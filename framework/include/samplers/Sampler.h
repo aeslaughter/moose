@@ -53,6 +53,7 @@ public:
   virtual std::vector<DenseMatrix<Real>> sample();
   std::vector<DenseMatrix<Real>> getSamples();
   double rand(unsigned int index = 0);
+  Real computeSample(dof_id_type row_index, dof_id_type col_index);
 
   // The public members define the API that is exposed to application developers that are using
   // Sampler objects to perform calculations, so be very careful when adding items here since
@@ -69,8 +70,8 @@ public:
    * Use these with caution as they can result in a large amount of memory use, the preferred
    * method for accessing Sampler data is the getNextLocalRow() method.
    */
-  DenseMatrix<Real> getGlobalSamples();
-  DenseMatrix<Real> getLocalSamples();
+  DenseMatrix<Real> getGlobalSamples(dof_id_type mat_index = 0);
+  DenseMatrix<Real> getLocalSamples(dof_id_type mat_index = 0);
   ///@}
 
   /**
@@ -90,7 +91,7 @@ public:
    * generators are made after each call to getSamples or getLocalSamples, so this generally
    * should be avoided.
    */
-  std::vector<Real> getNextLocalRow();
+  std::vector<Real> getNextLocalRow(dof_id_type mat_index = 0);
 
   /**
    * Return the number of samples.
@@ -144,9 +145,11 @@ protected:
    * Base class must override this method to supply the sample distribution data.
    * @param row_index The row index of sample value to compute.
    * @param col_index The column index of sample value to compute.
+   * @param mat_index The matrix index of sample value to compute (default zero)
    * @return The value for the given row and column.
    */
-  virtual Real computeSample(dof_id_type row_index, dof_id_type col_index);
+  virtual Real
+  computeSample(dof_id_type row_index, dof_id_type col_index, dof_id_type mat_index) = 0;
 
   ///@{
   /**
@@ -155,8 +158,8 @@ protected:
    * These methods should not be called directly, each is automatically called by the public
    * getGlobalSamples() or getLocalSamples() methods.
    */
-  virtual void sampleSetUp(){};
-  virtual void sampleTearDown(){};
+  virtual void sampleSetUp(dof_id_type /*mat_index*/){};
+  virtual void sampleTearDown(dof_id_type /*mat_index*/){};
   ///@}
 
   // The following methods are advanced methods that should not be needed by application developers,
@@ -170,20 +173,20 @@ protected:
    * These methods should not be called directly, each is automatically called by the public
    * getGlobalSamples() or getLocalSamples() methods.
    */
-  virtual void computeSampleMatrix(DenseMatrix<Real> & matrix);
-  virtual void computeLocalSampleMatrix(DenseMatrix<Real> & matrix);
+  virtual void computeSampleMatrix(DenseMatrix<Real> & matrix, dof_id_type /*mat_index*/);
+  virtual void computeLocalSampleMatrix(DenseMatrix<Real> & matrix, dof_id_type /*mat_index*/);
   ///@}
 
   ///@{
   /**
    * Method to populate a complete row of sample data.
    * @param i The global row index to compute
-   * @param data The correctly sized vector of sample value to poplulate
-
+   * @param data The correctly sized vector of sample value to populate
+   *
    * This method should not be called directly, it is automatically called by the public
    * getGlobalSamples(), getLocalSamples(), or getNextLocalRow() methods.
    */
-  virtual void computeSampleRow(dof_id_type i, std::vector<Real> & data);
+  virtual void computeSampleRow(dof_id_type i, std::vector<Real> & data, dof_id_type /*mat_index*/);
 
   /**
    * Method for advancing the random number generator(s) by the supplied number or calls to rand().

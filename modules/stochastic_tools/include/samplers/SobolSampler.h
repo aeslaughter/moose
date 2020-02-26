@@ -26,9 +26,10 @@ public:
   SobolSampler(const InputParameters & parameters);
 
 protected:
-  virtual Real computeSample(dof_id_type row_index, dof_id_type col_index) override;
-  virtual void sampleSetUp() override;
-  virtual void sampleTearDown() override;
+  virtual Real
+  computeSample(dof_id_type row_index, dof_id_type col_index, dof_id_type mat_index) override;
+  virtual void sampleSetUp(dof_id_type mat_index) override;
+  virtual void sampleTearDown(dof_id_type mat_index) override;
 
   ///@{
   /// Sobol Monte Carlo matrices, these are sized and cleared to avoid keeping large matrices around

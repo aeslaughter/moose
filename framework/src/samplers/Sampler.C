@@ -133,7 +133,7 @@ Sampler::execute()
 }
 
 DenseMatrix<Real>
-Sampler::getGlobalSamples()
+Sampler::getGlobalSamples(dof_id_type mat_index /*= 0*/)
 {
   TIME_SECTION(_perf_get_global_samples);
 
@@ -147,15 +147,15 @@ Sampler::getGlobalSamples()
 
   _next_local_row_requires_state_restore = true;
   _generator.restoreState();
-  sampleSetUp();
+  sampleSetUp(mat_index);
   DenseMatrix<Real> output(_n_rows, _n_cols);
-  computeSampleMatrix(output);
-  sampleTearDown();
+  computeSampleMatrix(output, mat_index);
+  sampleTearDown(mat_index);
   return output;
 }
 
 DenseMatrix<Real>
-Sampler::getLocalSamples()
+Sampler::getLocalSamples(dof_id_type mat_index /*= 0*/)
 {
   TIME_SECTION(_perf_get_local_samples);
 
@@ -169,22 +169,22 @@ Sampler::getLocalSamples()
 
   _next_local_row_requires_state_restore = true;
   _generator.restoreState();
-  sampleSetUp();
+  sampleSetUp(mat_index);
   DenseMatrix<Real> output(_n_local_rows, _n_cols);
-  computeLocalSampleMatrix(output);
-  sampleTearDown();
+  computeLocalSampleMatrix(output, mat_index);
+  sampleTearDown(mat_index);
   return output;
 }
 
 std::vector<Real>
-Sampler::getNextLocalRow()
+Sampler::getNextLocalRow(dof_id_type mat_index /*= 0*/)
 {
   TIME_SECTION(_perf_get_next_local_row);
 
   if (_next_local_row_requires_state_restore)
   {
     _generator.restoreState();
-    sampleSetUp();
+    sampleSetUp(mat_index);
     advanceGenerators(_next_local_row * _n_cols);
     _next_local_row_requires_state_restore = false;
 
@@ -198,14 +198,14 @@ Sampler::getNextLocalRow()
   }
 
   std::vector<Real> output(_n_cols);
-  computeSampleRow(_next_local_row, output);
+  computeSampleRow(_next_local_row, output, mat_index);
   mooseAssert(output.size() == _n_cols, "The row of sample data is not sized correctly.");
   _next_local_row++;
 
   if (_next_local_row == _local_row_end)
   {
     advanceGenerators((_n_rows - _local_row_end) * _n_cols);
-    sampleTearDown();
+    sampleTearDown(mat_index);
     _next_local_row = _local_row_begin;
     _next_local_row_requires_state_restore = true;
   }
@@ -214,25 +214,25 @@ Sampler::getNextLocalRow()
 }
 
 void
-Sampler::computeSampleMatrix(DenseMatrix<Real> & matrix)
+Sampler::computeSampleMatrix(DenseMatrix<Real> & matrix, dof_id_type mat_index /*= 0*/)
 {
   for (dof_id_type i = 0; i < _n_rows; ++i)
   {
     std::vector<Real> row(_n_cols, 0);
-    computeSampleRow(i, row);
+    computeSampleRow(i, row, mat_index);
     mooseAssert(row.size() == _n_cols, "The row of sample data is not sized correctly.");
     std::copy(row.begin(), row.end(), matrix.get_values().begin() + i * _n_cols);
   }
 }
 
 void
-Sampler::computeLocalSampleMatrix(DenseMatrix<Real> & matrix)
+Sampler::computeLocalSampleMatrix(DenseMatrix<Real> & matrix, dof_id_type mat_index /*= 0*/)
 {
   advanceGenerators(_local_row_begin * _n_cols);
   for (dof_id_type i = _local_row_begin; i < _local_row_end; ++i)
   {
     std::vector<Real> row(_n_cols, 0);
-    computeSampleRow(i, row);
+    computeSampleRow(i, row, mat_index);
     mooseAssert(row.size() == _n_cols, "The row of sample data is not sized correctly.");
     std::copy(
         row.begin(), row.end(), matrix.get_values().begin() + ((i - _local_row_begin) * _n_cols));
@@ -241,10 +241,10 @@ Sampler::computeLocalSampleMatrix(DenseMatrix<Real> & matrix)
 }
 
 void
-Sampler::computeSampleRow(dof_id_type i, std::vector<Real> & data)
+Sampler::computeSampleRow(dof_id_type i, std::vector<Real> & data, dof_id_type mat_index /*= 0*/)
 {
   for (dof_id_type j = 0; j < _n_cols; ++j)
-    data[j] = computeSample(i, j);
+    data[j] = computeSample(i, j, mat_index);
 }
 
 void
@@ -329,9 +329,9 @@ Sampler::getSamples()
       "getSamples is being removed, use getNextLocalRow, getLocalSamples, or getGlobalSamples."));
 
   _generator.restoreState();
-  sampleSetUp();
+  sampleSetUp(0);
   std::vector<DenseMatrix<Real>> output = sample();
-  sampleTearDown();
+  sampleTearDown(0);
 
   mooseAssert(output.size() > 0,
               "It is not acceptable to return an empty vector of sample matrices.");

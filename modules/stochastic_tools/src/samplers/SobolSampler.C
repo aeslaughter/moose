@@ -43,8 +43,7 @@ SobolSampler::SobolSampler(const InputParameters & parameters)
   setNumberOfRows(_num_rows_per_matrix * (_distribution_names.size() + 2));
 }
 
-void
-SobolSampler::sampleSetUp()
+void SobolSampler::sampleSetUp(dof_id_type /*mat_index*/)
 {
   _a_matrix.resize(_num_rows_per_matrix, getNumberOfCols());
   _b_matrix.resize(_num_rows_per_matrix, getNumberOfCols());
@@ -57,7 +56,7 @@ SobolSampler::sampleSetUp()
 }
 
 Real
-SobolSampler::computeSample(dof_id_type row_index, dof_id_type col_index)
+SobolSampler::computeSample(dof_id_type row_index, dof_id_type col_index, dof_id_type /*mat_index*/)
 {
   dof_id_type matrix_index = row_index / _num_rows_per_matrix;
   dof_id_type r = row_index - matrix_index * _num_rows_per_matrix;
@@ -72,8 +71,7 @@ SobolSampler::computeSample(dof_id_type row_index, dof_id_type col_index)
     return _a_matrix(r, col_index);
 }
 
-void
-SobolSampler::sampleTearDown()
+void SobolSampler::sampleTearDown(dof_id_type /*mat_index*/)
 {
   _a_matrix.resize(0, 0);
   _b_matrix.resize(0, 0);
