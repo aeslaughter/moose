@@ -135,6 +135,11 @@ PolynomialChaos::trainFinalize()
   if (!_quad_sampler)
     for (std::size_t i = 0; i < _ncoeff; ++i)
       _coeff[i] /= _sampler->getNumberOfRows();
+
+  std::cout << processor_id() << " PolynomialChaos::coeff = ";
+  for (auto & val : _coeff)
+    std::cout << val << " ";
+  std::cout << std::endl;
 }
 
 Real
