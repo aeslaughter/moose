@@ -91,7 +91,8 @@ PolynomialChaos::initialSetup()
 void
 PolynomialChaos::train()
 {
-  std::cerr << _sampler->getNumberOfRows() << " " << _values_ptr->size() << std::endl;
+  std::cout << "PolynomialChaos::train()" << std::endl;
+    //std::cerr << _sampler->getNumberOfRows() << " " << _values_ptr->size() << std::endl;
 
   // Check if results of samples matches number of samples
   // mooseAssert(_sampler->getNumberOfRows() == _values_ptr->size(),
@@ -157,7 +158,6 @@ PolynomialChaos::evaluate(const std::vector<Real> & x) const
       tmp *= poly_val(d, _tuple[i][d]);
     val += tmp;
   }
-
   return val;
 }
 
@@ -194,8 +194,12 @@ PolynomialChaos::computeStandardDeviation() const
     Real norm = 1.0;
     for (std::size_t d = 0; d < _ndim; ++d)
       norm *= _poly[d]->innerProduct(_tuple[i][d]);
+
     var += _coeff[i] * _coeff[i] * norm;
   }
+
+  /// Total number of coefficient (defined by size of _tuple)
+  std::cerr << processor_id() << " stddev = " << std::sqrt(var) << std::endl;
 
   return std::sqrt(var);
 }

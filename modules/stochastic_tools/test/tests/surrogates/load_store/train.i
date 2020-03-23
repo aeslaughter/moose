@@ -64,6 +64,13 @@
     parallel_type = REPLICATED
     samplers = quadrature
   []
+ []
+
+    [VectorPostprocessors/pc_moments]
+    type = PolynomialChaosStatistics
+    pc_name = poly_chaos
+    compute = 'mean stddev skewness kurtosis'
+    execute_on = final
 []
 
 [Surrogates]

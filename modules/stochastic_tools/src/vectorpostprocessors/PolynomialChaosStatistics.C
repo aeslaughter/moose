@@ -70,11 +70,3 @@ PolynomialChaosStatistics::finalize()
 {
   gatherSum(_stats);
 }
-
-void
-PolynomialChaosStatistics::threadJoin(const UserObject & y)
-{
-  const PolynomialChaosStatistics & pps = static_cast<const PolynomialChaosStatistics &>(y);
-  for (unsigned int i = 0; i < _stats.size(); ++i)
-    _stats[i] += pps._stats[i];
-}

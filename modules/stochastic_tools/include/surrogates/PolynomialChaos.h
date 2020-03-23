@@ -89,16 +89,16 @@ private:
   /// Vector postprocessor of the results from perturbing the model with _sampler
   const VectorPostprocessorValue * _values_ptr = nullptr;
 
-  // The following items are stored using declareModelData for use as a trained model.
-
   /// Total number of parameters/dimensions
   unsigned int _ndim;
 
+  /// Total number of coefficient (defined by size of _tuple)
+  std::size_t  _ncoeff;
+
+  // The following items are stored using declareModelData for use as a trained model.
+
   /// A _ndim-by-_ncoeff matrix containing the appropriate one-dimensional polynomial order
   std::vector<std::vector<unsigned int>> & _tuple;
-
-  /// Total number of coefficient (defined by size of _tuple)
-  std::size_t _ncoeff;
 
   /// These are the coefficients we are after in the PC expansion
   std::vector<Real> & _coeff;

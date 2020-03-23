@@ -36,14 +36,41 @@ SurrogateModelOutput::SurrogateModelOutput(const InputParameters & parameters)
 void
 SurrogateModelOutput::output(const ExecFlagType & /*type*/)
 {
-  RestartableDataIO restartable_data_io(_app);
-  for (const auto & surrogate_name : _surrogates)
+  if (processor_id() == 0)
   {
-    const SurrogateModel & model = getSurrogateModelByName(surrogate_name);
-    const std::string filename =
+    RestartableDataIO restartable_data_io(_app);
+    for (const auto & surrogate_name : _surrogates)
+    {
+      const SurrogateModel & model = getSurrogateModelByName(surrogate_name);
+      const std::string filename =
         this->filename() + "_" + surrogate_name + restartable_data_io.getRestartableDataExt();
 
-    const RestartableDataMap & meta_data = _app.getRestartableDataMap(model.name());
-    restartable_data_io.writeRestartableData(filename, meta_data);
+      const RestartableDataMap & meta_data = _app.getRestartableDataMap(model.name());
+      restartable_data_io.writeRestartableData(filename, meta_data);
+
+      std::cout << "WRITE:--------------------------------------------------------" << std::endl;
+
+      auto coeff =
+        static_cast<RestartableData<std::vector<Real>> *>(meta_data.at("_coeff").value.get());
+
+      std::this_thread::sleep_for(std::chrono::seconds(2 * processor_id()));
+      std::cerr << processor_id() << ": coeff->size() = " << coeff->get().size() << std::endl;
+      std::cerr << "coeff = ";
+      for (auto & val : coeff->get())
+        std::cerr << val << " ";
+      std::cerr << std::endl;
+
+      std::this_thread::sleep_for(std::chrono::seconds(2 * processor_id()));
+      auto tuple = static_cast<RestartableData<std::vector<std::vector<unsigned int>>> *>(
+        meta_data.at("_tuple").value.get());
+      std::cerr << processor_id() << ": tuple->size() = " << tuple->get().size() << std::endl;
+      for (std::size_t i = 0; i < tuple->get().size(); ++i)
+      {
+        std::cerr << "tuple[" << i << "] = ";
+        for (auto & val : tuple->get()[i])
+          std::cerr << val << " ";
+        std::cerr << std::endl;
+      }
+    }
   }
 }
