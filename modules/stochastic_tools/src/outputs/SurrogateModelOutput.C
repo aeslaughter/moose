@@ -48,6 +48,7 @@ SurrogateModelOutput::output(const ExecFlagType & /*type*/)
       const RestartableDataMap & meta_data = _app.getRestartableDataMap(model.name());
       restartable_data_io.writeRestartableData(filename, meta_data);
 
+      /*
       std::cout << "WRITE:--------------------------------------------------------" << std::endl;
 
       auto coeff =
@@ -71,6 +72,7 @@ SurrogateModelOutput::output(const ExecFlagType & /*type*/)
           std::cerr << val << " ";
         std::cerr << std::endl;
       }
+      */
     }
   }
 }

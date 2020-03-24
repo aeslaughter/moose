@@ -75,6 +75,7 @@ LoadSurrogateDataAction::load(SurrogateModel & model)
   std::unordered_set<std::string> filter_names;
   data_io.readRestartableData(meta_data, filter_names);
 
+  /*
   auto coeff =
       static_cast<RestartableData<std::vector<Real>> *>(meta_data.at("_coeff").value.get());
 
@@ -96,4 +97,5 @@ LoadSurrogateDataAction::load(SurrogateModel & model)
       std::cerr << val << " ";
     std::cerr << std::endl;
   }
+  */
 }

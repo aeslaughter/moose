@@ -29,7 +29,7 @@ public:
   /**
    * Train the surrogate model.
    */
-  virtual void train() = 0;
+  virtual void train(){}// = 0;
 
   ///@{
   /**
@@ -58,9 +58,9 @@ public:
   /**
    * UserObject methods that are used to implement the training/evaluate interfaces.
    */
-  virtual void initialize() final;
-  virtual void execute() final;
-  virtual void finalize() final;
+  virtual void initialize() override;//final;
+  virtual void execute() override;// final;
+  virtual void finalize() override;// final;
   virtual void threadJoin(const UserObject &) final {} // GeneralUserObjects are not threaded
 
 private:

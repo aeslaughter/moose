@@ -89,10 +89,30 @@ PolynomialChaos::initialSetup()
 }
 
 void
-PolynomialChaos::train()
+PolynomialChaos::execute()
 {
-  std::cout << "PolynomialChaos::train()" << std::endl;
-    //std::cerr << _sampler->getNumberOfRows() << " " << _values_ptr->size() << std::endl;
+  std::this_thread::sleep_for(std::chrono::seconds(2 * processor_id()));
+  std::cerr << processor_id() << " PolynomialChaos::train()" << std::endl;
+  std::cerr << "_ndim = " << _ndim << std::endl;
+  std::cerr << "_order = " << _order << std::endl;
+  std::cerr << "_ncoeff = " << _ncoeff << std::endl;
+  std::cerr << "_quad_sampler = " << bool(_quad_sampler) << std::endl;
+
+  std::this_thread::sleep_for(std::chrono::seconds(2 * processor_id()));
+  for (std::size_t i = 0; i < _tuple.size(); ++i)
+  {
+    std::cerr << "_tuple[" << i << "] = ";
+    for (auto & val : _tuple[i])
+      std::cerr << val << " ";
+    std::cerr << std::endl;
+  }
+
+  std::this_thread::sleep_for(std::chrono::seconds(2 * processor_id()));
+  std::cerr << processor_id() << " PolynomialChaos::coeff = ";
+  for (auto & val : _coeff)
+    std::cerr << val << " ";
+  std::cerr << std::endl;
+
 
   // Check if results of samples matches number of samples
   // mooseAssert(_sampler->getNumberOfRows() == _values_ptr->size(),
@@ -110,12 +130,16 @@ PolynomialChaos::train()
     // Evaluate polynomials to avoid duplication
     for (unsigned int d = 0; d < _ndim; ++d)
       for (unsigned int i = 0; i < _order; ++i)
+      {
         poly_val(d, i) = _poly[d]->compute(i, data[d]);
+        std::cerr << "poly_val(" << d << ", " << i << ") = " << poly_val(d,i) << std::endl;
+      }
 
     // Loop over coefficients
     for (std::size_t i = 0; i < _ncoeff; ++i)
     {
       Real val = (*_values_ptr)[p - _sampler->getLocalRowBegin()];
+      std::cerr << val << "[" << p << ", " << i << "]" << val << std::endl;
       // Loop over parameters
       for (std::size_t d = 0; d < _ndim; ++d)
         val *= poly_val(d, _tuple[i][d]);
@@ -128,18 +152,20 @@ PolynomialChaos::train()
 }
 
 void
-PolynomialChaos::trainFinalize()
+PolynomialChaos::finalize()
 {
+
   gatherSum(_coeff);
 
   if (!_quad_sampler)
     for (std::size_t i = 0; i < _ncoeff; ++i)
       _coeff[i] /= _sampler->getNumberOfRows();
 
-  std::cout << processor_id() << " PolynomialChaos::coeff = ";
+  std::this_thread::sleep_for(std::chrono::seconds(2 * processor_id()));
+  std::cerr << processor_id() << " PolynomialChaos::coeff = ";
   for (auto & val : _coeff)
-    std::cout << val << " ";
-  std::cout << std::endl;
+    std::cerr << val << " ";
+  std::cerr << std::endl;
 }
 
 Real

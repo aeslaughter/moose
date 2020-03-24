@@ -21,8 +21,8 @@ public:
   static InputParameters validParams();
   PolynomialChaos(const InputParameters & parameters);
   virtual void initialSetup() override;
-  virtual void train() override;
-  virtual void trainFinalize() override;
+  virtual void execute() override;
+  virtual void finalize() override;
   virtual Real evaluate(const std::vector<Real> & x) const override;
 
   /// Access number of dimensions/parameters
