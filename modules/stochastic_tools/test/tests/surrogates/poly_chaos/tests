@@ -6,7 +6,7 @@
     type = CSVDiff
     input = master_2d_mc.i
     allow_test_objects = true
-    csvdiff = 'master_2d_mc_out_pc_samp_0002.csv'
+    csvdiff = 'master_2d_mc_out_pc_samp_0002.csv master_2d_mc_out_storage_0002.csv master_2d_mc_out_pc_coeff_0002.csv'
     requirement = 'The system shall compute polynomial chaos coefficients using Monte Carlo integration.'
   []
   [gauss_legendre_integration]
