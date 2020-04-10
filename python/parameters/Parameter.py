@@ -8,6 +8,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import textwrap
 import logging
+import typing
 LOG = logging.getLogger(__file__)
 
 class Parameter(object):
@@ -32,7 +33,7 @@ class Parameter(object):
                        that starts with and underscore is assumed to be private
     """
     def __init__(self, name, default=None, doc=None, vtype=None, allow=None, size=None,
-                 array=False, required=False, private=None):
+                 array=False, required=False, private=None, mutable=True):
 
         # Force vtype to be a tuple to allow multiple types to be defined
         if isinstance(vtype, type):
@@ -46,7 +47,9 @@ class Parameter(object):
         self.__doc = doc           # documentation string
         self.__array = array       # create an array
         self.__size = size         # array size
-        self.__required = required # see validate()
+        self.__required = required # see initialize()
+        self.__mutable = mutable   # allow parameter to change, see initializie()
+        self.__initialized = False # see initialized
 
         if not isinstance(self.__name, str):
             msg = "The supplied 'name' argument must be a 'str', but {} was provided."
@@ -85,6 +88,10 @@ class Parameter(object):
         if not isinstance(self.__private, bool):
             msg = "The supplied 'required' argument must be a 'bool', but {} was provided."
             raise TypeError(msg.format(type(self.__required)))
+
+        if not isinstance(self.__mutable, bool):
+            msg = "The supplied 'mutable' argument must be a 'bool', but {} was provided."
+            raise TypeError(msg.format(type(self.__mutable)))
 
         elif self.__size is not None:
             self.__array = True
@@ -149,6 +156,10 @@ class Parameter(object):
         """
         Sets the value and performs a myriad of consistency checks.
         """
+        if self.__initialized and not self.__mutable:
+            msg = "The parameters '{}' does not support assignment after initialization, " \
+                  "it was marked as immutable."
+            raise TypeError(msg.format(self.__name))
 
         if val is None:
             self.__value = None
@@ -204,12 +215,18 @@ class Parameter(object):
 
         self.__value = val
 
-    def validate(self):
-        """Validate that the Parameter is in the correct state."""
+    def initialize(self):
+        """Enforce mutable flag and validate that the Parameter is in the correct state."""
+
+        # Mark Parameters as initialized, see value setter
+        self.__initialized = True
+
+        # Required state
         if self.__required and (self.value is None):
             msg = "The Parameter '%s' is marked as required, but no value is assigned."
             LOG.warning(msg, self.name)
             return 1
+
         return 0
 
     def toString(self):

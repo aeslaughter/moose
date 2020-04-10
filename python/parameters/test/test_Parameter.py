@@ -171,7 +171,7 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(opt.required, True)
 
         with self.assertLogs(level=logging.WARNING) as cm:
-            retcode = opt.validate()
+            retcode = opt.initialize()
         self.assertEqual(retcode, 1)
         self.assertEqual(len(cm.output), 1)
         self.assertIn("The Parameter 'year' is marked as required, but no value is assigned.", cm.output[0])
@@ -181,7 +181,7 @@ class TestParameter(unittest.TestCase):
         self.assertIn("The supplied 'required' argument must be a 'bool', but <class 'str'> was provided.", str(e.exception))
 
         opt.value = 1980
-        self.assertEqual(opt.validate(), 0)
+        self.assertEqual(opt.initialize(), 0)
 
     def testSetDefault(self):
         opt = Parameter('year', default=1980)
@@ -210,6 +210,19 @@ class TestParameter(unittest.TestCase):
 
         opt = Parameter('_year')
         self.assertEqual(opt.private, True)
+
+    def testMutable(self):
+        opt = Parameter('year', mutable=False)
+        opt.value = 1949
+        opt.initialize()
+
+        with self.assertRaises(TypeError) as e:
+            opt.value = 1980
+        self.assertIn("The parameters 'year' does not support assignment after initialization, it was marked as immutable.", str(e.exception))
+
+        with self.assertRaises(TypeError) as e:
+            Parameter('year', mutable="wrong")
+        self.assertIn("The supplied 'mutable' argument must be a 'bool', but <class 'str'> was provided.", str(e.exception))
 
     def testToString(self):
         opt = Parameter('year')
