@@ -116,6 +116,5 @@ class TestMooseObject(unittest.TestCase):
         self.assertEqual(len(log.output), 1)
         self.assertIn("foo", log.output[0])
 
-
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True, exit=False)
