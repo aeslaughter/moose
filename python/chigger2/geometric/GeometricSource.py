@@ -1,5 +1,5 @@
 import vtk
-from chigger import base
+from .. import base
 
 
 class GeometricSource(base.ChiggerSource):

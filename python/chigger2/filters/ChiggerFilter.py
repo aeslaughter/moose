@@ -1,7 +1,7 @@
 import logging
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
-from chigger import base
+from .. import base
 
 class ChiggerFilter(base.ChiggerAlgorithm):
     """Base class for filter objects that are passed into ChiggerResult objects."""
