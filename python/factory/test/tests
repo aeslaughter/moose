@@ -1,0 +1,6 @@
+[Tests]
+  [MooseObject]
+    type = PythonUnitTest
+    input = test_MooseObject.py
+  []
+[]

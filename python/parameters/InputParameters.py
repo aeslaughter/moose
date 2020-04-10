@@ -35,6 +35,21 @@ class InputParameters(object):
         self.__mode = mode
         self.__parameters = OrderedDict()
 
+    def initialize(self, mode=None):
+        """
+        Perform Parameter checks and begin enforcing Parameter mutable keyword.
+
+        Inputs:
+            mode: (Optional) Override the error mode supplied to constructor
+        """
+        self.__mode = mode or self.__mode
+        for param in self.__parameters.values():
+            param.initialize()
+
+    def getErrorMode(self):
+        """Return the current ErrorMode for this object."""
+        return self.__mode
+
     def add(self, *args, **kwargs):
         """
         Add a new Parameter to the warehouse
