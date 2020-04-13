@@ -115,14 +115,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('v', MainWindowObserver._nextViewport, shift=True, args=(True,),
                      desc="Select the previous viewport.")
 
-        """
         bindings.add('s', MainWindowObserver._nextSource,
-                     desc="Select the next source in the current viewport.")
+                     desc="Select the next Source object.")
         bindings.add('s', MainWindowObserver._nextSource, shift=True, args=(True,),
-                     desc="Select the previous source in the current viewport.")
-        """
+                     desc="Select the previous Source object.")
 
-        bindings.add('r', MainWindowObserver._deactivate, desc="Reset (clear) selection(s).")
+        bindings.add('r', MainWindowObserver._deactivate, desc="Reset (clear) selection.")
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
 
         bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file.")
@@ -141,7 +139,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                          "something incompatible ('{}'), remove the 'mode' option from the " \
                          "Window object or set it to 'chigger'.", mode)
 
-        self._window.setOption('mode', 'chigger')
+        self._window.setParam('mode', 'chigger')
 
         # Remove VTK key interactions
         self._window.getVTKInteractor().RemoveObservers(vtk.vtkCommand.CharEvent)
@@ -176,10 +174,13 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
 
     def _availableViewports(self):
-        return [viewport for viewport in self._window.viewports() if viewport.interactive]
+        return [viewport for viewport in self._window.viewports()]# if viewport.interactive]
 
-    def _availableSources(self, viewport):
-        return [source for viewport in viewport.sources() if viewport.interactive]
+    def _availableSources(self):
+        sources = list()
+        for viewport in self._availableViewports():
+            sources += [(source, viewport) for source in viewport.sources()]
+        return sources
 
     def _nextViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
         """
@@ -204,32 +205,18 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         if self.__current_viewport_index is not None:
             viewport = viewports[self.__current_viewport_index]
-            self.__current_viewport_outline = geometric.Outline2D(viewport,
-                                                                  bounds=(0,1,0,1),
-                                                                  color=(1, 1, 0), linewidth=6)
-            viewport.updateData()
-
-
-    def _deactivateViewport(self):
-        if self.__current_viewport_outline is not None:
-            self.__current_viewport_outline.remove()
-            self.__current_viewport_outline = None
+            self._activateViewport(viewport)
 
     def _nextSource(self, decrease=False):
         """
         Keybinding callback: Activate the "next" source object in the current viewport
         """
         self.debug('Select Source')
+        self._deactivateSource()
+        self._deactivateViewport()
 
-        if self.__current_viewport_outline is None:
-            return
-
-        if self.__current_source_outline is not None:
-            self.__current_source_outline.remove()
-            self.__current_source_outline = None
-
-        viewport = self._availableViewports()[self.__current_viewport_index]
-        N = len(viewport)
+        sources = self._availableSources()
+        N = len(sources)
         if self.__current_source_index is None:
             self.__current_source_index = N - 1 if decrease else 0
         elif decrease:
@@ -242,23 +229,64 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                 self.__current_source_index = None
 
         if self.__current_source_index is not None:
-            source = self._availableSources(viewport)[self.__current_source_index]
-            if self.__current_source is not source:
-                self._deactivateSource()
-
+            source, viewport = sources[self.__current_source_index]
             self._activateSource(viewport, source)
-
 
     def _deactivate(self): #pylint: disable=no-self-use, unused-argument
         """
-        Keybinding callback: Deactivate all viewports.
+        Keybinding callback: Deactivate all viewports/sourcs.
         """
         self._deactivateViewport()
-        self.__current_viewport_index = None
         self._deactivateSource()
-        #if self.__current_source_outline is not None:
-         #   self.__current_source_outline.remove()
-         #   self.__current_source_outline = None
+
+    def _activateViewport(self, viewport):
+        self.__current_viewport_outline = geometric.Outline2D(viewport,
+                                                              bounds=(0,1,0,1),
+                                                              color=(1, 1, 0), linewidth=6)
+        viewport.updateData()
+
+    def _deactivateViewport(self):
+        if self.__current_viewport_outline is not None:
+            self.__current_viewport_outline.remove()
+            self.__current_viewport_outline = None
+
+    def _activateSource(self, viewport, source):
+        if self.__current_source_outline is None:
+            bnds = source.getBounds()
+            obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
+            self.__current_source = source
+            self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0), linewidth=5)
+
+            if isinstance(source.getVTKActor(), vtk.vtkActor2D):
+                self.__style_2d.setSource(source, self.__current_source_outline)
+                self._window.getVTKInteractor().SetInteractorStyle(self.__style_2d)
+            else:
+                self._window.getVTKInteractor().SetInteractorStyle(self.__style_3d)
+
+            # Disable interaction with all other viewports
+            viewports = self._availableViewports()
+            for vp in viewports:
+                if vp is not viewport:
+                    vp.getVTKRenderer().InteractiveOff()
+                else:
+                    vp.getVTKRenderer().InteractiveOn()
+
+    def _deactivateSource(self):
+        if self.__current_source_outline is not None:
+
+            if isinstance(self.__current_source.getVTKActor(), vtk.vtkActor2D):
+                self.__style_2d.setSource(None, None)
+
+            self.__current_source_outline.remove()
+            self.__current_source_outline = None
+            self.__current_source = None
+
+            self._window.getVTKInteractor().SetInteractorStyle(None)
+
+            # Restore interaction, to allow mouse clicks, with all viewports
+            viewports = self._availableViewports()
+            for vp in viewports:
+                vp.getVTKRenderer().InteractiveOn()
 
     def _printHelp(self): #pylint: disable=unused-argument
         """
@@ -312,7 +340,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         vtk_renderer = self._window.getVTKInteractor().FindPokedRenderer(*pos)
         props = vtk_renderer.PickProp(*pos)
 
-
         #TODO: Check for more than one???
         #props.GetNumberOfItems()
         if props is not None:
@@ -338,32 +365,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                 if source.getVTKActor() is prop:
                     return viewport, source
         return None
-
-    def _activateSource(self, viewport, source):
-        if self.__current_source_outline is None:
-            bnds = source.getBounds()
-            obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
-            self.__current_source = source
-            self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0), linewidth=5)
-
-            if isinstance(source.getVTKActor(), vtk.vtkActor2D):
-                self.__style_2d.setSource(source, self.__current_source_outline)
-                self._window.getVTKInteractor().SetInteractorStyle(self.__style_2d)
-            else:
-                self._window.getVTKInteractor().SetInteractorStyle(self.__style_3d)
-
-    def _deactivateSource(self):
-        if self.__current_source_outline is not None:
-
-            if isinstance(self.__current_source.getVTKActor(), vtk.vtkActor2D):
-                self.__style_2d.setSource(None, None)
-
-            self.__current_source_outline.remove()
-            self.__current_source_outline = None
-            self.__current_source = None
-
-            self._window.getVTKInteractor().SetInteractorStyle(None)
-
 
     def _writeChanges(self):
         if self.__current_source is None:

@@ -77,7 +77,7 @@ class ColorBar(base.ChiggerCompositeSource):
 
         data = rectangle.getParam('point_data')
         if (data is None) or (data.GetNumberOfTuples() != res):
-            rectangle.setOption('point_data', self.__computeColorMapPointData(res))
+            rectangle.setParam('point_data', self.__computeColorMapPointData(res))
 
 
         base.ChiggerCompositeSource.applyOptions(self)
@@ -101,7 +101,7 @@ class ColorBar(base.ChiggerCompositeSource):
         """
         Update the colorbar origin.
         """
-        self.setOption('colorbar_origin', position)
+        self.setParam('colorbar_origin', position)
         self.printOption('colorbar_origin')
 
     def _increment(self, increment, name, *args): #pylint: disable=unused-argument
@@ -111,7 +111,7 @@ class ColorBar(base.ChiggerCompositeSource):
         value = self.getParam(name) + increment
         if value < 1 and value > 0:
             self.printOption(name)
-            self.setOption(name, value)
+            self.setParam(name, value)
 
     def _incrementFont(self, increment, *args): #pylint: disable=unused-argument
         """
@@ -123,11 +123,11 @@ class ColorBar(base.ChiggerCompositeSource):
             fz_tick = ax.getVTKSource().GetLabelProperties().GetFontSize() + increment
             fz_title = ax.getVTKSource().GetTitleProperties().GetFontSize() + increment
             if fz_tick > 0:
-                ax.setOption('tick_font_size', fz_tick)
+                ax.setParam('tick_font_size', fz_tick)
                 ax.printOption('tick_font_size')
 
             if fz_title > 0:
-                ax.setOption('title_font_size', fz_title)
+                ax.setParam('title_font_size', fz_title)
                 ax.printOption('title_font_size')
 
         _, axis0, axis1 = self._sources #pylint: disable=unbalanced-tuple-unpacking

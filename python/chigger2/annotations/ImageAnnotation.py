@@ -59,7 +59,7 @@ class ImageAnnotation(base.ChiggerResult):
         """
         Re-position the image based on the mouse position.
         """
-        self.setOption('position', position)
+        self.setParam('position', position)
         self.printOption('position')
 
     def _setWidth(self, window, binding): #pylint: disable=unused-argument
@@ -69,7 +69,7 @@ class ImageAnnotation(base.ChiggerResult):
         step = -0.01 if binding.shift else 0.01
         width = self.getParam('width') + step
         if width > 0 and (width <= 1):
-            self.setOption('width', width)
+            self.setParam('width', width)
             self.printOption('width')
 
     def _setOpacity(self, window, binding): #pylint: disable=unused-argument
@@ -79,5 +79,5 @@ class ImageAnnotation(base.ChiggerResult):
         step = -0.05 if binding.shift else 0.05
         opacity = self.getParam('opacity') + step
         if opacity > 0 and opacity < 1:
-            self.setOption('opacity', opacity)
+            self.setParam('opacity', opacity)
             self.printOption('opacity')

@@ -81,14 +81,14 @@ class TestExodusReader(unittest.TestCase):
         # Create ExodusReader
         reader = chigger.exodus.ExodusReader(self.single)
 
-        # Test setOption
+        # Test setParam
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOption('timestep', 2)
+            reader.setParam('timestep', 2)
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 11)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOption')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOption::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParam')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParam::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -99,13 +99,13 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(l.output[9], 'DEBUG:ExodusReader: __updateActiveBlocks')
         self.assertEqual(l.output[10], 'DEBUG:ExodusReader: __updateActiveVariables')
 
-        # Test setOption, that doesn't change options
+        # Test setParam, that doesn't change options
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOption('timestep', 2)
+            reader.setParam('timestep', 2)
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOption')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParam')
         self.assertEqual(l.output[1], 'DEBUG:ExodusReader: updateInformation')
 
         # Test setParams
@@ -249,7 +249,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(tinfo[0].index, 20)
 
         # Change the time, the __update* methods should NOT be called because the files didn't change
-        reader.setOption('time', 1)
+        reader.setParam('time', 1)
         with self.assertLogs(level=logging.DEBUG) as l:
             tinfo = reader.getCurrentTimeInformation()
 

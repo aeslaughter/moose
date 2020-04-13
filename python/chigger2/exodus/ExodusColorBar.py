@@ -55,9 +55,9 @@ class ExodusColorBar(misc.ColorBar):
                     kwargs[key] = result.getParam(key)
 
             if self.getParam('viewport') is None:
-                self.setOption('viewport', self._results[0].getParam('viewport'))
+                self.setParam('viewport', self._results[0].getParam('viewport'))
             if self.getParam('layer') is None:
-                self.setOption('layer', self._results[0].getParam('layer'))
+                self.setParam('layer', self._results[0].getParam('layer'))
 
         super(ExodusColorBar, self).setParams(*args, **kwargs)
 
@@ -85,6 +85,6 @@ class ExodusColorBar(misc.ColorBar):
             set_axis_options_helper(secondary, self._results[1])
             secondary.set('visible', True)
 
-        self.setOption('primary', primary)
-        self.setOption('secondary', secondary)
+        self.setParam('primary', primary)
+        self.setParam('secondary', secondary)
         super(ExodusColorBar, self).update(**kwargs)

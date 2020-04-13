@@ -12,6 +12,7 @@ import weakref
 import collections
 import vtk
 import mooseutils
+from parameters import InputParameters
 from .ChiggerAlgorithm import ChiggerAlgorithm
 from .. import utils
 
@@ -71,9 +72,9 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('o', ChiggerSourceBase._displayOptions,
+        bindings.add('o', ChiggerSourceBase._displayParams,
                      desc="Output the available options for this object to the screen.")
-        bindings.add('o', lambda s: ChiggerSourceBase._displayOptions(s, script=True), shift=True,
+        bindings.add('o', lambda s: ChiggerSourceBase._displayParams(s, script=True), shift=True,
                      desc="Output the non-default options for this object, as key-value pairs, to the screen.")
         return bindings
 
@@ -124,8 +125,8 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         self.__filter_info.append(FilterInfo(filter_type=filter_type, active=active))
 
         fname = filter_type.FILTERNAME
-        self._options.add(fname, filter_type.validParams(),
-                          doc="Options for the '{}' filter.".format(fname))
+        self._input_parameters.add(fname, filter_type.validParams(),
+                                   doc="Options for the '{}' filter.".format(fname))
 
 
     def remove(self):
@@ -176,14 +177,43 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         self.assignParam('linewidth', self._vtkactor.GetProperty().SetLineWidth)
         self.assignParam('pointsize', self._vtkactor.GetProperty().SetPointSize)
 
-    def _displayOptions(self, script=False):
+    def _displayParams(self, script=False):
         if script:
-            out, sub_out = self._options.toScriptString()
+            out, sub_out = self._paramsToScriptString(self._input_parameters)
             print("({})".format(', '.join(out)))
             for key, value in sub_out.items():
                 print("'{}', {}".format(key, ', '.join(value)))
         else:
-            print(self._options.toString())
+            print(self._input_parameters.toString())
+
+    @staticmethod
+    def _paramsToScriptString(params, **kwargs):
+        """
+        Takes an InputParameters object and returns a string for building python scripts.
+
+        Inputs:
+            kwargs: Key, value pairs provided will replace values in options with the string given
+                    in the value, but will not set the actual value. This is generally for
+                    code generation tools.
+        """
+        output = []
+        sub_output = dict()
+        for key in params.keys():
+            opt = params.get(key)
+
+            if isinstance(opt, InputParameters):
+                items, _ = ChiggerSourceBase._paramsToScriptString(opt)
+                if items:
+                    sub_output[key] = items
+
+            elif not params.isDefault(key):
+                if key in kwargs:
+                    r = kwargs[key]
+                else:
+                    r = repr(opt)
+                output.append('{}={}'.format(key, r))
+
+        return output, sub_output
 
     def __connectFilters(self):
         self.debug('__connectFilters')

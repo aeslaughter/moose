@@ -274,7 +274,7 @@ class InputParameters(object):
         Create a string of all parameters using Parameter.toString
         """
         out = []
-        for param in self.itervalues():
+        for param in self.__parameters.values():
             out.append(param.toString())
         return '\n\n'.join(out)
 

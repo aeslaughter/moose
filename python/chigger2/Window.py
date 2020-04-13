@@ -132,7 +132,7 @@ class Window(base.ChiggerAlgorithm):
         mode = self.getParam('mode')
         if mode is None:
             if '--test' in sys.argv:
-                self.setOption('mode', 'offscreen')
+                self.setParam('mode', 'offscreen')
 
         # Add the background
         Viewport(self, name='__ChiggerWindowBackground__', layer=0, interactive=False)
@@ -282,7 +282,7 @@ class Window(base.ChiggerAlgorithm):
         self.assignParam('smoothing', self.__vtkwindow.SetPolygonSmoothing)
         self.assignParam('smoothing', self.__vtkwindow.SetPointSmoothing)
 
-        #self.setOption('antialiasing', self.__vtkwindow.SetAAFrames)
+        #self.setParam('antialiasing', self.__vtkwindow.SetAAFrames)
         self.assignParam('multisamples', self.__vtkwindow.SetMultiSamples)
         self.assignParam('size', self.__vtkwindow.SetSize)
 

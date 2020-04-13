@@ -210,7 +210,7 @@ class ExodusSource(base.ChiggerSource):
         block_info = self.__reader.getBlockInformation()
         for item in ['block', 'boundary', 'nodeset']:
             if self.isParamValid(item) and self.getParam(item) == []:
-                self.setOption(item, [item.name for item in \
+                self.setParam(item, [item.name for item in \
                                       block_info[getattr(ExodusReader, item.upper())].itervalues()])
 
         def get_indices(option, vtk_type):

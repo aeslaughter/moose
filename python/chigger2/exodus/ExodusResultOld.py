@@ -152,7 +152,7 @@ class ExodusResult(base.ChiggerResult):
         elif index < 0:
             index = n - 1
 
-        self.setOption('cmap', available[index])
+        self.setParam('cmap', available[index])
         self.printOption('cmap')
 
     def _updateTimestep(self, window, binding): #pylint: disable=unused-argument
@@ -161,6 +161,6 @@ class ExodusResult(base.ChiggerResult):
         n = len(self._reader.getTimes())
         if current == n:
             current = 0
-        self._reader.setOption('time', None)
-        self._reader.setOption('timestep', current)
+        self._reader.setParam('time', None)
+        self._reader.setParam('timestep', current)
         self._reader.printOption('timestep')

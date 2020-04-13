@@ -30,6 +30,6 @@ class VolumeAxes(base.ChiggerResult):
 
     def update(self, **kwargs):
         bnds = self._result.getBounds()
-        self._sources[0].setOption('point1', (bnds[0], bnds[2], bnds[4]))
-        self._sources[0].setOption('point2', (bnds[1], bnds[3], bnds[5]))
+        self._sources[0].setParam('point1', (bnds[0], bnds[2], bnds[4]))
+        self._sources[0].setParam('point2', (bnds[1], bnds[3], bnds[5]))
         super(VolumeAxes, self).update(**kwargs)

@@ -60,13 +60,13 @@ class MultiAppExodusReader(base.ChiggerObject):
             out += str(reader)
         return out
 
-    def setOption(self, *args, **kwargs):
+    def setParam(self, *args, **kwargs):
         """
         Set single option for all contained readers.
         """
-        super(MultiAppExodusReader, self).setOption(*args, **kwargs)
+        super(MultiAppExodusReader, self).setParam(*args, **kwargs)
         for reader in self.__readers:
-            reader.setOption(*args, **kwargs)
+            reader.setParam(*args, **kwargs)
 
     def setParams(self, *args, **kwargs):
         """

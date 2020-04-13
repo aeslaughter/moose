@@ -134,7 +134,7 @@ class ExodusSource(base.ChiggerSource):
                     extract_indices.append(b.multiblock_index)
 
         fobject = self._filters['extract']
-        fobject.setOption('indices', extract_indices)
+        fobject.setParam('indices', extract_indices)
 
         # Misc. mapper settings
         self._vtkmapper.InterpolateScalarsBeforeMappingOn()
@@ -238,7 +238,7 @@ class ExodusSource(base.ChiggerSource):
         if vfullname is not None:
             current = self.__reader.getParam('variables')
             current = current + (vfullname,) if current is not None else (vfullname,)
-            self.__reader.setOption('variables', current)
+            self.__reader.setParam('variables', current)
             self._vtkmapper.SelectColorArray(vname)
 
         # Component
@@ -262,7 +262,7 @@ class ExodusSource(base.ChiggerSource):
             local = tuple([b.name for b in binfo])
 
         if local is not None:
-            self.__reader.setOption(param, self.__reader.getParam(param) + local)
+            self.__reader.setParam(param, self.__reader.getParam(param) + local)
 
     """
         # Explode
@@ -299,7 +299,7 @@ class ExodusSource(base.ChiggerSource):
         elif index < 0:
             index = n - 1
 
-        self.setOption('cmap', available[index])
+        self.setParam('cmap', available[index])
         self.printOption('cmap')
 
     def _updateTimestep(self, window, binding): #pylint: disable=unused-argument
@@ -308,7 +308,7 @@ class ExodusSource(base.ChiggerSource):
         n = len(self._reader.getTimes())
         if current == n:
             current = 0
-        self._reader.setOption('time', None)
-        self._reader.setOption('timestep', current)
+        self._reader.setParam('time', None)
+        self._reader.setParam('timestep', current)
         self._reader.printOption('timestep')
     """

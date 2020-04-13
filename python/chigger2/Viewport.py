@@ -98,8 +98,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         # property should be used by objects that need information from the Window object.
         window.add(self)
         #self.__window_weakref = None# weakref.ref(window)
-
-        self._vtkrenderer.InteractiveOff()
+#
+        #self._vtkrenderer.InteractiveOff()
 
 
     #def _window(self):

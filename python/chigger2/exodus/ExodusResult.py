@@ -108,7 +108,7 @@ class ExodusResult(base.ChiggerResult):
         for item in ['block', 'boundary', 'nodeset']:
             opt = self.getParam(item)
             if opt == []:
-                self.setOption(item, [item.name for item in \
+                self.setParam(item, [item.name for item in \
                                       block_info[getattr(ExodusReader, item.upper())].itervalues()])
 
         # Update the extract indices
@@ -130,7 +130,7 @@ class ExodusResult(base.ChiggerResult):
         for filters in self._filters:
             for fobject in filters:
                 if fobject.FILTERNAME == 'extract':
-                    fobject.setOption('indices', extract_indices)
+                    fobject.setParam('indices', extract_indices)
 
         for vtkmapper in self._vtkmappers:
             vtkmapper.SetScalarModeToUsePointFieldData()
@@ -421,7 +421,7 @@ class ExodusResult(base.ChiggerResult):
         elif index < 0:
             index = n - 1
 
-        self.setOption('cmap', available[index])
+        self.setParam('cmap', available[index])
         self.printOption('cmap')
 
     def _updateTimestep(self, window, binding): #pylint: disable=unused-argument
@@ -430,6 +430,6 @@ class ExodusResult(base.ChiggerResult):
         n = len(self._reader.getTimes())
         if current == n:
             current = 0
-        self._reader.setOption('time', None)
-        self._reader.setOption('timestep', current)
+        self._reader.setParam('time', None)
+        self._reader.setParam('timestep', current)
         self._reader.printOption('timestep')

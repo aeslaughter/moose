@@ -64,9 +64,9 @@ class Line(base.ChiggerObject):
 
         # Set x,y data
         if x_data:
-            self.setOption('x', x_data)
+            self.setParam('x', x_data)
         if y_data:
-            self.setOption('y', y_data)
+            self.setParam('y', y_data)
 
     def setParams(self, *args, **kwargs):
         """
@@ -76,9 +76,9 @@ class Line(base.ChiggerObject):
 
         tracer = self.getParam('tracer')
         if tracer and not self.isParamValid('xtracer'):
-            self.setOption('xtracer', True)
+            self.setParam('xtracer', True)
         if tracer and not self.isParamValid('ytracer'):
-            self.setOption('ytracer', True)
+            self.setParam('ytracer', True)
 
     def initialize(self):
         """

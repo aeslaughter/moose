@@ -15,7 +15,7 @@ import chigger
 reader = chigger.exodus.ExodusReader('../input/mug_blocks_out.e', time=1.2345)
 
 finfo = reader.getFileInformation()
-reader.setOption('time', 1.23456)
+reader.setParam('time', 1.23456)
 finfo = reader.getFileInformation()
 
 #reader.Update()

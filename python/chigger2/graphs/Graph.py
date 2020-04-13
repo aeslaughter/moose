@@ -76,7 +76,7 @@ class Graph(base.ChiggerResultBase):
         # Add the lines provided as arguments
         lines = self.getParam('lines') if self.isParamValid('lines') else []
         lines.extend(args)
-        self.setOption('lines', lines)
+        self.setParam('lines', lines)
 
     def update(self, *args, **kwargs):
         """
@@ -180,7 +180,7 @@ class Graph(base.ChiggerResultBase):
                 c[1] = 1 - c[1]
                 c[2] = 1 - c[2]
 
-            line.setOption('color', tuple(c))
+            line.setParam('color', tuple(c))
 
         self._plots.append(line)
 
