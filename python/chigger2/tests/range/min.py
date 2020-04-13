@@ -16,6 +16,6 @@ cbar = chigger.exodus.ExodusColorBar(mug, primary={'precision':2, 'num_ticks':3,
 window = chigger.RenderWindow(mug, cbar, size=(300,300), test=True)
 
 for i in range(5):
-    reader.setOptions(timestep=i)
+    reader.setParams(timestep=i)
     window.write('min_' + str(i) + '.png')
 window.start()

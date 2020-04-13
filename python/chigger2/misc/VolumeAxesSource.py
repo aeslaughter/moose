@@ -16,8 +16,8 @@ from .. import utils
 class VolumeAxesSource(base.ChiggerSourceBase):
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerResult.validOptions()
+    def validParams():
+        opt = base.ChiggerResult.validParams()
         opt.add('xaxis', default=VolumeAxesSource.getAxisActorOptions(), doc="The x-axis options.")
         opt.add('yaxis', default=VolumeAxesSource.getAxisActorOptions(), doc="The y-axis options.")
         opt.add('zaxis', default=VolumeAxesSource.getAxisActorOptions(), doc="The z-axis options.")
@@ -51,8 +51,8 @@ class VolumeAxesSource(base.ChiggerSourceBase):
         """
         super(VolumeAxesSource, self).update(**kwargs)
 
-        p0 = self.getOption('point1')
-        p1 = self.getOption('point2')
+        p0 = self.getParam('point1')
+        p1 = self.getParam('point2')
         bnds = [p0[0], p1[0], p0[1], p1[1], p0[2], p1[2]]
         self._vtkactor.SetBounds(*bnds)
 
@@ -74,7 +74,7 @@ class VolumeAxesSource(base.ChiggerSourceBase):
             mooseutils.mooseError("Must provide 'x', 'y', or 'z'.")
             return
 
-        opt = self.getOption(axis + 'axis')
+        opt = self.getParam(axis + 'axis')
         color = opt.get('color')
         comp = ['x', 'y', 'z'].index(axis)
         self._vtkactor.GetTitleTextProperty(comp).SetColor(*color)

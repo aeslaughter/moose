@@ -67,8 +67,8 @@ class Window(base.ChiggerAlgorithm):
     """
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerAlgorithm.validOptions()
+    def validParams():
+        opt = base.ChiggerAlgorithm.validParams()
 
         opt.add('size', default=(1920, 1080), vtype=int, size=2,
                 doc="The size of the window, expects a list of two items")
@@ -129,7 +129,7 @@ class Window(base.ChiggerAlgorithm):
         self.__main_observer = None
 
         # Set interaction mode
-        mode = self.getOption('mode')
+        mode = self.getParam('mode')
         if mode is None:
             if '--test' in sys.argv:
                 self.setOption('mode', 'offscreen')
@@ -219,35 +219,35 @@ class Window(base.ChiggerAlgorithm):
         # Viewport Layers
         n = self.__vtkwindow.GetNumberOfLayers()
         for view in self.__viewports:
-            n = max(n, view.getOption('layer') + 1)
+            n = max(n, view.getParam('layer') + 1)
         self.__vtkwindow.SetNumberOfLayers(n)
 
-        if self.isOptionValid('background'):
-            self.__viewports[0].setOptions(background=self.getOption('background'),
-                                           background2=self.getOption('background2'))
+        if self.isParamValid('background'):
+            self.__viewports[0].setParams(background=self.getParam('background'),
+                                           background2=self.getParam('background2'))
 
         # Auto Background adjustments
         """
-        background = self.getOption('background')
+        background = self.getParam('background')
         fontcolor = (0,0,0) if background == (1,1,1) else (1,1,1)
         for view in self.__viewports:
             for src in view.sources():
                 if isinstance(src, base.ChiggerCompositeSource):
                     for s in src._sources:
                         for name in s.__BACKGROUND_OPTIONS__:
-                            if not s.isOptionValid(name):
-                                s.setOptions(**{name:fontcolor})
+                            if not s.isParamValid(name):
+                                s.setParams(**{name:fontcolor})
                 else:
                     for name in src.__BACKGROUND_OPTIONS__:
-                        if not src.isOptionValid(name):
-                            src.setOptions(**{name:fontcolor})
+                        if not src.isParamValid(name):
+                            src.setParams(**{name:fontcolor})
         """
 
-        self.assignOption('size', self.__vtkwindow.SetSize)
+        self.assignParam('size', self.__vtkwindow.SetSize)
 
         # Create the MainWindowObserver if it doesn't exist and 'mode' is not set
         # The MainWindowObserver object sets the mode to 'chigger' for the next step
-        #mode = self.getOption('mode')
+        #mode = self.getParam('mode')
         #if (mode is None) and (self.__main_observer is None):
         #    self.__main_observer = observers.MainWindowObserver(self)
 
@@ -256,7 +256,7 @@ class Window(base.ChiggerAlgorithm):
         #     2. Default VTK interaction
         #     3. chigger based interaction (e.g. MainWindowObserver)
         #     4. no interaction
-        mode = self.getOption('mode') # get it again because the MainWindowObserver can change it
+        mode = self.getParam('mode') # get it again because the MainWindowObserver can change it
         if mode == 'offscreen':
             self.__vtkwindow.OffScreenRenderingOn()
 
@@ -277,26 +277,26 @@ class Window(base.ChiggerAlgorithm):
             self.error("Invalid 'mode' of '{}' provided.", mode)
 
         # vtkRenderWindow Settings
-        #self.assignOption('offscreen', self.__vtkwindow.SetOffScreenRendering)
-        self.assignOption('smoothing', self.__vtkwindow.SetLineSmoothing)
-        self.assignOption('smoothing', self.__vtkwindow.SetPolygonSmoothing)
-        self.assignOption('smoothing', self.__vtkwindow.SetPointSmoothing)
+        #self.assignParam('offscreen', self.__vtkwindow.SetOffScreenRendering)
+        self.assignParam('smoothing', self.__vtkwindow.SetLineSmoothing)
+        self.assignParam('smoothing', self.__vtkwindow.SetPolygonSmoothing)
+        self.assignParam('smoothing', self.__vtkwindow.SetPointSmoothing)
 
         #self.setOption('antialiasing', self.__vtkwindow.SetAAFrames)
-        self.assignOption('multisamples', self.__vtkwindow.SetMultiSamples)
-        self.assignOption('size', self.__vtkwindow.SetSize)
+        self.assignParam('multisamples', self.__vtkwindow.SetMultiSamples)
+        self.assignParam('size', self.__vtkwindow.SetSize)
 
 
         #self.__vtkwindow.Start()
         #print self.__vtkwindow
 
-        #print self.getOption('background')
-        #self.__background._options.update(self.getOption('background'))
+        #print self.getParam('background')
+        #self.__background._options.update(self.getParam('background'))
 
         # Observers
         #if self.__vtkinteractor:
 
-        #    for observer in self.getOption('observers'):
+        #    for observer in self.getParam('observers'):
         #        if not isinstance(observer, observers.ChiggerObserver):
         #            msg = "The supplied observer of type {} must be a {} object."
         #            raise mooseutils.MooseException(msg.format(type(observer),
@@ -311,9 +311,9 @@ class Window(base.ChiggerAlgorithm):
         #self.__vtkwindow.Render()
 
         """
-        if self.getOption('reset_camera'):
+        if self.getParam('reset_camera'):
             for result in self.__viewports:
-                if result.isOptionValid('camera'):
+                if result.isParamValid('camera'):
                     result.getVTKRenderer().ResetCameraClippingRange()
                 else:
                     result.getVTKRenderer().ResetCamera()
@@ -322,9 +322,9 @@ class Window(base.ChiggerAlgorithm):
     def _onRequestData(self, *args):
         base.ChiggerAlgorithm._onRequestData(self, *args)
         #self.__vtkwindow.Render()
-    #def setOptions(self, *args, **kwargs):
-    #    base.ChiggerObject.setOptions(self, *args, **kwargs)
-    #    self.__background._options.update(self.getOption('background'))
+    #def setParams(self, *args, **kwargs):
+    #    base.ChiggerObject.setParams(self, *args, **kwargs)
+    #    self.__background._options.update(self.getParam('background'))
 
 
     def resetCamera(self):
@@ -375,7 +375,7 @@ class Window(base.ChiggerAlgorithm):
         window_filter.SetInput(self.__vtkwindow)
 
         # Allow the background to be transparent
-        if self.getOption('transparent'):
+        if self.getParam('transparent'):
             window_filter.SetInputBufferTypeToRGBA()
 
         self.__vtkwindow.Render()

@@ -18,6 +18,6 @@ window = chigger.RenderWindow(exodus, size=(300,300), test=True)
 reader.update()
 times = reader.getTimes()
 for i in range(4):
-    reader.setOptions(timestep=None, time=times[i])
+    reader.setParams(timestep=None, time=times[i])
     window.write('displacement_off_' + str(i) + '.png')
 window.start()

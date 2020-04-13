@@ -18,8 +18,8 @@ class Cube(GeometricSource):
     VTKSOURCETYPE = vtk.vtkCubeSource
 
     @staticmethod
-    def validOptions():
-        opt = GeometricSource.validOptions()
+    def validParams():
+        opt = GeometricSource.validParams()
         opt.add("bounds", None, vtype=float, size=6,
                 doc="The bounding box for the cube [xmin, xmax, ymin, ymax, zmin, zmax]. This " \
                 "will overwrite the 'lengths' and 'center' options.")
@@ -34,14 +34,14 @@ class Cube(GeometricSource):
         """
         GeometricSource._onRequestInformation(self)
 
-        if self.isOptionValid('center'):
-            self._vtksource.SetCenter(self.getOption('center'))
+        if self.isParamValid('center'):
+            self._vtksource.SetCenter(self.getParam('center'))
 
-        if self.isOptionValid('lengths'):
-            x, y, z = self.getOption('lengths')
+        if self.isParamValid('lengths'):
+            x, y, z = self.getParam('lengths')
             self._vtksource.SetXLength(x)
             self._vtksource.SetYLength(y)
             self._vtksource.SetZLength(z)
 
-        if self.isOptionValid('bounds'):
-            self._vtksource.SetBounds(*self.getOption('bounds'))
+        if self.isParamValid('bounds'):
+            self._vtksource.SetBounds(*self.getParam('bounds'))

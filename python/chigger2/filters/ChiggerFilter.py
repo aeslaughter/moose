@@ -11,8 +11,8 @@ class ChiggerFilter(base.ChiggerAlgorithm):
     FILTERNAME = None
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerAlgorithm.validOptions()
+    def validParams():
+        opt = base.ChiggerAlgorithm.validParams()
         return opt
 
     def __init__(self, **kwargs):

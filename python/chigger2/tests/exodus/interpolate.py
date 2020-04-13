@@ -15,17 +15,17 @@ source = chigger.exodus.ExodusSource(viewport)
 window = chigger.RenderWindow(result, size=(300, 300))
 
 # time = 2, timestep = 0
-reader.setOptions(timestep=0)
+reader.setParams(timestep=0)
 print result.getRange() # [0, 5]
 window.write('interpolate_2.png')
 
 # time = 11, timestep = 1
-reader.setOptions(timestep=1)
+reader.setParams(timestep=1)
 print result.getRange() # [0, 14]
 window.write('interpolate_11.png')
 
 # time = 6.5, timestep = N/A (interpolate)
-reader.setOptions(time=6.5)
+reader.setParams(time=6.5)
 print result.getRange() # [0, 9.5]
 window.write('interpolate_6-5.png') # time = 6.5
 

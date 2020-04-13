@@ -28,7 +28,7 @@ line1 = chigger.graphs.Line(x, y1, label='y1')
 line2 = chigger.graphs.Line(x, y2, label='y2')
 
 # Add lines to graph
-graph.setOptions(lines=(line0, line1, line2))
+graph.setParams(lines=(line0, line1, line2))
 
 # Window
 window = chigger.RenderWindow(graph, size=(500, 250), test=True)

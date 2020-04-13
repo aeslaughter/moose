@@ -16,8 +16,8 @@ class TextAnnotationBase(base.ChiggerResult):
     Base for text based annotations.
     """
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerResult.validOptions()
+    def validParams():
+        opt = base.ChiggerResult.validParams()
         opt.remove('camera')
         return opt
 
@@ -61,26 +61,26 @@ class TextAnnotationBase(base.ChiggerResult):
 
     def _increaseFont(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
-        sz = self.getOption('font_size') + 1
+        sz = self.getParam('font_size') + 1
         self.update(font_size=sz)
         self.printOption('font_size')
 
     def _decreaseFont(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
-        sz = self.getOption('font_size') - 1
+        sz = self.getParam('font_size') - 1
         self.update(font_size=sz)
         self.printOption('font_size')
 
     def _increaseOpacity(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
-        opacity = self.getOption('text_opacity') + 0.01
+        opacity = self.getParam('text_opacity') + 0.01
         if opacity <= 1.:
             self.update(text_opacity=opacity)
             self.printOption('text_opacity')
 
     def _decreaseOpacity(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
-        opacity = self.getOption('text_opacity') - 0.01
+        opacity = self.getParam('text_opacity') - 0.01
         if opacity > 0.:
             self.update(text_opacity=opacity)
             self.printOption('text_opacity')
@@ -93,6 +93,6 @@ class TextAnnotationBase(base.ChiggerResult):
 
     def setActive(self, active):
         """Overrides the default active highlighting."""
-        if self.getOption('highlight_active'):
+        if self.getParam('highlight_active'):
             for src in self.getSources():
                 src.getVTKActor().GetTextProperty().SetFrame(active)

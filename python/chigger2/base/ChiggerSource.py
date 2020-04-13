@@ -47,9 +47,9 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
 
 
     @classmethod
-    def validOptions(cls):
-        opt = ChiggerAlgorithm.validOptions()
-        opt += utils.KeyBindingMixin.validOptions()
+    def validParams(cls):
+        opt = ChiggerAlgorithm.validParams()
+        opt += utils.KeyBindingMixin.validParams()
 
 
         opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
@@ -80,7 +80,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     def __init__(self, viewport, **kwargs):
 
         # Storage for the available filters for this object, this needs to be before the base
-        # class __init__ because the setOptions command of this class attempts to apply options to
+        # class __init__ because the setParams command of this class attempts to apply options to
         # the filters.
         self.__filter_info = list()
 
@@ -124,7 +124,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         self.__filter_info.append(FilterInfo(filter_type=filter_type, active=active))
 
         fname = filter_type.FILTERNAME
-        self._options.add(fname, filter_type.validOptions(),
+        self._options.add(fname, filter_type.validParams(),
                           doc="Options for the '{}' filter.".format(fname))
 
 
@@ -155,8 +155,8 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     def getBounds(self):
         pass
 
-    def setOptions(self, *args, **kwargs):
-        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
+    def setParams(self, *args, **kwargs):
+        ChiggerAlgorithm.setParams(self, *args, **kwargs)
 
         for finfo in self.__filter_info:
             if finfo.filter_type.FILTERNAME in args:
@@ -171,10 +171,10 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         # Connect the filters
         self.__connectFilters()
 
-        self.assignOption('color', self._vtkactor.GetProperty().SetColor)
-        self.assignOption('opacity', self._vtkactor.GetProperty().SetOpacity)
-        self.assignOption('linewidth', self._vtkactor.GetProperty().SetLineWidth)
-        self.assignOption('pointsize', self._vtkactor.GetProperty().SetPointSize)
+        self.assignParam('color', self._vtkactor.GetProperty().SetColor)
+        self.assignParam('opacity', self._vtkactor.GetProperty().SetOpacity)
+        self.assignParam('linewidth', self._vtkactor.GetProperty().SetLineWidth)
+        self.assignParam('pointsize', self._vtkactor.GetProperty().SetPointSize)
 
     def _displayOptions(self, script=False):
         if script:
@@ -219,8 +219,8 @@ class ChiggerSource(ChiggerSourceBase):
     VTKACTORTYPE = vtk.vtkActor
 
     @classmethod
-    def validOptions(cls):
-        opt = ChiggerSourceBase.validOptions()
+    def validParams(cls):
+        opt = ChiggerSourceBase.validParams()
 
         opt.add('representation', default='surface', allow=('surface', 'wireframe', 'points'),
                 doc="View volume representation.")
@@ -240,7 +240,7 @@ class ChiggerSource(ChiggerSourceBase):
     def _onRequestInformation(self):
         ChiggerSourceBase._onRequestInformation(self)
 
-        rep = self.getOption('representation')
+        rep = self.getParam('representation')
         if rep == 'surface':
             self._vtkactor.GetProperty().SetRepresentationToSurface()
         elif rep == 'wireframe':
@@ -248,11 +248,11 @@ class ChiggerSource(ChiggerSourceBase):
         elif rep == 'points':
             self._vtkactor.GetProperty().SetRepresentationToPoints()
 
-        self.assignOption('edges', self._vtkactor.GetProperty().SetEdgeVisibility)
-        self.assignOption('edgecolor', self._vtkactor.GetProperty().SetEdgeColor)
-        self.assignOption('edgewidth', self._vtkactor.GetProperty().SetLineWidth)
+        self.assignParam('edges', self._vtkactor.GetProperty().SetEdgeVisibility)
+        self.assignParam('edgecolor', self._vtkactor.GetProperty().SetEdgeColor)
+        self.assignParam('edgewidth', self._vtkactor.GetProperty().SetLineWidth)
 
-        self.assignOption('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
+        self.assignParam('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
 
     def getBounds(self):
         return self._vtkmapper.GetBounds()
@@ -262,8 +262,8 @@ class ChiggerSource2D(ChiggerSourceBase):
     VTKACTORTYPE = vtk.vtkActor2D
 
     @classmethod
-    def validOptions(cls):
-        opt = ChiggerSourceBase.validOptions()
+    def validParams(cls):
+        opt = ChiggerSourceBase.validParams()
 
         opt.add('coordinate_system', 'normalized_viewport', vtype=str,
                 allow=('normalized_viewport', 'viewport'), doc="Set the input coordinate system.")
@@ -279,7 +279,7 @@ class ChiggerSource2D(ChiggerSourceBase):
         if self._vtkmapper.GetTransformCoordinate() is None:
             self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())
         coordinate = self._vtkmapper.GetTransformCoordinate()
-        if self.getOption('coordinate_system') == 'normalized_viewport':
+        if self.getParam('coordinate_system') == 'normalized_viewport':
             coordinate.SetCoordinateSystemToNormalizedViewport()
         else:
             coordinate.SetCoordinateSystemToViewport()

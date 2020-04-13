@@ -7,21 +7,21 @@ import chigger
 filename = '../input/input_out.e'
 reader = chigger.exodus.ExodusReader(filename)
 result = chigger.exodus.ExodusResult(reader, lim=(0,14), variable='u')
-result.setOptions('edges', visible=True)
+result.setParams('edges', visible=True)
 window = chigger.RenderWindow(result, size=(300, 300))
 
 # time = 2, timestep = 0
-reader.setOptions(timestep=0)
+reader.setParams(timestep=0)
 print result.getRange() # [0, 5]
 window.write('interpolate_adapt_2.png')
 
 # time = 11, timestep = 1
-reader.setOptions(timestep=1)
+reader.setParams(timestep=1)
 print result.getRange() # [0, 14]
 window.write('interpolate_adapt_11.png')
 
 # time = 6.5, timestep = N/A (interpolate)
-reader.setOptions(time=6.5)
+reader.setParams(time=6.5)
 print result.getRange() # [0, 9.5]
 window.write('interpolate_adapt_6-5.png') # time = 6.5
 

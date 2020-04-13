@@ -21,9 +21,9 @@ class Text(base.ChiggerSource):
 
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerSource.validOptions()
-        opt += utils.TextOptions.validOptions()
+    def validParams():
+        opt = base.ChiggerSource.validParams()
+        opt += utils.TextOptions.validParams()
         opt.add('text', vtype=str, doc="The text to display.")
         opt.add('position', vtype=float, size=2, doc="The text position in normalized viewport coordinates.")
         return opt
@@ -35,8 +35,8 @@ class Text(base.ChiggerSource):
     def applyOptions(self):
         base.ChiggerSource.applyOptions(self)
 
-        self.assignOption('text', self._vtkactor.SetInput)
+        self.assignParam('text', self._vtkactor.SetInput)
 
         utils.TextOptions.applyOptions(self._vtkactor.GetTextProperty(), self._options)
 
-        self.assignOption('position', self._vtkactor.SetPosition)
+        self.assignParam('position', self._vtkactor.SetPosition)

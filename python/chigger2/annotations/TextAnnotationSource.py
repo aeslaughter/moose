@@ -18,15 +18,15 @@ class TextAnnotationSource(base.ChiggerSourceBase):
     """
 
     @staticmethod
-    def validOptions():
+    def validParams():
         """
         Return default options for this object.
         """
-        opt = base.ChiggerSourceBase.validOptions()
+        opt = base.ChiggerSourceBase.validParams()
         opt.add('position', default=(0.5, 0.5), vtype=float, size=2,
                 doc="The text position within the viewport, in relative coordinates.")
         opt.add('text', vtype=str, doc="The text to display.")
-        opt += utils.FontOptions.validOptions()
+        opt += utils.FontOptions.validParams()
         return opt
 
     def __init__(self, **kwargs):
@@ -41,8 +41,8 @@ class TextAnnotationSource(base.ChiggerSourceBase):
         super(TextAnnotationSource, self).update(**kwargs)
 
         utils.FontOptions.applyOptions(self._vtkactor.GetTextProperty(), self._options)
-        if self.isOptionValid('position'):
+        if self.isParamValid('position'):
             self._vtkactor.GetPositionCoordinate().SetValue(*self.applyOption('position'))
 
-        if self.isOptionValid('text'):
+        if self.isParamValid('text'):
             self._vtkactor.SetInput(self.applyOption('text'))

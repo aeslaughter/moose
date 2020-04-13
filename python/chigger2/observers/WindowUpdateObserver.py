@@ -13,8 +13,8 @@ class WindowUpdateObserver(TimerObserver):
     A repeating timer that updates the RenderWindow.
     """
     @staticmethod
-    def validOptions():
-        opt = TimerObserver.validOptions()
+    def validParams():
+        opt = TimerObserver.validParams()
         return opt
 
     def onTimer(self, obj, event): #pylint: disable=unused-argument

@@ -19,8 +19,8 @@ class CylinderSource(BaseType):
     """
 
     @staticmethod
-    def validOptions():
-        opt = BaseType.validOptions()
+    def validParams():
+        opt = BaseType.validParams()
         opt.add('height', doc="The height of the cylinder", vtype=float)
         opt.add('radius', doc="The radius of the cylinder.", vtype=float)
         opt.add('resolution', default=8, doc="The number of sides of the cylinder.", vtype=int)
@@ -36,11 +36,11 @@ class CylinderSource(BaseType):
         """
         super(CylinderSource, self).update(**kwargs)
 
-        if self.isOptionValid('height'):
+        if self.isParamValid('height'):
             self._vtksource.SetHeight(self.applyOption('height'))
-        if self.isOptionValid('radius'):
+        if self.isParamValid('radius'):
             self._vtksource.SetRadius(self.applyOption('radius'))
-        if self.isOptionValid('resolution'):
+        if self.isParamValid('resolution'):
             self._vtksource.SetResolution(self.applyOption('resolution'))
-        if self.isOptionValid('capping'):
+        if self.isParamValid('capping'):
             self._vtksource.CappingOn()

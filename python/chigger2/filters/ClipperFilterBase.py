@@ -18,8 +18,8 @@ class ClipperFilterBase(ChiggerFilterBase):
     CLIPFUNCTION_TYPE = vtk.vtkImplicitFunction
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerFilterBase.validOptions()
+    def validParams():
+        opt = ChiggerFilterBase.validParams()
         opt.add('normalized', default=True, vtype=bool,
                 doc="When True supplied position arguments are supplied in "
                     "normalized coordinates (0-1) with respect to the object "
@@ -41,7 +41,7 @@ class ClipperFilterBase(ChiggerFilterBase):
         """
         super(ClipperFilterBase, self).update(**kwargs)
 
-        if self.isOptionValid('inside_out'):
+        if self.isParamValid('inside_out'):
             self._vtkfilter.SetInsideOut(self.applyOption('inside_out'))
 
     def getPosition(self, position):
@@ -52,7 +52,7 @@ class ClipperFilterBase(ChiggerFilterBase):
             position[list]: The position to convert, note nothing occurs if 'normalized=False'.
         """
         bounds = self._source.getBounds()
-        normalized = self.getOption('normalized')
+        normalized = self.getParam('normalized')
         if normalized:
             for i, j in enumerate([0, 2, 4]):
                 scale = bounds[j+1] - bounds[j]

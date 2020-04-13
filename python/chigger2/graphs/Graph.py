@@ -20,21 +20,21 @@ class Graph(base.ChiggerResultBase):
     """
 
     @staticmethod
-    def validOptions():
+    def validParams():
         """
         Options specific to the graph as a whole. (static)
         """
-        opt = base.ChiggerResultBase.validOptions()
+        opt = base.ChiggerResultBase.validParams()
         opt.add('color_scheme', vtype=str, doc="The VTK color scheme to utilize.")
-        opt.add('xaxis', default=utils.AxisOptions.validOptions(),
+        opt.add('xaxis', default=utils.AxisOptions.validParams(),
                 doc="The settings for the x-axis.")
-        opt.add('yaxis', default=utils.AxisOptions.validOptions(),
+        opt.add('yaxis', default=utils.AxisOptions.validParams(),
                 doc="The settings for the y-axis.")
-        opt.add('x2axis', default=utils.AxisOptions.validOptions(),
+        opt.add('x2axis', default=utils.AxisOptions.validParams(),
                 doc="The settings for the secondary x-axis (top).")
-        opt.add('y2axis', default=utils.AxisOptions.validOptions(),
+        opt.add('y2axis', default=utils.AxisOptions.validParams(),
                 doc="The settings for the secondary y-axis (right).")
-        opt.add('legend', default=utils.LegendOptions.validOptions(),
+        opt.add('legend', default=utils.LegendOptions.validParams(),
                 doc="The settings for the graph legend.")
         opt.add('hidden_border', vtype=int,
                 doc="Adjust the border of hidden axis; useful if axis text is cut-off.")
@@ -74,7 +74,7 @@ class Graph(base.ChiggerResultBase):
         self._plots = []
 
         # Add the lines provided as arguments
-        lines = self.getOption('lines') if self.isOptionValid('lines') else []
+        lines = self.getParam('lines') if self.isParamValid('lines') else []
         lines.extend(args)
         self.setOption('lines', lines)
 
@@ -85,24 +85,24 @@ class Graph(base.ChiggerResultBase):
         super(Graph, self).update(*args, **kwargs)
 
         # Global font_size
-        if self.isOptionValid('font_size'):
+        if self.isParamValid('font_size'):
             fz = self.applyOption('font_size')
             for sub_opt in ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'legend']:
-                opt = self.getOption(sub_opt)
-                if not opt.isOptionValid('font_size'):
+                opt = self.getParam(sub_opt)
+                if not opt.isParamValid('font_size'):
                     opt.set('font_size', fz)
 
         # Update Axis options
-        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.BOTTOM), self.getOption('xaxis'))
-        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.LEFT), self.getOption('yaxis'))
-        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.TOP), self.getOption('x2axis'))
-        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.RIGHT), self.getOption('y2axis'))
+        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.BOTTOM), self.getParam('xaxis'))
+        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.LEFT), self.getParam('yaxis'))
+        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.TOP), self.getParam('x2axis'))
+        self._setAxisOptions(self._vtkchart.GetAxis(vtk.vtkAxis.RIGHT), self.getParam('y2axis'))
 
         # Legend
-        utils.LegendOptions.setOptions(self._vtkchart, self._vtkrenderer, self.getOption('legend'))
+        utils.LegendOptions.setParams(self._vtkchart, self._vtkrenderer, self.getParam('legend'))
 
         # Line objects
-        if self.isOptionValid('lines'):
+        if self.isParamValid('lines'):
             for line in self._options.get('lines'):
                 self._addPlotObject(line)
             self._options.remove('lines')
@@ -133,15 +133,15 @@ class Graph(base.ChiggerResultBase):
 
         # Set plot corners
         for line in self._plots:
-            corner = line.options().raw('corner').allow.index(line.getOption('corner'))
+            corner = line.options().raw('corner').allow.index(line.getParam('corner'))
             for plot in line.getVTKPlotObjects():
                 self._vtkchart.SetPlotCorner(plot, corner)
 
             line.update()
 
         # Adjust hidden borders
-        if self.isOptionValid('hidden_border'):
-            self._vtkchart.SetHiddenAxisBorder(self.getOption('hidden_border'))
+        if self.isParamValid('hidden_border'):
+            self._vtkchart.SetHiddenAxisBorder(self.getParam('hidden_border'))
 
     def _addPlotObject(self, line):
         """
@@ -155,13 +155,13 @@ class Graph(base.ChiggerResultBase):
         line.initialize()
 
         # Set the line color, if not set by the user
-        if not line.isOptionValid('color'):
+        if not line.isParamValid('color'):
 
             # Colors
             if self._vtkcolorseries is None:
                 self._vtkcolorseries = vtk.vtkColorSeries()
-                if self.isOptionValid('color_scheme'):
-                    scheme = eval('vtk.vtkColorSeries.' + self.getOption('color_scheme').upper())
+                if self.isParamValid('color_scheme'):
+                    scheme = eval('vtk.vtkColorSeries.' + self.getParam('color_scheme').upper())
                     self._vtkcolorseries.SetColorScheme(scheme)
 
             n_lines = len(self._plots)
@@ -174,7 +174,7 @@ class Graph(base.ChiggerResultBase):
             c = [c[0]/256., c[1]/256., c[2]/256.]
 
             # If the color matches the background, flip it
-            b = self.getRenderWindow().getOption('background')
+            b = self.getRenderWindow().getParam('background')
             if (c[0] == b[0]) and (c[1] == b[1]) and (c[2] == c[2]):
                 c[0] = 1 - c[0]
                 c[1] = 1 - c[1]
@@ -192,7 +192,7 @@ class Graph(base.ChiggerResultBase):
             axis[vtkAxis]: The axis to update.
             opt[Options]: The options to apply to the axis.
         """
-        utils.AxisOptions.setOptions(vtkaxis, opt)
+        utils.AxisOptions.setParams(vtkaxis, opt)
 
         # Adjust hidden border size (changes made here are overridden by the 'hidden_border' option)
         if self._vtkchart.GetHiddenAxisBorder() < vtkaxis.GetLabelProperties().GetFontSize():
@@ -201,7 +201,7 @@ class Graph(base.ChiggerResultBase):
     def _setFont(self, window, binding): #pylint: disable=unused-argument
         """Keybinding method."""
         step = -1 if binding.shift else 1
-        sz = self.getOption('font_size') + step
+        sz = self.getParam('font_size') + step
         self.update(font_size=sz)
         self.printOption('font_size')
 
@@ -210,7 +210,7 @@ class Graph(base.ChiggerResultBase):
         increment = -1 if binding.shift else 1
         for plt in self._plots:
             if isinstance(plt, Line):
-                sz = plt.getOption('width') + increment
+                sz = plt.getParam('width') + increment
                 if sz >= 0:
                     plt.update(width=sz)
                 plt.printOption('width')

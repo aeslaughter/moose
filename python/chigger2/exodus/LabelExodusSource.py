@@ -26,9 +26,9 @@ class LabelExodusSource(base.ChiggerSource2D):
     FILTER_TYPES = [filters.IdFilter, filters.CellCenters, filters.SelectVisiblePoints]
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerSource2D().validOptions()
-        opt += utils.FontOptions.validOptions()
+    def validParams():
+        opt = base.ChiggerSource2D().validParams()
+        opt += utils.FontOptions.validParams()
         opt.add('label_type', default='variable', vtype=str,
                 doc="Specify the type of label to create.",
                 allow=('point', 'cell', 'variable'))
@@ -61,10 +61,10 @@ class LabelExodusSource(base.ChiggerSource2D):
         """
 
         # Apply options (update can't be called here b/c the required filters need to be set first)
-        self.setOptions(**kwargs)
+        self.setParams(**kwargs)
 
         # Update the required filters based on the label type.
-        label_type = self.getOption('label_type')
+        label_type = self.getParam('label_type')
         if label_type == 'cell':
             self._required_filters = [filters.IdFilter(), filters.CellCenters(),
                                       filters.SelectVisiblePoints()]
@@ -78,7 +78,7 @@ class LabelExodusSource(base.ChiggerSource2D):
                 self._required_filters = [filters.CellCenters(), filters.SelectVisiblePoints()]
             else:
                 self._required_filters = [filters.SelectVisiblePoints()]
-            self._vtkmapper.SetFieldDataName(self._exodus_source.getOption('variable'))
+            self._vtkmapper.SetFieldDataName(self._exodus_source.getParam('variable'))
             self._vtkmapper.SetLabelModeToLabelFieldData()
 
         # Call base class to connect filters/mappers

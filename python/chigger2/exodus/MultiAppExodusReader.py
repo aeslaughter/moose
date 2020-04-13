@@ -26,8 +26,8 @@ class MultiAppExodusReader(base.ChiggerObject):
     """
 
     @staticmethod
-    def validOptions():
-        opt = ExodusReader.validOptions()
+    def validParams():
+        opt = ExodusReader.validParams()
         return opt
 
     def __init__(self, pattern, **kwargs):
@@ -68,13 +68,13 @@ class MultiAppExodusReader(base.ChiggerObject):
         for reader in self.__readers:
             reader.setOption(*args, **kwargs)
 
-    def setOptions(self, *args, **kwargs):
+    def setParams(self, *args, **kwargs):
         """
         Set options for all contained readers.
         """
-        super(MultiAppExodusReader, self).setOptions(*args, **kwargs)
+        super(MultiAppExodusReader, self).setParams(*args, **kwargs)
         for reader in self.__readers:
-            reader.setOptions(*args, **kwargs)
+            reader.setParams(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         """

@@ -19,8 +19,8 @@ class ColorBar(base.ChiggerCompositeSource):
     width, which makes it difficult to control either. This class decouples the colorbar and labels.
     """
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerCompositeSource.validOptions()
+    def validParams():
+        opt = base.ChiggerCompositeSource.validParams()
         opt.add('origin', (0.5, 0.5), vtype=float, size=2, doc="Define the center of the colorbar, in relative viewport coordinates.")
         opt.add('width', 0.025, vtype=float, doc="The width of the colorbar, in relative viewport coordinates.")
         opt.add('length', 0.7, vtype=float, doc="The length of the colorbar, in relative viewport coordinates.")
@@ -58,24 +58,24 @@ class ColorBar(base.ChiggerCompositeSource):
         # ColorBar Rectangle
         rectangle = self._sources[0]
 
-        origin = self.getOption('origin')
-        width = self.getOption('width')
-        length = self.getOption('length')
-        angle = self.getOption('rotate')
+        origin = self.getParam('origin')
+        width = self.getParam('width')
+        length = self.getParam('length')
+        angle = self.getParam('rotate')
 
         p0 = (origin[0]-width/2., origin[1]-length/2., 0)
         p1 = (p0[0] + width, p0[1], 0)
         p2 = (p0[0], p0[1] + length, 0)
 
-        res = self.getOption('resolution')
-        rectangle.setOptions(origin=p0, point1=p1, point2=p2,
-                             cmap=self.getOption('cmap'),
+        res = self.getParam('resolution')
+        rectangle.setParams(origin=p0, point1=p1, point2=p2,
+                             cmap=self.getParam('cmap'),
                              cmap_num_colors=res,
-                             rotate=self.getOption('rotate'),
-                             cmap_reverse=self.getOption('reverse'),
+                             rotate=self.getParam('rotate'),
+                             cmap_reverse=self.getParam('reverse'),
                              resolution=(1, res))
 
-        data = rectangle.getOption('point_data')
+        data = rectangle.getParam('point_data')
         if (data is None) or (data.GetNumberOfTuples() != res):
             rectangle.setOption('point_data', self.__computeColorMapPointData(res))
 
@@ -108,7 +108,7 @@ class ColorBar(base.ChiggerCompositeSource):
         """
         Helper for changing the width and length of the colorbar.
         """
-        value = self.getOption(name) + increment
+        value = self.getParam(name) + increment
         if value < 1 and value > 0:
             self.printOption(name)
             self.setOption(name, value)

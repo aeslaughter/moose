@@ -17,9 +17,9 @@ class ExodusResultLineSampler(ChiggerResult):
     """
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerResult.validOptions()
-        opt += ExodusSourceLineSampler.validOptions()
+    def validParams():
+        opt = ChiggerResult.validParams()
+        opt += ExodusSourceLineSampler.validParams()
         return opt
 
     def __init__(self, exodus_result, **kwargs):
@@ -31,5 +31,5 @@ class ExodusResultLineSampler(ChiggerResult):
 
         super(ExodusResultLineSampler, self).__init__(*sources,
                                                       renderer=exodus_result.getVTKRenderer(),
-                                                      viewport=exodus_result.getOption('viewport'),
+                                                      viewport=exodus_result.getParam('viewport'),
                                                       **kwargs)

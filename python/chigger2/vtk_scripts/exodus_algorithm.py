@@ -10,8 +10,8 @@ class ExodusReader(ChiggerAlgorithm, VTKPythonAlgorithmBase):
     """I am building a tool for Exodus files, it will be doing all sorts of helpful tasks..."""
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerAlgorithm.validOptions()
+    def validParams():
+        opt = ChiggerAlgorithm.validParams()
         #opt.add('time', vtype=float,
         #        doc="The time to view, if not specified the last timestep is displayed.")
         opt.add("timestep", default=-1, vtype=int,
@@ -46,7 +46,7 @@ class ExodusReader(ChiggerAlgorithm, VTKPythonAlgorithmBase):
         #self.__reader0.SetFileName(self.__filename)
         #self.__reader0.UpdateInformation()
 
-        self.__reader0.SetTimeStep(self.getOption('timestep'))
+        self.__reader0.SetTimeStep(self.getParam('timestep'))
         self.__reader0.SetAllArrayStatus(vtk.vtkExodusIIReader.NODAL, 1) # enables all NODAL variables
         self.__reader0.Update()
 
@@ -78,7 +78,7 @@ class ExodusReader(ChiggerAlgorithm, VTKPythonAlgorithmBase):
     #    Returns:
     #        list: Contains tuples (filename, modified time) of active file(s).
     #    """
-    #    if self.isOptionValid('adaptive'):
+    #    if self.isParamValid('adaptive'):
     #        return utils.get_active_filenames(self.__filename, self.__filename + '-s*')
     #    else:
     #        return utils.get_active_filenames(self.__filename)

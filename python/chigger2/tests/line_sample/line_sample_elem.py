@@ -23,8 +23,8 @@ y = sample[0].getSample('aux')
 
 line = chigger.graphs.Line(x, y, width=4, label='probe')
 graph = chigger.graphs.Graph(line, viewport=(0.5,0,1,1))
-graph.setOptions('xaxis', lim=(0, 1.4))
-graph.setOptions('yaxis', lim=(0, 1.))
+graph.setParams('xaxis', lim=(0, 1.4))
+graph.setParams('yaxis', lim=(0, 1.))
 
 window = chigger.RenderWindow(result, cbar, sample, graph, size=(800, 400), test=True)
 

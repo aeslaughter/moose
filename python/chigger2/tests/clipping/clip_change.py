@@ -29,6 +29,6 @@ window = chigger.RenderWindow(mug, size=(300,300), test=True)
 # Render the results and write a file
 steps = [-1, 0, 1]
 for i in range(len(steps)):
-    clip.setOptions(origin=tuple([steps[i]]*3))
+    clip.setParams(origin=tuple([steps[i]]*3))
     window.write('clip_change' + str(i) + '.png')
 window.start()

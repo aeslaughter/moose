@@ -18,7 +18,7 @@ window = chigger.RenderWindow(mug, size=(600,600), test=True)
 reader.update()
 times = reader.getTimes()
 for i in range(len(times)):
-    reader.setOptions(timestep=i)
+    reader.setParams(timestep=i)
     window.write('adapt_' + str(i) + '.png')
 
 window.start()

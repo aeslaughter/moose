@@ -35,8 +35,8 @@ def create(base_type):
         FILTER_TYPES = []
 
         @staticmethod
-        def validOptions():
-            opt = source_type.validOptions()
+        def validParams():
+            opt = source_type.validParams()
             opt.add('origin', default=(0, 0, 0), vtype=float, size=3,
                     doc='Define the origin of the plane.')
             opt.add('point1', default=(1, 0, 0), vtype=float, size=3,
@@ -48,7 +48,7 @@ def create(base_type):
             opt.add('data', None, vtype=vtk.vtkFloatArray,
                     doc="The VTK data to attach to the vtkMapper for this object, for used with " \
                         "the 'cmap' option.")
-            opt += ColorMap.validOptions()
+            opt += ColorMap.validParams()
            # opt.set('color', None)
             opt.set('cmap', None)
             return opt
@@ -62,35 +62,35 @@ def create(base_type):
             """
             super(PlaneSourceMeta, self).update(**kwargs)
 
-            if self.isOptionValid('origin'):
-                self._vtksource.SetOrigin(*self.getOption('origin'))
+            if self.isParamValid('origin'):
+                self._vtksource.SetOrigin(*self.getParam('origin'))
 
-            if self.isOptionValid('point1'):
-                self._vtksource.SetPoint1(*self.getOption('point1'))
+            if self.isParamValid('point1'):
+                self._vtksource.SetPoint1(*self.getParam('point1'))
 
-            if self.isOptionValid('point2'):
-                self._vtksource.SetPoint2(*self.getOption('point2'))
+            if self.isParamValid('point2'):
+                self._vtksource.SetPoint2(*self.getParam('point2'))
 
-            if self.isOptionValid('resolution'):
-                self._vtksource.SetResolution(*self.getOption('resolution'))
+            if self.isParamValid('resolution'):
+                self._vtksource.SetResolution(*self.getParam('resolution'))
 
-            if self.isOptionValid('cmap'):
-                if self.isOptionValid('color'):
+            if self.isParamValid('cmap'):
+                if self.isParamValid('color'):
                     mooseutils.mooseWarning('The "color" and "cmap" options are both being set, '
                                             'the "color" will be ignored.')
 
-                #if not self.isOptionValid('data'):
+                #if not self.isParamValid('data'):
                 #    mooseutils.mooseError('The "cmap" option requires that "data" option also '
                 #                          'be supplied.')
 
-                if self.isOptionValid('data'):
+                if self.isParamValid('data'):
                     self._vtksource.Update()
-                    data = self.getOption('data')
+                    data = self.getParam('data')
                     self._vtksource.GetOutput().GetCellData().SetScalars(data)
-                    cmap_options = {key:self.getOption(key) for key in ['cmap', 'cmap_reverse',
+                    cmap_options = {key:self.getParam(key) for key in ['cmap', 'cmap_reverse',
                                                                         'cmap_num_colors',
                                                                         'cmap_range']}
-                    self._colormap.setOptions(**cmap_options)
+                    self._colormap.setParams(**cmap_options)
                     self._vtkmapper.SetScalarRange(data.GetRange(0))
                     self._vtkmapper.SetLookupTable(self._colormap())
 

@@ -28,8 +28,8 @@ class ExodusResult(base.ChiggerResult):
     INPUTTYPE = 'vtkMultiBlockDataSet'
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerResult.validOptions()
+    def validParams():
+        opt = base.ChiggerResult.validParams()
 
         # Variable selection
         opt.add('variable', vtype=str, doc="The nodal or elemental variable to render.")
@@ -58,7 +58,7 @@ class ExodusResult(base.ChiggerResult):
                 doc="View volume representation.")
 
         # Colormap
-        opt += base.ColorMap.validOptions()
+        opt += base.ColorMap.validParams()
 
         opt.add('explode', None, vtype=float,
                 doc="When multiple sources are being used (e.g., NemesisReader) setting this to a "
@@ -106,7 +106,7 @@ class ExodusResult(base.ChiggerResult):
         # Update the block/boundary/nodeset settings to convert [] to all.
         block_info = self._inputs[0].getBlockInformation()
         for item in ['block', 'boundary', 'nodeset']:
-            opt = self.getOption(item)
+            opt = self.getParam(item)
             if opt == []:
                 self.setOption(item, [item.name for item in \
                                       block_info[getattr(ExodusReader, item.upper())].itervalues()])
@@ -115,7 +115,7 @@ class ExodusResult(base.ChiggerResult):
         def get_indices(option, vtk_type):
             """Helper to populate vtkExtractBlock object from selected blocks/sidesets/nodesets"""
             indices = []
-            blocks = self.getOption(option)
+            blocks = self.getParam(option)
             if blocks:
                 for vtkid, item in block_info[vtk_type].items():
                     for name in blocks:
@@ -171,14 +171,14 @@ class ExodusResult(base.ChiggerResult):
             return
 
         # Re-compute ranges for all sources
-        rng = list(self.getRange(local=self.getOption('local_range')))
-        if self.isOptionValid('lim'):
-            rng = self.getOption('lim')
+        rng = list(self.getRange(local=self.getParam('local_range')))
+        if self.isParamValid('lim'):
+            rng = self.getParam('lim')
         else:
-            if self.isOptionValid('min'):
-                rng[0] = self.getOption('min')
-            if self.isOptionValid('max'):
-                rng[1] = self.getOption('max')
+            if self.isParamValid('min'):
+                rng[0] = self.getParam('min')
+            if self.isParamValid('max'):
+                rng[1] = self.getParam('max')
 
         if rng[0] > rng[1]:
             mooseutils.mooseDebug("Minimum range greater than maximum:", rng[0], ">", rng[1],
@@ -189,7 +189,7 @@ class ExodusResult(base.ChiggerResult):
             src.getVTKMapper().SetScalarRange(rng)
 
         # Explode
-        if self.isOptionValid('explode'):
+        if self.isParamValid('explode'):
             factor = self.applyOption('explode')
             m = self.getCenter()
             for src in self._sources:
@@ -244,10 +244,10 @@ class ExodusResult(base.ChiggerResult):
             return
 
         default = available[available.keys()[0]]
-        if not self.isOptionValid('variable'):
+        if not self.isParamValid('variable'):
             varinfo = default
         else:
-            var_name = self.getOption('variable')
+            var_name = self.getParam('variable')
             if var_name not in available:
                 msg = "The variable '{}' provided does not exist, using '{}', available " \
                       "variables include:\n{}"
@@ -268,10 +268,10 @@ class ExodusResult(base.ChiggerResult):
         self.__current_variable = varinfo
 
         # Colormap
-        if not self.getOption('color'):
-            self._colormap.setOptions(cmap=self.getOption('cmap'),
-                                      cmap_reverse=self.getOption('cmap_reverse'),
-                                      cmap_num_colors=self.getOption('cmap_num_colors'))
+        if not self.getParam('color'):
+            self._colormap.setParams(cmap=self.getParam('cmap'),
+                                      cmap_reverse=self.getParam('cmap_reverse'),
+                                      cmap_num_colors=self.getParam('cmap_num_colors'))
             for vtkmapper in self._vtkmappers:
                 vtkmapper.SelectColorArray(varinfo.name)
                 vtkmapper.SetLookupTable(self._colormap())
@@ -279,8 +279,8 @@ class ExodusResult(base.ChiggerResult):
 
         # Component
         component = -1 # Default component to utilize if not valid
-        if self.isOptionValid('component'):
-            component = self.getOption('component')
+        if self.isParamValid('component'):
+            component = self.getParam('component')
 
         for vtkmapper in self._vtkmappers:
             if component == -1:
@@ -293,20 +293,20 @@ class ExodusResult(base.ChiggerResult):
                 vtkmapper.GetLookupTable().SetVectorComponent(component)
 
         # Range
-        if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('lim'):
+        if (self.isParamValid('min') or self.isParamValid('max')) and self.isParamValid('lim'):
             mooseutils.mooseError('Both a "min" and/or "max" options has been set along with the '
                                   '"range" option, the "range" is being utilized, the others are '
                                   'ignored.')
 
         # Range
-        rng = list(self.getRange(local=self.getOption('local_lim')))
-        if self.isOptionValid('lim'):
-            rng = self.getOption('lim')
+        rng = list(self.getRange(local=self.getParam('local_lim')))
+        if self.isParamValid('lim'):
+            rng = self.getParam('lim')
         else:
-            if self.isOptionValid('min'):
-                rng[0] = self.getOption('min')
-            if self.isOptionValid('max'):
-                rng[1] = self.getOption('max')
+            if self.isParamValid('min'):
+                rng[0] = self.getParam('min')
+            if self.isParamValid('max'):
+                rng[1] = self.getParam('max')
 
         if rng[0] > rng[1]:
             mooseutils.mooseDebug("Minimum range greater than maximum:", rng[0], ">", rng[1],
@@ -333,7 +333,7 @@ class ExodusResult(base.ChiggerResult):
         """
         Private version of range for the update method.
         """
-        component = self.getOption('component')
+        component = self.getParam('component')
         pairs = []
         for filters in self._filters:
             filter_obj = None
@@ -363,7 +363,7 @@ class ExodusResult(base.ChiggerResult):
         """
         Determine the range of visible items.
         """
-        component = self.getOption('component')
+        component = self.getParam('component')
         pairs = []
         for vtkmapper in self._vtkmappers:
             vtkmapper.Update() # required to have up-to-date ranges
@@ -399,7 +399,7 @@ class ExodusResult(base.ChiggerResult):
                                             'variable "{}"'.format(self.__current_variable.name))
 
     def _updateOpacity(self, window, binding): #pylint: disable=unuysed-argument
-        opacity = self.getOption('opacity')
+        opacity = self.getParam('opacity')
         if binding.shif
             if opacity > 0.05:
                 opacity -= 0.05
@@ -412,7 +412,7 @@ class ExodusResult(base.ChiggerResult):
     def _updateColorMap(self, window, binding): #pylint: disable=unused-argument
         step = 1 if not binding.shift else -1
         available = self._sources[0]._colormap.names() #pylint: disable=protected-access
-        index = available.index(self.getOption('cmap'))
+        index = available.index(self.getParam('cmap'))
 
         n = len(available)
         index += step

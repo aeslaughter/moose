@@ -8,8 +8,8 @@ class ExtractBlockFilter(ChiggerFilter):
     FILTERNAME = 'extract'
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerFilter.validOptions()
+    def validParams():
+        opt = ChiggerFilter.validParams()
         opt.add('indices', vtype=list,
                 doc="The list of vtkMultiBlockDataSet indices to extract.")
         return opt
@@ -30,7 +30,7 @@ class ExtractBlockFilter(ChiggerFilter):
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
 
-        extract_indices = self.getOption('indices')
+        extract_indices = self.getParam('indices')
         if not extract_indices:
             msg = "The 'indices' option was empty for the ExtractBlockFilter, " \
                   "this filter is being bypassed."

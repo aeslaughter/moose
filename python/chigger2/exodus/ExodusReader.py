@@ -106,8 +106,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
     VARIABLE_TYPES_NAMES = {ELEMENTAL:'ELEMENTAL', NODAL:'NODAL', GLOBAL:'GLOBAL'}
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerAlgorithm.validOptions()
+    def validParams():
+        opt = base.ChiggerAlgorithm.validParams()
         opt.add('filename', vtype=str, doc="The filename to load, this is typically set via the constructor.")
 
         opt.add('time', vtype=(int, float),
@@ -165,14 +165,14 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         super(ExodusReader, self)._onRequestInformation()
 
         # The file to load
-        filename = self.getOption('filename')
+        filename = self.getParam('filename')
         if not os.path.isfile(filename):
             self.error("The file {} is not a valid filename.", filename)
             return 0
 
         # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
         # block information only needs to be updated if the file list changed
-        filenames = self.__getActiveFilenames(self.getOption('filename'))
+        filenames = self.__getActiveFilenames(self.getParam('filename'))
         if self.__filenames != filenames:
             self.__filenames = filenames
 
@@ -214,7 +214,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
                 vtkobject = vtk.vtkTemporalInterpolator()
                 vtkobject.SetInputConnection(0, file0.vtkreader.GetOutputPort(0))
-                vtkobject.UpdateTimeStep(self.getOption('time'))
+                vtkobject.UpdateTimeStep(self.getParam('time'))
 
             # Interpolation across files
             else:
@@ -265,7 +265,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.updateData()
         if not self.hasVariable(self.GLOBAL, variable):
             self.error("The supplied global variable, '{}', does not exist in {}.", variable,
-                       self.getOption('filename'))
+                       self.getParam('filename'))
             return sys.float_info.min
 
         time0, time1 = self.__getCurrentTimeInformation()
@@ -286,7 +286,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             g0 = vtkobject0.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time0.index, 0)
             g1 = vtkobject1.GetOutput().GetBlock(0).GetBlock(0).GetFieldData().GetAbstractArray(variable).GetComponent(time1.index, 0)
 
-            return utils.interp(self.getOption('time'), [time0.time, time1.time], [g0, g1])
+            return utils.interp(self.getParam('time'), [time0.time, time1.time], [g0, g1])
 
         elif (time0 is not None):
             vtkobject = self.__fileinfo[time0.filename].vtkreader
@@ -357,8 +357,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """(private)
         getCurrentTimeInformation, without updateInformation call.
         """
-        time = self.getOption('time')
-        timestep = self.getOption('timestep')
+        time = self.getParam('time')
+        timestep = self.getParam('timestep')
 
         # "time" option
         n = len(self.__timeinfo) - 1
@@ -380,7 +380,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             # Locate index less than or equal to the desired time
             idx = bisect.bisect_right(times, time) - 1
-            if self.getOption('time_interpolation'):
+            if self.getParam('time_interpolation'):
                 return self.__timeinfo[idx], self.__timeinfo[idx+1]
             else:
                 return self.__timeinfo[idx], None
@@ -433,14 +433,14 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 vtkreader.SetObjectStatus(binfo.object_type, binfo.object_index, binfo.active)
 
         # Displacement Settings
-        vtkreader.SetApplyDisplacements(self.getOption('displacements'))
-        vtkreader.SetDisplacementMagnitude(self.getOption('displacement_magnitude'))
+        vtkreader.SetApplyDisplacements(self.getParam('displacements'))
+        vtkreader.SetDisplacementMagnitude(self.getParam('displacement_magnitude'))
 
         # According to the VTK documentation setting this to False (not the default) speeds
         # up data loading. In my testing I was seeing load times cut in half or more with
         # "squeezing" disabled. I am leaving this as an option just in case we discover some
         # reason it shouldn't be disabled.
-        vtkreader.SetSqueezePoints(self.getOption('squeeze'))
+        vtkreader.SetSqueezePoints(self.getParam('squeeze'))
 
     def __getActiveFilenames(self, filename):
         """(private)
@@ -449,7 +449,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             list: Contains tuples (filename, modified time) of active file(s).
         """
-        if self.getOption('adaptive'):
+        if self.getParam('adaptive'):
             return utils.get_active_filenames(filename, filename + '-s*')
         else:
             return utils.get_active_filenames(filename)
@@ -513,7 +513,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.debug('__updateBlockInformation')
 
         self.__blockinfo = collections.defaultdict(list)
-        finfo = self.__fileinfo[self.getOption('filename')]
+        finfo = self.__fileinfo[self.getParam('filename')]
         with lock_file(finfo.filename):
             index = 0                   # index to be used with the vtkExtractBlock::AddIndex method
             vtkreader = finfo.vtkreader # the vtkExodusIIReader object for the first file
@@ -541,7 +541,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         same variables.
         """
         self.debug('__updateVariableInformation')
-        finfo = self.__fileinfo[self.getOption('filename')]
+        finfo = self.__fileinfo[self.getParam('filename')]
 
         self.__variableinfo = dict()
         with lock_file(finfo.filename):
@@ -562,7 +562,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Set the data arrays (variables) to load.
         """
         self.debug('__updateActiveVariables')
-        variables = self.getOption('variables')
+        variables = self.getParam('variables')
         if variables is not None:
             self.__activeVariableCheck(variables)
             for var_group in self.__variableinfo.values():
@@ -578,9 +578,9 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Set the geometric arrays (variables) to load.
         """
         self.debug('__updateActiveBlocks')
-        b = self.getOption('blocks')
-        n = self.getOption('nodesets')
-        s = self.getOption('sidesets')
+        b = self.getParam('blocks')
+        n = self.getParam('nodesets')
+        s = self.getParam('sidesets')
         self.__setActiveBlocks('blocks', b, (n, s), self.__blockinfo[ExodusReader.BLOCK])
         self.__setActiveBlocks('nodesets', n, (b, s), self.__blockinfo[ExodusReader.NODESET])
         self.__setActiveBlocks('sidesets', s, (b, n), self.__blockinfo[ExodusReader.SIDESET])

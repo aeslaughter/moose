@@ -9,13 +9,13 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from .Options import Options
+from parameters import InputParameters
 
-def validOptions(): #pylint: disable=invalid-name
+def validParams(): #pylint: disable=invalid-name
     """
     Options specific to the legend.
     """
-    opt = Options()
+    opt = InputParameters()
     opt.add('visible', default=True, vtype=bool,
             doc="Control the visibility of the legend.")
     opt.add('background', vtype=float, size=3,
@@ -33,31 +33,31 @@ def validOptions(): #pylint: disable=invalid-name
     opt.add('border_width', doc="The border width.", vtype=float)
     return opt
 
-def setOptions(vtkchart, vtkrenderer, opt): #pylint: disable=invalid-name
+def setParams(vtkchart, vtkrenderer, opt): #pylint: disable=invalid-name
     """
     A method for updating the legend options.
     """
 
     legend = vtkchart.GetLegend()
 
-    if opt.isOptionValid('visible'):
+    if opt.isParamValid('visible'):
         vtkchart.SetShowLegend(opt.applyOption('visible'))
 
-    #if opt.isOptionValid('background'):
+    #if opt.isParamValid('background'):
     #    legend.GetBrush().SetColorF(opt.applyOption('background'))
     #else:
     #    legend.GetBrush().SetColorF(vtkrenderer.GetBackground())
 
-    if opt.isOptionValid('color'):
+    if opt.isParamValid('color'):
         legend.GetLabelProperties().SetColor(opt.applyOption('color'))
 
-    if opt.isOptionValid('opacity'):
+    if opt.isParamValid('opacity'):
         legend.GetBrush().SetOpacityF(opt.applyOption('opacity'))
 
-    if opt.isOptionValid('font_size'):
+    if opt.isParamValid('font_size'):
         legend.SetLabelSize(opt.applyOption('font_size'))
 
-    if opt.isOptionValid('point'):
+    if opt.isParamValid('point'):
         pt = opt.get('point')
         legend.SetVerticalAlignment(vtk.vtkChartLegend.CUSTOM)
         legend.SetHorizontalAlignment(vtk.vtkChartLegend.CUSTOM)
@@ -74,9 +74,9 @@ def setOptions(vtkchart, vtkrenderer, opt): #pylint: disable=invalid-name
                                            opt.get('horizontal_alignment').upper()))
 
     if opt.get('border'):
-        if opt.isOptionValid('border_color'):
+        if opt.isParamValid('border_color'):
             legend.GetPen().SetColorF(opt.applyOption('border_color'))
-        if opt.isOptionValid('border_width'):
+        if opt.isParamValid('border_width'):
             legend.GetPen().SetWidth(opt.applyOption('border_width'))
     else:
         legend.GetPen().SetOpacity(0)

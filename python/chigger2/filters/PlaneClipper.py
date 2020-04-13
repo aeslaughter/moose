@@ -18,8 +18,8 @@ class PlaneClipper(ClipperFilterBase):
     """
 
     @staticmethod
-    def validOptions():
-        opt = ClipperFilterBase.validOptions()
+    def validParams():
+        opt = ClipperFilterBase.validParams()
         opt.add('origin', default=(0.5, 0.5, 0.5), size=3, vtype=float,
                 doc="The origin of the clipping plane.")
         opt.add('normal', default=(1, 0, 0), size=3, vtype=float,
@@ -35,9 +35,9 @@ class PlaneClipper(ClipperFilterBase):
         """
         super(PlaneClipper, self).update(**kwargs)
 
-        if self.isOptionValid('origin'):
+        if self.isParamValid('origin'):
             origin = self.getPosition(copy.copy(list(self.applyOption('origin'))))
             self._vtkclipfunction.SetOrigin(origin)
 
-        if self.isOptionValid('normal'):
+        if self.isParamValid('normal'):
             self._vtkclipfunction.SetNormal(self.applyOption('normal'))

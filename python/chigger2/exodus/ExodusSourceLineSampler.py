@@ -20,8 +20,8 @@ class ExodusSourceLineSampler(geometric.LineSource):
     """
 
     @staticmethod
-    def validOptions():
-        opt = geometric.LineSource.validOptions()
+    def validParams():
+        opt = geometric.LineSource.validParams()
         opt.set('point1', None)
         opt.set('point2', None)
         return opt
@@ -46,13 +46,13 @@ class ExodusSourceLineSampler(geometric.LineSource):
 
         # Set the default points to the corners of the bounding box
         bnds = self._exodus_source.getBounds()
-        if self.getOption('point1') is None:
+        if self.getParam('point1') is None:
             self._vtksource.SetPoint1((bnds[0], bnds[2], bnds[4]))
-        if self.getOption('point2') is None:
+        if self.getParam('point2') is None:
             self._vtksource.SetPoint2((bnds[1], bnds[3], bnds[5]))
 
         # Compute the distance
-        n = self.getOption('resolution')
+        n = self.getParam('resolution')
         self._vtksource.Update()
         p0 = self._vtksource.GetPoint1()
         p1 = self._vtksource.GetPoint2()

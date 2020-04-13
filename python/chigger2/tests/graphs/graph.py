@@ -14,8 +14,8 @@ import chigger
 k = chigger.graphs.Line([1,2,3,4], [1,2.75,3.5,4], label='k')
 
 graph = chigger.graphs.Graph(k, legend={'visible':False})
-graph.setOptions('xaxis', title='X-Axis', lim=(1,4))
-graph.setOptions('yaxis', title='y-Axis', lim=(1,4))
+graph.setParams('xaxis', title='X-Axis', lim=(1,4))
+graph.setParams('yaxis', title='y-Axis', lim=(1,4))
 
 window = chigger.RenderWindow(graph, size=(300,300), test=True)
 window.write('graph.png')

@@ -11,6 +11,7 @@ import collections
 import copy
 import textwrap
 import mooseutils
+from parameters import InputParameters
 
 KeyBinding = collections.namedtuple('KeyBinding', 'key shift description function args')
 
@@ -39,9 +40,8 @@ class KeyBindingMixin(object):
     Class for inheriting key binding support for an object.
     """
     @staticmethod
-    def validOptions():
-        from . import Options
-        opt = Options()
+    def validParams():
+        opt = InputParameters()
         opt.add('interactive', True, doc="Toggle indicating if the object is interactive.")
         return opt
 
@@ -81,4 +81,4 @@ class KeyBindingMixin(object):
         """
         Return the interactive state for the object.
         """
-        return self.getOption('interactive')
+        return self.getParam('interactive')

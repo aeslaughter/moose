@@ -51,8 +51,8 @@ class ColorMap(base.ChiggerObject):
     """
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerObject.validOptions()
+    def validParams():
+        opt = base.ChiggerObject.validParams()
         opt.add('cmap', default='default', vtype=str,
                 doc="The colormap name.")
         opt.add('cmap_reverse', default=False, vtype=bool,
@@ -87,7 +87,7 @@ class ColorMap(base.ChiggerObject):
         Operator() returns the vtkLookupTable for use as a colormap.
         """
         # Use peacock style
-        name = self.getOption('cmap')
+        name = self.getParam('cmap')
         if name == 'default':
             vtktable = self.__default()
 
@@ -102,8 +102,8 @@ class ColorMap(base.ChiggerObject):
         else:
             raise mooseutils.MooseException("Unknown colormap:", name)
 
-        if self.isOptionValid('cmap_range'):
-            vtktable.SetRange(*self.getOption('cmap_range'))
+        if self.isParamValid('cmap_range'):
+            vtktable.SetRange(*self.getParam('cmap_range'))
         vtktable.Build()
         return vtktable
 
@@ -111,9 +111,9 @@ class ColorMap(base.ChiggerObject):
         """
         Build Peacock style colormap.
         """
-        n = self.getOption('cmap_num_colors')
+        n = self.getParam('cmap_num_colors')
         lut = vtk.vtkLookupTable()
-        if self.getOption('cmap_reverse'):
+        if self.getParam('cmap_reverse'):
             lut.SetHueRange(0.0, 0.667)
         else:
             lut.SetHueRange(0.667, 0.0)
@@ -126,8 +126,8 @@ class ColorMap(base.ChiggerObject):
         """
 
         # Extract matplotlib colormap
-        name = self.getOption('cmap')
-        n = self.getOption('cmap_num_colors')
+        name = self.getParam('cmap')
+        n = self.getParam('cmap_num_colors')
         points = np.linspace(0, 1, n)
 
         cmap = getattr(cm, name)(points)
@@ -136,7 +136,7 @@ class ColorMap(base.ChiggerObject):
         table = vtk.vtkLookupTable()
         table.SetNumberOfTableValues(n)
 
-        if self.getOption('cmap_reverse'):
+        if self.getParam('cmap_reverse'):
             rng = list(reversed(range(n)))
         else:
             rng = list(range(n))
@@ -150,7 +150,7 @@ class ColorMap(base.ChiggerObject):
         Builds VTK table using Paraview XML colormap files.
         """
         # Extract data
-        name = self.getOption('cmap')
+        name = self.getParam('cmap')
         data = self._data[name]
 
         # Extract the table data
@@ -171,7 +171,7 @@ class ColorMap(base.ChiggerObject):
                 points.append([r, g, b])
 
         # Flip the data if desired
-        if self.getOption('cmap_reverse'):
+        if self.getParam('cmap_reverse'):
             points = list(reversed(points))
 
         # Build function
@@ -182,7 +182,7 @@ class ColorMap(base.ChiggerObject):
         function.Build()
 
         # The number of points
-        n = self.getOption('cmap_num_colors')
+        n = self.getParam('cmap_num_colors')
         cm_points = np.linspace(xmin, xmax, n)
 
         # Build the lookup table

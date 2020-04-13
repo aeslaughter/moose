@@ -14,8 +14,8 @@ class TimerObserver(ChiggerObserver):
     Class for creating timers to be passed in to RenderWindow object.
     """
     @staticmethod
-    def validOptions():
-        opt = ChiggerObserver.validOptions()
+    def validParams():
+        opt = ChiggerObserver.validParams()
         opt.add('duration', default=1000, vtype=int,
                 doc="The repeat interval, in milliseconds, of the timer.")
         opt.add('count', vtype=int,
@@ -33,7 +33,7 @@ class TimerObserver(ChiggerObserver):
         Add a repeating timer.
         """
         super(TimerObserver, self).init(*args, **kwargs)
-        self._window.getVTKInteractor().CreateRepeatingTimer(self.getOption('duration'))
+        self._window.getVTKInteractor().CreateRepeatingTimer(self.getParam('duration'))
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.TimerEvent, self._callback)
 
     def count(self):
@@ -52,9 +52,9 @@ class TimerObserver(ChiggerObserver):
         Inputs:
             obj, event: Required by VTK.
         """
-        if self.isOptionValid('count') and (self._count >= self.getOption('count')):
+        if self.isParamValid('count') and (self._count >= self.getParam('count')):
             self._window.getVTKInteractor().DestroyTimer()
-            if self.getOption('terminate'):
+            if self.getParam('terminate'):
                 self.terminate()
             return
         self._count += 1

@@ -20,11 +20,11 @@ class ImageAnnotationSource(base.ChiggerSource2D):
     """
 
     @staticmethod
-    def validOptions():
+    def validParams():
         """
         Return default options for this object.
         """
-        opt = base.ChiggerSource.validOptions()
+        opt = base.ChiggerSource.validParams()
         opt.add('filename', None, "The PNG file to read, this can be absolute or relative path to "
                                   "a PNG or just the name of a PNG located in the chigger/logos "
                                   "directory.", vtype=str)
@@ -67,7 +67,7 @@ class ImageAnnotationSource(base.ChiggerSource2D):
         super(ImageAnnotationSource, self).update(**kwargs)
 
         # Load the filename
-        if self.isOptionValid('filename'):
+        if self.isParamValid('filename'):
             filename = self.applyOption('filename')
             if not os.path.exists(filename):
                 filename = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logos',
@@ -77,28 +77,28 @@ class ImageAnnotationSource(base.ChiggerSource2D):
             self.__reader.SetFileName(filename)
 
         # Set the width/height
-        if self.isOptionValid('width') or self.isOptionValid('height'):
+        if self.isParamValid('width') or self.isParamValid('height'):
             window_size = self._vtkrenderer.GetSize()
             self.__reader.Update()
             image_size = list(self.__reader.GetOutput().GetDimensions())
             aspect = float(image_size[0]) / float(image_size[1]) # w/h
 
-            if self.isOptionValid('width') and self.isOptionValid('height'):
+            if self.isParamValid('width') and self.isParamValid('height'):
                 image_size[0] = int(window_size[0] * self.applyOption('width'))
                 image_size[1] = int(window_size[1] * self.applyOption('height'))
 
-            elif self.isOptionValid('width'):
+            elif self.isParamValid('width'):
                 image_size[0] = int(window_size[0] * self.applyOption('width'))
                 image_size[1] = int(image_size[0] / aspect)
 
-            elif self.isOptionValid('height'):
+            elif self.isParamValid('height'):
                 image_size[1] = int(window_size[1] * self.applyOption('height'))
                 image_size[0] = int(image_size[1] * aspect)
 
             self.__resize.SetOutputDimensions(*image_size)
 
         # Image position
-        if self.isOptionValid('position'):
+        if self.isParamValid('position'):
 
             # Determine the position in pixels
             tr = vtk.vtkCoordinate()
@@ -114,14 +114,14 @@ class ImageAnnotationSource(base.ChiggerSource2D):
                 image_size = self.__reader.GetOutput().GetDimensions()
 
             # Adjust the position for alignment
-            if self.getOption('horizontal_alignment') == 'center':
+            if self.getParam('horizontal_alignment') == 'center':
                 position[0] = position[0] - (image_size[0]*0.5)
-            elif self.getOption('horizontal_alignment') == 'right':
+            elif self.getParam('horizontal_alignment') == 'right':
                 position[0] = position[0] - image_size[0]
 
-            if self.getOption('vertical_alignment') == 'center':
+            if self.getParam('vertical_alignment') == 'center':
                 position[1] = position[1] - (image_size[1]*0.5)
-            elif self.getOption('vertical_alignment') == 'top':
+            elif self.getParam('vertical_alignment') == 'top':
                 position[1] = position[1] - image_size[1]
 
             self._vtkactor.SetPosition(*position)

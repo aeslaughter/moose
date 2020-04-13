@@ -17,7 +17,7 @@ line = chigger.graphs.Line(color=(1,0,0), label='k_eff')
 graph = chigger.graphs.Graph(line,
                              xaxis={'lim':(0,5), 'num_ticks':3, 'title':'x'},
                              yaxis={'lim':(0,15),'num_ticks':5, 'title':'y'})
-graph.setOptions('legend', vertical_alignment='bottom', horizontal_alignment='center')
+graph.setParams('legend', vertical_alignment='bottom', horizontal_alignment='center')
 
 window = chigger.RenderWindow(graph, size=(500, 250), test=True)
 
@@ -25,6 +25,6 @@ times = reader.getTimes()
 for i, t in enumerate(times):
     reader.update(timestep=i)
     k = reader.getGlobalData('k_eff')
-    line.setOptions(x=(t,), y=(k,), append=True)
+    line.setParams(x=(t,), y=(k,), append=True)
     window.write('plot_current_field_data_' + str(i) + '.png')
 window.start()

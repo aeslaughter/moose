@@ -8,14 +8,14 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-from .Options import Options
-def validOptions(): #pylint: disable=invalid-name
+from parameters import InputParameters
+def validParams(): #pylint: disable=invalid-name
     """
     Returns options for vtk fonts.
     """
     #key = lambda x: '{}_{}'.format(prefix, x) if prefix else x
 
-    opt = Options()
+    opt = InputParameters()
     opt.add('color', None, doc="The text color.", vtype=float, size=3)
     opt.add('shadow', False, doc="Toggle text shadow.", vtype=bool)
     opt.add('halign', 'left', doc="Set the font justification.", vtype=str,
@@ -44,7 +44,7 @@ def validOptions(): #pylint: disable=invalid-name
 
     return opt
 
-def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
+def setParams(tprop, opt, prefix=None): #pylint: disable=invalid-name
     """
     Applies font options to vtkTextProperty object.
 
@@ -64,12 +64,12 @@ def applyOptions(tprop, opt, prefix=None): #pylint: disable=invalid-name
     tprop.UseTightBoundingBoxOn()
 
     halign = key('halign')
-    if opt.isOptionValid(halign):
+    if opt.isParamValid(halign):
         idx = opt.raw(halign).allow.index(opt.get(halign))
         tprop.SetJustification(idx)
 
     valign = key('valign')
-    if opt.isOptionValid(valign):
+    if opt.isParamValid(valign):
         idx = opt.raw(valign).allow.index(
             opt.get(valign))
         tprop.SetVerticalJustification(idx)

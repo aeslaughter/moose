@@ -9,8 +9,8 @@ class GeometricSource(base.ChiggerSource):
     VTKSOURCETYPE = None
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerSource.validOptions()
+    def validParams():
+        opt = base.ChiggerSource.validParams()
         return opt
 
     def __init__(self, *args, **kwargs):
@@ -33,8 +33,8 @@ class GeometricSource2D(base.ChiggerSource2D):
     VTKSOURCETYPE = None
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerSource2D.validOptions()
+    def validParams():
+        opt = base.ChiggerSource2D.validParams()
         return opt
 
     def __init__(self, *args, **kwargs):

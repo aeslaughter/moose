@@ -22,8 +22,8 @@ class ExodusColorBar(misc.ColorBar):
         result1: (Optional) The ExodusResult for the secondary axis.
     """
     @staticmethod
-    def validOptions():
-        opt = misc.ColorBar.validOptions()
+    def validParams():
+        opt = misc.ColorBar.validParams()
         opt.set('viewport', None)
         opt.set('layer', None)
         return opt
@@ -44,22 +44,22 @@ class ExodusColorBar(misc.ColorBar):
             raise mooseutils.MooseException("The supplied index must be 0 or 1.")
         return self._results[index]
 
-    def setOptions(self, *args, **kwargs):
+    def setParams(self, *args, **kwargs):
         """
         Update the supplied options and apply the colormap options from the ExodusResult.
         """
         if not args:
-            opts = base.ColorMap.validOptions()
+            opts = base.ColorMap.validParams()
             for result in self._results:
                 for key in opts.keys():
-                    kwargs[key] = result.getOption(key)
+                    kwargs[key] = result.getParam(key)
 
-            if self.getOption('viewport') is None:
-                self.setOption('viewport', self._results[0].getOption('viewport'))
-            if self.getOption('layer') is None:
-                self.setOption('layer', self._results[0].getOption('layer'))
+            if self.getParam('viewport') is None:
+                self.setOption('viewport', self._results[0].getParam('viewport'))
+            if self.getParam('layer') is None:
+                self.setOption('layer', self._results[0].getParam('layer'))
 
-        super(ExodusColorBar, self).setOptions(*args, **kwargs)
+        super(ExodusColorBar, self).setParams(*args, **kwargs)
 
     def update(self, **kwargs):
         """
@@ -67,8 +67,8 @@ class ExodusColorBar(misc.ColorBar):
         colorbar.
         """
         n = len(self._results)
-        primary = self.getOption('primary')
-        secondary = self.getOption('secondary')
+        primary = self.getParam('primary')
+        secondary = self.getParam('secondary')
 
         def set_axis_options_helper(ax, result): #pylint: disable=invalid-name
             """Helper for setting axis options."""

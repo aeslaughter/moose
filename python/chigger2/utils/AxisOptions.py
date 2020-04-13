@@ -10,7 +10,7 @@
 
 import vtk
 import mooseutils
-from .Options import Options
+from parameters import InputParameters
 
 VTK_NOTATION_ENUM = [
     vtk.vtkAxis.STANDARD_NOTATION,
@@ -19,9 +19,9 @@ VTK_NOTATION_ENUM = [
     vtk.vtkAxis.PRINTF_NOTATION
 ]
 
-def validOptions():
+def validParams():
     """Returns options for vtkAxis objects."""
-    opt = Options()
+    opt = InputParametrs()
     opt.add('fontcolor', default=(1,1,1), vtype=float, size=3, doc="The color of the axis, ticks, and labels.")
     opt.add('axis_fontcolor', vtype=float, size=3, doc="The color of the axis, this overrides the value in 'fontcolor'.")
 
@@ -56,7 +56,7 @@ def validOptions():
     # opt.add('axis_scale', 1, vtype=float, doc="The axis scaling factor.")
     # opt.add('zero_tol', 1e-10, vtype=float, doc="Tolerance for considering limits to be the same.")
 
-def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
+def setParams(vtkaxis, opt): #pylint: disable=invalid-name
     """
     Set the options for vtkAxis object.
     """
@@ -66,21 +66,21 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
 
     """
     # Visibility
-    if opt.isOptionValid('tick_visible'):
+    if opt.isParamValid('tick_visible'):
         vtkaxis.SetTicksVisible(opt.applyOption('ticks_visible'))
 
-    if opt.isOptionValid('axis_visible'):
+    if opt.isParamValid('axis_visible'):
         vtkaxis.SetAxisVisible(opt.applyOption('axis_visible'))
 
-    if opt.isOptionValid('labels_visible'):
+    if opt.isParamValid('labels_visible'):
         vtkaxis.SetLabelsVisible(opt.applyOption('labels_visible'))
 
     # Ticks
-    if opt.isOptionValid('num_ticks'):
+    if opt.isParamValid('num_ticks'):
         vtkaxis.SetNumberOfTicks(opt.applyOption('num_ticks'))
 
     # Limits
-    if opt.isOptionValid('lim'):
+    if opt.isParamValid('lim'):
         lim = opt.get('lim')
         if abs(lim[1] - lim[0]) < opt.get('zero_tol'):
             vtkaxis.SetBehavior(vtk.vtkAxis.CUSTOM)
@@ -110,7 +110,7 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
     """
 
     # Color
-    if opt.isOptionValid('fontcolor'):
+    if opt.isParamValid('fontcolor'):
         clr = opt.get('fontcolor')
         vtkaxis.GetTitleProperties().SetColor(*clr)
         vtkaxis.GetLabelProperties().SetColor(*clr)
@@ -118,29 +118,29 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
 
     """
     # Axis title
-    if opt.isOptionValid('title'):
+    if opt.isParamValid('title'):
         vtkaxis.SetTitle(opt.applyOption('title'))
 
     # Font sizes
-    if opt.isOptionValid('font_size'):
+    if opt.isParamValid('font_size'):
         vtkaxis.GetTitleProperties().SetFontSize(opt.applyOption('font_size'))
         vtkaxis.GetLabelProperties().SetFontSize(opt.applyOption('font_size'))
 
-    if opt.isOptionValid('title_font_size'):
+    if opt.isParamValid('title_font_size'):
         vtkaxis.GetTitleProperties().SetFontSize(opt.applyOption('title_font_size'))
-    if opt.isOptionValid('tick_font_size'):
+    if opt.isParamValid('tick_font_size'):
         vtkaxis.GetLabelProperties().SetFontSize(opt.applyOption('tick_font_size'))
 
     # Precision/notation
-    if opt.isOptionValid('precision'):
+    if opt.isParamValid('precision'):
         vtkaxis.SetPrecision(opt.applyOption('precision'))
 
-    if opt.isOptionValid('notation'):
+    if opt.isParamValid('notation'):
         notation = opt.get('notation').upper()
         vtk_notation = getattr(vtk.vtkAxis, notation + '_NOTATION')
         vtkaxis.SetNotation(vtk_notation)
 
-    if opt.isOptionValid('precision'):
+    if opt.isParamValid('precision'):
         if vtkaxis.GetNotation() in VTK_NOTATION_ENUM[1:2]:
             vtkaxis.SetPrecision(opt['precision'])
         else:
@@ -148,24 +148,24 @@ def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
                                     "set to either 'scientific' or 'fixed'.")
 
     # Grid lines
-    if opt.isOptionValid('grid'):
+    if opt.isParamValid('grid'):
         vtkaxis.SetGridVisible(opt.applyOption('grid'))
 
-    if opt.isOptionValid('grid_color'):
+    if opt.isParamValid('grid_color'):
         vtkaxis.GetGridPen().SetColorF(opt.applyOption('grid_color'))
 
     # Set the position and points
-    if opt.isOptionValid('axis_position'):
+    if opt.isParamValid('axis_position'):
         pos = {'left':vtk.vtkAxis.LEFT, 'right':vtk.vtkAxis.RIGHT, 'top':vtk.vtkAxis.TOP,
                'bottom':vtk.vtkAxis.BOTTOM}
         vtkaxis.SetPosition(pos[opt.applyOption('axis_position')])
 
-    if opt.isOptionValid('axis_point1'):
+    if opt.isParamValid('axis_point1'):
         vtkaxis.SetPoint1(*opt.applyOption('axis_point1'))
 
-    if opt.isOptionValid('axis_point2'):
+    if opt.isParamValid('axis_point2'):
         vtkaxis.SetPoint2(*opt.applyOption('axis_point2'))
 
-    if opt.isOptionValid('axis_scale'):
+    if opt.isParamValid('axis_scale'):
         vtkaxis.SetScalingFactor(opt.applyOption('axis_scale'))
     """

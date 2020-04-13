@@ -34,8 +34,8 @@ class ExodusSource(base.ChiggerSource):
     #                filters.OutlineFilter]
 
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerSource.validOptions()
+    def validParams():
+        opt = base.ChiggerSource.validParams()
 
         # Variable
         opt.add('variable', vtype=str, doc="The nodal or elemental variable to render.")
@@ -62,7 +62,7 @@ class ExodusSource(base.ChiggerSource):
         opt.add('max', vtype=float, doc="The maximum range.")
 
         # Colormap
-        opt += base.ColorMap.validOptions()
+        opt += base.ColorMap.validParams()
         return opt
 
     def __init__(self, viewport, reader, **kwargs):
@@ -137,7 +137,7 @@ class ExodusSource(base.ChiggerSource):
         """
         Private version of range for the update method.
         """
-        component = self.getOption('component')
+        component = self.getParam('component')
         pairs = []
         for i in range(self.__vtkextractblock.GetOutput().GetNumberOfBlocks()):
             current = self.__vtkextractblock.GetOutput().GetBlock(i)
@@ -158,7 +158,7 @@ class ExodusSource(base.ChiggerSource):
         """
         Determine the range of visible items.
         """
-        component = self.getOption('component')
+        component = self.getParam('component')
         self.getVTKMapper().Update() # required to have up-to-date ranges
         data = self.getVTKMapper().GetInput()
         out = self.__getActiveArray(data)
@@ -201,7 +201,7 @@ class ExodusSource(base.ChiggerSource):
 
         # Update the options, but do not call update from base class. See comment at end of this
         # method.
-        self.setOptions(**kwargs)
+        self.setParams(**kwargs)
 
         # Update the reader
         self.__reader.update()
@@ -209,7 +209,7 @@ class ExodusSource(base.ChiggerSource):
         # Enable all blocks (subdomains) if nothing is enabled
         block_info = self.__reader.getBlockInformation()
         for item in ['block', 'boundary', 'nodeset']:
-            if self.isOptionValid(item) and self.getOption(item) == []:
+            if self.isParamValid(item) and self.getParam(item) == []:
                 self.setOption(item, [item.name for item in \
                                       block_info[getattr(ExodusReader, item.upper())].itervalues()])
 
@@ -218,8 +218,8 @@ class ExodusSource(base.ChiggerSource):
             Helper to populate vtkExtractBlock object from the selected blocks/sidesets/nodesets
             """
             indices = []
-            if self.isOptionValid(option):
-                blocks = self.getOption(option)
+            if self.isParamValid(option):
+                blocks = self.getParam(option)
                 for vtkid, item in block_info[vtk_type].items():
                     for name in blocks:
                         if (item.name == str(name)) or (str(name) == vtkid):
@@ -241,8 +241,8 @@ class ExodusSource(base.ChiggerSource):
         self.__updateVariable()
 
         # Representation
-        if self.isOptionValid('representation'):
-            func = 'SetRepresentationTo{}'.format(self.getOption('representation').title())
+        if self.isParamValid('representation'):
+            func = 'SetRepresentationTo{}'.format(self.getParam('representation').title())
             attr = getattr(self._vtkactor.GetProperty(), func)
             attr()
 
@@ -279,10 +279,10 @@ class ExodusSource(base.ChiggerSource):
             return
 
         default = available[available.keys()[0]]
-        if not self.isOptionValid('variable'):
+        if not self.isParamValid('variable'):
             varinfo = default
         else:
-            var_name = self.getOption('variable')
+            var_name = self.getParam('variable')
             if var_name not in available:
                 msg = "The variable '{}' provided does not exist, using '{}', available " \
                       "variables include:\n{}"
@@ -301,18 +301,18 @@ class ExodusSource(base.ChiggerSource):
         self.__current_variable = varinfo
 
         # Colormap
-        if not self.getOption('color'):
-            self._colormap.setOptions(cmap=self.getOption('cmap'),
-                                      cmap_reverse=self.getOption('cmap_reverse'),
-                                      cmap_num_colors=self.getOption('cmap_num_colors'))
+        if not self.getParam('color'):
+            self._colormap.setParams(cmap=self.getParam('cmap'),
+                                      cmap_reverse=self.getParam('cmap_reverse'),
+                                      cmap_num_colors=self.getParam('cmap_num_colors'))
             self._vtkmapper.SelectColorArray(varinfo.name)
             self._vtkmapper.SetLookupTable(self._colormap())
             self._vtkmapper.UseLookupTableScalarRangeOff()
 
         # Component
         component = -1 # Default component to utilize if not valid
-        if self.isOptionValid('component'):
-            component = self.getOption('component')
+        if self.isParamValid('component'):
+            component = self.getParam('component')
 
         if component == -1:
             self._vtkmapper.GetLookupTable().SetVectorModeToMagnitude()
@@ -324,20 +324,20 @@ class ExodusSource(base.ChiggerSource):
             self._vtkmapper.GetLookupTable().SetVectorComponent(component)
 
         # Range
-        if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('range'):
+        if (self.isParamValid('min') or self.isParamValid('max')) and self.isParamValid('range'):
             mooseutils.mooseError('Both a "min" and/or "max" options has been set along with the '
                                   '"range" option, the "range" is being utilized, the others are '
                                   'ignored.')
 
         # Range
         rng = list(self.__getRange()) # Use range from all sources as the default
-        if self.isOptionValid('range'):
-            rng = self.getOption('range')
+        if self.isParamValid('range'):
+            rng = self.getParam('range')
         else:
-            if self.isOptionValid('min'):
-                rng[0] = self.getOption('min')
-            if self.isOptionValid('max'):
-                rng[1] = self.getOption('max')
+            if self.isParamValid('min'):
+                rng[0] = self.getParam('min')
+            if self.isParamValid('max'):
+                rng[1] = self.getParam('max')
 
         if rng[0] > rng[1]:
             mooseutils.mooseDebug("Minimum range greater than maximum:", rng[0], ">", rng[1],

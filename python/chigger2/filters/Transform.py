@@ -17,8 +17,8 @@ class Transform(ChiggerFilter):
 
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerFilter.validOptions()
+    def validParams():
+        opt = ChiggerFilter.validParams()
         opt.add('scale', default=(1, 1, 1), vtype=float, size=3,
                 doc="The scale to apply in the x, y, z coordinate dimensions.")
         opt.add('translate', default=(0, 0, 0), vtype=float, size=3,
@@ -43,17 +43,17 @@ class Transform(ChiggerFilter):
         """
         super(Transform, self).update(**kwargs)
 
-        if self.isOptionValid('scale'):
+        if self.isParamValid('scale'):
             inverse = self.__transform.GetInverse().GetScale()
             scale = self.applyOption('scale')
             scale = [scale[i]*inverse[i] for i in range(len(scale))]
             self.__transform.Scale(scale)
 
-        if self.isOptionValid('translate'):
+        if self.isParamValid('translate'):
             translate = self.applyOption('translate')
             self.__transform.Translate(translate)
 
-        if self.isOptionValid('rotate'):
+        if self.isParamValid('rotate'):
             rot = self.applyOption('rotate')
             self.__transform.RotateX(rot[0])
             self.__transform.RotateY(rot[1])

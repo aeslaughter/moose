@@ -37,12 +37,12 @@ box = geometric.Rectangle(origin=(0.3, 0.2, 0),
                           rotate=angle,
                           resolution=(1, 256),
                           point_data=data)
-#box.setOptions('transform', rotate=(90,0,0))
+#box.setParams('transform', rotate=(90,0,0))
 
 
-p0 = box.getOption('origin')
-p1 = box._vtksource.GetPoint1()#getOption('point1')
-p2 = box._vtksource.GetPoint2()#getOption('point2')
+p0 = box.getParam('origin')
+p1 = box._vtksource.GetPoint1()#getParam('point1')
+p2 = box._vtksource.GetPoint2()#getParam('point2')
 
 primary1 = (p1[0]-p0[0]+p2[0], p1[1]-p0[1]+p2[1])
 primary2 = (p1[0], p1[1])
@@ -74,9 +74,9 @@ ax1 = misc.Axis2D(title='Secondary',
 
 
 
-p0 = box.getOption('origin')
-p1 = box.getOption('point1')
-p2 = box.getOption('point2')
+p0 = box.getParam('origin')
+p1 = box.getParam('point1')
+p2 = box.getParam('point2')
 
 voffset = 0.075
 primary1 = (p1[0]-p0[0]+p2[0], p1[1]-p0[1]+p2[1])

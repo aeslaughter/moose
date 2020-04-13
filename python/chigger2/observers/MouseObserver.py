@@ -15,8 +15,8 @@ class MouseObserver(ChiggerObserver):
     """
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerObserver.validOptions()
+    def validParams():
+        opt = ChiggerObserver.validParams()
         return opt
 
     def __init__(self, **kwargs):

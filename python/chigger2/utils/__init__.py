@@ -16,8 +16,6 @@ import subprocess
 import numpy as np
 import vtk
 import mooseutils
-from .Option import Option
-from .Options import Options
 from . import AxisOptions
 from . import TextOptions
 from . import LegendOptions

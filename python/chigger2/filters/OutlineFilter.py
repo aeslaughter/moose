@@ -17,8 +17,8 @@ class OutlineFilter(ChiggerFilterBase):
     """
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerFilterBase.validOptions()
+    def validParams():
+        opt = ChiggerFilterBase.validParams()
         return opt
 
     def __init__(self, **kwargs):

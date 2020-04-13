@@ -15,9 +15,9 @@ class VolumeAxes(base.ChiggerResult):
     A class for displaying the 3D axis around a volume
     """
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerResult.validOptions()
-        opt += VolumeAxesSource.validOptions()
+    def validParams():
+        opt = base.ChiggerResult.validParams()
+        opt += VolumeAxesSource.validParams()
         opt.remove('point1')
         opt.remove('point2')
         return opt

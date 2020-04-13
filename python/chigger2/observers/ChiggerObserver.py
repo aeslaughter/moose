@@ -20,8 +20,8 @@ class ChiggerObserver(base.ChiggerObject):
     This object is a base class and not intended for general use, see TimerObserver as an example.
     """
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerObject.validOptions()
+    def validParams():
+        opt = base.ChiggerObject.validParams()
         return opt
 
     def __init__(self, window, **kwargs):

@@ -17,6 +17,6 @@ window = chigger.RenderWindow(mug, cbar, size=(300,300), test=True)
 
 # Render the results and write a file
 for i in range(2):
-    reader.setOptions(timestep=i)
+    reader.setParams(timestep=i)
     window.write('none_' + str(i) + '.png')
 window.start()

@@ -20,9 +20,9 @@ class LabelExodusResult(base.ChiggerResult):
         result[ExodusResult]: The result object to label.
     """
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerResult.validOptions()
-        opt += LabelExodusSource.validOptions()
+    def validParams():
+        opt = base.ChiggerResult.validParams()
+        opt += LabelExodusSource.validParams()
         return opt
 
     def __init__(self, exodus_result, **kwargs):
@@ -34,5 +34,5 @@ class LabelExodusResult(base.ChiggerResult):
             sources.append(LabelExodusSource(src, **kwargs))
 
         super(LabelExodusResult, self).__init__(*sources, renderer=exodus_result.getVTKRenderer(),
-                                                viewport=exodus_result.getOption('viewport'),
+                                                viewport=exodus_result.getParam('viewport'),
                                                 vtkmapper_type=vtk.vtkLabeledDataMapper, **kwargs)

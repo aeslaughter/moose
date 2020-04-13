@@ -17,8 +17,8 @@ class ChiggerFilterBase(base.ChiggerObject):
     Wrapper for creating vtk filters that can be automatically connected by ChiggerFilterSourceBase.
     """
     @staticmethod
-    def validOptions():
-        opt = base.ChiggerObject.validOptions()
+    def validParams():
+        opt = base.ChiggerObject.validParams()
         return opt
 
     # The required filter type

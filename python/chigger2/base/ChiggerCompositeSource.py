@@ -4,9 +4,9 @@ from .. import utils
 class ChiggerCompositeSource(utils.KeyBindingMixin, ChiggerObject):
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerObject.validOptions()
-        opt += utils.KeyBindingMixin.validOptions()
+    def validParams():
+        opt = ChiggerObject.validParams()
+        opt += utils.KeyBindingMixin.validParams()
         return opt
 
     @staticmethod

@@ -39,17 +39,17 @@ def read_all_times(prefix=''):
 # Default settings
 read_all_times('Default:')
 
-reader.setOptions(squeeze=True)
+reader.setParams(squeeze=True)
 read_all_times('squeeze=False:')
 
-reader.setOptions(variables=variables)
-reader.setOptions(squeeze=False)
+reader.setParams(variables=variables)
+reader.setParams(squeeze=False)
 read_all_times('Variable:')
 
-#reader.setOptions(variables=None, block=block)
-reader.setOptions(variables=None)
+#reader.setParams(variables=None, block=block)
+reader.setParams(variables=None)
 read_all_times('Block:')
 
-#reader.setOptions(variables=variables, block=block)
-reader.setOptions(variables=variables)
+#reader.setParams(variables=variables, block=block)
+reader.setParams(variables=variables)
 read_all_times('Variable and Block:')

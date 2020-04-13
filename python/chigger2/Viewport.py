@@ -26,9 +26,9 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
     VTKINPUTTYPE = None
 
     @classmethod
-    def validOptions(cls):
-        opt = base.ChiggerAlgorithm.validOptions()
-        opt += utils.KeyBindingMixin.validOptions()
+    def validParams(cls):
+        opt = base.ChiggerAlgorithm.validParams()
+        opt += utils.KeyBindingMixin.validParams()
 
         opt.add('light', vtype=float,
                doc="Add a headlight with the given intensity to the renderer.")
@@ -52,10 +52,10 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         bindings = utils.KeyBindingMixin.validKeyBindings()
         bindings.add('c', Viewport.printCamera,
                      desc="Display the camera settings for this object.")
-        bindings.add('o', Viewport.printOptions,
+        bindings.add('o', Viewport.printParams,
                      desc="Display the available key, value options for this result.")
-        bindings.add('o', Viewport.printSetOptions, shift=True,
-                     desc="Display the available key, value options as a 'setOptions' method call.")
+        bindings.add('o', Viewport.printSetParams, shift=True,
+                     desc="Display the available key, value options as a 'setParams' method call.")
 
         bindings.add('right', Viewport._setViewport, args=(0, 0.025),
                      desc="Increase the viewport x-min value.")
@@ -149,17 +149,17 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
     def _onRequestInformation(self):
         base.ChiggerAlgorithm._onRequestInformation(self)
-        self._vtkrenderer.SetViewport(self.getOption('viewport'))
+        self._vtkrenderer.SetViewport(self.getParam('viewport'))
 
-        if self.isOptionValid('layer'):
-            layer = self.getOption('layer')
+        if self.isParamValid('layer'):
+            layer = self.getParam('layer')
             if layer < 0:
                 self.error("The 'layer' option must be zero or greater but {} provided.", layer)
             self._vtkrenderer.SetLayer(layer)
 
-        self._vtkrenderer.SetBackground(self.getOption('background'))
-        if self.isOptionValid('background2'):
-            self._vtkrenderer.SetBackground2(self.getOption('background2'))
+        self._vtkrenderer.SetBackground(self.getParam('background'))
+        if self.isParamValid('background2'):
+            self._vtkrenderer.SetBackground2(self.getParam('background2'))
             self._vtkrenderer.SetGradientBackground(True)
         else:
             self._vtkrenderer.SetGradientBackground(False)
@@ -196,8 +196,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         self._setViewport(2, -0.05)
 
     def _setViewport(self, index, increment):
-        x_min, y_min, x_max, y_max = self.getOption('viewport')
-        c = list(self.getOption('viewport'))
+        x_min, y_min, x_max, y_max = self.getParam('viewport')
+        c = list(self.getParam('viewport'))
         c[index] += increment
 
         x_min = round(c[0], 3) if (c[0] >= 0 and c[0] < c[2]) else x_min
@@ -206,6 +206,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         y_min = round(c[1], 3) if (c[1] >= 0 and c[1] < c[3]) else y_min
         y_max = round(c[3], 3) if (c[3] <= 1 and c[1] < c[3]) else y_max
 
-        self.setOptions(viewport=(x_min, y_min, x_max, y_max))
+        self.setParams(viewport=(x_min, y_min, x_max, y_max))
         self.updateInformation()
         self.printOption('viewport')

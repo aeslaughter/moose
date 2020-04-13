@@ -34,7 +34,7 @@ class ChiggerObjectBase(MooseObject):
 
     def setParam(self, name, value):
         """Set the value of an individual parameter."""
-        self._parameters.set(name, value)
+        self._input_parameters.set(name, value)
 
     def setParams(self, *args, **kwargs):
         """
@@ -50,16 +50,16 @@ class ChiggerObjectBase(MooseObject):
         # Sub-options case
         if args:
             for sub in args:
-                if not self._parameters.hasParameter(sub):
+                if not self._input_parameters.hasParameter(sub):
                     msg = "The supplied sub-parameter '{}' does not exist.".format(sub)
                     mooseutils.mooseError(msg)
                 else:
-                    self._parameters.get(sub).update(**kwargs)
+                    self._input_parameters.get(sub).update(**kwargs)
                     self._set_options_tracebacks[sub] = traceback.extract_stack()
 
         # Main options case
         else:
-            self._parameters.update(**kwargs)
+            self._input_parameters.update(**kwargs)
 
     def assignParam(self, name, func):
         """Apply the a parameter to the given function."""
@@ -69,7 +69,7 @@ class ChiggerObjectBase(MooseObject):
 
     def printParam(self, key):
         """Print key, value pair of a parameter."""
-        print('{}={}'.format(key, repr(self.getOption(key))))
+        print('{}={}'.format(key, repr(self.getParam(key))))
 
     def printParams(self, *args):
         """
@@ -77,14 +77,14 @@ class ChiggerObjectBase(MooseObject):
         """
         print(self._options)
 
-    def printUpdateParams(self, *args):
+    def printSetParams(self, *args):
         """
-        Print python code for the 'update' method.
+        Print python code for the 'setParams' method.
         """
         output, sub_output = self._options.toScriptString()
-        print('setOptions({})'.format(', '.join(output)))
+        print('setParams({})'.format(', '.join(output)))
         for key, value in sub_output.items():
-            print('setOptions({}, {})'.format(key, ', '.join(repr(value))))
+            print('setParams({}, {})'.format(key, ', '.join(repr(value))))
 
     def __del__(self):
         self.debug('__del__()')
@@ -99,6 +99,6 @@ class ChiggerObject(ChiggerObjectBase):
 
     def setParams(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
-        ChiggerObjectBase.setOptions(self, *args, **kwargs)
+        ChiggerObjectBase.setParams(self, *args, **kwargs)
         if self._options.modified() > self.__modified_time.GetMTime():
             self.__modified_time.Modified()

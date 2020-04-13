@@ -14,8 +14,8 @@ class SingleShotObserver(ChiggerObserver):
     Class for creating timers to be passed in to RenderWindow object.
     """
     @staticmethod
-    def validOptions():
-        opt = ChiggerObserver.validOptions()
+    def validParams():
+        opt = ChiggerObserver.validParams()
         opt.add('duration', default=1000, vtype=int,
                 doc="Trigger delay, in milliseconds, of the single shot timer.")
         opt.add('terminate', default=False, vtype=bool,
@@ -28,7 +28,7 @@ class SingleShotObserver(ChiggerObserver):
         Add a repeating timer.
         """
         super(SingleShotObserver, self).init(*args, **kwargs)
-        self._window.getVTKInteractor().CreateOneShotTimer(self.getOption('duration'))
+        self._window.getVTKInteractor().CreateOneShotTimer(self.getParam('duration'))
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.TimerEvent, self._callback)
 
     def onTimer(self, obj, event): #pylint: disable=no-self-use, unused-argument
@@ -43,5 +43,5 @@ class SingleShotObserver(ChiggerObserver):
             obj, event: Required by VTK.
         """
         self.onTimer(obj, event)
-        if self.getOption('terminate'):
+        if self.getParam('terminate'):
             self._window.getVTKInteractor().TerminateApp()

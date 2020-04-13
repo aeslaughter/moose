@@ -57,7 +57,7 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
             factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
             self._callSourceMethod('zoom', factor)
             bnds = self._source.getBounds()
-            self._outline.setOptions(bounds=bnds)
+            self._outline.setParams(bounds=bnds)
             obj.GetInteractor().GetRenderWindow().Render()
 
     def onMouseWheelBackward(self, obj, event):
@@ -65,7 +65,7 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
             factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
             self._callSourceMethod('zoom', -factor)
             bnds = self._source.getBounds()
-            self._outline.setOptions(bounds=bnds)
+            self._outline.setParams(bounds=bnds)
             obj.GetInteractor().GetRenderWindow().Render()
 
     def onKeyPress(self, obj, event):
@@ -87,7 +87,7 @@ class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
 
                 self._callSourceMethod('move', dx, dy)
                 bnds = self._source.getBounds()
-                self._outline.setOptions(bounds=bnds)
+                self._outline.setParams(bounds=bnds)
                 obj.GetInteractor().GetRenderWindow().Render()
                 self._move_origin = pos
 
@@ -104,8 +104,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     RE = re.compile(r"(?P<key>[^\s=]+)=(?P<value>.*?)(?=(?:,\s[^\s=]+=|\Z)|\)\Z)")
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerObserver.validOptions()
+    def validParams():
+        opt = ChiggerObserver.validParams()
         return opt
 
     @staticmethod
@@ -135,7 +135,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         utils.KeyBindingMixin.__init__(self)
 
         # Disable th VTK default interaction
-        mode = self._window.getOption('mode')
+        mode = self._window.getParam('mode')
         if (mode is not None) and (mode != 'chigger'):
             self.warning("A MainWindowObserver object is being used but the 'mode' is set to " \
                          "something incompatible ('{}'), remove the 'mode' option from the " \
@@ -378,7 +378,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             key = match.group('key')
             value = match.group('value')
             if key in output:
-                return '{}={}'.format(key, repr(self.__current_source.getOption(key)))
+                return '{}={}'.format(key, repr(self.__current_source.getParam(key)))
             return match.group(0)
 
         with open(filename, 'r') as fid:

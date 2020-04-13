@@ -18,9 +18,9 @@ class TimeAnnotation(TextAnnotationBase):
     """
 
     @staticmethod
-    def validOptions():
-        opt = TextAnnotationBase.validOptions()
-        opt += TimeAnnotationSource.validOptions()
+    def validParams():
+        opt = TextAnnotationBase.validParams()
+        opt += TimeAnnotationSource.validParams()
         return opt
 
     def __init__(self, **kwargs):

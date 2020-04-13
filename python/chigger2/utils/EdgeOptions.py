@@ -1,6 +1,6 @@
 from Options import Options
 
-def validOptions():
+def validParams():
     """Returns options for edge properties for vtkActor objects."""
     opt = Options()
 
@@ -16,7 +16,7 @@ def validOptions():
 def applyOptions(vtkactor, opt):
 
     """
-    if opt.isOptionValid('orientation'):
+    if opt.isParamValid('orientation'):
         vtkactor.SetOrientation(opt.get('orientation'))
 
     x, y, z = opt.get('rotation')

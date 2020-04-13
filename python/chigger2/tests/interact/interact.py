@@ -21,7 +21,7 @@ parser.add_argument('--create-main-window-observer', action='store_true', help='
 args = parser.parse_args()
 
 window = chigger.Window(size=(800, 800), mode=args.mode)
-chigger.observers.MainWindowObserver(window)
+#chigger.observers.MainWindowObserver(window)
 
 left = chigger.Viewport(window, viewport=(0, 0, 0.5, 1))
 right = chigger.Viewport(window, viewport=(0.5, 0, 1, 1))

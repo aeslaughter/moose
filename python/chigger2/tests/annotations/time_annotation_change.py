@@ -28,7 +28,7 @@ reader.update()
 times = reader.getTimes()
 for i in range(10):
     time.update(time=times[i])
-    reader.setOptions(timestep=i)
+    reader.setParams(timestep=i)
     window.update()
     window.write('time_annotation_change_' + str(i) + '.png')
 

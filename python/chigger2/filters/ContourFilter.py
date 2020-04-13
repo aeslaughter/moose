@@ -18,8 +18,8 @@ class ContourFilter(ChiggerFilterBase):
     """
 
     @staticmethod
-    def validOptions():
-        opt = ChiggerFilterBase.validOptions()
+    def validParams():
+        opt = ChiggerFilterBase.validParams()
         opt.add('count', default=10, vtype=int,
                 doc="The number of contours to be automatically generated between the "
                     "specified range.")
@@ -45,12 +45,12 @@ class ContourFilter(ChiggerFilterBase):
         self._vtkfilter.SetInputArrayToProcess(0, 0, 0, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS,
                                                varinfo.name)
 
-        if self.isOptionValid('levels'):
+        if self.isParamValid('levels'):
             levels = self.applyOption('levels')
             n = len(levels)
             self._vtkfilter.SetNumberOfContours(n)
             for i in range(n):
                 self._vtkfilter.SetValue(i, levels[i])
-        elif self.isOptionValid('count') and (self.getOption('levels') is None):
+        elif self.isParamValid('count') and (self.getParam('levels') is None):
             rng = self._source.getVTKMapper().GetScalarRange()
             self._vtkfilter.GenerateValues(self.applyOption('count'), rng)

@@ -20,12 +20,12 @@ class ImageAnnotation(base.ChiggerResult):
     """
 
     @staticmethod
-    def validOptions():
+    def validParams():
         """
         Return the default options for this object.
         """
-        opt = base.ChiggerResult.validOptions()
-        opt += ImageAnnotationSource.validOptions()
+        opt = base.ChiggerResult.validParams()
+        opt += ImageAnnotationSource.validParams()
         return opt
 
     @staticmethod
@@ -67,7 +67,7 @@ class ImageAnnotation(base.ChiggerResult):
         Callback for setting the image width.
         """
         step = -0.01 if binding.shift else 0.01
-        width = self.getOption('width') + step
+        width = self.getParam('width') + step
         if width > 0 and (width <= 1):
             self.setOption('width', width)
             self.printOption('width')
@@ -77,7 +77,7 @@ class ImageAnnotation(base.ChiggerResult):
         Callback for changing opacity.
         """
         step = -0.05 if binding.shift else 0.05
-        opacity = self.getOption('opacity') + step
+        opacity = self.getParam('opacity') + step
         if opacity > 0 and opacity < 1:
             self.setOption('opacity', opacity)
             self.printOption('opacity')

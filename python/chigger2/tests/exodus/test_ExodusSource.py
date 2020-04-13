@@ -73,13 +73,13 @@ class TestExodusReader(unittest.TestCase):
         # Limit to blocks
         # When limiting by blocks and an accurate range is desired then "squeeze points" must be enabled; otherwise,
         # the un-limited range is utilized.
-        reader.setOptions(squeeze=True)
+        reader.setParams(squeeze=True)
         source.update(variable='diffused', block=['76'])
         rng = source.getRange()
         self.assertAlmostEqual(rng[0], 0.0)
         self.assertAlmostEqual(rng[1], 1.8851526891663235)
 
-        reader.setOptions(squeeze=False)
+        reader.setParams(squeeze=False)
         source.update()
         rng = source.getRange()
         self.assertAlmostEqual(rng[0], 0.0)

@@ -66,8 +66,8 @@ class TestExodusReader(unittest.TestCase):
             reader = chigger.exodus.ExodusReader(self.single)
 
         self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
 
         # Delete the object
         with self.assertLogs(level=logging.DEBUG) as l:
@@ -108,27 +108,27 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOption')
         self.assertEqual(l.output[1], 'DEBUG:ExodusReader: updateInformation')
 
-        # Test setOptions
+        # Test setParams
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(timestep=3)
+            reader.setParams(timestep=3)
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
         self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateActiveBlocks')
         self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateActiveVariables')
 
-        # Test setOptions, that doesn't change options
+        # Test setParams, that doesn't change options
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(timestep=3)
+            reader.setParams(timestep=3)
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
         self.assertEqual(l.output[1], 'DEBUG:ExodusReader: updateInformation')
 
 
@@ -352,12 +352,12 @@ class TestExodusReader(unittest.TestCase):
 
         # Test setting 'blocks'
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(blocks=(1,))
+            reader.setParams(blocks=(1,))
             binfo = reader.getBlockInformation()
 
         self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -395,12 +395,12 @@ class TestExodusReader(unittest.TestCase):
 
         # Test setting 'nodesets'
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(nodesets=(2,))
+            reader.setParams(nodesets=(2,))
             binfo = reader.getBlockInformation()
 
         self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -431,12 +431,12 @@ class TestExodusReader(unittest.TestCase):
 
         # Test setting 'sidesets'
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(sidesets=('bottom',))
+            reader.setParams(sidesets=('bottom',))
             binfo = reader.getBlockInformation()
 
         self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -467,13 +467,13 @@ class TestExodusReader(unittest.TestCase):
 
         # Test un-setting
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(blocks=tuple(), sidesets=tuple(), nodesets=tuple())
+            reader.setParams(blocks=tuple(), sidesets=tuple(), nodesets=tuple())
             binfo = reader.getBlockInformation()
             reader.updateData()
 
         self.assertEqual(len(l.output), 10)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -504,13 +504,13 @@ class TestExodusReader(unittest.TestCase):
 
         # Test disable
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(blocks=None, sidesets=tuple(), nodesets=None)
+            reader.setParams(blocks=None, sidesets=tuple(), nodesets=None)
             binfo = reader.getBlockInformation()
             reader.updateData()
 
         self.assertEqual(len(l.output), 10)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -594,7 +594,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertIn("The supplied global variable, 'convected', does not ", l.output[0])
 
         with self.assertLogs() as l:
-            reader.setOptions(variables=('convected::WRONG',))
+            reader.setParams(variables=('convected::WRONG',))
             reader.updateInformation()
         self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
 
@@ -662,12 +662,12 @@ class TestExodusReader(unittest.TestCase):
 
         # Test 'variables=...'
         with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setOptions(variables=('convected',))
+            reader.setParams(variables=('convected',))
             vinfo = reader.getVariableInformation()
 
         self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setOptions')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setOptions::Modified')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
         self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
         self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
         self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
@@ -697,7 +697,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertAlmostEqual(times[-1], 2)
 
         # Current Time
-        reader.setOptions(timestep=None, time=1.01)
+        reader.setParams(timestep=None, time=1.01)
         tdata0, tdata1 = reader.getCurrentTimeInformation()
         self.assertAlmostEqual(tdata0.time, 1)
         self.assertEqual(tdata0.timestep, 10)
@@ -738,7 +738,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertAlmostEqual(times[-1], 2)
 
         # Current Time
-        reader.setOptions(timestep=None, time=1.01, time_interpolation=False)
+        reader.setParams(timestep=None, time=1.01, time_interpolation=False)
         tdata0, tdata1 = reader.getCurrentTimeInformation()
 
         self.assertAlmostEqual(tdata0.time, 1)
@@ -781,7 +781,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(gdata.GetArray(0).GetComponent(2, 0), 10)
 
         # Time = 5
-        reader.setOptions(time=5)
+        reader.setParams(time=5)
         reader.Update()
         data = reader.GetOutputDataObject(0).GetBlock(0).GetBlock(0)
         cdata = data.GetCellData()
@@ -809,7 +809,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(gdata.GetArray(0).GetComponent(1, 0), 5)
 
         # Time = 7.5
-        reader.setOptions(time=7.5)
+        reader.setParams(time=7.5)
         reader.Update()
         data = reader.GetOutputDataObject(0).GetBlock(0).GetBlock(0)
         cdata = data.GetCellData()
@@ -834,7 +834,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(reader.getGlobalData('global'), 7.5)
 
         # Time = 2.25
-        reader.setOptions(time=2.25)
+        reader.setParams(time=2.25)
         reader.Update()
         data = reader.GetOutputDataObject(0).GetBlock(0).GetBlock(0)
         cdata = data.GetCellData()
@@ -864,7 +864,7 @@ class TestExodusReader(unittest.TestCase):
         """
         reader = chigger.exodus.ExodusReader(self.single, variables=('func_pp',))
         for i, r in enumerate(range(0,21,2)):
-            reader.setOptions(timestep=i)
+            reader.setParams(timestep=i)
             self.assertAlmostEqual(reader.getGlobalData('func_pp'), r/10.)
 
     def testVector(self):
@@ -886,7 +886,7 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(reader.getTimes(), [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5])
 
         # Time
-        reader.setOptions(timestep=None, time=1.01)
+        reader.setParams(timestep=None, time=1.01)
         tdata, tdata1 = reader.getCurrentTimeInformation()
         self.assertIsNone(tdata1)
         self.assertAlmostEqual(tdata.time, 1)
@@ -899,7 +899,7 @@ class TestExodusReader(unittest.TestCase):
         for i in range(6):
             mooseutils.touch(self.testfiles[i])
 
-        reader.setOptions(time=None, timestep=-1)
+        reader.setParams(time=None, timestep=-1)
         tdata, tdata1 = reader.getCurrentTimeInformation()
         self.assertIsNone(tdata1)
         self.assertEqual(reader.getTimes(), [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0])
@@ -971,12 +971,12 @@ class TestExodusReader(unittest.TestCase):
 
         # Check for warning if just 'variables' is provided
         with self.assertLogs() as l:
-            reader.setOptions(variables=('variable',))
+            reader.setParams(variables=('variable',))
             variables = reader.getVariableInformation()
         self.assertIn("The variable name 'variable' exists with", l.output[0])
 
         # Check active state with suffix supplied
-        reader.setOptions(variables=('variable::NODAL',))
+        reader.setParams(variables=('variable::NODAL',))
         variables = reader.getVariableInformation()
         self.assertFalse(variables[chigger.exodus.ExodusReader.ELEMENTAL][0].active)
         self.assertFalse(variables[chigger.exodus.ExodusReader.GLOBAL][0].active)
@@ -984,7 +984,7 @@ class TestExodusReader(unittest.TestCase):
 
         # Check for error if bad suffix given
         with self.assertLogs() as l:
-            reader.setOptions(variables=('variable::WRONG',))
+            reader.setParams(variables=('variable::WRONG',))
             variables = reader.getVariableInformation()
         self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
 
