@@ -255,5 +255,40 @@ class TestInputParameters(unittest.TestCase):
             self.assertEqual(len(log.output), 1)
             self.assertIn("Cannot determine if the parameters is valid, the parameter 'bar' does not exist", log.output[0])
 
+    def testModified(self):
+        params = InputParameters()
+        params.add('year')
+        t0 = params.modified()
+
+        params.set('year', 1980)
+        t1 = params.modified()
+        self.assertTrue(t1 > t0)
+
+        params.set('year', None)
+        t2 = params.modified()
+        self.assertTrue(t2 > t1)
+
+        params.set('year', None)
+        t3 = params.modified()
+        self.assertTrue(t3 == t2)
+
+        params.set('year', 1980)
+        t4 = params.modified()
+        self.assertTrue(t4 > t3)
+
+        params.set('year', 1949)
+        t5 = params.modified()
+        self.assertTrue(t5 > t4)
+
+        params.set('year', 1949)
+        t6 = params.modified()
+        self.assertTrue(t6 == t5)
+
+        params.add('month', 8)
+        t7 = params.modified()
+        self.assertTrue(t7 > t6)
+
+
+
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True, exit=False)

@@ -9,6 +9,15 @@
 import textwrap
 import logging
 import typing
+
+try:
+    import vtk
+    HAS_VTK = True
+except ModuleNotFoundError:
+    import time
+    HAS_VTK = False
+
+
 LOG = logging.getLogger(__file__)
 
 class Parameter(object):
@@ -50,6 +59,12 @@ class Parameter(object):
         self.__required = required # see initialize()
         self.__mutable = mutable   # allow parameter to change, see initializie()
         self.__initialized = False # see initialized
+
+        if HAS_VTK:
+            self.__modified = vtk.vtkTimeStamp()
+            self.__modified.Modified()
+        else:
+            self.__modified = time.monotonic()
 
         if not isinstance(self.__name, str):
             msg = "The supplied 'name' argument must be a 'str', but {} was provided."
@@ -151,6 +166,17 @@ class Parameter(object):
         if self.__value is None:
             self.value = self.__default
 
+    @property
+    def modified(self):
+        """Returns the time at which the parameter was last modified."""
+        if hasattr(self.__value, 'modified'):
+            return self.__value.modified()
+
+        if HAS_VTK:
+            return self.__modified.GetMTime()
+        else:
+            return self.__modified
+
     @value.setter
     def value(self, val):
         """
@@ -162,6 +188,8 @@ class Parameter(object):
             raise TypeError(msg.format(self.__name))
 
         if val is None:
+            if self.__value is not None:
+                self.__updateModifiedTime()
             self.__value = None
             return
 
@@ -213,6 +241,9 @@ class Parameter(object):
             LOG.warning(msg, self.name, val, self.__allow)
             return
 
+        if self.__value != val:
+            self.__updateModifiedTime()
+
         self.__value = val
 
     def initialize(self):
@@ -257,7 +288,12 @@ class Parameter(object):
 
         return '\n'.join(out)
 
-
     def __str__(self):
         """Support print statement on Parameter object."""
         return self.toString()
+
+    def __updateModifiedTime(self):
+        if HAS_VTK:
+            self.__modified.Modified()
+        else:
+            self.__modified = time.monotonic()

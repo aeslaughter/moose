@@ -46,9 +46,11 @@ class InputParameters(object):
         for param in self.__parameters.values():
             param.initialize()
 
-    def getErrorMode(self):
-        """Return the current ErrorMode for this object."""
-        return self.__mode
+    def modified(self):
+        """
+        Returns latest modified time for the Parameter objects
+        """
+        return max(param.modified for param in self.__parameters.values())
 
     def add(self, *args, **kwargs):
         """

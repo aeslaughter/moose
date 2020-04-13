@@ -244,5 +244,33 @@ class TestParameter(unittest.TestCase):
         s = str(opt)
         self.assertIn("best", s)
 
+    def testModified(self):
+        opt = Parameter('year')
+        t0 = opt.modified
+
+        opt.value = 1980
+        t1 = opt.modified
+        self.assertTrue(t1 > t0)
+
+        opt.value = None
+        t2 = opt.modified
+        self.assertTrue(t2 > t1)
+
+        opt.value = None
+        t3 = opt.modified
+        self.assertTrue(t3 == t2)
+
+        opt.value = 1980
+        t4 = opt.modified
+        self.assertTrue(t4 > t3)
+
+        opt.value = 1949
+        t5 = opt.modified
+        self.assertTrue(t5 > t4)
+
+        opt.value = 1949
+        t6 = opt.modified
+        self.assertTrue(t6 == t5)
+
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2, buffer=True)
