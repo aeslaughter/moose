@@ -120,7 +120,9 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('s', MainWindowObserver._nextSource, shift=True, args=(True,),
                      desc="Select the previous Source object")
 
-        bindings.add('r', MainWindowObserver._deactivate, desc="Reset (clear) selection")
+        bindings.add('r', MainWindowObserver._deactivate, desc="Hard reset (clear) selection (resets the selection index)")
+        bindings.add('r', MainWindowObserver._deactivate, desc="Soft reset (clear) selection (maintains the selection index)", shift=True, args=(True,))
+
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object")
 
         #bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file")
@@ -223,12 +225,15 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             source, viewport = sources[self.__current_source_index]
             self._activateSource(viewport, source)
 
-    def _deactivate(self): #pylint: disable=no-self-use, unused-argument
+    def _deactivate(self, soft=False): #pylint: disable=no-self-use, unused-argument
         """
         Keybinding callback: Deactivate all viewports/sourcs.
         """
         self._deactivateViewport()
         self._deactivateSource()
+        if not soft:
+            self.__current_viewport_index = None
+            self.__current_source_index = None
 
     def _activateViewport(self, viewport):
         self.__current_viewport_outline = geometric.Outline2D(viewport,

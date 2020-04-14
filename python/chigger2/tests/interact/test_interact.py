@@ -68,6 +68,9 @@ class TestInteraction(ChiggerTestCase):
         rect1 = chigger.geometric.Rectangle(right, bounds=(0.25, 0.5, 0.25, 0.75), color=(0.2,0.1, 0.5))
         cube1 = chigger.geometric.Cube(right, bounds=(0.5, 0.8, 0, 0.5, 0.8, 1), color=(0.8, 0.2, 0.1))
 
+    def tearDown(self):
+        self._tester.terminate()
+
     @patch('sys.stdout', new_callable=io.StringIO)
     def testGeneralHelp(self, stdout):
         self._tester.pressKey('h')
@@ -92,10 +95,10 @@ class TestInteraction(ChiggerTestCase):
         self._tester.pressKey('v')
         self._tester.pressKey('h')
         self.assertIn('Current Viewport Keybindings', stdout.getvalue())
-        self._tester.terminate()
+
 
     def testSelectViewport(self):
-        self.assertImage('viewport0.png')
+        self.assertImage('initial.png')
 
         self._tester.pressKey('v')
         self.assertImage('viewport1.png')
@@ -107,7 +110,7 @@ class TestInteraction(ChiggerTestCase):
         self.assertImage('viewport3.png')
 
         self._tester.pressKey('v')
-        self.assertImage('viewport0.png')
+        self.assertImage('initial.png')
 
         self._tester.pressKey('v', shift=True)
         self.assertImage('viewport3.png')
@@ -119,26 +122,75 @@ class TestInteraction(ChiggerTestCase):
         self.assertImage('viewport1.png')
 
         self._tester.pressKey('v', shift=True)
-        self.assertImage('viewport0.png')
+        self.assertImage('initial.png')
 
-        self._tester.terminate()
+    def testSelectSource(self):
+        self.assertImage('initial.png')
 
+        self._tester.pressKey('s')
+        self.assertImage('source1.png')
 
+        self._tester.pressKey('s')
+        self.assertImage('source2.png')
 
-#stdout = io.StringIO()
-#sys.stdout = stdout
-#class Tester(chigger.observers.TestObserver):
-#    def onTimer(self, *args):
-#        self.pressKey('h')
+        self._tester.pressKey('s')
+        self.assertImage('source3.png')
 
-#        self.assertInStdOut('General Keybindings:')
-#        self.flushStdout()
-#        self.assertInStdOut('General Keybindings:')
+        self._tester.pressKey('s')
+        self.assertImage('source4.png')
 
-#tester = Tester(window, duration=2000, terminate=True, capture_stdout=True)
+        self._tester.pressKey('s')
+        self.assertImage('initial.png')
 
-#tester = chigger.observers.TestObserver(window, duration=1000, terminate=True, function=lambda *x: x[0].pressKey('h'))
+        self._tester.pressKey('s', shift=True)
+        self.assertImage('source4.png')
 
-#window.write('outline.png')
+        self._tester.pressKey('s', shift=True)
+        self.assertImage('source3.png')
 
-#window.start()
+        self._tester.pressKey('s', shift=True)
+        self.assertImage('source2.png')
+
+        self._tester.pressKey('s', shift=True)
+        self.assertImage('source1.png')
+
+        self._tester.pressKey('s', shift=True)
+        self.assertImage('initial.png')
+
+    def testReset(self):
+        self.assertImage('initial.png')
+
+        self._tester.pressKey('s')
+        self.assertImage('source1.png')
+
+        self._tester.pressKey('r')
+        self.assertImage('initial.png')
+
+        self._tester.pressKey('s')
+        self.assertImage('source1.png')
+
+        self._tester.pressKey('r', shift=True)
+        self.assertImage('initial.png')
+
+        self._tester.pressKey('s')
+        self.assertImage('source2.png')
+
+    def testInteractor(self):
+        self.assertImage('initial.png')
+
+        self._tester.pressKey('s')
+        self._tester.mouseMove(0.5, 0.5)
+        self._tester.mouseWheelForward(5)
+        self.assertImage('interact_foward_2d.png')
+
+        self._tester.mouseWheelBackward(5)
+        self._tester.pressKey('r')
+        self.assertImage('initial.png')
+
+        self._tester.pressKey('s')
+        self._tester.mouseWheelBackward(5)
+        self.assertImage('interact_backward_2d.png')
+
+        self._tester.mouseWheelForward(5)
+        self._tester.pressKey('r')
+        self.assertImage('initial.png')

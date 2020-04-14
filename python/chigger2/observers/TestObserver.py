@@ -48,7 +48,7 @@ class TestObserver(SingleShotObserver):
         vtkinteractor.SetKeySym(None)
         vtkinteractor.SetShiftKey(False)
 
-    def moveMouse(self, x, y): #pylint: disable=invalid-name
+    def mouseMove(self, x, y): #pylint: disable=invalid-name
         """
         Simulate a mouse movement.
 
@@ -65,6 +65,16 @@ class TestObserver(SingleShotObserver):
         vtkinteractor = self._window.getVTKInteractor()
         vtkinteractor.SetEventPosition(int(pos[0]), int(pos[1]))
         vtkinteractor.InvokeEvent(vtk.vtkCommand.MouseMoveEvent, vtkinteractor)
+
+    def mouseWheelForward(self, count=1):
+        vtkinteractor = self._window.getVTKInteractor()
+        for i in range(count):
+            vtkinteractor.InvokeEvent(vtk.vtkCommand.MouseWheelForwardEvent, vtkinteractor)
+
+    def mouseWheelBackward(self, count=1):
+        vtkinteractor = self._window.getVTKInteractor()
+        for i in range(count):
+            vtkinteractor.InvokeEvent(vtk.vtkCommand.MouseWheelBackwardEvent, vtkinteractor)
 
     def pressLeftMouseButton(self):
         """
