@@ -7,12 +7,31 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
+import sys
+import io
 import vtk
-from SingleShotObserver import SingleShotObserver
+from .SingleShotObserver import SingleShotObserver
+
+
+class TestObserverException(Exception):
+    def __init__(self, text, *args, **kwargs):
+        Exception.__init__(self, text.format(*args, **kwargs))
+
 class TestObserver(SingleShotObserver):
     """
     Tool for simulating key strokes and mouse movements.
     """
+
+    @staticmethod
+    def validParams():
+        params = SingleShotObserver.validParams()
+        return params
+
+    def __init__(self, *args, **kwargs):
+        SingleShotObserver.__init__(self, *args, **kwargs)
+
+    #sdef __enter__
+
 
     def pressKey(self, key, shift=False):
         """

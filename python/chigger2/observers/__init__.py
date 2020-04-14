@@ -12,7 +12,7 @@ from .ChiggerObserver import ChiggerObserver
 #from TimerObserver import TimerObserver
 #from KeyObserver import KeyObserver
 #from MouseObserver import MouseObserver
-#from SingleShotObserver import SingleShotObserver
+from .SingleShotObserver import SingleShotObserver
 #from WindowUpdateObserver import WindowUpdateObserver
 from .MainWindowObserver import MainWindowObserver
-#from TestObserver import TestObserver
+from .TestObserver import TestObserver

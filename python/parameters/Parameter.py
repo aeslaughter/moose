@@ -183,7 +183,7 @@ class Parameter(object):
         Sets the value and performs a myriad of consistency checks.
         """
         if self.__initialized and not self.__mutable:
-            msg = "The parameters '{}' does not support assignment after initialization, " \
+            msg = "The parameter '{}' does not support assignment after initialization, " \
                   "it was marked as immutable."
             raise TypeError(msg.format(self.__name))
 

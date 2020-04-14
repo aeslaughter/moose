@@ -28,6 +28,7 @@ class MooseObject(object):
         params.add('name', vtype=str, doc="The name of the object.", mutable=False)
         params.add('error_mode', vtype=InputParameters.ErrorMode, mutable=False,
                    doc="Set InputParameters error mode to WARNING, ERROR, or EXCEPTION.")
+        params.add('level', vtype=(str, int), doc="The logging level.", mutable=False)
         return params
 
     def __init__(self, *args, **kwargs):
@@ -69,6 +70,10 @@ class MooseObject(object):
 
         # Store the name to avoid dict looks ups on name() method
         self.__name = self.getParam('name') if 'name' in self._input_parameters else None
+
+        # Set the logging level
+        if self._input_parameters.isValid('level'):
+            self.__log.setLevel(self._input_parameters.get('level'))
 
     def name(self):
         """The name of the object as assigned using the 'name' parameter at construction."""

@@ -8,7 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
-from ChiggerObserver import ChiggerObserver
+from .ChiggerObserver import ChiggerObserver
 class SingleShotObserver(ChiggerObserver):
     """
     Class for creating timers to be passed in to RenderWindow object.
@@ -23,13 +23,16 @@ class SingleShotObserver(ChiggerObserver):
 
         return opt
 
-    def init(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Add a repeating timer.
         """
-        super(SingleShotObserver, self).init(*args, **kwargs)
+        ChiggerObserver.__init__(self, *args, **kwargs)
         self._window.getVTKInteractor().CreateOneShotTimer(self.getParam('duration'))
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.TimerEvent, self._callback)
+
+    def terminate(self):
+        self._window.getVTKInteractor().TerminateApp()
 
     def onTimer(self, obj, event): #pylint: disable=no-self-use, unused-argument
         """The 'onTimer(obj, event)' method must be implemented."""
@@ -44,4 +47,4 @@ class SingleShotObserver(ChiggerObserver):
         """
         self.onTimer(obj, event)
         if self.getParam('terminate'):
-            self._window.getVTKInteractor().TerminateApp()
+            self.terminate()

@@ -247,7 +247,10 @@ class InputParameters(object):
             else:
                 for key in opt.keys():
                     if self.hasParameter(key):
-                        self.set(key, opt.get(key))
+                        old_value = self.get(key)
+                        new_value = opt.get(key)
+                        if old_value != new_value:
+                            self.set(key, new_value)
                     else:
                         unused.add(key)
 

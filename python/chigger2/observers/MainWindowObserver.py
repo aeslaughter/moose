@@ -111,20 +111,19 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('v', MainWindowObserver._nextViewport, desc="Select the next viewport.")
+        bindings.add('v', MainWindowObserver._nextViewport, desc="Select the next Viewport object")
         bindings.add('v', MainWindowObserver._nextViewport, shift=True, args=(True,),
-                     desc="Select the previous viewport.")
+                     desc="Select the previous Viewport object")
 
         bindings.add('s', MainWindowObserver._nextSource,
-                     desc="Select the next Source object.")
+                     desc="Select the next Source object")
         bindings.add('s', MainWindowObserver._nextSource, shift=True, args=(True,),
-                     desc="Select the previous Source object.")
+                     desc="Select the previous Source object")
 
-        bindings.add('r', MainWindowObserver._deactivate, desc="Reset (clear) selection.")
-        bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
+        bindings.add('r', MainWindowObserver._deactivate, desc="Reset (clear) selection")
+        bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object")
 
-        bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file.")
-
+        #bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file")
         return bindings
 
     def __init__(self, *args, **kwargs):
@@ -164,14 +163,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.__current_source = None
         self.__current_source_index = None
         self.__current_source_outline = None
-
-
-
-    #def __del__(self):
-    #    ChiggerObserver.__del__(self)
-    #    self.__current_source = None
-    #    self.__current_outline = None
-
 
     def _availableViewports(self):
         return [viewport for viewport in self._window.viewports()]# if viewport.interactive]
@@ -255,7 +246,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             bnds = source.getBounds()
             obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
             self.__current_source = source
-            self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0), linewidth=5)
+            self.__current_source_outline = obj(viewport, bounds=bnds, color=(1, 1, 0))
 
             if isinstance(source.getVTKActor(), vtk.vtkActor2D):
                 self.__style_2d.setSource(source, self.__current_source_outline)
@@ -374,7 +365,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         filename = trace[0]
         line = trace[1]
 
-        output, sub_output = self.__current_source._options.getNonDefaultOptions()
+        output, sub_output = self.__current_source._input_parameters.getNonDefaultOptions()
         def sub_func(match):
             key = match.group('key')
             value = match.group('value')

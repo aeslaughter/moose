@@ -349,6 +349,9 @@ class Window(base.ChiggerAlgorithm):
         Writes the VTKWindow to an image.
         """
         self.debug('write')
+        self.updateInformation()
+        self.updateData()
+        self.__vtkwindow.Render()
 
         # Allowed extensions and the associated readers
         writers = dict()

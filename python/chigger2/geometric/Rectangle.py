@@ -11,7 +11,7 @@ class Rectangle(GeometricSource2D):
     @staticmethod
     def validParams():
         opt = GeometricSource2D.validParams()
-        opt += base.ColorMap.validParams()
+        opt.add('cmap', base.ColorMap.validParams())
 
         opt.add("bounds", None, vtype=float, size=4,
                 doc="The bounding box for the cube [xmin, xmax, ymin, ymax].")
@@ -72,8 +72,8 @@ class Rectangle(GeometricSource2D):
             self._vtksource.GetOutput().GetPointData().SetScalars(pdata)
             self._vtkmapper.SetScalarRange(pdata.GetRange())
 
-        self._colormap.setParams(**self._options.toDict('cmap', 'cmap_reverse',
-                                                         'cmap_num_colors', 'cmap_range'))
+        self._colormap.parameters().update(self.getParam('cmap'))
+
         if self.isParamValid('cmap'):
             self._vtkmapper.SetLookupTable(self._colormap())
             self._vtkmapper.SetUseLookupTableScalarRange(True)
