@@ -186,7 +186,7 @@ class TestInteraction(ChiggerTestCase):
         self._tester.keyPress('s')
         self._tester.mouseMove(0.5, 0.5)
         self._tester.mouseWheelForward(5)
-        self.assertImage('interact_foward_2d.png')
+        self.assertImage('interact_forward_2d.png')
 
         self._tester.mouseWheelBackward(5)
         self._tester.keyPress('r')
@@ -215,4 +215,19 @@ class TestInteraction(ChiggerTestCase):
         self._tester.mouseMove(0.5, 0.5)
         user.onMouseMove(self._window.getVTKInteractorStyle(), None)
         self._tester.keyPress('r')
+        self.assertImage('initial.png')
+
+    def testMouseSelect(self):
+        self.assertImage('initial.png')
+        self._tester.mouseMove(0.15, 0.5)
+        self._tester.mousePressLeft()
+        self.assertImage('source1.png')
+
+        self._tester.mouseMove(0.65, 0.5)
+        self._tester.mousePressLeft()
+        self._tester.mousePressLeft()
+        self.assertImage('source3.png')
+
+        self._tester.mouseMove(0.5, 0.5)
+        self._tester.mousePressLeft()
         self.assertImage('initial.png')
