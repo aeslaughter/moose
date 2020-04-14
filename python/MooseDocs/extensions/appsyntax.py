@@ -98,6 +98,8 @@ class AppSyntaxExtension(command.CommandExtension):
 
     def __init__(self, *args, **kwargs):
         command.CommandExtension.__init__(self, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        command.CommandExtension.__init__(self, *args, **kwargs)
 
         self._app_type = None
         self._app_syntax = None
