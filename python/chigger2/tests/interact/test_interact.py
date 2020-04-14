@@ -73,7 +73,7 @@ class TestInteraction(ChiggerTestCase):
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def testGeneralHelp(self, stdout):
-        self._tester.pressKey('h')
+        self._tester.keyPress('h')
         self.assertIn('General Keybindings:', stdout.getvalue())
 
         self.assertIn(' v:', stdout.getvalue())
@@ -92,105 +92,127 @@ class TestInteraction(ChiggerTestCase):
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def testViewportHelp(self, stdout):
-        self._tester.pressKey('v')
-        self._tester.pressKey('h')
+        self._tester.keyPress('v')
+        self._tester.keyPress('h')
         self.assertIn('Current Viewport Keybindings', stdout.getvalue())
 
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def testSourceHelp(self, stdout):
+        self._tester.keyPress('s')
+        self._tester.keyPress('h')
+        self.assertIn('Current Source Keybindings', stdout.getvalue())
 
     def testSelectViewport(self):
         self.assertImage('initial.png')
 
-        self._tester.pressKey('v')
+        self._tester.keyPress('v')
         self.assertImage('viewport1.png')
 
-        self._tester.pressKey('v')
+        self._tester.keyPress('v')
         self.assertImage('viewport2.png')
 
-        self._tester.pressKey('v')
+        self._tester.keyPress('v')
         self.assertImage('viewport3.png')
 
-        self._tester.pressKey('v')
+        self._tester.keyPress('v')
         self.assertImage('initial.png')
 
-        self._tester.pressKey('v', shift=True)
+        self._tester.keyPress('v', shift=True)
         self.assertImage('viewport3.png')
 
-        self._tester.pressKey('v', shift=True)
+        self._tester.keyPress('v', shift=True)
         self.assertImage('viewport2.png')
 
-        self._tester.pressKey('v', shift=True)
+        self._tester.keyPress('v', shift=True)
         self.assertImage('viewport1.png')
 
-        self._tester.pressKey('v', shift=True)
+        self._tester.keyPress('v', shift=True)
         self.assertImage('initial.png')
 
     def testSelectSource(self):
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source1.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source2.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source3.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source4.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s', shift=True)
+        self._tester.keyPress('s', shift=True)
         self.assertImage('source4.png')
 
-        self._tester.pressKey('s', shift=True)
+        self._tester.keyPress('s', shift=True)
         self.assertImage('source3.png')
 
-        self._tester.pressKey('s', shift=True)
+        self._tester.keyPress('s', shift=True)
         self.assertImage('source2.png')
 
-        self._tester.pressKey('s', shift=True)
+        self._tester.keyPress('s', shift=True)
         self.assertImage('source1.png')
 
-        self._tester.pressKey('s', shift=True)
+        self._tester.keyPress('s', shift=True)
         self.assertImage('initial.png')
 
     def testReset(self):
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source1.png')
 
-        self._tester.pressKey('r')
+        self._tester.keyPress('r')
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source1.png')
 
-        self._tester.pressKey('r', shift=True)
+        self._tester.keyPress('r', shift=True)
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self.assertImage('source2.png')
 
-    def testInteractor(self):
+    def test2DInteractorZoom(self):
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self._tester.mouseMove(0.5, 0.5)
         self._tester.mouseWheelForward(5)
         self.assertImage('interact_foward_2d.png')
 
         self._tester.mouseWheelBackward(5)
-        self._tester.pressKey('r')
+        self._tester.keyPress('r')
         self.assertImage('initial.png')
 
-        self._tester.pressKey('s')
+        self._tester.keyPress('s')
         self._tester.mouseWheelBackward(5)
         self.assertImage('interact_backward_2d.png')
 
         self._tester.mouseWheelForward(5)
-        self._tester.pressKey('r')
+        self._tester.keyPress('r')
+        self.assertImage('initial.png')
+
+    def test2DInteractorTranslate(self):
+        self.assertImage('initial.png')
+        self._tester.keyPress('s')
+        self._tester.mouseMove(0.5, 0.5)
+        user = self._window.getVTKInteractorStyle()
+        user._left_button_down = True
+        user._move_origin = self._window.getVTKInteractor().GetEventPosition()
+        self._tester.mouseMove(0.7, 0.5)
+        user.onMouseMove(self._window.getVTKInteractorStyle(), None)
+        self.assertImage('translate_2d.png')
+
+        user._move_origin = self._window.getVTKInteractor().GetEventPosition()
+        self._tester.mouseMove(0.5, 0.5)
+        user.onMouseMove(self._window.getVTKInteractorStyle(), None)
+        self._tester.keyPress('r')
         self.assertImage('initial.png')

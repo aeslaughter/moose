@@ -187,7 +187,7 @@ class Window(base.ChiggerAlgorithm):
         """
         Return the vtkInteractor object.
         """
-        return self.__vtkinteractorstyle
+        return self.__vtkinteractor.GetInteractorStyle()
 
     def getVTKWindow(self):
         """
