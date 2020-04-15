@@ -222,18 +222,15 @@ class Parameter(object):
                     return
 
         else:
-            if self.__vtype is not None:
+            if (self.__vtype is not None) and (not isinstance(val, self.__vtype)):
                 for vtype in self.__vtype:
                     try:
                         val = vtype(val)
                         break
                     except (ValueError, TypeError):
-                        pass
-
-            if (self.__vtype is not None) and not isinstance(val, self.__vtype):
-                msg = "'%s' must be of type %s but %s provided."
-                LOG.warning(msg, self.name, self.__vtype, type(val))
-                return
+                        msg = "'%s' must be of type %s but %s provided."
+                        LOG.warning(msg, self.name, self.__vtype, type(val))
+                        return
 
         # Check that the value is allowed
         if (self.__allow is not None) and (val != None) and (val not in self.__allow):

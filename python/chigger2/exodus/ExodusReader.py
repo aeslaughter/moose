@@ -203,11 +203,14 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Initialize the current time data
         time0, time1 = self.__getCurrentTimeInformation()
+        print(time0, time1)
 
         # Time Interpolation
         if (time0 is not None) and (time1 is not None):
             file0 = self.__fileinfo[time0.filename]
             file1 = self.__fileinfo[time1.filename]
+
+            print(file0, file1)
 
             # Interpolation on same file
             if file0.vtkreader is file1.vtkreader:
