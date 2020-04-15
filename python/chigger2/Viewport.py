@@ -99,7 +99,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         window.add(self)
         #self.__window_weakref = None# weakref.ref(window)
 #
-        #self._vtkrenderer.InteractiveOff()
+ #       self._vtkrenderer.InteractiveOff()
 
 
     #def _window(self):
@@ -129,13 +129,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
             elif arg.getVTKActor() is not None:
                 self._vtkrenderer.RemoveActor(arg.getVTKActor())
 
-
-    #def RequestData(self, request, inInfo, outInfo):
-    #    base.ChiggerAlgorithm.RequestData(self, request, inInfo, outInfo)
-    #    opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
-    #    print opt
-    #    return 1
-
     def updateInformation(self):
         base.ChiggerAlgorithm.updateInformation(self)
         for source in self.__sources:
@@ -145,7 +138,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         base.ChiggerAlgorithm.updateData(self)
         for source in self.__sources:
             source.updateData()
-
 
     def _onRequestInformation(self):
         base.ChiggerAlgorithm._onRequestInformation(self)
@@ -164,6 +156,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         else:
             self._vtkrenderer.SetGradientBackground(False)
 
+        self.assignParam('camera', self._vtkrenderer.SetActiveCamera)
+
         #self._vtkrenderer.ResetCameraClippingRange()
 
     def getVTKRenderer(self):
@@ -172,12 +166,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
     def sources(self):
         return self.__sources
-
-    #def __del__(self):
-    #    base.ChiggerAlgorithm.__del__(self)
-        #for source in self.__sources:
-        #    del source
-    #    self.__sources = None
 
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
@@ -208,4 +196,4 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
         self.setParams(viewport=(x_min, y_min, x_max, y_max))
         self.updateInformation()
-        self.printOption('viewport')
+        self.printParam('viewport')

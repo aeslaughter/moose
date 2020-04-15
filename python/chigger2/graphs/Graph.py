@@ -203,7 +203,7 @@ class Graph(base.ChiggerResultBase):
         step = -1 if binding.shift else 1
         sz = self.getParam('font_size') + step
         self.update(font_size=sz)
-        self.printOption('font_size')
+        self.printParam('font_size')
 
     def _setLineThickness(self, window, binding): #pylint: disable=unused-argument
         """Keybinding method."""
@@ -213,4 +213,4 @@ class Graph(base.ChiggerResultBase):
                 sz = plt.getParam('width') + increment
                 if sz >= 0:
                     plt.update(width=sz)
-                plt.printOption('width')
+                plt.printParam('width')

@@ -14,6 +14,7 @@ import textwrap
 import vtk
 
 import mooseutils
+from parameters import InputParameters
 from .ChiggerObserver import ChiggerObserver
 from .. import utils
 from .. import geometric
@@ -124,7 +125,10 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('r', MainWindowObserver._deactivate, desc="Soft reset (clear) selection (maintains the selection index)", shift=True, args=(True,))
 
         bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object")
+        bindings.add('q', MainWindowObserver._closeWindow, desc="Close the VTK window.")
 
+        # TODO: Update _writeChanges to operate on all source and viewport objects and show
+        #       a diff by default; use shift-w to write
         #bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file")
         return bindings
 
@@ -143,7 +147,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self._window.setParam('mode', 'chigger')
 
         # Remove VTK key interactions
-        self._window.getVTKInteractor().RemoveObservers(vtk.vtkCommand.CharEvent)
+        self._window.getVTKInteractor().RemoveAllObservers()
 
         # Add the basic interaction for keys and mouse clicks
         self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
@@ -259,6 +263,11 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             else:
                 self._window.getVTKInteractor().SetInteractorStyle(self.__style_3d)
 
+            # Add the style resets the observers, thus re-enables key bindings on the
+            # interactor. I am not sure why this, this is the work around to remove the default
+            # VTK key bindings.
+            self._window.getVTKInteractor().RemoveObservers(vtk.vtkCommand.CharEvent)
+
             # Disable interaction with all other viewports
             viewports = self._availableViewports()
             for vp in viewports:
@@ -334,7 +343,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def _onLeftButtonPressEvent(self, obj, event):
         pos = self._window.getVTKInteractor().GetEventPosition()
         vtk_renderer = self._window.getVTKInteractor().FindPokedRenderer(*pos)
-        props = vtk_renderer.PickProp(*pos)
+        props =  vtk_renderer.PickProp(*pos)
 
         #TODO: Check for more than one???
         #props.GetNumberOfItems()
@@ -362,6 +371,12 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                     return viewport, source
         return None
 
+    def _closeWindow(self):
+        ans = input('Close VTK window [y/N]? ')
+        if ans.lower() in ('y', 'yes'):
+            self._window.getVTKWindow().Finalize()
+            self._window.getVTKInteractor().TerminateApp()
+
     def _writeChanges(self):
         if self.__current_source is None:
             return
@@ -370,7 +385,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         filename = trace[0]
         line = trace[1]
 
-        output, sub_output = self.__current_source._input_parameters.getNonDefaultOptions()
+        output, sub_output = self.getNonDefaultParams(self._input_parameters)
         def sub_func(match):
             key = match.group('key')
             value = match.group('value')

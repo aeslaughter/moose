@@ -15,7 +15,6 @@ custom interaction (default).
 import chigger2 as chigger
 
 window = chigger.Window(size=(800, 800))
-chigger.observers.MainWindowObserver(window)
 
 left = chigger.Viewport(window, viewport=(0, 0, 0.5, 1))
 right = chigger.Viewport(window, viewport=(0.5, 0, 1, 1))
@@ -26,5 +25,4 @@ cube0 = chigger.geometric.Cube(left, bounds=(0.5, 0.8, 0, 0.5, 0.8, 1), color=(0
 rect1 = chigger.geometric.Rectangle(right, bounds=(0.25, 0.5, 0.25, 0.75), color=(0.2,0.1, 0.5))
 cube1 = chigger.geometric.Cube(right, bounds=(0.5, 0.8, 0, 0.5, 0.8, 1), color=(0.8, 0.2, 0.1))
 
-window.write('interact.png')
 window.start()

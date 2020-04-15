@@ -19,48 +19,6 @@ from . import annotations
 from . import observers
 from .Viewport import Viewport
 
-"""
-class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
-    pass
-
-class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
-    ZOOM_FACTOR = 2
-
-    def __init__(self, source):
-        self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
-        self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPressEvent)
-        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMoveEvent)
-
-        super(Chigger2DInteractorStyle, self).__init__()
-
-        self._source = source
-        self._move_origin = None
-
-    def onMouseWheelForward(self, obj, event):
-        self.zoom(self.ZOOM_FACTOR)
-        obj.GetInteractor().GetRenderWindow().Render()
-
-    def onMouseWheelBackward(self, obj, event):
-        self.zoom(-self.ZOOM_FACTOR)
-        obj.GetInteractor().GetRenderWindow().Render()
-
-    def onKeyPressEvent(self, obj, event):
-        key = obj.GetKeySym().lower()
-        if key == 'shift_l':
-            self._shift_origin = obj.GetInteractor().GetEventPosition()
-
-    def onMouseMoveEvent(self, obj, event):
-        if obj.GetShiftKey():
-            if self._move_origin == None:
-                self._move_origin = obj.GetInteractor().GetEventPosition()
-            else:
-                pos = obj.GetInteractor().GetEventPosition()
-                self.move(pos[0] - self._move_origin[0], pos[1] - self._move_origin[1])
-                obj.GetInteractor().GetRenderWindow().Render()
-                self._move_origin = pos
-"""
-
 class Window(base.ChiggerAlgorithm):
     """
     Wrapper of vtkRenderWindow
@@ -123,7 +81,6 @@ class Window(base.ChiggerAlgorithm):
 
         self.__vtkwindow = vtk.vtkRenderWindow()
         self.__vtkinteractor = kwargs.pop('vtkinteractor', self.__vtkwindow.MakeRenderWindowInteractor())
-        #self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()
         self.__vtkinteractorstyle = None
         self.__viewports = list()
         self.__main_observer = None
@@ -224,7 +181,7 @@ class Window(base.ChiggerAlgorithm):
 
         if self.isParamValid('background'):
             self.__viewports[0].setParams(background=self.getParam('background'),
-                                           background2=self.getParam('background2'))
+                                          background2=self.getParam('background2'))
 
         # Auto Background adjustments
         """
@@ -260,14 +217,14 @@ class Window(base.ChiggerAlgorithm):
         if mode == 'offscreen':
             self.__vtkwindow.OffScreenRenderingOn()
 
+        # Use chigger interaction (MainWindowObserver handles this automatcially)
+        elif (mode is None) or mode == 'chigger':
+            self.__main_observer = observers.MainWindowObserver(self)
+
         # Use the default interaction, this is the default if MainWindowObserver doesn't exist
-        elif (mode is None) or (mode == 'vtk'):
+        elif mode == 'vtk':
             self.__vtkinteractorstyle = vtk.vtkInteractorStyleJoystickCamera()
             self.__vtkinteractor.SetInteractorStyle(self.__vtkinteractorstyle)
-
-        # Use chigger interaction (MainWindowObserver handles this automatcially)
-        elif mode == 'chigger':
-            pass
 
         elif mode == 'none':
             self.__vtkinteractor.SetInteractorStyle(None)

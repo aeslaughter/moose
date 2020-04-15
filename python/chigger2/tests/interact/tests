@@ -1,0 +1,6 @@
+[Tests]
+  [unit]
+    type = PythonUnitTest
+    input = test_interact.py
+  []
+[]

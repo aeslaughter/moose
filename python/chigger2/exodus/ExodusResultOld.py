@@ -138,7 +138,7 @@ class ExodusResult(base.ChiggerResult):
             if opacity <= 0.95:
                 opacity += 0.05
         self.update(opacity=opacity)
-        self.printOption('opacity')
+        self.printParam('opacity')
 
     def _updateColorMap(self, window, binding): #pylint: disable=unused-argument
         step = 1 if not binding.shift else -1
@@ -153,7 +153,7 @@ class ExodusResult(base.ChiggerResult):
             index = n - 1
 
         self.setParam('cmap', available[index])
-        self.printOption('cmap')
+        self.printParam('cmap')
 
     def _updateTimestep(self, window, binding): #pylint: disable=unused-argument
         step = 1 if not binding.shift else -1
@@ -163,4 +163,4 @@ class ExodusResult(base.ChiggerResult):
             current = 0
         self._reader.setParam('time', None)
         self._reader.setParam('timestep', current)
-        self._reader.printOption('timestep')
+        self._reader.printParam('timestep')

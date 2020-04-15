@@ -56,7 +56,7 @@ class ExodusSource(base.ChiggerSource):
                     "blocks.")
 
         # Colormap
-        opt += base.ColorMap.validParams()
+        opt.add('cmap', base.ColorMap.validParams())
 
         opt.add('explode', None, vtype=float,
                 doc="When multiple sources are being used (e.g., NemesisReader) setting this to a "
@@ -70,11 +70,6 @@ class ExodusSource(base.ChiggerSource):
         bindings = base.ChiggerSource.validKeyBindings()
 
         """
-        # Opacity keybindings
-        bindings.add('a', ExodusSource._updateOpacity,
-                     desc='Increase the alpha (opacity) by 1%.')
-        bindings.add('a', ExodusSource._updateOpacity, shift=True,
-                     desc='Decrease the alpha (opacity) by 1%.')
 
         # Colormap keybindings
         bindings.add('m', ExodusSource._updateColorMap,
@@ -115,9 +110,7 @@ class ExodusSource(base.ChiggerSource):
 
         # Colormap
         if not self.getParam('color'):
-            self._colormap.setParams(cmap=self.getParam('cmap'),
-                                      cmap_reverse=self.getParam('cmap_reverse'),
-                                      cmap_num_colors=self.getParam('cmap_num_colors'))
+            self._colormap.parameters().update(self.getParam('cmap'))
             self._vtkmapper.SetLookupTable(self._colormap())
 
         # Update the block/boundary/nodeset and variable settings on the reader
@@ -285,7 +278,7 @@ class ExodusSource(base.ChiggerSource):
             if opacity <= 0.95:
                 opacity += 0.05
         self.update(opacity=opacity)
-        self.printOption('opacity')
+        self.printParam('opacity')
 
     def _updateColorMap(self, window, binding): #pylint: disable=unused-argument
         step = 1 if not binding.shift else -1
@@ -300,7 +293,7 @@ class ExodusSource(base.ChiggerSource):
             index = n - 1
 
         self.setParam('cmap', available[index])
-        self.printOption('cmap')
+        self.printParam('cmap')
 
     def _updateTimestep(self, window, binding): #pylint: disable=unused-argument
         step = 1 if not binding.shift else -1
@@ -310,5 +303,5 @@ class ExodusSource(base.ChiggerSource):
             current = 0
         self._reader.setParam('time', None)
         self._reader.setParam('timestep', current)
-        self._reader.printOption('timestep')
+        self._reader.printParam('timestep')
     """

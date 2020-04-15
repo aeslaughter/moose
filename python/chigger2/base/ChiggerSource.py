@@ -72,10 +72,16 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('o', ChiggerSourceBase._displayParams,
+        bindings.add('o', ChiggerSourceBase.printParams,
                      desc="Output the available options for this object to the screen.")
-        bindings.add('o', lambda s: ChiggerSourceBase._displayParams(s, script=True), shift=True,
+        bindings.add('o', lambda s: ChiggerSourceBase.printSetParams(s), shift=True,
                      desc="Output the non-default options for this object, as key-value pairs, to the screen.")
+
+        bindings.add('a', ChiggerSourceBase._updateOpacity,
+                     desc='Increase the alpha (opacity) by 1%.')
+        bindings.add('a', ChiggerSourceBase._updateOpacity, args=(True,), shift=True,
+                     desc='Decrease the alpha (opacity) by 1%.')
+
         return bindings
 
     def __init__(self, viewport, **kwargs):
@@ -177,44 +183,6 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         self.assignParam('linewidth', self._vtkactor.GetProperty().SetLineWidth)
         self.assignParam('pointsize', self._vtkactor.GetProperty().SetPointSize)
 
-    def _displayParams(self, script=False):
-        if script:
-            out, sub_out = self._paramsToScriptString(self._input_parameters)
-            print("({})".format(', '.join(out)))
-            for key, value in sub_out.items():
-                print("'{}', {}".format(key, ', '.join(value)))
-        else:
-            print(self._input_parameters.toString())
-
-    @staticmethod
-    def _paramsToScriptString(params, **kwargs):
-        """
-        Takes an InputParameters object and returns a string for building python scripts.
-
-        Inputs:
-            kwargs: Key, value pairs provided will replace values in options with the string given
-                    in the value, but will not set the actual value. This is generally for
-                    code generation tools.
-        """
-        output = []
-        sub_output = dict()
-        for key in params.keys():
-            opt = params.get(key)
-
-            if isinstance(opt, InputParameters):
-                items, _ = ChiggerSourceBase._paramsToScriptString(opt)
-                if items:
-                    sub_output[key] = items
-
-            elif not params.isDefault(key):
-                if key in kwargs:
-                    r = kwargs[key]
-                else:
-                    r = repr(opt)
-                output.append('{}={}'.format(key, r))
-
-        return output, sub_output
-
     def __connectFilters(self):
         self.debug('__connectFilters')
 
@@ -236,6 +204,18 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         # Connect mapper/filters into the pipeline
         if self._vtkmapper:
             self._vtkmapper.SetInputConnection(base_obj.GetOutputPort(0))
+
+
+    def _updateOpacity(self, shift=False): #pylint: disable=unuysed-argument
+        opacity = self.getParam('opacity')
+        if shift:
+            if opacity > 0.05:
+                opacity -= 0.05
+        else:
+            if opacity <= 0.95:
+                opacity += 0.05
+        self.setParams(opacity=opacity)
+        self.printParam('opacity')
 
     def __del__(self):
         ChiggerAlgorithm.__del__(self)
@@ -267,6 +247,18 @@ class ChiggerSource(ChiggerSourceBase):
 
         return opt
 
+    @staticmethod
+    def validKeyBindings():
+        bindings = ChiggerSourceBase.validKeyBindings()
+        bindings.add('c', ChiggerSource.printCamera,
+                     desc="Display the camera settings for this object.")
+        bindings.add('e', ChiggerSource.toggleEdges,
+                     desc="Toggle the visibility of object edges.")
+        return bindings
+
+    def getBounds(self):
+        return self._vtkmapper.GetBounds()
+
     def _onRequestInformation(self):
         ChiggerSourceBase._onRequestInformation(self)
 
@@ -284,8 +276,11 @@ class ChiggerSource(ChiggerSourceBase):
 
         self.assignParam('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
 
-    def getBounds(self):
-        return self._vtkmapper.GetBounds()
+    def printCamera(self):
+        self._viewport.printCamera()
+
+    def toggleEdges(self):
+        self.setParam('edges', not self.getParam('edges'))
 
 
 class ChiggerSource2D(ChiggerSourceBase):

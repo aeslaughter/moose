@@ -11,6 +11,7 @@ import vtk
 import logging
 import traceback
 import mooseutils
+from parameters import InputParameters
 from factory import MooseObject
 from .. import utils
 
@@ -75,16 +76,43 @@ class ChiggerObjectBase(MooseObject):
         """
         Print a list of all available options for this object.
         """
-        print(self._options)
+        print(self._input_parameters)
 
     def printSetParams(self, *args):
         """
         Print python code for the 'setParams' method.
         """
-        output, sub_output = self._options.toScriptString()
+        output, sub_output = ChiggerObject.getNonDefaultParams(self._input_parameters)
         print('setParams({})'.format(', '.join(output)))
         for key, value in sub_output.items():
             print('setParams({}, {})'.format(key, ', '.join(repr(value))))
+
+    @staticmethod
+    def getNonDefaultParams(params, **kwargs):
+        """
+        Takes an InputParameters object and returns a string for building python scripts.
+
+        Inputs:
+            kwargs: Key, value pairs provided will replace values in options with the string given
+                    in the value.
+        """
+        output = []
+        sub_output = dict()
+        for key, value in params.items():
+            if isinstance(value, InputParameters):
+                items, _ = ChiggerObject.getNonDefaultParams(value)
+                if items:
+                    sub_output[key] = items
+
+            elif not params.isDefault(key):
+                if key in kwargs:
+                    r = kwargs[key]
+                else:
+                    r = repr(value)
+                output.append('{}={}'.format(key, r))
+
+        return output, sub_output
+
 
     def __del__(self):
         self.debug('__del__()')
@@ -100,5 +128,5 @@ class ChiggerObject(ChiggerObjectBase):
     def setParams(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setParams(self, *args, **kwargs)
-        if self._options.modified() > self.__modified_time.GetMTime():
+        if self._input_parameters.modified() > self.__modified_time.GetMTime():
             self.__modified_time.Modified()

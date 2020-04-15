@@ -63,33 +63,33 @@ class TextAnnotationBase(base.ChiggerResult):
         """Keybinding method."""
         sz = self.getParam('font_size') + 1
         self.update(font_size=sz)
-        self.printOption('font_size')
+        self.printParam('font_size')
 
     def _decreaseFont(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
         sz = self.getParam('font_size') - 1
         self.update(font_size=sz)
-        self.printOption('font_size')
+        self.printParam('font_size')
 
     def _increaseOpacity(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
         opacity = self.getParam('text_opacity') + 0.01
         if opacity <= 1.:
             self.update(text_opacity=opacity)
-            self.printOption('text_opacity')
+            self.printParam('text_opacity')
 
     def _decreaseOpacity(self, *args): #pylint: disable=unused-argument
         """Keybinding method."""
         opacity = self.getParam('text_opacity') - 0.01
         if opacity > 0.:
             self.update(text_opacity=opacity)
-            self.printOption('text_opacity')
+            self.printParam('text_opacity')
 
     def onMouseMoveEvent(self, position):
         """Called by MainWindowObserver when the mouse moves and this object is active."""
         if self._allow_mouse_drag:
             self.update(position=position)
-            self.printOption('position')
+            self.printParam('position')
 
     def setActive(self, active):
         """Overrides the default active highlighting."""

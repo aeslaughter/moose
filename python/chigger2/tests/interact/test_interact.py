@@ -28,9 +28,6 @@ class ChiggerTestCase(unittest.TestCase):
         goldname = os.path.join(os.path.dirname(filename), 'gold', os.path.basename(filename))
         self._window.write(filename)
 
-
-
-
         """
         image = vtk.vtkPNGReader()
         image.SetFileName(filename)
@@ -57,7 +54,6 @@ class TestInteraction(ChiggerTestCase):
 
         self._window = chigger.Window(size=(400, 400))
         self._tester = chigger.observers.TestObserver(self._window)
-        chigger.observers.MainWindowObserver(self._window)
 
         left = chigger.Viewport(self._window, viewport=(0, 0, 0.5, 1))
         right = chigger.Viewport(self._window, viewport=(0.5, 0, 1, 1))
