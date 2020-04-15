@@ -114,4 +114,7 @@ class MooseObject(object):
     def _log(self, lvl, msg, *args, **kwargs):
         """Helper for using logging package with class name prefix"""
         obj = self.getLogger()
-        obj.log(lvl, '({}): {}'.format(self.name(), msg.format(*args, **kwargs)))
+        if self.name() != self.__class__.__name__:
+            obj.log(lvl, '({}):{}'.format(self.name(), msg.format(*args, **kwargs)))
+        else:
+            obj.log(lvl, msg.format(*args, **kwargs))

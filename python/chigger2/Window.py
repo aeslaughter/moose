@@ -346,13 +346,3 @@ class Window(base.ChiggerAlgorithm):
         writer.SetFileName(filename)
         writer.SetInputData(window_filter.GetOutput())
         writer.Write()
-
-    #def __getitem__(self, index):
-    #    """
-    #    Operator[] access into results objects.
-    #    """
-    #    return self.__viewports[index]
-
-
-    def _onKeyPressEvent(self, obj, event):
-        print('foo')

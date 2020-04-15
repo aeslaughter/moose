@@ -30,11 +30,13 @@ class ChiggerObjectBase(MooseObject):
 
     def __init__(self, *args, **kwargs):
         MooseObject.__init__(self, *args, **kwargs)
+        self.debug('__init__')
         self._init_traceback = traceback.extract_stack()
         self._set_options_tracebacks = dict()
 
     def setParam(self, name, value):
         """Set the value of an individual parameter."""
+        self.debug('setParam')
         self._input_parameters.set(name, value)
 
     def setParams(self, *args, **kwargs):
@@ -43,11 +45,12 @@ class ChiggerObjectBase(MooseObject):
 
         Usage:
            update(sub0, sub1, ..., key0=value0, key1=value1, ...)
-           Updates all sub-options with the provided key value pairs
+           Updates all sub-options with the provided key value pairsf
 
            update(key0=value0, key1=value1, ...)
            Updates the main options with the provided key,value pairs
         """
+        self.debug('setParams')
         # Sub-options case
         if args:
             for sub in args:
@@ -64,6 +67,7 @@ class ChiggerObjectBase(MooseObject):
 
     def assignParam(self, name, func):
         """Apply the a parameter to the given function."""
+        self.debug('assignParam')
         if self.isParamValid(name):
             value = self.getParam(name)
             func(value)

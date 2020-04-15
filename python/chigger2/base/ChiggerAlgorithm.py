@@ -41,7 +41,7 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""
         ChiggerObjectBase.setParams(self, *args, **kwargs)
         if self._input_parameters.modified() > self.GetMTime():
-            self.debug('update::Modified')
+            self.debug('setParams::Modified')
             self.Modified()
 
     def _onRequestInformation(self):

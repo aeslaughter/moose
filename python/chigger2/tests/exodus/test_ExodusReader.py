@@ -14,7 +14,7 @@ import shutil
 import time
 import logging
 import mooseutils
-import chigger
+import chigger2 as chigger
 import vtk
 
 class TestExodusReader(unittest.TestCase):
@@ -65,18 +65,17 @@ class TestExodusReader(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as l:
             reader = chigger.exodus.ExodusReader(self.single)
 
-        self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
+        self.assertEqual(len(l.output),1)
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:__init__')
 
         # Delete the object
         with self.assertLogs(level=logging.DEBUG) as l:
             del reader
         self.assertEqual(len(l.output), 1)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: __del__()')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:__del__()')
 
-    def testOptions(self):
-        """Test the setting options calls the correct methods."""
+    def testParams(self):
+        """Test the setting parameters calls the correct methods."""
 
         # Create ExodusReader
         reader = chigger.exodus.ExodusReader(self.single)
@@ -87,17 +86,17 @@ class TestExodusReader(unittest.TestCase):
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 11)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParam')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParam::Modified')
-        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
-        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
-        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
-        self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateFileInformation')
-        self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateTimeInformation')
-        self.assertEqual(l.output[7], 'DEBUG:ExodusReader: __updateBlockInformation')
-        self.assertEqual(l.output[8], 'DEBUG:ExodusReader: __updateVariableInformation')
-        self.assertEqual(l.output[9], 'DEBUG:ExodusReader: __updateActiveBlocks')
-        self.assertEqual(l.output[10], 'DEBUG:ExodusReader: __updateActiveVariables')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParam')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:setParam::Modified')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader:updateInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader:RequestInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader:_onRequestInformation')
+        self.assertEqual(l.output[5], 'DEBUG:ExodusReader:__updateFileInformation')
+        self.assertEqual(l.output[6], 'DEBUG:ExodusReader:__updateTimeInformation')
+        self.assertEqual(l.output[7], 'DEBUG:ExodusReader:__updateBlockInformation')
+        self.assertEqual(l.output[8], 'DEBUG:ExodusReader:__updateVariableInformation')
+        self.assertEqual(l.output[9], 'DEBUG:ExodusReader:__updateActiveBlocks')
+        self.assertEqual(l.output[10], 'DEBUG:ExodusReader:__updateActiveVariables')
 
         # Test setParam, that doesn't change options
         with self.assertLogs(level=logging.DEBUG) as l:
@@ -105,8 +104,8 @@ class TestExodusReader(unittest.TestCase):
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParam')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParam')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:updateInformation')
 
         # Test setParams
         with self.assertLogs(level=logging.DEBUG) as l:
@@ -114,13 +113,13 @@ class TestExodusReader(unittest.TestCase):
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: setParams::Modified')
-        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: updateInformation')
-        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: RequestInformation')
-        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: _onRequestInformation')
-        self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateActiveBlocks')
-        self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateActiveVariables')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:setParams::Modified')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader:updateInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader:RequestInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader:_onRequestInformation')
+        self.assertEqual(l.output[5], 'DEBUG:ExodusReader:__updateActiveBlocks')
+        self.assertEqual(l.output[6], 'DEBUG:ExodusReader:__updateActiveVariables')
 
         # Test setParams, that doesn't change options
         with self.assertLogs(level=logging.DEBUG) as l:
@@ -128,8 +127,8 @@ class TestExodusReader(unittest.TestCase):
             reader.updateInformation()
 
         self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: setParams')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParams')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:updateInformation')
 
 
     def testFileInformation(self):
@@ -143,28 +142,28 @@ class TestExodusReader(unittest.TestCase):
             finfo = reader.getFileInformation()
 
         self.assertEqual(len(l.output), 9)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader: RequestInformation')
-        self.assertEqual(l.output[2], 'DEBUG:ExodusReader: _onRequestInformation')
-        self.assertEqual(l.output[3], 'DEBUG:ExodusReader: __updateFileInformation')
-        self.assertEqual(l.output[4], 'DEBUG:ExodusReader: __updateTimeInformation')
-        self.assertEqual(l.output[5], 'DEBUG:ExodusReader: __updateBlockInformation')
-        self.assertEqual(l.output[6], 'DEBUG:ExodusReader: __updateVariableInformation')
-        self.assertEqual(l.output[7], 'DEBUG:ExodusReader: __updateActiveBlocks')
-        self.assertEqual(l.output[8], 'DEBUG:ExodusReader: __updateActiveVariables')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:updateInformation')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:RequestInformation')
+        self.assertEqual(l.output[2], 'DEBUG:ExodusReader:_onRequestInformation')
+        self.assertEqual(l.output[3], 'DEBUG:ExodusReader:__updateFileInformation')
+        self.assertEqual(l.output[4], 'DEBUG:ExodusReader:__updateTimeInformation')
+        self.assertEqual(l.output[5], 'DEBUG:ExodusReader:__updateBlockInformation')
+        self.assertEqual(l.output[6], 'DEBUG:ExodusReader:__updateVariableInformation')
+        self.assertEqual(l.output[7], 'DEBUG:ExodusReader:__updateActiveBlocks')
+        self.assertEqual(l.output[8], 'DEBUG:ExodusReader:__updateActiveVariables')
 
         # Get FileInfo dict, this should NOT trigger a call to the VTK pipeline RequestInformation
         with self.assertLogs(level=logging.DEBUG) as l:
             finfo = reader.getFileInformation()
 
         self.assertEqual(len(l.output), 1)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: updateInformation')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:updateInformation')
 
         # Delete the object
         with self.assertLogs(level=logging.DEBUG) as l:
             del reader
         self.assertEqual(len(l.output), 1)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader: __del__()')
+        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:__del__()')
 
         # Check that the file information is valid
         self.assertEqual(len(finfo), 1)

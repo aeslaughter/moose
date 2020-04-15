@@ -235,12 +235,8 @@ class ChiggerSource(ChiggerSourceBase):
         opt.add('representation', default='surface', allow=('surface', 'wireframe', 'points'),
                 doc="View volume representation.")
 
-        opt.add('edges', default=False, vtype=bool,
-                doc="Enable edges on the rendered object.")
-        opt.add('edgecolor', default=(0.5,)*3, array=True, size=3, vtype=float,
-                doc="The color of the edges, 'edges=True' must be set.")
-        opt.add('edgewidth', default=1, vtype=(float, int),
-                doc="The width of the edges, 'edges=True' must be set.")
+
+        opt.add('edges', utils.EdgeParams.validParams(), doc="Edge parameters")
 
         opt.add('lines_as_tubes', default=False, vtype=bool,
                 doc="Toggle rendering 1D lines as tubes.")
@@ -270,9 +266,7 @@ class ChiggerSource(ChiggerSourceBase):
         elif rep == 'points':
             self._vtkactor.GetProperty().SetRepresentationToPoints()
 
-        self.assignParam('edges', self._vtkactor.GetProperty().SetEdgeVisibility)
-        self.assignParam('edgecolor', self._vtkactor.GetProperty().SetEdgeColor)
-        self.assignParam('edgewidth', self._vtkactor.GetProperty().SetLineWidth)
+        utils.EdgeParams.setParams(self, self.getParam('edges'))
 
         self.assignParam('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
 
@@ -280,7 +274,8 @@ class ChiggerSource(ChiggerSourceBase):
         self._viewport.printCamera()
 
     def toggleEdges(self):
-        self.setParam('edges', not self.getParam('edges'))
+        value = self.getParam('edges').get('enable')
+        self.setParams('edges', enable=not value)
 
 
 class ChiggerSource2D(ChiggerSourceBase):

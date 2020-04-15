@@ -10,6 +10,6 @@ camera.SetFocalPoint(0.00000000, 0.00000000, 0.12500000)
 window = chigger.Window(size=(400, 400))
 viewport = chigger.Viewport(window, camera=camera)
 reader = chigger.exodus.ExodusReader('../input/mug_blocks_out.e')
-source = chigger.exodus.ExodusSource(viewport, reader, variable='diffused', edges=True, cmap={'key':'viridis'})
+source = chigger.exodus.ExodusSource(viewport, reader, variable='diffused', cmap={'key':'viridis'})
 
 window.start()

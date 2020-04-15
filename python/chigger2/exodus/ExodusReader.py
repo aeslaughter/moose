@@ -17,6 +17,7 @@ import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
 import mooseutils
+from mooseutils import AutoPropertyMixin, addProperty
 from .. import utils
 from .. import base
 
@@ -31,11 +32,11 @@ def lock_file(filename):
         yield
         fcntl.flock(f, fcntl.LOCK_UN)
 
-@mooseutils.addProperty('name', ptype=str, required=True)
-@mooseutils.addProperty('object_type', ptype=int, required=True)
-@mooseutils.addProperty('num_components', ptype=int, required=True)
-@mooseutils.addProperty('active', ptype=bool, default=True)
-class VarInfo(mooseutils.AutoPropertyMixin):
+@addProperty('name', ptype=str, required=True)
+@addProperty('object_type', ptype=int, required=True)
+@addProperty('num_components', ptype=int, required=True)
+@addProperty('active', ptype=bool, default=True)
+class VarInfo(AutoPropertyMixin):
     """
     Storage for variable information.
 
@@ -48,13 +49,13 @@ class VarInfo(mooseutils.AutoPropertyMixin):
     def __repr__(self):
         return '{} (name={}, object_type={}, num_components={}, active={})'.format(self.fullname, self.name, self.object_type, self.num_components, self.active)
 
-@mooseutils.addProperty('name', ptype=str, required=True)
-@mooseutils.addProperty('number', ptype=int, required=True)
-@mooseutils.addProperty('object_type', ptype=int, required=True)
-@mooseutils.addProperty('object_index', ptype=int, required=True)
-@mooseutils.addProperty('multiblock_index', ptype=int, required=True)
-@mooseutils.addProperty('active', ptype=bool, default=True)
-class BlockInfo(mooseutils.AutoPropertyMixin):
+@addProperty('name', ptype=str, required=True)
+@addProperty('number', ptype=int, required=True)
+@addProperty('object_type', ptype=int, required=True)
+@addProperty('object_index', ptype=int, required=True)
+@addProperty('multiblock_index', ptype=int, required=True)
+@addProperty('active', ptype=bool, default=True)
+class BlockInfo(AutoPropertyMixin):
     """
     Storage for block information.
 
