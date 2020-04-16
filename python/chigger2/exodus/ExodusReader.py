@@ -173,7 +173,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
         # block information only needs to be updated if the file list changed
-        filenames = self.__getActiveFilenames(self.getParam('filename'))
+        filenames = self.__getActiveFilenames(filename)
         if self.__filenames != filenames:
             self.__filenames = filenames
 
@@ -203,14 +203,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Initialize the current time data
         time0, time1 = self.__getCurrentTimeInformation()
-        print(time0, time1)
 
         # Time Interpolation
         if (time0 is not None) and (time1 is not None):
             file0 = self.__fileinfo[time0.filename]
             file1 = self.__fileinfo[time1.filename]
-
-            print(file0, file1)
 
             # Interpolation on same file
             if file0.vtkreader is file1.vtkreader:
