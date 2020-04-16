@@ -169,7 +169,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         filename = self.getParam('filename')
         if not os.path.isfile(filename):
             self.error("The file {} is not a valid filename.", filename)
-            return 0
+            return
 
         # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
         # block information only needs to be updated if the file list changed
@@ -367,10 +367,15 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             times = [t.time for t in self.__timeinfo]
 
             # Error if supplied time is out of range
-            if (time > times[-1]) or (time < times[0]):
+            if (time > times[-1]):
                 self.warning("Time out of range, {} not in {}, using the latest timestep.",
                              time, repr([times[0], times[-1]]))
-                return None, None
+                return self.__timeinfo[-1], None
+
+            elif (time < times[0]):
+                self.warning("Time out of range, {} not in {}, using the first timestep.",
+                             time, repr([times[0], times[-1]]))
+                return self.__timeinfo[0], None
 
             # Exact match
             try:
