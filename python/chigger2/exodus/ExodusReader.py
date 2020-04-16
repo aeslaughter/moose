@@ -189,7 +189,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Build VarInfo from the first file
             self.__updateVariableInformation()
 
-            # Update active blocks, etc.
+        # Update active blocks, etc.
         self.__updateActiveBlocks()
 
         # Update active variables

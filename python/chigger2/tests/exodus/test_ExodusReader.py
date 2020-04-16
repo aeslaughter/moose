@@ -1115,5 +1115,16 @@ class TestExodusReader(unittest.TestCase):
             variables = reader.getVariableInformation()
         self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
 
+
+
+# TODO:
+# ExodusReader._onRequestInformation should set self.Modifed if parameters change rather than
+#                                    in the various setParams methods
+#
+# The setParams methods should indicate that _onRequestInformation is needed
+#
+# This will open up the possibility that self.Modified could be called manually within the
+# _onRequestInformation functions to allow for object to decided if data update is needed
+
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2)
