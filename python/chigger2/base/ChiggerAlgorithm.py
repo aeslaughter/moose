@@ -19,6 +19,10 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     It also adds a new layer to the normal VTK callbacks that calls Modified if a parameter
     changes. This is also used to check for file updates in the ExodusReader. See the documentation
     in self.updateModified for further information.
+
+    TODO: There is probably a method for adding new requests via VTK so that the UpdateInformation
+          and Update methods could do the updateModified call, but figuring that out was beyond my
+          knowledge and the time sink is already deep.
     """
 
     def __init__(self, nInputPorts=0, nOutputPorts=0, outputType=None, inputType=None, **kwargs):
@@ -93,6 +97,27 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         self.debug('updateData')
         self.Update()
 
+    def setParam(self, *args, **kwargs):
+        """
+        Override ChiggerObjectBase.setParam to call updateModified
+        """
+        ChiggerObjectBase.setParam(self, *args, **kwargs)
+        self.__paramModifiedHelper()
+
+    def setParams(self, *args, **kwargs):
+        """
+        Override ChiggerObjectBase.setParams to call updateModified
+        """
+        ChiggerObjectBase.setParams(self, *args, **kwargs)
+        self.__paramModifiedHelper()
+
+    def assignParam(self, *args, **kwargs):
+        """
+        Override ChiggerObjectBase.assignParam to call updateModified
+        """
+        ChiggerObjectBase.assignParam(self, *args, **kwargs)
+        self.__paramModifiedHelper()
+
     def _onRequestModified(self):
         """
         This method is designed to be overridden, but be sure to call the base version to maintain
@@ -103,9 +128,7 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
         class uses this to check if the files associated with the reader have changed.
         """
         self.debug('_onRequestModified')
-        if self._input_parameters.modified() > self.GetMTime():
-            self.debug('_onRequestModified::Modified')
-            self.Modified()
+        self.__paramModifiedHelper()
         return 1
 
     def _onRequestInformation(self, inInfo, outInfo):
@@ -128,6 +151,13 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
             > data objects.
         """
         self.debug('_onRequestData')
+
+    def __paramModifiedHelper(self):
+        """
+        Helper to mark the object as modified if the parameters change.
+        """
+        if self._input_parameters.modified() > self.GetMTime():
+            self.objectModified()
 
     def RequestInformation(self, request, inInfo, outInfo):
         """

@@ -117,7 +117,6 @@ class ChiggerObjectBase(MooseObject):
 
         return output, sub_output
 
-
     def __del__(self):
         self.debug('__del__()')
 
