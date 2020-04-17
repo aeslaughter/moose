@@ -12,8 +12,8 @@ class Outline(GeometricSource):
                 doc="The bounding box of the object to outline: [xmin, xmax, ymin, ymax, zmin, zmax].")
         return opt
 
-    def _onRequestInformation(self):
-        GeometricSource._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        GeometricSource._onRequestInformation(self, inInfo, outInfo)
         self.assignParam('bounds', self._vtksource.SetBounds)
 
 
@@ -28,8 +28,8 @@ class Outline2D(GeometricSource2D):
 
         return opt
 
-    def _onRequestInformation(self):
-        GeometricSource2D._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        GeometricSource2D._onRequestInformation(self, inInfo, outInfo)
         bnds = self.getParam('bounds')
         self._vtksource.SetBounds(bnds[0], bnds[1], bnds[2], bnds[3], 0, 0)
 

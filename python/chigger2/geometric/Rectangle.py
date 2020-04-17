@@ -41,11 +41,11 @@ class Rectangle(GeometricSource2D):
         bnds = self.getParam('bounds')
         return (bnds[0], bnds[1], bnds[2], bnds[3])
 
-    def _onRequestInformation(self):
+    def _onRequestInformation(self, inInfo, outInfo):
         """
         Set the options for this cube. (public)
         """
-        GeometricSource2D._onRequestInformation(self)
+        GeometricSource2D._onRequestInformation(self, inInfo, outInfo)
 
         bnds = self.getParam('bounds')
         p0 = (bnds[0], bnds[2], 0)

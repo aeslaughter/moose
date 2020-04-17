@@ -1,6 +1,33 @@
 [Tests]
-  [./command_line]
+  issues = '#12095'
+  design = 'python/chigger/index.md'
+
+  [tool]
+    requirement = "The system shall include a script based visualization tool with"
+
+    [window]
+      type = ImageDiff
+      command = window.py
+      cli_args = '--test'
+      imagediff = window.png
+
+      detail = "a general render window that"
+    []
+    [viewport]
+      type = ImageDiff
+      command = viewport.py
+      cli_args = '--test'
+      imagediff = viewport.png
+
+      detail = "supports multiple viewports."
+    []
+  []
+
+  [command_line]
+    skip = "TODO"
     type = PythonUnitTest
     input = test_chigger.py
-  [../]
+
+    requirement = "The system shall include a command-line tool for quickly viewing Exodus data."
+  []
 []

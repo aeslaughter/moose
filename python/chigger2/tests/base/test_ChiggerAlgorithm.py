@@ -41,10 +41,7 @@ class TestChiggerAlgorithm(chigger.base.ChiggerAlgorithm):
         self._vtksource.Update()
         opt.ShallowCopy(self._vtksource.GetOutput())
 
-class TestInfoAlgorithm(unittest.TestCase):
-    """
-    A test case to ensure that file modified time changes are detected.
-    """
+class ChiggerAlgorithmTestCase(unittest.TestCase):
     def testObjectInit(self):
         obj = TestChiggerAlgorithm()
         self.assertEqual(obj.n_mod, 0)
@@ -140,6 +137,10 @@ class TestInfoAlgorithm(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as l:
             obj.updateModified()
 
+        self.assertEqual(obj.n_mod, 1)
+        self.assertEqual(obj.n_info, 0)
+        self.assertEqual(obj.n_data, 0)
+
         self.assertEqual(obj.GetMTime(), t0)
         self.assertEqual(len(l.output), 2)
         self.assertEqual('DEBUG:TestChiggerAlgorithm:updateModified', l.output[0])
@@ -148,6 +149,10 @@ class TestInfoAlgorithm(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as l:
             obj.parameters().update(test=2) # don't used setParams because that calls updateModified
             obj.updateModified()
+
+        self.assertEqual(obj.n_mod, 2)
+        self.assertEqual(obj.n_info, 0)
+        self.assertEqual(obj.n_data, 0)
 
         self.assertNotEqual(obj.GetMTime(), t0)
 
@@ -161,6 +166,10 @@ class TestInfoAlgorithm(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as l:
             obj.updateInformation()
 
+        self.assertEqual(obj.n_mod, 0)
+        self.assertEqual(obj.n_info, 1)
+        self.assertEqual(obj.n_data, 0)
+
         self.assertEqual(len(l.output), 3)
         self.assertEqual('DEBUG:TestChiggerAlgorithm:updateInformation', l.output[0])
         self.assertEqual('DEBUG:TestChiggerAlgorithm:RequestInformation', l.output[1])
@@ -168,6 +177,10 @@ class TestInfoAlgorithm(unittest.TestCase):
 
         with self.assertLogs(level=logging.DEBUG) as l:
             obj.updateInformation()
+
+        self.assertEqual(obj.n_mod, 0)
+        self.assertEqual(obj.n_info, 1)
+        self.assertEqual(obj.n_data, 0)
 
         self.assertEqual(len(l.output), 1)
         self.assertEqual('DEBUG:TestChiggerAlgorithm:updateInformation', l.output[0])
@@ -176,13 +189,73 @@ class TestInfoAlgorithm(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as l:
             obj.updateInformation()
 
+        self.assertEqual(obj.n_mod, 0)
+        self.assertEqual(obj.n_info, 2)
+        self.assertEqual(obj.n_data, 0)
+
         self.assertEqual(len(l.output), 3)
         self.assertEqual('DEBUG:TestChiggerAlgorithm:updateInformation', l.output[0])
         self.assertEqual('DEBUG:TestChiggerAlgorithm:RequestInformation', l.output[1])
         self.assertEqual('DEBUG:TestChiggerAlgorithm:_onRequestInformation', l.output[2])
 
+    def testUpdateData(self):
+        obj = TestChiggerAlgorithm()
+        with self.assertLogs(level=logging.DEBUG) as l:
+            obj.updateData()
 
+        self.assertEqual(obj.n_mod, 0)
+        self.assertEqual(obj.n_info, 1)
+        self.assertEqual(obj.n_data, 1)
 
+        self.assertEqual(len(l.output), 5)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:updateData', l.output[0])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:RequestInformation', l.output[1])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:_onRequestInformation', l.output[2])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:RequestData', l.output[3])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:_onRequestData', l.output[4])
+
+        with self.assertLogs(level=logging.DEBUG) as l:
+            obj.updateData()
+
+        self.assertEqual(obj.n_mod, 0)
+        self.assertEqual(obj.n_info, 1)
+        self.assertEqual(obj.n_data, 1)
+
+        self.assertEqual(len(l.output), 1)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:updateData', l.output[0])
+
+        obj.setParams(test=2)
+        with self.assertLogs(level=logging.DEBUG) as l:
+            obj.updateData()
+
+        self.assertEqual(obj.n_mod, 0)
+        self.assertEqual(obj.n_info, 2)
+        self.assertEqual(obj.n_data, 2)
+
+        self.assertEqual(len(l.output), 5)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:updateData', l.output[0])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:RequestInformation', l.output[1])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:_onRequestInformation', l.output[2])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:RequestData', l.output[3])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:_onRequestData', l.output[4])
+
+    def testSetParam(self):
+        obj = TestChiggerAlgorithm()
+        with self.assertLogs(level=logging.DEBUG) as l:
+            obj.setParam('test', 2)
+
+        self.assertEqual(len(l.output), 2)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:setParam', l.output[0])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:objectModified', l.output[1])
+
+    def testSetParams(self):
+        obj = TestChiggerAlgorithm()
+        with self.assertLogs(level=logging.DEBUG) as l:
+            obj.setParams(test=2)
+
+        self.assertEqual(len(l.output), 2)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:setParams', l.output[0])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:objectModified', l.output[1])
 
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2)

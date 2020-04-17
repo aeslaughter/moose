@@ -15,7 +15,7 @@ from parameters import InputParameters
 from factory import MooseObject
 from .. import utils
 
-class ChiggerObjectBase(MooseObject):
+class ChiggerObject(MooseObject):
     """
     Base for all user-facing object in chigger.
 
@@ -72,6 +72,10 @@ class ChiggerObjectBase(MooseObject):
             value = self.getParam(name)
             func(value)
 
+
+    #TODO: Move these to utils
+
+
     def printParam(self, key):
         """Print key, value pair of a parameter."""
         print('{}={}'.format(key, repr(self.getParam(key))))
@@ -119,17 +123,3 @@ class ChiggerObjectBase(MooseObject):
 
     def __del__(self):
         self.debug('__del__()')
-
-class ChiggerObject(ChiggerObjectBase):
-    """Base class for objects that need parameters but are NOT in the VTK pipeline."""
-
-    def __init__(self, **kwargs):
-        self.__modified_time = vtk.vtkTimeStamp()
-        ChiggerObjectBase.__init__(self, **kwargs)
-        self.__modified_time.Modified()
-
-    def setParams(self, *args, **kwargs):
-        """Set the supplied objects, if anything changes mark the class as modified for VTK."""
-        ChiggerObjectBase.setParams(self, *args, **kwargs)
-        if self._input_parameters.modified() > self.__modified_time.GetMTime():
-            self.__modified_time.Modified()

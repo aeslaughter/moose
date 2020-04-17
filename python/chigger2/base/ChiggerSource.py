@@ -172,8 +172,8 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
 
                 self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 
-    def _onRequestInformation(self):
-        ChiggerAlgorithm._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
 
         # Connect the filters
         self.__connectFilters()
@@ -255,8 +255,8 @@ class ChiggerSource(ChiggerSourceBase):
     def getBounds(self):
         return self._vtkmapper.GetBounds()
 
-    def _onRequestInformation(self):
-        ChiggerSourceBase._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        ChiggerSourceBase._onRequestInformation(self, inInfo, outInfo)
 
         rep = self.getParam('representation')
         if rep == 'surface':
@@ -293,8 +293,8 @@ class ChiggerSource2D(ChiggerSourceBase):
     def getBounds(self):
         raise NotImplementedError('2D objects must return the bounds as [xmin, xmax, ymin, ymax].')
 
-    def _onRequestInformation(self):
-        ChiggerSourceBase._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        ChiggerSourceBase._onRequestInformation(self, inInfo, outInfo)
 
         if self._vtkmapper.GetTransformCoordinate() is None:
             self._vtkmapper.SetTransformCoordinate(vtk.vtkCoordinate())

@@ -159,11 +159,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__blockinfo = set()                    # BlockInfo objects
         self.__variableinfo = list()                # VarInfo objects
 
-    def _onRequestInformation(self):
+    def _onRequestInformation(self, inInfo, outInfo):
         """(override,protected)
         Do not call this method, call updateInformation.
         """
-        super(ExodusReader, self)._onRequestInformation()
+        base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
 
         # The file to load
         filename = self.getParam('filename')

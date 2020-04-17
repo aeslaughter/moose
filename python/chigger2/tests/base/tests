@@ -1,0 +1,15 @@
+[Tests]
+  issues = '#12095'
+  design = 'python/chigger/index.md'
+  [base]
+      requirement = "The system shall include a script based visualization tool with base objects"
+
+      [ChiggerObject]
+
+      []
+
+      [ChiggerAlgorithm]
+
+      []
+  []
+[]

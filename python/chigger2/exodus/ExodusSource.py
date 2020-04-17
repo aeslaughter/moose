@@ -105,8 +105,8 @@ class ExodusSource(base.ChiggerSource):
         # TODO: Check 'variables' set
 
 
-    def _onRequestInformation(self):
-        base.ChiggerSource._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        base.ChiggerSource._onRequestInformation(self, inInfo, outInfo)
 
         # Colormap
         if not self.getParam('color'):

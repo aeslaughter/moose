@@ -1,9 +1,9 @@
 import vtk
 import logging
-from .ChiggerObject import ChiggerObjectBase
+from .ChiggerObject import ChiggerObject
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
-class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
+class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
     """
     A base class for objects that require options and are a part of the VTK pipeline.
 
@@ -26,7 +26,7 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
     """
 
     def __init__(self, nInputPorts=0, nOutputPorts=0, outputType=None, inputType=None, **kwargs):
-        ChiggerObjectBase.__init__(self, **kwargs)
+        ChiggerObject.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self)
 
         self.SetNumberOfInputPorts(nInputPorts)
@@ -99,23 +99,16 @@ class ChiggerAlgorithm(ChiggerObjectBase, VTKPythonAlgorithmBase):
 
     def setParam(self, *args, **kwargs):
         """
-        Override ChiggerObjectBase.setParam to call updateModified
+        Override ChiggerObject.setParam to call updateModified
         """
-        ChiggerObjectBase.setParam(self, *args, **kwargs)
+        ChiggerObject.setParam(self, *args, **kwargs)
         self.__paramModifiedHelper()
 
     def setParams(self, *args, **kwargs):
         """
-        Override ChiggerObjectBase.setParams to call updateModified
+        Override ChiggerObject.setParams to call updateModified
         """
-        ChiggerObjectBase.setParams(self, *args, **kwargs)
-        self.__paramModifiedHelper()
-
-    def assignParam(self, *args, **kwargs):
-        """
-        Override ChiggerObjectBase.assignParam to call updateModified
-        """
-        ChiggerObjectBase.assignParam(self, *args, **kwargs)
+        ChiggerObject.setParams(self, *args, **kwargs)
         self.__paramModifiedHelper()
 
     def _onRequestModified(self):

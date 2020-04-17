@@ -29,7 +29,7 @@ class Window(base.ChiggerAlgorithm):
         opt = base.ChiggerAlgorithm.validParams()
 
         opt.add('size', default=(1920, 1080), vtype=int, size=2,
-                doc="The size of the window, expects a list of two items")
+                doc="The size of the window, in pixels, as a tuple (horizontal, vertical).expects a list of two items")
         #opt.add('style', default='interactive', vtype=str,
         #        allow=('interactive', 'modal', 'interactive2D'),
         #        doc="The interaction style ('interactive' enables 3D interaction, 'interactive2D' "\
@@ -48,12 +48,12 @@ class Window(base.ChiggerAlgorithm):
                 doc="Number of antialiasing frames to perform (set vtkRenderWindow::SetAAFrames).")
 
         # Background settings
-        opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
-                doc="The primary background color.")
-        opt.add('background2', None, vtype=float, size=3,
-                doc="The secondary background color, when specified a gradient style background is created.")
-        opt.add('transparent', False, vtype=bool,
-                doc="When True images created will use a transparent background.")
+        #opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
+        #        doc="The primary background color.")
+        #opt.add('background2', None, vtype=float, size=3,
+        #        doc="The secondary background color, when specified a gradient style background is created.")
+        #opt.add('transparent', False, vtype=bool,
+        #        doc="When True images created will use a transparent background.")
 
         # Interaction
         opt.add('mode', default=None, vtype=str, allow=('vtk', 'chigger', 'offscreen', 'none'),
@@ -86,13 +86,11 @@ class Window(base.ChiggerAlgorithm):
         self.__main_observer = None
 
         # Set interaction mode
-        mode = self.getParam('mode')
-        if mode is None:
-            if '--test' in sys.argv:
-                self.setParam('mode', 'offscreen')
+        if '--test' in sys.argv:
+            self.setParam('mode', 'offscreen')
 
         # Add the background
-        Viewport(self, name='__ChiggerWindowBackground__', layer=0, interactive=False)
+        #Viewport(self, name='__ChiggerWindowBackground__', layer=0, interactive=False)
 
         # Create "chigger" watermark
         """
@@ -160,7 +158,7 @@ class Window(base.ChiggerAlgorithm):
         self.updateInformation()
         self.updateData()
         self.__vtkwindow.Render()
-        if self.__vtkinteractor:
+        if self.__vtkinteractor and self.getParam('mode') != 'offscreen':
             self.__vtkinteractor.Initialize()
             self.__vtkinteractor.Start()
 
@@ -170,8 +168,8 @@ class Window(base.ChiggerAlgorithm):
     #        del view
     #    self.__viewports = None
 
-    def _onRequestInformation(self):
-        base.ChiggerAlgorithm._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
 
         # Viewport Layers
         n = self.__vtkwindow.GetNumberOfLayers()
@@ -179,9 +177,9 @@ class Window(base.ChiggerAlgorithm):
             n = max(n, view.getParam('layer') + 1)
         self.__vtkwindow.SetNumberOfLayers(n)
 
-        if self.isParamValid('background'):
-            self.__viewports[0].setParams(background=self.getParam('background'),
-                                          background2=self.getParam('background2'))
+        #if self.isParamValid('background'):
+        #    self.__viewports[0].setParams(background=self.getParam('background'),
+        #                                  background2=self.getParam('background2'))
 
         # Auto Background adjustments
         """
@@ -335,8 +333,8 @@ class Window(base.ChiggerAlgorithm):
         window_filter.SetInput(self.__vtkwindow)
 
         # Allow the background to be transparent
-        if self.getParam('transparent'):
-            window_filter.SetInputBufferTypeToRGBA()
+        #if self.getParam('transparent'):
+        #    window_filter.SetInputBufferTypeToRGBA()
 
         self.__vtkwindow.Render()
         window_filter.Update()

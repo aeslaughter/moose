@@ -32,7 +32,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
         opt.add('light', vtype=float,
                doc="Add a headlight with the given intensity to the renderer.")
-        opt.add('layer', default=1, vtype=int,
+        opt.add('layer', default=0, vtype=int,
                 doc="The VTK layer within the render window.")
         opt.add('viewport', default=(0., 0., 1., 1.), vtype=float, size=4,
                 doc="A list given the viewport coordinates [x_min, y_min, x_max, y_max], in " \
@@ -139,8 +139,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         for source in self.__sources:
             source.updateData()
 
-    def _onRequestInformation(self):
-        base.ChiggerAlgorithm._onRequestInformation(self)
+    def _onRequestInformation(self, inInfo, outInfo):
+        base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
         self._vtkrenderer.SetViewport(self.getParam('viewport'))
 
         if self.isParamValid('layer'):
