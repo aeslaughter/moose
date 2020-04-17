@@ -8,11 +8,10 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
-import chigger
-reader = chigger.exodus.ExodusReader('../input/mug_blocks_out.e')
-mug0 = chigger.exodus.ExodusResult(reader, variable='convected', viewport=(0, 0, 0.5, 1), cmap='shock')
-mug1 = chigger.exodus.ExodusResult(reader, variable='diffused', viewport=(0.5, 0, 1, 1), cmap='coolwarm')
-window = chigger.RenderWindow(mug1, mug0, size=(600, 300), test=True)
-window.write('viewports.png')
+import chigger2 as chigger
+window = chigger.Window(size=(400, 400))
+a = chigger.Viewport(window, xlim=(0,0.5), ylim=(0,0.5), background=(0,0,0))
+b = chigger.Viewport(window, xlim=(0.5,1), ylim=(0,0.5), background=(1,0,0))
+c = chigger.Viewport(window, xlim=(0,0.5), ylim=(0.5,1), background=(0,1,0))
+d = chigger.Viewport(window, xlim=(0.5,1), ylim=(0.5,1), background=(0,0,1))
 window.start()

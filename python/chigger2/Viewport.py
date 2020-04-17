@@ -31,12 +31,13 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         opt += utils.KeyBindingMixin.validParams()
 
         opt.add('light', vtype=float,
-               doc="Add a headlight with the given intensity to the renderer.")
+                doc="Intensity of a 'headlight' to add to the renderer.")
         opt.add('layer', default=0, vtype=int,
                 doc="The VTK layer within the render window.")
-        opt.add('viewport', default=(0., 0., 1., 1.), vtype=float, size=4,
-                doc="A list given the viewport coordinates [x_min, y_min, x_max, y_max], in " \
-                    "relative position to the entire window (0 to 1).")
+        opt.add('xlim', (0, 1), vtype=float, size=2,
+                doc="The minimum and maximum viewport coordinates in the x-direction.")
+        opt.add('ylim', (0, 1), vtype=float, size=2,
+                doc="The minimum and maximum viewport coordinates in the y-direction.")
         opt.add('camera', None, vtype=vtk.vtkCamera,
                 doc="The VTK camera to utilize for viewing the results.")
         opt.add('background', (0.0, 0.0, 0.0), vtype=float, size=3,
@@ -83,35 +84,38 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         utils.KeyBindingMixin.__init__(self)
         base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0, **kwargs)
 
-        # Initialize class members
-        self.__sources = list()
+        # Create renderer the viewport
         self._vtkrenderer = vtk.vtkRenderer()
 
-        # Verify renderer type
-        if not isinstance(self._vtkrenderer, vtk.vtkRenderer):
-            msg = "The supplied value for the renderer is a {} but it must be of type vtkRenderer."
-            raise mooseutils.MooseException(msg.format(type(self._vtkrenderer).__name__))
+        # List of ChiggerSource objects
+        self.__sources = list()
 
-        # Add the Viewport to the Window and store a reference without reference counting, the
-        # underlying VTK objects keep track of things and without the weakref here there is a
-        # circular reference between the vtkRenderer and vtkRenderWindow objects. The _window
-        # property should be used by objects that need information from the Window object.
+        # Add to the Window
         window.add(self)
-        #self.__window_weakref = None# weakref.ref(window)
-#
- #       self._vtkrenderer.InteractiveOff()
 
+    def getVTKRenderer(self):
+        """
+        Return the vtk.vtkRenderer object
+        """
+        return self._vtkrenderer
 
-    #def _window(self):
-    #    """Property so that self._w#indow acts like the actual window object."""
-    #    return self.__window_weakref()
+    def sources(self):
+        """
+        Return the list of ChiggerSource objects
+        """
+        return self.__sources
 
     def add(self, arg):
+        """
+        Append the source object(s) to the renderer.
+        """
 
+        # "composite" source contain more than one VTKActor
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
                 self._vtkrenderer.AddActor(actor)
 
+        # all other sources contain a single actor
         else:
             actor = arg.getVTKActor()
             if actor is not None:
@@ -120,6 +124,9 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         self.__sources.append(arg)
 
     def remove(self, arg):
+        """
+        Remove the source objects(s)
+        """
         if arg in self.__sources:
             self.__sources.remove(arg)
 
@@ -128,44 +135,60 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
                     self._vtkrenderer.RemoveActor(actor)
             elif arg.getVTKActor() is not None:
                 self._vtkrenderer.RemoveActor(arg.getVTKActor())
+        else:
+            msg = "The supplied source object '{}' is not owned by this viewport."
+            self.warning(msg, arg.name())
 
     def updateInformation(self):
+        """
+        Update the sources if the Viewport updates
+
+        The Viewport is a ChiggerAlgorithm, but doesn't have inputs or outputs. It is just using
+        the VTK logic to update itself and the associated source objects. This is likely a bit of
+        an abuse of the VTK design, but it works well and keeps the design consistent.
+        """
         base.ChiggerAlgorithm.updateInformation(self)
         for source in self.__sources:
             source.updateInformation()
 
     def updateData(self):
+        """
+        Update the sources if the Viewport updates
+
+        See updateInformation
+        """
         base.ChiggerAlgorithm.updateData(self)
         for source in self.__sources:
             source.updateData()
 
     def _onRequestInformation(self, inInfo, outInfo):
+        """
+        Update Viewport settings for supplied parameters.
+        """
         base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
-        self._vtkrenderer.SetViewport(self.getParam('viewport'))
 
+        # Viewport size/location
+        x = self.getParam('xlim')
+        y = self.getParam('ylim')
+        self._vtkrenderer.SetViewport(x[0], y[0], x[1], y[1])
+
+        # Layer
         if self.isParamValid('layer'):
             layer = self.getParam('layer')
             if layer < 0:
                 self.error("The 'layer' option must be zero or greater but {} provided.", layer)
             self._vtkrenderer.SetLayer(layer)
 
-        self._vtkrenderer.SetBackground(self.getParam('background'))
-        if self.isParamValid('background2'):
-            self._vtkrenderer.SetBackground2(self.getParam('background2'))
-            self._vtkrenderer.SetGradientBackground(True)
-        else:
-            self._vtkrenderer.SetGradientBackground(False)
+        # Background
+        self.assignParam('background', self._vtkrenderer.SetBackground)
+        self.assignParam('background2', self._vtkrenderer.SetBackground2)
+        self._vtkrenderer.SetGradientBackground(self.isParamValid('background2'))
 
+        # Camera
         self.assignParam('camera', self._vtkrenderer.SetActiveCamera)
 
         #self._vtkrenderer.ResetCameraClippingRange()
 
-    def getVTKRenderer(self):
-        """Return the vtk.vtkRenderer object."""
-        return self._vtkrenderer
-
-    def sources(self):
-        return self.__sources
 
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""

@@ -183,7 +183,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" viewport object.
         """
-        self.debug('Select Viewport')
+        self.debug('_nextViewport')
         self._deactivateSource()
         self._deactivateViewport()
 
@@ -208,7 +208,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Activate the "next" source object in the current viewport
         """
-        self.debug('Select Source')
+        self.debug('_nextSource')
         self._deactivateSource()
         self._deactivateViewport()
 
@@ -233,6 +233,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         Keybinding callback: Deactivate all viewports/sourcs.
         """
+        self.debug('_deactivate')
         self._deactivateViewport()
         self._deactivateSource()
         if not soft:
@@ -240,17 +241,20 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
             self.__current_source_index = None
 
     def _activateViewport(self, viewport):
+        self.debug('_activateViewport')
         self.__current_viewport_outline = geometric.Outline2D(viewport,
                                                               bounds=(0,1,0,1),
                                                               color=(1, 1, 0), linewidth=6)
         viewport.updateData()
 
     def _deactivateViewport(self):
+        self.debug('_deactivateViewport')
         if self.__current_viewport_outline is not None:
             self.__current_viewport_outline.remove()
             self.__current_viewport_outline = None
 
     def _activateSource(self, viewport, source):
+        self.debug('_activatesSource')
         if self.__current_source_outline is None:
             bnds = source.getBounds()
             obj = geometric.Outline2D if len(bnds) == 4 else geometric.Outline
@@ -277,6 +281,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                     vp.getVTKRenderer().InteractiveOn()
 
     def _deactivateSource(self):
+        self.debug('_deactivateSource')
         if self.__current_source_outline is not None:
 
             if isinstance(self.__current_source.getVTKActor(), vtk.vtkActor2D):
@@ -320,6 +325,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         key = obj.GetKeySym().lower()
         shift = obj.GetShiftKey()
+        self.debug('_onKeyPressEvent:{}:shift={}', key, shift)
 
         # This objects bindings
         for binding in self.getKeyBindings(key, shift):

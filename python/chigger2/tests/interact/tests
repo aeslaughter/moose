@@ -1,4 +1,7 @@
 [Tests]
+  issues = '#12095'
+  design = 'python/chigger/index.md'
+  requirement = "The system shall include a script based visualization tool with command-line interaction."
   [unit]
     type = PythonUnitTest
     input = test_interact.py

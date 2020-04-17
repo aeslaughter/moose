@@ -16,8 +16,8 @@ import chigger2 as chigger
 
 window = chigger.Window(size=(800, 800))
 
-left = chigger.Viewport(window, viewport=(0, 0, 0.5, 1))
-right = chigger.Viewport(window, viewport=(0.5, 0, 1, 1))
+left = chigger.Viewport(window, xlim=(0, 0.5))
+right = chigger.Viewport(window, xlim=(0.5, 1))
 
 rect0 = chigger.geometric.Rectangle(left, bounds=(0.25, 0.5, 0.25, 0.75), color=(0.5, 0.1, 0.2))
 cube0 = chigger.geometric.Cube(left, bounds=(0.5, 0.8, 0, 0.5, 0.8, 1), color=(0.1, 0.2, 0.8))

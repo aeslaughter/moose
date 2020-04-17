@@ -1,8 +1,16 @@
 [Tests]
-  [./viewports]
-    type = ImageDiff
-    command = viewports.py
-    imagediff = 'viewports.png'
-    cli_args = '--test'
-  [../]
+  issues = '#12095'
+  design = 'python/chigger/index.md'
+
+  [tool]
+    requirement = "The system shall include a script based visualization tool that"
+    [viewports]
+      type = ImageDiff
+      command = viewports.py
+      cli_args = '--test'
+      imagediff = viewports.png
+
+      detail = "supports multiple viewports."
+    []
+  []
 []

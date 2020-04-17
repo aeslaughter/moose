@@ -1,8 +1,26 @@
 [Tests]
-  [./clear]
-    type = ImageDiff
-    command = window_clear.py
-    imagediff = 'window_clear.png'
-    cli_args = '--test'
-  [../]
+  issues = '#12095'
+  design = 'python/chigger/index.md'
+
+  [tool]
+    requirement = "The system shall include a script based visualization tool with"
+
+    [window]
+      type = ImageDiff
+      command = window.py
+      cli_args = '--test'
+      imagediff = window.png
+
+      detail = "a general render window"
+    []
+    [clear]
+      skip = TODO
+      type = ImageDiff
+      command = window_clear.py
+      cli_args = '--test'
+      imagediff = 'window_clear.png'
+
+     detail = "that supports writing image files with clear backgrounds."
+    []
+  []
 []
