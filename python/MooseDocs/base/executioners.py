@@ -603,3 +603,102 @@ class ParallelPipe(Executioner):
 
         with self.LOCK:
             conn.send(data)
+
+
+class ParallelMPIBarrier(Executioner):
+    """
+    Parallel Executioner that uses mpi4y.
+    """
+    def execute(self, nodes, num_threads=None):
+        """Perform the translation with multiprocessing."""
+        from mpi4py import MPI
+        self._comm = MPI.COMM_WORLD
+
+        num_local_items, local_items_begin, local_items_end = mooseutils.linear_partition(len(self._page_objects), self._comm.Get_size(), self._comm.Get_rank())
+        self._target(self._page_objects[local_items_begin:local_items_end])
+
+        #barrier = multiprocessing.Barrier(num_threads)
+        #manager = multiprocessing.Manager()
+        #page_attributes = manager.list([None]*len(self._page_objects))
+
+        #jobs = []
+        #random.shuffle(nodes)
+        #for chunk in mooseutils.make_chunks(nodes, num_threads):
+        #    p = multiprocessing.Process(target=self._target, args=(chunk, barrier, page_attributes))
+        #    jobs.append(p)
+        #    p.start()
+
+        #for job in jobs:
+        #    job.join()
+
+    def _target(self, nodes):
+        """Target function for multiprocessing.Process calls."""
+
+        local_attributes = dict()
+        local_content = dict()
+        local_ast = dict()
+        local_result = dict()
+
+        # READ
+        for node in nodes:
+            Executioner.setMutable(node, True)
+            content = self.read(node)
+            if content is None:
+                print(node.source)
+            local_attributes[node.uid] = node.attributes
+            Executioner.setMutable(node, False)
+            local_content[node.uid] = content
+
+        self._comm.Barrier()
+        self._updateAttributes(local_attributes)
+
+        # TOKENIZE
+        for node in nodes:
+            content = local_content.pop(node.uid)
+            print(content)
+            Executioner.setMutable(node, True)
+            mooseutils.recursive_update(node.attributes, local_attributes[node.uid])
+            ast = self.tokenize(node, content)
+            local_attributes[node.uid] = node.attributes
+            Executioner.setMutable(node, False)
+            local_ast[node.uid] = ast
+
+        self._comm.Barrier()
+        self._updateAttributes(local_attributes)
+
+        """
+        # RENDER
+        for node in nodes:
+            ast = local_ast.pop(node.uid)
+            Executioner.setMutable(node, True)
+            mooseutils.recursive_update(node.attributes, page_attributes[node.uid])
+            result = self.render(node, ast)
+            page_attributes[node.uid] = node.attributes
+            Executioner.setMutable(node, False)
+            local_result[node.uid] = result
+
+        barrier.wait()
+        self._updateAttributes(page_attributes)
+
+        # WRITE
+        for node in nodes:
+            result = local_result.pop(node.uid)
+            Executioner.setMutable(node, True)
+            mooseutils.recursive_update(node.attributes, page_attributes[node.uid])
+            result = self.write(node, result)
+            Executioner.setMutable(node, False)
+        """
+
+    def _updateAttributes(self, page_attributes):
+        """Update the local page objects with attributes gathered from the other processes"""
+
+        for uid, attr in page_attributes.items():
+            uid = self._comm.bcast(uid, root=self._comm.Get_rank())
+            attr = self._comm.bcast(attr, root=self._comm.Get_rank())
+            if attr is not None:
+                self._page_objects[uid].update(attr)
+
+        #page_attributes = self._comm.bcast(page_attributes, root=self._comm.Get_rank())
+        #for i, page in enumerate(self._page_objects):
+        #    if page_attributes[i] is not None:
+        #        page.update(page_attributes[i])

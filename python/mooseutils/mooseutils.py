@@ -251,6 +251,23 @@ def make_chunks(local, num=multiprocessing.cpu_count()):
     k, m = divmod(len(local), num)
     return (local[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(num))
 
+def linear_partition(num_items, num_chunks, chunk_id):
+    """
+    Compute indices to divide objects into equal size chunks
+    """
+    global_num_local_items = num_items / num_chunks
+    num_local_items = global_num_local_items
+
+    leftovers = num_items % num_chunks
+    if chunk_id < leftovers:
+        num_local_items += 1
+        local_items_begin = num_local_items * chunk_id
+    else:
+        local_items_begin = (global_num_local_items + 1) * leftovers + global_num_local_items * (chunk_id - leftovers)
+
+    local_items_end = local_items_begin + num_local_items
+    return (int(num_local_items), int(local_items_begin), int(local_items_end))
+
 def camel_to_space(text):
     """
     Converts the supplied camel case text to space separated words.
