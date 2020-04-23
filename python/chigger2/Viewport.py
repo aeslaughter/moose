@@ -111,7 +111,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         """
 
         # Register the supplied object for making correct calls to the update methods
-        self._addObject(arg)
+        self._addAlgorithm(arg)
 
         # "composite" source contain more than one VTKActor
         if isinstance(arg, base.ChiggerCompositeSource):

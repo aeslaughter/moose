@@ -106,25 +106,26 @@ class Window(base.ChiggerAlgorithm):
 
         """
         self.__viewports.append(viewport)
+        self._addAlgorithm(viewport)
 
         renderer = viewport.getVTKRenderer()
         if not self.__vtkwindow.HasRenderer(renderer):
             self.__vtkwindow.AddRenderer(renderer)
 
-    def updateModified(self):
-        base.ChiggerAlgorithm.updateModified(self)
-        for view in self.__viewports:
-            view.updateModified()
+    #def updateModified(self):
+    #    base.ChiggerAlgorithm.updateModified(self)
+    #    for view in self.__viewports:
+    #        view.updateModified()
 
-    def updateInformation(self):
-        base.ChiggerAlgorithm.updateInformation(self)
-        for view in self.__viewports:
-            view.updateInformation()
+    #def updateInformation(self):
+    #    base.ChiggerAlgorithm.updateInformation(self)
+    #    for view in self.__viewports:
+    #        view.updateInformation()
 
     def updateData(self):
         base.ChiggerAlgorithm.updateData(self)
         for view in self.__viewports:
-            view.updateData()
+            #view.updateData()
             view.getVTKRenderer().ResetCamera()
 
     def viewports(self):

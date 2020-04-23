@@ -82,8 +82,8 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         self.debug('updateModified')
 
         # Call updateModified on all objects added via _addObject
-        for ref in self.__algorithms:
-            ref().updateModified()
+        for obj in self.__getAlgorithms():
+            obj.updateModified()
 
         # Call "virtual" method for modified requests
         retcode = self._onRequestModified()
@@ -102,8 +102,8 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         self.debug('updateInformation')
 
         # Call updateInformation on all objects added via _addObject
-        for ref in self.__algorithms:
-            ref().updateInformation()
+        for obj in self.__getAlgorithms():
+            obj.updateInformation()
 
         self.UpdateInformation()
 
@@ -114,8 +114,8 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         self.debug('updateData')
 
         # Call updateData on all objects added via _addObject
-        for ref in self.__algorithms:
-            ref().updateData()
+        for obj in self.__getAlgorithms():
+            obj.updateData()
 
         self.Update()
 
@@ -133,7 +133,7 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         ChiggerObject.setParams(self, *args, **kwargs)
         self.__paramModifiedHelper()
 
-    def _addObject(self, obj, connect=False):
+    def _addAlgorithm(self, obj):
         """
         Create object dependency for the calls to updateModified, updateInformation, and updateData.
 
@@ -152,6 +152,15 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
             self.__algorithms.add(weakref.ref(obj))
         return obj
 
+    def __getAlgorithms(self):
+        """
+        Helper for returning valid ChiggerAlgorithm objects from a items added via _addObject
+        """
+        # Remove dead items
+        self.__algorithms = set([a for a in self.__algorithms if a() is not None])
+        for a in self.__algorithms:
+            yield a()
+
     def _onRequestModified(self):
         """
         This method is designed to be overridden, but be sure to call the base version to maintain
@@ -160,6 +169,8 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         The purpose of this method is to call the VTK method self.Modified(), which indicates to the
         VTK pipeline that something has changed an the class needs to be updated. The ExodusReader
         class uses this to check if the files associated with the reader have changed.
+
+        To be consistent with VTK this method should return 1 (or None) for success.
         """
         self.debug('_onRequestModified')
         self.__paramModifiedHelper()
@@ -173,8 +184,11 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
             > The rule here is to provide or compute as much information as you can without actually
             > executing (or reading in the entire data file) and without taking up significant CPU
             > time.
+
+        To be consistent with VTK this method should return 1 (or None) for success.
         """
         self.debug('_onRequestInformation')
+        return 1
 
     def _onRequestData(self, inInfo, outInfo):
         """
@@ -183,8 +197,11 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         https://vtk.org/Wiki/VTK/Tutorials/New_Pipeline
             > Finally REQUEST_DATA will be called and the algorithm should fill in the output ports
             > data objects.
+
+        To be consistent with VTK this method should return 1 (or None) for success.
         """
         self.debug('_onRequestData')
+        return 1
 
     def __paramModifiedHelper(self):
         """
