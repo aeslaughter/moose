@@ -2,14 +2,21 @@
   issues = '#12095'
   design = 'python/chigger/index.md'
   [base]
-      requirement = "The system shall include a script based visualization tool with base objects"
+    requirement = "The system shall include a script based visualization tool with base objects"
 
-      [ChiggerObject]
+    [ChiggerObject]
+      type = PythonUnitTest
+      input = test_ChiggerObject.py
 
-      []
+      detail = "that enable custom parameters and"
 
-      [ChiggerAlgorithm]
+    []
 
-      []
+    [ChiggerAlgorithm]
+      type = PythonUnitTest
+      input = test_ChiggerObject.py
+
+      detail = "provide automatic update via the visualization pipeline."
+    []
   []
 []

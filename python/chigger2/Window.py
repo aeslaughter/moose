@@ -111,6 +111,10 @@ class Window(base.ChiggerAlgorithm):
         if not self.__vtkwindow.HasRenderer(renderer):
             self.__vtkwindow.AddRenderer(renderer)
 
+    def updateModified(self):
+        base.ChiggerAlgorithm.updateModified(self)
+        for view in self.__viewports:
+            view.updateModified()
 
     def updateInformation(self):
         base.ChiggerAlgorithm.updateInformation(self)
@@ -155,8 +159,7 @@ class Window(base.ChiggerAlgorithm):
         Begin the interactive VTK session.
         """
         self.debug("start")
-        self.updateInformation()
-        self.updateData()
+        self.updateObject()
         self.__vtkwindow.Render()
         if self.__vtkinteractor and self.getParam('mode') != 'offscreen':
             self.__vtkinteractor.Initialize()

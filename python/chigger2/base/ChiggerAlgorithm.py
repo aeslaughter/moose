@@ -1,4 +1,5 @@
 import vtk
+import weakref
 import logging
 from .ChiggerObject import ChiggerObject
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
@@ -35,6 +36,11 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
             self.OutputType = outputType
         if inputType is not None:
             self.InputType = inputType
+
+        # Storage for connect algorithms; this is used to make the correct calls to the
+        # various update methods. The objects are stored using weakref to avoid any delete
+        # order problems
+        self.__algorithms = set()
 
         # Set the VTK modified time, this is needed to make sure the options for this class are all
         # older than the class itself.
@@ -74,6 +80,12 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         _onRequestModified every time, see the help _onRequestModified for more information.
         """
         self.debug('updateModified')
+
+        # Call updateModified on all objects added via _addObject
+        for ref in self.__algorithms:
+            ref().updateModified()
+
+        # Call "virtual" method for modified requests
         retcode = self._onRequestModified()
 
         # Mimic return code behavior of VTK UpdateInformation and Update methods
@@ -88,6 +100,11 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         Alias for VTK UpdateInformation method to provide for a uniform API.
         """
         self.debug('updateInformation')
+
+        # Call updateInformation on all objects added via _addObject
+        for ref in self.__algorithms:
+            ref().updateInformation()
+
         self.UpdateInformation()
 
     def updateData(self):
@@ -95,6 +112,11 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         Alias for VTK Update method to provide for a uniform API.
         """
         self.debug('updateData')
+
+        # Call updateData on all objects added via _addObject
+        for ref in self.__algorithms:
+            ref().updateData()
+
         self.Update()
 
     def setParam(self, *args, **kwargs):
@@ -110,6 +132,25 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         """
         ChiggerObject.setParams(self, *args, **kwargs)
         self.__paramModifiedHelper()
+
+    def _addObject(self, obj, connect=False):
+        """
+        Create object dependency for the calls to updateModified, updateInformation, and updateData.
+
+        This class is designed to help handle all object connections, regardless if those objects
+        are connected in the VTK pipeline. If an object has dependent objects, the dependency
+        should be added using this function. The various update methods for objects added using
+        this method are then are automatically with calls to those functions for this class.
+
+        See Viewport.py and ExodusSource.py for examples. Notice, that if the objects require
+        connection within the VTK pipeline that those connections must also be made, which is the
+        case for ExodusSource.
+        """
+        if not isinstance(obj, ChiggerAlgorithm):
+            self.error("The supplied object must be a ChiggerAlgorithm type.")
+        else:
+            self.__algorithms.add(weakref.ref(obj))
+        return obj
 
     def _onRequestModified(self):
         """

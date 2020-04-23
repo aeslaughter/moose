@@ -60,19 +60,15 @@ class TestExodusReader(unittest.TestCase):
         if os.path.exists(cls.duplicate):
             os.remove(cls.duplicate)
 
-    #def setUp(self):
-        #log = logging.getLogger(__name__)
-        #log.setLevel(logging.INFO)
-
-    @unittest.skip("")
     def testCreateDelete(self):
         """Test that creating and deleting an object calls correct methods."""
         # Create ExodusReader
         with self.assertLogs(level=logging.DEBUG) as l:
             reader = chigger.exodus.ExodusReader(self.single)
 
-        self.assertEqual(len(l.output),1)
+        self.assertEqual(len(l.output),2)
         self.assertEqual(l.output[0], 'DEBUG:ExodusReader:__init__')
+        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:objectModified')
 
         # Delete the object
         with self.assertLogs(level=logging.DEBUG) as l:
@@ -80,64 +76,6 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(len(l.output), 1)
         self.assertEqual(l.output[0], 'DEBUG:ExodusReader:__del__()')
 
-    @unittest.skip("")
-    def testParams(self):
-        """Test the setting parameters calls the correct methods."""
-
-        # Create ExodusReader
-        reader = chigger.exodus.ExodusReader(self.single)
-
-        # Test setParam
-        with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setParam('timestep', 2)
-            reader.updateInformation()
-
-        self.assertEqual(len(l.output), 11)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParam')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:setParam::Modified')
-        self.assertEqual(l.output[2], 'DEBUG:ExodusReader:updateInformation')
-        self.assertEqual(l.output[3], 'DEBUG:ExodusReader:RequestInformation')
-        self.assertEqual(l.output[4], 'DEBUG:ExodusReader:_onRequestInformation')
-        self.assertEqual(l.output[5], 'DEBUG:ExodusReader:__updateFileInformation')
-        self.assertEqual(l.output[6], 'DEBUG:ExodusReader:__updateTimeInformation')
-        self.assertEqual(l.output[7], 'DEBUG:ExodusReader:__updateBlockInformation')
-        self.assertEqual(l.output[8], 'DEBUG:ExodusReader:__updateVariableInformation')
-        self.assertEqual(l.output[9], 'DEBUG:ExodusReader:__updateActiveBlocks')
-        self.assertEqual(l.output[10], 'DEBUG:ExodusReader:__updateActiveVariables')
-
-        # Test setParam, that doesn't change options
-        with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setParam('timestep', 2)
-            reader.updateInformation()
-
-        self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParam')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:updateInformation')
-
-        # Test setParams
-        with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setParams(timestep=3)
-            reader.updateInformation()
-
-        self.assertEqual(len(l.output), 7)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParams')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:setParams::Modified')
-        self.assertEqual(l.output[2], 'DEBUG:ExodusReader:updateInformation')
-        self.assertEqual(l.output[3], 'DEBUG:ExodusReader:RequestInformation')
-        self.assertEqual(l.output[4], 'DEBUG:ExodusReader:_onRequestInformation')
-        self.assertEqual(l.output[5], 'DEBUG:ExodusReader:__updateActiveBlocks')
-        self.assertEqual(l.output[6], 'DEBUG:ExodusReader:__updateActiveVariables')
-
-        # Test setParams, that doesn't change options
-        with self.assertLogs(level=logging.DEBUG) as l:
-            reader.setParams(timestep=3)
-            reader.updateInformation()
-
-        self.assertEqual(len(l.output), 2)
-        self.assertEqual(l.output[0], 'DEBUG:ExodusReader:setParams')
-        self.assertEqual(l.output[1], 'DEBUG:ExodusReader:updateInformation')
-
-    @unittest.skip("")
     def testFileInformation(self):
         """Test that the file information is updated correctly."""
 
@@ -180,7 +118,6 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(f.filename, self.single)
         self.assertEqual(len(f.times), 21)
 
-    @unittest.skip("")
     def testTimeInformation(self):
         """Test the TimeInfo objects"""
 
@@ -257,7 +194,6 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(tinfo[3].filename, self.multiple + '-s003')
         self.assertEqual(tinfo[3].index, 0)
 
-    @unittest.skip("")
     def testCurrentTimeInformation(self):
         """Test the returning of the current TimeInfo objects"""
 
@@ -343,7 +279,6 @@ class TestExodusReader(unittest.TestCase):
         self.assertEqual(tinfo[1].filename, self.multiple + '-s003')
         self.assertEqual(tinfo[1].index, 0)
 
-    @unittest.skip("")
     def testBlockInformation(self):
         """Test the BlockInfo objects"""
 

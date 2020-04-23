@@ -257,5 +257,39 @@ class ChiggerAlgorithmTestCase(unittest.TestCase):
         self.assertEqual('DEBUG:TestChiggerAlgorithm:setParams', l.output[0])
         self.assertEqual('DEBUG:TestChiggerAlgorithm:objectModified', l.output[1])
 
+    def testAddObject(self):
+        parent = TestChiggerAlgorithm(name="parent")
+        child = TestChiggerAlgorithm(name="child")
+        parent._addObject(child)
+
+        with self.assertLogs(level=logging.DEBUG) as l:
+            parent.updateObject()
+
+        self.assertEqual(len(l.output), 17)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateObject', l.output[0])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateModified', l.output[1])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):updateModified', l.output[2])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):_onRequestModified', l.output[3])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):_onRequestModified', l.output[4])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateInformation', l.output[5])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):updateInformation', l.output[6])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):RequestInformation', l.output[7])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):_onRequestInformation', l.output[8])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):RequestInformation', l.output[9])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):_onRequestInformation', l.output[10])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateData', l.output[11])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):updateData', l.output[12])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):RequestData', l.output[13])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(child):_onRequestData', l.output[14])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):RequestData', l.output[15])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):_onRequestData', l.output[16])
+
+        with self.assertLogs(level=logging.ERROR) as l:
+            parent._addObject("Wrong")
+
+        self.assertEqual(len(l.output), 1)
+        self.assertIn("The supplied object must be a ChiggerAlgorithm type", l.output[0])
+
+
 if __name__ == '__main__':
     unittest.main(module=__name__, verbosity=2)

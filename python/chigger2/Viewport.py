@@ -110,6 +110,9 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         Append the source object(s) to the renderer.
         """
 
+        # Register the supplied object for making correct calls to the update methods
+        self._addObject(arg)
+
         # "composite" source contain more than one VTKActor
         if isinstance(arg, base.ChiggerCompositeSource):
             for actor in arg.getVTKActors():
@@ -138,28 +141,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         else:
             msg = "The supplied source object '{}' is not owned by this viewport."
             self.warning(msg, arg.name())
-
-    def updateInformation(self):
-        """
-        Update the sources if the Viewport updates
-
-        The Viewport is a ChiggerAlgorithm, but doesn't have inputs or outputs. It is just using
-        the VTK logic to update itself and the associated source objects. This is likely a bit of
-        an abuse of the VTK design, but it works well and keeps the design consistent.
-        """
-        base.ChiggerAlgorithm.updateInformation(self)
-        for source in self.__sources:
-            source.updateInformation()
-
-    def updateData(self):
-        """
-        Update the sources if the Viewport updates
-
-        See updateInformation
-        """
-        base.ChiggerAlgorithm.updateData(self)
-        for source in self.__sources:
-            source.updateData()
 
     def _onRequestInformation(self, inInfo, outInfo):
         """

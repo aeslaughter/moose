@@ -156,14 +156,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         self.__filenames = list()                   # current list of files
         self.__timeinfo = list()                    # TimeInfo objects
         self.__fileinfo = collections.OrderedDict() # FileInfo objects
-        self.__blockinfo = set()                    # BlockInfo objects
+        self.__blockinfo = None                     # BlockInfo objects
         self.__variableinfo = list()                # VarInfo objects
 
-    def _onRequestInformation(self, inInfo, outInfo):
-        """(override,protected)
-        Do not call this method, call updateInformation.
-        """
-        base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
+    def _onRequestModified(self):
+        """Mark the reader as modified if filenames are altered."""
+        base.ChiggerAlgorithm._onRequestModified(self)
 
         # The file to load
         filename = self.getParam('filename')
@@ -188,6 +186,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
             # Build VarInfo from the first file
             self.__updateVariableInformation()
+
+            # Mark the object has modified
+            self.objectModified()
+
+
+    def _onRequestInformation(self, inInfo, outInfo):
+        """(override,protected)
+        Do not call this method, call updateInformation.
+        """
+        base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
 
         # Update active blocks, etc.
         self.__updateActiveBlocks()

@@ -96,6 +96,7 @@ class ExodusSource(base.ChiggerSource):
                                     nOutputPorts=1, outputType='vtkMultiBlockDataSet',
                                     **kwargs)
 
+        self._addObject(self.__reader)
         self.SetInputConnection(self.__reader.GetOutputPort())
 
         self._addFilter(filters.ExtractBlockFilter, True)
@@ -103,6 +104,12 @@ class ExodusSource(base.ChiggerSource):
 
         # TODO: Check 'blocks', etc. and warn if set
         # TODO: Check 'variables' set
+
+    #def updateModified(self):
+    #    """
+    #    """
+    #    self.__reader.updateModified()
+    #    base.ChiggerSource.updateModified(self)
 
 
     def _onRequestInformation(self, inInfo, outInfo):
