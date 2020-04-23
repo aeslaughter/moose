@@ -260,7 +260,7 @@ class ChiggerAlgorithmTestCase(unittest.TestCase):
     def testAddObject(self):
         parent = TestChiggerAlgorithm(name="parent")
         child = TestChiggerAlgorithm(name="child")
-        parent._addObject(child)
+        parent._addAlgorithm(child)
 
         with self.assertLogs(level=logging.DEBUG) as l:
             parent.updateObject()
@@ -285,10 +285,23 @@ class ChiggerAlgorithmTestCase(unittest.TestCase):
         self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):_onRequestData', l.output[16])
 
         with self.assertLogs(level=logging.ERROR) as l:
-            parent._addObject("Wrong")
+            parent._addAlgorithm("Wrong")
 
         self.assertEqual(len(l.output), 1)
         self.assertIn("The supplied object must be a ChiggerAlgorithm type", l.output[0])
+
+        del child
+        with self.assertLogs(level=logging.DEBUG) as l:
+            parent.updateObject()
+
+        print('\n'.join(l.output))
+        self.assertEqual(len(l.output), 5)
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateObject', l.output[0])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateModified', l.output[1])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):_onRequestModified', l.output[2])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateInformation', l.output[3])
+        self.assertEqual('DEBUG:TestChiggerAlgorithm:(parent):updateData', l.output[4])
+
 
 
 if __name__ == '__main__':
