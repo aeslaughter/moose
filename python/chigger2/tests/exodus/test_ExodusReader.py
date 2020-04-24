@@ -568,54 +568,47 @@ class TestExodusReader(unittest.TestCase):
         self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 0))
         self.assertFalse(vtkreader.GetObjectStatus(vtk.vtkExodusIIReader.NODE_SET, 1))
 
-    @unittest.skip("")
     def testWarnings(self):
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, time=1000)
-            reader.updateInformation()
-            reader.updateData()
+            reader.updateObject()
         self.assertIn("using the latest", l.output[0])
-
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, time=-1)
-            reader.updateInformation()
-            reader.updateData()
+            reader.updateObject()
         self.assertIn("using the first", l.output[0])
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, timestep=-2)
-            reader.updateInformation()
-            reader.updateData()
+            reader.updateObject()
         self.assertIn("Timestep out of range: -2 not in", l.output[0])
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, timestep=42)
-            reader.updateInformation()
-            reader.updateData()
+            reader.updateObject()
         self.assertIn("Timestep out of range: 42 not in", l.output[0])
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, blocks=('nope',))
-            reader.updateInformation()
+            reader.updateObject()
         self.assertIn("The following items in 'blocks' do not exist: nope", l.output[0])
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, nodesets=('nope',))
-            reader.updateInformation()
+            reader.updateObject()
         self.assertIn("The following items in 'nodesets' do not exist: nope", l.output[0])
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.single, sidesets=('nope',))
-            reader.updateInformation()
+            reader.updateObject()
         self.assertIn("The following items in 'sidesets' do not exist: nope", l.output[0])
 
         with self.assertLogs(level=logging.WARNING) as l:
             reader = chigger.exodus.ExodusReader(self.duplicate, variables=('variable',))
-            reader.updateInformation()
+            reader.updateObject()
         self.assertIn("The variable name 'variable' exists with multiple", l.output[0])
 
-   #@unittest.skip("")
     def testErrors(self):
         """
         Test for error messages.
@@ -623,7 +616,7 @@ class TestExodusReader(unittest.TestCase):
 
         with self.assertLogs(level=logging.ERROR) as l:
             reader = chigger.exodus.ExodusReader('foo.e')
-            reader.updateInformation()
+            reader.updateObject()
         self.assertIn("The file foo.e is not a valid filename.", l.output[0])
 
         """
@@ -634,16 +627,14 @@ class TestExodusReader(unittest.TestCase):
 
         with self.assertLogs(level=logging.ERROR) as l:
             reader.setParams(variables=('convected::WRONG',))
-            reader.updateInformation()
+            reader.updateObject()
         self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
 
         with self.assertLogs(level=logging.ERROR) as l:
             reader = chigger.exodus.ExodusReader(self.multiple, time=1.12345)
-            reader.updateInformation()
-            reader.updateData()
+            reader.updateObject()
         self.assertIn("Support for time interpolation across adaptive time steps is not supported.", l.output[0])
         """
-
     @unittest.skip("")
     def testVariableInformation(self):
         """Test the VarInfo objects"""

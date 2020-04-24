@@ -153,11 +153,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         base.ChiggerAlgorithm.__init__(self, **kwargs)
         VTKPythonAlgorithmBase.__init__(self, nInputPorts=0, nOutputPorts=1, outputType='vtkMultiBlockDataSet')
 
-        self.__filenames = list()                   # current list of files
-        self.__timeinfo = list()                    # TimeInfo objects
-        self.__fileinfo = collections.OrderedDict() # FileInfo objects
-        self.__blockinfo = None                     # BlockInfo objects
-        self.__variableinfo = list()                # VarInfo objects
+        self.__filenames = None    # current list of files
+        self.__timeinfo = None     # TimeInfo objects
+        self.__fileinfo = None     # FileInfo objects
+        self.__blockinfo = None    # BlockInfo objects
+        self.__variableinfo = None # VarInfo objects
 
     def _onRequestModified(self):
         """Mark the reader as modified if filenames are altered."""
@@ -167,7 +167,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         filename = self.getParam('filename')
         if not os.path.isfile(filename):
             self.error("The file {} is not a valid filename.", filename)
-            return
+            self.__reset()
+            return 0
 
         # Complete list of filenames with adaptive suffixes (-s002, ...) the file, time, and
         # block information only needs to be updated if the file list changed
@@ -190,24 +191,26 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             # Mark the object has modified
             self.objectModified()
 
-
     def _onRequestInformation(self, inInfo, outInfo):
         """(override,protected)
         Do not call this method, call updateInformation.
         """
         base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
 
-        # Update active blocks, etc.
-        self.__updateActiveBlocks()
-
-        # Update active variables
-        self.__updateActiveVariables()
+        # Update active varibles, blocks, etc
+        if self.__filenames:
+            self.__updateActiveBlocks()
+            self.__updateActiveVariables()
 
     def _onRequestData(self, inInfo, outInfo):
         """(override, protected)
         Do not call this method, call updateData.
         """
         base.ChiggerAlgorithm._onRequestData(self, inInfo, outInfo)
+
+        # Do nothing if the filenames are not populated
+        if self.__filenames:
+            return 0
 
         # Initialize the current time data
         time0, time1 = self.__getCurrentTimeInformation()
@@ -257,7 +260,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             list: A list of all times.
         """
         self.updateModified()
-        #self.updateInformation()
         return [t.time for t in self.__timeinfo if t.time != None]
 
     def getGlobalData(self, variable):
@@ -371,9 +373,12 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         time = self.getParam('time')
         timestep = self.getParam('timestep')
 
+        # Do nothing if the filenames do not exist
+        if not self.__filenames:
+            return None, None
+
         # "time" option
-        n = len(self.__timeinfo) - 1
-        if time is not None:
+        elif time is not None:
             times = [t.time for t in self.__timeinfo]
 
             # Error if supplied time is out of range
@@ -403,6 +408,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # "timestep" option
         elif timestep is not None:
+            n = len(self.__timeinfo) - 1
 
             # Account for out-of-range timesteps
             idx = timestep
@@ -427,6 +433,16 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             if (var.name == var_name) or (var.fullname == var_name):
                 return True
         return False
+
+    def __reset(self):
+        """(private)
+        Reset the information lists to None; this is used when the filename becomes invalid
+        """
+        self.__filenames = None    # current list of files
+        self.__timeinfo = None     # TimeInfo objects
+        self.__fileinfo = None     # FileInfo objects
+        self.__blockinfo = None    # BlockInfo objects
+        self.__variableinfo = None # VarInfo objects
 
     def __onRequestDataHelper(self, vtkreader):
         """(private)

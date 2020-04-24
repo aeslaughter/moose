@@ -61,9 +61,11 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         Call all necessary functions to ensure the information and data of the object are updated.
         """
         self.debug('updateObject')
-        self.updateModified()
-        self.updateInformation()
-        self.updateData()
+        retcode = self.updateModified()
+        if not retcode:
+            retcode = self.updateInformation()
+        if not retcode:
+            self.updateData()
 
     def updateModified(self):
         """
@@ -94,6 +96,7 @@ class ChiggerAlgorithm(ChiggerObject, VTKPythonAlgorithmBase):
         if retcode != 1:
             msg = 'Failed request callback, _onRequestModified returned an invalid code of {}.'
             self.error(msg, retcode)
+        return retcode
 
     def updateInformation(self):
         """
