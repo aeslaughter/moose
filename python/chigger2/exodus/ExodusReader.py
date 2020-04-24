@@ -210,7 +210,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         # Do nothing if the filenames are not populated
         if self.__filenames:
-            return 0
+            return
 
         # Initialize the current time data
         time0, time1 = self.__getCurrentTimeInformation()
@@ -239,7 +239,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             self.__onRequestDataHelper(vtkobject)
 
         else:
-            return 0
+            return
 
         # Update the Reader and output port
         vtkobject.Update()
