@@ -256,7 +256,8 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             list: A list of all times.
         """
-        self.updateInformation()
+        self.updateModified()
+        #self.updateInformation()
         return [t.time for t in self.__timeinfo if t.time != None]
 
     def getGlobalData(self, variable):
@@ -270,8 +271,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             float: The global data (Postprocessor value) for the current timestep and defined
                    variable.
         """
-        self.updateInformation()
-        self.updateData()
+        self.updateObject()
         if not self.hasVariable(self.GLOBAL, variable):
             self.error("The supplied global variable, '{}', does not exist in {}.", variable,
                        self.getParam('filename'))
@@ -311,7 +311,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             dict: Keys are the filename and items are FileInfo objects.
         """
-        self.updateInformation()
+        self.updateModified()
         return self.__fileinfo
 
     def getTimeInformation(self):
@@ -321,7 +321,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         Returns:
             list: List of TimeInfo objects.
         """
-        self.updateInformation()
+        self.updateModified()
         return self.__timeinfo
 
     def getCurrentTimeInformation(self):
@@ -334,6 +334,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
                 will be None. If it doesn't match exact the two TimeInfo objects returned will be
                 those that bracket the desired value.
         """
+        self.updateModified()
         self.updateInformation()
         return self.__getCurrentTimeInformation()
 
@@ -345,6 +346,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             dict: The keys are the object type id from VTK (see MULTIBLOCK_INDEX_TO_OBJECTTYPE),
                   the values are a list of BlockInfo objects.
         """
+        self.updateModified()
         self.updateInformation()
         return self.__blockinfo
 
@@ -359,7 +361,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
             dict: The keys are the variable type id from VTK (see VARIABLE_TYPES), the values are
                   a list of VarInfo objects.
         """
-        self.updateInformation()
+        self.updateModified()
         return self.__variableinfo
 
     def __getCurrentTimeInformation(self):
