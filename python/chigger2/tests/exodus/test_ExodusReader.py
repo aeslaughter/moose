@@ -619,13 +619,13 @@ class TestExodusReader(unittest.TestCase):
             reader.updateObject()
         self.assertIn("The file foo.e is not a valid filename.", l.output[0])
 
-        """
         with self.assertLogs(level=logging.ERROR) as l:
             reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
             reader.getGlobalData('convected')
         self.assertIn("The supplied global variable, 'convected', does not ", l.output[0])
 
         with self.assertLogs(level=logging.ERROR) as l:
+            reader = chigger.exodus.ExodusReader(self.single, variables=('convected', 'func_pp'))
             reader.setParams(variables=('convected::WRONG',))
             reader.updateObject()
         self.assertIn("Unknown variable prefix '::WRONG'", l.output[0])
@@ -634,7 +634,7 @@ class TestExodusReader(unittest.TestCase):
             reader = chigger.exodus.ExodusReader(self.multiple, time=1.12345)
             reader.updateObject()
         self.assertIn("Support for time interpolation across adaptive time steps is not supported.", l.output[0])
-        """
+
     @unittest.skip("")
     def testVariableInformation(self):
         """Test the VarInfo objects"""

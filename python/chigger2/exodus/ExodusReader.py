@@ -155,9 +155,11 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
 
         self.__filenames = None    # current list of files
         self.__timeinfo = None     # TimeInfo objects
-        self.__fileinfo = None     # FileInfo objects
         self.__blockinfo = None    # BlockInfo objects
         self.__variableinfo = None # VarInfo objects
+
+        # FileInfo objects, this should always exists to avoid destroying vtkExodusReader objects
+        self.__fileinfo = collections.OrderedDict()
 
     def _onRequestModified(self):
         """Mark the reader as modified if filenames are altered."""
@@ -440,7 +442,6 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         self.__filenames = None    # current list of files
         self.__timeinfo = None     # TimeInfo objects
-        self.__fileinfo = None     # FileInfo objects
         self.__blockinfo = None    # BlockInfo objects
         self.__variableinfo = None # VarInfo objects
 
