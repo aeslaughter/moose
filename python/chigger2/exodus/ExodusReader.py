@@ -199,7 +199,7 @@ class ExodusReader(base.ChiggerAlgorithm, VTKPythonAlgorithmBase):
         """
         base.ChiggerAlgorithm._onRequestInformation(self, inInfo, outInfo)
 
-        # Update active varibles, blocks, etc
+        # Updated active variables, blocks, etc
         if self.__filenames:
             self.__updateActiveBlocks()
             self.__updateActiveVariables()
