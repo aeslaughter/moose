@@ -174,7 +174,7 @@ VectorPostprocessorData::getVectorPostprocessorHelper(const VectorPostprocessorN
     vec_storage._needs_old = true;
 
   // lambda for doing comparison on name (i.e., first item in pair)
-  auto comp = [&vector_name](std::pair<std::string, VectorPostprocessorState> & pair) {
+  auto comp = [&vector_name](std::pair<std::string, VectorPostprocessorVectorState<Real>> & pair) {
     return pair.first == vector_name;
   };
   // Search for the vector, if it is not located create the entry in the storage
@@ -190,9 +190,9 @@ VectorPostprocessorData::getVectorPostprocessorHelper(const VectorPostprocessorN
   if (!vec_struct.current)
   {
     mooseAssert(!vec_struct.old, "Uninitialized pointers in VectorPostprocessor Data");
-    vec_struct.current = &declareRestartableDataWithObjectName<VectorPostprocessorValue>(
+    vec_struct.current = &declareRestartableDataWithObjectName<VectorPostprocessorVector<Real>>(
         vpp_name + "_" + vector_name, "values");
-    vec_struct.old = &declareRestartableDataWithObjectName<VectorPostprocessorValue>(
+    vec_struct.old = &declareRestartableDataWithObjectName<VectorPostprocessorVector<Real>>(
         vpp_name + "_" + vector_name, "values_old");
   }
 
@@ -218,7 +218,7 @@ VectorPostprocessorData::hasVectors(const std::string & vpp_name) const
   return false;
 }
 
-const std::vector<std::pair<std::string, VectorPostprocessorData::VectorPostprocessorState>> &
+const std::vector<std::pair<std::string, VectorPostprocessorVectorState<Real>>> &
 VectorPostprocessorData::vectors(const std::string & vpp_name) const
 {
   auto it_pair = _vpp_data.find(vpp_name);
@@ -240,7 +240,6 @@ VectorPostprocessorData::broadcastScatterVectors(const std::string & vpp_name)
   for (auto & current_pair : vpp_vectors._values)
   {
     auto & vpp_state = current_pair.second;
-
     if (!vpp_vectors._is_broadcast && vpp_state.needs_broadcast)
     {
       auto size = vpp_state.current->size();
@@ -279,17 +278,13 @@ VectorPostprocessorData::copyValuesBack()
 
     for (auto & vec_it : vec_pair.second._values)
     {
+      auto & vec_state = vec_it.second;
       if (preserve_history)
-        *vec_it.second.old = *vec_it.second.current;
+        *vec_state.old = *vec_state.current;
       else
-        vec_it.second.old->swap(*vec_it.second.current);
+        vec_state.old->swap(*vec_state.current);
 
-      vec_it.second.scatter_old = vec_it.second.scatter_current;
+      vec_state.scatter_old = vec_state.scatter_current;
     }
   }
-}
-
-VectorPostprocessorData::VectorPostprocessorVectors::VectorPostprocessorVectors()
-  : _contains_complete_history(false), _is_broadcast(false), _needs_old(false)
-{
 }

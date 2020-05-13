@@ -169,7 +169,9 @@ struct DecrementRank<Eigen::Matrix<Real, Eigen::Dynamic, LIBMESH_DIM>>
  * various MOOSE typedefs
  */
 typedef Real PostprocessorValue;
-typedef std::vector<Real> VectorPostprocessorValue;
+template <typename T>
+using VectorPostprocessorVector = std::vector<T>;
+using VectorPostprocessorValue = VectorPostprocessorVector<Real>;
 typedef Real ScatterVectorPostprocessorValue;
 typedef boundary_id_type BoundaryID;
 typedef unsigned int InterfaceID;

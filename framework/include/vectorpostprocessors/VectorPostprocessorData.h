@@ -12,18 +12,19 @@
 // MOOSE includes
 #include "MooseTypes.h"
 #include "Restartable.h"
+#include "VectorPostprocessorStorage.h"
 
 // libMesh includes
 #include "libmesh/parallel_object.h"
 
-#include <map>
+#include <unordered_map>
 
-// Forwad declarations
 class FEProblemBase;
 
 class VectorPostprocessorData : public Restartable, public libMesh::ParallelObject
 {
 public:
+  using VectorPostprocessorState = VectorPostprocessorVectorState<Real>;
   static InputParameters validParams();
 
   /**
@@ -35,25 +36,6 @@ public:
    * Initialization method, sets the current and old value to 0.0 for this postprocessor
    */
   void init(const std::string & name);
-
-  /// VectorPostprocessorState (2 containers for values (see MooseTypes.h)
-  struct VectorPostprocessorState
-  {
-    VectorPostprocessorValue * current = nullptr;
-    VectorPostprocessorValue * old = nullptr;
-
-    ScatterVectorPostprocessorValue scatter_current;
-    ScatterVectorPostprocessorValue scatter_old;
-
-    /// Whether or not this vector needs to be broadcast
-    bool needs_broadcast = false;
-
-    /// Whether or not this vector needs to be scatterd
-    bool needs_scatter = false;
-
-    /// Whether or not this vector is distributed
-    bool is_distributed = false;
-  };
 
   /**
    * Initialization method, sets the current and old value to 0.0 for this
@@ -139,7 +121,7 @@ public:
    * Get the map of vectors for a particular VectorPostprocessor
    * @param vpp_name The name of the VectorPostprocessor
    */
-  const std::vector<std::pair<std::string, VectorPostprocessorState>> &
+  const std::vector<std::pair<std::string, VectorPostprocessorVectorState<Real>>> &
   vectors(const std::string & vpp_name) const;
 
   /**
@@ -163,43 +145,9 @@ private:
                                                           bool is_distributed = false,
                                                           bool needs_broadcast = false,
                                                           bool needs_scatter = false);
-  /**
-   * Vector of pairs representing the declared vectors (vector name, vector DS)
-   * The vector DS is a data structure containing a current and old container (vector of Reals)
-   */
-  struct VectorPostprocessorVectors
-  {
-    VectorPostprocessorVectors();
-
-    ///@{
-    // Default move constructors
-    VectorPostprocessorVectors(VectorPostprocessorVectors &&) = default;
-    VectorPostprocessorVectors & operator=(VectorPostprocessorVectors &&) = default;
-    ///@}
-
-    /// The state (pointers to the correct data) of the vectors for the VPP object, see
-    /// the header for the declaration of the VectorPostprocessorState class
-    std::vector<std::pair<std::string, VectorPostprocessorState>> _values;
-
-    /// The following flags default to false, they can each be switched to true from within the
-    /// getVectorPostprocessorHelper. Once true they remain true. When they become true depends on
-    /// the flag. The various getter methods should be inspected to see how they are set.
-
-    /// Boolean indicating whether these vectors contain complete history (append mode)
-    bool _contains_complete_history = false;
-
-    /// Boolean indicating whether the vector will already be replicated in parallel by the VPP
-    bool _is_broadcast = false;
-
-    /// Boolean indicating whether any old vectors have been requested.
-    bool _needs_old = false;
-
-    /// Flag if data is distributed
-    bool _is_distributed = false;
-  };
 
   /// The VPP data store in a map: VPP Name to vector storage
-  std::map<std::string, VectorPostprocessorVectors> _vpp_data;
+  std::unordered_map<std::string, VectorPostprocessorStorage> _vpp_data;
 
   std::set<std::string> _requested_items;
   std::set<std::string> _supplied_items;

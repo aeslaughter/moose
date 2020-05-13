@@ -63,8 +63,10 @@ HistogramVectorPostprocessor::execute()
     // For each value vector compute the histogram
     for (auto & the_pair : vpp_vectors)
     {
+      const auto & vec_state =
+          static_cast<const VectorPostprocessorVectorState<Real> &>(the_pair.second);
       const auto & name = the_pair.first;
-      const auto & values = *the_pair.second.current;
+      const auto & values = *vec_state.current;
 
       mooseAssert(_histogram_data.count(name), "Error retrieving VPP vector");
       auto & histo_data = _histogram_data.at(name);
