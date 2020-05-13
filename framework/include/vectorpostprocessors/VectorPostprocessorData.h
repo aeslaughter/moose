@@ -121,7 +121,7 @@ public:
    * Get the map of vectors for a particular VectorPostprocessor
    * @param vpp_name The name of the VectorPostprocessor
    */
-  const std::vector<std::pair<std::string, VectorPostprocessorVectorState<Real>>> &
+  const std::vector<std::pair<std::string, VectorPostprocessorVectorStateBase>> &
   vectors(const std::string & vpp_name) const;
 
   /**

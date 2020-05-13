@@ -3455,7 +3455,7 @@ FEProblemBase::declareVectorPostprocessorVector(const VectorPostprocessorName & 
       name, vector_name, contains_complete_history, is_broadcast, is_distributed);
 }
 
-const std::vector<std::pair<std::string, VectorPostprocessorData::VectorPostprocessorState>> &
+const std::vector<std::pair<std::string, VectorPostprocessorVectorStateBase>> &
 FEProblemBase::getVectorPostprocessorVectors(const std::string & vpp_name)
 {
   return _vpps_data.vectors(vpp_name);

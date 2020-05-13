@@ -131,7 +131,9 @@ TableOutput::outputVectorPostprocessors()
 
       for (const auto & vec_it : vectors)
       {
-        const auto & vector = *vec_it.second.current;
+        const auto & vec_state =
+            static_cast<const VectorPostprocessorVectorState<Real> &>(vec_it.second);
+        const auto & vector = *vec_state.current;
         table.addData(vec_it.first, vector);
       }
 

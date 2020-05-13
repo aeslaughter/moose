@@ -88,7 +88,9 @@ XMLOutput::outputVectorPostprocessors()
           }
 
           // Write the vector of data
-          const auto & vector = *vec_it.second.current;
+          const auto & vec_state =
+              static_cast<const VectorPostprocessorVectorState<Real> &>(vec_it.second);
+          const auto & vector = *vec_state.current;
           std::ostringstream oss;
           std::copy(vector.begin(), vector.end(), infix_ostream_iterator<Real>(oss, " "));
           data_node.text().set(oss.str().c_str());

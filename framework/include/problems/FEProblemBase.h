@@ -937,7 +937,7 @@ public:
    * Get the vectors for a specific VectorPostprocessor.
    * @param vpp_name The name of the VectorPostprocessor
    */
-  const std::vector<std::pair<std::string, VectorPostprocessorData::VectorPostprocessorState>> &
+  const std::vector<std::pair<std::string, VectorPostprocessorVectorStateBase>> &
   getVectorPostprocessorVectors(const std::string & vpp_name);
 
   // Dampers /////

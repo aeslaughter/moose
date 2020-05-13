@@ -60,7 +60,7 @@ public:
   ///@}
 
   /// The state (pointers to the correct data) of the vectors for the VPP object
-  std::vector<std::pair<std::string, VectorPostprocessorVectorState<Real>>> _values;
+  std::vector<std::pair<std::string, VectorPostprocessorVectorStateBase>> _values;
 
   /// The following flags default to false, they can each be switched to true from within the
   /// getVectorPostprocessorHelper. Once true they remain true. When they become true depends on
