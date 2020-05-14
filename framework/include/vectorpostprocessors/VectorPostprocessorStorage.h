@@ -20,6 +20,15 @@ public:
   VectorPostprocessorVectorStateBase() = default;
   virtual ~VectorPostprocessorVectorStateBase() = default;
 
+  /*
+  VectorPostprocessorVectorStateBase(const VectorPostprocessorVectorStateBase &) = delete;
+  VectorPostprocessorVectorStateBase & operator=(const VectorPostprocessorVectorStateBase &) =
+  delete;
+
+  VectorPostprocessorVectorStateBase(VectorPostprocessorVectorStateBase &&) = delete;
+  VectorPostprocessorVectorStateBase & operator=(VectorPostprocessorVectorStateBase &&) = delete;
+  */
+
   /// Whether or not this vector needs to be broadcast
   bool needs_broadcast = false;
 
@@ -38,7 +47,15 @@ class VectorPostprocessorVectorState : public VectorPostprocessorVectorStateBase
 {
 public:
   VectorPostprocessorVectorState() = default;
-
+  /*
+  VectorPostprocessorVectorState(VectorPostprocessorVectorState && other) noexcept:
+      VectorPostprocessorVectorStateBase(other)
+    {
+      std::cout << "state move" << std::endl;
+      current = other.current;
+      old = other.old;
+    }
+  */
   VectorPostprocessorVector<T> * current = nullptr;
   VectorPostprocessorVector<T> * old = nullptr;
 
@@ -58,6 +75,8 @@ public:
   VectorPostprocessorStorage(VectorPostprocessorStorage &&) = default;
   VectorPostprocessorStorage & operator=(VectorPostprocessorStorage &&) = default;
   ///@}
+
+  std::vector<std::unique_ptr<VectorPostprocessorVectorStateBase>> _vectors;
 
   /// The state (pointers to the correct data) of the vectors for the VPP object
   std::vector<std::pair<std::string, VectorPostprocessorVectorStateBase>> _values;

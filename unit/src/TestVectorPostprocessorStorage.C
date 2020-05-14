@@ -19,9 +19,20 @@ TEST(VectorPostprocessorStorage, StateBase)
 
   // int
   std::vector<int> vec_int = {2011, 2013};
-  VectorPostprocessorVectorState<int> state_int;
-  state_int.current = &vec_int;
+  auto ptr = std::make_unique<VectorPostprocessorVectorState<int>>();
+  ptr->is_distributed = true;
+  ptr->old = &vec_int;
+  ptr->current = &vec_int;
 
-  // VectorPostprocessorStorage storage;
-  // storage._values.emplace_back("int",
+  VectorPostprocessorStorage storage;
+  storage._vectors.emplace_back(std::move(ptr));
+
+  auto & back = static_cast<VectorPostprocessorVectorState<int> &>(*storage._vectors.back());
+  // back.is_distributed = true;
+  // back.old = &vec_int;
+  // back.current = &vec_int;
+
+  EXPECT_TRUE(back.is_distributed);
+  EXPECT_EQ(*back.current, vec_int);
+  EXPECT_EQ(back.current, &vec_int);
 }
