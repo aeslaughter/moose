@@ -28,10 +28,6 @@ TEST(VectorPostprocessorStorage, StateBase)
   storage._vectors.emplace_back(std::move(ptr));
 
   auto & back = static_cast<VectorPostprocessorVectorState<int> &>(*storage._vectors.back());
-  // back.is_distributed = true;
-  // back.old = &vec_int;
-  // back.current = &vec_int;
-
   EXPECT_TRUE(back.is_distributed);
   EXPECT_EQ(*back.current, vec_int);
   EXPECT_EQ(back.current, &vec_int);

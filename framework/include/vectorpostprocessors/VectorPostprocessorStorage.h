@@ -20,15 +20,6 @@ public:
   VectorPostprocessorVectorStateBase() = default;
   virtual ~VectorPostprocessorVectorStateBase() = default;
 
-  /*
-  VectorPostprocessorVectorStateBase(const VectorPostprocessorVectorStateBase &) = delete;
-  VectorPostprocessorVectorStateBase & operator=(const VectorPostprocessorVectorStateBase &) =
-  delete;
-
-  VectorPostprocessorVectorStateBase(VectorPostprocessorVectorStateBase &&) = delete;
-  VectorPostprocessorVectorStateBase & operator=(VectorPostprocessorVectorStateBase &&) = delete;
-  */
-
   /// Whether or not this vector needs to be broadcast
   bool needs_broadcast = false;
 
