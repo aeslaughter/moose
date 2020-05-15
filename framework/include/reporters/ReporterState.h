@@ -10,9 +10,6 @@
 
 #include "MooseTypes.h"
 
-/**
- * Generic container for type independent Reporter values
- */
 class ReporterStateBase
 {
 public:
@@ -25,34 +22,56 @@ class ReporterState : public ReporterStateBase
 {
 public:
   ReporterState(T & current, T & old);
-  T & currentValue() const;
-  T & oldValue() const;
+  T & getValue() const;
+  T & getOldValue() const;
 
 protected:
-  T & _current;
-  T & _old;
+  T & _value;
+  T & _value_old;
 };
 
 template <typename T>
-ReporterState<T>::ReporterState(T & current, T & old)
-  : ReporterStateBase, current(current), old(old)
+ReporterState<T>::ReporterState(T & value, T & value_old)
+  : ReporterStateBase(), _value(value), _value_old(value_old)
 {
 }
 
 template <typename T>
 T &
-ReporterState<T>::currentValue() const
+ReporterState<T>::getValue() const
 {
-  return _current;
+  return _value;
 }
 
 template <typename T>
 T &
-ReporterState<T>::oldValue() const
+ReporterState<T>::getOldValue() const
 {
-  return _old;
+  return _value_old;
 }
 
+class ReporterStateName
+{
+public:
+  ReporterStateName(const std::string & object_name, const std::string & value_name);
+
+  operator std::string() const;
+  bool operator==(const ReporterStateName & rhs) const;
+
+private:
+  const std::string _combined_name;
+};
+
+template <>
+struct std::hash<ReporterStateName>
+{
+  std::size_t operator()(const ReporterStateName & other) const
+  {
+    return std::hash<std::string>{}(other);
+  }
+};
+
+/*
 class ReporterStorage
 {
 public:
@@ -67,3 +86,4 @@ public:
 
   std::vector<std::unique_ptr<ReporterStateBase>> _reporters;
 };
+*/

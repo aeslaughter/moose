@@ -20,11 +20,19 @@ Counter::validParams()
   return params;
 }
 
-Counter::Counter(const InputParameters & parameters) : GeneralReporter(parameters) {}
+Counter::Counter(const InputParameters & parameters)
+  : GeneralReporter(parameters), _num_linear_iterations(declareValue<Real>("num_linear_iterations"))
+{
+}
 
 void
 Counter::execute()
 {
-  std::cout << name() << std::endl;
-  // return _subproblem.nLinearIterations();
+  _num_linear_iterations = _subproblem.nLinearIterations();
+}
+
+void
+Counter::finalize()
+{
+  std::cout << name() << " " << _num_linear_iterations << std::endl;
 }

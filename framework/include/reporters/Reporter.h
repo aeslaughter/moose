@@ -10,6 +10,7 @@
 #pragma once
 
 #include "OutputInterface.h"
+#include "FEProblemBase.h"
 
 class Reporter : public OutputInterface
 {
@@ -18,5 +19,21 @@ public:
   Reporter(const InputParameters & parameters);
   virtual ~Reporter() = default;
 
-  // protected:
+protected:
+  template <typename T>
+  T & declareValue(const std::string & value_name);
+
+private:
+  const std::string & _reporter_name;
+
+  const THREAD_ID _reporter_tid;
+
+  FEProblemBase * _reporter_fe_problem;
 };
+
+template <typename T>
+T &
+Reporter::declareValue(const std::string & value_name)
+{
+  return _reporter_fe_problem->declareReporterValue<T>(_reporter_name, value_name);
+}

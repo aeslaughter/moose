@@ -748,7 +748,18 @@ public:
    */
   virtual void
   addReporter(std::string type, const std::string & name, InputParameters & parameters);
-  // virtual Sampler & getReporter(const std::string & name, THREAD_ID tid = 0);
+
+  template <typename T>
+  T & declareReporterValue(const std::string & object_name, const std::string & vector_name)
+  {
+    return _reporter_data.declareReporterValue<T>(object_name, vector_name);
+  }
+
+  template <typename T>
+  const T & getReporterValue(const std::string & object_name, const std::string & vector_name) const
+  {
+    return _reporter_data.getReporterValue<T>(object_name, vector_name);
+  }
   ///@}
 
   // UserObjects /////

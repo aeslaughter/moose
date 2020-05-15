@@ -7,6 +7,9 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
+#include "Reporter.h"
+#include "InputParameters.h"
+
 InputParameters
 Reporter::validParams()
 {
@@ -17,4 +20,10 @@ Reporter::validParams()
   return params;
 }
 
-Reporter::Reporter(const InputParameters & parameters) : OutputInterface(parameters) {}
+Reporter::Reporter(const InputParameters & parameters)
+  : OutputInterface(parameters),
+    _reporter_name(parameters.get<std::string>("_name")),
+    _reporter_tid(parameters.isParamValid("_tid") ? parameters.get<THREAD_ID>("_tid") : 0),
+    _reporter_fe_problem(parameters.getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
+{
+}

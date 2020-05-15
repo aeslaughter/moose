@@ -17,6 +17,9 @@ public:
   static InputParameters validParams();
   Counter(const InputParameters & parameters);
   virtual void initialize() override {}
-  virtual void finalize() override {}
+  virtual void finalize() override;
   virtual void execute() override;
+
+protected:
+  Real & _num_linear_iterations;
 };
