@@ -15,6 +15,7 @@
 #include "MortarData.h"
 #include "PostprocessorData.h"
 #include "VectorPostprocessorData.h"
+#include "ReporterData.h"
 #include "Adaptivity.h"
 #include "InitialConditionWarehouse.h"
 #include "ScalarInitialConditionWarehouse.h"
@@ -740,6 +741,15 @@ public:
 
   /// Initialize the VectorPostprocessor data
   void initVectorPostprocessorData(const std::string & name);
+
+  ///@{
+  /**
+   * Reporter system
+   */
+  virtual void
+  addReporter(std::string type, const std::string & name, InputParameters & parameters);
+  // virtual Sampler & getReporter(const std::string & name, THREAD_ID tid = 0);
+  ///@}
 
   // UserObjects /////
   virtual void addUserObject(std::string user_object_name,
@@ -1880,6 +1890,9 @@ protected:
 
   // VectorPostprocessors
   VectorPostprocessorData _vpps_data;
+
+  // Reporters
+  ReporterData _reporter_data;
 
   // TODO: delete this after apps have been updated to not call getUserObjects
   ExecuteMooseObjectWarehouse<UserObject> _all_user_objects;

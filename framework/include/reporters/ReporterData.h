@@ -18,18 +18,22 @@ class FEProblemBase;
 class ReporterData : public Restartable, public libMesh::ParallelObject
 {
 public:
-  static InputParameters validParams();
+  ReporterData(FEProblemBase & fe_problem);
 
+  /*
   template <typename T>
   T & declareReporterValue(const std::string & object_name, const std::string & value_name);
 
   template <typename T>
   const T & getReporterValue(const std::string & object_name, const std::string & value_name);
+  */
 
 private:
+  /*
   template <typename T>
   ReporterState<T> & getReporterStateHelper(const std::string & object_name,
                                             const std::string & value_name);
+  */
 
-  std::unordered_map<std::vector<std::unique_ptr<ReporterStateBase>>> _reporters;
+  // std::unordered_map<std::vector<std::unique_ptr<ReporterStateBase>>> _reporters;
 };

@@ -233,6 +233,7 @@ FEProblemBase::FEProblemBase(const InputParameters & parameters)
         "neighbor_material_props", &_mesh)),
     _pps_data(*this),
     _vpps_data(*this),
+    _reporter_data(*this),
     // TODO: delete the following line after apps have been updated to not call getUserObjects
     _all_user_objects(_app.getExecuteOnEnum()),
     _multi_apps(_app.getExecuteOnEnum()),
@@ -3231,6 +3232,7 @@ FEProblemBase::initPostprocessorData(const std::string & name)
 }
 
 void
+
 FEProblemBase::initVectorPostprocessorData(const std::string & name)
 {
   _vpps_data.init(name);
@@ -3262,6 +3264,17 @@ FEProblemBase::addVectorPostprocessor(std::string pp_name,
 
   addUserObject(pp_name, name, parameters);
   initVectorPostprocessorData(name);
+}
+
+void
+FEProblemBase::addReporter(std::string type, const std::string & name, InputParameters & parameters)
+{
+  // Check for name collision
+  if (hasUserObject(name))
+    mooseError(std::string("A UserObject with the name \"") + name +
+               "\" already exists.  You may not add a Reporter by the same name.");
+
+  addUserObject(type, name, parameters);
 }
 
 void

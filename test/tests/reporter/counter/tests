@@ -1,0 +1,6 @@
+[Tests]
+  [counter]
+    type = RunApp
+    input = counter.i
+  []
+[]
