@@ -9,6 +9,7 @@
 #pragma once
 
 #include "MooseTypes.h"
+#include <iostream>
 
 class ReporterStateBase
 {
@@ -54,12 +55,22 @@ class ReporterStateName
 {
 public:
   ReporterStateName(const std::string & object_name, const std::string & value_name);
+  ReporterStateName(const ReporterStateName & other);
+  ReporterStateName & operator=(const ReporterStateName & other);
+
+  ReporterStateName() {}
+  // friend class InputParameters;
+
+  const std::string & getObjectName() const;
+  const std::string & getValueName() const;
 
   operator std::string() const;
   bool operator==(const ReporterStateName & rhs) const;
 
 private:
-  const std::string _combined_name;
+  std::string _object_name;
+  std::string _value_name;
+  std::string _combined_name;
 };
 
 template <>
@@ -71,19 +82,4 @@ struct std::hash<ReporterStateName>
   }
 };
 
-/*
-class ReporterStorage
-{
-public:
-  ///@{
-  // Default constructors
-  ReporterStorage(){};
-  ReporterStorage(const ReporterStorage &) = delete;
-  ReporterStorage(ReporterStorage &&) = delete;
-  ReporterStorage & operator=(const ReporterStorage &) = delete;
-  ReporterStorage & operator=(ReporterStorage &&) = delete;
-  ///@}
-
-  std::vector<std::unique_ptr<ReporterStateBase>> _reporters;
-};
-*/
+std::ostream & operator<<(std::ostream & os, const ReporterStateName & state);

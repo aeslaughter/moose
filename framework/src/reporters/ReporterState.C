@@ -9,8 +9,22 @@
 
 ReporterStateName::ReporterStateName(const std::string & object_name,
                                      const std::string & value_name)
-  : _combined_name(object_name + "_" + value_name)
+  : _object_name(object_name),
+    _value_name(value_name),
+    _combined_name(object_name + "_" + value_name)
 {
+}
+
+const std::string &
+ReporterStateName::getObjectName() const
+{
+  return _object_name;
+}
+
+const std::string &
+ReporterStateName::getValueName() const
+{
+  return _value_name;
 }
 
 ReporterStateName::operator std::string() const { return _combined_name; }
@@ -19,4 +33,25 @@ bool
 ReporterStateName::operator==(const ReporterStateName & rhs) const
 {
   return _combined_name == rhs._combined_name;
+}
+
+ReporterStateName::ReporterStateName(const ReporterStateName & other)
+  : ReporterStateName(other._object_name, other._value_name)
+{
+}
+
+ReporterStateName &
+ReporterStateName::operator=(const ReporterStateName & other)
+{
+  _object_name = other._object_name;
+  _value_name = other._value_name;
+  _combined_name = other._combined_name;
+  return *this;
+}
+
+std::ostream &
+operator<<(std::ostream & os, const ReporterStateName & state)
+{
+  os << state.getObjectName() << "/" << state.getValueName();
+  return os;
 }

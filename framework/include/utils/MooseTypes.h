@@ -13,6 +13,7 @@
 #include "ADReal.h"
 #include "ADRankTwoTensorForward.h"
 #include "ADRankFourTensorForward.h"
+#include "ReporterState.h"
 
 #include "libmesh/libmesh.h"
 #include "libmesh/id_types.h"
@@ -179,6 +180,8 @@ typedef unsigned int THREAD_ID;
 typedef unsigned int TagID;
 typedef unsigned int PerfID;
 using RestartableDataMapName = std::string; // see MooseApp.h
+
+using ReporterName = ReporterStateName;
 
 template <bool is_ad>
 struct GenericRealStruct
@@ -824,9 +827,6 @@ DerivativeStringClass(PostprocessorName);
 
 /// This type is used for objects that expect VectorPostprocessor objects
 DerivativeStringClass(VectorPostprocessorName);
-
-/// This type is used for objects that expect Reporter objects
-DerivativeStringClass(ReporterName);
 
 /// This type is used for objects that expect Moose Function objects
 DerivativeStringClass(FunctionName);

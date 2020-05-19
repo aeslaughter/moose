@@ -1059,6 +1059,15 @@ InputParameters::setParamHelper<MaterialPropertyName, int>(const std::string & /
 
 template <>
 void
+InputParameters::setParamHelper<ReporterName, std::string>(const std::string & /*name*/,
+                                                           ReporterName & l_value,
+                                                           const std::string & r_value)
+{
+  std::cout << "r_value = " << r_value << std::endl;
+}
+
+template <>
+void
 InputParameters::setHelper<std::vector<PostprocessorName>>(const std::string & name)
 {
   _params[name]._vector_of_postprocessors = true;

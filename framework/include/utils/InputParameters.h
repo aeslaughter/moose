@@ -1524,6 +1524,11 @@ void InputParameters::setParamHelper<MaterialPropertyName, int>(const std::strin
                                                                 MaterialPropertyName & l_value,
                                                                 const int & r_value);
 template <>
+void InputParameters::setParamHelper<ReporterName, std::string>(const std::string & name,
+                                                                ReporterName & l_value,
+                                                                const std::string & r_value);
+
+template <>
 void InputParameters::setHelper<std::vector<PostprocessorName>>(const std::string & name);
 
 template <typename T>
