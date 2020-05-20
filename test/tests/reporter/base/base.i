@@ -18,6 +18,7 @@
     real_reporter = a::real
     vector_reporter = a::vector
     string_reporter = a::string
+    broadcast_reporter = a::broadcast
   []
   [a]
     type = TestDeclareReporter

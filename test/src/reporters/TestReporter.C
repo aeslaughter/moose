@@ -24,7 +24,8 @@ TestDeclareReporter::TestDeclareReporter(const InputParameters & parameters)
     _int(declareValue<int>("int")),
     _real(declareValue<Real>("real")),
     _vector(declareValue<std::vector<Real>>("vector")),
-    _string(declareValue<std::string>("string"))
+    _string(declareValue<std::string>("string")),
+    _bcast_value(declareValue<BroadcastValue<Real>>("broadcast"))
 {
 }
 
@@ -36,14 +37,8 @@ TestDeclareReporter::execute()
   _vector = {1, 1.1, 1.2};
   _string = "string";
 
-  /*
   if (processor_id() == 0)
-  {
-    _scatter.clear();
-    for (dof_id_type rank = 0; rank < n_processors(); rank++)
-      _scatter.push_back(2*rank);
-  }
-  */
+    _bcast_value.value = 42;
 }
 
 InputParameters
@@ -54,8 +49,7 @@ TestGetReporter::validParams()
   params.addRequiredParam<ReporterName>("real_reporter", "'real' reporter name");
   params.addRequiredParam<ReporterName>("vector_reporter", "'vector' reporter name");
   params.addRequiredParam<ReporterName>("string_reporter", "'string' reporter name");
-  // params.addRequiredParam<ReporterName>("broadcast_reporter", "'broadcast' reporter name");
-
+  params.addRequiredParam<ReporterName>("broadcast_reporter", "'broadcast' reporter name");
   return params;
 }
 
@@ -64,7 +58,8 @@ TestGetReporter::TestGetReporter(const InputParameters & parameters)
     _int(getReporterValue<int>("int_reporter")),
     _real(getReporterValue<Real>("real_reporter")),
     _vector(getReporterValue<std::vector<Real>>("vector_reporter")),
-    _string(getReporterValue<std::string>("string_reporter"))
+    _string(getReporterValue<std::string>("string_reporter")),
+    _bcast_value(getReporterValue<BroadcastValue<Real>>("broadcast_reporter"))
 {
 }
 
@@ -79,4 +74,6 @@ TestGetReporter::execute()
     mooseError("std::vector<Real> reporter test failed");
   if (_string != "string")
     mooseError("std::string reporter test failed");
+  if (_bcast_value.value != 42)
+    mooseError("BroadcastValue reporter test failed");
 }

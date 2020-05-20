@@ -25,7 +25,7 @@ protected:
   Real & _real;
   std::vector<Real> & _vector;
   std::string & _string;
-  // ScatterVector & _scatter;
+  BroadcastValue<Real> & _bcast_value;
 };
 
 class TestGetReporter : public GeneralReporter
@@ -42,5 +42,5 @@ protected:
   const Real & _real;
   const std::vector<Real> & _vector;
   const std::string & _string;
-  // const ScatterVector & _scatter;
+  const BroadcastValue<Real> & _bcast_value;
 };

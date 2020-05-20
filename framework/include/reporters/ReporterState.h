@@ -8,16 +8,17 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 #pragma once
 
-#include "MooseTypes.h"
 #include <iostream>
+#include "libmesh/parallel.h"
+#include "MooseTypes.h"
 
 class ReporterStateBase
 {
 public:
   ReporterStateBase() = default;
   virtual ~ReporterStateBase() = default;
-  virtual void initialize(const libMesh::Parallel::Communicator * comm) {}
-  virtual void finalize(const libMesh::Parallel::Communicator * comm) {}
+  // virtual void initialize(const libMesh::Parallel::Communicator * comm) {}d
+  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) = 0;
 };
 
 template <typename T>
@@ -27,6 +28,11 @@ public:
   ReporterState(T & current);
   T & getValue() const;
   // T & getOldValue() const;
+
+  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) final
+  {
+    std::cout << "ReporterState::finalize" << std::endl;
+  }
 
 protected:
   T & _value;
@@ -47,6 +53,16 @@ ReporterState<T>::getValue() const
 }
 
 // DEMO FOR ADDING PARALLEL TYPES
+template <typename T>
+struct BroadcastValue
+{
+  T value;
+};
+
+template <>
+void
+ReporterState<BroadcastValue<Real>>::finalize(const libMesh::Parallel::Communicator & /* comm*/);
+
 /*
 template <typename>
 class BroadcastReporterState : public ReporterState

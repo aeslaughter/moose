@@ -29,6 +29,8 @@ public:
   template <typename T>
   T & getReporterValue(const ReporterStateName & state_name);
 
+  void finalize(const std::string & object_name);
+
 private:
   template <typename T>
   ReporterState<T> & getReporterStateHelper(const ReporterStateName & state_name);

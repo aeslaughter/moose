@@ -55,3 +55,10 @@ operator<<(std::ostream & os, const ReporterStateName & state)
   os << state.getObjectName() << "/" << state.getValueName();
   return os;
 }
+
+template <>
+void
+ReporterState<BroadcastValue<Real>>::finalize(const libMesh::Parallel::Communicator & comm)
+{
+  comm.broadcast(_value.value);
+}
