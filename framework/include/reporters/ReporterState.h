@@ -22,18 +22,18 @@ template <typename T>
 class ReporterState : public ReporterStateBase
 {
 public:
-  ReporterState(T & current, T & old);
+  ReporterState(T & current);
   T & getValue() const;
-  T & getOldValue() const;
+  // T & getOldValue() const;
 
 protected:
   T & _value;
-  T & _value_old;
+  // T & _value_old;
 };
 
 template <typename T>
-ReporterState<T>::ReporterState(T & value, T & value_old)
-  : ReporterStateBase(), _value(value), _value_old(value_old)
+ReporterState<T>::ReporterState(T & value) //, T & value_old)
+  : ReporterStateBase(), _value(value)     //, _value_old(value_old)
 {
 }
 
@@ -44,12 +44,14 @@ ReporterState<T>::getValue() const
   return _value;
 }
 
+/*
 template <typename T>
 T &
 ReporterState<T>::getOldValue() const
 {
   return _value_old;
 }
+*/
 
 class ReporterStateName
 {

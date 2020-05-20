@@ -11,16 +11,31 @@
 
 #include "GeneralReporter.h"
 
-class TestReporter : public GeneralReporter
+class TestDeclareReporter : public GeneralReporter
 {
 public:
   static InputParameters validParams();
-  TestReporter(const InputParameters & parameters);
+  TestDeclareReporter(const InputParameters & parameters);
   virtual void initialize() override {}
   virtual void finalize() override;
   virtual void execute() override;
 
 protected:
-  // Real & _declare_value;
-  // const Real & _get_value;
+  int & _int;
+  Real & _real;
+  std::vector<Real> & _vector;
+  std::string & _string;
+};
+
+class TestGetReporter : public GeneralReporter
+{
+public:
+  static InputParameters validParams();
+  TestGetReporter(const InputParameters & parameters);
+  virtual void initialize() override {}
+  virtual void finalize() override;
+  virtual void execute() override;
+
+protected:
+  const int & _int;
 };

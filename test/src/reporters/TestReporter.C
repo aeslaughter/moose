@@ -9,34 +9,59 @@
 
 #include "TestReporter.h"
 
-#include "SubProblem.h"
-
-registerMooseObject("MooseTestApp", TestReporter);
+registerMooseObject("MooseTestApp", TestDeclareReporter);
+registerMooseObject("MooseTestApp", TestGetReporter);
 
 InputParameters
-TestReporter::validParams()
+TestDeclareReporter::validParams()
 {
   InputParameters params = GeneralReporter::validParams();
-  MooseEnum num("elements nodes");
-  params.addParam<MooseEnum>("count", num, "The number to count.");
-  params.addRequiredParam<ReporterName>("reporter", "The name of the reporter to get.");
   return params;
 }
 
-TestReporter::TestReporter(const InputParameters & parameters)
-  : GeneralReporter(parameters) /*, _declare_value(declareValue<Real>("declare")),
-                                  _get_value(getReporterValue<Real>("name"))*/
+TestDeclareReporter::TestDeclareReporter(const InputParameters & parameters)
+  : GeneralReporter(parameters),
+    _int(declareValue<int>("int")),
+    _real(declareValue<Real>("real")),
+    _vector(declareValue<std::vector<Real>>("vector")),
+    _string(declareValue<std::string>("string"))
 {
-  std::cout << getParam<ReporterName>("reporter") << std::endl;
 }
 
 void
-TestReporter::execute()
+TestDeclareReporter::execute()
 {
-  //  _declare_value = _mesh.n_elem();
+  _int = 1980;
+  _real = 1.2345;
+  _vector = {1, 1.1, 1.2};
 }
 
 void
-TestReporter::finalize()
+TestDeclareReporter::finalize()
+{
+}
+
+InputParameters
+TestGetReporter::validParams()
+{
+  InputParameters params = GeneralReporter::validParams();
+  params.addRequiredParam<ReporterName>("int_reporter", "'int' reporter name");
+  return params;
+}
+
+TestGetReporter::TestGetReporter(const InputParameters & parameters)
+  : GeneralReporter(parameters), _int(getReporterValue<int>("int_reporter"))
+{
+}
+
+void
+TestGetReporter::execute()
+{
+  if (_int != 1980)
+    mooseError("int reporter test failed");
+}
+
+void
+TestGetReporter::finalize()
 {
 }

@@ -7,39 +7,39 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 #pragma once
+#include "MooseTypes.h"
+#include "InputParameters.h"
+#include "FEProblemBase.h"
 
 class ReporterInterface
 {
 public:
+  static InputParameters validParams();
+
   ReporterInterface(const MooseObject * moose_object);
 
-  /*
   template <typename T>
-  const T & getReporterValue(const ReporterName & name);
+  const T & getReporterValue(const std::string & param_name) const;
 
   template <typename T>
-  const T & getReporterValueByName(const std::string & object_name, const std::string & value_name);
-  */
+  const T & getReporterValueByName(const ReporterName & state_name) const;
 
 private:
   const InputParameters & _ri_params;
   FEProblemBase & _ri_fe_problem_base;
 };
 
-/*
 template <typename T>
 const T &
-ReporterInterface::getReporterValueByName(const std::string & object_name, const std::string &
-value_name)
+ReporterInterface::getReporterValue(const std::string & param_name) const
 {
-  return _ri_fe_problem_base.getReporterValue<T>(object_name, value_name);
+  const ReporterName & rname = _ri_params.template get<ReporterName>(param_name);
+  return getReporterValueByName<T>(rname);
 }
 
 template <typename T>
 const T &
-ReporterInterface::getReporterValue(const ReporterName & name)
+ReporterInterface::getReporterValueByName(const ReporterName & state_name) const
 {
-  const ReporterName & reporter_name,
-  return _ri_fe_problem_base.getReporterValue<T>(object_name, value_name);
+  return _ri_fe_problem_base.getReporterValue<T>(state_name);
 }
-*/

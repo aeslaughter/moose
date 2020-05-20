@@ -35,5 +35,6 @@ template <typename T>
 T &
 Reporter::declareValue(const std::string & value_name)
 {
-  return _reporter_fe_problem->declareReporterValue<T>(_reporter_name, value_name);
+  ReporterName state_name(_reporter_name, value_name);
+  return _reporter_fe_problem->getReporterValue<T>(state_name);
 }

@@ -1,51 +1,28 @@
 [Mesh]
   type = GeneratedMesh
-  dim = 2
-  nx = 10
-  ny = 10
+  dim = 1
 []
 
-[Variables]
-  [u]
-  []
+[Variables/u]
 []
 
-[Kernels]
-  [diff]
-    type = ADDiffusion
-    variable = u
-  []
-[]
-
-[BCs]
-  [left]
-    type = ADDirichletBC
-    variable = u
-    boundary = left
-    value = 0
-  []
-  [right]
-    type = ADDirichletBC
-    variable = u
-    boundary = right
-    value = 1
-  []
+[Problem]
+  solve = false
+  kernel_coverage_check = false
 []
 
 [Reporters]
   [a]
-    type = TestReporter
-    reporter = b::value
+    type = TestDeclareReporter
   []
   [b]
-    type = TestReporter
+    type = TestGetReporter
     reporter = a::value
   []
 []
 
 [Executioner]
   type = Steady
-  solve_type = 'NEWTON'
 []
 
 [Outputs]

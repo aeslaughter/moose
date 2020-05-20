@@ -27,31 +27,24 @@ public:
   ReporterData(FEProblemBase & fe_problem);
 
   template <typename T>
-  T & declareReporterValue(const std::string & object_name, const std::string & value_name);
-
-  template <typename T>
-  const T & getReporterValue(const std::string & object_name, const std::string & value_name);
+  T & getReporterValue(const ReporterStateName & state_name);
 
 private:
   template <typename T>
-  ReporterState<T> & getReporterStateHelper(const std::string & object_name,
-                                            const std::string & value_name);
+  ReporterState<T> & getReporterStateHelper(const ReporterStateName & state_name);
 
   std::unordered_map<ReporterStateName, std::unique_ptr<ReporterStateBase>> _reporter_values;
 };
 
 template <typename T>
 ReporterState<T> &
-ReporterData::getReporterStateHelper(const std::string & object_name,
-                                     const std::string & value_name)
+ReporterData::getReporterStateHelper(const ReporterStateName & state_name)
 {
-  const ReporterStateName state_name(object_name, value_name);
   auto state_pair = _reporter_values.find(state_name);
   if (state_pair == _reporter_values.end())
   {
-    auto unique_ptr = libmesh_make_unique<ReporterState<T>>(
-        declareRestartableDataWithObjectName<T>(state_name, "value"),
-        declareRestartableDataWithObjectName<T>(state_name, "value_old"));
+    auto unique_ptr = libmesh_make_unique<ReporterState<T>>(declareRestartableDataWithObjectName<T>(
+        state_name.getValueName(), state_name.getObjectName()));
 
     _reporter_values.emplace(state_name, std::move(unique_ptr));
     state_pair = _reporter_values.find(state_name);
@@ -67,17 +60,9 @@ ReporterData::getReporterStateHelper(const std::string & object_name,
 }
 
 template <typename T>
-T &
-ReporterData::declareReporterValue(const std::string & object_name, const std::string & value_name)
-{
-  ReporterState<T> & state = getReporterStateHelper<T>(object_name, value_name);
-  return state.getValue();
-}
-
-template <typename T>
 const T &
-ReporterData::getReporterValue(const std::string & object_name, const std::string & value_name)
+ReporterData::getReporterValue(const ReporterStateName & state_name) const
 {
-  const ReporterState<T> & state = getReporterStateHelper<T>(object_name, value_name);
+  const ReporterState<T> & state = getReporterStateHelper<T>(state_name);
   return state.getValue();
 }

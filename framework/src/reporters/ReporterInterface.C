@@ -7,7 +7,15 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
+#include "MooseObject.h"
 #include "ReporterInterface.h"
+#include "FEProblemBase.h"
+
+InputParameters
+ReporterInterface::validParams()
+{
+  return emptyInputParameters();
+}
 
 ReporterInterface::ReporterInterface(const MooseObject * moose_object)
   : _ri_params(moose_object->parameters()),
