@@ -16,6 +16,8 @@ class ReporterStateBase
 public:
   ReporterStateBase() = default;
   virtual ~ReporterStateBase() = default;
+  virtual void initialize(const libMesh::Parallel::Communicator * comm) {}
+  virtual void finalize(const libMesh::Parallel::Communicator * comm) {}
 };
 
 template <typename T>
@@ -44,13 +46,36 @@ ReporterState<T>::getValue() const
   return _value;
 }
 
+// DEMO FOR ADDING PARALLEL TYPES
 /*
+template <typename>
+class BroadcastReporterState : public ReporterState
+{
+public:
+  BroadcastReporterState(T & current, const libMesh::Parallel::Communicator * comm);
+  virtual void finalize() override;
+
+protected:
+  const libmesh::Parallel::Communicator * _comm;
+};
+
 template <typename T>
 T &
-ReporterState<T>::getOldValue() const
+BroadcastReporterState(T & current, const libMesh::Parallel::Communicator * comm) :
+    ReporterState<T>(current),
+    _comm(comm)
 {
-  return _value_old;
 }
+
+template <typename T>
+void
+BroadcastReporterState<T>::finalize()
+{
+  std::cout << "here................." << std::endl;
+}
+
+
+using BroadcastReal = Real;
 */
 
 class ReporterStateName

@@ -2013,11 +2013,8 @@ Parser::setScalarParameter<ReporterName, std::string>(
     bool in_global,
     GlobalParamsAction * global_block)
 {
-  std::cout << "full_name = " << _root->param<std::string>(full_name) << std::endl;
   std::vector<std::string> names = MooseUtils::split(_root->param<std::string>(full_name), "::");
-  std::cout << "names = " << names[0] << " " << names[1] << std::endl;
   param->set() = ReporterName(names[0], names[1]);
-  std::cout << param->get() << std::endl;
 }
 
 template <>

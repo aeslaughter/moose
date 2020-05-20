@@ -34,5 +34,5 @@ Counter::execute()
 void
 Counter::finalize()
 {
-  std::cout << name() << " " << _num_linear_iterations << std::endl;
+  // std::cout << name() << " " << _num_linear_iterations << std::endl;
 }

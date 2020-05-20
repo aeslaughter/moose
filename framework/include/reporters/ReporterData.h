@@ -60,8 +60,8 @@ ReporterData::getReporterStateHelper(const ReporterStateName & state_name)
 }
 
 template <typename T>
-const T &
-ReporterData::getReporterValue(const ReporterStateName & state_name) const
+T &
+ReporterData::getReporterValue(const ReporterStateName & state_name)
 {
   const ReporterState<T> & state = getReporterStateHelper<T>(state_name);
   return state.getValue();

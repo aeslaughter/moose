@@ -17,7 +17,7 @@ public:
   static InputParameters validParams();
   TestDeclareReporter(const InputParameters & parameters);
   virtual void initialize() override {}
-  virtual void finalize() override;
+  virtual void finalize() override {}
   virtual void execute() override;
 
 protected:
@@ -25,6 +25,7 @@ protected:
   Real & _real;
   std::vector<Real> & _vector;
   std::string & _string;
+  // ScatterVector & _scatter;
 };
 
 class TestGetReporter : public GeneralReporter
@@ -33,9 +34,13 @@ public:
   static InputParameters validParams();
   TestGetReporter(const InputParameters & parameters);
   virtual void initialize() override {}
-  virtual void finalize() override;
+  virtual void finalize() override {}
   virtual void execute() override;
 
 protected:
   const int & _int;
+  const Real & _real;
+  const std::vector<Real> & _vector;
+  const std::string & _string;
+  // const ScatterVector & _scatter;
 };

@@ -10,6 +10,7 @@
 #include "MooseObject.h"
 #include "ReporterInterface.h"
 #include "FEProblemBase.h"
+#include "DependencyResolverInterface.h"
 
 InputParameters
 ReporterInterface::validParams()
