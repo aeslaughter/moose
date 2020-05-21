@@ -18,7 +18,7 @@ ReporterData::ReporterData(FEProblemBase & fe_problem)
 void
 ReporterData::finalize(const std::string & object_name)
 {
-  for (std::pair<const ReporterStateName, std::unique_ptr<ReporterStateBase>> & pair :
+  for (std::pair<const ReporterName, std::unique_ptr<ReporterStateBase>> & pair :
        _reporter_values)
     if (pair.first.getObjectName() == object_name)
       pair.second->finalize(comm());

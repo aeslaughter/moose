@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include "libmesh/parallel.h"
-#include "MooseTypes.h"
+#include "ReporterName.h"
 
 class ReporterStateBase
 {
@@ -29,7 +29,7 @@ public:
   T & getValue() const;
   // T & getOldValue() const;
 
-  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) final
+  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) override
   {
     std::cout << "ReporterState::finalize" << std::endl;
   }
@@ -39,90 +39,49 @@ protected:
   // T & _value_old;
 };
 
-template <typename T>
-ReporterState<T>::ReporterState(T & value) //, T & value_old)
-  : ReporterStateBase(), _value(value)     //, _value_old(value_old)
-{
-}
 
-template <typename T>
-T &
-ReporterState<T>::getValue() const
+
+
+/*
+template <template<typename> class U, typename T>
+class ContainerReporterState : public ReporterStateBase
 {
-  return _value;
-}
+public:
+  ContainerReporterState(U<T> & current);
+  U<T> & getValue() const;
+  // T & getOldValue() const;
+
+  virtual void finalize(const libMesh::Parallel::Communicator & comm) final
+  {
+    std::cout << "ContainerReporterState::finalize" << std::endl;
+  }
+
+protected:
+  U<T> & _value;
+  // T & _value_old;
+};
+*/
+
+
 
 // DEMO FOR ADDING PARALLEL TYPES
 template <typename T>
-struct BroadcastValue
+class BroadcastValue
 {
-  T value;
+public:
+
+  operator T() const { return _value; }
+  BroadcastValue & operator=(const T & other)
+    {
+      _value = other;
+      return *this;
+    }
+  T _value;
 };
+
+
+
 
 template <>
 void
 ReporterState<BroadcastValue<Real>>::finalize(const libMesh::Parallel::Communicator & /* comm*/);
-
-/*
-template <typename>
-class BroadcastReporterState : public ReporterState
-{
-public:
-  BroadcastReporterState(T & current, const libMesh::Parallel::Communicator * comm);
-  virtual void finalize() override;
-
-protected:
-  const libmesh::Parallel::Communicator * _comm;
-};
-
-template <typename T>
-T &
-BroadcastReporterState(T & current, const libMesh::Parallel::Communicator * comm) :
-    ReporterState<T>(current),
-    _comm(comm)
-{
-}
-
-template <typename T>
-void
-BroadcastReporterState<T>::finalize()
-{
-  std::cout << "here................." << std::endl;
-}
-
-
-using BroadcastReal = Real;
-*/
-
-class ReporterStateName
-{
-public:
-  ReporterStateName(const std::string & object_name, const std::string & value_name);
-  ReporterStateName(const ReporterStateName & other);
-  ReporterStateName & operator=(const ReporterStateName & other);
-
-  ReporterStateName() {}
-  // friend class InputParameters;
-
-  const std::string & getObjectName() const;
-  const std::string & getValueName() const;
-
-  operator std::string() const;
-  bool operator==(const ReporterStateName & rhs) const;
-
-private:
-  std::string _object_name;
-  std::string _value_name;
-  std::string _combined_name;
-};
-
-template <>
-struct std::hash<ReporterStateName>
-{
-  std::size_t operator()(const ReporterStateName & other) const
-  {
-    return std::hash<std::string>{}(other);
-  }
-};
-
-std::ostream & operator<<(std::ostream & os, const ReporterStateName & state);

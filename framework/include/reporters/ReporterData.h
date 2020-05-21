@@ -17,54 +17,56 @@
 
 class FEProblemBase;
 
-// auto hash = [](const ReporterStateName & name){ return
-// std::hash<std::string>{}(name.getCombinedName()); }; auto comp = [](const ReporterStateName & l,
-// const ReporterStateName &r){ return l.getCombinedName() == r.getCombinedName(); };
-
 class ReporterData : public Restartable, public libMesh::ParallelObject
 {
 public:
   ReporterData(FEProblemBase & fe_problem);
 
   template <typename T>
-  T & getReporterValue(const ReporterStateName & state_name);
+  T & getReporterValue(const ReporterName & state_name);
+
+  template <typename T, template<typename> class S>
+  T & getReporterValue(const ReporterName & state_name);
 
   void finalize(const std::string & object_name);
 
 private:
-  template <typename T>
-  ReporterState<T> & getReporterStateHelper(const ReporterStateName & state_name);
+  template <typename T, template<typename> class S>
+  ReporterState<T> & getReporterStateHelper(const ReporterName & state_name);
 
-  std::unordered_map<ReporterStateName, std::unique_ptr<ReporterStateBase>> _reporter_values;
+  std::unordered_map<ReporterName, std::unique_ptr<ReporterStateBase>> _reporter_values;
 };
 
-template <typename T>
+template <typename T, template<typename> class S>
 ReporterState<T> &
-ReporterData::getReporterStateHelper(const ReporterStateName & state_name)
+ReporterData::getReporterStateHelper(const ReporterName & state_name)
 {
   auto state_pair = _reporter_values.find(state_name);
   if (state_pair == _reporter_values.end())
   {
-    auto unique_ptr = libmesh_make_unique<ReporterState<T>>(declareRestartableDataWithObjectName<T>(
+    auto unique_ptr = libmesh_make_unique<S<T>>(declareRestartableDataWithObjectName<T>(
         state_name.getValueName(), state_name.getObjectName()));
 
     _reporter_values.emplace(state_name, std::move(unique_ptr));
     state_pair = _reporter_values.find(state_name);
   }
-  /*
-  auto state_pair = _reporter_values.emplace(
-    std::piecewise_construct, std::forward_as_tuple(state_name),
-    std::forward_as_tuple<ReporterState<T>>(declareRestartableDataWithObjectName<T>(state_name,
-  "value"), declareRestartableDataWithObjectName<T>(state_name, "value_old")));
-  */
+
   auto & state = static_cast<ReporterState<T> &>(*(state_pair->second));
   return state;
 }
 
 template <typename T>
 T &
-ReporterData::getReporterValue(const ReporterStateName & state_name)
+ReporterData::getReporterValue(const ReporterName & state_name)
 {
-  const ReporterState<T> & state = getReporterStateHelper<T>(state_name);
+  const ReporterState<T> & state = getReporterStateHelper<T, ReporterState>(state_name);
+  return state.getValue();
+}
+
+template <typename T, template<typename> class S>
+T &
+ReporterData::getReporterValue(const ReporterName & state_name)
+{
+  const ReporterState<T> & state = getReporterStateHelper<T, S>(state_name);
   return state.getValue();
 }

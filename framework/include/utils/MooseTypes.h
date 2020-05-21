@@ -181,8 +181,6 @@ typedef unsigned int TagID;
 typedef unsigned int PerfID;
 using RestartableDataMapName = std::string; // see MooseApp.h
 
-using ReporterName = ReporterStateName;
-
 template <bool is_ad>
 struct GenericRealStruct
 {
