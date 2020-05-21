@@ -18,70 +18,37 @@ public:
   ReporterStateBase() = default;
   virtual ~ReporterStateBase() = default;
   // virtual void initialize(const libMesh::Parallel::Communicator * comm) {}d
-  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) = 0;
+  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/)
+    {
+      std::cout << "ReporterStateBase::finalize" << std::endl;
+    }
 };
 
 template <typename T>
 class ReporterState : public ReporterStateBase
 {
 public:
-  ReporterState(T & current);
+  ReporterState(T & value);
   T & getValue() const;
-  // T & getOldValue() const;
 
   virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) override
-  {
-    std::cout << "ReporterState::finalize" << std::endl;
-  }
+    {
+      std::cout << "ReporterState::finalize" << std::endl;
+    }
 
 protected:
   T & _value;
-  // T & _value_old;
 };
 
 
-
-
-/*
-template <template<typename> class U, typename T>
-class ContainerReporterState : public ReporterStateBase
-{
-public:
-  ContainerReporterState(U<T> & current);
-  U<T> & getValue() const;
-  // T & getOldValue() const;
-
-  virtual void finalize(const libMesh::Parallel::Communicator & comm) final
-  {
-    std::cout << "ContainerReporterState::finalize" << std::endl;
-  }
-
-protected:
-  U<T> & _value;
-  // T & _value_old;
-};
-*/
-
-
-
-// DEMO FOR ADDING PARALLEL TYPES
 template <typename T>
-class BroadcastValue
+class ReporterBroadcastState : public ReporterState<T>
 {
 public:
-
-  operator T() const { return _value; }
-  BroadcastValue & operator=(const T & other)
+  ReporterBroadcastState(T & value);
+  virtual void finalize(const libMesh::Parallel::Communicator & comm) override
     {
-      _value = other;
-      return *this;
+      std::cout << "ReporterBroadcastState::finalize" << std::endl;
+      comm.broadcast(this->_value);
     }
-  T _value;
 };
-
-
-
-
-template <>
-void
-ReporterState<BroadcastValue<Real>>::finalize(const libMesh::Parallel::Communicator & /* comm*/);

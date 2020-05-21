@@ -25,7 +25,7 @@ TestDeclareReporter::TestDeclareReporter(const InputParameters & parameters)
     _real(declareValue<Real>("real")),
     _vector(declareValue<std::vector<Real>>("vector")),
     _string(declareValue<std::string>("string")),
-    _bcast_value(declareValue<BroadcastValue<Real>>("broadcast"))
+    _bcast_value(declareValue<Real, ReporterBroadcastState>("broadcast"))
 {
 }
 
@@ -38,7 +38,7 @@ TestDeclareReporter::execute()
   _string = "string";
 
   if (processor_id() == 0)
-    _bcast_value.value = 42;
+    _bcast_value = 42;
 }
 
 InputParameters
@@ -59,7 +59,7 @@ TestGetReporter::TestGetReporter(const InputParameters & parameters)
     _real(getReporterValue<Real>("real_reporter")),
     _vector(getReporterValue<std::vector<Real>>("vector_reporter")),
     _string(getReporterValue<std::string>("string_reporter")),
-    _bcast_value(getReporterValue<BroadcastValue<Real>>("broadcast_reporter"))
+    _bcast_value(getReporterValue<Real, ReporterBroadcastState>("broadcast_reporter"))
 {
 }
 
@@ -74,6 +74,6 @@ TestGetReporter::execute()
     mooseError("std::vector<Real> reporter test failed");
   if (_string != "string")
     mooseError("std::string reporter test failed");
-  if (_bcast_value.value != 42)
-    mooseError("BroadcastValue reporter test failed");
+  if (_bcast_value != 42)
+    mooseError("Broadcast reporter test failed");
 }

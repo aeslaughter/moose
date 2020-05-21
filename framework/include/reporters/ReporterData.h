@@ -22,9 +22,10 @@ class ReporterData : public Restartable, public libMesh::ParallelObject
 public:
   ReporterData(FEProblemBase & fe_problem);
 
+  /*
   template <typename T>
-  T & getReporterValue(const ReporterName & state_name);
-
+  T & getReporterValue(const ReporterName & state_name, THREAD_ID);
+  */
   template <typename T, template<typename> class S>
   T & getReporterValue(const ReporterName & state_name);
 
@@ -55,6 +56,7 @@ ReporterData::getReporterStateHelper(const ReporterName & state_name)
   return state;
 }
 
+/*
 template <typename T>
 T &
 ReporterData::getReporterValue(const ReporterName & state_name)
@@ -62,6 +64,7 @@ ReporterData::getReporterValue(const ReporterName & state_name)
   const ReporterState<T> & state = getReporterStateHelper<T, ReporterState>(state_name);
   return state.getValue();
 }
+*/
 
 template <typename T, template<typename> class S>
 T &

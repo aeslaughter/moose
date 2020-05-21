@@ -23,22 +23,28 @@ ReporterState<T>::getValue() const
 }
 
 
-
-
-
-
-
-
 template class ReporterState<int>;
 template class ReporterState<Real>;
 template class ReporterState<std::vector<Real>>;
 template class ReporterState<std::string>;
-template class ReporterState<BroadcastValue<Real>>;
 
 
-template <>
-void
-ReporterState<BroadcastValue<Real>>::finalize(const libMesh::Parallel::Communicator & comm)
+template <typename T>
+ReporterBroadcastState<T>::ReporterBroadcastState(T & value) :
+    ReporterState<T>(value)
 {
-  comm.broadcast(_value._value);
 }
+
+/*
+template <typename T>
+void ReporterBroadcastState<T>::finalize(const libMesh::Parallel::Communicator & comm)
+{
+  std::cout << "ReporterBroadcastState::finalize" << std::endl;
+  comm.broadcast(this->_value);
+}
+*/
+
+//template class ReporterBroadcastState<int>;
+template class ReporterBroadcastState<Real>;
+//template class ReporterBroadcastState<std::vector<Real>>;
+//template class ReporterBroadcastState<std::string>;

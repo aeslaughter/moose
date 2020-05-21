@@ -19,10 +19,10 @@ public:
   ReporterInterface(const MooseObject * moose_object);
 
 protected:
-  template <typename T>
+template <typename T, template<typename> class S=ReporterState>
   const T & getReporterValue(const std::string & param_name);
 
-  template <typename T>
+  template <typename T, template<typename> class S=ReporterState>
   const T & getReporterValueByName(const ReporterName & state_name);
 
   virtual void addReporterDependencyHelper(const ReporterName & /*state_name*/) {}
@@ -32,18 +32,18 @@ private:
   FEProblemBase & _ri_fe_problem_base;
 };
 
-template <typename T>
+template <typename T, template<typename> class S>
 const T &
 ReporterInterface::getReporterValue(const std::string & param_name)
 {
   const ReporterName & state_name = _ri_params.template get<ReporterName>(param_name);
-  return getReporterValueByName<T>(state_name);
+  return getReporterValueByName<T,S>(state_name);
 }
 
-template <typename T>
+template <typename T, template<typename> class S>
 const T &
 ReporterInterface::getReporterValueByName(const ReporterName & state_name)
 {
   addReporterDependencyHelper(state_name);
-  return _ri_fe_problem_base.getReporterValue<T>(state_name);
+  return _ri_fe_problem_base.getReporterData().getReporterValue<T,S>(state_name);
 }

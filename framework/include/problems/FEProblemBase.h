@@ -748,12 +748,19 @@ public:
    */
   virtual void
   addReporter(std::string type, const std::string & name, InputParameters & parameters);
+  const ReporterData & getReporterData() const { return _reporter_data; }
+  ReporterData & getReporterData() { return _reporter_data; }
 
+  //template <typename T>
+   //friend T& Reporter::declareValue<T>(const std::string &);
+
+  /*
   template <typename T>
   T & getReporterValue(const ReporterName & state_name)
   {
     return _reporter_data.getReporterValue<T>(state_name);
   }
+  */
   ///@}
 
   // UserObjects /////
