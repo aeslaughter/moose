@@ -1168,7 +1168,6 @@ MooseApp::registerRestartableData(const std::string & name,
                                   bool read_only,
                                   const RestartableDataMapName & metaname)
 {
-  std::cout << "REGISTER: " << name << std::endl;
   if (!metaname.empty() && tid != 0)
     mooseError(
         "The meta data storage for '", metaname, "' is not threaded, so the tid must be zero.");

@@ -7,6 +7,7 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
+/*
 #include "Counter.h"
 
 #include "SubProblem.h"
@@ -36,3 +37,4 @@ Counter::finalize()
 {
   // std::cout << name() << " " << _num_linear_iterations << std::endl;
 }
+*/

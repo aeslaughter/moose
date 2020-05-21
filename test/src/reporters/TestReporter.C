@@ -9,8 +9,10 @@
 
 #include "TestReporter.h"
 
+
 registerMooseObject("MooseTestApp", TestDeclareReporter);
 registerMooseObject("MooseTestApp", TestGetReporter);
+
 
 InputParameters
 TestDeclareReporter::validParams()
@@ -59,7 +61,7 @@ TestGetReporter::TestGetReporter(const InputParameters & parameters)
     _real(getReporterValue<Real>("real_reporter")),
     _vector(getReporterValue<std::vector<Real>>("vector_reporter")),
     _string(getReporterValue<std::string>("string_reporter")),
-    _bcast_value(getReporterValue<Real, ReporterBroadcastState>("broadcast_reporter"))
+    _bcast_value(getReporterValue<Real>("broadcast_reporter"))
 {
 }
 

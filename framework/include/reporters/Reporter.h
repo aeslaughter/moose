@@ -27,8 +27,6 @@ protected:
 private:
   const std::string & _reporter_name;
 
-  const THREAD_ID _reporter_tid;
-
   FEProblemBase * _reporter_fe_problem;
 };
 
@@ -37,5 +35,5 @@ T &
 Reporter::declareValue(const std::string & value_name)
 {
   ReporterName state_name(_reporter_name, value_name);
-  return _reporter_fe_problem->getReporterData().getReporterValue<T, S>(state_name);
+  return _reporter_fe_problem->getReporterData().declareReporterValue<T, S>(state_name);
 }

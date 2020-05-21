@@ -9,6 +9,7 @@
 
 #pragma once
 
+/*
 #include "GeneralReporter.h"
 
 class Counter : public GeneralReporter
@@ -23,3 +24,4 @@ public:
 protected:
   Real & _num_linear_iterations;
 };
+*/

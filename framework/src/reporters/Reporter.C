@@ -23,7 +23,6 @@ Reporter::validParams()
 Reporter::Reporter(const InputParameters & parameters)
   : OutputInterface(parameters),
     _reporter_name(parameters.get<std::string>("_object_name")),
-    _reporter_tid(parameters.isParamValid("_tid") ? parameters.get<THREAD_ID>("_tid") : 0),
     _reporter_fe_problem(parameters.getCheckedPointerParam<FEProblemBase *>("_fe_problem_base"))
 {
 }
