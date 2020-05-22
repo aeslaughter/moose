@@ -9,22 +9,37 @@
 
 #pragma once
 
-#include "Restartable.h"
+#include "RestartableData.h"
 #include "ReporterState.h"
-#include "MooseApp.h"
 #include "libmesh/parallel_object.h"
 #include "libmesh/auto_ptr.h"
-#include <unordered_map>
 
-class FEProblemBase;
+class MooseApp;
 
-class ReporterData : public Restartable, public libMesh::ParallelObject
+/**
+ * Data stored in MooseApp restartable data
+ * Consolidates code and handles old/older/... data
+ * Implements context class for customizable parallel stuff
+ *
+ * Data is not threaded, the calculation can be via UO, but the resulting data is not
+ *
+ */
+
+class ReporterData
 {
 public:
-  ReporterData(FEProblemBase & fe_problem);
+
+  // The old/older values are stored in vector and this vector must have memory that doesn't
+  // get reallocated. This is because the calls to getReporterValue can occur in any order using
+  // any time index.
+  constexpr static std::size_t HISTORY_CAPACITY = 5;
+
+  ReporterData(MooseApp & moose_app);
+  void init();
+
 
   template <typename T>
-  const T & getReporterValue(const ReporterName & state_name);
+  const T & getReporterValue(const ReporterName & state_name, const std::size_t time_index = 0);
 
   template <typename T, template<typename> class S>
   T & declareReporterValue(const ReporterName & state_name);
@@ -32,11 +47,41 @@ public:
   void finalize(const std::string & object_name);
 
 private:
+
+  MooseApp & _app;
+
+  template <typename T>
+  RestartableData<T> & getReporterDataHelper(const ReporterName & reporter_name, bool declare);
+
+
   //template <typename T, template<typename> class S>
    //ReporterState<T> & getReporterStateHelper(const ReporterName & state_name);
 
-  std::unordered_map<ReporterName, std::unique_ptr<ReporterStateBase>> _reporter_states;
+  //std::unordered_map<ReporterName, std::unique_ptr<ReporterStateBase>> _reporter_states;
+
+  bool _initialized = false;
 };
+
+
+template <typename T>
+RestartableData<T> &
+SurrogateModel::getReporterDataHelper(const ReporterName & reporter_name, bool declare) const
+{
+  //
+  if (_initialized)
+    mooseError("An attempt was made to declare or get Reporter data with the name '", reporter_name, "' after FEProblemBase::init(), calls to get or declare Reporter data cannot be made after FEProblem::init(); all calls should be made in the object constructor.");
+
+
+
+  const std::string data_name = "ReporterData/" + reporter_name.getObjectName() + "/" + reporter_name.getValueName();
+  auto data_ptr = libmesh_make_unique<RestartableData<std::pair<T, std::vector<T>>>(data_name, nullptr);
+  data_ptr.reserve(ReporterData::MAX_HISTORY);
+  RestartableDataValue & value =
+      _app.registerRestartableData(data_name, std::move(data_ptr), 0, declare);
+  auto & data_ref = static_cast<RestartableData<std::pair<T, std::vector<T>>> &>(value);
+  return data_ref.first;
+}
+
 
 /*
 template <typename T, template<typename> class S>
@@ -67,11 +112,17 @@ ReporterData::getReporterValue(const ReporterName & state_name)
   return state.getValue();
 }
 */
-
+/*
+// TODO: add optional initial value overload
 template <typename T, template<typename> class S>
 T &
 ReporterData::declareReporterValue(const ReporterName & state_name)
 {
+  if (_initialized)
+    mooseError("The Reporter...");
+
+
+
   T & value = declareRestartableDataWithObjectName<T>(state_name.getValueName(),
                                                       state_name.getObjectName());
 
@@ -80,20 +131,24 @@ ReporterData::declareReporterValue(const ReporterName & state_name)
 
   return value;
 }
+*/
 
 
 
-
-
+/*
 template <typename T>
 const T &
 ReporterData::getReporterValue(const ReporterName & state_name)
 {
   _restartable_read_only = true;
-  return declareRestartableDataWithObjectName<T>(state_name.getValueName(),
-                                                 state_name.getObjectName());
+  const T & value = declareRestartableDataWithObjectName<T>(state_name.getValueName(),
+                                                            state_name.getObjectName());
   _restartable_read_only = false;
 
+
+
+  return value;
+*/
 /*
   const std::string full_name(_restartable_system_name + "/" + state_name.getObjectName() + "/" + state_name.getValueName());
   const RestartableDataMap & data = _restartable_app.getRestartableData()[0];
@@ -116,4 +171,4 @@ ReporterData::getReporterValue(const ReporterName & state_name)
     return value_ptr->get();
   }
   */
-}
+//}

@@ -29,7 +29,9 @@ class ReporterState : public ReporterStateBase
 {
 public:
   ReporterState(T & value);
-  T & getValue() const;
+  T & getValue(const std::size_t time_index = 0) const;
+
+  //void initValue(const std::size_t time_index, T & value);
 
   virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) override
     {
@@ -37,8 +39,17 @@ public:
     }
 
 protected:
-  T & _value;
+  std::vector<T*> _values;
 };
+
+/*
+template <typename T>
+void
+ReporterState::initValue(const std::size_t time_index, T & value)
+{
+*/
+
+
 
 
 template <typename T>
@@ -49,6 +60,6 @@ public:
   virtual void finalize(const libMesh::Parallel::Communicator & comm) override
     {
       std::cout << "ReporterBroadcastState::finalize" << std::endl;
-      comm.broadcast(this->_value);
+      //comm.broadcast(this->_values);
     }
 };

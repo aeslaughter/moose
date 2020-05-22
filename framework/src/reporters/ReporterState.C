@@ -11,17 +11,17 @@
 
 template <typename T>
 ReporterState<T>::ReporterState(T & value) //, T & value_old)
-  : ReporterStateBase(), _value(value)     //, _value_old(value_old)
+    : ReporterStateBase(), _values(1, &value)     //, _value_old(value_old)
 {
 }
 
 template <typename T>
 T &
-ReporterState<T>::getValue() const
+ReporterState<T>::getValue(const std::size_t time_index) const
 {
-  return _value;
+  mooseAssert(time_index < _values.size(), "Invalid time index.");
+  return *_values[time_index];
 }
-
 
 template class ReporterState<int>;
 template class ReporterState<Real>;

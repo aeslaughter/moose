@@ -26,7 +26,8 @@
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
+  num_steps = 3
 []
 
 [Outputs]

@@ -8,18 +8,31 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "ReporterData.h"
-#include "FEProblemBase.h"
+#include "MooseApp.h"
 
-ReporterData::ReporterData(FEProblemBase & fe_problem)
-    : Restartable(fe_problem.getMooseApp(), "values", "ReporterData", 0), ParallelObject(fe_problem)
+ReporterData::ReporterData(MooseApp & moose_app),
+  _app(moose_app)
 {
 }
+
+
+void
+ReporterData::init()
+{
+  // assign old/older data
+  // shrink_to_fit
+
+  _initialized = true;
+}
+
 
 void
 ReporterData::finalize(const std::string & object_name)
 {
+  /*
   for (std::pair<const ReporterName, std::unique_ptr<ReporterStateBase>> & pair :
          _reporter_states)
     if (pair.first.getObjectName() == object_name)
       pair.second->finalize(comm());
+  */
 }

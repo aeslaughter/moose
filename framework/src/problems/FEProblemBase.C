@@ -4772,6 +4772,8 @@ FEProblemBase::init()
   if (_displaced_problem)
     _displaced_problem->init();
 
+  _reporter_data.init();
+
   _initialized = true;
 }
 
