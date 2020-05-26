@@ -11,7 +11,7 @@
 
 #include "OutputInterface.h"
 #include "FEProblemBase.h"
-#include "ReporterState.h"
+//#include "ReporterState.h"
 
 class Reporter : public OutputInterface
 {
@@ -21,7 +21,7 @@ public:
   virtual ~Reporter() = default;
 
 protected:
-  template <typename T, template<typename> class S=ReporterState>
+  template <typename T>//, template<typename> class S=ReporterState>
   T & declareValue(const std::string & value_name);
 
 private:
@@ -30,10 +30,10 @@ private:
   FEProblemBase * _reporter_fe_problem;
 };
 
-template <typename T, template<typename> class S>
+template <typename T>//, template<typename> class S>
 T &
 Reporter::declareValue(const std::string & value_name)
 {
   ReporterName state_name(_reporter_name, value_name);
-  return _reporter_fe_problem->getReporterData().declareReporterValue<T, S>(state_name);
+  return _reporter_fe_problem->getReporterData().declareReporterValue<T>(state_name);
 }

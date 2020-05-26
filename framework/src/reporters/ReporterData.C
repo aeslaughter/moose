@@ -8,9 +8,9 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "ReporterData.h"
-#include "MooseApp.h"
+//#include "MooseApp.h"
 
-ReporterData::ReporterData(MooseApp & moose_app),
+ReporterData::ReporterData(MooseApp & moose_app):
   _app(moose_app)
 {
 }

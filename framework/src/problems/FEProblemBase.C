@@ -234,7 +234,7 @@ FEProblemBase::FEProblemBase(const InputParameters & parameters)
         "neighbor_material_props", &_mesh)),
     _pps_data(*this),
     _vpps_data(*this),
-    _reporter_data(*this),
+    _reporter_data(_app),
     // TODO: delete the following line after apps have been updated to not call getUserObjects
     _all_user_objects(_app.getExecuteOnEnum()),
     _multi_apps(_app.getExecuteOnEnum()),

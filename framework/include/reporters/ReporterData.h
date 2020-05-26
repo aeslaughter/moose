@@ -13,8 +13,8 @@
 #include "ReporterState.h"
 #include "libmesh/parallel_object.h"
 #include "libmesh/auto_ptr.h"
-
-class MooseApp;
+#include "MooseApp.h"
+//class MooseApp;
 
 /**
  * Data stored in MooseApp restartable data
@@ -35,13 +35,14 @@ public:
   constexpr static std::size_t HISTORY_CAPACITY = 5;
 
   ReporterData(MooseApp & moose_app);
+
   void init();
 
 
   template <typename T>
   const T & getReporterValue(const ReporterName & state_name, const std::size_t time_index = 0);
 
-  template <typename T, template<typename> class S>
+  template <typename T, template<typename> class S=ReporterState>
   T & declareReporterValue(const ReporterName & state_name);
 
   void finalize(const std::string & object_name);
@@ -51,7 +52,7 @@ private:
   MooseApp & _app;
 
   template <typename T>
-  RestartableData<T> & getReporterDataHelper(const ReporterName & reporter_name, bool declare);
+  ReporterState<T> & getReporterDataHelper(const ReporterName & reporter_name, bool declare);
 
 
   //template <typename T, template<typename> class S>
@@ -64,8 +65,8 @@ private:
 
 
 template <typename T>
-RestartableData<T> &
-SurrogateModel::getReporterDataHelper(const ReporterName & reporter_name, bool declare) const
+ReporterState<T> &
+ReporterData::getReporterDataHelper(const ReporterName & reporter_name, bool declare)
 {
   //
   if (_initialized)
@@ -74,13 +75,32 @@ SurrogateModel::getReporterDataHelper(const ReporterName & reporter_name, bool d
 
 
   const std::string data_name = "ReporterData/" + reporter_name.getObjectName() + "/" + reporter_name.getValueName();
-  auto data_ptr = libmesh_make_unique<RestartableData<std::pair<T, std::vector<T>>>(data_name, nullptr);
-  data_ptr.reserve(ReporterData::MAX_HISTORY);
+  auto data_ptr = libmesh_make_unique<ReporterState<T>>(data_name, nullptr);
+  data_ptr->get().second.reserve(ReporterData::HISTORY_CAPACITY);
   RestartableDataValue & value =
-      _app.registerRestartableData(data_name, std::move(data_ptr), 0, declare);
-  auto & data_ref = static_cast<RestartableData<std::pair<T, std::vector<T>>> &>(value);
-  return data_ref.first;
+      _app.registerRestartableData(data_name, std::move(data_ptr), 0, !declare);
+  auto & data_ref = static_cast<ReporterState<T>&>(value);
+  return data_ref;
 }
+
+
+template <typename T>
+const T &
+ReporterData::getReporterValue(const ReporterName & reporter_name, const std::size_t time_index)
+{
+  ReporterState<T> & data_ref = getReporterDataHelper<T>(reporter_name, false);
+  return data_ref.get().first;
+}
+
+
+template <typename T, template<typename> class S>
+T &
+ReporterData::declareReporterValue(const ReporterName & reporter_name)
+{
+  ReporterState<T> & data_ref = getReporterDataHelper<T>(reporter_name, true);
+  return data_ref.get().first;
+}
+
 
 
 /*

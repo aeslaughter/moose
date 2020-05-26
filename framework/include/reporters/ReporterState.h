@@ -11,36 +11,53 @@
 #include <iostream>
 #include "libmesh/parallel.h"
 #include "ReporterName.h"
-
-class ReporterStateBase
-{
-public:
-  ReporterStateBase() = default;
-  virtual ~ReporterStateBase() = default;
-  // virtual void initialize(const libMesh::Parallel::Communicator * comm) {}d
-  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/)
-    {
-      std::cout << "ReporterStateBase::finalize" << std::endl;
-    }
-};
+#include "RestartableData.h"
 
 template <typename T>
-class ReporterState : public ReporterStateBase
+class ReporterState : public RestartableData<std::pair<T, std::vector<T>>>
 {
 public:
-  ReporterState(T & value);
-  T & getValue(const std::size_t time_index = 0) const;
-
-  //void initValue(const std::size_t time_index, T & value);
-
-  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) override
+  ReporterState(std::string name, void * context) : RestartableData<std::pair<T, std::vector<T>>>(name, context)
     {
-      std::cout << "ReporterState::finalize" << std::endl;
     }
 
-protected:
-  std::vector<T*> _values;
+
+
 };
+
+
+
+
+
+//class ReporterStateBase
+ //{
+//public:
+//  ReporterStateBase() = default;
+//  virtual ~ReporterStateBase() = default;
+//  // virtual void initialize(const libMesh::Parallel::Communicator * comm) {}d
+//  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/)
+//    {
+//      std::cout << "ReporterStateBase::finalize" << std::endl;
+//    }
+//};
+//
+ //template <typename T>
+ //class ReporterState : public ReporterStateBase
+ //{
+//public:
+//  ReporterState(T & value);
+//  T & getValue(const std::size_t time_index = 0) const;
+//
+//  //void initValue(const std::size_t time_index, T & value);
+//
+//  virtual void finalize(const libMesh::Parallel::Communicator & /*comm*/) override
+//    {
+//      std::cout << "ReporterState::finalize" << std::endl;
+//    }
+//
+//protected:
+//  std::vector<T*> _values;
+//};
 
 /*
 template <typename T>
@@ -57,9 +74,9 @@ class ReporterBroadcastState : public ReporterState<T>
 {
 public:
   ReporterBroadcastState(T & value);
-  virtual void finalize(const libMesh::Parallel::Communicator & comm) override
-    {
-      std::cout << "ReporterBroadcastState::finalize" << std::endl;
-      //comm.broadcast(this->_values);
-    }
+//  virtual void finalize(const libMesh::Parallel::Communicator & comm) override
+//    {
+//      std::cout << "ReporterBroadcastState::finalize" << std::endl;
+//      //comm.broadcast(this->_values);
+//    }
 };

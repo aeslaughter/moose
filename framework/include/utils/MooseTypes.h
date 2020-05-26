@@ -13,7 +13,7 @@
 #include "ADReal.h"
 #include "ADRankTwoTensorForward.h"
 #include "ADRankFourTensorForward.h"
-#include "ReporterState.h"
+#include "ReporterName.h"
 
 #include "libmesh/libmesh.h"
 #include "libmesh/id_types.h"
