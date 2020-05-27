@@ -67,7 +67,6 @@ class ContentExtension(command.CommandExtension):
     def binContent(self, page, location=None, method=None):
         """
         Helper method for creating page bins.
-
         Inputs:
             location[str]: The content page local path must begin with the given string.
             method[LETTER|FOLDER]: Method for bin assignment.
@@ -78,11 +77,7 @@ class ContentExtension(command.CommandExtension):
         nodes = self.translator.findPages(func)
         nodes.sort(key=lambda n: n.local)
 
-        if location == 'training/darcy_thermo_mech':
-            print(nodes, '\n')
-
         headings = collections.defaultdict(list)
-        func = lambda n: n.local.startswith(location) and isinstance(n, pages.Source)
         for node in nodes:
             h_node = heading.find_heading(node)
 
@@ -94,23 +89,12 @@ class ContentExtension(command.CommandExtension):
                 elif method == ContentExtension.FOLDER:
                     parts = tuple(node.local.replace(location, '').strip(os.sep).split(os.sep))
                     key = parts[0] if len(parts) > 1 else ''
-
-                    if location == 'training/darcy_thermo_mech':
-                        print(text, "\n")
-                        print(parts, "\n")
-                        print(key, "\n")
-
                 else:
                     raise exceptions.MooseDocsException("Unknown method.")
                 path = node.relativeDestination(page)
                 headings[key].append((text, path, label))
 
-        if location == 'training/darcy_thermo_mech':
-            print(headings, "\n")
-
         for value in headings.values():
-            if location == 'training/darcy_thermo_mech':
-                print(value, "\n")
             value.sort(key=lambda x: x[2])
 
         return headings
@@ -201,8 +185,6 @@ class OutlineCommand(command.CommandComponent):
             levels = [int(l) for l in levels.split()]
         elif isinstance(levels, float):
             levels = [int(levels)]
-
-        print("LEVELS: ", levels, "\n")
 
         OutlineToken(parent,
                      location=self.settings['location'],
@@ -333,37 +315,11 @@ class RenderTableOfContents(components.RenderComponent):
 class RenderOutline(components.RenderComponent):
 
     def createHTML(self, parent, token, page):
-        headings = self.extension.binContent(page, token['location'], ContentExtension.FOLDER)
-        links = self.extension.get('source_links')
-
+        location = token['location']
         hide = token['hide']
         levels = token['levels']
-        func = lambda n: (n.name == 'Heading') and (n['level'] in levels) and (n is not token) \
-               and (n['id'] not in hide)
-        toks = moosetree.findall(token.root, func)
 
-        for tok in toks:
-            id_ = tok['id']
-            bookmark = id_ if id_ else tok.text('-').lower()
-            link = core.Link(None, url='#{}'.format(bookmark))
+        # All the headings for the current page should be listed here...
+        print("\n***CURRENT PAGE HEADINGS***\n\n", page['heading'], "\n")
 
-        location = token['location']
-        func = lambda p: p.local.startswith(location) and isinstance(p, pages.Source)
-        nodes = self.translator.findPages(func)
-        nodes.sort(key=lambda n: n.local)
-
-
-        # Build lists
-        for head in sorted(headings.keys()):
-            items = headings[head]
-            if head:
-                h = html.Tag(parent, 'h{:d}'.format(int(token['level'])),
-                             class_='moose-a-to-z')
-                if head in links:
-                    p = self.translator.findPage(links[head])
-                    dest = p.relativeDestination(page)
-                    html.Tag(h, 'a', href=dest, string=str(head) + ' ')
-                else:
-                    html.String(h, content=str(head))
-
-                    print(head, '\n')
+        # Now we just need to find all pages in `location` and get their headings too

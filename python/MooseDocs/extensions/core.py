@@ -177,7 +177,6 @@ class QuoteBlock(components.ReaderComponent):
 class HeadingBlock(components.ReaderComponent):
     """
     Hash style markdown headings with settings.
-
     # Heading Level One with=settings
     """
     TOKEN = Heading
@@ -189,11 +188,6 @@ class HeadingBlock(components.ReaderComponent):
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, parent, info, page):
-        this = page['heading']
-        print("INFO: ", this, "\n")
-        if not self.attributes.get('id'):
-            self.attributes['id'] += 'yo'
-        print("ID: ", self.attributes['id'], "\n")
         heading = Heading(parent, level=info['level'].count('#'), **self.attributes)
         return heading
 
@@ -280,14 +274,10 @@ class EndOfFileBlock(components.ReaderComponent):
 class LinkInline(components.ReaderComponent):
     """
     Links are defined as: [link text](link address).
-
     The regex is a bit tricky for this when the line also contains a "shortcut link", as follows:
-
        [shortcut] and regular [link text](link address).
-
     Without the negative lookahead after the first "[" the match would capture the beginning at
     the shortcut link.
-
     https://regex101.com/r/LXjbHt/2
     """
 

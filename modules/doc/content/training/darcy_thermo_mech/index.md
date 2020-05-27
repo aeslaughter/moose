@@ -4,7 +4,7 @@ Welcome to the first tutorial of the MOOSE Workshop! Here, new user's will work 
 
 <!-- maybe here it is okay to say "you" or "your">-->
 
-
+## Purpose
 
 Historically, this tutorial has been the focus of the [live hosted workshops](training/index.md#lws). To better support the growing user-base, this online online version of the workshop was created to provide details typically discussed in the live version. New users are encouraged to engage themselves in this training by reading the content carefully and reproducing the steps, without simply copying and pasting code. Rest assured, you will be working on your custom application in no time! <!-- I really like this last sentence as it is... what do you think?-->
 

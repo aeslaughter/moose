@@ -34,14 +34,16 @@ class HeadingExtension(Extension):
 
     def postTokenize(self, page, ast):
         func = lambda n: (n.name == 'Heading')
-        #print("AST: ", ast, "\n")
         for node in moosetree.iterate(ast.root, func):
-            print("NODE: ", node, "\n")
+            if not node.get('id'):
+                node['id'] = node.text('-').lower()
             id_ = node.get('id', '')
             if id_ not in page['heading']:
-                print(page['heading'], "\n")
                 page['heading'][id_] = node.copy()
-                print(page['heading'], "\n")
+
+        # check what the heading dictionary looks like now
+        print(page, "\n")
+        print(page['heading'], "\n")
 
     def extend(self, reader, renderer):
         self.requires(core)
