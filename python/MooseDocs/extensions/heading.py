@@ -16,7 +16,10 @@ def make_extension(**kwargs):
 def find_heading(page, bookmark=''):
     """Helper for returning a copy of the heading tokens."""
     data = page.get('heading', dict())
-    h = data.get(bookmark, None) if data else None
+    if bookmark:
+        h = data.get(bookmark, None) if data else None
+    else:
+        h = data.get(list(data.keys())[0], None) if data else None
     if h is not None:
         return h.copy()
 
@@ -42,8 +45,8 @@ class HeadingExtension(Extension):
                 page['heading'][id_] = node.copy()
 
         # check what the heading dictionary looks like now
-        print(page, "\n")
-        print(page['heading'], "\n")
+        #print(page, "\n")
+        #print(page['heading'], "\n")
 
     def extend(self, reader, renderer):
         self.requires(core)
