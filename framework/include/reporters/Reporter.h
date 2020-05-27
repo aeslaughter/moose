@@ -21,8 +21,11 @@ public:
   virtual ~Reporter() = default;
 
 protected:
-  template <typename T>//, template<typename> class S=ReporterState>
+  template <typename T, template<typename> class S=ReporterContext>
   T & declareValue(const std::string & value_name);
+
+  template <typename T, template<typename> class S=ReporterContext>
+  T & declareValue(const std::string & value_name, const T & default_value);
 
 private:
   const std::string & _reporter_name;
@@ -30,10 +33,19 @@ private:
   FEProblemBase * _reporter_fe_problem;
 };
 
-template <typename T>//, template<typename> class S>
+template <typename T, template<typename> class S>
 T &
 Reporter::declareValue(const std::string & value_name)
 {
   ReporterName state_name(_reporter_name, value_name);
-  return _reporter_fe_problem->getReporterData().declareReporterValue<T>(state_name);
+  return _reporter_fe_problem->getReporterData().declareReporterValue<T, S>(state_name);
+}
+
+
+template <typename T, template<typename> class S>
+T &
+Reporter::declareValue(const std::string & value_name, const T & default_value)
+{
+  ReporterName state_name(_reporter_name, value_name);
+  return _reporter_fe_problem->getReporterData().declareReporterValue<T, S>(state_name, default_value);
 }

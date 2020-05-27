@@ -4772,8 +4772,6 @@ FEProblemBase::init()
   if (_displaced_problem)
     _displaced_problem->init();
 
-  _reporter_data.init();
-
   _initialized = true;
 }
 
@@ -4937,6 +4935,7 @@ FEProblemBase::advanceState()
 
   _pps_data.copyValuesBack();
   _vpps_data.copyValuesBack();
+  _reporter_data.copyValuesBack();
 
   if (_material_props.hasStatefulProperties())
     _material_props.shift(*this);

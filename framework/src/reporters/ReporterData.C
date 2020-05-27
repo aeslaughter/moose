@@ -19,10 +19,37 @@ ReporterData::ReporterData(MooseApp & moose_app):
 void
 ReporterData::init()
 {
+  for (auto data_ptr : _data_ptrs)
+  {
+    ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
+    context_ptr->init();
+  }
+
+
   // assign old/older data
   // shrink_to_fit
 
+
+  // TODO: Add init_reporter_data action, because FEProblemBase::init is too early
   _initialized = true;
+}
+
+
+void
+ReporterData::copyValuesBack()
+{
+  for (auto data_ptr : _data_ptrs)
+  {
+    ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
+    context_ptr->copyValuesBack();
+  }
+
+}
+
+
+void
+ReporterData::initialize(const std::string & object_name)
+{
 }
 
 

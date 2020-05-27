@@ -36,27 +36,43 @@ public:
 
   ReporterData(MooseApp & moose_app);
 
-  void init();
-
+  /*
+  template <typename T>
+  const T & getReporterValue(const ReporterName & reporter_name, const T & default_value);
+  */
 
   template <typename T>
-  const T & getReporterValue(const ReporterName & state_name, const std::size_t time_index = 0);
+  const T & getReporterValue(const ReporterName & reporter_name, const std::size_t time_index = 0);
 
-  template <typename T, template<typename> class S=ReporterState>
+  template <typename T, template<typename> class S>
   T & declareReporterValue(const ReporterName & state_name);
 
+  template <typename T, template<typename> class S>
+  T & declareReporterValue(const ReporterName & state_name, const T & default_value);
+
+
+  void initialize(const std::string & object_name);
   void finalize(const std::string & object_name);
+
+  void init();
+  void copyValuesBack();
 
 private:
 
   MooseApp & _app;
 
   template <typename T>
-  ReporterState<T> & getReporterDataHelper(const ReporterName & reporter_name, bool declare);
+  ReporterState<T> & getReporterStateHelper(const ReporterName & reporter_name, bool declare);
 
 
   //template <typename T, template<typename> class S>
    //ReporterState<T> & getReporterStateHelper(const ReporterName & state_name);
+
+  // Convenience...
+  std::set<RestartableDataValue *> _data_ptrs;
+
+  std::set<std::unique_ptr<ReporterContextBase>> _context_ptrs;
+
 
   //std::unordered_map<ReporterName, std::unique_ptr<ReporterStateBase>> _reporter_states;
 
@@ -66,20 +82,19 @@ private:
 
 template <typename T>
 ReporterState<T> &
-ReporterData::getReporterDataHelper(const ReporterName & reporter_name, bool declare)
+ReporterData::getReporterStateHelper(const ReporterName & reporter_name, bool declare)
 {
   //
   if (_initialized)
     mooseError("An attempt was made to declare or get Reporter data with the name '", reporter_name, "' after FEProblemBase::init(), calls to get or declare Reporter data cannot be made after FEProblem::init(); all calls should be made in the object constructor.");
 
-
-
   const std::string data_name = "ReporterData/" + reporter_name.getObjectName() + "/" + reporter_name.getValueName();
-  auto data_ptr = libmesh_make_unique<ReporterState<T>>(data_name, nullptr);
-  data_ptr->get().second.reserve(ReporterData::HISTORY_CAPACITY);
+  auto data_ptr = libmesh_make_unique<ReporterState<T>>(data_name);
+  data_ptr->get().second.resize(ReporterData::HISTORY_CAPACITY);
   RestartableDataValue & value =
       _app.registerRestartableData(data_name, std::move(data_ptr), 0, !declare);
   auto & data_ref = static_cast<ReporterState<T>&>(value);
+  _data_ptrs.insert(&data_ref);
   return data_ref;
 }
 
@@ -88,17 +103,53 @@ template <typename T>
 const T &
 ReporterData::getReporterValue(const ReporterName & reporter_name, const std::size_t time_index)
 {
-  ReporterState<T> & data_ref = getReporterDataHelper<T>(reporter_name, false);
-  return data_ref.get().first;
+  ReporterState<T> & data_ref = getReporterStateHelper<T>(reporter_name, false);
+  return data_ref.value(time_index);
 }
 
+/*
+template <typename T>
+const T &
+ReporterData::getReporterValue(const ReporterName & reporter_name, const T & default_value)
+{
+  ReporterState<T> & data_ref = getReporterStateHelper<T>(reporter_name, false);
+  data_ref.get().first = default_value;
+  return data_ref.value();
+}
+*/
 
 template <typename T, template<typename> class S>
 T &
 ReporterData::declareReporterValue(const ReporterName & reporter_name)
 {
-  ReporterState<T> & data_ref = getReporterDataHelper<T>(reporter_name, true);
-  return data_ref.get().first;
+  ReporterState<T> & data_ref = getReporterStateHelper<T>(reporter_name, true);
+
+  if (data_ref.context() == nullptr)
+  {
+    auto context_ptr = libmesh_make_unique<S<T>>(data_ref);
+    auto emplace_pair = _context_ptrs.emplace(std::move(context_ptr));
+    data_ref.setContext(emplace_pair.first->get());
+  }
+
+  return data_ref.value();
+}
+
+
+template <typename T, template<typename> class S>
+T &
+ReporterData::declareReporterValue(const ReporterName & reporter_name, const T & default_value)
+{
+  ReporterState<T> & data_ref = getReporterStateHelper<T>(reporter_name, true);
+
+  if (data_ref.context() == nullptr)
+  {
+    auto context_ptr = libmesh_make_unique<S<T>>(data_ref);
+    auto emplace_pair = _context_ptrs.emplace(std::move(context_ptr));
+    data_ref.setContext(emplace_pair.first->get());
+  }
+
+  data_ref.get().first = default_value;
+  return data_ref.value();
 }
 
 

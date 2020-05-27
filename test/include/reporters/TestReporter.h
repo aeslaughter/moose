@@ -39,8 +39,12 @@ public:
 
 protected:
   const int & _int;
+  const int & _int_old;
+
   const Real & _real;
   const std::vector<Real> & _vector;
   const std::string & _string;
   //const Real & _bcast_value;
+
+
 };

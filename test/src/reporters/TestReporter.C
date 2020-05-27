@@ -23,7 +23,7 @@ TestDeclareReporter::validParams()
 
 TestDeclareReporter::TestDeclareReporter(const InputParameters & parameters)
   : GeneralReporter(parameters),
-    _int(declareValue<int>("int")),
+    _int(declareValue<int>("int", 1980)),
     _real(declareValue<Real>("real")),
     _vector(declareValue<std::vector<Real>>("vector")),
     _string(declareValue<std::string>("string"))//,
@@ -34,7 +34,7 @@ TestDeclareReporter::TestDeclareReporter(const InputParameters & parameters)
 void
 TestDeclareReporter::execute()
 {
-  _int = 1980;
+  _int += _t_step;
   _real = 1.2345;
   _vector = {1, 1.1, 1.2};
   _string = "string";
@@ -58,6 +58,7 @@ TestGetReporter::validParams()
 TestGetReporter::TestGetReporter(const InputParameters & parameters)
   : GeneralReporter(parameters),
     _int(getReporterValue<int>("int_reporter")),
+    _int_old(getReporterValue<int>("int_reporter", 1)),
     _real(getReporterValue<Real>("real_reporter")),
     _vector(getReporterValue<std::vector<Real>>("vector_reporter")),
     _string(getReporterValue<std::string>("string_reporter"))//,
@@ -68,14 +69,19 @@ TestGetReporter::TestGetReporter(const InputParameters & parameters)
 void
 TestGetReporter::execute()
 {
-  if (_int != 1980)
-    mooseError("int reporter test failed");
+  if (_int != 1980 + _t_step)
+    mooseError("int reporter test failed: ", _int, " != ", 1980 + _t_step);
   if (_real != 1.2345)
     mooseError("Real reporter test failed");
   if (_vector != std::vector<Real>({1., 1.1, 1.2}))
     mooseError("std::vector<Real> reporter test failed");
   if (_string != "string")
     mooseError("std::string reporter test failed");
+
+  if (_t_step > 0 && _int_old != 1980 + (_t_step -1))
+    mooseError("int_old on timestep 0 failed: ", _int_old, " != ", 1980 + (_t_step -1));
+
+
   //if (_bcast_value != 42)
      //  mooseError("Broadcast reporter test failed");
 }
