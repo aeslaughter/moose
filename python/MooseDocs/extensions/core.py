@@ -189,6 +189,11 @@ class HeadingBlock(components.ReaderComponent):
                     flags=re.MULTILINE|re.DOTALL|re.UNICODE)
 
     def createToken(self, parent, info, page):
+        this = page['heading']
+        print("INFO: ", this, "\n")
+        if not self.attributes.get('id'):
+            self.attributes['id'] += 'yo'
+        print("ID: ", self.attributes['id'], "\n")
         heading = Heading(parent, level=info['level'].count('#'), **self.attributes)
         return heading
 

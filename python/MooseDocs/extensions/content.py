@@ -27,6 +27,7 @@ def make_extension(**kwargs):
 ContentToken = tokens.newToken('ContentToken', location='', level=None)
 AtoZToken = tokens.newToken('AtoZToken', location='', level=None, buttons=True)
 TableOfContents = tokens.newToken('TableOfContents', levels=list(), columns=1, hide=[])
+OutlineToken = tokens.newToken('OutlineToken', location='', levels=list(), hide=[])
 
 LATEX_CONTENTLIST = """
 \\DeclareDocumentCommand{\\ContentItem}{mmm}{#3 (\\texttt{\\small #1})\\dotfill \\pageref{#2}\\\\}
@@ -50,10 +51,12 @@ class ContentExtension(command.CommandExtension):
         self.addCommand(reader, ContentCommand())
         self.addCommand(reader, AtoZCommand())
         self.addCommand(reader, TableOfContentsCommand())
+        self.addCommand(reader, OutlineCommand())
 
         renderer.add('AtoZToken', RenderAtoZ())
         renderer.add('ContentToken', RenderContentToken())
         renderer.add('TableOfContents', RenderTableOfContents())
+        renderer.add('OutlineToken', RenderOutline())
 
         if isinstance(renderer, LatexRenderer):
             renderer.addPreamble(LATEX_CONTENTLIST)
@@ -75,6 +78,9 @@ class ContentExtension(command.CommandExtension):
         nodes = self.translator.findPages(func)
         nodes.sort(key=lambda n: n.local)
 
+        if location == 'training/darcy_thermo_mech':
+            print(nodes, '\n')
+
         headings = collections.defaultdict(list)
         func = lambda n: n.local.startswith(location) and isinstance(n, pages.Source)
         for node in nodes:
@@ -88,12 +94,23 @@ class ContentExtension(command.CommandExtension):
                 elif method == ContentExtension.FOLDER:
                     parts = tuple(node.local.replace(location, '').strip(os.sep).split(os.sep))
                     key = parts[0] if len(parts) > 1 else ''
+
+                    if location == 'training/darcy_thermo_mech':
+                        print(text, "\n")
+                        print(parts, "\n")
+                        print(key, "\n")
+
                 else:
                     raise exceptions.MooseDocsException("Unknown method.")
                 path = node.relativeDestination(page)
                 headings[key].append((text, path, label))
 
+        if location == 'training/darcy_thermo_mech':
+            print(headings, "\n")
+
         for value in headings.values():
+            if location == 'training/darcy_thermo_mech':
+                print(value, "\n")
             value.sort(key=lambda x: x[2])
 
         return headings
@@ -161,6 +178,37 @@ class TableOfContentsCommand(command.CommandComponent):
                                hide=self.settings['hide'].split(),
                                levels=levels,
                                columns=int(self.settings['columns']))
+
+class OutlineCommand(command.CommandComponent):
+    COMMAND = ('content', 'contents')
+    SUBCOMMAND = 'outline'
+
+    @staticmethod
+    def defaultSettings():
+        settings = command.CommandComponent.defaultSettings()
+        settings['location'] = ('', "The markdown content directory to build contents.")
+        settings['levels'] = (1, 'Heading level(s) to display.')
+        settings['hide'] = ('', "A list of heading ids to hide.")
+        return settings
+
+    def createToken(self, parent, info, page):
+        if info['command'] == 'contents':
+            msg = 'The command "!contents" is deprecated, please use "!content list".'
+            LOG.warning(common.report_error(msg, page.source, info.line, info[0], prefix='WARNING'))
+
+        levels = self.settings['levels']
+        if isinstance(levels, (str, str)):
+            levels = [int(l) for l in levels.split()]
+        elif isinstance(levels, float):
+            levels = [int(levels)]
+
+        print("LEVELS: ", levels, "\n")
+
+        OutlineToken(parent,
+                     location=self.settings['location'],
+                     levels=levels,
+                     hide=self.settings['hide'].split())
+        return parent
 
 class RenderContentToken(components.RenderComponent):
 
@@ -281,3 +329,41 @@ class RenderTableOfContents(components.RenderComponent):
 
     def createLatex(self, parent, token, page):
         return None
+
+class RenderOutline(components.RenderComponent):
+
+    def createHTML(self, parent, token, page):
+        headings = self.extension.binContent(page, token['location'], ContentExtension.FOLDER)
+        links = self.extension.get('source_links')
+
+        hide = token['hide']
+        levels = token['levels']
+        func = lambda n: (n.name == 'Heading') and (n['level'] in levels) and (n is not token) \
+               and (n['id'] not in hide)
+        toks = moosetree.findall(token.root, func)
+
+        for tok in toks:
+            id_ = tok['id']
+            bookmark = id_ if id_ else tok.text('-').lower()
+            link = core.Link(None, url='#{}'.format(bookmark))
+
+        location = token['location']
+        func = lambda p: p.local.startswith(location) and isinstance(p, pages.Source)
+        nodes = self.translator.findPages(func)
+        nodes.sort(key=lambda n: n.local)
+
+
+        # Build lists
+        for head in sorted(headings.keys()):
+            items = headings[head]
+            if head:
+                h = html.Tag(parent, 'h{:d}'.format(int(token['level'])),
+                             class_='moose-a-to-z')
+                if head in links:
+                    p = self.translator.findPage(links[head])
+                    dest = p.relativeDestination(page)
+                    html.Tag(h, 'a', href=dest, string=str(head) + ' ')
+                else:
+                    html.String(h, content=str(head))
+
+                    print(head, '\n')
