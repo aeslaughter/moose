@@ -19,11 +19,12 @@ ReporterData::ReporterData(MooseApp & moose_app):
 void
 ReporterData::init()
 {
-  for (auto data_ptr : _data_ptrs)
-  {
-    ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
-    context_ptr->init();
-  }
+  for (const std::pair<std::string, std::set<RestartableDataValue *>> & data_pair : _data_ptrs)
+    for (auto data_ptr : data_pair.second)
+    {
+      ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
+      context_ptr->init();
+    }
 
 
   // assign old/older data
@@ -38,28 +39,22 @@ ReporterData::init()
 void
 ReporterData::copyValuesBack()
 {
-  for (auto data_ptr : _data_ptrs)
-  {
-    ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
-    context_ptr->copyValuesBack();
-  }
+  for (const std::pair<std::string, std::set<RestartableDataValue *>> & data_pair : _data_ptrs)
+    for (auto data_ptr : data_pair.second)
+    {
+      ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
+      context_ptr->copyValuesBack();
+    }
 
 }
-
-
-void
-ReporterData::initialize(const std::string & object_name)
-{
-}
-
 
 void
 ReporterData::finalize(const std::string & object_name)
 {
-  /*
-  for (std::pair<const ReporterName, std::unique_ptr<ReporterStateBase>> & pair :
-         _reporter_states)
-    if (pair.first.getObjectName() == object_name)
-      pair.second->finalize(comm());
-  */
+  // assert
+  for (RestartableDataValue * data_ptr : _data_ptrs[object_name])
+  {
+    ReporterContextBase * context_ptr = static_cast<ReporterContextBase *>(data_ptr->context());
+    context_ptr->finalize();
+  }
 }

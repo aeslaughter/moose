@@ -69,7 +69,7 @@ private:
    //ReporterState<T> & getReporterStateHelper(const ReporterName & state_name);
 
   // Convenience...
-  std::set<RestartableDataValue *> _data_ptrs;
+  std::unordered_map<std::string, std::set<RestartableDataValue *>> _data_ptrs;
 
   std::set<std::unique_ptr<ReporterContextBase>> _context_ptrs;
 
@@ -94,7 +94,7 @@ ReporterData::getReporterStateHelper(const ReporterName & reporter_name, bool de
   RestartableDataValue & value =
       _app.registerRestartableData(data_name, std::move(data_ptr), 0, !declare);
   auto & data_ref = static_cast<ReporterState<T>&>(value);
-  _data_ptrs.insert(&data_ref);
+  _data_ptrs[reporter_name.getObjectName()].insert(&data_ref);
   return data_ref;
 }
 
@@ -126,7 +126,7 @@ ReporterData::declareReporterValue(const ReporterName & reporter_name)
 
   if (data_ref.context() == nullptr)
   {
-    auto context_ptr = libmesh_make_unique<S<T>>(data_ref);
+    auto context_ptr = libmesh_make_unique<S<T>>(_app, data_ref);
     auto emplace_pair = _context_ptrs.emplace(std::move(context_ptr));
     data_ref.setContext(emplace_pair.first->get());
   }
@@ -143,7 +143,7 @@ ReporterData::declareReporterValue(const ReporterName & reporter_name, const T &
 
   if (data_ref.context() == nullptr)
   {
-    auto context_ptr = libmesh_make_unique<S<T>>(data_ref);
+    auto context_ptr = libmesh_make_unique<S<T>>(_app, data_ref);
     auto emplace_pair = _context_ptrs.emplace(std::move(context_ptr));
     data_ref.setContext(emplace_pair.first->get());
   }

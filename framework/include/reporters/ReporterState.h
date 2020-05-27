@@ -9,7 +9,10 @@
 #pragma once
 
 #include <iostream>
+
 #include "libmesh/parallel.h"
+#include "libmesh/parallel_object.h"
+
 #include "ReporterName.h"
 #include "RestartableData.h"
 
@@ -23,15 +26,16 @@ public:
 
   T & value(const std::size_t time_index = 0);
 
-  void init();
-  void copyValuesBack();
-
 
   void setContext(void * void_ptr)
     {
       this->_context = void_ptr;
     }
 
+  std::size_t getMaxRequestedTimeIndex() const
+    {
+      return _max_requested_time_index;
+    }
 
 
 private:
@@ -56,54 +60,38 @@ ReporterState<T>::value(const std::size_t time_index)
 
 }
 
-template <typename T>
-void
-ReporterState<T>::init()
-{
-  T & value = this->get().first;
-  std::vector<T> & old_values = this->get().second;
-
-  old_values.resize(_max_requested_time_index);
-
-  for (std::size_t i = 0; i < old_values.size(); ++i)
-    old_values[i] = value;
-}
-
-template <typename T>
-void
-ReporterState<T>::copyValuesBack()
-{
-  T & value = this->get().first;
-  std::vector<T> & old_values = this->get().second;
-
-  for (std::size_t i = 1; i < old_values.size(); ++i)
-    old_values[i] = old_values[i-1];
-
-  if (old_values.size() > 0)
-    old_values[0] = value;
-}
 
 
-class ReporterContextBase
+
+class ReporterContextBase : public libMesh::ParallelObject
 {
 public:
-  ReporterContextBase() = default;
+  ReporterContextBase(const libMesh::ParallelObject & other);
   virtual ~ReporterContextBase() = default;
   virtual void init() = 0;
   virtual void copyValuesBack() = 0;
+  virtual void finalize() = 0;
 };
+
+
 
 template <typename T>
 class ReporterContext : public ReporterContextBase
 {
 public:
-  ReporterContext(ReporterState<T> & state) : ReporterContextBase(),
-                                                  _state(state)
+  ReporterContext(const libMesh::ParallelObject & other,
+                  ReporterState<T> & state) : ReporterContextBase(other),
+                                              _state(state)
     {
     }
 
   virtual void init() override;
   virtual void copyValuesBack() override;
+
+  virtual void finalize() override
+    {
+    }
+
 
 
 protected:
@@ -116,12 +104,13 @@ template <typename T>
 void
 ReporterContext<T>::init()
 {
-  _state.init();
-  /*
-  for (std::size_t i = 0; i < _max_requested_time_index; ++i)
-    this->get().second.push_back(this->get().first);
-  this->get().second.shrink_to_fit();
-  */
+  T & value = _state.set().first;
+  std::vector<T> & old_values = _state.set().second;
+
+  old_values.resize(_state.getMaxRequestedTimeIndex());
+
+  for (std::size_t i = 0; i < old_values.size(); ++i)
+    old_values[i] = value;
 }
 
 
@@ -129,8 +118,36 @@ template <typename T>
 void
 ReporterContext<T>::copyValuesBack()
 {
-  _state.copyValuesBack();
+  T & value = _state.set().first;
+  std::vector<T> & old_values = _state.set().second;
+
+  for (std::size_t i = 1; i < old_values.size(); ++i)
+    old_values[i] = old_values[i-1];
+
+  if (old_values.size() > 0)
+    old_values[0] = value;
 }
+
+
+template <typename T>
+class ReporterBroadcastContext : public ReporterContext<T>
+{
+public:
+  ReporterBroadcastContext(const libMesh::ParallelObject & other,
+                           ReporterState<T> & state) : ReporterContext<T>(other, state)
+    {
+    }
+
+
+
+  virtual void finalize() override
+    {
+      this->comm().broadcast(this->_state.set().first);
+    }
+
+};
+
+
 
 
 

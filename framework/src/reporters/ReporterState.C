@@ -9,6 +9,13 @@
 
 #include "ReporterState.h"
 
+
+ReporterContextBase::ReporterContextBase(const libMesh::ParallelObject & other) :
+    libMesh::ParallelObject(other)
+                          {
+                          }
+
+
 //template <typename T>
  //ReporterState<T>::ReporterState(T & value) //, T & value_old)
  //    : ReporterStateBase(), _values(1, &value)     //, _value_old(value_old)
