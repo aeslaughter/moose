@@ -51,10 +51,13 @@ public:
 
 protected:
 
+  const unsigned int _order;
   const VectorPostprocessorValue & _x_training_data;
   const VectorPostprocessorValue & _y_training_data;
 
 private:
+
+
 
   // TODO: Fix order of operations so things to not need to be setup in gradient function
   mutable DenseVector<Real> _b_vector;

@@ -81,8 +81,13 @@ CSVReader::initialize()
 void
 CSVReader::execute()
 {
+  std::cout << "CSVReader::execute" << std::endl;
   const std::vector<std::string> & names = _csv_reader.getNames();
   const std::vector<std::vector<double>> & data = _csv_reader.getData();
   for (std::size_t i = 0; i < _column_data.size(); ++i)
+  {
     _column_data[names[i]]->assign(data[i].begin(), data[i].end());
+    std::cout << names[i] << " = " << _column_data[names[i]]->size() << std::endl;
+  }
+
 }

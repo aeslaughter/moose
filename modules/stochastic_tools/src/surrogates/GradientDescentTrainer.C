@@ -41,6 +41,7 @@ PolynomialLeastSquares::validParams()
 
 PolynomialLeastSquares::PolynomialLeastSquares(const InputParameters & parameters) :
     ObjectiveFunction(parameters),
+    _order(getParam<unsigned int>("order")),
     _x_training_data(getVectorPostprocessorValue("vector_postprocessor", getParam<std::string>("x_vector"), false)),
     _y_training_data(getVectorPostprocessorValue("vector_postprocessor", getParam<std::string>("y_vector"), false))
 {
@@ -57,7 +58,7 @@ PolynomialLeastSquares::initialSetup()
 unsigned int
 PolynomialLeastSquares::size() const
 {
-  return _A_matrix.m();
+  return _order + 1;
 }
 
 
@@ -79,13 +80,12 @@ PolynomialLeastSquares::gradient(const DenseVector<Real> & x) const
   // can be created late via an action, for now hack it in
   if (_b_vector.size() == 0)
   {
-    const auto order = getParam<unsigned int>("order");
-    _A_matrix.resize(_x_training_data.size(), order+1);
+    _A_matrix.resize(_x_training_data.size(), _order+1);
     _b_vector = _y_training_data;
     _Ax_minus_b.resize(_y_training_data.size());
 
     // TODO: Loop over offsets and to a std::fill using _A.get_values() on the underlying std::vector
-    for (unsigned int col = 0; col < order+1; ++col)
+    for (unsigned int col = 0; col < _order+1; ++col)
       for (unsigned int row = 0; row < _A_matrix.m(); ++row)
         _A_matrix(row, col) = std::pow(_x_training_data[row], col);
   }
