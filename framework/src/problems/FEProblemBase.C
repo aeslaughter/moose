@@ -3468,7 +3468,7 @@ bool
 FEProblemBase::hasPostprocessor(const std::string & name) const
 {
   ReporterName r_name(name, "value");
-  return _reporter_data.hasReporterValue<PostprocessorValue>(r_name);
+  return _reporter_data.hasReporterValue(r_name);
 }
 
 const PostprocessorValue &
