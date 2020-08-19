@@ -140,27 +140,24 @@ TableOutput::outputVectorPostprocessors()
   // List of names of the postprocessors to output
   const std::set<std::string> & out = getVectorPostprocessorOutput();
 
-  // Loop through the postprocessor names and extract the values from the VectorPostprocessorData
-  // storage
-  for (const auto & vpp_name : out)
+  for (const auto & combined_name : getReporterOutput())
   {
-    if (_problem_ptr->vectorPostprocessorHasVectors(vpp_name))
+    ReporterName r_name(combined_name);
+    const std::string & vpp_name = r_name.getObjectName();
+    const std::string & vec_name = r_name.getValueName();
+    const bool vpp_out = out.find(vpp_name) != out.end();
+    if (vpp_out &&
+        (_problem_ptr->getReporterData().hasReporterValue<VectorPostprocessorValue>(r_name)))
     {
-      const auto & vectors = _problem_ptr->getVectorPostprocessorVectors(vpp_name);
-
       auto insert_pair =
           moose_try_emplace(_vector_postprocessor_tables, vpp_name, FormattedTable());
 
       FormattedTable & table = insert_pair.first->second;
-
-      table.clear();
       table.outputTimeColumn(false);
 
-      for (const auto & vec_it : vectors)
-      {
-        const auto & vector = *vec_it.second.current;
-        table.addData(vec_it.first, vector);
-      }
+      const auto & vector =
+          _problem_ptr->getReporterData().getReporterValue<VectorPostprocessorValue>(r_name);
+      table.addData(vec_name, vector);
 
       if (_time_data)
       {

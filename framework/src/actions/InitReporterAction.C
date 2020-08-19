@@ -23,5 +23,5 @@ InitReporterAction::InitReporterAction(InputParameters params) : Action(params) 
 void
 InitReporterAction::act()
 {
-  _problem->getReporterData().init();
+  //_problem->getReporterData().init();
 }

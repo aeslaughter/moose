@@ -65,7 +65,7 @@ CSVReader::CSVReader(const InputParameters & params)
 }
 
 void
-CSVReader::initialize()
+CSVReader::initialSetup()
 {
   // read file declare the vectors, also prevent user from reading the same file multiple times
   if (_column_data.empty())
@@ -76,6 +76,11 @@ CSVReader::initialize()
   }
   else
     mooseError("Error in " + name() + ". CSVReader cannot execute more than once per file.");
+}
+
+void
+CSVReader::initialize()
+{
 }
 
 void

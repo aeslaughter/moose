@@ -926,6 +926,27 @@ public:
   bool hasVectorPostprocessor(const std::string & name);
 
   /**
+   * Get a read-only reference to the vector value associated with the VectorPostprocessor.
+   * @param object_name The name of the VPP object.
+   * @param vector_name The namve of the decalred vector within the object.
+   * @return Referent to the vector of data.
+   *
+   * Note: This method is only for retrieving values that already exist, the VectorPostprocessor and
+   *       VectorPostprocessorInterface objects should be used rather than this method for creating
+   *       and getting values within objects.
+   */
+  const VectorPostprocessorValue &
+  getVectorPostprocessorValueByName(const std::string & object_name,
+                                    const std::string & vector_name,
+                                    std::size_t t_index = 0) const;
+
+  /*
+  void setVectorPostprocessorValueByName(const ReporterName & name,
+                                         const VectorPostprocessorValue & value,
+                                         std::size_t t_index = 0);
+  */
+
+  /**
    * DEPRECATED: Use the new version where you need to specify whether or
    * not the vector must be broadcast
    *

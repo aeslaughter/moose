@@ -39,7 +39,7 @@ operator<<(std::ostream & os, const ReporterMode & mode)
       os << "DISTRIBUTED";
       break;
     default:
-      mooseError("Unkown ReporterMode");
+      mooseError("Unknown ReporterMode");
       break;
   }
   return os;

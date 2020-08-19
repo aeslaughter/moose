@@ -187,8 +187,8 @@ CSV::output(const ExecFlagType & type)
       if (_sort_columns)
         it.second.sortColumns();
 
-      auto include_time_suffix = !vpp_data.containsCompleteHistory(vpp_name);
-      auto is_distributed = vpp_data.isDistributed(vpp_name);
+      auto include_time_suffix = true; //! vpp_data.containsCompleteHistory(vpp_name);
+      auto is_distributed = false;     // vpp_data.isDistributed(vpp_name);
 
       if (is_distributed || processor_id() == 0)
       {

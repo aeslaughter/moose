@@ -346,7 +346,7 @@ ReporterScatterContext<T>::finalize()
   mooseAssert(this->processor_id() == 0 ? _values.size() == this->n_processors() : true,
               "Vector to be scatter must be sized to match the number of processors");
   mooseAssert(this->processor_id() > 0 ? _values.size() == 0 : true,
-              "Vector to be scatter must be sized to on processors execpt for the root processor");
+              "Vector to be scatter must be sized to on processors except for the root processor");
   ReporterContext<T>::finalize();
   this->comm().scatter(_values, this->_state.set().first);
 }

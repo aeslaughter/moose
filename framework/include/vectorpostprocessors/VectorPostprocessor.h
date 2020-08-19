@@ -43,11 +43,6 @@ public:
   virtual ~VectorPostprocessor() = default;
 
   /**
-   * This will get called to actually grab the final value the VectorPostprocessor has calculated.
-   */
-  virtual VectorPostprocessorValue & getVector(const std::string & vector_name);
-
-  /**
    * Returns the name of the VectorPostprocessor.
    */
   std::string PPName() { return _vpp_name; }
@@ -61,6 +56,11 @@ public:
    * Return true if the VPP is operating in distributed mode.
    */
   bool isDistributed() const { return _is_distributed; }
+
+  /**
+   * Return the names of the vectors associated with this object.
+   */
+  const std::set<std::string> & getVectorNames() const;
 
 protected:
   /**
@@ -89,4 +89,6 @@ private:
   const bool _is_broadcast;
 
   std::map<std::string, VectorPostprocessorValue> _thread_local_vectors;
+
+  std::set<std::string> _vector_names;
 };

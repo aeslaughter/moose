@@ -64,17 +64,21 @@ VectorPostprocessor::VectorPostprocessor(const InputParameters & parameters)
 }
 
 VectorPostprocessorValue &
-VectorPostprocessor::getVector(const std::string & vector_name)
-{
-  return _vpp_fe_problem->getVectorPostprocessorValue(_vpp_name, vector_name);
-}
-
-VectorPostprocessorValue &
 VectorPostprocessor::declareVector(const std::string & vector_name)
 {
+  _vector_names.insert(vector_name);
+
   if (_vpp_tid)
     return _thread_local_vectors.emplace(vector_name, VectorPostprocessorValue()).first->second;
-  else
-    return _vpp_fe_problem->declareVectorPostprocessorVector(
-        _vpp_name, vector_name, _contains_complete_history, _is_broadcast, _is_distributed);
+
+  ReporterName r_name(_vpp_name, vector_name);
+  return _vpp_fe_problem->getReporterData()
+      .declareReporterValue<VectorPostprocessorValue, ReporterContext>(r_name,
+                                                                       Moose::ReporterMode::ROOT);
+}
+
+const std::set<std::string> &
+VectorPostprocessor::getVectorNames() const
+{
+  return _vector_names;
 }

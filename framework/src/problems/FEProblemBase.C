@@ -1162,6 +1162,8 @@ FEProblemBase::timestepSetup()
   if (_requires_nonlocal_coupling)
     if (_nonlocal_kernels.hasActiveObjects() || _nonlocal_integrated_bcs.hasActiveObjects())
       _has_nonlocal_coupling = true;
+
+  _reporter_data.init();
 }
 
 unsigned int
@@ -3524,7 +3526,16 @@ FEProblemBase::getVectorPostprocessorData() const
 bool
 FEProblemBase::hasVectorPostprocessor(const std::string & name)
 {
-  return _vpps_data.hasVectorPostprocessor(name);
+  return hasUserObject(name);
+}
+
+const VectorPostprocessorValue &
+FEProblemBase::getVectorPostprocessorValueByName(const std::string & object_name,
+                                                 const std::string & vector_name,
+                                                 std::size_t t_index) const
+{
+  ReporterName r_name(object_name, vector_name);
+  return _reporter_data.getReporterValue<VectorPostprocessorValue>(r_name, t_index);
 }
 
 VectorPostprocessorValue &
@@ -3786,9 +3797,11 @@ FEProblemBase::joinAndFinalize(TheWarehouse::Query query, bool isgen)
     if (pp)
       setPostprocessorValueByName(obj->name(), pp->getValue());
 
+    /*
     auto vpp = dynamic_cast<VectorPostprocessor *>(obj);
     if (vpp)
       _vpps_data.broadcastScatterVectors(vpp->PPName());
+    */
 
     // Update Reporter data
     auto reporter = dynamic_cast<Reporter *>(obj);

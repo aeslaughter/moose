@@ -17,7 +17,9 @@ VectorPostprocessorInterface::VectorPostprocessorInterface(const MooseObject * m
   : _broadcast_by_default(broadcast_by_default),
     _vpi_params(moose_object->parameters()),
     _vpi_feproblem(*_vpi_params.getCheckedPointerParam<FEProblemBase *>("_fe_problem_base")),
-    _vpi_tid(_vpi_params.have_parameter<THREAD_ID>("_tid") ? _vpi_params.get<THREAD_ID>("_tid") : 0)
+    _vpi_tid(_vpi_params.have_parameter<THREAD_ID>("_tid") ? _vpi_params.get<THREAD_ID>("_tid")
+                                                           : 0),
+    _vpi_reporter_data(_vpi_feproblem.getReporterData())
 {
 }
 
@@ -25,30 +27,30 @@ const VectorPostprocessorValue &
 VectorPostprocessorInterface::getVectorPostprocessorValue(const std::string & name,
                                                           const std::string & vector_name)
 {
-  return _vpi_feproblem.getVectorPostprocessorValue(
-      _vpi_params.get<VectorPostprocessorName>(name), vector_name, _broadcast_by_default);
+  return getVectorPostprocessorValueByName(_vpi_params.get<VectorPostprocessorName>(name),
+                                           vector_name);
 }
 
 const VectorPostprocessorValue &
 VectorPostprocessorInterface::getVectorPostprocessorValueByName(
     const VectorPostprocessorName & name, const std::string & vector_name)
 {
-  return _vpi_feproblem.getVectorPostprocessorValue(name, vector_name, _broadcast_by_default);
+  return getVectorPostprocessorByNameHelper(name, vector_name, _broadcast_by_default, 0);
 }
 
 const VectorPostprocessorValue &
 VectorPostprocessorInterface::getVectorPostprocessorValueOld(const std::string & name,
                                                              const std::string & vector_name)
 {
-  return _vpi_feproblem.getVectorPostprocessorValueOld(
-      _vpi_params.get<VectorPostprocessorName>(name), vector_name, _broadcast_by_default);
+  return getVectorPostprocessorValueOldByName(_vpi_params.get<VectorPostprocessorName>(name),
+                                              vector_name);
 }
 
 const VectorPostprocessorValue &
 VectorPostprocessorInterface::getVectorPostprocessorValueOldByName(
     const VectorPostprocessorName & name, const std::string & vector_name)
 {
-  return _vpi_feproblem.getVectorPostprocessorValueOld(name, vector_name, _broadcast_by_default);
+  return getVectorPostprocessorByNameHelper(name, vector_name, _broadcast_by_default, 1);
 }
 
 const VectorPostprocessorValue &
@@ -56,17 +58,16 @@ VectorPostprocessorInterface::getVectorPostprocessorValue(const std::string & na
                                                           const std::string & vector_name,
                                                           bool needs_broadcast)
 {
-  return _vpi_feproblem.getVectorPostprocessorValue(_vpi_params.get<VectorPostprocessorName>(name),
-                                                    vector_name,
-                                                    needs_broadcast || _broadcast_by_default);
+  return getVectorPostprocessorValueByName(
+      _vpi_params.get<VectorPostprocessorName>(name), vector_name, needs_broadcast);
 }
 
 const VectorPostprocessorValue &
 VectorPostprocessorInterface::getVectorPostprocessorValueByName(
     const VectorPostprocessorName & name, const std::string & vector_name, bool needs_broadcast)
 {
-  return _vpi_feproblem.getVectorPostprocessorValue(
-      name, vector_name, needs_broadcast || _broadcast_by_default);
+  return getVectorPostprocessorByNameHelper(
+      name, vector_name, needs_broadcast || _broadcast_by_default, 0);
 }
 
 const VectorPostprocessorValue &
@@ -74,18 +75,16 @@ VectorPostprocessorInterface::getVectorPostprocessorValueOld(const std::string &
                                                              const std::string & vector_name,
                                                              bool needs_broadcast)
 {
-  return _vpi_feproblem.getVectorPostprocessorValueOld(
-      _vpi_params.get<VectorPostprocessorName>(name),
-      vector_name,
-      needs_broadcast || _broadcast_by_default);
+  return getVectorPostprocessorValueOldByName(
+      _vpi_params.get<VectorPostprocessorName>(name), vector_name, needs_broadcast);
 }
 
 const VectorPostprocessorValue &
 VectorPostprocessorInterface::getVectorPostprocessorValueOldByName(
     const VectorPostprocessorName & name, const std::string & vector_name, bool needs_broadcast)
 {
-  return _vpi_feproblem.getVectorPostprocessorValueOld(
-      name, vector_name, needs_broadcast || _broadcast_by_default);
+  return getVectorPostprocessorByNameHelper(
+      name, vector_name, needs_broadcast || _broadcast_by_default, 1);
 }
 
 const ScatterVectorPostprocessorValue &
@@ -144,4 +143,17 @@ VectorPostprocessorInterface::isVectorPostprocessorDistributedByName(
 {
   const VectorPostprocessorData & data = _vpi_feproblem.getVectorPostprocessorData();
   return data.isDistributed(name);
+}
+
+const VectorPostprocessorValue &
+VectorPostprocessorInterface::getVectorPostprocessorByNameHelper(const std::string & object_name,
+                                                                 const std::string & vector_name,
+                                                                 bool broadcast,
+                                                                 std::size_t t_index) const
+{
+  Moose::ReporterMode mode =
+      broadcast ? Moose::ReporterMode::REPLICATED : Moose::ReporterMode::ROOT;
+  ReporterName r_name(object_name, vector_name);
+  return _vpi_reporter_data.getReporterValue<VectorPostprocessorValue>(
+      r_name, object_name, mode, t_index);
 }
