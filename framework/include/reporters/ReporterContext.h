@@ -36,11 +36,14 @@ public:
   /// Return the ReporterName that the context is associated
   virtual const ReporterName & name() const = 0;
 
+  /// Return True if init() has been called
+  virtual bool initialized() const = 0;
+
   /// Return the type of the data stored
   // This is a helper for ReporterData::store
   virtual std::string type() const = 0;
 
-  /// Called by InitReporterAction via ReporterData
+  /// Called by ReporterData::finalize, if needed
   virtual void init() = 0;
 
   /// Called by FEProblemBase::advanceState via ReporterData
@@ -94,15 +97,19 @@ private:
   /// Automatic action needed after finalize
   ReporterContext::AutoOperation _auto_operation = ReporterContext::AutoOperation::NONE;
 
-  // The following methods are called by the ReporterData and are not intented external use, as such
-  // they are changed to private. See the comments in ReporterState for why these are here rather
-  // than in the ReporterState object directly.
+  // The following methods are called by the ReporterData and are not indented for external use, as
+  // such they are changed to private. See the comments in ReporterState for why these are here
+  // rather than in the ReporterState object directly.
   virtual void init() final;
+  virtual bool initialized() const final;
   virtual void copyValuesBack() final;
   virtual void performAutoFinalizeOperations() final;
   virtual void store(nlohmann::json & json) const final;
   virtual std::string type() const final;
   friend class ReporterData;
+
+  // Initialization flag
+  bool _initialized = false;
 };
 
 template <typename T>
@@ -128,6 +135,13 @@ ReporterContext<T>::name() const
 }
 
 template <typename T>
+bool
+ReporterContext<T>::initialized() const
+{
+  return _initialized;
+}
+
+template <typename T>
 const ReporterState<T> &
 ReporterContext<T>::state() const
 {
@@ -138,6 +152,9 @@ template <typename T>
 void
 ReporterContext<T>::init()
 {
+  // Indicate that this objects has been initialized
+  _initialized = true;
+
   // Initialize all the old values
   T & value = _state.set().first;
   std::vector<T> & old_values = _state.set().second;

@@ -200,7 +200,7 @@ private:
   MooseApp & _app;
 
   /**
-   * Helper object that for creating the necessary RestartableData for Reporter values.
+   * Helper method for creating the necessary RestartableData for Reporter values.
    * @tparam T The desired C++ type for the Reporter value
    * @param reporter_name Object/data name for the Reporter value
    * @param declare Flag indicating if the ReporterValue is being declared or read. This flag
@@ -210,9 +210,19 @@ private:
   template <typename T>
   ReporterState<T> & getReporterStateHelper(const ReporterName & reporter_name, bool declare);
 
+  /**
+   * Helper method for returning the ReporterContextBase object, if it exists.
+   * @param reporter_name Object/data name for the Reporter value
+   */
+  const ReporterContextBase *
+  getReporterContextBaseHelper(const ReporterName & reporter_name) const;
+
   /// The ReporterContext objects are created when a value is declared. The context objects
   /// include a reference to the associated ReporterState values. This container stores the
   /// context object for each Reporter value.
+  ///
+  /// The declareReporterValue method relies on the emplace method, so this muse remain a std::set
+  /// to operate correctly with the initialization process.
   std::set<std::unique_ptr<ReporterContextBase>> _context_ptrs;
 
   /// When true an error message is triggered so that the get/declare methods cannot be called
@@ -228,12 +238,15 @@ template <typename T>
 ReporterState<T> &
 ReporterData::getReporterStateHelper(const ReporterName & reporter_name, bool declare)
 {
+  /*
   // Avoid calling get/declare methods after object construction
   if (_initialized)
     mooseError("An attempt was made to declare or get Reporter data with the name '",
                reporter_name,
                "' after Reporter data was initialized, calls to get or declare Reporter data "
                "should be made in the object constructor.");
+
+  */
 
   // Creates the RestartableData object for storage in the MooseApp restart/recover system
   auto data_ptr = libmesh_make_unique<ReporterState<T>>(reporter_name);
@@ -286,13 +299,10 @@ template <typename T>
 bool
 ReporterData::hasReporterValue(const ReporterName & reporter_name) const
 {
-  auto func = [reporter_name](const std::unique_ptr<ReporterContextBase> & ptr) {
-    return ptr->name() == reporter_name;
-  };
-  auto ptr = std::find_if(_context_ptrs.begin(), _context_ptrs.end(), func);
-  if (ptr != _context_ptrs.end())
+  auto ptr = getReporterContextBaseHelper(reporter_name);
+  if (ptr != nullptr)
   {
-    auto context = dynamic_cast<const ReporterContext<T> *>(ptr->get());
+    auto context = dynamic_cast<const ReporterContext<T> *>(ptr);
     return context != nullptr;
   }
   return false;
@@ -303,13 +313,10 @@ const T &
 ReporterData::getReporterValue(const ReporterName & reporter_name,
                                const std::size_t time_index) const
 {
-  auto func = [reporter_name](const std::unique_ptr<ReporterContextBase> & ptr) {
-    return ptr->name() == reporter_name;
-  };
-  auto ptr = std::find_if(_context_ptrs.begin(), _context_ptrs.end(), func);
-  if (ptr == _context_ptrs.end())
+  auto ptr = getReporterContextBaseHelper(reporter_name);
+  if (ptr == nullptr)
     mooseError("The desired Reporter value '", reporter_name, "' does not exist.");
-  auto context_ptr = static_cast<const ReporterContext<T> *>(ptr->get());
+  auto context_ptr = static_cast<const ReporterContext<T> *>(ptr);
   return context_ptr->state().value(time_index);
 }
 

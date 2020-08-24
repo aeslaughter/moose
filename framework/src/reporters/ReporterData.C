@@ -59,7 +59,11 @@ ReporterData::finalize(const std::string & object_name)
   // ReporterData.C:xx:xx: error: 'auto' not allowed in lambda parameter
   auto func = [object_name](const std::unique_ptr<ReporterContextBase> & ptr) {
     if (ptr->name().getObjectName() == object_name)
+    {
+      if (!ptr->initialized())
+        ptr->init();
       ptr->finalize();
+    }
   };
   std::for_each(_context_ptrs.begin(), _context_ptrs.end(), func);
 }
@@ -94,4 +98,14 @@ ReporterData::getReporterNames() const
   for (const auto & context_ptr : _context_ptrs)
     output.insert(context_ptr->name());
   return output;
+}
+
+const ReporterContextBase *
+ReporterData::getReporterContextBaseHelper(const ReporterName & reporter_name) const
+{
+  auto func = [reporter_name](const std::unique_ptr<ReporterContextBase> & ptr) {
+    return ptr->name() == reporter_name;
+  };
+  auto ptr = std::find_if(_context_ptrs.begin(), _context_ptrs.end(), func);
+  return ptr != _context_ptrs.end() ? ptr->get() : nullptr;
 }
