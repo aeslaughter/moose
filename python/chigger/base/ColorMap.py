@@ -15,6 +15,7 @@ import xml.etree.ElementTree as xml
 # Import matplotlib, if it exists
 try:
     from matplotlib import cm
+    import matplotlib.pyplot as plt
     import numpy as np
     USE_MATPLOTLIB = True
 except ImportError:
@@ -42,7 +43,7 @@ def get_xml_table_values():
 
 class ColorMap(ChiggerObject):
     """
-    Class for defining colormaps for use with ExodusResult objects.
+    Class for defining colormaps.
 
     If matplotlib is available this class first checks for the name in there. If it is not found
     there or matplotlib is not available it loads the XML files from this repository, which are the
@@ -50,13 +51,16 @@ class ColorMap(ChiggerObject):
     """
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerObject.getOptions()
-        opt.add('cmap', 'default', "The colormap name.")
-        opt.add('cmap_reverse', False, "Reverse the order of colormap.")
-        opt.add('cmap_num_colors', 256, "Number of colors to use (matplotlib only).")
-        opt.add('cmap_range', [0, 1], "Set the data range for the color map to display.")
-        opt.add('cmap_nan', [0.5, 0.5, 0.5, 1], "Set the NaN color.")
+    def validOptions():
+        opt = ChiggerObject.validOptions()
+        opt.add('cmap', default='default', vtype=str,
+                doc="The colormap name.")
+        opt.add('cmap_reverse', default=False, vtype=bool,
+                doc="Reverse the order of colormap.")
+        opt.add('cmap_num_colors', default=256, vtype=int,
+                doc="Number of colors to use (matplotlib only).")
+        opt.add('cmap_range', default=(0, 1), vtype=(float, int), size=2,
+                doc="Set the data range for the color map to display.")
         return opt
 
     # The table is only needed once
@@ -74,7 +78,7 @@ class ColorMap(ChiggerObject):
         """
         names = ['default']
         if USE_MATPLOTLIB:
-            names += dir(cm)
+            names += plt.colormaps()
         names += self._data.keys()
         return names
 
@@ -98,11 +102,9 @@ class ColorMap(ChiggerObject):
         else:
             raise mooseutils.MooseException("Unknown colormap:", name)
 
-        if self.isOptionValid('cmap_range'):
-            vtktable.SetRange(*self.getOption('cmap_range'))
-
-        if self.isOptionValid('cmap_nan'):
-            vtktable.SetNanColor(*self.getOption('cmap_nan'))
+        #if self.isValid('cmap_range'):
+        #    vtktable.SetRange(*self.getOption('cmap_range'))
+        vtktable.SetRange(0,1)
         vtktable.Build()
         return vtktable
 

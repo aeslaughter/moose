@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from .ChiggerFilterBase import ChiggerFilterBase
+from ChiggerFilterBase import ChiggerFilterBase
 
 class RotationalExtrusionFilter(ChiggerFilterBase):
     """
@@ -35,8 +35,8 @@ class RotationalExtrusionFilter(ChiggerFilterBase):
         """
         super(RotationalExtrusionFilter, self).update(**kwargs)
 
-        if self.isOptionValid('angle'):
+        if self.isValid('angle'):
             self._vtkfilter.SetAngle(self.getOption('angle'))
 
-        if self.isOptionValid('resolution'):
+        if self.isValid('resolution'):
             self._vtkfilter.SetResolution(self.getOption('resolution'))

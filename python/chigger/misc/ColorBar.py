@@ -7,162 +7,129 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import numpy as np
 import vtk
-from .AxisSource import AxisSource
-from .. import base
-from .. import geometric
+from .. import base, geometric, utils
 
-
-class ColorBar(base.ChiggerResult):
+class ColorBar(base.ChiggerCompositeSource):
     """
-    A generic colorbar.
+    A generic colorbar, that can be rotated and contain dual axis.
 
     The default colorbar in VTK, vtkScalarBarActor, tightly couples the tick marks with the bar
     width, which makes it difficult to control either. This class decouples the colorbar and labels.
     """
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerResult.getOptions()
-        opt.add('location', 'right', "The location of the primary axis.",
-                allow=['left', 'right', 'top', 'bottom'])
-        opt.add('colorbar_origin', None, "The position of the colorbar, relative to the viewport.",
-                vtype=tuple)
-        opt.add('width', 0.05, "The width of the colorbar, relative to window.", vtype=float)
-        opt.add('length', 0.5, "The height of the colorbar, relative to window.", vtype=float)
-        opt += base.ColorMap.getOptions()
-
-        ax0 = AxisSource.getOptions()
-        ax0.setDefault('ticks_visible', False)
-        ax0.setDefault('axis_visible', False)
-        ax0.pop('color')
-        opt.add('primary', ax0, "The primary axis options.")
-
-        ax1 = AxisSource.getOptions()
-        ax1.setDefault('axis_visible', False)
-        ax1.setDefault('ticks_visible', False)
-        ax1.setDefault('visible', False)
-        ax1.pop('color')
-        opt.add('secondary', ax1, "The secondary axis options.")
+    def validOptions():
+        opt = base.ChiggerCompositeSource.validOptions()
+        opt.add('origin', (0.5, 0.5), vtype=float, size=2, doc="Define the center of the colorbar, in relative viewport coordinates.")
+        opt.add('width', 0.025, vtype=float, doc="The width of the colorbar, in relative viewport coordinates.")
+        opt.add('length', 0.7, vtype=float, doc="The length of the colorbar, in relative viewport coordinates.")
+        opt.add('cmap', 'cividis', vtype=str, doc="The color map name.")
+        opt.add('reverse', False, vtype=bool, doc="Reverse the color map.")
+        opt.add('resolution', 256, vtype=int, doc="The number of colors and polygons to use when creating colorbar geometry.")
+        opt.add('rotate', 0, vtype=int, doc="Counter clock-wise rotation of color bar; use 90 to create a horizontal bar.")
         return opt
 
-    def __init__(self, **kwargs):
-        super(ColorBar, self).__init__(**kwargs)
-        self._sources = [geometric.PlaneSource2D(), AxisSource(), AxisSource()]
+    @staticmethod
+    def validKeyBindings():
+        bindings = base.ChiggerCompositeSource.validKeyBindings()
 
-    def update(self, **kwargs):
-        """
-        Apply setting to create a colorbar.
+        #bindings.add('w', lambda s, *args: ColorBar._increment(s, 0.005, 'width', *args),
+        #             desc="Increase the width of the colorbar by 0.005.")
+        #bindings.add('w', lambda s, *args: ColorBar._increment(s, -0.005, 'width', *args),
+        #             shift=True,
+        #             desc="Decrease the width of the colorbar by 0.005.")
+        #bindings.add('l', lambda s, *args: ColorBar._increment(s, 0.005, 'length', *args),
+        #             desc="Increase the length of the colorbar by 0.005.")
+        #bindings.add('l', lambda s, *args: ColorBar._increment(s, -0.005, 'length', *args),
+        #             shift=True, desc="Decrease the length of the colorbar by 0.005.")
+        #bindings.add('f', lambda s, *args: ColorBar._incrementFont(s, 1),
+        #             desc="Increase the font size by 1 point (when result is selected).")
+        #bindings.add('f', lambda s, *args: ColorBar._incrementFont(s, -1), shift=True,
+        #             desc="Decrease the font size by 1 point (when result is selected).")
+        return bindings
 
-        Inputs:
-            see ChiggerResult
-        """
+    def __init__(self, *args, **kwargs):
+        super(ColorBar, self).__init__(geometric.Rectangle(*args), **kwargs)
 
-        # Set the options provided
-        self.setOptions(**kwargs)
-        if self.needsInitialize():
-            self.initialize()
 
-        # Convenience names for the various sources
-        plane, axis0, axis1 = self._sources
+    def applyOptions(self):
 
-        # Origin
-        loc = self.getOption('location').lower()
-        if not self.isOptionValid('colorbar_origin'):
-            if (loc == 'right') or (loc == 'left'):
-                self.setOption('colorbar_origin', [0.8, 0.25, 0.0])
-            else:
-                self.setOption('colorbar_origin', [0.25, 0.2, 0.0])
+        # ColorBar Rectangle
+        rectangle = self._sources[0]
 
-        # Get dimensions of colorbar, taking into account the orientation
-        n = self.getOption('cmap_num_colors')
-        length0 = 0
-        length1 = 0
-        loc = self.getOption('location')
-        if (loc == 'right') or (loc == 'left'):
-            length0 = self.getOption('width')
-            length1 = self.getOption('length')
-            plane.setOptions(resolution=[1, n+1])
-        else:
-            length0 = self.getOption('length')
-            length1 = self.getOption('width')
-            plane.setOptions(resolution=[n+1, 1])
+        origin = self.getOption('origin')
+        width = self.getOption('width')
+        length = self.getOption('length')
+        angle = self.getOption('rotate')
 
-        # Coordinate system transformation object
-        pos = self.getOption('colorbar_origin')
-        coord = vtk.vtkCoordinate()
-        coord.SetCoordinateSystemToNormalizedViewport()
+        p0 = (origin[0]-width/2., origin[1]-length/2., 0)
+        p1 = (p0[0] + width, p0[1], 0)
+        p2 = (p0[0], p0[1] + length, 0)
 
-        # The viewport must be set, before the points are computed.
-        if self.isOptionValid('viewport'):
-            self._vtkrenderer.SetViewport(self.getOption('viewport'))
+        res = self.getOption('resolution')
+        rectangle.setOptions(origin=p0, point1=p1, point2=p2,
+                             cmap=self.getOption('cmap'),
+                             cmap_num_colors=res,
+                             rotate=self.getOption('rotate'),
+                             cmap_reverse=self.getOption('reverse'),
+                             resolution=(1, res))
 
-        # Point 0
-        coord.SetViewport(self._vtkrenderer)
-        coord.SetValue(pos[0]+length0, pos[1], 0)
-        p0 = coord.GetComputedViewportValue(self._vtkrenderer)
+        data = rectangle.getOption('point_data')
+        if (data is None) or (data.GetNumberOfTuples() != res):
+            rectangle.setOption('point_data', self.__computeColorMapPointData(res))
 
-        # Point 1
-        coord.SetValue(pos[0], pos[1]+length1, 0)
-        p1 = coord.GetComputedViewportValue(self._vtkrenderer)
 
-        coord.SetValue(*pos)
-        pos = coord.GetComputedViewportValue(self._vtkrenderer)
+        base.ChiggerCompositeSource.applyOptions(self)
 
-        # Update the bar position
-        plane.setOptions(origin=[pos[0], pos[1], 0],
-                         point1=[p0[0], p0[1], 0],
-                         point2=[p1[0], p1[1], 0])
-
-        # Set the colormap for the bar
-        rng = self.getOption('cmap_range')
-        step = (rng[1] - rng[0]) / float(n)
-
-        data = vtk.vtkFloatArray()
-        data.SetNumberOfTuples(n+1)
-        for i in range(n+1):
-            data.SetValue(i, rng[0] + i*step)
-        plane.setOptions(data=data)
-
-        # Setup the primary Axis
-        axis0.options().update(self.getOption('primary'))
-        location = self.__setAxisPosition(axis0, p0, p1, self.getOption('location'))
-
-        # Setup the secondary Axis
-        axis1.options().update(self.getOption('secondary'))
-        self.__setAxisPosition(axis1, p0, p1, location)
-
-        # Call base class method
-        super(ColorBar, self).update()
 
     @staticmethod
-    def __setAxisPosition(axis, pt0, pt1, location):
+    def __computeColorMapPointData(n):
+        m = 1
+        data = vtk.vtkFloatArray()
+        data.SetName('data')
+        data.SetNumberOfTuples((n+1)*(m+1))
+        ydata = np.linspace(0, 1, n+1)
+        idx = 0
+        for i in range(n+1):
+            for j in range(m+1):
+                data.SetValue(idx, 1-ydata[i])
+                idx += 1
+        return data
+
+    def onMouseMoveEvent(self, position):
         """
-        Helper for setting the position of the axis along the color plane.
+        Update the colorbar origin.
+        """
+        self.setOption('colorbar_origin', position)
+        self.printOption('colorbar_origin')
+
+    def _increment(self, increment, name, *args): #pylint: disable=unused-argument
+        """
+        Helper for changing the width and length of the colorbar.
+        """
+        value = self.getOption(name) + increment
+        if value < 1 and value > 0:
+            self.printOption(name)
+            self.setOption(name, value)
+
+    def _incrementFont(self, increment, *args): #pylint: disable=unused-argument
+        """
+        Helper for changing the font sizes.
         """
 
-        # The secondary location to output
-        secondary_location = None
+        def set_font_size(ax): #pylint: disable=invalid-name
+            """Helper for setting both the label and tile fonts."""
+            fz_tick = ax.getVTKSource().GetLabelProperties().GetFontSize() + increment
+            fz_title = ax.getVTKSource().GetTitleProperties().GetFontSize() + increment
+            if fz_tick > 0:
+                ax.setOption('tick_font_size', fz_tick)
+                ax.printOption('tick_font_size')
 
-        # Position the axis
-        axis.setOption('axis_position', location.lower())
-        if location.lower() == 'left':
-            axis.setOption('axis_point1', [pt1[0], pt0[1]])
-            axis.setOption('axis_point2', [pt1[0], pt1[1]])
-            secondary_location = 'right'
+            if fz_title > 0:
+                ax.setOption('title_font_size', fz_title)
+                ax.printOption('title_font_size')
 
-        elif location.lower() == 'right':
-            axis.setOption('axis_point1', [pt0[0], pt0[1]])
-            axis.setOption('axis_point2', [pt0[0], pt1[1]])
-            secondary_location = 'left'
-
-        elif location.lower() == 'top':
-            axis.setOption('axis_point1', [pt1[0], pt1[1]])
-            axis.setOption('axis_point2', [pt0[0], pt0[1]])
-            secondary_location = 'bottom'
-
-        elif location.lower() == 'bottom':
-            axis.setOption('axis_point1', [pt1[0], pt0[1]])
-            axis.setOption('axis_point2', [pt0[0], pt0[1]])
-            secondary_location = 'top'
-        return secondary_location
+        _, axis0, axis1 = self._sources #pylint: disable=unbalanced-tuple-unpacking
+        set_font_size(axis0)
+        set_font_size(axis1)

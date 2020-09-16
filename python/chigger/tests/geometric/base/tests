@@ -1,22 +1,22 @@
 [Tests]
-  [orientation]
+  [./orientation]
     type = ImageDiff
     command = orientation.py
     imagediff = 'orientation.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [scale]
+  [./scale]
     type = ImageDiff
     command = scale.py
     imagediff = 'scale.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [rotation]
+  [./rotation]
     type = ImageDiff
     command = rotation.py
     imagediff = 'rotation.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 []

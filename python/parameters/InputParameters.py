@@ -17,6 +17,7 @@ class InputParameters(object):
     """
     A warehouse for creating and storing options
     """
+    __PARAM_TYPE__ = Parameter
 
     class ErrorMode(enum.Enum):
         """Defines the error mode."""
@@ -50,7 +51,7 @@ class InputParameters(object):
         if isinstance(default, InputParameters):
             kwargs['vtype'] = InputParameters
 
-        self.__parameters[args[0]] = Parameter(*args, **kwargs)
+        self.__parameters[args[0]] = self.__PARAM_TYPE__(*args, **kwargs)
 
     def __contains__(self, name):
         """

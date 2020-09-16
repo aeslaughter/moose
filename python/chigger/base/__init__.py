@@ -9,41 +9,17 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from .ChiggerObject import ChiggerObject
+from .ChiggerAlgorithm import ChiggerAlgorithm
+from .ChiggerSource import ChiggerSource, ChiggerSource2D
+from .ChiggerCompositeSource import ChiggerCompositeSource
 
-from .ChiggerSourceBase import ChiggerSourceBase
-from .ChiggerFilterSourceBase import ChiggerFilterSourceBase
-from .ChiggerSource import ChiggerSource
-from .ChiggerSource2D import ChiggerSource2D
-
-from .ChiggerResultBase import ChiggerResultBase
-from .ChiggerResult import ChiggerResult
-from .KeyPressInteractorStyle import KeyPressInteractorStyle
-
+# "utils" would be the correct place for this, but it creates a cyclic dependency because it uses
+# base.ChiggerObject; "misc" has a similar problem and "misc" is reserved for source objects
 from .ColorMap import ColorMap
 
-from .ResultGroup import ResultGroup
-
-def create_single_source_result(source_type):
-    """
-    In many cases only a single source object (ChiggerSourceBase) must be linked to a renderer
-    (ChiggerResult), as is the case for the annotations (e.g., TextAnnotation). To avoid creating
-    nearly identical classes for each these cases this function can be used to generate the class
-    needed based on the type provided.
-
-    Inputs:
-        SOURCE_TYPE: The type of source to attach to a ChiggerResult object.
-    """
-    class ChiggerResultMeta(ChiggerResult):
-        """
-        Meta class for creating ChiggerResult classes of different types.
-        """
-        @staticmethod
-        def getOptions():
-            opt = ChiggerResult.getOptions()
-            opt += source_type.getOptions()
-            return opt
-
-        def __init__(self, **kwargs):
-            super(ChiggerResultMeta, self).__init__(source_type(), **kwargs)
-
-    return ChiggerResultMeta
+def backgroundOptions(*args):
+    """Decorator for adding automatic color settings for black/white background"""
+    def create(cls):
+        cls.__BACKGROUND_OPTIONS__.update(args)
+        return cls
+    return create

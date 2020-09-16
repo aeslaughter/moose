@@ -1,8 +1,8 @@
 [Tests]
-  [test]
+  [./test]
     type = ImageDiff
     command = mesh_only.py
     imagediff = 'mesh_only.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 []

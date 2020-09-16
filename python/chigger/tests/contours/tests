@@ -1,56 +1,57 @@
 [Tests]
-  [default]
+  [./default]
     # Test contour object with default settings
     type = ImageDiff
     command = default.py
     imagediff = 'default.png'
     allowed_linux = 0.97
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [blocks]
+  [./blocks]
     # Subdomain restricted contours
     type = ImageDiff
     command = block.py
     imagediff = 'block.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [block_elem]
+  [./block_elem]
     type = RunException
     command = block_elem.py
     expect_err = "ContourFilter currently only works with nodal variables."
-    display_required = true
-  []
+    display_required = True
+    cli_args = '--test'
+  [../]
 
-  [levels]
+  [./levels]
     # Explicit levels
     type = ImageDiff
     command = levels.py
     imagediff = 'levels.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [combo]
+  [./combo]
     # Volume and contour together
     type = ImageDiff
     command = combo.py
     imagediff = 'combo.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [inline]
+  [./inline]
     type = ImageDiff
     command = inline.py
     imagediff = 'inline.png'
     allowed_linux = 0.97
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 
-  [inline_clip]
+  [./inline_clip]
     type = ImageDiff
     command = inline_clip.py
     imagediff = 'inline_clip.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 []

@@ -7,77 +7,257 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import logging
+import weakref
+import collections
 import vtk
-from .ChiggerFilterSourceBase import ChiggerFilterSourceBase
+import mooseutils
+from .ChiggerAlgorithm import ChiggerAlgorithm
+from .. import utils
 
-class ChiggerSource(ChiggerFilterSourceBase):
+@mooseutils.addProperty('filter_type', required=True)
+@mooseutils.addProperty('active', ptype=bool, default=True)
+class FilterInfo(mooseutils.AutoPropertyMixin):
     """
-    The base class for all 3D objects.
+    Storage for Filter object information.
 
-    All VTK settings that can be applied to the (VTKACTOR_TYPE and VTKMAPPER_TYPE) should be made in
-    this class.
-
-    Inputs:
-        see ChiggerFilterSourceBase
+    This is a stand-alone class to allow for the 'active' property to be altered.
     """
+    pass
 
-    # The 3D base class actor/mapper that this object to which ownership is restricted
-    VTKACTOR_TYPE = vtk.vtkActor
-    VTKMAPPER_TYPE = vtk.vtkMapper
 
-    @staticmethod
-    def getOptions():
-        opt = ChiggerFilterSourceBase.getOptions()
-        opt.add('orientation', None, "The orientation of the object.", vtype=list)
-        opt.add('rotation', [0, 0, 0], "The rotation of the object about x, y, z axes.", vtype=list)
-        opt.add('edges', False, "Enable/disable display of object edges.")
-        opt.add('edge_color', [0, 0, 1], "Set the edge color.")
-        opt.add('edge_width', "The edge width.", vtype=int)
-        opt.add('point_size', "The point size.", vtype=float)
-        opt.add('opacity', 1, "The object opacity.", vtype=float)
-        opt.add('color', "The color of the object.", vtype=list)
+class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
+
+    # The type of vtkProp to create (this should be defined in child class)
+    VTKACTORTYPE = None
+
+    # The type of vtkAbstractMapper to create (this should be defined in child class)
+    VTKMAPPERTYPE = None
+
+    # List of possible filters, this is an internal item. Filters are added with addFilter decorator
+    #__FILTERS__ = list()
+
+    # List of active filters
+    #__ACTIVE_FILTERS__ = set()
+
+    # Background options, by default the background color is black thus the default text colors are
+    # white. If the background is changed to white then the default text colors are then
+    # automatically changed to black
+    __BACKGROUND_OPTIONS__ = set()
+
+
+    @classmethod
+    def validOptions(cls):
+        opt = ChiggerAlgorithm.validOptions()
+        opt += utils.KeyBindingMixin.validOptions()
+
+        opt.add('opacity', default=1., vtype=float, doc="The object opacity.")
+        opt.add('color', vtype=(float, int), size=3, doc="The color of the object.")
+        opt.add('linewidth', 1, vtype=(int, float), doc="The line width for the object.")
+
+        opt.add('pointsize', default=1, vtype=(float, int),
+                doc="The point size to utilized.")
+
+        opt.add('highlight', default=False, vtype=bool,
+                doc="Highlight to object.")
+
+
+        # TODO: Restore these
+        """
+        opt.add('orientation', vtype=float, size=3, doc="The orientation of the object.")
+        opt.add('rotation', default=(0., 0., 0.), vtype=float, size=3,
+                doc="The rotation of the object about x, y, z axes.")
+        """
         return opt
 
-    def __init__(self, vtkactor_type=vtk.vtkActor, vtkmapper_type=vtk.vtkPolyDataMapper, **kwargs):
-        super(ChiggerSource, self).__init__(vtkactor_type, vtkmapper_type, **kwargs)
+    @staticmethod
+    def validKeyBindings():
+        bindings = utils.KeyBindingMixin.validKeyBindings()
+        return bindings
 
-    def update(self, **kwargs):
+    def __init__(self, viewport, **kwargs):
+
+        # Storage for the available filters for this object, this needs to be before the base
+        # class __init__ because the setOptions command of this class attempts to apply options to
+        # the filters.
+        self.__filter_info = list()
+
+        utils.KeyBindingMixin.__init__(self)
+        ChiggerAlgorithm.__init__(self, **kwargs)
+
+        # Storage for the outline object created with 'higlight' option
+        self.__outline = None
+
+        # Create mapper
+        self._vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
+        if (self._vtkmapper is not None) and not isinstance(self._vtkmapper, vtk.vtkAbstractMapper):
+            msg = 'The supplied mapper is a {} but must be a vtk.vtkAbstractMapper type.'
+            raise mooseutils.MooseException(msg.format(type(self._vtkmapper).__name__))
+
+        # Create the actor
+        self._vtkactor = self.VTKACTORTYPE() if self.VTKACTORTYPE else None
+        if (self._vtkactor is not None) and not isinstance(self._vtkactor, vtk.vtkProp):
+            msg = 'The supplied actor is a {} but must be a vtk.vtkProp type.'
+            raise mooseutils.MooseException(msg.format(type(self._vtkactor).__name__))
+
+        # Connect the mapper and actor and add the actor to the renderer
+        if self._vtkmapper is not None:
+            self._vtkactor.SetMapper(self._vtkmapper)
+
+        # Storage for the filter object instances
+        self._filters = collections.OrderedDict()
+
+        # Add this ChiggerSource object to the viewport
+        viewport.add(self)
+
+        # Store a reference without reference counting, the underlying VTK objects keep track of
+        # things and without the weakref here there is a circular reference between the vtkRenderer
+        # and vtkActor objects. The _viewport property should be used by objects that need
+        # information from the Viewport object.
+        self.__viewport_weakref = weakref.ref(viewport)
+
+    @property
+    def _viewport(self):
+        """Property so that self._viewport acts like the actual Viewport object."""
+        return self.__viewport_weakref()
+
+    def _addFilter(self, filter_type, active=False):
+        self.__filter_info.append(FilterInfo(filter_type=filter_type, active=active))
+
+        fname = filter_type.FILTERNAME
+        self._options.add(fname, filter_type.validOptions(),
+                          doc="Options for the '{}' filter.".format(fname))
+
+    def remove(self):
+        self._viewport.remove(self)
+
+    def getVTKActor(self):
         """
-        Updates the VTK settings for the VTKACTOR_TYPE/VTKMAPPER_TYPE objects. (override)
+        Return the constructed vtk actor object. (public)
 
-        Inputs:
-            see ChiggerFilterSourceBase
+        Returns:
+            An object derived from vtk.vtkProp.
         """
-        super(ChiggerSource, self).update(**kwargs)
+        return self._vtkactor
 
-        if self.isOptionValid('orientation'):
-            self._vtkactor.SetOrientation(self.getOption('orientation'))
+    def getVTKMapper(self):
+        """
+        Return the constructed vtk mapper object. (public)
 
-        if self.isOptionValid('rotation'):
-            x, y, z = self.getOption('rotation')
-            self._vtkactor.RotateX(x)
-            self._vtkactor.RotateY(y)
-            self._vtkactor.RotateZ(z)
+        Returns:
+            An object derived from vtk.vtkAbstractMapper
+        """
+        return self._vtkmapper
 
-        if self.isOptionValid('edges') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetEdgeVisibility'):
-            self._vtkactor.GetProperty().SetEdgeVisibility(self.getOption('edges'))
+    def getFilters(self):
+        return self._filters
 
-        if self.isOptionValid('edge_color') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetEdgeColor'):
-            self._vtkactor.GetProperty().SetEdgeColor(self.getOption('edge_color'))
+    def setOptions(self, *args, **kwargs):
+        ChiggerAlgorithm.setOptions(self, *args, **kwargs)
 
-        if self.isOptionValid('edge_width') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetLineWidth'):
-            self._vtkactor.GetProperty().SetLineWidth(self.getOption('edge_width'))
+        for finfo in self.__filter_info:
+            if finfo.filter_type.FILTERNAME in args:
+                finfo.active = True
+                self.__ACTIVE_FILTERS__.add(filter_type.FILTERNAME)
 
-        if self.isOptionValid('point_size') and \
-           hasattr(self._vtkactor.GetProperty(), 'SetPointSize'):
-            self._vtkactor.GetProperty().SetPointSize(self.getOption('point_size'))
+    def _onRequestInformation(self, *args):
+        ChiggerAlgorithm._onRequestInformation(self, *args)
 
-        if self.isOptionValid('opacity'):
-            self._vtkactor.GetProperty().SetOpacity(self.getOption('opacity'))
+        # Connect the filters
+        self.__connectFilters()
 
-        if self.isOptionValid('color'):
-            self._vtkactor.GetProperty().SetColor(self.getOption('color'))
+        self.assignOption('color', self._vtkactor.GetProperty().SetColor)
+        self.assignOption('opacity', self._vtkactor.GetProperty().SetOpacity)
+        self.assignOption('linewidth', self._vtkactor.GetProperty().SetLineWidth)
+        self.assignOption('pointsize', self._vtkactor.GetProperty().SetPointSize)
+        self.assignOption('visible', self._vtkactor.SetVisibility)
+
+        # Create/Remove highlight
+        if self.getOption('highlight') and (self.__outline is None):
+            from .. import geometric # avoid cyclic import
+            is_3D = isinstance(self.getVTKActor(), vtk.vtkActor)
+            obj_type = geometric.Highlight if is_3D else geometric.Highlight2D
+            offset = 0.05 if is_3D else 0.02
+            self.__outline = obj_type(self._viewport, self, interactive=False, offset=offset, linewidth=3, color=(1,1,0))
+        elif (not self.getOption('highlight')) and (self.__outline is not None):
+            self.__outline.remove()
+            del self.__outline
+            self.__outline = None
+
+    def __connectFilters(self):
+        self.debug('__connectFilters')
+
+        for finfo in self.__filter_info:
+            fname = finfo.filter_type.FILTERNAME
+            if (finfo.active) and (fname not in self._filters):
+                self._filters[fname] = finfo.filter_type()
+                self.Modified()
+            elif (not finfo.active) and (fname in self._filters):
+                self._filters.pop(fname)
+                self.Modified()
+
+        base_obj = self
+        for fname, filter_obj in self._filters.items():
+            self.debug('{} --> {}'.format(filter_obj.name(), base_obj.name()))
+            filter_obj.SetInputConnection(0, base_obj.GetOutputPort(0))
+            base_obj = filter_obj
+
+        # Connect mapper/filters into the pipeline
+        if self._vtkmapper is not None:
+            self.debug('{} --> {}'.format(self._vtkmapper.GetClassName(), base_obj.name()))
+            self._vtkmapper.SetInputConnection(0, base_obj.GetOutputPort(0))
+
+    def __del__(self):
+        ChiggerAlgorithm.__del__(self)
+
+        # Delete the actor and mapper, this is needed to avoid a seg fault in VTK
+        self._vtkactor = None
+        self._vtkmapper = None
+
+class ChiggerSource(ChiggerSourceBase):
+
+    VTKACTORTYPE = vtk.vtkActor
+
+    @classmethod
+    def validOptions(cls):
+        opt = ChiggerSourceBase.validOptions()
+
+        opt.add('representation', default='surface', allow=('surface', 'wireframe', 'points'),
+                doc="View volume representation.")
+
+        opt.add('edges', default=False, vtype=bool,
+                doc="Enable edges on the rendered object.")
+        opt.add('edgecolor', default=(0.5,)*3, array=True, size=3, vtype=float,
+                doc="The color of the edges, 'edges=True' must be set.")
+        opt.add('edgewidth', default=1, vtype=(float, int),
+                doc="The width of the edges, 'edges=True' must be set.")
+
+        opt.add('lines_as_tubes', default=False, vtype=bool,
+                doc="Toggle rendering 1D lines as tubes.")
+
+        return opt
+
+    def _onRequestInformation(self, *args):
+        ChiggerSourceBase._onRequestInformation(self, *args)
+
+        rep = self.getOption('representation')
+        if rep == 'surface':
+            self._vtkactor.GetProperty().SetRepresentationToSurface()
+        elif rep == 'wireframe':
+            self._vtkactor.GetProperty().SetRepresentationToWireframe()
+        elif rep == 'points':
+            self._vtkactor.GetProperty().SetRepresentationToPoints()
+
+        self.assignOption('edges', self._vtkactor.GetProperty().SetEdgeVisibility)
+        self.assignOption('edgecolor', self._vtkactor.GetProperty().SetEdgeColor)
+        self.assignOption('edgewidth', self._vtkactor.GetProperty().SetLineWidth)
+
+        self.assignOption('lines_as_tubes', self._vtkactor.GetProperty().SetRenderLinesAsTubes)
+
+class ChiggerSource2D(ChiggerSourceBase):
+    VTKACTORTYPE = vtk.vtkActor2D
+
+    @classmethod
+    def validOptions(cls):
+        opt = ChiggerSourceBase.validOptions()
+        return opt
