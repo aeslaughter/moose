@@ -7,6 +7,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import textwrap
+import inspect
 import logging
 LOG = logging.getLogger(__file__)
 
@@ -30,9 +31,11 @@ class Parameter(object):
         required[bool]: Define if the option is required; see InputParameters.py
         private[bool]: Define if the options is private; see InputParameters.py. A parameter name
                        that starts with and underscore is assumed to be private
+        verify[tuple]: Define a custom verify function and error message. The first item must
+                       be a callable function with a single argument, the second item must be a str.
     """
     def __init__(self, name, default=None, doc=None, vtype=None, allow=None, size=None,
-                 array=False, required=False, private=None):
+                 array=False, required=False, private=None, verify=None):
 
         # Force vtype to be a tuple to allow multiple types to be defined
         if isinstance(vtype, type):
@@ -47,6 +50,7 @@ class Parameter(object):
         self.__array = array       # create an array
         self.__size = size         # array size
         self.__required = required # see validate()
+        self.__verify = verify     # verification function
 
         if not isinstance(self.__name, str):
             msg = "The supplied 'name' argument must be a 'str', but {} was provided."
@@ -85,6 +89,26 @@ class Parameter(object):
         if not isinstance(self.__private, bool):
             msg = "The supplied 'required' argument must be a 'bool', but {} was provided."
             raise TypeError(msg.format(type(self.__required)))
+
+        if (self.__verify is not None) and (not isinstance(self.__verify, tuple)):
+            msg = "The supplied 'verify' argument must be a 'tuple' with callable function and 'str' error message, but {} was provided."
+            raise TypeError(msg.format(type(self.__verify)))
+
+        if (self.__verify is not None) and (len(self.__verify) != 2):
+            msg = "The supplied 'verify' argument must be a 'tuple' with two items a callable function and 'str' error message, but {} with {} items was provided."
+            raise TypeError(msg.format(type(self.__verify), len(self.__verify)))
+
+        if (self.__verify is not None) and (not inspect.isfunction(self.__verify[0])):
+            msg = "The first item in the 'verify' argument tuple must be a callable function with a single argument, but {} was provided"
+            raise TypeError(msg.format(type(self.__verify[0])))
+
+        if (self.__verify is not None) and (len(inspect.signature(self.__verify[0]).parameters) != 1):
+            msg = "The first item in the 'verify' argument tuple must be a callable function with a single argument, but {} was provided that has {} arguments."
+            raise TypeError(msg.format(type(self.__verify[0]), len(inspect.signature(self.__verify[0]).parameters)))
+
+        if (self.__verify is not None) and (not isinstance(self.__verify[1], str)):
+            msg = "The second item in the 'verify' argument tuple must be a string, but {} was provided"
+            raise TypeError(msg.format(type(self.__verify[1])))
 
         elif self.__size is not None:
             self.__array = True
@@ -138,71 +162,30 @@ class Parameter(object):
         return self.__private
 
     @default.setter
-    def default(self, value):
+    def default(self, val):
         """Set the default value for this option."""
-        self.__default = value
-        if self.__value is None:
-            self.value = self.__default
+        if val is None:
+            self.__default = None
+
+        else:
+            d = self.__check(val)
+            if d is not None:
+                self.__default = d
+                if self.__value is None:
+                    self.__value = self.__default
 
     @value.setter
     def value(self, val):
         """
         Sets the value and performs a myriad of consistency checks.
         """
-
         if val is None:
             self.__value = None
             return
 
-        if self.__array and not isinstance(val, tuple):
-            msg = "'%s' was defined as an array, which require %s for assignment, but a %s was " \
-                  "provided."
-            LOG.warning(msg, self.name, tuple, type(val))
-            return
-
-        if self.__array:
-            for v in val:
-                if self.__vtype is not None:
-                    for vtype in self.__vtype:
-                        try:
-                            v = vtype(v)
-                            break
-                        except (ValueError, TypeError):
-                            pass
-
-                if (self.__vtype is not None) and not isinstance(v, self.__vtype):
-                    msg = "The values within '%s' must be of type %s but %s provided."
-                    LOG.warning(msg, self.name, self.__vtype, type(v))
-                    return
-
-            if self.__size is not None:
-                if len(val) != self.__size:
-                    msg = "'%s' was defined as an array with length %s but a value with length %s " \
-                          "was provided."
-                    LOG.warning(msg, self.name, self.__size, len(val))
-                    return
-
-        else:
-            if self.__vtype is not None:
-                for vtype in self.__vtype:
-                    try:
-                        val = vtype(val)
-                        break
-                    except (ValueError, TypeError):
-                        pass
-
-            if (self.__vtype is not None) and not isinstance(val, self.__vtype):
-                msg = "'%s' must be of type %s but %s provided."
-                LOG.warning(msg, self.name, self.__vtype, type(val))
-                return
-
-        # Check that the value is allowed
-        if (self.__allow is not None) and (val != None) and (val not in self.__allow):
-            msg = "Attempting to set '%s' to a value of %s but only the following are allowed: %s"
-            LOG.warning(msg, self.name, val, self.__allow)
-            return
-
-        self.__value = val
+        v = self.__check(val)
+        if v is not None:
+            self.__value = v
 
     def validate(self):
         """Validate that the Parameter is in the correct state."""
@@ -240,6 +223,67 @@ class Parameter(object):
 
         return '\n'.join(out)
 
+    def __check(self, val):
+        """
+        Check that the supplied value is correct.
+
+        This function is used to when setting the default and the value itself.
+        """
+        if self.__array and not isinstance(val, tuple):
+            msg = "'%s' was defined as an array, which require %s for assignment, but a %s was " \
+                  "provided."
+            LOG.warning(msg, self.name, tuple, type(val))
+            return None
+
+        if self.__array:
+            for v in val:
+                if self.__vtype is not None:
+                    for vtype in self.__vtype:
+                        try:
+                            v = vtype(v)
+                            break
+                        except (ValueError, TypeError):
+                            pass
+
+                if (self.__vtype is not None) and not isinstance(v, self.__vtype):
+                    msg = "The values within '%s' must be of type %s but %s provided."
+                    LOG.warning(msg, self.name, self.__vtype, type(v))
+                    return None
+
+            if self.__size is not None:
+                if len(val) != self.__size:
+                    msg = "'%s' was defined as an array with length %s but a value with length %s " \
+                          "was provided."
+                    LOG.warning(msg, self.name, self.__size, len(val))
+                    return None
+
+        else:
+            if self.__vtype is not None:
+                for vtype in self.__vtype:
+                    try:
+                        val = vtype(val)
+                        break
+                    except (ValueError, TypeError):
+                        pass
+
+            if (self.__vtype is not None) and not isinstance(val, self.__vtype):
+                msg = "'%s' must be of type %s but %s provided."
+                LOG.warning(msg, self.name, self.__vtype, type(val))
+                return None
+
+        # Check that the value is allowed
+        if (self.__allow is not None) and (val != None) and (val not in self.__allow):
+            msg = "Attempting to set '%s' to a value of %s but only the following are allowed: %s"
+            LOG.warning(msg, self.name, val, self.__allow)
+            return None
+
+        # Call custom verify function
+        if (self.__verify is not None) and (not self.__verify[0](val)):
+            msg = "Verify function failed with the given value of {}\n{}"
+            LOG.warning(msg.format(val, self.__verify[1]))
+            return None
+
+        return val
 
     def __str__(self):
         """Support print statement on Parameter object."""
