@@ -74,9 +74,6 @@ class ChiggerObjectBase(object):
             return self.__class__.__name__
         return self.getOption('name')
 
-    #def updateOptions(self, other):
-    #    self._options.update(other)
-
     def isValid(self, name):
         """(public)
         Test if the given option is valid (i.e., not None).

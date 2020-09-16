@@ -51,6 +51,7 @@ class Parameter(object):
         self.__size = size         # array size
         self.__required = required # see validate()
         self.__verify = verify     # verification function
+        self.__set_by_user = False # flag indicating if the parameter was set after construction
 
         if not isinstance(self.__name, str):
             msg = "The supplied 'name' argument must be a 'str', but {} was provided."
@@ -115,6 +116,7 @@ class Parameter(object):
 
         if default is not None:
             self.value = default
+            self.__set_by_user = False # override self.value setting of this
 
     @property
     def name(self):
@@ -179,13 +181,19 @@ class Parameter(object):
         """
         Sets the value and performs a myriad of consistency checks.
         """
-        if val is None:
+        if (val is None) and (self.__value is not None):
             self.__value = None
+            self.__set_by_user = True
             return
 
         v = self.__check(val)
         if v is not None:
             self.__value = v
+            self.__set_by_user = True
+
+    def isSetByUser(self):
+        """Return True if the value has been set after construction."""
+        return self.__set_by_user
 
     def validate(self):
         """Validate that the Parameter is in the correct state."""

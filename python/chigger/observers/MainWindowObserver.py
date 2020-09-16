@@ -18,85 +18,6 @@ from .ChiggerObserver import ChiggerObserver
 from .. import utils
 from .. import geometric
 
-
-class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
-    def __init__(self):
-        super(Chigger3DInteractorStyle, self).__init__()
-
-class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
-    ZOOM_FACTOR = 0.01
-
-    def __init__(self):
-        self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
-        self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPress)
-        self.AddObserver(vtk.vtkCommand.KeyReleaseEvent, self.onKeyRelease)
-        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMove)
-        self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.onLeftButtonPress)
-        self.AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent, self.onLeftButtonRelease)
-        super(Chigger2DInteractorStyle, self).__init__()
-
-        self._source = None
-        self._outline = None
-        self._move_origin = None
-        self._left_button_down = None
-
-    def setSource(self, source, outline):
-        self._source = source
-        self._outline = outline
-        self._left_button_down = True # method is called with the left-mouse button down
-
-    def onLeftButtonPress(self, obj, event):
-        self._left_button_down = True
-
-    def onLeftButtonRelease(self, obj, event):
-        self._left_button_down = False
-
-    def onMouseWheelForward(self, obj, event):
-        if not obj.GetShiftKey():
-            factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
-            self._callSourceMethod('zoom', factor)
-            bnds = self._source.getBounds()
-            self._outline.setOptions(bounds=bnds)
-            obj.GetInteractor().GetRenderWindow().Render()
-
-    def onMouseWheelBackward(self, obj, event):
-        if not obj.GetShiftKey():
-            factor = getattr(self._source, 'ZOOM_FACTOR', self.ZOOM_FACTOR)
-            self._callSourceMethod('zoom', -factor)
-            bnds = self._source.getBounds()
-            self._outline.setOptions(bounds=bnds)
-            obj.GetInteractor().GetRenderWindow().Render()
-
-    def onKeyPress(self, obj, event):
-        key = obj.GetKeySym().lower()
-        if key == 'shift_l':
-            self._move_origin = obj.GetInteractor().GetEventPosition()
-
-    def onKeyRelease(self, obj, event):
-        key = obj.GetKeySym().lower()
-        if key == 'shift_l':
-            self._move_origin = None
-
-    def onMouseMove(self, obj, event):
-        if (self._move_origin is not None) and self._left_button_down:
-            pos = obj.GetInteractor().GetEventPosition()
-            if pos != self._move_origin:
-                dx = pos[0] - self._move_origin[0]
-                dy = pos[1] - self._move_origin[1]
-
-                self._callSourceMethod('move', dx, dy)
-                bnds = self._source.getBounds()
-                self._outline.setOptions(bounds=bnds)
-                obj.GetInteractor().GetRenderWindow().Render()
-                self._move_origin = pos
-
-    def _callSourceMethod(self, method, *args, **kwargs):
-        func = getattr(self._source, method, None)
-        if func is not None:
-            func(*args, **kwargs)
-
-
 class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     """
     The main means for interaction with the chigger interactive window.
@@ -113,7 +34,6 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
 
-        """
         bindings.add('v', MainWindowObserver._nextViewport, desc="Select the next viewport.")
         bindings.add('v', MainWindowObserver._nextViewport, shift=True, args=(True,),
                      desc="Select the previous viewport.")
@@ -123,10 +43,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('s', MainWindowObserver._nextSource, shift=True, args=(True,),
                      desc="Select the previous source in the current viewport.")
 
-        #bindings.add('t', MainWindowObserver._deactivate, desc="Clear selection(s).")
-        bindings.add('h', MainWindowObserver._printHelp, desc="Display the help for this object.")
+        bindings.add('t', MainWindowObserver._deactivate, desc="Clear selection(s).")
         bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file.")
-        """
 
         return bindings
 
@@ -135,45 +53,82 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         utils.KeyBindingMixin.__init__(self)
 
         self.addObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
-        self.addObserver(vtk.vtkCommand.LeftButtonPressEvent, self._onLeftButtonPressEvent)
 
-        self.__style_2d = Chigger2DInteractorStyle()
-        self.__style_3d = Chigger3DInteractorStyle()
+        # Disable interaction by default, but honor user specified interaction
+        for viewport in self._getViewports():
 
-        # TODO: Warn if viewport or source is already highlighted
+            # Viewport
+            v_i = viewport.getOption('interactive') if viewport._options.isSetByUser('interactive') else False
+            v_h = viewport.getOption('highlight') if viewport._options.isSetByUser('highlight') else v_i
+            viewport.setOptions(highlight=v_h, interactive=v_i)
 
+            # Sources
+            for source in viewport.sources():
+                s_i = source.getOption('interactive') if source._options.isSetByUser('interactive') else False
+                s_h = source.getOption('highlight') if source._options.isSetByUser('highlight') else s_i
+                source.setOptions(highlight=s_h, interactive=s_i)
 
+                # If the source is active so must be the viewport
+                if s_i:
+                    viewport.setOptions(highlight=True, interactive=True)
 
-    def _availableViewports(self):
+    def _getViewports(self):
         """Complete list of available Viewport objects"""
-        return [viewport for viewport in self._window.viewports() if viewport.interactive()]
+        return [viewport for viewport in self._window.viewports() if viewport.getOption('layer') > 0]
 
     def _getActiveViewport(self):
         """Current active (highlighted) Viewport object"""
-        for viewport in self._availableViewports():
-            if viewport.getOption('highlight'):
+        for viewport in self._getViewports():
+            if viewport.getOption('interactive'):
                 return viewport
         return None
 
     def _setActiveViewport(self, viewport):
-        for vp in self._availableViewports():
-            vp.setOptions(highlight=viewport is vp)
+        for vp in self._getViewports():
+            active = viewport is vp
+            vp.setOptions(interactive=active, highlight=active)
+            vp.updateInformation()
 
-    def _availableSources(self):
+    def _nextViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
+        """
+        (Keybinding callback)
+        Activate the "next" viewport object.
+        """
+        self.debug('Select Next Viewport')
+
+        # Remove highlighting from the active source.
+        self._setActiveSource(None)
+
+        # Determine the index of the Viewport to be set to active
+        index = 0
+        viewports = self._getViewports()
+        current = self._getActiveViewport()
+        if current is not None:
+            index = viewports.index(current)
+            index = index - 1 if decrease else index + 1
+
+        current = viewports[index] if index < len(viewports) else None
+        self._setActiveViewport(current)
+
+        self._window.getVTKWindow().Render()
+
+    def _getSources(self):
         """Complete list of available ChiggerSourceBase objects"""
-        return [source for viewport in self._availableViewports() for source in viewport.sources() if source.interactive()]
+        return [source for viewport in self._getViewports() for source in viewport.sources() if source.getOption('pickable')]
 
     def _getActiveSource(self):
-        """Current active (highlighted) ChiggerSourceBase object"""
-        for source in self._availableSources():
-            if source.getOption('highlight'):
+        """Current active ChiggerSourceBase object"""
+        for source in self._getSources():
+            if source.getOption('interactive'):
                 return source
         return None
 
     def _setActiveSource(self, source):
-        for s in self._availableSources():
-            s.setOptions(highlight=s is source)
-
+        for s in self._getSources():
+            active = s is source
+            s.setOptions(highlight=active, interactive=active)
+            s._viewport.updateInformation()
+            s.updateInformation()
 
     def _nextSource(self, decrease=False):
         """
@@ -181,24 +136,21 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         self.debug('Select Next Source')
 
-        # Remove Viewport selection
-        self._setActiveViewport(None)
-
         # Determine the index of the ChiggerSourceBase to be set to active
-        sources = self._availableSources()
+        sources = self._getSources()
         current = self._getActiveSource()
+        index = 0
         if current is not None:
             index = sources.index(current)
             index = index - 1 if decrease else index + 1
 
-        else:
-            index = 0
+        current = sources[index] if index < len(sources) else None
+        self._setActiveSource(current)
 
-        if index < len(sources):
-            current = sources[index]
-            self._setActiveSource(current)
+        vp = current._viewport if current is not None else None
+        self._setActiveViewport(vp)
 
-        self._window.getVTKWindow().Render()
+        self._window.render()
 
     def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
         """
@@ -219,65 +171,43 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         for binding in self._window.getKeyBindings(key, shift):
             binding.function(self._window, *binding.args)
 
-
         # Viewport options
-        #viewport = self._getActiveViewport()
-        #if viewport is not None:
-        #    for binding in viewport.getKeyBindings(key, shift):
-        #        binding.function(viewport, *binding.args)
+        viewport = self._getActiveViewport()
+        if viewport is not None:
+            for binding in viewport.getKeyBindings(key, shift):
+                binding.function(viewport, *binding.args)
 
         # Source options
-        #if self.__current_source_index is not None:
-        #    viewport = self._availableViewports()[self.__current_viewport_index]
-        #    source = self._availableSources(viewport)[self.__current_source_index]
-        #    for binding in source.getKeyBindings(key, shift):
-        #        binding.function(source, *binding.args)
+        source = self._getActiveSource()
+        if source is not None:
+            for binding in source.getKeyBindings(key, shift):
+                binding.function(source, *binding.args)
 
-        #self._window.Update()
-        self._window.getVTKWindow().Render()
+        self._window.render()
 
+    def _deactivate(self):
+        """Remove all interaction seclections"""
+        self._setActiveViewport(None)
+        self._setActiveSource(None)
 
-    def _onLeftButtonPressEvent(self, obj, event):
-
-        return None
-
-        pos = self._window.getVTKInteractor().GetEventPosition()
-        vtk_renderer = self._window.getVTKInteractor().FindPokedRenderer(*pos)
-        vtk_style = self._window.getVTKInteractorStyle()
-        props = vtk_renderer.PickProp(*pos)
-
-        """
-        #TODO: Check for more than one???
-        #props.GetNumberOfItems()
-        if props is not None:
-            prop = props.GetFirstNode().GetViewProp()
-            viewport, source = self._getSource(prop)
-            if self.__current_source is not source:
-                self._deactivateSource()
-
-            self._activateSource(viewport, source)
-
-        else:
-            self._deactivateSource()
-        """
 
     def _writeChanges(self):
-        return
+        """Write changes directly to the script"""
 
-        """
-        if self.__current_source is None:
+        source = self._getActiveSource()
+        if source is None:
             return
 
-        trace = self.__current_source._init_traceback[0]
+        trace = source._init_traceback[0]
         filename = trace[0]
         line = trace[1]
 
-        output, sub_output = self.__current_source._options.getNonDefaultOptions()
+        output, sub_output = source._options.getNonDefaultOptions()
         def sub_func(match):
             key = match.group('key')
             value = match.group('value')
             if key in output:
-                return '{}={}'.format(key, repr(self.__current_source.getOption(key)))
+                return '{}={}'.format(key, repr(source.getOption(key)))
             return match.group(0)
 
         with open(filename, 'r') as fid:
@@ -287,4 +217,3 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         lines[line-1] = '{}\n'.format(content)
 
         print(''.join(lines))
-        """

@@ -18,56 +18,7 @@ from . import base
 from . import annotations
 from . import observers
 from . import utils
-from .Viewport import Viewport
-
-
-class Chigger3DInteractorStyle(vtk.vtkInteractorStyleMultiTouchCamera):
-    """
-    Default 3D interaction for chigger.
-    """
-    pass
-
-class Chigger2DInteractorStyle(vtk.vtkInteractorStyleUser):
-    """
-    Default 2D interaction for chigger.
-
-    This style allows 2D interaction to mimic the zoom and translate functionality of the 3D version.
-    """
-    ZOOM_FACTOR = 2
-
-    def __init__(self, source):
-        self.AddObserver(vtk.vtkCommand.MouseWheelForwardEvent, self.onMouseWheelForward)
-        self.AddObserver(vtk.vtkCommand.MouseWheelBackwardEvent, self.onMouseWheelBackward)
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.onKeyPressEvent)
-        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMouseMoveEvent)
-
-        super(Chigger2DInteractorStyle, self).__init__()
-
-        self._source = source
-        self._move_origin = None
-
-    def onMouseWheelForward(self, obj, event):
-        self.zoom(self.ZOOM_FACTOR)
-        obj.GetInteractor().GetRenderWindow().Render()
-
-    def onMouseWheelBackward(self, obj, event):
-        self.zoom(-self.ZOOM_FACTOR)
-        obj.GetInteractor().GetRenderWindow().Render()
-
-    def onKeyPressEvent(self, obj, event):
-        key = obj.GetKeySym().lower()
-        if key == 'shift_l':
-            self._shift_origin = obj.GetInteractor().GetEventPosition()
-
-    def onMouseMoveEvent(self, obj, event):
-        if obj.GetShiftKey():
-            if self._move_origin == None:
-                self._move_origin = obj.GetInteractor().GetEventPosition()
-            else:
-                pos = obj.GetInteractor().GetEventPosition()
-                self.move(pos[0] - self._move_origin[0], pos[1] - self._move_origin[1])
-                obj.GetInteractor().GetRenderWindow().Render()
-                self._move_origin = pos
+from .Viewport import Viewport, Background
 
 class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
     """
@@ -114,6 +65,7 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
         opt.add('filename', vtype=str, doc="The output image filename for the write command.")
 
         # Observer
+        opt.add('interactive', True, doc="Toggle indicating if the Window is interactive.")
         opt.add('observer', vtype=bool, default=True,
                 doc="Create the default observer for command-line and mouse interaction.")
 
@@ -122,13 +74,10 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
     @staticmethod
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
-        bindings.add('v', Window._nextViewport, desc="Select the next viewport.")
-        bindings.add('v', Window._nextViewport, shift=True, args=(True,),
-                     desc="Select the previous viewport.")
         return bindings
 
     def __init__(self, **kwargs):
-        base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0,**kwargs)
+        base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0, **kwargs)
         utils.KeyBindingMixin.__init__(self)
 
         self.__vtkwindow = vtk.vtkRenderWindow()#kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
@@ -144,7 +93,7 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
         # is setup and serves as a fallback vtkRenderer object of all others are off.
         #
         # https://vtk.org/pipermail/vtkusers/2018-June/102030.html
-        Viewport(self, name='__ChiggerWindowBackground__', layer=0, highlight=False, interactive=True)
+        Background(self)
 
         # Create "chigger" watermark
         """
@@ -180,7 +129,7 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
         base.ChiggerAlgorithm.updateData(self)
         for view in self.__viewports:
             view.updateData()
-            view.getVTKRenderer().ResetCamera()
+            #view.getVTKRenderer().ResetCamera()
 
     def viewports(self):
         """(public)
@@ -354,12 +303,11 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
     def _onRequestData(self, *args):
         base.ChiggerAlgorithm._onRequestData(self, *args)
         self.__vtkwindow.Render()
-        self.debug('Render Complete')
-        #self.__vtkwindow.InvokeEvent(vtk.vtkCommand.UserEvent)
 
-    #def setOptions(self, *args, **kwargs):
-    #    base.ChiggerObject.setOptions(self, *args, **kwargs)
-    #    self.__background._options.update(self.getOption('background'))
+    def render(self):
+        self.updateInformation()
+        self.updateData()
+        self.__vtkwindow.Render()
 
     def resetCamera(self):
         """
@@ -436,37 +384,3 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
 
     def _onKeyPressEvent(self, obj, event):
         print('foo')
-
-
-    def _nextViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
-        """
-        (Keybinding callback)
-        Activate the "next" viewport object.
-        """
-        self.debug('Select Next Viewport')
-
-        # Remove highlighting from the active source.
-        #self._setActiveSource(None)
-
-        # Determine the index of the Viewport to be set to active
-
-
-        #index = 0
-        #viewports = [vp for vp in self.__viewports if vp.interactive()]
-        #for i, viewport in enumerate(viewports):
-        #    if viewport
-
-
-
-
-        current = self._getActiveViewport()
-        if current is not None:
-            index = viewports.index(current)
-            index = index - 1 if decrease else index + 1
-        else:
-            index = 0
-
-        if index < len(viewports):
-            self._setActiveViewport(viewports[index])
-
-        self._window.getVTKWindow().Render()

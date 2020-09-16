@@ -63,8 +63,9 @@ class ChiggerObserver(base.ChiggerObject):
         return  tag
 
     def __del__(self):
-        for tag in self.__observer_tags:
-            self._window.getVTKInteractor().RemoveObserver(tag)
+        pass
+        #for tag in self.__observer_tags:
+        #    self._window.getVTKInteractor().RemoveObserver(tag)
 
     @property
     def _window(self):

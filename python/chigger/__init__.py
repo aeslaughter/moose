@@ -10,7 +10,7 @@
 import os
 
 from .Window import Window
-from .Viewport import Viewport
+from .Viewport import Viewport, Background
 from . import annotations
 from . import base
 from . import utils

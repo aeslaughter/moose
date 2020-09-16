@@ -20,8 +20,8 @@ class Option(parameters.Parameter):
     """
 
     def __init__(self, *args, **kwargs):
-        parameters.Parameter.__init__(self, *args, **kwargs)
         self.__modified = vtk.vtkTimeStamp()    # modified status, see Options class
+        parameters.Parameter.__init__(self, *args, **kwargs)
         self.__modified.Modified()
 
     @property
@@ -41,6 +41,7 @@ class Option(parameters.Parameter):
         """
         Sets the value and performs a myriad of consistency checks and updates modified time
         """
+        old_value = self._Parameter__value
         parameters.Parameter.value.fset(self, val)
-        if self._Parameter__value != val:
+        if old_value != self._Parameter__value:
             self.__modified.Modified()

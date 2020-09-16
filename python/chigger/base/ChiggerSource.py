@@ -58,8 +58,13 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         opt.add('pointsize', default=1, vtype=(float, int),
                 doc="The point size to utilized.")
 
+        opt.add('pickable', default=True, vtype=bool,
+                doc="Indicates if the source can be selected via the MainWindowObserver")
+
+        opt.add('interactive', default=True, vtype=bool,
+                doc="Marks the source active for the MainWindowObserver")
         opt.add('highlight', default=False, vtype=bool,
-                doc="Highlight to object.")
+                doc="Highlight the object.")
 
 
         # TODO: Restore these
@@ -170,7 +175,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         self.assignOption('opacity', self._vtkactor.GetProperty().SetOpacity)
         self.assignOption('linewidth', self._vtkactor.GetProperty().SetLineWidth)
         self.assignOption('pointsize', self._vtkactor.GetProperty().SetPointSize)
-        self.assignOption('visible', self._vtkactor.SetVisibility)
+        #self.assignOption('visible', self._vtkactor.SetVisibility)
 
         # Create/Remove highlight
         if self.getOption('highlight') and (self.__outline is None):
@@ -178,7 +183,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
             is_3D = isinstance(self.getVTKActor(), vtk.vtkActor)
             obj_type = geometric.Highlight if is_3D else geometric.Highlight2D
             offset = 0.05 if is_3D else 0.02
-            self.__outline = obj_type(self._viewport, self, interactive=False, offset=offset, linewidth=3, color=(1,1,0))
+            self.__outline = obj_type(self._viewport, self, pickable=False, offset=offset, linewidth=1, color=(1,1,0))
         elif (not self.getOption('highlight')) and (self.__outline is not None):
             self.__outline.remove()
             del self.__outline

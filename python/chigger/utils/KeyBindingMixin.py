@@ -43,7 +43,6 @@ class KeyBindingMixin(object):
     def validOptions():
         from . import Options
         opt = Options()
-        opt.add('interactive', True, doc="Toggle indicating if the object is interactive.")
         return opt
 
     @staticmethod
@@ -65,11 +64,6 @@ class KeyBindingMixin(object):
         """
         Helper for printing keybindings.
         """
-
-        # Do nothing if object is not interactive
-        if not self.interactive():
-            return None
-
         n = 0
         out = []
         for key, value in self.__keybindings.bindings.items():
@@ -79,15 +73,8 @@ class KeyBindingMixin(object):
             n = max(n, len(tag))
 
         if out:
-            print(mooseutils.colorText('{} Keybindings:'.format(self.name()), 'YELLOW'))
+            print(mooseutils.colorText('\n{} Keybindings:'.format(self.name()), 'YELLOW'))
         for key, desc in out:
             key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'GREEN')
             print('\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
                                           subsequent_indent=' '*(n + 2))))
-
-
-    def interactive(self):
-        """
-        Return the interactive state for the object.
-        """
-        return self.getOption('interactive')

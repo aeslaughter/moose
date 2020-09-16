@@ -149,6 +149,19 @@ class InputParameters(object):
             return None
         return opt.value == opt.default
 
+    def isSetByUser(self, name):
+        """
+        Return True if the supplied option was set after construction.
+
+        Inputs:
+            name[str]: The name of the Parameter to test.
+        """
+        opt = self.__parameters.get(name, None)
+        if opt is None:
+            self.__errorHelper("Cannot check if the parameters was set by the user, the parameter '{}' does not exist.", name)
+            return False
+        return opt.isSetByUser()
+
     def set(self, name, *args, **kwargs):
         """
         Set the value of a parameter or update contents of a sub-parameters.

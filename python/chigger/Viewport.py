@@ -32,7 +32,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
         opt.add('light', vtype=float,
                doc="Add a headlight with the given intensity to the renderer.")
-        opt.add('layer', default=1, vtype=int,
+        opt.add('layer', default=1, vtype=int, verify=(lambda v: v > 0, "The 'layer' must be greater than zero."),
                 doc="The VTK layer within the render window.")
         opt.add('viewport', default=(0., 0., 1., 1.), vtype=float, size=4,
                 doc="A list given the viewport coordinates [x_min, y_min, x_max, y_max], in " \
@@ -45,6 +45,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
                 doc="The secondary background color, when supplied this creates a gradient " \
                     "background")
 
+        opt.add('interactive', vtype=bool, doc="Toggle indicating if the Viewport is interactive.")
         opt.add('highlight', vtype=bool, default=False,
                 doc="Toggle highlighting of the viewport boundary.")
 
@@ -85,7 +86,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
     def __init__(self, window, **kwargs):
         utils.KeyBindingMixin.__init__(self)
-        base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0, **kwargs)
+        base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0,
+                                       **kwargs)
 
         # Initialize class members
         self.__sources = list()
@@ -103,8 +105,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         # property should be used by objects that need information from the Window object.
         window.add(self)
         self.__window_weakref = weakref.ref(window)
-
-        self._vtkrenderer.InteractiveOff()
 
     @property
     def _window(self):
@@ -169,7 +169,7 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         # Add/Remove highlight
         if self.getOption('highlight') and (self.__outline is None):
             self.__outline = geometric.Outline2D(self, bounds=(0,1,0,1), color=(1,1,0),
-                                                 linewidth=5, interactive=False)
+                                                 linewidth=5, pickable=False)
         elif (not self.getOption('highlight')) and (self.__outline is not None):
             self.__outline.remove()
             del self.__outline
@@ -228,3 +228,16 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         self.setOptions(viewport=(x_min, y_min, x_max, y_max))
         self.updateInformation()
         self.printOption('viewport')
+
+
+class Background(Viewport):
+    @classmethod
+    def validOptions(cls):
+        opt = Viewport.validOptions()
+        opt.set('name', '__ChiggerWindowBackground__')
+        opt.set('highlight', False)
+        opt.set('interactive', True)
+        opt.remove('layer')
+        opt.add('layer', default=0, vtype=int, allow=(0,),
+                doc="The VTK layer within the render window, for the Background object this must be zero.")
+        return opt

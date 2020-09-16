@@ -10,10 +10,11 @@
 
 import chigger
 window = chigger.Window(size=(200, 200))
+left = chigger.Viewport(window, name='left', viewport=(0, 0, 0.5, 1), highlight=True)
+right = chigger.Viewport(window, name='right', viewport=(0.5, 0, 1, 1))
+window.start()
 
-left = chigger.Viewport(window, viewport=(0, 0, 0.5, 1))
-right = chigger.Viewport(window, viewport=(0.5, 0, 1, 1))
-
+"""
 window.write(filename='viewport_none.png')
 
 test = chigger.observers.TestObserver(window)
@@ -25,3 +26,4 @@ test.pressKey('v')
 window.write(filename='viewport_right.png')
 
 window.terminate()
+"""
