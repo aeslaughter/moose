@@ -127,11 +127,11 @@ class ChiggerObjectBase(object):
             self._options.update(**kwargs)
 
     def setOption(self, name, value):
-        #self.debug('setOption')
+        self.debug('setOption')
         self._options.set(name, value)
 
     def assignOption(self, name, func):
-        #self.debug('assignOption')
+        self.debug('assignOption')
         self._options.assign(name, func)
 
     def __setOptionsFromCommandLine(self, argv):
@@ -156,24 +156,8 @@ class ChiggerObjectBase(object):
                 self.info('Setting Option from Command Line: {}', match.group(0))
                 self.setOption(match.group('key'), eval(match.group('value')))
 
-    # TODO: ??? Move these to utils.show_options(obj, format=...)
     def printOption(self, key):
         print('{}={}'.format(key, repr(self.getOption(key))))
-
-    def printOptions(self, *args):
-        """
-        Print a list of all available options for this object.
-        """
-        print(self._options)
-
-    def printSetOptions(self, *args):
-        """
-        Print python code for the 'setOptions' method.
-        """
-        output, sub_output = self._options.toScriptString()
-        print('setOptions({})'.format(', '.join(output)))
-        for key, value in sub_output.items():
-            print('setOptions({}, {})'.format(key, ', '.join(repr(value))))
 
     def __del__(self):
         self.debug('__del__()')
@@ -185,12 +169,6 @@ class ChiggerObject(ChiggerObjectBase):
         self.__modified_time = vtk.vtkTimeStamp()
         ChiggerObjectBase.__init__(self, **kwargs)
         self.__modified_time.Modified()
-
-    #def update(self, other):
-    #    ChiggerObjectBase.update(self, other)
-    #    if self._options.modified() > self.__modified_time.GetMTime():
-    #        self.applyOptions()
-    #        self.__modified_time.Modified()
 
     def setOptions(self, *args, **kwargs):
         """Set the supplied objects, if anything changes mark the class as modified for VTK."""

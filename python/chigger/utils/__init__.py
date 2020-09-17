@@ -151,9 +151,10 @@ def print_camera(camera, prefix='camera', precision=8):
         d = ''.join(['(', frmt, ', ', frmt, ', ', frmt, ')'])
         return d.format(*vec)
 
-    return [prefix + '.SetViewUp' + dump(precision, view_up), prefix + '.SetPosition' + \
-                                         dump(precision, position), prefix + '.SetFocalPoint' + \
-                                         dump(precision, focal)]
+    return [prefix + ' = vtk.vtkCamera()',
+            prefix + '.SetViewUp' + dump(precision, view_up),
+            prefix + '.SetPosition' + dump(precision, position),
+            prefix + '.SetFocalPoint' + dump(precision, focal)]
 
 def rotate_point(p, o, angle):
     """Rotates a point counter clockwise about an origin."""

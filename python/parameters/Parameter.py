@@ -9,6 +9,7 @@
 import textwrap
 import inspect
 import logging
+import mooseutils
 LOG = logging.getLogger(__file__)
 
 class Parameter(object):
@@ -205,26 +206,26 @@ class Parameter(object):
 
     def toString(self):
         """Create a string of Parameter information."""
-        out = [self.__name]
+        out = [mooseutils.colorText(self.__name, 'LIGHT_YELLOW')]
 
         if self.__doc is not None:
             wrapper = textwrap.TextWrapper()
             wrapper.initial_indent = ' '*2
             wrapper.subsequent_indent = ' '*2
             wrapper.width = 100
-            out += wrapper.wrap(self.__doc)
+            out += [mooseutils.colorText(w, 'GREY') for w in wrapper.wrap(self.__doc)]
 
-        out += ['    Value:   {}'.format(repr(self.value))]
+        out += ['  Value:   {}'.format(repr(self.value))]
 
         if self.__default is not None:
-            out += ['    Default: {}'.format(repr(self.__default))]
+            out += ['  Default: {}'.format(repr(self.__default))]
 
         if self.__vtype is not None:
-            out += ['    Type(s): {}'.format(tuple([t.__name__ for t in self.__vtype]))]
+            out += ['  Type(s): {}'.format(tuple([t.__name__ for t in self.__vtype]))]
 
         if self.__allow is not None:
             wrapper = textwrap.TextWrapper()
-            wrapper.initial_indent = '    Allow:   '
+            wrapper.initial_indent = '  Allow:   '
             wrapper.subsequent_indent = ' '*len(wrapper.initial_indent)
             wrapper.width = 100 - len(wrapper.initial_indent)
             out += wrapper.wrap(repr(self.__allow))

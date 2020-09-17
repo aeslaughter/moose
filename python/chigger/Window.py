@@ -17,10 +17,9 @@ import mooseutils
 from . import base
 from . import annotations
 from . import observers
-from . import utils
 from .Viewport import Viewport, Background
 
-class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
+class Window(base.ChiggerAlgorithm):
     """
     Wrapper of vtkRenderWindow
     """
@@ -28,7 +27,6 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
     @staticmethod
     def validOptions():
         opt = base.ChiggerAlgorithm.validOptions()
-        opt += utils.KeyBindingMixin.validOptions()
 
         opt.add('size', default=(1920, 1080), vtype=int, size=2,
                 doc="The size of the window, expects a list of two items")
@@ -71,14 +69,8 @@ class Window(base.ChiggerAlgorithm, utils.KeyBindingMixin):
 
         return opt
 
-    @staticmethod
-    def validKeyBindings():
-        bindings = utils.KeyBindingMixin.validKeyBindings()
-        return bindings
-
     def __init__(self, **kwargs):
         base.ChiggerAlgorithm.__init__(self, nInputPorts=0, nOutputPorts=0, **kwargs)
-        utils.KeyBindingMixin.__init__(self)
 
         self.__vtkwindow = vtk.vtkRenderWindow()#kwargs.pop('vtkwindow', vtk.vtkRenderWindow())
         self.__vtkinteractor = self.__vtkwindow.MakeRenderWindowInteractor()

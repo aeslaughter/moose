@@ -32,3 +32,58 @@ class Options(parameters.InputParameters):
         if self.isValid(name):
             value = self.get(name)
             func(value)
+
+    def toDict(self, *keys):
+        """
+        Return a dict() from the supplied keys
+        """
+        keys = keys or self.__options.keys()
+        return {k:self.get(k) for k in keys}
+
+    def toScript(self, **kwargs):
+        """
+        Takes an Options object and returns a string for building python scripts.
+
+        Inputs:
+            kwargs: Key, value pairs provided will replace values in options with the string given
+                    in the value, but will not set the actual value. This is generally for
+                    code generation tools.
+        """
+        output = []
+        sub_output = dict()
+        for key in self.keys():
+            opt = self.get(key)
+
+            if isinstance(opt, Options):
+                items, _ = opt.toScript()
+                if items:
+                    sub_output[key] = items
+
+            elif not self.isDefault(key):
+                if key in kwargs:
+                    r = kwargs[key]
+                else:
+                    r = repr(opt)
+                output.append('{}={}'.format(key, r))
+
+        return output, sub_output
+
+    def getNonDefaultOptions(self, **kwargs):
+        output = []
+        sub_output = dict()
+        for key in self.keys():
+            opt = self.get(key)
+
+            if isinstance(opt, Options):
+                items, _ = opt.getNonDefaultOptions()
+                if items:
+                    sub_output[key] = items
+
+            elif not self.isDefault(key):
+                if key in kwargs:
+                    r = kwargs[key]
+                else:
+                    r = repr(opt)
+                output.append(key)
+
+        return output, sub_output

@@ -57,10 +57,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         bindings = utils.KeyBindingMixin.validKeyBindings()
         bindings.add('c', Viewport.printCamera,
                      desc="Display the camera settings for this object.")
-        bindings.add('o', Viewport.printOptions,
-                     desc="Display the available key, value options for this result.")
-        bindings.add('o', Viewport.printSetOptions, shift=True,
-                     desc="Display the available key, value options as a 'setOptions' method call.")
 
         bindings.add('right', Viewport._setViewport, args=(0, 0.025),
                      desc="Increase the viewport x-min value.")
@@ -191,12 +187,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
 
     def sources(self):
         return self.__sources
-
-    #def __del__(self):
-    #    base.ChiggerAlgorithm.__del__(self)
-        #for source in self.__sources:
-        #    del source
-    #    self.__sources = None
 
     def printCamera(self, *args): #pylint: disable=unused-argument
         """Keybinding callback."""
