@@ -277,7 +277,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
 
     def _onChangeOption(self):
-
+        """Prompt user on command line to change a parameter by name"""
 
         # Determine the object to glean options from and error if two things are active
         source = self.getActiveSource()
@@ -291,6 +291,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
 
         obj = source or viewport
 
+        # Get the name of the parameter to change
         while True:
             param = self._prompt('Enter the option to change (press enter to abort): ')
             if len(param) > 0 and (param not in obj._options):
@@ -300,6 +301,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
                 continue
             break
 
+        # Get the value of the parameter
         if len(param) > 0:
             print(obj._options.toString(param))
             value = self._prompt('Enter the value of the option to change: ')

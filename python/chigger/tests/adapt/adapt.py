@@ -8,7 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import chigger
-window = chigger.Window(size=(600,600))
+window = chigger.Window(size=(300, 300))
 viewport = chigger.Viewport(window)
 
 reader = chigger.exodus.ExodusReader('../input/step10_micro_out.e', timestep=0)
@@ -17,6 +17,6 @@ mug = chigger.exodus.ExodusSource(viewport, reader, variable='phi', cmap='viridi
 times = reader.getTimes()
 for i in range(len(times)):
     reader.setOptions(timestep=i)
-    window.write('adapt_' + str(i) + '.png')
+    window.write(filename='adapt_' + str(i) + '.png')
 
 window.start()
