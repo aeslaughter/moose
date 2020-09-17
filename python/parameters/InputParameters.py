@@ -266,13 +266,15 @@ class InputParameters(object):
         """
         return self.toString()
 
-    def toString(self):
+    def toString(self, *keys):
         """
         Create a string of all parameters using Parameter.toString
         """
         out = []
-        for param in self.__parameters.values():
-            out.append(param.toString())
+        keys = keys or self.__parameters.keys()
+        for key, param in self.__parameters.items():
+            if key in keys:
+                out.append(param.toString())
         return '\n\n'.join(out)
 
     def __errorHelper(self, text, *args, **kwargs):

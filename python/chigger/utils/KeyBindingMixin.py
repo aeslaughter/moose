@@ -49,10 +49,6 @@ class KeyBindingMixin(object):
     def validKeyBindings():
         bindings = KeyBindings()
         bindings.add('h', KeyBindingMixin._printKeyBindings, desc="Display the help for this object.")
-        bindings.add('o', KeyBindingMixin._printOptions,
-                     desc="Display the available key, value options for this result.")
-        bindings.add('o', KeyBindingMixin._printSetOptions, shift=True,
-                     desc="Display the available key, value options as a 'setOptions' method call.")
         return bindings
 
     def __init__(self):
@@ -82,18 +78,3 @@ class KeyBindingMixin(object):
             key = mooseutils.colorText('{0: >{w}}: '.format(key, w=n), 'LIGHT_GREEN')
             print('\n'.join(textwrap.wrap(desc, 100, initial_indent=key,
                                           subsequent_indent=' '*(n + 2))))
-    def _printOptions(self, *args):
-        """
-        Print a list of all available options for this object.
-        """
-        print(mooseutils.colorText('\n{} Available Options:'.format(self.name()), 'LIGHT_CYAN'))
-        print(self._options)
-
-    def _printSetOptions(self, *args):
-        """
-        Print python code for the 'setOptions' method.
-        """
-        output, sub_output = self._options.toScript()
-        print('\n{} -> setOptions({})'.format(self.name(), ', '.join(output)))
-        for key, value in sub_output.items():
-            print('{} -> setOptions({}, {})'.format(self.name(), key, ', '.join(repr(value))))

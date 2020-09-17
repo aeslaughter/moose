@@ -1,4 +1,3 @@
-#pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
 #*
@@ -32,17 +31,25 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
     def validKeyBindings():
         bindings = utils.KeyBindingMixin.validKeyBindings()
 
-        bindings.add('v', MainWindowObserver._nextViewport, desc="Select the next viewport.")
-        bindings.add('v', MainWindowObserver._nextViewport, shift=True, args=(True,),
+        bindings.add('v', MainWindowObserver.nextViewport, desc="Select the next viewport.")
+        bindings.add('v', MainWindowObserver.nextViewport, shift=True, args=(True,),
                      desc="Select the previous viewport.")
 
-        bindings.add('s', MainWindowObserver._nextSource,
+        bindings.add('s', MainWindowObserver.nextSource,
                      desc="Select the next source in the current viewport.")
-        bindings.add('s', MainWindowObserver._nextSource, shift=True, args=(True,),
+        bindings.add('s', MainWindowObserver.nextSource, shift=True, args=(True,),
                      desc="Select the previous source in the current viewport.")
 
-        bindings.add('t', MainWindowObserver._deactivate, desc="Clear selection(s).")
-        bindings.add('w', MainWindowObserver._writeChanges, desc="Write the changed settings to the script file.")
+        bindings.add('p', MainWindowObserver._onPrintOptions,
+                     desc="Display the available key, value options for the active source or viewport.")
+        bindings.add('p', MainWindowObserver._onPrintSetOptions, shift=True,
+                     desc="Display the available key, value options as a 'setOptions' method call for the active source of viewport.")
+
+        bindings.add('o', MainWindowObserver._onChangeOption,
+                     desc="Prompt the user to change an option via the command-line.")
+
+        bindings.add('t', MainWindowObserver.deactivate, desc="Clear selection(s).")
+        bindings.add('w', MainWindowObserver._onWriteChanges, desc="Write the changed settings for an active object to the script file.")
 
         return bindings
 
@@ -53,148 +60,103 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         self.addObserver(vtk.vtkCommand.KeyPressEvent, self._onKeyPressEvent)
 
         # Disable interaction by default, but honor user specified interaction
-        for viewport in self._getViewports():
-
-            # Viewport
+        for viewport in self.getViewports():
             v_i = viewport.getOption('interactive') if viewport._options.isSetByUser('interactive') else False
             v_h = viewport.getOption('highlight') if viewport._options.isSetByUser('highlight') else v_i
             viewport.setOptions(highlight=v_h, interactive=v_i)
 
-            # Sources
             for source in viewport.sources():
                 s_i = source.getOption('interactive') if source._options.isSetByUser('interactive') else False
                 s_h = source.getOption('highlight') if source._options.isSetByUser('highlight') else s_i
                 source.setOptions(highlight=s_h, interactive=s_i)
 
-    def _getViewports(self):
+    def getViewports(self):
         """Complete list of available Viewport objects"""
         return [viewport for viewport in self._window.viewports() if viewport.getOption('layer') > 0]
 
-    def _getActiveViewport(self):
+    def getActiveViewport(self):
         """Current active (highlighted) Viewport object"""
-        for viewport in self._getViewports():
+        for viewport in self.getViewports():
             if viewport.getOption('interactive'):
                 return viewport
         return None
 
-    def _setActiveViewport(self, viewport):
-        for vp in self._getViewports():
+    def setActiveViewport(self, viewport):
+        """Activate the supplied viewport and disable all others"""
+        for vp in self.getViewports():
             active = viewport is vp
             vp.setOptions(interactive=active, highlight=active)
             vp.updateInformation()
 
-    def _nextViewport(self, decrease=False): #pylint: disable=no-self-use, unused-argument
-        """
-        (Keybinding callback)
-        Activate the "next" viewport object.
-        """
+    def nextViewport(self, decrease=False):
+        """Activate the "next" viewport object."""
         self.debug('Select Next Viewport')
 
         # Remove highlighting from the active source.
-        self._setActiveSource(None)
+        self.setActiveSource(None)
 
         # Determine the index of the Viewport to be set to active
         index = 0
-        viewports = self._getViewports()
-        current = self._getActiveViewport()
+        viewports = self.getViewports()
+        current = self.getActiveViewport()
         if current is not None:
             index = viewports.index(current)
             index = index - 1 if decrease else index + 1
 
         current = viewports[index] if index < len(viewports) else None
-        self._setActiveViewport(current)
+        self.setActiveViewport(current)
 
         self._window.render()
 
-    def _getSources(self):
+    def getSources(self):
         """Complete list of available ChiggerSourceBase objects"""
-        return [source for viewport in self._getViewports() for source in viewport.sources() if source.getOption('pickable')]
+        return [source for viewport in self.getViewports() for source in viewport.sources() if source.getOption('pickable')]
 
-    def _getActiveSource(self):
+    def getActiveSource(self):
         """Current active ChiggerSourceBase object"""
-        for source in self._getSources():
+        for source in self.getSources():
             if source.getOption('interactive'):
                 return source
         return None
 
-    def _setActiveSource(self, source):
-        for s in self._getSources():
+    def setActiveSource(self, source):
+        for s in self.getSources():
             active = s is source
             s.setOptions(highlight=active, interactive=active)
             s._viewport.updateInformation()
             s.updateInformation()
 
-    def _nextSource(self, decrease=False):
+    def nextSource(self, decrease=False):
         """
-        Keybinding callback: Activate the "next" source object in the current viewport
+        Activate the "next" source object
         """
         self.debug('Select Next Source')
 
         # Remove active viewport
-        self._setActiveViewport(None)
+        self.setActiveViewport(None)
 
         # Determine the index of the ChiggerSourceBase to be set to active
-        sources = self._getSources()
-        current = self._getActiveSource()
+        sources = self.getSources()
+        current = self.getActiveSource()
         index = 0
         if current is not None:
             index = sources.index(current)
             index = index - 1 if decrease else index + 1
 
         current = sources[index] if index < len(sources) else None
-        self._setActiveSource(current)
+        self.setActiveSource(current)
 
         self._window.render()
 
-    def _onKeyPressEvent(self, obj, event): #pylint: disable=unused-argument
-        """
-        The function to be called by the vtkInteractor KeyPressEvent (see init).
-
-        Inputs:
-            obj, event: Required by VTK.
-        """
-        key = obj.GetKeySym().lower()
-        shift = obj.GetShiftKey()
-        self.debug('Key press: {}, shift={}', key, shift)
-
-        # This objects bindings
-        for binding in self.getKeyBindings(key, shift):
-            binding.function(self, *binding.args)
-
-        # Viewport options
-        viewport = self._getActiveViewport()
-        if viewport is not None:
-            for binding in viewport.getKeyBindings(key, shift):
-                binding.function(viewport, *binding.args)
-
-        # Source options
-        source = self._getActiveSource()
-        if source is not None:
-            for binding in source.getKeyBindings(key, shift):
-                binding.function(source, *binding.args)
-
-        self._window.render()
-
-    def _deactivate(self):
+    def deactivate(self):
         """Remove all interaction seclections"""
-        self._setActiveViewport(None)
-        self._setActiveSource(None)
+        self.setActiveViewport(None)
+        self.setActiveSource(None)
 
-    def _writeChanges(self):
-        """Write changes directly to the script, if desired"""
-
-        # Determine the object to glean options from and error if two things are active
-        source = self._getActiveSource()
-        viewport = self._getActiveViewport()
-        if (source is not None) and (viewport is not None):
-            self.error("Both a source and viewport are active which is not supported for writing, because of potential output conflicts.")
-            return
-        elif (source is None) and (viewport is None):
-            self.warning("No active source of viewport to inspect for option changes, so there is nothing to write.")
-            return
+    def writeChanges(self, obj):
+        """Write changes from the supplied object directly to the script, if desired"""
 
         # Extract the option information
-        obj = source or viewport
         trace = obj._init_traceback[0]
         filename = trace[0]
         line = trace[1]
@@ -230,10 +192,8 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         print('='*n)
         print(diff.strip('\n'))
 
-        # Prompt the user for
-        self._window.getVTKInteractor().Disable()
-        choice = input("Would you like to overwrite[w], create a diff[d], or quit[q]? ")
-        self._window.getVTKInteractor().Enable()
+        # Prompt the user for an action
+        choice = self._prompt("Would you like to overwrite[w], create a diff[d], or quit[q]? ")
 
         if choice == 'd':
             with open(filename + '.diff', 'w') as fid:
@@ -241,3 +201,106 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         elif choice == 'w':
             with open(filename, 'w') as fid:
                 fid.write(''.join(new_lines))
+
+    def _prompt(self, msg):
+        self._window.getVTKInteractor().Disable()
+        choice = input(msg)
+        self._window.getVTKInteractor().Enable()
+        return choice
+
+    def _onKeyPressEvent(self, obj, event):
+        """
+        The function to be called by the vtkInteractor KeyPressEvent (see init).
+
+        Inputs:
+            obj, event: Required by VTK.
+        """
+        key = obj.GetKeySym().lower()
+        shift = obj.GetShiftKey()
+        self.info('Key press: {}, shift={}', key, shift)
+
+        # This objects bindings
+        for binding in self.getKeyBindings(key, shift):
+            binding.function(self, *binding.args)
+
+        # Viewport options
+        viewport = self.getActiveViewport()
+        if viewport is not None:
+            for binding in viewport.getKeyBindings(key, shift):
+                binding.function(viewport, *binding.args)
+
+        # Source options
+        source = self.getActiveSource()
+        if source is not None:
+            for binding in source.getKeyBindings(key, shift):
+                binding.function(source, *binding.args)
+
+        self._window.render()
+
+    def _onWriteChanges(self):
+
+
+        # Determine the object to glean options from and error if two things are active
+        source = self.getActiveSource()
+        viewport = self.getActiveViewport()
+        if (source is not None) and (viewport is not None):
+            self.error("Both a source and viewport are active which is not supported for writing, because of potential output conflicts.")
+            return
+        elif (source is None) and (viewport is None):
+            self.warning("No active source of viewport to inspect for option changes, so there is nothing to write.")
+            return
+
+        obj = source or viewport
+        self.writeChanges(obj)
+
+    def _onPrintOptions(self):
+        """Print a list of all available options for active objects."""
+        def printHelper(obj):
+            if obj is not None:
+                print(mooseutils.colorText('\n{} Available Options:'.format(obj.name()), 'LIGHT_CYAN'))
+                print(obj._options)
+
+        printHelper(self.getActiveViewport())
+        printHelper(self.getActiveSource())
+
+    def _onPrintSetOptions(self, *args):
+        """Print python code for the 'setOptions' method for active objects"""
+        def printHelper(obj):
+            if obj is not None:
+                output, sub_output = obj._options.toScript()
+                print('\n{} -> setOptions({})'.format(obj.name(), ', '.join(output)))
+                for key, value in sub_output.items():
+                    print('{} -> setOptions({}, {})'.format(obj.name(), key, ', '.join(repr(value))))
+
+        printHelper(self.getActiveViewport())
+        printHelper(self.getActiveSource())
+
+
+    def _onChangeOption(self):
+
+
+        # Determine the object to glean options from and error if two things are active
+        source = self.getActiveSource()
+        viewport = self.getActiveViewport()
+        if (source is not None) and (viewport is not None):
+            self.error("Both a source and viewport are active which is not supported for writing, because of potential output conflicts.")
+            return
+        elif (source is None) and (viewport is None):
+            self.warning("No active source of viewport to inspect for option changes, so there is nothing to write.")
+            return
+
+        obj = source or viewport
+
+        while True:
+            param = self._prompt('Enter the option to change (press enter to abort): ')
+            if len(param) > 0 and (param not in obj._options):
+                msg ="'{}' is not an option in {} object, available options include:\n  ".format(param, obj.name())
+                msg += '\n  '.join(obj._options.keys())
+                print(msg)
+                continue
+            break
+
+        if len(param) > 0:
+            print(obj._options.toString(param))
+            value = self._prompt('Enter the value of the option to change: ')
+            obj.setOption(param, eval(value))

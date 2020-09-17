@@ -41,4 +41,9 @@
 
 [Outputs]
   exodus = true
+  [scren]
+    type = Console
+    output_screen = false
+    #output_file = true
+  []
 []

@@ -219,7 +219,6 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         self.updateInformation()
         self.printOption('viewport')
 
-
 class Background(Viewport):
     @classmethod
     def validOptions(cls):
