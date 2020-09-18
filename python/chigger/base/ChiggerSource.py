@@ -208,7 +208,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
             base_obj = filter_obj
 
         # Connect mapper/filters into the pipeline
-        if self._vtkmapper is not None:
+        if (self._vtkmapper is not None) and (base_obj.GetNumberOfOutputPorts()):
             self.debug('{} --> {}'.format(self._vtkmapper.GetClassName(), base_obj.name()))
             self._vtkmapper.SetInputConnection(0, base_obj.GetOutputPort(0))
 

@@ -13,15 +13,14 @@ class Text(TextBase):
 
     @staticmethod
     def validOptions():
-        opt = TestBase.validOptions()
-        #opt += utils.TextOptions.validOptions()
-        opt.add('text', vtype=str, doc="The text to display.")
-        opt.add('position', vtype=float, size=2, doc="The text position in normalized viewport coordinates.")
+        opt = TextBase.validOptions()
         return opt
 
+    """
     def _updateInformation(self, *args):
         TextBase._updateInformation(self, *args)
 
         self.assignOption('text', self._vtkactor.SetInput)
         #utils.TextOptions.applyOptions(self._vtkactor.GetTextProperty(), self._options)
         self.assignOption('position', self._vtkactor.SetPosition)
+    """
