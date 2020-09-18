@@ -178,16 +178,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         #self.assignOption('visible', self._vtkactor.SetVisibility)
 
         # Create/Remove highlight
-        if self.getOption('highlight') and (self.__outline is None):
-            from .. import geometric # avoid cyclic import
-            is_3D = isinstance(self.getVTKActor(), vtk.vtkActor)
-            obj_type = geometric.Highlight if is_3D else geometric.Highlight2D
-            offset = 0.05 if is_3D else 0.02
-            self.__outline = obj_type(self._viewport, self, pickable=False, offset=offset, linewidth=1, color=(1,1,0))
-        elif (not self.getOption('highlight')) and (self.__outline is not None):
-            self.__outline.remove()
-            del self.__outline
-            self.__outline = None
+        self._highlight()
 
     def __connectFilters(self):
         self.debug('__connectFilters')
@@ -211,6 +202,33 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         if (self._vtkmapper is not None) and (base_obj.GetNumberOfOutputPorts()):
             self.debug('{} --> {}'.format(self._vtkmapper.GetClassName(), base_obj.name()))
             self._vtkmapper.SetInputConnection(0, base_obj.GetOutputPort(0))
+
+    def _highlight(self):
+        """
+        Apply/remove highlight based on 'highlight' option.
+
+        This is a stand-alone function to allow for object to customize the behavior if needed. For
+        example the TextBase object overrides this method. In truth the text object was the
+        motivating factor for creating this function and handling the highlighting in this way. Many
+        days have been lost trying to create a generic method for highlighting an object and this
+        was the best I could do. Perhaps a VTK ninja could do something better.
+
+        Dear Future Andrew,
+        Don't change this basic design, you spent way too much time getting it to this. Leave it.
+        - Andrew (9.18.2020)
+        """
+        if self.getOption('highlight') and (self.__outline is None):
+            from .. import geometric # avoid cyclic import
+            is_3D = isinstance(self.getVTKActor(), vtk.vtkActor)
+            obj_type = geometric.Highlight if is_3D else geometric.Highlight2D
+            offset = 0.05 if is_3D else 0.02
+            self.__outline = obj_type(self._viewport, self, pickable=False, offset=offset, linewidth=1, color=(1,1,0))
+        elif (not self.getOption('highlight')) and (self.__outline is not None):
+            self.__outline.remove()
+            del self.__outline
+            self.__outline = None
+
+
 
     def __del__(self):
         ChiggerAlgorithm.__del__(self)

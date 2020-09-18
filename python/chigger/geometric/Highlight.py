@@ -16,7 +16,6 @@ class Highlight(GeometricSource):
         GeometricSource.__init__(self, viewport,
                       nInputPorts=1, inputType='vtkPolyData',
                       **kwargs)
-        self._chiggersource = source
         self.SetInputConnection(source.GetOutputPort())
 
     def _onRequestData(self, inInfo, outInfo):
@@ -45,12 +44,12 @@ class Highlight2D(GeometricSource2D):
         GeometricSource2D.__init__(self, viewport,
                       nInputPorts=1, inputType='vtkPolyData',
                       **kwargs)
-        self._chiggersource = source
         self.SetInputConnection(source.GetOutputPort())
 
     def _onRequestData(self, inInfo, outInfo):
         inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         bnds = list(inp.GetBounds())
+
         offset = self.getOption('offset')
         for i in [1,3,5]:
             bnds[i-1] = bnds[i-1] - offset

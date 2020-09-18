@@ -33,9 +33,9 @@ class Image(base.ChiggerSource2D):
                     "(None maintains image dimension).")
         opt.add('position', (0, 0), vtype=float, size=2,
                 doc="The position of the image within the viewport, in relative coordinates.")
-        opt.add('horizontal_alignment', 'left', allow=('left', 'center', 'right'),
+        opt.add('halign', 'left', allow=('left', 'center', 'right'),
                 doc="The position horizontal position alignment.")
-        opt.add('vertical_alignment', 'bottom', allow=('bottom', 'center', 'top'),
+        opt.add('valign', 'bottom', allow=('bottom', 'center', 'top'),
                 doc="The position vertical position alignment.")
         return opt
 
@@ -72,9 +72,6 @@ class Image(base.ChiggerSource2D):
         self._vtkmapper.SetColorLevel(127.5); # center of the color range to map to
 
         filename = self.getOption('filename')
-        if not os.path.exists(filename):
-            filename = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logos',
-                                                    os.path.basename(filename)))
         if not os.path.exists(filename):
             raise OSError('Unable to locate image file: {}'.format(self.getOption('filename')))
 

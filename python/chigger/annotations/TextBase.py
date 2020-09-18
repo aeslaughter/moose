@@ -7,69 +7,75 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
-from .. import base
+from .Annotation import Annotation
 from .. import utils
-class TextBase(base.ChiggerSource2D):
+class TextBase(Annotation):
     """
     Base for text based annotations.
     """
     VTKACTORTYPE = vtk.vtkTextActor
-    VTKMAPPERTYPE = vtk.vtkPolyDataMapper2D
 
     @staticmethod
     def validOptions():
-        opt = base.ChiggerSource2D.validOptions()
+        opt = Annotation.validOptions()
         opt += utils.TextOptions.validOptions()
         opt.add('text', vtype=str, doc="The text to display.")
-        opt.add('position', vtype=float, size=2, doc="The text position in normalized viewport coordinates.")
         return opt
 
     @staticmethod
     def validKeyBindings():
-        bindings = base.ChiggerSource2D.validKeyBindings()
-        bindings.add('f', TextBase._increaseFont,
+        bindings = Annotation.validKeyBindings()
+        bindings.add('f', TextBase._incrementFont, args=(1,),
                      desc="Increase the font size by 1 point.")
-        bindings.add('f', TextBase._decreaseFont, shift=True,
+        bindings.add('f', TextBase._incrementFont, args=(-1,), shift=True,
                      desc="Decrease the font size by 1 point.")
-        bindings.add('a', TextBase._increaseOpacity,
-                     desc="Increase the font alpha (opacity) by 1%.")
-        bindings.add('a', TextBase._decreaseOpacity, shift=True,
-                     desc="Decrease the font alpha (opacity) by 1%.")
+        bindings.add('a', TextBase._incrementAlpha, args=(0.2,),
+                     desc="Increase the font alpha (opacity) by 2%.")
+        bindings.add('a', TextBase._incrementAlpha, args=(-0.2,), shift=True,
+                     desc="Decrease the font alpha (opacity) by 2%.")
+        bindings.add('r', TextBase._incrementRotate, args=(2,),
+                     desc="Rotate by two degrees counter clockwise.")
+        bindings.add('r', TextBase._incrementRotate, args=(-2,), shift=True,
+                     desc="Rotate by two degrees counter clockwise.")
         return bindings
 
     def __init__(self, *args, **kwargs):
-        base.ChiggerSource2D.__init__(self, *args, **kwargs)
+        Annotation.__init__(self, *args, **kwargs)
+        self._vtkmapper = self._vtkactor.GetMapper()
         self._vtkactor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
 
-    def _updateInformation(self, *args):
-        base.ChiggerSource2D._updateInformation(self, *args)
-
+    def _onRequestInformation(self, *args):
         self.assignOption('text', self._vtkactor.SetInput)
         self.assignOption('position', self._vtkactor.SetPosition)
         utils.TextOptions.applyOptions(self._vtkactor.GetTextProperty(), self._options)
 
-    def _increaseFont(self, *args): #pylint: disable=unused-argument
-        """Keybinding method."""
-        sz = self.getOption('font_size') + 1
-        #self.update(font_size=sz)
-        self.printOption('font_size')
+        # Do this late so that the highlight function overrides the current frame settings
+        Annotation._onRequestInformation(self, *args)
 
-    def _decreaseFont(self, *args): #pylint: disable=unused-argument
-        """Keybinding method."""
-        sz = self.getOption('font_size') - 1
-        #self.update(font_size=sz)
-        self.printOption('font_size')
+    def _highlight(self):
+        if self.getOption('highlight'):
+            self._vtkactor.GetTextProperty().SetFrame(True)
+            self._vtkactor.GetTextProperty().SetFrameColor((1,1,0))
+            self._vtkactor.GetTextProperty().SetFrameWidth(3)
 
-    def _increaseOpacity(self, *args): #pylint: disable=unused-argument
-        """Keybinding method."""
-        opacity = self.getOption('text_opacity') + 0.01
+    def _incrementFont(self, delta):
+        sz = self.getOption('size') + delta
+        self.setOptions(size=sz)
+        self.printOption('size')
+
+    def _incrementAlpha(self, delta):
+        opacity = self.getOption('opacity') + delta
         if opacity <= 1.:
-            #self.update(text_opacity=opacity)
-            self.printOption('text_opacity')
+            self.setOptions(opacity=opacity)
+            self.printOption('opacity')
 
-    def _decreaseOpacity(self, *args): #pylint: disable=unused-argument
-        """Keybinding method."""
-        opacity = self.getOption('text_opacity') - 0.01
-        if opacity > 0.:
-            #self.update(text_opacity=opacity)
-            self.printOption('text_opacity')
+    def _incrementRotate(self, delta):
+        angle = self.getOption('rotate') + delta
+        print(angle)
+        if angle > 360:
+            angle = angle - 360
+        elif angle < 0:
+            angle = angle + 360
+
+        self.setOption('rotate', angle)
+        self.printOption('rotate')

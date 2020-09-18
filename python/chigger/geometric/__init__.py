@@ -8,7 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 from .. import base
-
+from .GeometricSource import GeometricSource, GeometricSource2D
 from .Cube import Cube
 from .Rectangle import Rectangle
 from .Outline import Outline, Outline2D

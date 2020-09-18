@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
 #*
@@ -11,8 +10,9 @@
 import chigger
 window = chigger.Window(size=(300,300))#, background=(1,1,1))
 viewport = chigger.Viewport(window)
-text = chigger.annotations.Text(viewport, color=(0,1,0), text='This is a test.')
-                                #, orientation=45, valign='middle',
-                                #halign='center', position=(0.5, 0.5))
+text = chigger.annotations.Text(viewport, color=(0,1,0), text='This is a test.', frame=False,
+                                rotate=45, valign='middle',
+                                halign='center', position=(0.5, 0.5))
+
 window.write(filename='text_annotation.png')
 window.start()

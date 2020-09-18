@@ -151,16 +151,8 @@ class Viewport(utils.KeyBindingMixin, base.ChiggerAlgorithm):
         base.ChiggerAlgorithm._onRequestInformation(self, *args)
         self._vtkrenderer.SetViewport(self.getOption('viewport'))
 
-        #if self.isValid('layer'):
-        #    layer = self.getOption('layer')
-        #    if layer < 0:
-        #        self.error("The 'layer' option must be zero or greater but {} provided.", layer)
-        #    n = self._window.GetNumberOfLayers()
-        #    self._vtkrenderer.SetLayer(layer)
-
         self.assignOption('layer', self._vtkrenderer.SetLayer)
         self.assignOption('interactive', self._vtkrenderer.SetInteractive)
-
 
         # Add/Remove highlight
         if self.getOption('highlight') and (self.__outline is None):

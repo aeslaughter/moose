@@ -45,11 +45,20 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         bindings.add('p', MainWindowObserver._onPrintSetOptions, shift=True,
                      desc="Display the available key, value options as a 'setOptions' method call for the active source of viewport.")
 
-        bindings.add('o', MainWindowObserver._onChangeOption,
-                     desc="Prompt the user to change an option via the command-line.")
-
         bindings.add('t', MainWindowObserver.deactivate, desc="Clear selection(s).")
-        bindings.add('w', MainWindowObserver._onWriteChanges, desc="Write the changed settings for an active object to the script file.")
+
+        # TODO:
+        # bindinds.add('q',...)
+
+
+        # TODO: This still needs some work, hitting enter doesn't seem to exit correctly
+        #bindings.add('o', MainWindowObserver._onChangeOption,
+        #             desc="Prompt the user to change an option via the command-line.")
+
+        # TODO: This needs some work also, it can mess up spacing and and the 'opacity' from the
+        #       Text annotation does not show up
+        #bindings.add('w', MainWindowObserver._onWriteChanges,
+        #             desc="Write the changed settings for an active object to the script file.")
 
         return bindings
 
@@ -217,7 +226,7 @@ class MainWindowObserver(ChiggerObserver, utils.KeyBindingMixin):
         """
         key = obj.GetKeySym().lower()
         shift = obj.GetShiftKey()
-        self.info('Key press: {}, shift={}', key, shift)
+        self.debug('Key press: {}, shift={}', key, shift)
 
         # This objects bindings
         for binding in self.getKeyBindings(key, shift):
