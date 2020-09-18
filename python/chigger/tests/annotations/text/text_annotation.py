@@ -8,11 +8,10 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
 import chigger
-text = chigger.annotations.Text(text='This is a test.', orientation=45, valign='middle',
+window = chigger.Window(size=(300,300))#, background=(1,1,1))
+viewport = chigger.Viewport(window)
+text = chigger.annotations.Text(viewport, text='This is a test.', orientation=45, valign='middle',
                                 halign='center', position=(0.5, 0.5))
-vp = chigger.Viewport(text)
-window = chigger.Window(vp, size=(300,300), background=(1,1,1))
-window.write('text_annotation.png')
+window.write(filename='text_annotation.png')
 window.start()

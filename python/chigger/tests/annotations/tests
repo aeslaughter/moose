@@ -1,56 +1,51 @@
 [Tests]
-  [./image]
+  design = python/chigger/index.md
+  issues = '#12095'
+  [image]
     # Test displaying an image
     type = ImageDiff
     command = image_annotation.py
     imagediff = 'image_annotation.png'
-    cli_args = '--test'
-  [../]
+  []
 
-  [./image_height]
+  [image_height]
     # Test displaying an image using width and height
     type = ImageDiff
     command = image_annotation_height.py
     imagediff = 'image_annotation_height.png'
-    cli_args = '--test'
-  [../]
+  []
 
-  [./logo]
+  [logo]
     # Test displaying logos
     type = ImageDiff
     command = logo_annotation.py
     imagediff = 'logo_annotation.png'
-    cli_args = '--test'
-  [../]
+  []
 
-  [./text]
+  [text]
     # Test displaying text
     type = ImageDiff
     command = text_annotation.py
     imagediff = 'text_annotation.png'
-    cli_args = '--test'
-  [../]
+  []
 
-  [./time]
+  [time]
     # Test displaying time with TimeAnnotation
     type = ImageDiff
     command = time_annotation.py
     imagediff = 'time_annotation.png'
-    cli_args = '--test'
-  [../]
+  []
 
-  [./time_change]
+  [time_change]
     # Test displaying changing time
     type = ImageDiff
     command = time_annotation_change.py
     imagediff = 'time_annotation_change_0.png time_annotation_change_9.png'
-    cli_args = '--test'
-  [../]
+  []
 
-  [./math]
+  [math]
     type = ImageDiff
     command = math_annotation.py
     imagediff = 'math_annotation.png'
-    cli_args = '--test'
-  [../]
+  []
 []

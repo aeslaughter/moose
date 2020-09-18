@@ -17,7 +17,7 @@ class TextBase(base.ChiggerSource2D):
 
     @staticmethod
     def validOptions():
-        opt = base.ChiggerResult.validOptions()
+        opt = base.ChiggerSource2D.validOptions()
         opt.remove('camera')
         return opt
 
