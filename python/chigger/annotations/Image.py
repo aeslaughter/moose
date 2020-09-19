@@ -1,4 +1,3 @@
-#pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
 #*
@@ -9,21 +8,20 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import os
 import vtk
-from .. import base
+from .Annotation import Annotation
 
-class Image(base.ChiggerSource2D):
+class Image(Annotation):
     """
     Result object for displaying images in 3D space.
     """
     VTKMAPPERTYPE = vtk.vtkImageMapper
-
 
     @staticmethod
     def validOptions():
         """
         Return the default options for this object.
         """
-        opt = base.ChiggerSource2D.validOptions()
+        opt = Annotation.validOptions()
         opt.add('filename', vtype=str, doc="The image filename to open.")
         opt.add('width', vtype=float,
                 doc="The image width as a fraction of the window width "
@@ -31,14 +29,11 @@ class Image(base.ChiggerSource2D):
         opt.add('height', vtype=float,
                 doc="The image height as a fraction of the window width "
                     "(None maintains image dimension).")
-        opt.add('position', (0, 0), vtype=float, size=2,
-                doc="The position of the image within the viewport, in relative coordinates.")
         opt.add('halign', 'left', allow=('left', 'center', 'right'),
                 doc="The position horizontal position alignment.")
         opt.add('valign', 'bottom', allow=('bottom', 'center', 'top'),
                 doc="The position vertical position alignment.")
         return opt
-
 
     """
     @staticmethod
@@ -55,13 +50,11 @@ class Image(base.ChiggerSource2D):
         return bindings
     """
 
-
     def __init__(self, *args, **kwargs):
-        base.ChiggerSource2D.__init__(self, *args,
-                                      nOutputPorts=1,
-                                      outputType='vtkImageData',
-                                      #outputType='vtkPolyData',
-                                      **kwargs)
+        Annotation.__init__(self, *args,
+                            nOutputPorts=1,
+                            outputType='vtkImageData',
+                            **kwargs)
 
         self._reader = vtk.vtkPNGReader()
         self._resize = vtk.vtkImageResize()
@@ -84,13 +77,10 @@ class Image(base.ChiggerSource2D):
         self._reader.SetFileName(filename)
         self._resize.SetInputConnection(self._reader.GetOutputPort())
 
-        base.ChiggerSource2D._onRequestInformation(self, *args)
+        Annotation._onRequestInformation(self, *args)
 
         # TODO: I can not figure out why ChiggerSourceBase::__connectFilters is not making this connection
         self._vtkmapper.SetInputConnection(self._resize.GetOutputPort())
-
-    def _onRequestData(self, inInfo, outInfo):
-        base.ChiggerSource2D._onRequestData(self, inInfo, outInfo)
 
         # Set the width/height
         if self.isValid('width') or self.isValid('height'):
@@ -125,62 +115,51 @@ class Image(base.ChiggerSource2D):
             position = list(tr.GetComputedDisplayValue(self._viewport.getVTKRenderer()))
 
             # Get the image size
-            image_size = self._resize.GetOutputDimensions()
-            if image_size == (-1, -1, -1):
-                self._reader.Update()
-                image_size = self._reader.GetOutput().GetDimensions()
+            image_size = self._getImageSize()
 
             # Adjust the position for alignment
-            if self.getOption('horizontal_alignment') == 'center':
+            if self.getOption('halign') == 'center':
                 position[0] = position[0] - (image_size[0]*0.5)
-            elif self.getOption('horizontal_alignment') == 'right':
+            elif self.getOption('halign') == 'right':
                 position[0] = position[0] - image_size[0]
 
-            if self.getOption('vertical_alignment') == 'center':
+            if self.getOption('valign') == 'center':
                 position[1] = position[1] - (image_size[1]*0.5)
-            elif self.getOption('vertical_alignment') == 'top':
+            elif self.getOption('valign') == 'top':
                 position[1] = position[1] - image_size[1]
 
             self._vtkactor.SetPosition(*position)
 
         self._resize.Update()
 
+    def _onRequestData(self, inInfo, outInfo):
+        Annotation._onRequestData(self, inInfo, outInfo)
+
         # TODO: This should setup the output of this object, but it doesn't do anything. For
         #       some reason the connection to the mapper is failing
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt.ShallowCopy(self._resize.GetOutput())
 
-    def getBounds(self):
-        position = self.getOption('position')
-        width = self.getOption('width')
-        if width is None:
-            width = 1
-
-        height = self.getOption('height')
-        if height is None:
-            height = 1
-        return (position[0], position[0] + width, position[1], position[1] + height)
+    def _getImageSize(self):
+        image_size = self._resize.GetOutputDimensions()
+        if image_size == (-1, -1, -1):
+            self._reader.Update()
+            image_size = self._reader.GetOutput().GetDimensions()
+        return image_size
 
 
-    # def setActive(self, active):
-    #     """
-    #     Overrides the default active highlighting.
-    #     """
-    #     if active:
-    #         self._sources[0].getVTKActor().GetProperty().SetBackingColor(1, 0, 0)
-    #         self._sources[0].getVTKActor().GetProperty().SetBacking(True)
+    def _highlight(self):
+        image_pos = self._vtkactor.GetPosition()
+        image_size = self._getImageSize()
+        view_size = self._viewport.getVTKRenderer().GetSize()
 
-    #     else:
-    #         self._sources[0].getVTKActor().GetProperty().SetBacking(False)
+        print(self._resize.GetOutputDimensions())
+        print(image_pos, image_size, view_size)
 
-    # def onMouseMoveEvent(self, position):
-    #     """
-    #     Re-position the image based on the mouse position.
-    #     """
-    #     self.setOption('position', position)
-    #     self.printOption('position')
 
-    # def _setWidth(self, window, binding): #pylint: disable=unused-argument
+
+
+    # def _setWidth(self, window, binding):
     #     """
     #     Callback for setting the image width.
     #     """
@@ -190,7 +169,7 @@ class Image(base.ChiggerSource2D):
     #         self.setOption('width', width)
     #         self.printOption('width')
 
-    # def _setOpacity(self, window, binding): #pylint: disable=unused-argument
+    # def _setOpacity(self, window, binding):
     #     """
     #     Callback for changing opacity.
     #     """

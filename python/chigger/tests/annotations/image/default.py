@@ -11,7 +11,7 @@ import chigger
 
 window = chigger.Window(size=(300,300), filename='default.png')
 viewport = chigger.Viewport(window)
-moose = chigger.annotations.Image(viewport, filename='../../logos/moose.png')
+moose = chigger.annotations.Image(viewport, filename='../../../logos/moose.png')
 
 window.write()
 window.start()

@@ -15,19 +15,20 @@ class Annotation(base.ChiggerSource2D):
     @staticmethod
     def validOptions():
         opt = base.ChiggerSource2D.validOptions()
-        opt.add('position', vtype=float, size=2, doc="The text position in normalized viewport coordinates.")
+        opt.add('position', (0, 0), vtype=float, size=2,
+                doc="The text position in normalized viewport coordinates.")
         return opt
 
     @staticmethod
     def validKeyBindings():
         bindings = base.ChiggerSource2D.validKeyBindings()
-        bindings.add('right', Annotation._move, args=(0.025, 0),
+        bindings.add('right', Annotation._move, args=(0.01, 0),
                      desc="Move the object to the right.")
-        bindings.add('left', Annotation._move, args=(-0.025, 0),
+        bindings.add('left', Annotation._move, args=(-0.01, 0),
                      desc="Move the object to the left.")
-        bindings.add('up', Annotation._move, args=(0, 0.025),
+        bindings.add('up', Annotation._move, args=(0, 0.01),
                      desc="Move the object up.")
-        bindings.add('down', Annotation._move, args=(0, -0.025),
+        bindings.add('down', Annotation._move, args=(0, -0.0),
                      desc="Move the object down.")
         return bindings
 
