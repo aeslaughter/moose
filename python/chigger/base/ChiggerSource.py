@@ -228,8 +228,6 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
             del self.__outline
             self.__outline = None
 
-
-
     def __del__(self):
         ChiggerAlgorithm.__del__(self)
 

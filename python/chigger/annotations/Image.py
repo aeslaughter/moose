@@ -9,6 +9,7 @@
 import os
 import vtk
 from .Annotation import Annotation
+from .. import geometric
 
 class Image(Annotation):
     """
@@ -77,60 +78,21 @@ class Image(Annotation):
         self._reader.SetFileName(filename)
         self._resize.SetInputConnection(self._reader.GetOutputPort())
 
+        # Set the width/height
+        image_size = self._getImageSize()
+        self._resize.SetOutputDimensions(*image_size)
+
+        # Set position
+        position = self._getPosition()
+        self._vtkactor.SetPosition(*position)
+
+        # Base class call, do this at the end to allow for _highlight to get the image size
         Annotation._onRequestInformation(self, *args)
 
         # TODO: I can not figure out why ChiggerSourceBase::__connectFilters is not making this connection
         self._vtkmapper.SetInputConnection(self._resize.GetOutputPort())
 
-        # Set the width/height
-        if self.isValid('width') or self.isValid('height'):
-            window_size = self._viewport.getVTKRenderer().GetSize()
-            self._reader.Update()
-            extent = self._reader.GetDataExtent()
-            image_size = [extent[1], extent[3], 0]
-            aspect = float(image_size[0]) / float(image_size[1]) # w/h
-
-            if self.isValid('width') and self.isValid('height'):
-                image_size[0] = int(window_size[0] * self.getOption('width'))
-                image_size[1] = int(window_size[1] * self.getOption('height'))
-
-            elif self.isValid('width'):
-                image_size[0] = int(window_size[0] * self.getOption('width'))
-                image_size[1] = int(image_size[0] / aspect)
-
-            elif self.isValid('height'):
-                image_size[1] = int(window_size[1] * self.getOption('height'))
-                image_size[0] = int(image_size[1] * aspect)
-
-            self._resize.SetOutputDimensions(*image_size)
-
-        # Image position
-        if self.isValid('position'):
-
-            # Determine the position in pixels
-            tr = vtk.vtkCoordinate()
-            tr.SetCoordinateSystemToNormalizedViewport()
-            p = self.getOption('position')
-            tr.SetValue(p[0], p[1], 0)
-            position = list(tr.GetComputedDisplayValue(self._viewport.getVTKRenderer()))
-
-            # Get the image size
-            image_size = self._getImageSize()
-
-            # Adjust the position for alignment
-            if self.getOption('halign') == 'center':
-                position[0] = position[0] - (image_size[0]*0.5)
-            elif self.getOption('halign') == 'right':
-                position[0] = position[0] - image_size[0]
-
-            if self.getOption('valign') == 'center':
-                position[1] = position[1] - (image_size[1]*0.5)
-            elif self.getOption('valign') == 'top':
-                position[1] = position[1] - image_size[1]
-
-            self._vtkactor.SetPosition(*position)
-
-        self._resize.Update()
+        #self._resize.Update()
 
     def _onRequestData(self, inInfo, outInfo):
         Annotation._onRequestData(self, inInfo, outInfo)
@@ -140,24 +102,82 @@ class Image(Annotation):
         opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
         opt.ShallowCopy(self._resize.GetOutput())
 
+    def _getPosition(self):
+        # Determine the position in pixels
+        tr = vtk.vtkCoordinate()
+        tr.SetCoordinateSystemToNormalizedViewport()
+        p = self.getOption('position')
+        tr.SetValue(p[0], p[1], 0)
+        position = list(tr.GetComputedDisplayValue(self._viewport.getVTKRenderer()))
+
+        # Get the image size
+        image_size = self._getImageSize()
+
+        # Adjust the position for alignment
+        if self.getOption('halign') == 'center':
+            position[0] = position[0] - (image_size[0]*0.5)
+        elif self.getOption('halign') == 'right':
+            position[0] = position[0] - image_size[0]
+
+        if self.getOption('valign') == 'center':
+            position[1] = position[1] - (image_size[1]*0.5)
+        elif self.getOption('valign') == 'top':
+            position[1] = position[1] - image_size[1]
+
+        return position
+
     def _getImageSize(self):
-        image_size = self._resize.GetOutputDimensions()
-        if image_size == (-1, -1, -1):
-            self._reader.Update()
-            image_size = self._reader.GetOutput().GetDimensions()
+        window_size = self._viewport.getVTKRenderer().GetSize()
+        self._reader.Update()
+        extent = self._reader.GetDataExtent()
+        image_size = [extent[1], extent[3], 0]
+        aspect = float(image_size[0]) / float(image_size[1]) # w/h
+
+        if self.isValid('width') and self.isValid('height'):
+            image_size[0] = int(window_size[0] * self.getOption('width'))
+            image_size[1] = int(window_size[1] * self.getOption('height'))
+
+        elif self.isValid('width'):
+            image_size[0] = int(window_size[0] * self.getOption('width'))
+            image_size[1] = int(image_size[0] / aspect)
+
+        elif self.isValid('height'):
+            image_size[1] = int(window_size[1] * self.getOption('height'))
+            image_size[0] = int(image_size[1] * aspect)
+
         return image_size
 
-
     def _highlight(self):
-        image_pos = self._vtkactor.GetPosition()
-        image_size = self._getImageSize()
-        view_size = self._viewport.getVTKRenderer().GetSize()
+        if self.getOption('highlight') and (self._ChiggerSourceBase__outline is None):
+            window_size = self._viewport.getVTKRenderer().GetSize()
+            image_size = self._getImageSize()
+            image_pos = self._vtkactor.GetPosition()
 
-        print(self._resize.GetOutputDimensions())
-        print(image_pos, image_size, view_size)
+            # compute bounds in viewport coordinates
+            offset = 0.02
+            bounds = [0]*4
+            bounds[0] = image_pos[0]
+            bounds[1] = image_size[0] / window_size[0] + bounds[0]
+            bounds[2] = image_pos[1]
+            bounds[3] = image_size[1] / window_size[1] + bounds[2]
+            for i, b in enumerate(bounds):
+                if b - offset < 0:
+                    bounds[i] = 0 + offset
+                if b + offset > 1:
+                    bounds[i] = 1 - offset
 
+            self._ChiggerSourceBase__outline = geometric.Outline2D(self._viewport,
+                                                                   linewidth=3,
+                                                                   offset=offset,
+                                                                   color=(1,1,0),
+                                                                   pickable=False,
+                                                                   interactive=False,
+                                                                   bounds=tuple(bounds))
 
-
+        elif (not self.getOption('highlight')) and (self._ChiggerSourceBase__outline is not None):
+            self._ChiggerSourceBase__outline.remove()
+            del self._ChiggerSourceBase__outline
+            self._ChiggerSourceBase__outline = None
 
     # def _setWidth(self, window, binding):
     #     """
