@@ -28,7 +28,7 @@ class Annotation(base.ChiggerSource2D):
                      desc="Move the object to the left.")
         bindings.add('up', Annotation._move, args=(0, 0.01),
                      desc="Move the object up.")
-        bindings.add('down', Annotation._move, args=(0, -0.0),
+        bindings.add('down', Annotation._move, args=(0, -0.01),
                      desc="Move the object down.")
         return bindings
 

@@ -9,9 +9,9 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import chigger
 
-window = chigger.Window(size=(300,300), filename='default.png')
+window = chigger.Window(size=(300,600), filename='default.png')
 viewport = chigger.Viewport(window)
-moose = chigger.annotations.Image(viewport, filename='../../../logos/moose.png')
+moose = chigger.annotations.Image(viewport, width=1, valign='center', position=(0., 0.5), filename='../../../logos/moose.png')
 
 window.write()
 window.start()

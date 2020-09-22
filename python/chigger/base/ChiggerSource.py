@@ -91,7 +91,7 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         ChiggerAlgorithm.__init__(self, **kwargs)
 
         # Storage for the outline object created with 'higlight' option
-        self.__outline = None
+        self._outline = None
 
         # Create mapper
         self._vtkmapper = self.VTKMAPPERTYPE() if self.VTKMAPPERTYPE else None
@@ -217,16 +217,16 @@ class ChiggerSourceBase(utils.KeyBindingMixin, ChiggerAlgorithm):
         Don't change this basic design, you spent way too much time getting it to this. Leave it.
         - Andrew (9.18.2020)
         """
-        if self.getOption('highlight') and (self.__outline is None):
+        if self.getOption('highlight') and (self._outline is None):
             from .. import geometric # avoid cyclic import
             is_3D = isinstance(self.getVTKActor(), vtk.vtkActor)
             obj_type = geometric.Highlight if is_3D else geometric.Highlight2D
             offset = 0.05 if is_3D else 0.02
-            self.__outline = obj_type(self._viewport, self, pickable=False, offset=offset, linewidth=1, color=(1,1,0))
-        elif (not self.getOption('highlight')) and (self.__outline is not None):
-            self.__outline.remove()
-            del self.__outline
-            self.__outline = None
+            self._outline = obj_type(self._viewport, self, pickable=False, offset=offset, linewidth=1, color=(1,1,0))
+        elif (not self.getOption('highlight')) and (self._outline is not None):
+            self._outline.remove()
+            del self._outline
+            self._outline = None
 
     def __del__(self):
         ChiggerAlgorithm.__del__(self)
