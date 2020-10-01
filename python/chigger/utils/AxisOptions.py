@@ -19,61 +19,70 @@ VTK_NOTATION_ENUM = [
     vtk.vtkAxis.PRINTF_NOTATION
 ]
 
-def get_options():
-    """
-    Retuns options for vtkAxis objects.
-    """
+def validOptions():
+    """Returns options for vtkAxis objects."""
     opt = Options()
-    opt.add('num_ticks', 5, "The number of tick marks to place on the axis.", vtype=int)
-    opt.add('lim', "The axis extents.", vtype=list)
-    opt.add('font_color', [1, 1, 1], "The color of the axis, ticks, and labels.")
-    opt.add('title', "The axis label.", vtype=str)
-    opt.add('font_size', "The axis title and label font sizes, in points.", vtype=int)
-    opt.add('title_font_size', "The axis title font size, in points.", vtype=int)
-    opt.add('tick_font_size', "The axis tick label font size, in points.", vtype=int)
-    opt.add('grid', True, "Show/hide the grid lines for this axis.")
-    opt.add('grid_color', [0.25, 0.25, 0.25], "The color for the grid lines.")
-    opt.add('precision', "The axis numeric precision.", vtype=int)
-    opt.add('notation', "The type of notation, leave empty to let VTK decide", vtype=str,
-            allow=['standard', 'scientific', 'fixed', 'printf'])
-    opt.add('ticks_visible', True, "Control visibility of tickmarks on colorbar axis.")
-    opt.add('axis_visible', True, "Control visibility of axis line on colorbar axis.")
-    opt.add('labels_visible', True, "Control visibility of the numeric labels.")
-    opt.add('axis_position', 'left', "Set the axis position (left, right, top, bottom)", vtype=str,
-            allow=['left', 'right', 'top', 'bottom'])
-    opt.add('axis_point1', [0, 0], 'Starting location of axis, in absolute viewport coordinates.')
-    opt.add('axis_point2', [0, 0], 'Ending location of axis, in absolute viewport coordinates.')
-    opt.add('axis_scale', 1, "The axis scaling factor.", vtype=float)
-    opt.add('axis_factor', 0, "Offset the axis by adding a factor.", vtype=float)
-    opt.add('axis_opacity', 1, "The vtkAxis opacity.", vtype=float)
-    opt.add('zero_tol', 1e-10, "Tolerance for considering limits to be the same.")
+    opt.add('fontcolor', default=(1,1,1), vtype=(int, float), size=3, doc="The color of the axis, ticks, and labels.")
+    opt.add('axis_fontcolor', vtype=(int, float), size=3, doc="The color of the axis, this overrides the value in 'fontcolor'.")
+
     return opt
 
-def set_options(vtkaxis, opt):
+    # opt.add('num_ticks', default=5, vtype=int, doc="The number of tick marks to place on the axis.")
+    # opt.add('lim', vtype=(int, float), size=2, doc="The axis extents.")
+    # opt.add('font_color', (1, 1, 1), vtype=(int, float), size=3,
+    #         doc="The color of the axis, ticks, and labels.")
+    # opt.add('title', vtype=str, doc="The axis label.")
+    # opt.add('font_size', vtype=int, doc="The axis title and label font sizes, in points.")
+    # opt.add('title_font_size', vtype=int, doc="The axis title font size, in points.")
+    # opt.add('tick_font_size', vtype=int, doc="The axis tick label font size, in points.")
+    # opt.add('grid', True, vtype=bool, doc="Show/hide the grid lines for this axis.")
+    # opt.add('grid_color', default=(0.25, 0.25, 0.25), vtype=(int, float), size=3,
+    #         doc="The color for the grid lines.")
+    # opt.add('precision', 3, vtype=int, doc="The axis numeric precision.")
+    # opt.add('notation', vtype=str, doc="The type of notation, leave empty to let VTK decide.",
+    #         allow=('standard', 'scientific', 'fixed', 'printf'))
+    # opt.add('ticks_visible', True, vtype=bool,
+    #         doc="Control visibility of tickmarks on colorbar axis.")
+    # opt.add('axis_visible', True, vtype=bool,
+    #         doc="Control visibility of axis line on colorbar axis.")
+    # opt.add('labels_visible', True, vtype=bool, doc="Control visibility of the numeric labels.")
+    # opt.add('axis_position', 'left', vtype=str,
+    #         doc="Set the axis position (left, right, top, bottom)",
+    #         allow=('left', 'right', 'top', 'bottom'))
+    # opt.add('axis_point1', (0, 0), vtype=(int, float), size=2,
+    #         doc='Starting location of axis, in absolute viewport coordinates.')
+    # opt.add('axis_point2', (0, 0), vtype=(int, float), size=2,
+    #         doc='Ending location of axis, in absolute viewport coordinates.')
+    # opt.add('axis_scale', 1, vtype=(int, float), doc="The axis scaling factor.")
+    # opt.add('zero_tol', 1e-10, vtype=(int, float), doc="Tolerance for considering limits to be the same.")
+
+def setOptions(vtkaxis, opt): #pylint: disable=invalid-name
     """
     Set the options for vtkAxis object.
     """
 
-    # Visibility
-    vtkaxis.SetTicksVisible(opt['ticks_visible'])
-    vtkaxis.SetAxisVisible(opt['axis_visible'])
-    vtkaxis.SetLabelsVisible(opt['labels_visible'])
 
-    # Opacity
-    if opt.isOptionValid('axis_opacity'):
-        opacity = opt['axis_opacity']
-        vtkaxis.SetOpacity(opacity)
-        vtkaxis.GetTitleProperties().SetOpacity(opacity)
-        vtkaxis.GetLabelProperties().SetOpacity(opacity)
+    pass
+
+    """
+    # Visibility
+    if opt.isValid('tick_visible'):
+        vtkaxis.SetTicksVisible(opt.applyOption('ticks_visible'))
+
+    if opt.isValid('axis_visible'):
+        vtkaxis.SetAxisVisible(opt.applyOption('axis_visible'))
+
+    if opt.isValid('labels_visible'):
+        vtkaxis.SetLabelsVisible(opt.applyOption('labels_visible'))
 
     # Ticks
-    if opt.isOptionValid('num_ticks'):
-        vtkaxis.SetNumberOfTicks(opt['num_ticks'])
+    if opt.isValid('num_ticks'):
+        vtkaxis.SetNumberOfTicks(opt.applyOption('num_ticks'))
 
     # Limits
-    if opt.isOptionValid('lim'):
-        lim = opt['lim']
-        if abs(lim[1] - lim[0]) < opt['zero_tol']:
+    if opt.isValid('lim'):
+        lim = opt.get('lim')
+        if abs(lim[1] - lim[0]) < opt.get('zero_tol'):
             vtkaxis.SetBehavior(vtk.vtkAxis.CUSTOM)
             vtkaxis.SetRange(0, 1)
 
@@ -98,53 +107,65 @@ def set_options(vtkaxis, opt):
     else:
         vtkaxis.SetBehavior(vtk.vtkAxis.AUTO)
         vtkaxis.SetCustomTickPositions(None, None)
+    """
 
     # Color
-    if opt.isOptionValid('font_color'):
-        clr = opt['font_color']
+    if opt.isValid('fontcolor'):
+        clr = opt.get('fontcolor')
         vtkaxis.GetTitleProperties().SetColor(*clr)
         vtkaxis.GetLabelProperties().SetColor(*clr)
         vtkaxis.GetPen().SetColorF(*clr)
 
+    """
     # Axis title
-    if opt.isOptionValid('title'):
-        vtkaxis.SetTitle(opt['title'])
+    if opt.isValid('title'):
+        vtkaxis.SetTitle(opt.applyOption('title'))
 
     # Font sizes
-    if opt.isOptionValid('font_size'):
-        vtkaxis.GetTitleProperties().SetFontSize(opt['font_size'])
-        vtkaxis.GetLabelProperties().SetFontSize(opt['font_size'])
+    if opt.isValid('font_size'):
+        vtkaxis.GetTitleProperties().SetFontSize(opt.applyOption('font_size'))
+        vtkaxis.GetLabelProperties().SetFontSize(opt.applyOption('font_size'))
 
-    if opt.isOptionValid('title_font_size'):
-        vtkaxis.GetTitleProperties().SetFontSize(opt['title_font_size'])
-    if opt.isOptionValid('tick_font_size'):
-        vtkaxis.GetLabelProperties().SetFontSize(opt['tick_font_size'])
+    if opt.isValid('title_font_size'):
+        vtkaxis.GetTitleProperties().SetFontSize(opt.applyOption('title_font_size'))
+    if opt.isValid('tick_font_size'):
+        vtkaxis.GetLabelProperties().SetFontSize(opt.applyOption('tick_font_size'))
 
     # Precision/notation
-    if opt.isOptionValid('notation'):
-        notation = opt['notation'].upper()
+    if opt.isValid('precision'):
+        vtkaxis.SetPrecision(opt.applyOption('precision'))
+
+    if opt.isValid('notation'):
+        notation = opt.get('notation').upper()
         vtk_notation = getattr(vtk.vtkAxis, notation + '_NOTATION')
         vtkaxis.SetNotation(vtk_notation)
 
-    if opt.isOptionValid('precision'):
-        if vtkaxis.GetNotation() in VTK_NOTATION_ENUM[1:3]:
+    if opt.isValid('precision'):
+        if vtkaxis.GetNotation() in VTK_NOTATION_ENUM[1:2]:
             vtkaxis.SetPrecision(opt['precision'])
         else:
             mooseutils.mooseWarning("When using 'precision' option, 'notation' option has to be "
                                     "set to either 'scientific' or 'fixed'.")
 
     # Grid lines
-    vtkaxis.SetGridVisible(opt['grid'])
-    vtkaxis.GetGridPen().SetColorF(opt['grid_color'])
+    if opt.isValid('grid'):
+        vtkaxis.SetGridVisible(opt.applyOption('grid'))
+
+    if opt.isValid('grid_color'):
+        vtkaxis.GetGridPen().SetColorF(opt.applyOption('grid_color'))
 
     # Set the position and points
-    if opt.isOptionValid('axis_position'):
+    if opt.isValid('axis_position'):
         pos = {'left':vtk.vtkAxis.LEFT, 'right':vtk.vtkAxis.RIGHT, 'top':vtk.vtkAxis.TOP,
                'bottom':vtk.vtkAxis.BOTTOM}
-        vtkaxis.SetPosition(pos[opt['axis_position']])
+        vtkaxis.SetPosition(pos[opt.applyOption('axis_position')])
 
-    if opt.isOptionValid('axis_point1'):
-        vtkaxis.SetPoint1(*opt['axis_point1'])
+    if opt.isValid('axis_point1'):
+        vtkaxis.SetPoint1(*opt.applyOption('axis_point1'))
 
-    if opt.isOptionValid('axis_point2'):
-        vtkaxis.SetPoint2(*opt['axis_point2'])
+    if opt.isValid('axis_point2'):
+        vtkaxis.SetPoint2(*opt.applyOption('axis_point2'))
+
+    if opt.isValid('axis_scale'):
+        vtkaxis.SetScalingFactor(opt.applyOption('axis_scale'))
+    """

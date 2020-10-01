@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from .ChiggerFilterBase import ChiggerFilterBase
+from ChiggerFilterBase import ChiggerFilterBase
 
 class RotationalExtrusionFilter(ChiggerFilterBase):
     """
@@ -21,7 +21,7 @@ class RotationalExtrusionFilter(ChiggerFilterBase):
     @staticmethod
     def getOptions():
         opt = ChiggerFilterBase.getOptions()
-        opt.add('angle', None, "Set the angle of rotation.", vtype=float)
+        opt.add('angle', None, "Set the angle of rotation.", vtype=(int, float))
         opt.add('resolution', None, "Set the rotational resolution.", vtype=int)
         return opt
 

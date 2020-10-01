@@ -74,3 +74,19 @@ class ImageDiff(FileTester):
                     break
 
         return output
+
+class ChiggerImageDiff(ImageDiff):
+    """Helper to automatically run chigger scripts in test mode."""
+
+    @staticmethod
+    def validParams():
+        params = ImageDiff.validParams()
+        params.addParam('offscreen', True, "Run the Chigger script in test mode, by adding " \
+                                           "Window:offscreen=True to the command line.")
+        return params
+
+    def getCommand(self, *args, **kwargs):
+        cmd = super().getCommand(*args, **kwargs)
+        if self.specs['offscreen']:
+            cmd += " Window:offscreen=True"
+        return cmd

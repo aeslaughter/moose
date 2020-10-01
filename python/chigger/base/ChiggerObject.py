@@ -1,4 +1,3 @@
-#pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
 #*
@@ -7,184 +6,236 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
+import os
+import sys
+import re
+import vtk
+import logging
+import traceback
+import inspect
 import mooseutils
-from .. import utils
 
-class ChiggerObject(object):
+class ChiggerObjectBase(object):
     """
     Base for all user-facing object in chigger.
 
-    The primary purpose is to provide a method for getting key, value
-    options and consistent update methods.
+    Inputs:
+        **kwargs: key/value pairs that are used to update the options defined in the validOptions
+                  method
     """
+    __LOG_LEVEL__ = dict(critical=logging.CRITICAL, error=logging.ERROR, warning=logging.warning,
+                         info=logging.INFO, debug=logging.DEBUG, notset=logging.NOTSET)
 
     @staticmethod
-    def getOptions():
+    def validOptions():
         """
-        All object should define a static getOptions method to add new key, value options. (public)
+        Objects should define a static validOptions method to add new key, value options.
         """
+        from .. import utils # avoids cyclic dependencies
         opt = utils.Options()
-        opt.add('debug', False, "Enable/disable debug messaging.")
+        opt.add('name', vtype=str,
+                doc="The object name (this name is displayed on the console help by pressing 'h'). "
+                    "If a name is not supplied the class name is utilized.")
         return opt
 
     def __init__(self, **kwargs):
-        super(ChiggerObject, self).__init__()
-        self._options = getattr(self.__class__, 'getOptions')()
-        self.__initial_options = kwargs
-        self.__needs_initialize = True
-        self.__needs_update = True
-
-    def options(self):
-        """
-        Return the utils.Options object for this class.
-        """
-        return self._options
-
-    def needsUpdate(self):
-        """
-        Return True if the object requires an Update method call. (public)
-        """
-        mooseutils.mooseDebug("{}.needsUpdate() = {}".format(self.__class__.__name__,
-                                                             self.__needs_update))
-        return self.__needs_update
-
-    def needsInitialize(self):
-        """
-        Return True if the object requires an _initialize method call. (public)
-        """
-        mooseutils.mooseDebug("{}.needsInitialize() = {}".format(self.__class__.__name__,
-                                                                 self.__needs_initialize))
-        return self.__needs_initialize
-
-    def update(self, initialize=True, **kwargs):
-        """
-        Update method should contain calls to underlying vtk objects. (public)
-
-        Inputs:
-            initialize[bool]: When True the initialize() method will be called, but only if needed.
-        """
-        if self.__needs_initialize and initialize:
-            self.initialize()
-        mooseutils.mooseDebug("{}.update()".format(self.__class__.__name__))
+        self.__logger = logging.getLogger(self.__class__.__module__)
+        self._options = getattr(self.__class__, 'validOptions')()
         self.setOptions(**kwargs)
-        self.setNeedsUpdate(False)
+        self.__setOptionsFromCommandLine(sys.argv)
+        self._options.validate()
 
-    def isOptionValid(self, name):
-        """
-        Test if the given option is valid (i.e., not None). (public)
-        """
-        return self._options.isOptionValid(name)
+        self._init_traceback = traceback.extract_stack()
+        self._set_options_tracebacks = dict()
 
-    def getOption(self, name):
+    def name(self):
         """
-        Return the value of an option. (public)
+        Return the "name" of the object.
+
+        If the 'name' option has been set, then it returns this value otherwise it returns the
+        class name.
+        """
+        if not self.isOptionValid('name'):
+            return self.__class__.__name__
+        return self.getOption('name')
+
+    def info(self, *args, **kwargs):
+        """
+        Log message with 'info' level.
 
         Inputs:
-            name[str]: The name of the option to retrieve
+            msg[str]: Message to display
+            *args[str]: optional strings to apply to message using 'format'
+            **kwargs: key/value pairs passed to logging package
         """
-        return self._options[name]
+        self._log(logging.INFO, *args, **kwargs)
 
-    def setOption(self, name, value):
+    def debug(self, *args, **kwargs):
         """
-        Set single option. (public)
+        Log message with 'debug' level.
+
+        see ChiggerObject.info
+        """
+        self._log(logging.DEBUG, *args, **kwargs)
+
+    def warning(self, *args, **kwargs):
+        """
+        Log message with 'warning' level.
+
+        see ChiggerObject.info
+        """
+        self._log(logging.WARNING, *args, **kwargs)
+
+    def error(self, *args, **kwargs):
+        """
+        Log message with 'error' level.
+
+        see ChiggerObject.info
+        """
+        self._log(logging.ERROR, *args, **kwargs)
+
+    def isOptionValid(self, *args):
+        """
+        Test if the given option is valid (i.e., not None).
+        """
+        return self._options.isValid(*args)
+
+    def isOptionDefault(self, *args):
+        """
+        Check if the option is set to the default value.
+        """
+        return self._options.isDefault(*args)
+
+    def getOption(self, *args):
+        """
+        Return the value of an option.
 
         Inputs:
-            name[str]: The name of the option to retrieve
-            value: The value to set the option to
+            name(s) [str]: Name(s) for option or nested option
+
+        Examples:
+            getOption('year')
+            getOption('date', 'year') # 'date' is an InputParameters object
+            getOption('date_year')    # 'date' is an InputParameters object
         """
-        changed = (self._options[name] != value)
-        if changed:
-            self._options[name] = value
-            self.setNeedsUpdate(True)
+        return self._options.get(*args)
+
+    def setOption(self, *args):
+        """
+        Set a specific option or sub-option
+
+        Inputs:
+            name(s) [str]: Name(s) for option or nested option
+            value: The value to assign to the option or nested option
+
+        Examples:
+            setOption('year', 1980)
+            setOption('date', 'year', 1980) # 'date' is an InputParameters object
+            setOption('date_year', 1980)    # 'date' is an InputParameters object
+        """
+        self.debug('setOption')
+        self._options.set(*args)
 
     def setOptions(self, *args, **kwargs):
         """
-        A method for setting/updating an objects options. (public)
+        A method for setting/updating an objects options.
 
         Usage:
            setOptions(sub0, sub1, ..., key0=value0, key1=value1, ...)
-           Updates all suboptions with the provided key value pairs
+           Updates all sub-options with the provided key value pairs
 
            setOptions(key0=value0, key1=value1, ...)
            Updates the main options with the provided key,value pairs
         """
+        self.debug('setOptions')
 
         # Sub-options case
-        changed = [self.needsUpdate()] # default changed status to the current status
-        if len(args) > 0:
+        if args:
             for sub in args:
-                if (self._options.hasOption(sub)) and isinstance(self.getOption(sub),
-                                                                 utils.Options):
-                    changed.append(self._options[sub].update(**kwargs))
-                elif isinstance(sub, utils.Options):
-                    changed.append(self._options.update(sub))
+                if not self._options.hasOption(sub):
+                    msg = "The supplied sub-option '{}' does not exist.".format(sub)
+                    mooseutils.mooseError(msg)
+                else:
+                    self._options.get(sub).update(**kwargs)
+                    self._set_options_tracebacks[sub] = traceback.extract_stack()
+
         # Main options case
         else:
-            changed.append(self._options.update(**kwargs))
+            self._options.update(**kwargs)
 
-        changed = any(changed)
-        self.setNeedsUpdate(changed)
-        return changed
+    def assignOption(self, *args):
+        """
+        Retrieve an option value and pass it into the given function
+        """
+        self.debug('assignOption')
+        self._options.assign(*args)
 
-    def updateOptions(self, *args):
+    def printOption(self, key):
         """
-        Apply the supplied option objects to this object and the contained ChiggerFilterSourceBase
-        objects. (override)
+        Prints the key/value pairing of an option as would be written in a script
+        """
+        print('{}={}'.format(key, repr(self.getOption(key))))
 
-        Inputs:
-            see ChiggerResultBase
+    def _log(self, lvl, msg, *args, **kwargs):
         """
-        changed = [self.needsUpdate()]
-        for sub in args:
-            changed.append(self._options.update(sub))
-        changed = any(changed)
-        self.setNeedsUpdate(changed)
-        return changed
+        Helper for using logging package with class name prefix
+        """
+        name = self.getOption('name')
+        msg = msg.format(*args)
+        if name:
+            self.__logger.log(lvl, '({}): {}'.format(self.getOption('name'), msg), **kwargs)
+        else:
+            self.__logger.log(lvl, ' {}'.format(msg), **kwargs)
 
-    def reset(self):
+    def __setOptionsFromCommandLine(self, argv):
         """
-        Reset initialization flag, so the _initialize method will be called again on next update.
-        """
-        self.__needs_initialize = True
+        Allow command-line modification of options upon during object construction.
 
-    def initialize(self):
-        """
-        Initialize method that runs once when update() is first called. (protected)
-        """
-        mooseutils.mooseDebug("{}.initialize()".format(self.__class__.__name__))
-        self.__needs_initialize = False
-        self._setInitialOptions()
+        There are two syntax options:
+            Type:Name:key=value
+            Type:key=value
+            The <name> is the value given to the 'name' option. If not provided then all objects of
+            the type are changed.
 
-    def _setInitialOptions(self):
+        For example:
+            Window:size=(500,400)
+            Window:the_name_given:size=(500,400)
         """
-        Method for applying the options passed to constructor, this is called by the
-        initialize() method automatically.
-        """
-        if self.__initial_options:
-            self.setOptions(**self.__initial_options)
-            self.__initial_options = None
+        pattern = r'(?P<type>{}):(?:(?P<name>.*?):)?(?P<key>.*?)=(?P<value>.*)'.format(self.__class__.__name__)
+        regex = re.compile(pattern)
+        for arg in argv:
+            match = re.search(regex, arg)
+            if match and ((match.group('name') is None) or match.group('name') == self.name()):
+                self.info('Setting Option from Command Line: {}'.format(match.group(0)))
+                self.setOption(match.group('key'), eval(match.group('value')))
 
-    def setNeedsUpdate(self, value):
-        """
-        Set the value of the need update flag. (protected)
+class ChiggerObject(ChiggerObjectBase):
+    """
+    Base class for objects that need options but are NOT in the VTK pipeline, for objects
+    within the pipeline please use ChiggerAlgorithm.
+    """
 
-        Inputs:
-            value[bool]: The value for the update flag.
-        """
-        mooseutils.mooseDebug("{}.setNeedsUpdate({})".format(self.__class__.__name__, value))
-        self.__needs_update = value
+    def __init__(self, **kwargs):
+        self.__modified_time = vtk.vtkTimeStamp()
+        ChiggerObjectBase.__init__(self, **kwargs)
+        self.__modified_time.Modified()
 
-    def _setNeedsInitialize(self, value):
+    def setOption(self, *args):
         """
-        Set the initialize flag for the _initialize method. (protected)
-        """
-        mooseutils.mooseDebug("{}._setNeedsInitialize({})".format(self.__class__.__name__, value))
-        self.__needs_initialize = value
+        Set the supplied option, if anything changes mark the class as modified for VTK.
 
-    def checkUpdateState(self):
+        See ChiggerObjectBase.setOption
         """
-        Checks if the object needs update and performs updated, if needed.
+        ChiggerObjectBase.setOption(self, *args)
+        if self._options.modified() > self.__modified_time.GetMTime():
+            self.__modified_time.Modified()
+
+    def setOptions(self, *args, **kwargs):
         """
-        if self.needsUpdate():
-            self.update()
+        Set the supplied options, if anything changes mark the class as modified for VTK.
+
+        See ChiggerObjectBase.setOptions
+        """
+        ChiggerObjectBase.setOptions(self, *args, **kwargs)
+        if self._options.modified() > self.__modified_time.GetMTime():
+            self.__modified_time.Modified()

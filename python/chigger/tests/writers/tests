@@ -1,8 +1,8 @@
 [Tests]
-  [writers]
+  [./writers]
     type = PythonUnitTest
     input = writers.py
     buffer = True
-    display_required = true
-  []
+    display_required = True
+  [../]
 []

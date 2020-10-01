@@ -9,8 +9,8 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
+import GeometricSourceMeta
 import mooseutils
-from . import GeometricSourceMeta
 from ..base import ColorMap
 
 def create(base_type):
@@ -35,18 +35,22 @@ def create(base_type):
         FILTER_TYPES = []
 
         @staticmethod
-        def getOptions():
-            opt = source_type.getOptions()
-            opt.add('origin', [0, 0, 0], 'Define the origin of the plane.')
-            opt.add('point1', [1, 0, 0], 'Define the first edge of the plane (origin->point1).')
-            opt.add('point2', [0, 1, 0], 'Define the second edge of the plane (origin->point2).')
-            opt.add('resolution', [1, 1], "Define the number of subdivisions in the x- and "
-                                          "y-direction of the plane.")
-            opt.add('data', None, "The VTK data to attach to the vtkMapper for this object, for "
-                                  "used with the 'cmap' option.", vtype=vtk.vtkFloatArray)
-            opt += ColorMap.getOptions()
-            opt.setDefault('color', None)
-            opt.setDefault('cmap', None)
+        def validOptions():
+            opt = source_type.validOptions()
+            opt.add('origin', default=(0, 0, 0), vtype=(int, float), size=3,
+                    doc='Define the origin of the plane.')
+            opt.add('point1', default=(1, 0, 0), vtype=(int, float), size=3,
+                    doc='Define the first edge of the plane (origin->point1).')
+            opt.add('point2', default=(0, 1, 0), vtype=(int, float), size=3,
+                    doc='Define the second edge of the plane (origin->point2).')
+            opt.add('resolution', default=(1, 1), vtype=int, size=2,
+                    doc="Define the number of subdivisions in the x- and y-direction of the plane.")
+            opt.add('data', None, vtype=vtk.vtkFloatArray,
+                    doc="The VTK data to attach to the vtkMapper for this object, for used with " \
+                        "the 'cmap' option.")
+            opt += ColorMap.validOptions()
+           # opt.set('color', None)
+            opt.set('cmap', None)
             return opt
 
         def __init__(self, **kwargs):
@@ -58,28 +62,28 @@ def create(base_type):
             """
             super(PlaneSourceMeta, self).update(**kwargs)
 
-            if self.isOptionValid('origin'):
+            if self.isValid('origin'):
                 self._vtksource.SetOrigin(*self.getOption('origin'))
 
-            if self.isOptionValid('point1'):
+            if self.isValid('point1'):
                 self._vtksource.SetPoint1(*self.getOption('point1'))
 
-            if self.isOptionValid('point2'):
+            if self.isValid('point2'):
                 self._vtksource.SetPoint2(*self.getOption('point2'))
 
-            if self.isOptionValid('resolution'):
+            if self.isValid('resolution'):
                 self._vtksource.SetResolution(*self.getOption('resolution'))
 
-            if self.isOptionValid('cmap'):
-                if self.isOptionValid('color'):
+            if self.isValid('cmap'):
+                if self.isValid('color'):
                     mooseutils.mooseWarning('The "color" and "cmap" options are both being set, '
                                             'the "color" will be ignored.')
 
-                if not self.isOptionValid('data'):
-                    mooseutils.mooseError('The "cmap" option requires that "data" option also '
-                                          'be supplied.')
+                #if not self.isValid('data'):
+                #    mooseutils.mooseError('The "cmap" option requires that "data" option also '
+                #                          'be supplied.')
 
-                if self.isOptionValid('data'):
+                if self.isValid('data'):
                     self._vtksource.Update()
                     data = self.getOption('data')
                     self._vtksource.GetOutput().GetCellData().SetScalars(data)
@@ -89,5 +93,9 @@ def create(base_type):
                     self._colormap.setOptions(**cmap_options)
                     self._vtkmapper.SetScalarRange(data.GetRange(0))
                     self._vtkmapper.SetLookupTable(self._colormap())
+
+        def getBounds(self):
+            self._vtksource.Update()
+            return self._vtksource.GetOutput().GetBounds()
 
     return PlaneSourceMeta

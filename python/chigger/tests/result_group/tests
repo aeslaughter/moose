@@ -1,8 +1,8 @@
 [Tests]
-  [group]
+  [./group]
     type = ImageDiff
     command = result_group.py
     imagediff = result_group.png
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 []

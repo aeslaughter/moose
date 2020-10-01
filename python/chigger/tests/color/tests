@@ -1,8 +1,8 @@
 [Tests]
-  [test]
+  [./test]
     type = ImageDiff
     command = color.py
     imagediff = color.png
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 []

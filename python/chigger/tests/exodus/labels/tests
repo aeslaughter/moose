@@ -1,24 +1,26 @@
 [Tests]
-  [points]
+  [./points]
     type = ImageDiff
     command = points.py
     imagediff = 'points.png'
-    allowed = 0.96
-    display_required = true
-  []
+    allowed_linux = 0.96
+    allowed_darwin = 0.97
+    cli_args = '--test'
+  [../]
 
-  [cells]
+  [./cells]
     type = ImageDiff
     command = cells.py
     imagediff = 'cells.png'
-    allowed = 0.96
-    display_required = true
-  []
+    allowed_linux = 0.96
+    allowed_darwin = 0.97
+    cli_args = '--test'
+  [../]
 
-  [variable]
+  [./variable]
     type = ImageDiff
     command = variable.py
     imagediff = 'variable.png'
-    display_required = true
-  []
+    cli_args = '--test'
+  [../]
 []

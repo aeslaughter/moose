@@ -1,0 +1,144 @@
+[Tests]
+  [default]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = default.png
+  []
+  [color]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = color.png
+    cli_args = "\"Text:font_color=(1,0,1)\" \"Window:filename='color.png'\""
+  []
+  [opacity]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = opacity.png
+    cli_args = "\"Text:font_opacity=0.2\" \"Window:filename='opacity.png'\""
+  []
+  [size]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = size.png
+    cli_args = "\"Text:font_size=1\" \"Window:filename='size.png'\""
+  []
+  [italic]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = italic.png
+    cli_args = "\"Text:font_italic=True\" \"Window:filename='italic.png'\""
+  []
+  [bold]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = bold.png
+    cli_args = "\"Text:font_bold=True\" \"Window:filename='bold.png'\""
+  []
+  [family]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = family.png
+    cli_args = "\"Text:font_family='times'\" \"Window:filename='family.png'\""
+  []
+  [rotate45]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate45.png
+    cli_args = "\"Text:rotate=45\" \"Window:filename='rotate45.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [rotate90]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate90.png
+    cli_args = "\"Text:rotate=90\" \"Window:filename='rotate90.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [rotate135]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate135.png
+    cli_args = "\"Text:rotate=135\" \"Window:filename='rotate135.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [rotate180]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate180.png
+    cli_args = "\"Text:rotate=180\" \"Window:filename='rotate180.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [rotate225]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate225.png
+    cli_args = "\"Text:rotate=225\" \"Window:filename='rotate225.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [rotate270]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate270.png
+    cli_args = "\"Text:rotate=270\" \"Window:filename='rotate270.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [rotate315]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = rotate315.png
+    cli_args = "\"Text:rotate=315\" \"Window:filename='rotate315.png'\" \"Text:valign='center'\" \"Text:halign='center'\" \"Text:position=(0.5, 0.5)\""
+  []
+  [halign_center]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = halign_center.png
+    cli_args = "\"Text:halign='center'\" \"Text:position=(0.5, 0.5)\" \"Window:filename='halign_center.png'\""
+  []
+  [halign_right]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = halign_right.png
+    cli_args = "\"Text:halign='right'\" \"Text:position=(0.5, 0.5)\" \"Window:filename='halign_right.png'\""
+  []
+  [halign_left]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = halign_left.png
+    cli_args = "\"Text:halign='left'\" \"Text:position=(0.5, 0.5)\" \"Window:filename='halign_left.png'\""
+  []
+  [valign_center]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = valign_center.png
+    cli_args = "\"Text:valign='center'\" \"Text:position=(0., 0.5)\" \"Window:filename='valign_center.png'\""
+  []
+  [valign_bottom]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = valign_bottom.png
+    cli_args = "\"Text:valign='bottom'\" \"Text:position=(0., 0.5)\" \"Window:filename='valign_bottom.png'\""
+  []
+  [valign_top]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = valign_top.png
+    cli_args = "\"Text:valign='top'\" \"Text:position=(0., 0.5)\" \"Window:filename='valign_top.png'\""
+  []
+  [frame]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = frame.png
+    cli_args = "\"Text:frame_on=True\" \"Text:position=(0.1, 0.5)\" \"Text:frame_color=(1,1,0)\" \"Text:frame_width=5\" \"Window:filename='frame.png'\""
+  []
+  [background]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = background.png
+    cli_args = "\"Text:background_on=True\" \"Text:background_color=(1,1,0)\" \"Text:background_opacity=0.2\" \"Window:filename='background.png'\""
+  []
+  [auto_text_color]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = auto_text_color.png
+    cli_args = "\"Window:background_color=(0.8,0.8,0.8)\" \"Window:filename='auto_text_color.png'\""
+  []
+  [math]
+    type = ChiggerImageDiff
+    command = math_annotation.py
+    imagediff = math_annotation.png
+  []
+[]

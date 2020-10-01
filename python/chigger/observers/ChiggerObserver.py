@@ -7,54 +7,72 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-from chigger.base import ChiggerObject
-class ChiggerObserver(ChiggerObject):
+import logging
+import weakref
+#from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
+
+from .. import base
+
+class ChiggerObserver(base.ChiggerObject):
     """
-    Base class for definning VTK observer functions.
+    Base class for defining VTK observer functions.
 
     This object is a base class and not intended for general use, see TimerObserver as an example.
     """
     @staticmethod
-    def getOptions():
-        opt = ChiggerObject.getOptions()
+    def validOptions():
+        opt = base.ChiggerObject.validOptions()
         return opt
 
-    def __init__(self, event, **kwargs):
-        super(ChiggerObserver, self).__init__(**kwargs)
-        self._event = event
-        self._window = None
-        self._vtk_command = None
+    def __init__(self, window, **kwargs):
+        base.ChiggerObject.__init__(self, **kwargs)
 
-    def addObserver(self, event, vtkinteractor):
+        # Storing a direct reference (self._window = window) causes VTK to seg. fault. As far as I
+        # can tell this is due to a cyclic reference between the observers added to the VTK
+        # interactor objects. Using a weak reference with the self._window property allows this
+        # class to operate like desired.
+        self.__window_weakref = weakref.ref(window)
+
+
+        self.__observer_tags = list()
+
+        #base.ChiggerAlgorithm.__init__(self, **kwargs)
+
+        #self.SetNumberOfInputPorts(1)
+        #self.SetNumberOfOutputPorts(0)
+        #self.InputType = 'vtkPythonAlgorithm'
+        #self.SetInputConnection(window.GetOutputPort(0))
+
+
+    #def RequestData(self, request, inInfo, outInfo):
+
+        #inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+        #self.SetInputData(inp)
+    #    return 1
+    #def init(self, window):
+    #    """
+    #    Initialize the observer, this is called by the RenderWindow automatically.
+
+    #    NOTE: This is an internal method, do not call it.
+    #    """
+    #    self._window = window
+
+    def addObserver(self, event, function):
+        tag = self._window.getVTKInteractor().AddObserver(event, function)
+        self.__observer_tags.append(tag)
+        return  tag
+
+    def __del__(self):
+        pass
+        #for tag in self.__observer_tags:
+        #    self._window.getVTKInteractor().RemoveObserver(tag)
+
+    @property
+    def _window(self):
+        return self.__window_weakref()
+
+    def terminate(self):
         """
-        Add the observer to the supplied vtkInteractor, see TimerObserver for an example.
-
-        Generally, this method is not needed. If you are creating a new Observer it should inherit
-        from one of the existing objects: e.g., KeyObserver, TimerObserver.
-
-        Inputs:
-            event[str]: The VTK event string, this is supplied in the constructor
-            vtkinteractor[vtkInteractor]: The interactor that the observer should be added.
-
-        NOTE: This method must return the VTK id return from the AddObserver method.
+        Terminate the render window.
         """
-        raise NotImplementedError("The addObserver method must be implmented.")
-
-    def isActive(self):
-        """
-        Return True if this observer is already a part of the VTK interactor.
-        """
-        if self._vtk_command is not None:
-            return self._window.getVTKInteractor().HasObserver(self._event, self._vtk_command)
-        else:
-            return False
-
-    def init(self, window):
-        """
-        Initialize the observer, this is called by the RenderWindow automatically.
-
-        NOTE: This is an internal method, do not call it.
-        """
-        self._window = window
-        vtkid = self.addObserver(self._event, self._window.getVTKInteractor())
-        self._vtk_command = window.getVTKInteractor().GetCommand(vtkid)
+        self._window.terminate()

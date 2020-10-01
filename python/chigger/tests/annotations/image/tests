@@ -1,0 +1,57 @@
+[Tests]
+  [default]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = default.png
+  []
+
+  [width]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = width.png
+    cli_args = "\"Image:width=1\" \"Window:filename='width.png'\""
+  []
+
+  [height]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = height.png
+    cli_args = "\"Image:height=1\" \"Window:filename='height.png'\""
+  []
+
+  [height_and_width]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = height_and_width.png
+    cli_args = "\"Image:height=1\" \"Image:width=1\" \"Window:filename='height_and_width.png'\""
+  []
+
+  [position]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = position.png
+    cli_args = "\"Image:position=(0.5,0.5)\" \"Window:filename='position.png'\""
+  []
+
+  [halign]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = horizontal_alignment.png
+    cli_args = "\"Image:halign='center'\" \"Image:width=1\" \"Image:position=(0.5,0.5)\" \"Window:filename='horizontal_alignment.png'\""
+  []
+
+  [vertical_alignment]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = vertical_alignment.png
+    cli_args = "\"Image:valign='top'\" \"Image:position=(0,1)\" \"Window:filename='vertical_alignment.png'\""
+  []
+
+  [opacity]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = opacity.png
+    cli_args = "\"Image:opacity=0.2\" \"Window:filename='opacity.png'\""
+  []
+
+[]

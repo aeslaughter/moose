@@ -1,4 +1,3 @@
-#pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
 #*
@@ -9,16 +8,29 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import os
+import math
 import glob
 import shutil
 import subprocess
 import numpy as np
 import vtk
 import mooseutils
-from .Options import Option, Options
 from . import AxisOptions
-from . import FontOptions
 from . import LegendOptions
+from .KeyBindingMixin import KeyBinding, KeyBindingMixin
+
+from .Option import Option
+from .Options import Options
+from .AutoColor import Color, AutoColor, auto_adjust_color
+from . import ColorMapOptions
+from . import TextOptions
+from . import BackgroundOptions
+
+from .utils import get_current_window
+from .utils import get_current_viewport
+
+# TODO: Move these to utils.py
+
 
 def get_active_filenames(basename, pattern=None):
     """
@@ -47,6 +59,9 @@ def get_active_filenames(basename, pattern=None):
 
     return output
 
+def interp(x, xp, fp):
+    return np.interp(x, xp, fp)
+
 def copy_adaptive_exodus_test_files(testbase):
     """
     A helper for copying test Exodus files.
@@ -63,19 +78,31 @@ def copy_adaptive_exodus_test_files(testbase):
         shutil.copy(src, dst)
     return sorted(testfiles)
 
-def get_bounds_min_max(*all_bounds):
-    """
-    Returns min,max bounds arrays provided a list of bounds sets.
-    """
-    xmin = [float('inf'), float('inf'), float('inf')]
-    xmax = [float('-inf'), float('-inf'), float('-inf')]
+#def get_bounds_min_max(*all_bounds):
+#    """
+#    Returns min,max bounds arrays provided a list of bounds sets.
+#    """
+#    bnds = get_vtk_bounds_min_max(*all_bounds)
+#    return (bnds[0], bnds[2], bnds[4]), (bnds[1], bnds[3], bnds[5])
 
+    #xmin = [float('inf'), float('inf'), float('inf')]
+    #xmax = [float('-inf'), float('-inf'), float('-inf')]
+
+    #for bounds in all_bounds:
+    #    for i, j in enumerate([0, 2, 4]):
+    #        xmin[i] = min(xmin[i], bounds[j])
+    #    for i, j in enumerate([1, 3, 5]):
+    #        xmax[i] = max(xmax[i], bounds[j])
+    #return xmin, xmax
+
+def get_vtk_bounds_min_max(*all_bounds):
+    bnds = [float('inf'), float('-inf'), float('inf'), float('-inf'), float('inf'), float('-inf')]
     for bounds in all_bounds:
-        for i, j in enumerate([0, 2, 4]):
-            xmin[i] = min(xmin[i], bounds[j])
-        for i, j in enumerate([1, 3, 5]):
-            xmax[i] = max(xmax[i], bounds[j])
-    return xmin, xmax
+        for i in [0, 2, 4]:
+            bnds[i] = min(bnds[i], bounds[i])
+        for i in [1, 3, 5]:
+            bnds[i] = max(bnds[i], bounds[i])
+    return bnds
 
 def get_bounds(*sources):
     """
@@ -83,14 +110,21 @@ def get_bounds(*sources):
     """
     bnds = []
     for src in sources:
-        bnds.append(src.getVTKMapper().GetBounds())
-    return get_bounds_min_max(*bnds)
+        if src is None:
+            continue
+        elif isinstance(src.getVTKActor(), vtk.vtkActor2D):
+            bnds.append(src.getVTKActor().GetBounds())
+        elif src.getVTKMapper() is not None:
+            bnds.append(src.getVTKMapper().GetBounds())
+    return get_vtk_bounds_min_max(*bnds)
 
 def compute_distance(*sources):
     """
     Returns the distance across the bounding box for all supplied sources.
     """
-    xmin, xmax = get_bounds(*sources)
+    bnds = get_bounds(*sources)
+    xmin = [bnds[0], bnds[2], bnds[4]]
+    xmax = [bnds[1], bnds[3], bnds[5]]
     return np.linalg.norm(np.array(xmax) - np.array(xmin))
 
 def get_min_max(*pairs):
@@ -104,7 +138,7 @@ def get_min_max(*pairs):
         xmax = max(xmax, x1)
     return xmin, xmax
 
-def print_camera(camera, prefix='camera', precision=10):
+def print_camera(camera, prefix='camera', precision=8):
     """
     Prints vtkCamera object to screen.
     """
@@ -126,9 +160,19 @@ def print_camera(camera, prefix='camera', precision=10):
         d = ''.join(['(', frmt, ', ', frmt, ', ', frmt, ')'])
         return d.format(*vec)
 
-    return [prefix + '.SetViewUp' + dump(precision, view_up), prefix + '.SetPosition' + \
-                                         dump(precision, position), prefix + '.SetFocalPoint' + \
-                                         dump(precision, focal)]
+    return [prefix + ' = vtk.vtkCamera()',
+            prefix + '.SetViewUp' + dump(precision, view_up),
+            prefix + '.SetPosition' + dump(precision, position),
+            prefix + '.SetFocalPoint' + dump(precision, focal)]
+
+def rotate_point(p, o, angle):
+    """Rotates a point counter clockwise about an origin."""
+    angle = angle * np.pi / 180.
+    x = [0]*len(p)
+    x[0] = math.cos(angle) * (p[0]-o[0]) - math.sin(angle) * (p[1]-o[1]) + o[0]
+    x[1] = math.sin(angle) * (p[0]-o[0]) + math.cos(angle) * (p[1]-o[1]) + o[1]
+    return tuple(x)
+
 
 def animate(pattern, output, delay=20, restart_delay=500, loop=True):
     """
@@ -146,7 +190,7 @@ def animate(pattern, output, delay=20, restart_delay=500, loop=True):
     subprocess.call(cmd)
 
 def img2mov(pattern, output, ffmpeg='ffmpeg', duration=60, framerate=None, bitrate='10M',
-            num_threads=1, quality=1, dry_run=False, output_framerate_increase=0, overwrite=False):
+            num_threads=1, quality=1, dry_run=False, output_framerate_increase=0):
     """
     Use ffmpeg to convert a series of images to a movie.
 
@@ -167,7 +211,7 @@ def img2mov(pattern, output, ffmpeg='ffmpeg', duration=60, framerate=None, bitra
     # Compute framerate from the duration if framerate is not given
     if not framerate:
         n = len(glob.glob(pattern))
-        framerate = int(n/duration)
+        framerate = n/duration
 
     # Build the command
     cmd = [ffmpeg]
@@ -179,8 +223,6 @@ def img2mov(pattern, output, ffmpeg='ffmpeg', duration=60, framerate=None, bitra
     cmd += ['-q:v', str(quality)]
     cmd += ['-threads', str(num_threads)]
     cmd += ['-framerate', str(framerate + output_framerate_increase)]
-    if overwrite:
-        cmd += ['-y']
     cmd += [output]
 
     c = ' '.join(cmd)

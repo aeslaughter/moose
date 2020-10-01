@@ -1,4 +1,3 @@
-#pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
 #*
@@ -7,313 +6,246 @@
 #*
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
-
 import vtk
 import mooseutils
+
 from .ExodusReader import ExodusReader
-from .. import utils
+from .MultiAppExodusReader import MultiAppExodusReader
 from .. import base
+from .. import utils
 from .. import filters
 
 class ExodusSource(base.ChiggerSource):
     """
-    Object for visualizing 3D volumes from an ExodusReader object.
-
-    See ExodusReader for details regarding the ExodusII file support provided.
+    Source object to displaying ExodusII data from a reader. The reader and source objects are
+    separate to allow for one reader to be used with many sources, which is more efficient.
 
     Inputs:
-        reader[ExodusReader]: The reader object containing the ExodusII file desired to be open.
-        **kwargs: see ChiggerSource
+        viewport[chigger.Viewport]: (optional) The viewport object that the source should be rendered
+        reader[chigger.exodus.ExodusReader]: The reader object containing the data to be rendered
+        kwargs: Key-value pair options.
     """
-    FILTER_TYPES = [filters.ContourFilter, filters.ClipperFilterBase, filters.GeometryFilter,
-                    filters.TransformFilter, filters.TubeFilter, filters.RotationalExtrusionFilter]
+    VTKACTORTYPE = vtk.vtkActor
+    VTKMAPPERTYPE = vtk.vtkPolyDataMapper
 
     @staticmethod
-    def getOptions():
-        opt = base.ChiggerSource.getOptions()
+    def validOptions():
+        opt = base.ChiggerSource.validOptions()
 
-        # Variable
-        opt.add('variable', "The nodal or elemental variable to render.", vtype=str)
-        opt.add('component', -1, "The vector variable component to render (-1 plots the "
-                                 " magnitude).", vtype=int, allow=[-1, 0, 1, 2])
+        # Variable selection
+        opt.add('variable', vtype=str, doc="The nodal or elemental variable to render.")
+        opt.add('component', -1, vtype=int, allow=(-1, 0, 1, 2),
+                doc="The vector variable component to render (-1 plots the magnitude).")
+
+        # Data range
+        opt.add('lim', vtype=(int, float), size=2,
+                doc="The range of data to display on the volume and colorbar; range takes " \
+                    "precedence of min/max.")
+        opt.add('min', vtype=(int, float), doc="The minimum range.")
+        opt.add('max', vtype=(int, float), doc="The maximum range.")
 
         # Subdomains/sidesets/nodesets
-        opt.add('nodeset', None, "A list of nodeset ids or names to display, use [] to display all "
-                                 "nodesets.", vtype=list)
-        opt.add('boundary', None, "A list of boundary ids (sideset) ids or names to display, use "
-                                  "[] to display all sidesets", vtype=list)
-        opt.add('block', [], "A list of subdomain (block) ids or names to display, use [] to "
-                             "dislpay all blocks.", vtype=list)
-
-        opt.add('representation', 'surface', "View volume representation.",
-                allow=['surface', 'wireframe', 'points'])
-
-        opt.add('range', "The range of data to display on the volume and colorbar; range takes "
-                         "precedence of min/max.", vtype=list)
-        opt.add('min', "The minimum range.", vtype=float)
-        opt.add('max', "The maximum range.", vtype=float)
+        opt.add('nodesets', None, vtype=list,
+                doc="A list of nodeset ids or names to display, use [] to display all nodesets.")
+        opt.add('sidesets', None, vtype=list,
+                doc="A list of sidesets (boundary) ids or names to display, use [] to display " \
+                    "all sidesets.")
+        opt.add('blocks', [], vtype=list,
+                doc="A list of subdomain (block) ids or names to display, use [] to display all " \
+                    "blocks.")
 
         # Colormap
-        opt += base.ColorMap.getOptions()
+        opt += utils.ColorMapOptions.validOptions()
+
+        opt.add('explode', None, vtype=(int, float),
+                doc="When multiple sources are being used (e.g., NemesisReader) setting this to a "
+                    "value will cause the various sources to be 'exploded' away from the center of "
+                    "the entire object.")
         return opt
 
-    def __init__(self, reader, **kwargs):
-        super(ExodusSource, self).__init__(**kwargs)
+    @staticmethod
+    def validKeyBindings():
 
-        if not isinstance(reader, ExodusReader):
-            raise mooseutils.MooseException('The supplied reader must be a '
-                                            '"chigger.readers.ExodusReader", but a "{}" was '
-                                            'provided.'.format(type(reader).__name__))
+        bindings = base.ChiggerSource.validKeyBindings()
+
+        """
+        # Opacity keybindings
+        bindings.add('a', ExodusSource._updateOpacity,
+                     desc='Increase the alpha (opacity) by 1%.')
+        bindings.add('a', ExodusSource._updateOpacity, shift=True,
+                     desc='Decrease the alpha (opacity) by 1%.')
+
+        # Colormap keybindings
+        bindings.add('m', ExodusSource._updateColorMap,i
+                     desc="Toggle through available colormaps.")
+        bindings.add('m', ExodusSource._updateColorMap, shift=True,
+                     desc="Toggle through available colormaps, in reverse direction.")
+
+        # Time keybindngs
+        bindings.add('t', ExodusSource._updateTimestep,
+                     desc="Increase timestep by 1.")
+        bindings.add('t', ExodusSource._updateTimestep, shift=True,
+                     desc="Decrease the timestep by 1.")
+        """
+        return bindings
+
+    def __init__(self, *args, **kwargs):
+
+        viewport = None
+        reader = None
+        if len(args) == 1:
+            reader = args[0]
+        elif len(args) == 2:
+            viewport = args[0]
+            reader = args[1]
+        else:
+            raise TypeError("ExodusSource expects 1 or 2 input arguments, but {} provided.".format(len(args)))
 
         self.__reader = reader
         self.__current_variable = None
-        self._colormap = base.ColorMap()
 
-        self.__extract_indices = []
-        self.__vtkextractblock = vtk.vtkExtractBlock()
-        self.__vtkextractblock.SetInputConnection(self.__reader.getVTKReader().GetOutputPort())
+        base.ChiggerSource.__init__(self, viewport,
+                                    nInputPorts=1, inputType='vtkMultiBlockDataSet',
+                                    nOutputPorts=1, outputType='vtkMultiBlockDataSet',
+                                    **kwargs)
 
-        self._required_filters = [filters.GeometryFilter()]
+        self.SetInputConnection(self.__reader.GetOutputPort())
 
-    def getExodusReader(self):
-        """
-        Return the ExodusReader object.
-        """
-        return self.__reader
+        self._addFilter(filters.ExtractBlockFilter, True)
+        self._addFilter(filters.GeometryFilter, True)
 
-    def getCurrentVariableInformation(self):
-        """
-        Return the chigger ExodusReader object.
-        """
-        return self.__current_variable
+        # TODO: Check 'blocks', etc. and warn if set
+        # TODO: Check 'variables' set
 
-    def getVTKSource(self):
-        """
-        Returns the vtkExtractBlock object used for pulling subdomain/sideset/nodeset data from the
-        reader. (override)
 
-        Returns:
-            vtk.vtkExtractBlock (see ChiggerFilterSourceBase)
-        """
-        return self.__vtkextractblock
-
-    def getBounds(self):
-        """
-        Return the extents of the active data objects.
-        """
-        self.checkUpdateState()
-
-        bnds = []
-        for i in range(self.__vtkextractblock.GetOutput().GetNumberOfBlocks()):
-            current = self.__vtkextractblock.GetOutput().GetBlock(i)
-            if isinstance(current, vtk.vtkUnstructuredGrid):
-                bnds.append(current.GetBounds())
-
-            elif isinstance(current, vtk.vtkMultiBlockDataSet):
-                for j in range(current.GetNumberOfBlocks()):
-                    bnds.append(current.GetBlock(j).GetBounds())
-
-        return utils.get_bounds_min_max(*bnds)
-
-    def getRange(self, local=False):
-        """
-        Return range of the active variable and blocks.
-        """
-        self.checkUpdateState()
-        if self.__current_variable is None:
-            return (None, None)
-        elif not local:
-            return self.__getRange()
-        else:
-            return self.__getLocalRange()
-
-    def __getRange(self):
-        """
-        Private version of range for the update method.
-        """
-        component = self.getOption('component')
-        pairs = []
-        for i in range(self.__vtkextractblock.GetOutput().GetNumberOfBlocks()):
-            current = self.__vtkextractblock.GetOutput().GetBlock(i)
-            if isinstance(current, vtk.vtkUnstructuredGrid):
-                array = self.__getActiveArray(current)
-                if array:
-                    pairs.append(array.GetRange(component))
-
-            elif isinstance(current, vtk.vtkMultiBlockDataSet):
-                for j in range(current.GetNumberOfBlocks()):
-                    array = self.__getActiveArray(current.GetBlock(j))
-                    if array:
-                        pairs.append(array.GetRange(component))
-
-        return utils.get_min_max(*pairs)
-
-    def __getLocalRange(self):
-        """
-        Determine the range of visible items.
-        """
-        component = self.getOption('component')
-        self.getVTKMapper().Update() # required to have up-to-date ranges
-        data = self.getVTKMapper().GetInput()
-        out = self.__getActiveArray(data)
-        if out is not None:
-            return out.GetRange(component)
-        else:
-            return [None, None]
-
-    def __getActiveArray(self, data):
-        """
-        Return the vtkArray for the current variable.
-
-        Inputs:
-            data[vtkUnstructuredGrid]: The VTK data object to extract array from.
-
-        see __GetRange and __GetBounds
-        """
-
-        name = self.__current_variable.name
-        if self.__current_variable.object_type == ExodusReader.ELEMENTAL:
-            for a in range(data.GetCellData().GetNumberOfArrays()):
-                if data.GetCellData().GetArrayName(a) == name:
-                    return data.GetCellData().GetAbstractArray(a)
-
-        elif self.__current_variable.object_type == ExodusReader.NODAL:
-            for a in range(data.GetPointData().GetNumberOfArrays()):
-                if data.GetPointData().GetArrayName(a) == name:
-                    return data.GetPointData().GetAbstractArray(a)
-        else:
-            raise mooseutils.MooseException('Unable to get the range for the '
-                                            'variable "{}"'.format(self.__current_variable.name))
-
-    def needsUpdate(self):
-        """
-        Indicates if this object needs its update method called. (override)
-
-        This adds checking of the contained reader, if the reader needs updating then so does this
-        class.
-        """
-        needs_update = super(ExodusSource, self).needsUpdate()
-        mooseutils.mooseDebug('ExodusSource.needsUpdate() = {}'.format(needs_update))
-        return needs_update or self.__reader.needsUpdate()
-
-    def update(self, **kwargs):
-        """
-        Updates this object based on the reader and specified options.
-
-        Inputs:
-            see ChiggerSource
-        """
-
-        # Update the options, but do not call update from base class. See comment at end of this
-        # method.
-        self.setOptions(**kwargs)
-
-        # Update the reader, if needed
-        if self.__reader.needsUpdate():
-            self.__reader.update()
-
-        # Enable all blocks (subdomains) if nothing is enabled
-        block_info = self.__reader.getBlockInformation()
-        for item in ['block', 'boundary', 'nodeset']:
-            if self.isOptionValid(item) and self.getOption(item) == []:
-                self.setOption(item, [item.name for item in \
-                                      block_info[getattr(ExodusReader, item.upper())].values()])
-        self.setNeedsUpdate(False) # this function does not need to update again
-
-        def get_indices(option, vtk_type):
-            """
-            Helper to populate vtkExtractBlock object from the selected blocks/sidesets/nodesets
-            """
-            indices = []
-            if self.isOptionValid(option):
-                blocks = self.getOption(option)
-                for vtkid, item in block_info[vtk_type].items():
-                    for name in blocks:
-                        if (item.name == str(name)) or (str(name) == vtkid):
-                            indices.append(item.multiblock_index)
-            return indices
-        extract_indices = get_indices('block', ExodusReader.BLOCK)
-        extract_indices += get_indices('boundary', ExodusReader.SIDESET)
-        extract_indices += get_indices('nodeset', ExodusReader.NODESET)
-
-        if self.__extract_indices != extract_indices:
-            self.__vtkextractblock.RemoveAllIndices()
-            for index in extract_indices:
-                self.__vtkextractblock.AddIndex(index)
-            self.__extract_indices = extract_indices
-        self.__vtkextractblock.Update()
-
-        # Define the coloring to utilize for the object
-        self.__updateVariable()
-
-        # Representation
-        if self.isOptionValid('representation'):
-            func = 'SetRepresentationTo{}'.format(self.getOption('representation').title())
-            attr = getattr(self._vtkactor.GetProperty(), func)
-            attr()
-
-        # Without this the results can be less than ideal
-        # (https://blog.kitware.com/what-is-interpolatescalarsbeforemapping-in-vtk/)
-        self._vtkmapper.InterpolateScalarsBeforeMappingOn()
-
-        # Call the base class method, this is done last because the reader and block extracting
-        # needs to be in place before the filters can be applied
-        super(ExodusSource, self).update()
-
-    def __updateVariable(self):
-        """
-        Method to update the active variable to display on the object. (private)
-        """
-        def get_available_variables():
-            """
-            Returns a sting listing the available nodal and elemental variable names.
-            """
-            nvars = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL]).keys()
-            evars = self.__reader.getVariableInformation(var_types=[ExodusReader.ELEMENTAL]).keys()
-            msg = ["Nodal:"]
-            msg += [" " + var for var in nvars]
-            msg += ["\nElemental:"]
-            msg += [" " + var for var in evars]
-            return ''.join(msg)
-
-        # Define the active variable name
-        available = self.__reader.getVariableInformation(var_types=[ExodusReader.NODAL,
-                                                                    ExodusReader.ELEMENTAL])
-
-        # Case when no variable exists
-        if not available:
-            return
-
-        default = available[list(available.keys())[0]]
-        if not self.isOptionValid('variable'):
-            varinfo = default
-        else:
-            var_name = self.getOption('variable')
-            if var_name not in available:
-                msg = "The variable '{}' provided does not exist, using '{}', available " \
-                      "variables include:\n{}"
-                mooseutils.mooseError(msg.format(var_name, default.name, get_available_variables()))
-                varinfo = default
-            else:
-                varinfo = available[var_name]
-
-        # Update vtkMapper to the correct data mode
-        if varinfo.object_type == ExodusReader.ELEMENTAL:
-            self._vtkmapper.SetScalarModeToUseCellFieldData()
-        elif varinfo.object_type == ExodusReader.NODAL:
-            self._vtkmapper.SetScalarModeToUsePointFieldData()
-        else:
-            raise mooseutils.MooseException('Unknown variable type, not sure how you made it here.')
-        self.__current_variable = varinfo
+    def _onRequestInformation(self, *args):
+        base.ChiggerSource._onRequestInformation(self, *args)
 
         # Colormap
-        if not self.isOptionValid('color'):
-            self._colormap.setOptions(cmap=self.getOption('cmap'),
-                                      cmap_reverse=self.getOption('cmap_reverse'),
-                                      cmap_num_colors=self.getOption('cmap_num_colors'))
-            self._vtkmapper.SelectColorArray(varinfo.name)
-            self._vtkmapper.SetLookupTable(self._colormap())
-            self._vtkmapper.UseLookupTableScalarRangeOff()
+        #if not self.getOption('color'):
+        cmap = utils.ColorMapOptions.applyOptions(self.getOption('cmap'))
+        self._vtkmapper.SetLookupTable(cmap)
+
+        # Update the block/boundary/nodeset and variable settings on the reader
+        self.__updateActiveBlocks()
+        self.__updateActiveVariables()
+        self.__reader.updateInformation() # the above apply settings to the reader
+
+        # Update the block/boundary/nodeset settings to convert [] to all.
+        extract_indices = []
+        block_info = self.__reader.getBlockInformation()
+        for binfo in block_info.values():
+            for b in binfo:
+                if b.active:
+                    extract_indices.append(b.multiblock_index)
+
+        fobject = self._filters['extract']
+        fobject.setOption('indices', extract_indices)
+
+        # Misc. mapper settings
+        self._vtkmapper.InterpolateScalarsBeforeMappingOn()
+        self._vtkmapper.UseLookupTableScalarRangeOff()
+
+    def _onRequestData(self, inInfo, outInfo):
+        """(protected, override)
+        Passes the reader data to the output port to allow for filters to be applied and
+        updates the range of the vtkMapper based on the available data or the user supplied options.
+        """
+        base.ChiggerSource._onRequestData(self, inInfo, outInfo)
+        inp = inInfo[0].GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+        opt = outInfo.GetInformationObject(0).Get(vtk.vtkDataObject.DATA_OBJECT())
+        opt.ShallowCopy(inp)
+
+        self.__setDataRange(opt)
+
+    def __setDataRange(self, out_data):
+        """(private)
+        Computes the range from the data and applies the user specified range settings.
+        """
+
+        rng = self.__getDataRange(out_data)
+        if self.isOptionValid('lim'):
+            rng = self.getOption('lim')
+        else:
+            if self.isOptionValid('min'):
+                rng[0] = self.getOption('min')
+            if self.isOptionValid('max'):
+                rng[1] = self.getOption('max')
+
+        if rng[0] > rng[1]:
+            self.debug("Minimum range greater than maximum: {} > {}, the range/min/max settings are being ignored.", *rng)
+            rng = self.__getDataRange(out_data)
+
+        self._vtkmapper.SetScalarRange(rng)
+
+    def __getDataRange(self, out_data):
+        """(private)
+        Return the range of all active blocks for the current variable and component.
+        """
+
+        variable = self.getOption('variable')
+        component = self.getOption('component')
+        rng = [float('inf'), -float('inf')]
+        for i in range(out_data.GetNumberOfBlocks()):
+            for j in range(out_data.GetBlock(i).GetNumberOfBlocks()):
+                data = out_data.GetBlock(i).GetBlock(j)
+                if data:
+                    pdata = out_data.GetBlock(i).GetBlock(j).GetPointData()
+                    for k in range(pdata.GetNumberOfArrays()):
+                        array = pdata.GetAbstractArray(k)
+                        if array.GetName() == variable:
+                            local = [0, 0]
+                            array.GetRange(local, component)
+                            rng = [min(rng[0], local[0]), max(rng[1], local[1])]
+                    cdata = out_data.GetBlock(i).GetBlock(j).GetCellData()
+                    for k in range(cdata.GetNumberOfArrays()):
+                        array = cdata.GetAbstractArray(k)
+                        if array.GetName() == variable:
+                            local = [0, 0]
+                            array.GetRange(local, component)
+                            rng = [min(rng[0], local[0]), max(rng[1], local[1])]
+        return rng
+
+    def __updateActiveBlocks(self):
+        self.debug('__updateActiveBlocks')
+
+        block_info = self.__reader.getBlockInformation()
+        self.__setActiveBlocksHelper('blocks', block_info[ExodusReader.BLOCK])
+        self.__setActiveBlocksHelper('sidesets', block_info[ExodusReader.SIDESET])
+        self.__setActiveBlocksHelper('nodesets', block_info[ExodusReader.NODESET])
+
+    def __updateActiveVariables(self):
+        self.debug('__updateActiveVariables')
+
+        vname = self.getOption('variable')
+        has_nodal = self.__reader.hasVariable(ExodusReader.NODAL, vname)
+        has_elemental = self.__reader.hasVariable(ExodusReader.ELEMENTAL, vname)
+
+        if has_nodal and has_elemental:
+            self.warning("The supplied variable name '{0}' exists as both a nodal and elemental variable, use '{0}::NODAL' or '{0}::ELEMENTAL' to indicate which is desired. The nodal version is being used.", vname)
+            vfullname = '{}::NODAL'.format(vname)
+            self._vtkmapper.SetScalarModeToUsePointFieldData()
+
+        elif has_nodal:
+            vfullname = '{}::NODAL'.format(vname)
+            self._vtkmapper.SetScalarModeToUsePointFieldData()
+
+        elif has_elemental:
+            vfullname = '{}::ELEMENTAL'.format(vname)
+            self._vtkmapper.SetScalarModeToUseCellFieldData()
+
+        else:
+            vinfo = self.__reader.getVariableInformation()
+            velem = ', '.join([v.name for v in vinfo[ExodusReader.ELEMENTAL]])
+            vnodal = ', '.join([v.name for v in vinfo[ExodusReader.NODAL]])
+            vfullname = None
+            self.error("The supplied variable name '{}' does not exist on the supplied reader. The following variables are available:\n  Elemental: {}\n  Nodal: {}.", vname, velem, vnodal)
+
+        if vfullname is not None:
+            current = self.__reader.getOption('variables')
+            current = current + (vfullname,) if current is not None else (vfullname,)
+            self.__reader.setOption('variables', current)
+            self._vtkmapper.SelectColorArray(vname)
 
         # Component
         component = -1 # Default component to utilize if not valid
@@ -329,41 +261,60 @@ class ExodusSource(base.ChiggerSource):
             self._vtkmapper.GetLookupTable().SetVectorModeToComponent()
             self._vtkmapper.GetLookupTable().SetVectorComponent(component)
 
-        # Range
-        if (self.isOptionValid('min') or self.isOptionValid('max')) and self.isOptionValid('range'):
-            mooseutils.mooseError('Both a "min" and/or "max" options has been set along with the '
-                                  '"range" option, the "range" is being utilized, the others are '
-                                  'ignored.')
+    def __setActiveBlocksHelper(self, param, binfo):
 
-        # Range
-        rng = list(self.__getRange()) # Use range from all sources as the default
-        if self.isOptionValid('range'):
-            rng = self.getOption('range')
+        local = self.getOption(param)
+        if local == []:
+            local = tuple([b.name for b in binfo])
+
+        if local is not None:
+            self.__reader.setOption(param, self.__reader.getOption(param) + local)
+
+    """
+        # Explode
+        if self.isValid('explode'):
+            factor = self.applyOption('explode')
+            m = self.getCenter()
+            for src in self._sources:
+                c = src.getVTKActor().GetCenter()
+                d = (c[0]-m[0], c[1]-m[1], c[2]-m[2])
+                src.getVTKActor().AddPosition(d[0]*factor, d[1]*factor, d[2]*factor)
+    """
+
+    """
+    def _updateOpacity(self, window, binding): #pylint: disable=unuysed-argument
+        opacity = self.getOption('opacity')
+        if binding.shift:
+            if opacity > 0.05:
+                opacity -= 0.05
         else:
-            if self.isOptionValid('min'):
-                rng[0] = self.getOption('min')
-            if self.isOptionValid('max'):
-                rng[1] = self.getOption('max')
+            if opacity <= 0.95:
+                opacity += 0.05
+        self.update(opacity=opacity)
+        self.printOption('opacity')
 
-        if rng[0] > rng[1]:
-            mooseutils.mooseDebug("Minimum range greater than maximum:", rng[0], ">", rng[1],
-                                  ", the range/min/max settings are being ignored.")
-            rng = list(self.__getRange())
+    def _updateColorMap(self, window, binding): #pylint: disable=unused-argument
+        step = 1 if not binding.shift else -1
+        available = self._sources[0]._colormap.names() #pylint: disable=protected-access
+        index = available.index(self.getOption('cmap'))
 
-        self.getVTKMapper().SetScalarRange(rng)
+        n = len(available)
+        index += step
+        if index == n:
+            index = 0
+        elif index < 0:
+            index = n - 1
 
-        # Handle Elemental variables that are not everywhere on the domain
-        varname = self.__current_variable.name
-        block = self.getOption('block')
-        if (self.__current_variable.object_type == ExodusReader.ELEMENTAL) and (block is not None):
-            for i in range(self.__vtkextractblock.GetOutput().GetNumberOfBlocks()):
-                if not hasattr(self.__vtkextractblock.GetOutput().GetBlock(i), 'GetNumberOfBlocks'):
-                    continue
-                for j in range(self.__vtkextractblock.GetOutput().GetBlock(i).GetNumberOfBlocks()):
-                    blk = self.__vtkextractblock.GetOutput().GetBlock(i).GetBlock(j)
-                    if not blk.GetCellData().HasArray(varname):
-                        data = vtk.vtkDoubleArray()
-                        data.SetName(varname)
-                        data.SetNumberOfTuples(blk.GetCellData().GetArray(0).GetNumberOfTuples())
-                        data.FillComponent(0, vtk.vtkMath.Nan())
-                        blk.GetCellData().AddArray(data)
+        self.setOption('cmap', available[index])
+        self.printOption('cmap')
+
+    def _updateTimestep(self, window, binding): #pylint: disable=unused-argument
+        step = 1 if not binding.shift else -1
+        current = self._reader.getTimeData().timestep + step
+        n = len(self._reader.getTimes())
+        if current == n:
+            current = 0
+        self._reader.setOption('time', None)
+        self._reader.setOption('timestep', current)
+        self._reader.printOption('timestep')
+    """

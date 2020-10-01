@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from . import GeometricSourceMeta
+import GeometricSourceMeta
 from .. import base, filters
 
 BaseType = GeometricSourceMeta.create(base.ChiggerSource)
@@ -20,18 +20,20 @@ class LineSource(BaseType):
     FILTER_TYPES = [filters.TubeFilter]
 
     @staticmethod
-    def getOptions():
+    def validOptions():
         """
         Return the default options for this object.
         """
-        opt = BaseType.getOptions()
-        opt.add('resolution', 100, "The number of points sampled over the line.")
-        opt.add('point1', [0, 0, 0], "The starting point of the line.")
-        opt.add('point2', [1, 1, 0], "The ending point of the line.")
-        opt.add('data', None, "Values to assign to the line, if used the resolution will be "
-                              "set to match the number of points.", vtype=list)
-        opt += base.ColorMap.getOptions()
-        opt.setDefault('cmap', 'default') # data is required
+        opt = BaseType.validOptions()
+        opt.add('resolution', default=100, vtype=int,
+                doc="The number of points sampled over the line.")
+        opt.add('point1', default=(0, 0, 0), size=3, vtype=(int, float),
+                doc="The starting point of the line.")
+        opt.add('point2', default=(1, 1, 0), size=3, vtype=(int, float),
+                doc="The ending point of the line.")
+        opt.add('data', vtype=list,
+                doc="Values to assign to the line, if used the resolution will be "
+                     "set to match the number of points.")
         return opt
 
     def __init__(self, **kwargs):
@@ -45,16 +47,16 @@ class LineSource(BaseType):
         """
         super(LineSource, self).update(**kwargs)
 
-        if self.isOptionValid('resolution'):
-            self._vtksource.SetResolution(self.getOption('resolution'))
+        if self.isValid('resolution'):
+            self._vtksource.SetResolution(self.applyOption('resolution'))
 
-        if self.isOptionValid('point1'):
-            self._vtksource.SetPoint1(self.getOption('point1'))
+        if self.isValid('point1'):
+            self._vtksource.SetPoint1(self.applyOption('point1'))
 
-        if self.isOptionValid('point2'):
-            self._vtksource.SetPoint2(self.getOption('point2'))
+        if self.isValid('point2'):
+            self._vtksource.SetPoint2(self.applyOption('point2'))
 
-        if self.isOptionValid('data'):
+        if self.isValid('data'):
             data = self.getOption('data')
             n = len(data)
             self._vtksource.SetResolution(n-1)

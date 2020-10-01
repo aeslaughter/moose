@@ -9,7 +9,7 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 import vtk
-from . import GeometricSourceMeta
+import GeometricSourceMeta
 from .. import base
 
 BaseType = GeometricSourceMeta.create(base.ChiggerSource)
@@ -19,12 +19,12 @@ class CylinderSource(BaseType):
     """
 
     @staticmethod
-    def getOptions():
-        opt = BaseType.getOptions()
-        opt.add('height', None, "The height of the cylinder", vtype=float)
-        opt.add('radius', None, "The radius of the cylinder.", vtype=float)
-        opt.add('resolution', 8, "The number of sides of the cylinder.", vtype=int)
-        opt.add("capping", False, "Display the end caps or not.", vtype=bool)
+    def validOptions():
+        opt = BaseType.validOptions()
+        opt.add('height', doc="The height of the cylinder", vtype=(int, float))
+        opt.add('radius', doc="The radius of the cylinder.", vtype=(int, float))
+        opt.add('resolution', default=8, doc="The number of sides of the cylinder.", vtype=int)
+        opt.add("capping", default=False, doc="Display the end caps or not.", vtype=bool)
         return opt
 
     def __init__(self, **kwargs):
@@ -36,11 +36,11 @@ class CylinderSource(BaseType):
         """
         super(CylinderSource, self).update(**kwargs)
 
-        if self.isOptionValid('height'):
-            self._vtksource.SetHeight(self.getOption('height'))
-        if self.isOptionValid('radius'):
-            self._vtksource.SetRadius(self.getOption('radius'))
-        if self.isOptionValid('resolution'):
-            self._vtksource.SetResolution(self.getOption('resolution'))
-        if self.isOptionValid('capping'):
+        if self.isValid('height'):
+            self._vtksource.SetHeight(self.applyOption('height'))
+        if self.isValid('radius'):
+            self._vtksource.SetRadius(self.applyOption('radius'))
+        if self.isValid('resolution'):
+            self._vtksource.SetResolution(self.applyOption('resolution'))
+        if self.isValid('capping'):
             self._vtksource.CappingOn()

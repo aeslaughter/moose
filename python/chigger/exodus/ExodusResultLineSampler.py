@@ -8,7 +8,7 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
-from .ExodusSourceLineSampler import ExodusSourceLineSampler
+from ExodusSourceLineSampler import ExodusSourceLineSampler
 from ..base import ChiggerResult
 
 class ExodusResultLineSampler(ChiggerResult):
@@ -17,8 +17,9 @@ class ExodusResultLineSampler(ChiggerResult):
     """
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerResult.getOptions()
+    def validOptions():
+        opt = ChiggerResult.validOptions()
+        opt += ExodusSourceLineSampler.validOptions()
         return opt
 
     def __init__(self, exodus_result, **kwargs):

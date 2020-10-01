@@ -1,0 +1,7 @@
+[Tests]
+  [default]
+    type = ChiggerImageDiff
+    command = default.py
+    imagediff = default.png
+  []
+[]

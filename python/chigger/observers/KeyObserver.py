@@ -8,34 +8,36 @@
 #* Licensed under LGPL 2.1, please see LICENSE for details
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 import vtk
-from .ChiggerObserver import ChiggerObserver
+from ChiggerObserver import ChiggerObserver
 class KeyObserver(ChiggerObserver):
     """
     Class for creating key press observers to be passed in to RenderWindow object.
     """
 
     @staticmethod
-    def getOptions():
-        opt = ChiggerObserver.getOptions()
+    def validOptions():
+        opt = ChiggerObserver.validOptions()
         return opt
 
     def __init__(self, **kwargs):
-        super(KeyObserver, self).__init__(vtk.vtkCommand.KeyPressEvent, **kwargs)
-        self._key = None
+        super(KeyObserver, self).__init__(**kwargs)
 
-    def addObserver(self, event, vtkinteractor):
+    def init(self, *args):
         """
         Add the KeyPressEvent for this object.
         """
-        return vtkinteractor.AddObserver(event, self._callback)
+        super(KeyObserver, self).init(*args)
+        return self._window.getVTKInteractor().AddObserver(vtk.vtkCommand.KeyPressEvent,
+                                                           self.__callback)
 
-    def _callback(self, obj, event): #pylint: disable=unused-argument
+    def onKeyPress(self, key, shift, obj, event):
+        raise NotImplementedError("The 'onKeyPress(key, obj, event)' method must be implemented.")
+
+    def __callback(self, obj, event): #pylint: disable=unused-argument
         """
         The function to be called by the RenderWindow.
 
         Inputs:
             obj, event: Required by VTK.
         """
-        self._key = obj.GetKeySym()
-        self.update()
-        self._key = None
+        self.onKeyPress(obj.GetKeySym(), obj.GetShiftKey(), obj, event)

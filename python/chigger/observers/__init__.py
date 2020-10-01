@@ -9,5 +9,10 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from .ChiggerObserver import ChiggerObserver
-from .TimerObserver import TimerObserver
-from .KeyObserver import KeyObserver
+#from TimerObserver import TimerObserver
+#from KeyObserver import KeyObserver
+#from MouseObserver import MouseObserver
+#from SingleShotObserver import SingleShotObserver
+#from WindowUpdateObserver import WindowUpdateObserver
+from .MainWindowObserver import MainWindowObserver
+from .TestObserver import TestObserver
