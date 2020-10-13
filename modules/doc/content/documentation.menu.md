@@ -12,7 +12,6 @@
 - [Physics Modules](modules/index.md)
 - [Syntax](syntax/index.md)
 - [List of Publications](publications.md)
-- [Old Wiki(deprecated)](https://www.mooseframework.org/old/wiki)
 !col-end!
 
 !col! small=12 medium=6 large=4
