@@ -64,24 +64,76 @@ def setup_plugin(plugin):
 
         connect_plugin(plugin, qobject, local=True)
 
-def initState(parent, *widgets):
+def init_state(parent):
+    """
+    Create storage for load/storing state information with Qt property system.
 
+    Inputs:
+        parent[QObject]: The object that will store state of child objects
+    """
+    parent.setProperty('pheasant/getState', list())
+    parent.setProperty('pheasant/setState', list())
+    parent.setProperty('pheasant/currentState', dict())
+
+def register_state(parent, widget, *args):
+    """
+    Register child objects for load/store of state information.
+
+    init_state(parent) should be called prior to this method.
+
+    Inputs:
+        parent[QObject]: The object that will store state of child objects
+        widget[QObject]: A child object for which state will be stored
+        args: A list of strings or tuples that provide the setter/getter functions
+
+    Example:
+
+        init_state(parent, widget, 'text', ('checked', 'setChecked'), (widget.clicked, widget.setClicked))
+
+    """
     getters = list()
     setters = list()
 
-    # Loop through widgets and extract set,get functions
-    for widget in widgets:
-        for get_name, set_name in WIDGET_SETTINGS_CACHE[type(widget)]:
+    for arg in args:
+        if isinstance(arg, str):
+            get_name = arg
+            set_name = 'set{}'.format(get_name.title())
+        elif isinstance(arg, tuple) and (len(arg) == 2):
+            get_name = arg[0]
+            set_name = arg[1]
+        else:
+            raise TypeError("The supplied arguments must be a single string or a tuple with two items (str or callable): ".format(arg))
+
+        if isinstance(get_name, str):
             getters.append(getattr(widget, get_name))
+        elif callable(get_name):
+            getters.append(get_name)
+        else:
+            raise TypeError("The supplied get name/method must be a 'str' or callable: {}".format(get_name))
+
+        if isinstance(set_name, str):
             setters.append(getattr(widget, set_name))
+        elif callable(set_name):
+            setters.append(set_name)
+        else:
+            raise TypeError("The supplied set name/method must be a 'str' or callable: {}".format(set_name))
 
+    prop = parent.property('pheasant/getState')
+    prop += getters
     parent.setProperty('pheasant/getState', getters)
+
+    prop = parent.property('pheasant/setState')
+    prop += setters
     parent.setProperty('pheasant/setState', setters)
-    parent.setProperty('pheasant/currentState', dict())
 
+def save_state(parent, key):
+    """
+    Save the QObject state with the given key name.
 
-def saveState(parent, key):
-
+    Inputs:
+        parent[QObject]: The object that will store state of child objects
+        key[str]: The name of the state
+    """
     getters = parent.property('pheasant/getState'.format(key))
     state = list()
     for attr in getters:
@@ -90,9 +142,14 @@ def saveState(parent, key):
     data[key] = state
     parent.setProperty('pheasant/currentState', data)
 
+def load_state(parent, key):
+    """
+    Load the QObject state with the given key name.
 
-def loadState(parent, key):
-
+    Inputs:
+        parent[QObject]: The object that will store state of child objects
+        key[str]: The name of the state
+    """
     state = parent.property('pheasant/currentState')[key]
     setters = parent.property('pheasant/setState')
     for value, attr in zip(state, setters):

@@ -1,0 +1,15 @@
+[Tests]
+  issues = '#14899'
+  design = 'python/pheasant/index.md'
+
+  [pheasant]
+    requirement = "The system shall include graphical interface tools that include"
+
+    [utils]
+      type = PythonUnitTest
+      input = test_utils.py
+
+      detail = "utilities for automatically connecting plugins,"
+    []
+  []
+[]

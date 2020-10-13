@@ -107,6 +107,85 @@ class TestSetupPlugin(utils.PheasantTestCase):
         self.assertTrue(btn0.button_clicked) # this
         self.assertTrue(btn0.setup_button)   # and this  is being tested
 
+class TestState(utils.PheasantTestCase):
+    def testInitState(self):
+        parent = QtWidgets.QWidget()
+
+        utils.init_state(parent)
+
+        self.assertEqual(parent.property('pheasant/getState'), list())
+        self.assertEqual(parent.property('pheasant/setState'), list())
+        self.assertEqual(parent.property('pheasant/currentState'), dict())
+
+    def testRegisterState(self):
+        parent = QtWidgets.QWidget()
+        utils.init_state(parent)
+
+        def check(qobject):
+            """Direct comparison of the method doesn't work, so check the effect"""
+            qobject.setText('foo')
+            self.assertEqual(len(parent.property('pheasant/getState')), 1)
+            func = parent.property('pheasant/getState')[0]
+            self.assertEqual(func(), 'foo')
+            self.assertEqual(qobject.text(), 'foo')
+
+            self.assertEqual(len(parent.property('pheasant/setState')), 1)
+            func = parent.property('pheasant/setState')[0]
+            func('bar')
+            self.assertEqual(qobject.text(), 'bar')
+
+        edit = QtWidgets.QLineEdit()
+        utils.register_state(parent, edit, 'text')
+        check(edit)
+
+        edit2 = QtWidgets.QLineEdit()
+        utils.register_state(parent, edit2, ('text', 'setText'))
+        check(edit2)
+
+        edit3 = QtWidgets.QLineEdit()
+        utils.register_state(parent, edit3, (edit3.text, lambda x: edit3.setText(x)))
+        check(edit3)
+
+        with self.assertRaises(TypeError) as e:
+            utils.register_state(parent, edit3, 1)
+        self.assertIn('single string or a tuple with two items', str(e.exception))
+
+        with self.assertRaises(TypeError) as e:
+            utils.register_state(parent, edit3, (1,2,3))
+        self.assertIn('single string or a tuple with two items', str(e.exception))
+
+        with self.assertRaises(TypeError) as e:
+            utils.register_state(parent, edit3, (1,2))
+        self.assertIn('get name/method must', str(e.exception))
+
+        with self.assertRaises(TypeError) as e:
+            utils.register_state(parent, edit3, (edit3.text, 2))
+        self.assertIn('set name/method must', str(e.exception))
+
+    def testSaveLoadState(self):
+        parent = QtWidgets.QWidget()
+        utils.init_state(parent)
+        edit = QtWidgets.QLineEdit()
+        utils.register_state(parent, edit, 'text')
+
+        edit.setText('foo')
+        self.assertEqual(edit.text(), 'foo')
+        utils.save_state(parent, 'A')
+
+        edit.setText('bar')
+        self.assertEqual(edit.text(), 'bar')
+        utils.save_state(parent, 'B')
+
+        utils.load_state(parent, 'A')
+        self.assertEqual(edit.text(), 'foo')
+
+        utils.load_state(parent, 'B')
+        self.assertEqual(edit.text(), 'bar')
+
+        utils.load_state(parent, 'A')
+        self.assertEqual(edit.text(), 'foo')
+
+
 if __name__ == '__main__':
     import unittest
     unittest.main(module=__name__, verbosity=2)
