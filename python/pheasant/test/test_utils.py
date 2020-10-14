@@ -185,6 +185,34 @@ class TestState(utils.PheasantTestCase):
         utils.load_state(parent, 'A')
         self.assertEqual(edit.text(), 'foo')
 
+class TestAddLabelWidget(utils.PheasantTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self._parent = QtWidgets.QWidget()
+        self._parent.setLayout(QtWidgets.QVBoxLayout())
+        self._layout = self._parent.layout()
+        self._edit = QtWidgets.QLineEdit()
+
+    def testWidgetThenLabelHoriz(self):
+        utils.add_labeled_widget(self._layout, self._edit, 'label')
+        self.assertEqual(self._layout.count(), 1)
+        self.assertEqual(self._layout.itemAt(0).count(), 2)
+
+    def testLabelThenWidgetHoriz(self):
+        utils.add_labeled_widget(self._layout, 'label', self._edit)
+        self.assertEqual(self._layout.count(), 1)
+        self.assertEqual(self._layout.itemAt(0).count(), 2)
+
+    def testWidgetThenLabelVertical(self):
+        utils.add_labeled_widget(self._layout, self._edit, 'label', stretch=1, vertical=True)
+        self.assertEqual(self._layout.count(), 1)
+        self.assertEqual(self._layout.itemAt(0).count(), 3)
+
+    def testLabelThenWidgetVertical(self):
+        utils.add_labeled_widget(self._layout, 'label', self._edit, vertical=True)
+        self.assertEqual(self._layout.count(), 1)
+        self.assertEqual(self._layout.itemAt(0).count(), 2)
 
 if __name__ == '__main__':
     import unittest

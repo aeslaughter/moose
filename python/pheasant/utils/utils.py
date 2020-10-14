@@ -155,26 +155,26 @@ def load_state(parent, key):
     for value, attr in zip(state, setters):
         attr(value)
 
-def addLabeledWidget(parent, arg0, arg1, stretch=None):
+def add_labeled_widget(parent, arg0, arg1, stretch=None, vertical=False):
     """
     Function for creating a widget with a text label.
 
     Inputs:
-        parent[QWidget]: The parent widget
+        parent[QLayout]: The parent widget
         arg0[str|QWidget]: The label or the widget
         arg1[str|QWidget]: The label or the widget, must be the other type from arg0
         stretch[int]: Location to add stretch
 
     """
-    layout = QtWidgets.QHBoxLayout()
-    parent.layout().addLayout(layout)
+    layout = QtWidgets.QVBoxLayout() if vertical else QtWidgets.QHBoxLayout()
+    parent.addLayout(layout)
     if isinstance(arg0, str):
         label = QtWidgets.QLabel(arg0)
         layout.addWidget(label)
         layout.addWidget(arg1)
     else:
         label = QtWidgets.QLabel(arg1)
-        layout.addWidget(argo)
+        layout.addWidget(arg0)
         layout.addWidget(label)
 
     if stretch is not None:
