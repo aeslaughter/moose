@@ -1,0 +1,10 @@
+[Tests]
+  issues = '#15899'
+  design = 'python/factory/index.md'
+  [MooseObject]
+    type = PythonUnitTest
+    input = test_MooseObject.py
+
+    requirement = "The system shall include a tool for instantiating python objects by name."
+  []
+[]
