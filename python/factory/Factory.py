@@ -53,8 +53,11 @@ class Factory(object):
     def __register_objects_from_file(self, file_path):
         """Registers all factory.MooseObject classes from the provided filename."""
         module_name, _ = os.path.splitext(file_path)
+        print(module_name, file_path)
         spec = importlib.util.spec_from_file_location(module_name, file_path)
+        print(spec)
         module = importlib.util.module_from_spec(spec)
+        print(module)
         spec.loader.exec_module(module)
         for name, obj in inspect.getmembers(module):
             if inspect.isclass(obj) and (MooseObject in inspect.getmro(obj)):

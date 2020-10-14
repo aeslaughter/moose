@@ -5,11 +5,11 @@ class MooseObject(object):
     @staticmethod
     def validParams():
         params = parameters.InputParameters()
-        params.add('name', vtype=str, doc="The name of the object.")
+        params.add('type', vtype=str, doc="The object type")
+        params.add('name', vtype=str, doc="Name of the object")
         return params
 
     def __init__(self, **kwargs):
-        super().__init__()
         self.__parameters = getattr(self.__class__, 'validParams')()
         self.__parameters.update(**kwargs)
         self.__parameters.validate()

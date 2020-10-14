@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+import os
+import sys
+import argparse
+from PySide2 import QtWidgets
+import pyhit
+import moosetree
+import factory
+#from pheasant import PheasantWindow
+
+def options():
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('config', type=str, default=os.getenv('PHEASANT_DEFAULT_CONFIG', 'pheasant.hit'),
+                        help="HIT configuration file for Pheasant GUI application")
+    parser.add_argument('--plugin-dirs', type=str, nargs='+', default=['plugins'],
+                        help="Location directory and/or filenames of plugins")
+    return parser.parse_args()
+
+def main():
+
+    from pheasant.base.PheasantWindow import PheasantWindow
+
+    # Command-line options
+    opt = options()
+    if not os.path.isfile(opt.config):
+        raise OSError("Unable to load config file: {}".format(opt.config))
+
+    # Create factory for instantiating plugins
+    f = factory.Factory(*opt.plugin_dirs)
+
+    # Read the config file
+    root = pyhit.load(opt.config)
+
+    # Build the GUI application
+    app = QtWidgets.QApplication()
+    window = PheasantWindow()
+
+    # Add tabs and plugins
+    tabs = moosetree.find(root, func=lambda n: n.fullpath == '/Tabs')
+    for tab in tabs:
+        params = {k:v for k,v in tab.params()}
+        tab_obj = window.addTab(tab.name, **params)
+
+        for plugin in tab:
+            params = {k:v for k,v in plugin.params()}
+            plugin_name = params.pop('type')
+            plugin_obj = f.create(plugin_name, **params)
+            tab_obj.addPlugin(plugin.name, plugin_obj)
+
+
+
+
+
+
+
+    # Create a Qt application
+
+    # TODO: Make all this work via a hit file
+
+
+    #p0 = TestPlugin()
+    #p1 = TestPlugin2()
+    #p2 = TestPlugin2()
+
+    #tab0 = PeacockTab()
+    #tab0.addPlugin('p0', p0)
+
+    #tab1 = PeacockTab()
+    #tab1.addPlugin('p1', p1, RIGHT)
+    #tab1.addPlugin('p2', p2)
+
+    #window = PeacockWindow()
+    #window.addTab('One', tab0)
+    #window.addTab('Two', tab1)
+
+    window.show()
+    # Enter Qt application main loop
+    app.exec_()
+    sys.exit()
+
+
+
+if __name__ == '__main__':
+    main()

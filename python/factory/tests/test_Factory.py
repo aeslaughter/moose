@@ -20,6 +20,7 @@ class TestMooseObject(unittest.TestCase):
         self.assertIn('The following paths', str(e.exception))
         self.assertIn('wrong', str(e.exception))
         self.assertIn('nope.py', str(e.exception))
+        self.assertTrue(False)
 
     def testCreate(self):
         loc = os.path.join(os.path.dirname(__file__), 'src', 'TestObject.py')

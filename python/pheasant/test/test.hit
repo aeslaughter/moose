@@ -1,0 +1,8 @@
+[Tabs]
+  [first]
+    title = "First Tab"
+    [plugin0]
+      type = TestPlugin
+    []
+  []
+[]

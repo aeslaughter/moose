@@ -1,0 +1,7 @@
+[Tabs]
+  [first]
+    [test]
+      type = TestObject
+    []
+  []
+[]
