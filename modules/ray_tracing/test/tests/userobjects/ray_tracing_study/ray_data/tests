@@ -1,0 +1,10 @@
+[Tests]
+  [test]
+    type = 'RunApp'
+    input = 'ray_data.i'
+    allow_test_objects = true
+    issues = '#16028'
+    design = 'RayTracingStudy.md'
+    requirement = 'The system shall support the storage and manipulation of data and auxiliary data on a ray.'
+  []
+[]

@@ -1,0 +1,35 @@
+[Tests]
+  [add_when]
+    requirement = 'The system shall produce an error when rays are added to the buffer '
+    issues = '#16028'
+    design = 'RayTracingStudy.md'
+
+    [outside_of_generation]
+      type = RunException
+      input = 'ray_tracing_study_errors.i'
+      cli_args = 'UserObjects/study/add_outside_of_generation=true'
+      expect_err = 'Rays can only be added to the buffer during generateRays'
+      allow_test_objects = true
+      detail = 'when outside of generation and addition during propagation is disabled, '
+    []
+    [outside_of_generation_with_during]
+      type = RunException
+      input = 'ray_tracing_study_errors.i'
+      cli_args = 'UserObjects/study/add_outside_of_generation=true'
+      expect_err = 'Rays can only be added to the buffer during generateRays\(\) and tracing'
+      allow_test_objects = true
+      detail = 'when added outside of generation and addition during propagation is enabled, '
+    []
+    [add_thread1]
+      type = RunException
+      input = 'ray_tracing_study_errors.i'
+      cli_args = 'UserObjects/study/add_thread1_during_generation=true'
+      expect_err = 'Rays can only be added on thread 0 during generateRays'
+      allow_test_objects = true
+      min_threads = 2
+      max_parallel = 1
+      threading = OPENMP # min compiler targets will run this w/o OpenMP
+      detail = 'and when added on threads other than thread 0 during generation.'
+    []
+  []
+[]

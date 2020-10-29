@@ -1,0 +1,22 @@
+[Tests]
+  requirement = 'The system shall support line integrals in the'
+  issues = '#16028'
+  design = 'IntegralRayKernelBase.md'
+
+  [line_integral]
+    [rz]
+      type = 'CSVDiff'
+      input = 'rz_line_integral.i'
+      csvdiff = 'rz_line_integral_out.csv'
+
+      detail = 'rz coordinate system '
+    []
+    [rspherical]
+      type = 'CSVDiff'
+      input = 'rspherical_line_integral.i'
+      csvdiff = 'rspherical_line_integral_out.csv'
+
+      detail = 'and in the rspherical coordinate system.'
+    []
+  []
+[]
