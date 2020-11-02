@@ -7,7 +7,10 @@ Renderer:
 Extensions:
     MooseDocs.extensions.navigation:
         active: False
+    MooseDocs.extensions.accordian:
+        active: True
     MooseDocs.extensions.appsyntax:
+        active: False
         executable: ${MOOSE_DIR}/test
         hide:
             framework: !include framework/doc/hidden.yml
@@ -21,6 +24,7 @@ Extensions:
     MooseDocs.extensions.acronym:
         acronyms: !include framework/doc/acronyms.yml
     MooseDocs.extensions.civet:
+        active: False
         test_results_cache: '/tmp/civet/jobs'
         remotes:
             moose:
@@ -29,7 +33,7 @@ Extensions:
     MooseDocs.extensions.template:
         active: True
     MooseDocs.extensions.sqa:
-        active: True
+        active: False
         categories:
             framework: !include framework/doc/sqa_framework.yml
         requirement-groups:

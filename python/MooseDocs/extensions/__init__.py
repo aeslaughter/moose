@@ -36,3 +36,4 @@ from . import sqa
 from . import style
 from . import table
 from . import special
+from . import accordion

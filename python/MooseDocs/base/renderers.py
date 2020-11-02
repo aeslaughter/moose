@@ -342,6 +342,7 @@ class MaterializeRenderer(HTMLRenderer):
         row = html.Tag(container, 'div', class_="row")
         col = html.Tag(row, 'div', class_="moose-content")
 
+        html.Tag(wrap, 'footer')
         return col
 
     def _method(self, component):
