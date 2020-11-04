@@ -1,0 +1,11 @@
+[Tests]
+  issues = '#16058'
+  design = 'TimePeriod.md'
+  [timestepSetup]
+     type = CSVDiff
+     input = timestep_setup.i
+     csvdiff = timestep_setup_out.csv
+
+     requirement = "The system shall support a setup method that executes when enabling object at a specific time period."
+  []
+[]
