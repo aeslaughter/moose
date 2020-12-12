@@ -95,8 +95,13 @@ class AccordionExtension(Extension):
         path = os.path.relpath(page.destination, page.base)
 
         parent = moosetree.find(result.root, lambda n: n.name == 'header')
+<<<<<<< HEAD
         div = html.Tag(parent, 'div', id_='accordion')
         ul = html.Tag(None, 'ul', id_='nav-mobile', class_="sidenav sidenav-fixed", style="transform:translateX(0%);")
+=======
+        div = html.Tag(parent, 'div', id_='moose-accordion')
+        ul = html.Tag(None, 'ul', class_="sidenav sidenav-fixed", style="transform:translateX(0%);")
+>>>>>>> 7d510cac3c (WIP: Need to clean up style, add ..., and figure out dual text under some items)
 
         def add_list_items(ul, children):
             for child in children:
@@ -113,7 +118,11 @@ class AccordionExtension(Extension):
                     else:
                         html.String(a, content=child.name)
 
+<<<<<<< HEAD
                     if h2:
+=======
+                    if False:#h2:
+>>>>>>> 7d510cac3c (WIP: Need to clean up style, add ..., and figure out dual text under some items)
                         page_ul = html.Tag(li, 'ul')
                         for h in h2:
                             page_li = html.Tag(page_ul, 'li')

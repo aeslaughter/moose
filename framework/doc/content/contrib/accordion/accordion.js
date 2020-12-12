@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $("#accordion a").click(function() {
+    $("#moose-accordion a").click(function() {
 	var link = $(this);
 	var closest_ul = link.closest("ul");
 	var parallel_active_links = closest_ul.find(".active")

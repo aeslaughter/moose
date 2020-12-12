@@ -1,10 +1,8 @@
-/*
-* {
-		margin: 0;
-		padding: 0;
+:root{
+    --accordian-background: rgba(150, 150, 150, 1.0);
 }
-*/
 
+<<<<<<< HEAD
 /*
 body {
 		background: #4EB889;
@@ -24,11 +22,31 @@ body {
 
 /*
 #accordion h3 {
+=======
+div.moose-accordian a{
+
+
+.sidenav{
+    background-color: var(--accordian-background);
+};
+
+
+
+#moose-accordian {
+    background:
+    width: 250px;
+    margin: 50px auto 0 auto;
+    color: white;
+    box-shadow: 0 5px 15px 1px rgba(0, 0, 0, 0.6), 0 0 200px 1px rgba(255, 255, 255, 0.5);
+}
+
+#moose-accordian h3 {
+>>>>>>> 7d510cac3c (WIP: Need to clean up style, add ..., and figure out dual text under some items)
     background: #003040;
     background: linear-gradient(#003040, #002535);
 }
 
-#accordion h3 a {
+#moose-accordian h3 a {
     padding: 0 10px;
     font-size: 12px;
     line-height: 34px;
@@ -37,7 +55,7 @@ body {
     text-decoration: none;
 }
 
-#accordion h3:hover {
+#moose-accordian h3:hover {
     text-shadow: 0 0 1px rgba(255, 255, 255, 0.7);
 }
 */
@@ -48,13 +66,12 @@ i {
 }
 */
 
-#accordion li {
+#moose-accordian li {
     list-style-type: none;
 }
 
-/*
-#accordion ul ul li a,
-#accordion h4 {
+#moose-accordian ul ul li a,
+#moose-accordian h4 {
     color: white;
     text-decoration: none;
     font-size: 11px;
@@ -64,39 +81,50 @@ i {
     transition: all 0.15s;
     position: relative;
 }
-*/
 
+<<<<<<< HEAD
 
 #accordion ul ul li a:hover {
+=======
+#moose-accordian ul ul li a:hover {
+>>>>>>> 7d510cac3c (WIP: Need to clean up style, add ..., and figure out dual text under some items)
     background: #003545;
     border-left: 5px solid lightgreen;
 }
 
+<<<<<<< HEAD
 
 #accordion ul ul {
+=======
+#moose-accordian ul ul {
+>>>>>>> 7d510cac3c (WIP: Need to clean up style, add ..., and figure out dual text under some items)
     display: none;
 }
 
-#accordion li.active>ul {
+#moose-accordian li.active>ul {
     display: block;
 }
 
+<<<<<<< HEAD
 /*
 #accordion ul ul ul {
+=======
+#moose-accordian ul ul ul {
+>>>>>>> 7d510cac3c (WIP: Need to clean up style, add ..., and figure out dual text under some items)
     margin-left: 15px;
     border-left: 1px dotted rgba(0, 0, 0, 0.5);
 }
 */
 
-#accordion a:not(:only-child):after {
-		content: "\f104";
-		font-family: fontawesome;
-		position: absolute;
-		right: 10px;
-		top: 0;
-		font-size: 14px;
+#moose-accordian a:not(:only-child):after {
+    content: "\f104";
+    font-family: fontawesome;
+    position: absolute;
+    right: 10px;
+    top: 0;
+    font-size: 14px;
 }
 
-#accordion .active>a:not(:only-child):after {
+#moose-accordian .active>a:not(:only-child):after {
     content: "\f107";
 }
