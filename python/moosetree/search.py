@@ -9,6 +9,7 @@ class IterMethod(Enum):
     """
     PRE_ORDER = 1
     BREADTH_FIRST = 2
+    CHILDREN = 3
 
 def findall(node, func=None, method=None, **kwargs):
     """
@@ -46,6 +47,9 @@ def iterate(node, func=lambda n: True, abort_on_find=False, method=None):
     elif method == IterMethod.PRE_ORDER:
         return __preorder_iterate(node, func, abort_on_find)
 
+    elif method == IterMethod.CHILDREN:
+        return __children_iterate(node, func, abort_on_find)
+
 def __breadthfirst_iterate(node, func, abort_on_find):
     """Breadth-first iteration"""
     stack = node.children
@@ -67,3 +71,11 @@ def __preorder_iterate(node, func, abort_on_find):
             if abort_on_find:
                 return
         stack = child.children + stack
+
+def __children_iterate(node, func, abort_on_find):
+    """Iterate through children only"""
+    for child in node.children:
+        if func(child):
+            yield child
+            if abort_on_find:
+                return

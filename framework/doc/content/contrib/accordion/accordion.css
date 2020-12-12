@@ -11,14 +11,18 @@ body {
 		font-family: Nunito, arial, verdana;
 }
 */
+
+
 #accordion {
-    background: #004050;
-    width: 250px;
-    margin: 50px auto 0 auto;
-    color: white;
+    /*background: #004050;*/
+    /*width: 250px;*/
+    /*margin: 50px auto 0 auto;*/
+    /*color: white;*/
     /*box-shadow: 0 5px 15px 1px rgba(0, 0, 0, 0.6), 0 0 200px 1px rgba(255, 255, 255, 0.5);*/
 }
 
+
+/*
 #accordion h3 {
     background: #003040;
     background: linear-gradient(#003040, #002535);
@@ -36,10 +40,13 @@ body {
 #accordion h3:hover {
     text-shadow: 0 0 1px rgba(255, 255, 255, 0.7);
 }
+*/
 
+/*
 i {
     margin-right: 10px;
 }
+*/
 
 #accordion li {
     list-style-type: none;
@@ -59,10 +66,12 @@ i {
 }
 */
 
+
 #accordion ul ul li a:hover {
     background: #003545;
     border-left: 5px solid lightgreen;
 }
+
 
 #accordion ul ul {
     display: none;
@@ -72,10 +81,12 @@ i {
     display: block;
 }
 
+/*
 #accordion ul ul ul {
     margin-left: 15px;
     border-left: 1px dotted rgba(0, 0, 0, 0.5);
 }
+*/
 
 #accordion a:not(:only-child):after {
 		content: "\f104";
