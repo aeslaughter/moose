@@ -69,10 +69,11 @@ std::unique_ptr<MeshBase>
 BreakMeshByBlockGenerator::generate()
 {
   std::unique_ptr<MeshBase> mesh = std::move(_input);
+  BoundaryInfo & boundary_info = mesh->get_boundary_info();
 
   // check that a boundary named _interface_transition_name does not already exist in the mesh
   if (_block_restricted && _add_transition_interface &&
-      mesh->boundary_info->get_id_by_name(_interface_transition_name) != Moose::INVALID_BOUNDARY_ID)
+      boundary_info.get_id_by_name(_interface_transition_name) != Moose::INVALID_BOUNDARY_ID)
     paramError("interface_transition_name",
                "BreakMeshByBlockGenerator the specified  interface transition boundary name "
                "already exits");
@@ -143,8 +144,8 @@ BreakMeshByBlockGenerator::generate()
                 mesh->add_node(new_node);
 
                 // Add boundary info to the new node
-                mesh->boundary_info->boundary_ids(current_node, node_boundary_ids);
-                mesh->boundary_info->add_node(new_node, node_boundary_ids);
+                boundary_info.boundary_ids(current_node, node_boundary_ids);
+                boundary_info.add_node(new_node, node_boundary_ids);
 
                 multiplicity_counter--; // node created, update multiplicity counter
 
