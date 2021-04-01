@@ -6083,6 +6083,10 @@ FEProblemBase::initialAdaptMesh()
   _cycles_completed = 0;
   if (n)
   {
+    if (_mesh.meshSubdomains().count(Moose::INTERNAL_SIDE_LOWERD_ID) ||
+        _mesh.meshSubdomains().count(Moose::BOUNDARY_SIDE_LOWERD_ID))
+      mooseError("HFEM does not support mesh adaptivity currently.");
+
     TIME_SECTION(_initial_adapt_mesh_timer);
 
     for (unsigned int i = 0; i < n; i++)
@@ -6126,6 +6130,10 @@ FEProblemBase::adaptMesh()
 
   for (unsigned int i = 0; i < cycles_per_step; ++i)
   {
+    if (_mesh.meshSubdomains().count(Moose::INTERNAL_SIDE_LOWERD_ID) ||
+        _mesh.meshSubdomains().count(Moose::BOUNDARY_SIDE_LOWERD_ID))
+      mooseError("HFEM does not support mesh adaptivity currently.");
+
     // Markers were already computed once by Executioner
     if (_adaptivity.getRecomputeMarkersFlag() && i > 0)
       computeMarkers();
