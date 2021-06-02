@@ -22,7 +22,7 @@ def plotter(prefix, suffix, xname, yname, xlabel=None, ylabel=None, xlog=None, y
     ax = fig.subplots()
 
     for i, mode in enumerate(['normal', 'batch-restore', 'batch-reset']):
-        data = pandas.read_csv('results/{}_{}.csv.4'.format(prefix, mode))
+        data = pandas.read_csv('results/{}_{}.csv.7'.format(prefix, mode))
         ax.plot(data[xname], data[yname], label=mode, markersize=8, marker='osd'[i])
 
     if xlabel is not None:

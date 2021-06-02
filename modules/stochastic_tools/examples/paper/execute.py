@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import mooseutils
 
-REPLICATE = 6
+REPLICATE = 7
 
 def execute(infile, outfile, mode, samples, mpi=None):
     data = dict(n_samples=[], n_ranks=[], total=[], per_proc=[], max_proc=[], time=[])
@@ -46,11 +46,11 @@ def execute(infile, outfile, mode, samples, mpi=None):
 
 if __name__ == '__main__':
 
-    base = 256
+    base = 128
 
     # Memory Serial
     input_file = 'full_solve.i'
-    samples = [base*b for b in range(1,5)]
+    samples = [base, base*2, base*4, base*8, base*16]
     if True:
         prefix = 'full_solve_memory_serial'
         execute(input_file, prefix , 'normal', samples)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     # Strong scale
     mpi = [1, 2, 4, 8, 16, 32, 64, 128]
-    if False:
+    if True:
         prefix = 'full_solve_strong_scale'
         samples = [base]*len(mpi)
         execute(input_file, prefix, 'normal', samples, mpi)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         execute(input_file, prefix, 'batch-restore', samples, mpi)
 
     # Weak scale
-    if False:
+    if True:
         prefix = 'full_solve_weak_scale'
         samples = [base*m for m in mpi]
         execute(input_file, prefix, 'normal', samples, mpi)
