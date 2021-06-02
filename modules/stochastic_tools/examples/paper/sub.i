@@ -1,7 +1,8 @@
 [Mesh]
   type = GeneratedMesh
-  dim = 1
+  dim = 2
   nx = 10
+  ny = 10
 []
 
 [Variables]
@@ -44,7 +45,7 @@
 
 [Executioner]
   type = Transient
-  num_steps = 1
+  num_steps = 5
   dt = 0.25
   solve_type = NEWTON
 []
