@@ -43,14 +43,9 @@ def execute(infile, outfile, mode, samples, mpi=None):
         df.to_csv('results/{}_{}.csv'.format(outfile, mode), index=False)
 
 if __name__ == '__main__':
-    """
-    Mac Pro (2019)
-    2.5 GHz 28-Core Intel Xeon W
-    240 GB 2933 MHz DDR4
-    """
     # Memory Serial
     input_file = 'full_solve.i'
-    if False:
+    if True:
         prefix = 'full_solve_memory_serial'
         samples = [1e1, 1e2, 1e3, 1e4, 1e5]
         execute(input_file, prefix , 'normal', samples)
@@ -58,10 +53,10 @@ if __name__ == '__main__':
         execute(input_file, prefix, 'batch-restore', samples)
 
     # Memory Parallel
-    if False:
+    if True:
         prefix = 'full_solve_memory_parallel'
         samples = [1e1, 1e2, 1e3, 1e4, 1e5]
-        mpi = [24]*len(samples)
+        mpi = [64]*len(samples)
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
         execute(input_file, prefix, 'batch-restore', samples, mpi)
@@ -69,7 +64,7 @@ if __name__ == '__main__':
     # Strong scale
     if True:
         prefix = 'full_solve_strong_scale'
-        mpi = [1, 2, 4, 8, 16, 32]
+        mpi = [1, 2, 4, 8, 16, 32, 64, 128]
         samples = [1e3]*len(mpi)
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
@@ -78,8 +73,8 @@ if __name__ == '__main__':
     # Weak scale
     if True:
         prefix = 'full_solve_weak_scale'
-        mpi = [1, 2, 4, 8, 16, 32]
-        samples = [1e3, 2e3, 4e3, 8e3, 16e3, 32e3]
+        mpi = [1, 2, 4, 8, 16, 32, 64, 128]
+        samples = [1e3, 2e3, 4e3, 8e3, 16e3, 32e3, 64e3, 128e3]
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
         execute(input_file, prefix, 'batch-restore', samples, mpi)
