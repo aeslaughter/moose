@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import mooseutils
 
-REPLICATE = 1
+REPLICATE = 2
 
 def execute(infile, outfile, mode, samples, mpi=None):
     data = dict(n_samples=[], n_ranks=[], total=[], per_proc=[], max_proc=[], time=[])
@@ -30,7 +30,7 @@ def execute(infile, outfile, mode, samples, mpi=None):
 
         print(' '.join(cmd))
         t = time.time()
-        out = subprocess.run(cmd, text=True, capture_output=True)
+        out = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         t = time.time() - t
 
         local = pandas.read_csv('{}.csv'.format(mode))
@@ -47,7 +47,7 @@ def execute(infile, outfile, mode, samples, mpi=None):
 if __name__ == '__main__':
     # Memory Serial
     input_file = 'full_solve.i'
-    if False:
+    if True:
         prefix = 'full_solve_memory_serial'
         samples = [1e1, 1e2, 1e3, 1e4]
         execute(input_file, prefix , 'normal', samples)
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         execute(input_file, prefix, 'batch-restore', samples)
 
     # Memory Parallel
-    if False:
+    if True:
         prefix = 'full_solve_memory_parallel'
         samples = [1e1, 1e2, 1e3, 1e4]
         mpi = [32]*len(samples)

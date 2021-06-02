@@ -57,4 +57,5 @@
 []
 
 [Outputs]
+  console = false
 []
