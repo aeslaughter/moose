@@ -16,8 +16,6 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import mooseutils
 
-REPLICATE = 7
-
 def execute(infile, outfile, mode, samples, mpi=None):
     data = dict(n_samples=[], n_ranks=[], total=[], per_proc=[], max_proc=[], time=[])
 
@@ -42,7 +40,7 @@ def execute(infile, outfile, mode, samples, mpi=None):
         data['time'].append(t)
 
         df = pandas.DataFrame(data, columns=['n_samples', 'n_ranks', 'total', 'per_proc', 'max_proc', 'time'])
-        df.to_csv('results/{}_{}.csv.{}'.format(outfile, mode, str(REPLICATE)), index=False)
+        df.to_csv('results/{}_{}.csv'.format(outfile, mode, str(REPLICATE)), index=False)
 
 if __name__ == '__main__':
 
@@ -50,7 +48,7 @@ if __name__ == '__main__':
 
     # Memory Serial
     input_file = 'full_solve.i'
-    samples = [base, base*2, base*4, base*8, base*16]
+    samples = [base, base*2, base*4, base*8, base*16, base*32]
     if True:
         prefix = 'full_solve_memory_serial'
         execute(input_file, prefix , 'normal', samples)
@@ -66,7 +64,7 @@ if __name__ == '__main__':
         execute(input_file, prefix, 'batch-restore', samples, mpi)
 
     # Strong scale
-    mpi = [1, 2, 4, 8, 16, 32, 64, 128]
+    mpi = [1, 2, 4, 8, 16, 32]
     if True:
         prefix = 'full_solve_strong_scale'
         samples = [base]*len(mpi)
