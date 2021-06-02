@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import mooseutils
 
-REPLICATE = 2
+REPLICATE = 5
 
 def execute(infile, outfile, mode, samples, mpi=None):
     data = dict(n_samples=[], n_ranks=[], total=[], per_proc=[], max_proc=[], time=[])
@@ -45,11 +45,14 @@ def execute(infile, outfile, mode, samples, mpi=None):
         df.to_csv('results/{}_{}.csv.{}'.format(outfile, mode, str(REPLICATE)), index=False)
 
 if __name__ == '__main__':
+
+    base = 256
+
     # Memory Serial
     input_file = 'full_solve.i'
+    samples = [base*b for b in range(1,5)]
     if True:
         prefix = 'full_solve_memory_serial'
-        samples = [1e1, 1e2, 1e3, 1e4]
         execute(input_file, prefix , 'normal', samples)
         execute(input_file, prefix, 'batch-reset', samples)
         execute(input_file, prefix, 'batch-restore', samples)
@@ -57,26 +60,24 @@ if __name__ == '__main__':
     # Memory Parallel
     if True:
         prefix = 'full_solve_memory_parallel'
-        samples = [1e1, 1e2, 1e3, 1e4]
-        mpi = [32]*len(samples)
+        mpi = [16]*len(samples)
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
         execute(input_file, prefix, 'batch-restore', samples, mpi)
 
     # Strong scale
-    if True:
+    mpi = [1, 2, 4, 8, 16, 32, 64, 128]
+    if False:
         prefix = 'full_solve_strong_scale'
-        mpi = [1, 2, 4, 8, 16, 32, 64]
-        samples = [1e3]*len(mpi)
+        samples = [base]*len(mpi)
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
         execute(input_file, prefix, 'batch-restore', samples, mpi)
 
     # Weak scale
-    if True:
+    if False:
         prefix = 'full_solve_weak_scale'
-        mpi = [1, 2, 4, 8, 16, 32, 64]
-        samples = [1e3, 2e3, 4e3, 8e3, 16e3, 32e3, 64e3]
+        samples = [base*m for m in mpi]
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
         execute(input_file, prefix, 'batch-restore', samples, mpi)

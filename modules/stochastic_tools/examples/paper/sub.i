@@ -1,8 +1,9 @@
 [Mesh]
   type = GeneratedMesh
-  dim = 2
+  dim = 3
   nx = 10
   ny = 10
+  nz = 10
 []
 
 [Variables]
@@ -12,11 +13,11 @@
 
 [Kernels]
   [diff]
-    type = ADDiffusion
+    type = Diffusion
     variable = u
   []
   [time]
-    type = ADTimeDerivative
+    type = TimeDerivative
     variable = u
   []
 []
@@ -47,7 +48,9 @@
   type = Transient
   num_steps = 5
   dt = 0.25
-  solve_type = NEWTON
+  solve_type = PJFNK
+  petsc_options_iname = '-pc_type -pc_hypre_type'
+  petsc_options_value = 'hypre boomeramg'
 []
 
 [Controls]
