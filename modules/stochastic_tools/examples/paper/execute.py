@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import mooseutils
 
-REPLICATE = 5
+REPLICATE = 6
 
 def execute(infile, outfile, mode, samples, mpi=None):
     data = dict(n_samples=[], n_ranks=[], total=[], per_proc=[], max_proc=[], time=[])
