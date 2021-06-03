@@ -44,37 +44,23 @@ def execute(infile, outfile, mode, samples, mpi=None):
 
 if __name__ == '__main__':
 
-    base = 128
-
-    # Memory Serial
     input_file = 'full_solve.i'
-    samples = [base, base*2, base*4, base*8, base*16, base*32]
-    if True:
-        prefix = 'full_solve_memory_serial'
-        execute(input_file, prefix , 'normal', samples)
-        execute(input_file, prefix, 'batch-reset', samples)
-        execute(input_file, prefix, 'batch-restore', samples)
+    base = 128
 
     # Memory Parallel
     if True:
         prefix = 'full_solve_memory_parallel'
-        mpi = [16]*len(samples)
+        samples = [base, base*2, base*4, base*8, base*16, base*32]
+        mpi = [32]*len(samples)
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
         execute(input_file, prefix, 'batch-restore', samples, mpi)
 
-    # Strong scale
     mpi = [1, 2, 4, 8, 16, 32]
-    if True:
-        prefix = 'full_solve_strong_scale'
-        samples = [base]*len(mpi)
-        execute(input_file, prefix, 'normal', samples, mpi)
-        execute(input_file, prefix, 'batch-reset', samples, mpi)
-        execute(input_file, prefix, 'batch-restore', samples, mpi)
-
     # Weak scale
     if True:
         prefix = 'full_solve_weak_scale'
+        mpi = [1, 2, 4, 8, 16, 32, 64]
         samples = [base*m for m in mpi]
         execute(input_file, prefix, 'normal', samples, mpi)
         execute(input_file, prefix, 'batch-reset', samples, mpi)
