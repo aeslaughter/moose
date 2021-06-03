@@ -22,7 +22,7 @@ def plotter(prefix, suffix, xname, yname, xlabel=None, ylabel=None, xlog=None, y
     ax = fig.subplots()
 
     for i, mode in enumerate(['normal', 'batch-restore', 'batch-reset']):
-        data = pandas.read_csv('results/{}_{}.csv.7'.format(prefix, mode))
+        data = pandas.read_csv('results/{}_{}.csv'.format(prefix, mode))
         ax.plot(data[xname], data[yname], label=mode, markersize=8, marker='osd'[i])
 
     if xlabel is not None:
@@ -63,34 +63,8 @@ if __name__ == '__main__':
     # Strong Scaling
     plotter('full_solve_strong_scale', 'strong',
             xname='n_ranks', xlabel='Number of Processors', xlog=2,
-            yname='time', ylabel='Time (sec.)', ylog=10)
+            yname='time', ylabel='Time (sec.)', ylog=None)
 
     plotter('full_solve_weak_scale', 'weak',
             xname='n_ranks', xlabel='Number of Processors', xlog=2,
             yname='time', ylabel='Time (sec.)', ylog=None)
-
-
-
-    """
-    plotter('full_solve_memory_serial', LOCATION, '', EXT,
-            ['normal', 'batch-restore', 'batch-reset'], ['total'], ['Total'], 'Memory (MiB)')
-
-    plotter('full_solve_memory_mpi', LOCATION, 'time', EXT,
-            ['normal', 'batch-restore', 'batch-reset'], ['time'], ['Time'], 'Time (sec.)')
-
-    plotter('full_solve_memory_mpi', LOCATION, '', EXT,
-            ['normal', 'batch-restore', 'batch-reset'], ['total', 'max_proc'], ['Total', 'Max'], 'Memory (MiB)')
-
-    # Transient
-    plotter('transient_memory_serial', LOCATION, 'time', EXT,
-            ['normal', 'batch-restore'], ['time'], ['Time'], 'Time (sec.)')
-
-    plotter('transient_memory_serial', LOCATION, '', EXT,
-            ['normal', 'batch-restore'], ['total'], ['Total'], 'Memory (MiB)')
-
-    plotter('transient_memory_mpi', LOCATION, 'time', EXT,
-            ['normal', 'batch-restore'], ['time'], ['Time'], 'Time (sec.)')
-
-    plotter('transient_memory_mpi', LOCATION, '', EXT,
-            ['normal', 'batch-restore'], ['total', 'max_proc'], ['Total', 'Max'], 'Memory (MiB)')
-    """
