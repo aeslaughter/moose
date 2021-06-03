@@ -101,29 +101,29 @@ def table(prefix):
 
     out.append('\bottomrule')
     out.append('\end{tabular}')
-    print('\n'.join(out))
+
+    with open('results/weak.tex', 'w') as fid:
+        fid.write('\n'.join(out))
 
 if __name__ == '__main__':
 
     input_file = 'full_solve.i'
-    base = 2
-    replicates = 5
+    base = 128
+    replicates = 10
 
     # Memory Parallel
-    if False:
+    if True:
         prefix = 'full_solve_memory_parallel'
-        samples = [base, base*2]
-        #samples = [base, base*2, base*4, base*8, base*16, base*32]
+        samples = [base, base*2, base*4, base*8, base*16, base*32]
         mpi = [32]*len(samples)
         execute(input_file, prefix, 'normal', samples, mpi, replicates)
         execute(input_file, prefix, 'batch-reset', samples, mpi, replicates)
         execute(input_file, prefix, 'batch-restore', samples, mpi, replicates)
 
     # Weak scale
-    if False:
+    if True:
         prefix = 'full_solve_weak_scale'
-        #mpi = [1, 2, 4, 8, 16, 32, 64]
-        mpi = [1, 2]
+        mpi = [1, 2, 4, 8, 16, 32, 64]
         samples = [base*m for m in mpi]
         execute(input_file, prefix, 'normal', samples, mpi, replicates)
         execute(input_file, prefix, 'batch-reset', samples, mpi, replicates)
