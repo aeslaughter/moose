@@ -40,7 +40,7 @@ def execute(infile, outfile, mode, samples, mpi=None):
         data['time'].append(t)
 
         df = pandas.DataFrame(data, columns=['n_samples', 'n_ranks', 'total', 'per_proc', 'max_proc', 'time'])
-        df.to_csv('results/{}_{}.csv'.format(outfile, mode, str(REPLICATE)), index=False)
+        df.to_csv('results/{}_{}.csv'.format(outfile, mode), index=False)
 
 if __name__ == '__main__':
 
