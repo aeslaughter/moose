@@ -14,6 +14,7 @@
     type = MonteCarlo
     num_rows = 10
     distributions = 'uniform uniform'
+    execute_on = 'initial timestep_end'
   []
 []
 
@@ -49,6 +50,11 @@
   []
 []
 
+[Executioner]
+  type = Transient
+  num_steps = 1
+[]
+
 [Postprocessors]
   [total]
     type = MemoryUsage
@@ -62,6 +68,17 @@
   [max_proc]
     type = MemoryUsage
     value_type = "max_process"
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [total_time]
+    type = PerfGraphData
+    execute_on = 'INITIAL TIMESTEP_END'
+    data_type = 'TOTAL'
+    section_name = 'Root'
+  []
+  [run_time]
+    type = ChangeOverTimePostprocessor
+    postprocessor = total_time
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []
