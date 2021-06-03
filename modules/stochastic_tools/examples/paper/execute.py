@@ -18,8 +18,19 @@ import statistics
 import collections
 import mooseutils
 
-def execute(infile, outfile, mode, samples, mpi=None, replicates=1):
+def get_args():
+    parser = argparse.ArgumentParser(description='Utility for producing results, plots, and tables for STM paper')
+    parser.add_argument('--skip-weak', action='store_true', help="Disable performing stochastic runs for weak scaling.")
+    parser.add_argument('--skip-memory', action='store_true', help="Disable performing stochastic runs for memory/timing.")
+    parser.add_argument('--replicates', default=10, type=int, help="Number of replicates to perform.")
+    parser.add_argument('--base', default=128, type=int, help="The base number of samples to perform.")
+    parser.add_argument('--memory-levels', default=6, type=int, help="Number of levels to perform for memory/timing runs, n in [base*2^0, ..., base*2^n-1].")
+    parser.add_argument('--memory-cores', default=32, type=int, help="Number of processors to use for memory/timing runs.")
+    parser.add_argument('--weak-levels', default=7, type=int, help="Number of processor levels to perform for weak scaling, n in [2^0,...,2^n-1].")
 
+    return parser.parse_args()
+
+def execute(infile, outfile, mode, samples, mpi=None, replicates=1):
     data = collections.defaultdict(list)
     if mpi is None: mpi = [1]*len(samples)
     exe = mooseutils.find_moose_executable_recursive()
@@ -53,7 +64,6 @@ def plot(prefix, suffix, xname, yname, xlabel=None, ylabel=None, xlog=None, ylog
 
     for i, mode in enumerate(['normal']):#, 'batch-restore', 'batch-reset']):
         data = pandas.read_csv('results/{}_{}.csv'.format(prefix, mode))
-        print(data)
         kwargs = dict()
         kwargs['label'] = mode
         kwargs['markersize'] = 4
@@ -62,7 +72,6 @@ def plot(prefix, suffix, xname, yname, xlabel=None, ylabel=None, xlog=None, ylog
             kwargs['capsize'] = 2
             kwargs['yerr'] = [ (data[yerr[0]] - data[yname]).tolist(),
                                (data[yname] - data[yerr[1]]).tolist()]
-            print(kwargs['yerr'])
         ax.errorbar(data[xname], data[yname], **kwargs)
 
     if xlabel is not None:
@@ -105,36 +114,34 @@ def table(prefix):
         restore = '{:.1f} ({:.1f}, {:.1f})'.format(*value[2])
         out.append(r'{} & {} & {} & {} & {} \\'.format(n_ranks, n_samples, normal, reset, restore))
 
-    out.append('\bottomrule')
-    out.append('\end{tabular}')
+    out.append(r'\bottomrule')
+    out.append(r'\end{tabular}')
 
-    with open('results/weak.tex', 'w') as fid:
+    with open('weak.tex', 'w') as fid:
         fid.write('\n'.join(out))
 
 if __name__ == '__main__':
 
     input_file = 'full_solve.i'
-    base = 128
-    replicates = 10
+    args = get_args()
 
     # Memory Parallel
-    if True:
+    if not args.skip_memory:
         prefix = 'full_solve_memory_parallel'
-        samples = [base, base*2, base*4]#, base*8, base*16, base*32]
-        mpi = [32]*len(samples)
-        execute(input_file, prefix, 'normal', samples, mpi, replicates)
-        execute(input_file, prefix, 'batch-reset', samples, mpi, replicates)
-        execute(input_file, prefix, 'batch-restore', samples, mpi, replicates)
+        samples = [args.base*2**n for n in range(args.memory_levels)]
+        mpi = [args.memory_cores]*len(samples)
+        execute(input_file, prefix, 'normal', samples, mpi, args.replicates)
+        execute(input_file, prefix, 'batch-reset', samples, mpi, args.replicates)
+        execute(input_file, prefix, 'batch-restore', samples, mpi, args.replicates)
 
     # Weak scale
-    if True:
+    if not args.skip_weak:
         prefix = 'full_solve_weak_scale'
-        mpi = [1, 2, 4, 8, 16, 32, 64]
-        samples = [base*m for m in mpi]
-        execute(input_file, prefix, 'normal', samples, mpi, replicates)
-        execute(input_file, prefix, 'batch-reset', samples, mpi, replicates)
-        execute(input_file, prefix, 'batch-restore', samples, mpi, replicates)
-
+        mpi = [2**n for n in range(args.weak_levels)]
+        samples = [args.base*m for m in mpi]
+        execute(input_file, prefix, 'normal', samples, mpi, args.replicates)
+        execute(input_file, prefix, 'batch-reset', samples, mpi, args.replicates)
+        execute(input_file, prefix, 'batch-restore', samples, mpi, args.replicates)
 
     # Parallel time and memory plots
     plot('full_solve_memory_parallel', 'time',
@@ -145,4 +152,5 @@ if __name__ == '__main__':
          xname='n_samples', xlabel='Number of Simulations', xlog=None,
          yname='mem_per_proc', ylabel='Memory (MiB)', ylog=None)
 
+    # Weak scaling table
     table('full_solve_weak_scale')
