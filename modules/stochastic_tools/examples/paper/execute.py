@@ -19,9 +19,8 @@ import collections
 import mooseutils
 
 def execute(infile, outfile, mode, samples, mpi=None, replicates=1):
-    data = dict(n_samples=[], n_ranks=[], mem_total=[], mem_per_proc=[], mem_max_proc=[],
-                run_time=[], run_time_min=[], run_time_max=[], real_time=[])
 
+    data = collections.defaultdict(list)
     if mpi is None: mpi = [1]*len(samples)
     exe = mooseutils.find_moose_executable_recursive()
     for n_cores, n_samples in zip(mpi, samples):
@@ -31,9 +30,7 @@ def execute(infile, outfile, mode, samples, mpi=None, replicates=1):
                'Outputs/file_base={}'.format(mode)]
 
         print(' '.join(cmd))
-        t = time.time()
         out = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        t = time.time() - t
 
         local = pandas.read_csv('{}.csv'.format(mode))
         data['n_ranks'].append(n_cores)
@@ -44,20 +41,29 @@ def execute(infile, outfile, mode, samples, mpi=None, replicates=1):
         data['run_time'].append(statistics.mean(local['run_time'].iloc[1:]))
         data['run_time_min'].append(min(local['run_time'].iloc[1:]))
         data['run_time_max'].append(max(local['run_time'].iloc[1:]))
-        data['real_time'].append(t)
 
         df = pandas.DataFrame(data, columns=data.keys())
         df.to_csv('results/{}_{}.csv'.format(outfile, mode))
 
 
-def plot(prefix, suffix, xname, yname, xlabel=None, ylabel=None, xlog=None, ylog=None):
+def plot(prefix, suffix, xname, yname, xlabel=None, ylabel=None, xlog=None, ylog=None, yerr=None):
 
     fig = plt.figure(figsize=[4,4], dpi=300, tight_layout=True)
     ax = fig.subplots()
 
-    for i, mode in enumerate(['normal', 'batch-restore', 'batch-reset']):
+    for i, mode in enumerate(['normal']):#, 'batch-restore', 'batch-reset']):
         data = pandas.read_csv('results/{}_{}.csv'.format(prefix, mode))
-        ax.plot(data[xname], data[yname], label=mode, markersize=8, marker='osd'[i])
+        print(data)
+        kwargs = dict()
+        kwargs['label'] = mode
+        kwargs['markersize'] = 4
+        kwargs['marker'] = 'osd'[i]
+        if yerr is not None:
+            kwargs['capsize'] = 2
+            kwargs['yerr'] = [ (data[yerr[0]] - data[yname]).tolist(),
+                               (data[yname] - data[yerr[1]]).tolist()]
+            print(kwargs['yerr'])
+        ax.errorbar(data[xname], data[yname], **kwargs)
 
     if xlabel is not None:
         ax.set_xlabel(xlabel, fontsize=10)
@@ -89,7 +95,7 @@ def table(prefix):
         data = pandas.read_csv('results/{}_{}.csv'.format(prefix, mode))
         for idx, row in data.iterrows():
             key = (int(row['n_samples']), int(row['n_ranks']))
-            times[key].append((row['run_time'], row['run_time_min'], row['run_time_max']))
+            times[key].append((row['run_time'], row['run_time_max'], row['run_time_min']))
 
     for key, value in times.items():
         n_samples = key[0]
@@ -114,7 +120,7 @@ if __name__ == '__main__':
     # Memory Parallel
     if True:
         prefix = 'full_solve_memory_parallel'
-        samples = [base, base*2, base*4, base*8, base*16, base*32]
+        samples = [base, base*2, base*4]#, base*8, base*16, base*32]
         mpi = [32]*len(samples)
         execute(input_file, prefix, 'normal', samples, mpi, replicates)
         execute(input_file, prefix, 'batch-reset', samples, mpi, replicates)
@@ -133,7 +139,7 @@ if __name__ == '__main__':
     # Parallel time and memory plots
     plot('full_solve_memory_parallel', 'time',
          xname='n_samples', xlabel='Number of Simulations', xlog=None,
-         yname='run_time', ylabel='Time (sec.)', ylog=None)
+         yname='run_time', ylabel='Time (sec.)', yerr=('run_time_min', 'run_time_max'), ylog=None)
 
     plot('full_solve_memory_parallel', 'memory',
          xname='n_samples', xlabel='Number of Simulations', xlog=None,
