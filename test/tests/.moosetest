@@ -1,0 +1,25 @@
+plugin_dirs = '../../python/plugins/moosetest'
+
+[Environment]
+  MOOSE_DIR = '../..'
+  LIBMESH_DIR = '${MOOSE_DIR}/libmesh'
+[]
+
+[Controllers]
+  [moose]
+    type = MOOSEConfigController
+    config_files = '${MOOSE_DIR}/framework/include/base/MooseConfig.h'
+  []
+  [petsc]
+    type = PETScConfigController
+    config_files = '${LIBMESH_DIR}/include/libmesh/libmesh_config.h'
+  []
+  [slepc]
+    type = SLEPcConfigController
+    config_files = '${LIBMESH_DIR}/include/libmesh/libmesh_config.h'
+  []
+  [libmesh]
+    type = LibMeshConfigController
+    config_files = '${LIBMESH_DIR}/include/libmesh/libmesh_config.h'
+  []
+[]
