@@ -9,8 +9,6 @@ from ..controllers import MOOSEConfigController, PETScConfigController, LibMeshC
 
 class MOOSEAppRunner(runners.RunCommand):
 
-
-
     @staticmethod
     def validParams():
         params = runners.RunCommand.validParams()
@@ -26,7 +24,11 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('jacobian', vtype=str, allow=('TEST', 'TEST_AND_RUN'),
                    doc="Enable PETSc options for testing the Jacobian ('TEST') without running the simulation or with running the simulation ('TEST_AND_RUN').")
 
-        # Legacy parameters
+        params.add('allow_warnings', vtype=bool, default=True,
+                   doc="When False the '--error' flag is passed to the executable.")
+
+
+        # TODO: Remove legacy parameters
         #
         # Appends the listed parameters from each Controller object to parameters on this object,
         # which eliminates the prefix.
@@ -41,8 +43,7 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('prereq')
         params.add('recover')
 
-        # TODO: Create SQAController, then set the sqa_design, etc. parameters using these, perhaps
-        #       a mixin object in MOOSE can do this sort of thig
+        # TODO: Create SQAController
         params.add('design')
         params.add('requirement')
         params.add('issues')
@@ -53,7 +54,7 @@ class MOOSEAppRunner(runners.RunCommand):
     def __init__(self, *args, **kwargs):
         runners.RunCommand.__init__(self, *args, **kwargs)
 
-        # Legacy parameters
+        # TODO: Remove legacy parameters
         #
         # The Controllers system in moosetools.moosetest creates sub-parameters with prefixes. The
         # following takes parameters from this object (see validParams) and sets the correct value
@@ -122,6 +123,10 @@ class MOOSEAppRunner(runners.RunCommand):
             command += ['-snes_test_jacobian', '-snes_force_iteration']
         if jac == 'TEST_AND_RUN':
             command += ['-snes_type', 'ksponly', '-ksp_type', 'preonly', '-pc_type', 'none', '-snes_convergence_test', 'skip']
+
+        # Error flags
+        if not self.getParam('allow_warnings'):
+            command.append('--error')
 
         self.parameters().setValue('command', tuple(command))
         return runners.RunCommand.execute(self)
