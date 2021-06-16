@@ -13,6 +13,11 @@ class Exodiff(MOOSEAppRunner):
         params = MOOSEAppRunner.validParams()
         params.add('exodiff', array=True, vtype=str,
                    doc="ExodusII file(s) to compare with counterpart in 'gold' directory.")
+
+        # Add parameters from the Differ object
+        differ_params = ExodusDiffer.validParams()
+        params.append(differ_params, 'abs_zero', 'rel_err')
+
         return params
 
     def __init__(self, *args, **kwargs):

@@ -27,6 +27,15 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('allow_warnings', vtype=bool, default=True,
                    doc="When False the '--error' flag is passed to the executable.")
 
+        # MPI parameters
+        mpi = InputParameters()
+        mpi.add('n_processors', vtype=int,
+                doc="Set the number of MPI processors to specific value to utilize when running application.")
+        mpi.add('max_processors', vtype=int,
+                doc="Maximum number of MPI processes to utilize when running application, this will override the value supplied in 'n_processors'.")
+        mpi.add('min_processors', vtype=int,
+                doc="Minimum number of MPI processes to utilize when running application, this will override the value supplied in 'n_processors'.")
+        params.add('mpi', default=mpi, doc="Set MPI processors counts.")
 
         # TODO: Remove legacy parameters
         #
@@ -37,6 +46,10 @@ class MOOSEAppRunner(runners.RunCommand):
         params.append(MOOSEConfigController.validObjectParams(), 'ad_mode', 'ad_indexing_type', 'ad_size')
         params.append(PETScConfigController.validObjectParams(), 'superlu', 'mumps', 'strumpack', 'parmetis', 'chaco', 'party', 'ptscotch')
         params.append(LibMeshConfigController.validObjectParams(), 'mesh_mode', 'dof_id_bytes', 'unique_id', 'dtk', 'boost', 'vtk', 'tecplot', 'curl', 'fparser_jit', 'threads', 'tbb', 'openmp')
+
+        params.add('max_parallel', vtype=int, doc="Replaced by 'mpi_max_processors'.")
+        params.add('min_parallel', vtype=int, doc="Replaced by 'mpi_min_processors'.")
+
 
         # TODO
         params.add('scale_refine')
@@ -89,10 +102,21 @@ class MOOSEAppRunner(runners.RunCommand):
         self.parameters().setValue('libmesh_tbb', self.getParam('tbb'))
         self.parameters().setValue('libmesh_openmp', self.getParam('openmp'))
 
+        # TODO: Error checking that MPI
+        # if n_processors set_by_users and min/max as well, produce an error
+
     def execute(self):
         """
         Run MOOSE-based application.
         """
+
+        # TODO: Deprecated parameters
+        mpi_max = self.getParam('max_parallel')
+        if mpi_max is not None:
+            self.parameters().setValue('mpi', 'max_processors', mpi_max)
+        mpi_min = self.getParam('min_parallel')
+        if mpi_min is not None:
+            self.parameters().setValue('mpi', 'min_processors', mpi_min)
 
         # Command list to supply base RunCommand
         command = list()
@@ -127,6 +151,21 @@ class MOOSEAppRunner(runners.RunCommand):
         # Error flags
         if not self.getParam('allow_warnings'):
             command.append('--error')
+
+        # MPI
+        # create mpi_n_processors, mpi_min_processors, mpi_max_processors
+        mpi = self.getParam('mpi', 'n_processors') or 1
+        min_mpi = self.getParam('mpi', 'min_processors')
+        if (min_mpi is not None) and (mpi < min_mpi):
+            mpi = min_parallel
+            self.reason('min_processors={}', min_mpi)
+        max_mpi = self.getParam('mpi', 'max_processors')
+        if (max_mpi is not None) and (max_mpi < mpi):
+            mpi = max_parallel
+            self.reason('max_processors={}', min_mpi)
+
+        if mpi > 1:
+            command = ['mpiexec', '-n', str(mpi)] + command
 
         self.parameters().setValue('command', tuple(command))
         return runners.RunCommand.execute(self)
