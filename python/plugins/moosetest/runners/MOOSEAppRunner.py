@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+from moosetools.parameters import InputParameters
 from moosetools.moosetest import runners
 from moosetools.mooseutils import find_moose_executable_recursive
 
@@ -22,6 +23,8 @@ class MOOSEAppRunner(runners.RunCommand):
                    doc="The input file (*.i) to utilize for running application. The file should be defined relative to the HIT test specification or the current working directory if the object is not being instantiated with a test specification.")
         params.add('cli_args', vtype=str, array=True,
                    doc="Additional command line arguments to pass to the MOOSE application execution.")
+        params.add('jacobian', vtype=str, allow=('TEST', 'TEST_AND_RUN'),
+                   doc="Enable PETSc options for testing the Jacobian ('TEST') without running the simulation or with running the simulation ('TEST_AND_RUN').")
 
         # Legacy parameters
         #
@@ -43,6 +46,7 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('design')
         params.add('requirement')
         params.add('issues')
+        params.add('detail')
 
         return params
 
@@ -112,12 +116,19 @@ class MOOSEAppRunner(runners.RunCommand):
         # Append "cli_args" parameters
         command += self.getParam('cli_args') or []
 
+        # Append PETSc Jacobian options
+        jac = self.getParam('jacobian')
+        if jac == 'TEST' or jac == 'TEST_AND_RUN':
+            command += ['-snes_test_jacobian', '-snes_force_iteration']
+        if jac == 'TEST_AND_RUN':
+            command += ['-snes_type', 'ksponly', '-ksp_type', 'preonly', '-pc_type', 'none', '-snes_convergence_test', 'skip']
 
         self.parameters().setValue('command', tuple(command))
         return runners.RunCommand.execute(self)
 
     def getFileBase(self):
         """
+        Determine the base directory for defining relative filenames.
         """
         if '_hit_filename' not in self.parameters():
             base_dir = os.getcwd()
