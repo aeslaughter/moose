@@ -1,5 +1,5 @@
 from moosetools.moosetest.base import make_differ
-from moosetools.moosetest.differs import ConsoleDiff
+from moosetools.moosetest.differs import ConsoleDiffer
 
 from ..runners import MOOSEAppRunner
 from ..differs import PETScJacobianDiffer
@@ -27,5 +27,5 @@ class RunApp(MOOSEAppRunner):
 
         # Create and add the Differ
         controllers = self.getParam('_controllers')
-        c_differ = make_differ(ConsoleDiff, controllers, name='consolediff', **kwargs)
+        c_differ = make_differ(ConsoleDiffer, controllers, name='consolediff', **kwargs)
         self.parameters().setValue('differs', (c_differ,))

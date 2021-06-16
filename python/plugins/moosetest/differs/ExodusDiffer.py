@@ -47,6 +47,8 @@ class ExodusDiffer(FileDiffer):
                '-Floor', str(self.getParam('abs_zero')),
                None, # created file
                None] # gold file
+
+        # Perform comparison of all file pairings
         for filename, gold_filename in self.pairs():
             cmd[-2] = os.path.relpath(filename, os.getcwd())
             cmd[-1] = os.path.relpath(gold_filename, os.getcwd())

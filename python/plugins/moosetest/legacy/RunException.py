@@ -1,5 +1,4 @@
 from moosetools.moosetest.base import make_differ
-from moosetools.moosetest.differs import ConsoleDiff
 
 from .RunApp import RunApp
 
