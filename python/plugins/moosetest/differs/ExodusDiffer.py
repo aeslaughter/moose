@@ -16,6 +16,11 @@ class ExodusDiffer(FileDiffer):
         params = FileDiffer.validParams()
         params.add('executable', vtype=str,
                    doc="The 'exodiff' executable to run, if not specified the version in MOOSE is used.")
+        params.add('abs_zero', vtype=float, default=1e-10,
+                   doc="Absolute zero cutoff used in exodiff comparisons.")
+        params.add('rel_err', vtype=float, default=5.5e-6,
+                   doc="Relative error value used in exodiff comparisons.")
+
         return params
 
     def execute(self, *args):
@@ -30,17 +35,25 @@ class ExodusDiffer(FileDiffer):
             msg = "The supplied 'exodiff' executable does not exist: {}"
             raise RuntimeError(msg.format(exe))
 
+        # subprocess.run key/value arguments
         kwargs = dict()
         kwargs['capture_output'] = True
         kwargs['encoding'] = 'utf-8'
         kwargs['check'] = False # raise exceptions
 
+        # exodiff executable command to run
+        cmd = [exe,
+               '-tolerance', str(self.getParam('rel_err')),
+               '-Floor', str(self.getParam('abs_zero')),
+               None, # created file
+               None] # gold file
         for filename, gold_filename in self.pairs():
-            cmd = [exe, os.path.relpath(filename, os.getcwd()), os.path.relpath(gold_filename, os.getcwd())]
+            cmd[-2] = os.path.relpath(filename, os.getcwd())
+            cmd[-1] = os.path.relpath(gold_filename, os.getcwd())
             str_cmd = ' '.join(cmd)
             print('RUNNING EXODIFF:\n{0}\n{1}\n{0}'.format('-' * len(str_cmd), str_cmd))
             out = subprocess.run(cmd, **kwargs)
             sys.stdout.write(out.stdout)
             sys.stderr.write(out.stderr)
             if out.returncode > 0:
-                self.error("{} != {}", cmd[1], cmd[2])
+                self.error("{} != {}", cmd[-2], cmd[-1])
