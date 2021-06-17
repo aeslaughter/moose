@@ -25,8 +25,7 @@ class Exodiff(MOOSEAppRunner):
 
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
-        kwargs['filenames'] = self.getParam('exodiff')
-        kwargs['base_dir'] = self.getParam('base_dir')
+        kwargs['file_names'] = self.getParam('exodiff')
 
         # Create and add the Differ
         controllers = self.getParam('_controllers')

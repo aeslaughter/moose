@@ -37,7 +37,6 @@ class PetscJacobianTester(MOOSEAppRunner):
 
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
-        kwargs['base_dir'] = self.getParam('base_dir')
         kwargs['ratio_tol'] = self.getParam('ratio_tol')
         kwargs['difference_tol'] = self.getParam('difference_tol')
         kwargs['only_final_jacobian'] = self.getParam('only_final_jacobian')

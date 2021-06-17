@@ -21,6 +21,9 @@ class MOOSEAppRunner(runners.RunCommand):
                    doc="The input file (*.i) to utilize for running application. The file should be defined relative to the HIT test specification or the current working directory if the object is not being instantiated with a test specification.")
         params.add('cli_args', vtype=str, array=True,
                    doc="Additional command line arguments to pass to the MOOSE application execution.")
+
+
+        # TODO: I am not sure about this approach yet...perhaps "jacobian_test=True and jacobian_test_and_run=True"
         params.add('jacobian', vtype=str, allow=('TEST', 'TEST_AND_RUN'),
                    doc="Enable PETSc options for testing the Jacobian ('TEST') without running the simulation or with running the simulation ('TEST_AND_RUN').")
 

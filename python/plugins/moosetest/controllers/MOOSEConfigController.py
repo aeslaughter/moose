@@ -37,7 +37,7 @@ class MOOSEConfigController(AutotoolsConfigController):
         params.add('ad_mode', allow=('SPARSE', 'NONSPARSE'), vtype=str,
                    doc="Limit the test to a specific automatic differentiation derivative type.",
                    user_data=AutotoolsConfigItem('MOOSE_SPARSE_AD', '0', {'0':'NONSPARSE', '1':'SPARSE'}))
-        params.add('ad_indexing_type', allow=('GLOBAL', 'LOCAL'), vtype=str,
+        params.add('ad_indexing_type', allow=('GLOBAL', 'LOCAL', 'global', 'local'), vtype=str,
                    doc="Limit the test to global or local automatic differentiation indexing scheme.",
                    user_data=AutotoolsConfigItem('MOOSE_GLOBAL_AD_INDEXING', '0', {'0':'LOCAL', '1':'GLOBAL'}))
         params.add('ad_size', vtype=int,
