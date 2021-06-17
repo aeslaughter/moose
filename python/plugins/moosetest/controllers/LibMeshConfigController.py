@@ -32,7 +32,7 @@ class LibMeshConfigController(AutotoolsConfigController):
         params = AutotoolsConfigController.validObjectParams()
 
         # libMesh features
-        params.add('mesh_mode', vtype=str, allow=('REPLICATED', 'DISTRIBUTED'),
+        params.add('mesh_mode', vtype=str, allow=('REPLICATED', 'DISTRIBUTED', 'replicated', 'distributed'),
                    doc="Require a specific parallel mesh mode.",
                    user_data=AutotoolsConfigItem('LIBMESH_ENABLE_PARMESH', '0', {'0':'REPLICATED', '1':'DISTRIBUTED'}))
         params.add('dof_id_bytes', vtype=int,

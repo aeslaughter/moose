@@ -18,6 +18,7 @@ class PetscJacobianTester(MOOSEAppRunner):
         params.append(differ_params, 'ratio_tol', 'difference_tol', 'only_final_jacobian')
 
         # TODO: Deprecated, see MOOSEAppRunner
+        params.add('state', doc="Not used. This parameter is was used for PETSc <3.9, which we no longer support.")
         params.add('run_sim', default=False, doc="Whether to actually run the simulation, testing the Jacobian "
                                                  "at every non-linear iteration of every time step. This is only "
                                                  "relevant for petsc versions >= 3.9.")

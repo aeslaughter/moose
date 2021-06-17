@@ -1,8 +1,8 @@
 from moosetools.moosetest.base import make_differ
-from ..runners import MOOSEAppRunner
+from .RunApp import RunApp
 from ..differs import ExodusDiffer
 
-class Exodiff(MOOSEAppRunner):
+class Exodiff(RunApp):
     """
     Run MOOSE application and compare Exodus files.
 
@@ -10,7 +10,7 @@ class Exodiff(MOOSEAppRunner):
     """
     @staticmethod
     def validParams():
-        params = MOOSEAppRunner.validParams()
+        params = RunApp.validParams()
         params.add('exodiff', array=True, vtype=str,
                    doc="ExodusII file(s) to compare with counterpart in 'gold' directory.")
 
@@ -21,7 +21,7 @@ class Exodiff(MOOSEAppRunner):
         return params
 
     def __init__(self, *args, **kwargs):
-        MOOSEAppRunner.__init__(self, *args, **kwargs)
+        RunApp.__init__(self, *args, **kwargs)
 
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
@@ -30,4 +30,6 @@ class Exodiff(MOOSEAppRunner):
         # Create and add the Differ
         controllers = self.getParam('_controllers')
         exo_differ = make_differ(ExodusDiffer, controllers, name='exodiff', **kwargs)
-        self.parameters().setValue('differs', (exo_differ,))
+
+        differs = list(self.getParam('differs'))
+        self.parameters().setValue('differs', tuple([exo_differ, *differs]))
