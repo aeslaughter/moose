@@ -36,6 +36,9 @@ class PetscJacobianTester(MOOSEAppRunner):
             cli_args = list(self.getParam('cli_args') or tuple()) + ['Outputs/exodus=false']
             self.parameters().setValue('cli_args', tuple(cli_args))
 
+        # Limit to METHOD=OPT
+        self.parameters().setValue('libmesh', 'methods', ('opt',))
+
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
         kwargs['ratio_tol'] = self.getParam('ratio_tol')

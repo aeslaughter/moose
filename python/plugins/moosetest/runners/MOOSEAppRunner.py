@@ -27,9 +27,9 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('jacobian', vtype=str, allow=('TEST', 'TEST_AND_RUN'),
                    doc="Enable PETSc options for testing the Jacobian ('TEST') without running the simulation or with running the simulation ('TEST_AND_RUN').")
 
+        # Command-line flags
         params.add('allow_warnings', vtype=bool, default=True,
                    doc="When False the '--error' flag is passed to the executable.")
-
         params.add('allow_test_objects', vtype=bool, default=True,
                    doc="Allow the use of test objects by adding '--allow-test-objects' to the MOOSE application command.")
 
@@ -61,14 +61,15 @@ class MOOSEAppRunner(runners.RunCommand):
         # In the future, this syntax should be removed and the prefix versions used
         params.append(MOOSEConfigController.validObjectParams(), 'ad_mode', 'ad_indexing_type', 'ad_size')
         params.append(PETScConfigController.validObjectParams(), 'superlu', 'mumps', 'strumpack', 'parmetis', 'chaco', 'party', 'ptscotch')
-        params.append(LibMeshConfigController.validObjectParams(), 'mesh_mode', 'dof_id_bytes', 'unique_id', 'dtk', 'boost', 'vtk', 'tecplot', 'curl', 'fparser_jit', 'threads', 'tbb', 'openmp')
+        params.append(LibMeshConfigController.validObjectParams(), 'mesh_mode', 'dof_id_bytes', 'unique_id', 'dtk', 'boost', 'vtk', 'tecplot', 'curl', 'fparser_jit', 'threads', 'tbb', 'openmp', 'methods')
 
         params.add('max_parallel', vtype=int, doc="Replaced by 'mpi_max'.")
         params.add('min_parallel', vtype=int, doc="Replaced by 'mpi_min'.")
 
-        params.add('max_threads', vtype=int, doc="Replaced by 'threads_max'.")
-        params.add('min_threads', vtype=int, doc="Replaced by 'threads_min'.")
+        params.add('max_threads', vtype=int, doc="Replaced by 'thread_max'.")
+        params.add('min_threads', vtype=int, doc="Replaced by 'thread_min'.")
 
+        params.add('method', vtype=str, array=True, doc="Replace by 'libmesh_methods'.")
 
 
         # TODO
@@ -94,33 +95,34 @@ class MOOSEAppRunner(runners.RunCommand):
         # in the included Controller objects
 
         # MOOSE
-        self.parameters().setValue('moose_ad_mode', self.getParam('ad_mode'))
-        self.parameters().setValue('moose_ad_indexing_type', self.getParam('ad_indexing_type'))
-        self.parameters().setValue('moose_ad_size', self.getParam('ad_size'))
+        self.parameters().setValue('moose', 'ad_mode', self.getParam('ad_mode'))
+        self.parameters().setValue('moose', 'ad_indexing_type', self.getParam('ad_indexing_type'))
+        self.parameters().setValue('moose', 'ad_size', self.getParam('ad_size'))
 
         # PETSc
-        self.parameters().setValue('petsc_superlu', self.getParam('superlu'))
-        self.parameters().setValue('petsc_mumps', self.getParam('mumps'))
-        self.parameters().setValue('petsc_strumpack', self.getParam('strumpack'))
-        self.parameters().setValue('petsc_parmetis', self.getParam('parmetis'))
-        self.parameters().setValue('petsc_chaco', self.getParam('chaco'))
-        self.parameters().setValue('petsc_party', self.getParam('party'))
-        self.parameters().setValue('petsc_ptscotch', self.getParam('ptscotch'))
+        self.parameters().setValue('petsc', 'superlu', self.getParam('superlu'))
+        self.parameters().setValue('petsc', 'mumps', self.getParam('mumps'))
+        self.parameters().setValue('petsc', 'strumpack', self.getParam('strumpack'))
+        self.parameters().setValue('petsc', 'parmetis', self.getParam('parmetis'))
+        self.parameters().setValue('petsc', 'chaco', self.getParam('chaco'))
+        self.parameters().setValue('petsc', 'party', self.getParam('party'))
+        self.parameters().setValue('petsc', 'ptscotch', self.getParam('ptscotch'))
 
         # libMesh
-        self.parameters().setValue('libmesh_mesh_mode', self.getParam('mesh_mode'))
-        self.parameters().setValue('libmesh_dof_id_bytes', self.getParam('dof_id_bytes'))
-        self.parameters().setValue('libmesh_unique_id', self.getParam('unique_id'))
-        self.parameters().setValue('libmesh_dtk', self.getParam('dtk'))
-        self.parameters().setValue('libmesh_boost', self.getParam('boost'))
-        self.parameters().setValue('libmesh_vtk', self.getParam('vtk'))
-        self.parameters().setValue('libmesh_tecplot', self.getParam('tecplot'))
-        self.parameters().setValue('libmesh_curl', self.getParam('curl'))
+        self.parameters().setValue('libmesh', 'mesh_mode', self.getParam('mesh_mode'))
+        self.parameters().setValue('libmesh', 'dof_id_bytes', self.getParam('dof_id_bytes'))
+        self.parameters().setValue('libmesh', 'unique_id', self.getParam('unique_id'))
+        self.parameters().setValue('libmesh', 'dtk', self.getParam('dtk'))
+        self.parameters().setValue('libmesh', 'boost', self.getParam('boost'))
+        self.parameters().setValue('libmesh', 'vtk', self.getParam('vtk'))
+        self.parameters().setValue('libmesh', 'tecplot', self.getParam('tecplot'))
+        self.parameters().setValue('libmesh', 'curl', self.getParam('curl'))
         #self.parameters().setValue('libmesh_slepc', self.getParam('slepc'))
-        self.parameters().setValue('libmesh_fparser_jit', self.getParam('fparser_jit'))
-        self.parameters().setValue('libmesh_threads', self.getParam('threads'))
-        self.parameters().setValue('libmesh_tbb', self.getParam('tbb'))
-        self.parameters().setValue('libmesh_openmp', self.getParam('openmp'))
+        self.parameters().setValue('libmesh', 'fparser_jit', self.getParam('fparser_jit'))
+        self.parameters().setValue('libmesh', 'threads', self.getParam('threads'))
+        self.parameters().setValue('libmesh', 'tbb', self.getParam('tbb'))
+        self.parameters().setValue('libmesh', 'openmp', self.getParam('openmp'))
+        self.parameters().setValue('libmesh', 'methods', self.getParam('methods') or tuple())
 
         # TODO: Error checking that MPI
         # if n_processors set_by_users and min/max as well, produce an error
@@ -140,11 +142,10 @@ class MOOSEAppRunner(runners.RunCommand):
 
         thd_max = self.getParam('max_threads')
         if thd_max is not None:
-            self.parameters().setValue('threads', 'max', thd_max)
+            self.parameters().setValue('thread', 'max', thd_max)
         thd_min = self.getParam('min_threads')
         if thd_min is not None:
-            self.parameters().setValue('threads', 'min', thd_min)
-
+            self.parameters().setValue('thread', 'min', thd_min)
 
         # Command list to supply base RunCommand
         command = list()
@@ -178,7 +179,7 @@ class MOOSEAppRunner(runners.RunCommand):
             command.append('--error')
 
         # Test objects
-        if self.getParam('allow_test_object'):
+        if self.getParam('allow_test_objects'):
             command += ['--allow-test-objects']
 
         # MPI
@@ -203,7 +204,8 @@ class MOOSEAppRunner(runners.RunCommand):
         if (n_min is not None) and (n < n_min):
             n = n_min
             self.reason('{}_min={}', prefix, n_min)
-        n_max = self.getParam(preix, 'max')
-        if (n_max is not None) and (n_max < mpi):
-            mpi = n_max
+        n_max = self.getParam(prefix, 'max')
+        if (n_max is not None) and (n_max < n):
+            n = n_max
             self.reason('{}_max={}', prefix, n_max)
+        return n

@@ -45,6 +45,7 @@ class ExodusDiffer(FileDiffer):
         cmd = [exe,
                '-tolerance', str(self.getParam('rel_err')),
                '-Floor', str(self.getParam('abs_zero')),
+               '-map',
                None, # created file
                None] # gold file
 

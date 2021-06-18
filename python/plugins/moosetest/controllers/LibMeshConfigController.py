@@ -38,10 +38,12 @@ class LibMeshConfigController(AutotoolsConfigController):
         params.add('dof_id_bytes', vtype=int,
                    doc="Require certain number of bytes for the `dof_id` type.",
                    user_data=AutotoolsConfigItem('LIBMESH_DOF_ID_BYTES', '4', int))
-
         params.add('unique_id', vtype=bool,
                    doc="The configured parallel mesh mode.",
                    user_data=AutotoolsConfigItem('LIBMESH_ENABLE_UNIQUE_ID', '0', bool))
+        params.add('methods', vtype=str, array=True, allow=('opt', 'devel', 'dbg', 'oprof'),
+                   doc="Limit to the specified build method(s).")
+
 
         # Additional, external libraries
         params.add('dtk', vtype=bool,
@@ -78,3 +80,12 @@ class LibMeshConfigController(AutotoolsConfigController):
                    user_data=AutotoolsConfigItem('LIBMESH_USING_OPENMP', '0', bool))
 
         return params
+
+    def execute(self, obj, params):
+        AutotoolsConfigController.execute(self, obj, params)
+
+        method = os.getenv('METHOD', None)
+        methods = params.getValue('methods') or None
+        if (methods is not None) and (method is not None) and (method.lower() not in methods):
+            self.info("METHOD={}, but test is limited to '{}'", method, ', '.join(methods))
+            self.skip(f"{method} not in {methods}")
