@@ -19,7 +19,7 @@ class MOOSEAppRunner(runners.RunCommand):
 
         params.add('input', vtype=str, required=True,
                    doc="The input file (*.i) to utilize for running application. The file should be defined relative to the HIT test specification or the current working directory if the object is not being instantiated with a test specification.")
-        params.add('cli_args', vtype=str, array=True,
+        params.add('cli_args', vtype=str, array=False,
                    doc="Additional command line arguments to pass to the MOOSE application execution.")
 
 
@@ -88,6 +88,10 @@ class MOOSEAppRunner(runners.RunCommand):
     def __init__(self, *args, **kwargs):
         runners.RunCommand.__init__(self, *args, **kwargs)
 
+        self._cli_args = list()
+
+
+
         # TODO: Remove legacy parameters
         #
         # The Controllers system in moosetools.moosetest creates sub-parameters with prefixes. The
@@ -123,9 +127,6 @@ class MOOSEAppRunner(runners.RunCommand):
         self.parameters().setValue('libmesh', 'tbb', self.getParam('tbb'))
         self.parameters().setValue('libmesh', 'openmp', self.getParam('openmp'))
         self.parameters().setValue('libmesh', 'methods', self.getParam('methods') or tuple())
-
-        # TODO: Error checking that MPI
-        # if n_processors set_by_users and min/max as well, produce an error
 
     def execute(self):
         """
@@ -165,7 +166,9 @@ class MOOSEAppRunner(runners.RunCommand):
         command += ['-i', input_file]
 
         # Append "cli_args" parameters
-        command += self.getParam('cli_args') or []
+        cli_args = self.getParam('cli_args')
+        if cli_args is not None:
+            command.append(cli_args)
 
         # Append PETSc Jacobian options
         jac = self.getParam('jacobian')

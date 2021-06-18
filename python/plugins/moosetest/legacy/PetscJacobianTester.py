@@ -33,8 +33,9 @@ class PetscJacobianTester(MOOSEAppRunner):
         #       use Outputs/exodus=false in 'cli_args' in specification.
         self.parameters().setValue('jacobian', 'TEST_AND_RUN' if self.getParam('run_sim') else 'TEST')
         if self.getParam('turn_off_exodus_output'):
-            cli_args = list(self.getParam('cli_args') or tuple()) + ['Outputs/exodus=false']
-            self.parameters().setValue('cli_args', tuple(cli_args))
+            cli_args = self.getParam('cli_args') or ''
+            cli_args += ' Outputs/exodus=false'
+            self.parameters().setValue('cli_args', cli_args.strip())
 
         # Limit to METHOD=OPT
         self.parameters().setValue('libmesh', 'methods', ('opt',))
