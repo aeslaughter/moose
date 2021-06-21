@@ -166,6 +166,7 @@ class MOOSEAppRunner(runners.RunCommand):
         command += ['-i', input_file]
 
         # Append "cli_args" parameters
+        # ([^\s]*[\"'][^\"']+[\"'][^\s]*)|\S+
         cli_args = self.getParam('cli_args')
         if cli_args is not None:
             command.append(cli_args)
