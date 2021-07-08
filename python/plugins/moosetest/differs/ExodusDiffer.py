@@ -20,6 +20,8 @@ class ExodusDiffer(FileDiffer):
                    doc="Absolute zero cutoff used in exodiff comparisons.")
         params.add('rel_err', vtype=float, default=5.5e-6,
                    doc="Relative error value used in exodiff comparisons.")
+        params.add('use_old_floor', vtype=bool, default=False,
+                   doc="Enable the use of the 'old floor' option in exodiff comparisions.")
 
         return params
 
@@ -45,11 +47,13 @@ class ExodusDiffer(FileDiffer):
         cmd = [exe,
                '-tolerance', str(self.getParam('rel_err')),
                '-Floor', str(self.getParam('abs_zero')),
-               '-map',
-               None, # created file
-               None] # gold file
+               '-map']
+
+        if self.getParam('use_old_floor'):
+            cmd.append('-use_old_floor')
 
         # Perform comparison of all file pairings
+        cmd += [None, None] # place holder for filenames
         for filename, gold_filename in self.pairs():
             cmd[-2] = os.path.relpath(filename, os.getcwd())
             cmd[-1] = os.path.relpath(gold_filename, os.getcwd())

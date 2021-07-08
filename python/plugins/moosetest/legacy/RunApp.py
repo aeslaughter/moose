@@ -19,6 +19,8 @@ class RunApp(MOOSEAppRunner):
                    doc="Ensure that the supplied text is not found the output text.")
         params.add('expect_out', vtype=str,
                    doc="Ensure that the supplied regex is found in the output text.")
+        params.add('match_literal', vtype=bool, default=False,
+                   doc="Use direct text comparison rather than regex for 'expect_out'.")
         return params
 
     def __init__(self, *args, **kwargs):
@@ -27,7 +29,10 @@ class RunApp(MOOSEAppRunner):
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
         kwargs['re_not_match'] = self.getParam('absent_out')
-        kwargs['re_match'] = self.getParam('expect_out')
+        if self.getParam('match_literal'):
+            kwargs['text_in'] = self.getParam('expect_out')
+        else:
+            kwargs['re_match'] = self.getParam('expect_out')
 
         # Create and add the Differ
         controllers = self.getParam('_controllers')

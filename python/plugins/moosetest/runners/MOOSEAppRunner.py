@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 
 from moosetools.parameters import InputParameters
@@ -53,6 +54,10 @@ class MOOSEAppRunner(runners.RunCommand):
                 doc="Minimum number of MPI processes to utilize when running application, this will override the value supplied in 'n_processors'.")
         params.add('mpi', default=mpi, doc="Set MPI processors counts and limits.")
 
+        # Special run methods
+        params.add('valgrind', vtype=bool, default=False,
+                   doc="Execute the test using 'valgrind'.")
+
         # TODO: Remove legacy parameters
         #
         # Appends the listed parameters from each Controller object to parameters on this object,
@@ -69,13 +74,14 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('max_threads', vtype=int, doc="Replaced by 'thread_max'.")
         params.add('min_threads', vtype=int, doc="Replaced by 'thread_min'.")
 
-        params.add('method', vtype=str, array=True, doc="Replace by 'libmesh_methods'.")
+        params.add('method', vtype=str, array=True, doc="Replaced by 'libmesh_methods'.")
 
+        params.add('prereq', vtype=str, array=True, doc="Replaced by 'requires'.")
 
         # TODO
         params.add('scale_refine')
-        params.add('prereq')
         params.add('recover')
+        params.add('group') # is group still used?
 
         # TODO: Create SQAController
         params.add('design')
@@ -87,10 +93,6 @@ class MOOSEAppRunner(runners.RunCommand):
 
     def __init__(self, *args, **kwargs):
         runners.RunCommand.__init__(self, *args, **kwargs)
-
-        self._cli_args = list()
-
-
 
         # TODO: Remove legacy parameters
         #
@@ -127,6 +129,8 @@ class MOOSEAppRunner(runners.RunCommand):
         self.parameters().setValue('libmesh', 'tbb', self.getParam('tbb'))
         self.parameters().setValue('libmesh', 'openmp', self.getParam('openmp'))
         self.parameters().setValue('libmesh', 'methods', self.getParam('methods') or tuple())
+
+        self.parameters().setValue('requires', self.getParam('prereq') or tuple())
 
     def execute(self):
         """
@@ -165,11 +169,10 @@ class MOOSEAppRunner(runners.RunCommand):
             return 1
         command += ['-i', input_file]
 
-        # Append "cli_args" parameters
-        # ([^\s]*[\"'][^\"']+[\"'][^\s]*)|\S+
-        cli_args = self.getParam('cli_args')
-        if cli_args is not None:
-            command.append(cli_args)
+        # Append "cli_args" parameters, using a regex that handles spaces with quotes
+        if self.isParamValid('cli_args'):
+            for match in re.finditer(r"([^\s]*[\"'][^\"']+[\"'][^\s]*)|\S+", self.getParam('cli_args')):
+                command.append(match.group(0))
 
         # Append PETSc Jacobian options
         jac = self.getParam('jacobian')
@@ -194,7 +197,7 @@ class MOOSEAppRunner(runners.RunCommand):
         # Threading
         threads = self._getParallelCount('thread')
         if threads > 1:
-            command += ['--n-threads', str(threads)]
+            command += ['--n-threads={}'.format(str(threads))]
 
         self.parameters().setValue('command', tuple(command))
         return runners.RunCommand.execute(self)

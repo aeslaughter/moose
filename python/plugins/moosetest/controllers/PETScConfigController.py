@@ -17,6 +17,8 @@ class PETScConfigController(AutotoolsConfigController):
     """
     A base `Controller` to dictate if an object should run based on a C++ configuration.
     """
+    AUTO_BUILD = False
+
     @staticmethod
     def validParams():
         params = AutotoolsConfigController.validParams()

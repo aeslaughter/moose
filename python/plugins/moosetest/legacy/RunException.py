@@ -17,8 +17,6 @@ class RunException(RunApp):
                    doc="A regular expression or literal string that must occur in the output.")
         params.add('expect_assert', vtype=str,
                    doc="A regular expression or literal string that must occur in the output.")
-        params.add('match_literal', vtype=bool, default=False,
-                   doc="When True the strings supplied to 'expect_err' or 'expect_assert' must match exactly.")
         return params
 
     def __init__(self, *args, **kwargs):

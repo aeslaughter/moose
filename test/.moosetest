@@ -1,8 +1,0 @@
-plugin_dirs = '../python/plugins/moosetest ../python/plugins/moosetest/controllers'
-
-[Controllers]
-  [moose]
-    type = MOOSEConfigController
-    filenames = ../framework/include/base/MooseConfig.h
-  []
-[]

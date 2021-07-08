@@ -21,6 +21,8 @@ class MOOSEConfigController(AutotoolsConfigController):
     """
     A base `Controller` to dictate if an object should run based on a C++ configuration.
     """
+    AUTO_BUILD = False
+
     @staticmethod
     def validParams():
         params = AutotoolsConfigController.validParams()
@@ -34,7 +36,7 @@ class MOOSEConfigController(AutotoolsConfigController):
         with the name given in the "prefix" parameter
         """
         params = AutotoolsConfigController.validObjectParams()
-        params.add('ad_mode', allow=('SPARSE', 'NONSPARSE'), vtype=str,
+        params.add('ad_mode', allow=('SPARSE', 'NONSPARSE', 'sparse', 'nonsparse'), vtype=str,
                    doc="Limit the test to a specific automatic differentiation derivative type.",
                    user_data=AutotoolsConfigItem('MOOSE_SPARSE_AD', '0', {'0':'NONSPARSE', '1':'SPARSE'}))
         params.add('ad_indexing_type', allow=('GLOBAL', 'LOCAL', 'global', 'local'), vtype=str,

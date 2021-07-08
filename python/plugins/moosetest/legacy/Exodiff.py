@@ -16,7 +16,7 @@ class Exodiff(RunApp):
 
         # Add parameters from the Differ object
         differ_params = ExodusDiffer.validParams()
-        params.append(differ_params, 'abs_zero', 'rel_err')
+        params.append(differ_params, 'abs_zero', 'rel_err', 'use_old_floor')
 
         return params
 
@@ -28,6 +28,7 @@ class Exodiff(RunApp):
         kwargs['file_names'] = self.getParam('exodiff')
         kwargs['abs_zero'] = self.getParam('abs_zero')
         kwargs['rel_err'] = self.getParam('rel_err')
+        kwargs['use_old_floor'] = self.getParam('use_old_floor')
 
         # Create and add the Differ
         controllers = self.getParam('_controllers')
