@@ -77,8 +77,10 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('valgrind', vtype=str, allow=('HEAVY', 'heavy', 'NONE', 'none'),
                    doc="Replaced by 'mem_mode' (see ValgrindController).")
 
+        params.add('skip', vtype=str, doc="Replaced by 'disable_reason'.")
+        params.add('deleted', vtype=str, doc="Replaced by 'disable_reason' and 'disable_method'.")
+
         # TODO
-        params.add('deleted')
         params.add('scale_refine')
         params.add('recover')
         params.add('group') # is group still used?
@@ -133,6 +135,15 @@ class MOOSEAppRunner(runners.RunCommand):
         self.parameters().setValue('requires', self.getParam('prereq') or tuple())
 
         self.parameters().setValue('mem', 'mode', self.getParam('valgrind'))
+
+        reason = self.getParam('skip')
+        if reason is not None:
+            self.parameters().setValue('disable', 'reason', reason)
+            self.parameters().setValue('disable', 'method', 'SKIP')
+        reason = self.getParam('deleted')
+        if reason is not None:
+            self.parameters().setValue('disable', 'reason', reason)
+            self.parameters().setValue('disable', 'method', 'REMOVE')
 
     def execute(self):
         """
