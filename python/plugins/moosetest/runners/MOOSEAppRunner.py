@@ -54,10 +54,6 @@ class MOOSEAppRunner(runners.RunCommand):
                 doc="Minimum number of MPI processes to utilize when running application, this will override the value supplied in 'n_processors'.")
         params.add('mpi', default=mpi, doc="Set MPI processors counts and limits.")
 
-        # Special run methods
-        params.add('valgrind', vtype=bool, default=False,
-                   doc="Execute the test using 'valgrind'.")
-
         # TODO: Remove legacy parameters
         #
         # Appends the listed parameters from each Controller object to parameters on this object,
@@ -78,7 +74,11 @@ class MOOSEAppRunner(runners.RunCommand):
 
         params.add('prereq', vtype=str, array=True, doc="Replaced by 'requires'.")
 
+        params.add('valgrind', vtype=str, allow=('HEAVY', 'heavy', 'NONE', 'none'),
+                   doc="Replaced by 'mem_mode' (see ValgrindController).")
+
         # TODO
+        params.add('deleted')
         params.add('scale_refine')
         params.add('recover')
         params.add('group') # is group still used?
@@ -132,6 +132,8 @@ class MOOSEAppRunner(runners.RunCommand):
 
         self.parameters().setValue('requires', self.getParam('prereq') or tuple())
 
+        self.parameters().setValue('mem', 'mode', self.getParam('valgrind'))
+
     def execute(self):
         """
         Run MOOSE-based application.
@@ -153,7 +155,7 @@ class MOOSEAppRunner(runners.RunCommand):
             self.parameters().setValue('thread', 'min', thd_min)
 
         # Command list to supply base RunCommand
-        command = list()
+        command = list(self.getParam('command') or tuple())
 
         # Locate MOOSE application executable
         exe = find_moose_executable_recursive()
@@ -163,7 +165,7 @@ class MOOSEAppRunner(runners.RunCommand):
         command.append(exe)
 
         # Locate application input file
-        input_file = self.getParam('input')
+        input_file = self.getParam('input').strip()
         if not os.path.isfile(input_file):
             self.critical("The supplied input file '{}' does not exist.", self.getParam('input'))
             return 1
@@ -199,7 +201,7 @@ class MOOSEAppRunner(runners.RunCommand):
         if threads > 1:
             command += ['--n-threads={}'.format(str(threads))]
 
-        self.parameters().setValue('command', tuple(command))
+        self.parameters().setValue('command', tuple(c.strip() for c in command))
         return runners.RunCommand.execute(self)
 
     def _getParallelCount(self, prefix):
