@@ -45,4 +45,4 @@ class AnalyzeJacobian(RunApp):
             command += ['--cli_args', cli_args]
 
         self.parameters().setValue('command', tuple(command))
-        return moosetest.runners.RunCommand.execute(self) # by-pass MOOSE stuff
+        return moosetest.runners.ExecuteCommand.execute(self) # by-pass MOOSE stuff

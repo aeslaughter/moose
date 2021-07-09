@@ -23,6 +23,8 @@ class CheckFiles(RunApp):
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
         kwargs['file_names_created'] = self.getParam('check_files')
+        if kwargs['file_names_created']:
+            self.parameters().setValue('file_check_created', True)
         kwargs['re_match'] = self.getParam('file_expect_out')
 
         # Create and add the Differ

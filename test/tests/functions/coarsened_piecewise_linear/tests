@@ -2,12 +2,12 @@
   issues = '#2272'
   design = 'source/functions/CoarsenedPiecewiseLinear.md'
 
-  #[./prepare_data]
-  #  type = RunCommand
-  #  command = './generate_data.py'
-  #  required_python_packages = 'numpy'
-  #  requirement = "Generate the fine tabulated function data for the coarsened_piecewise_linear test"
-  #[../]
+  [./prepare_data]
+    type = RunCommand
+    command = './generate_data.py'
+    required_python_packages = 'numpy'
+    requirement = "Generate the fine tabulated function data for the coarsened_piecewise_linear test"
+  [../]
   [./coarsened_piecewise_linear]
     type = 'CSVDiff'
     input = 'coarsened_piecewise_linear.i'

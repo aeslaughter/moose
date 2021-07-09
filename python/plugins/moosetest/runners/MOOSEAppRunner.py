@@ -8,11 +8,11 @@ from moosetools.mooseutils import find_moose_executable_recursive
 
 from ..controllers import MOOSEConfigController, PETScConfigController, LibMeshConfigController
 
-class MOOSEAppRunner(runners.RunCommand):
+class MOOSEAppRunner(runners.ExecuteCommand):
 
     @staticmethod
     def validParams():
-        params = runners.RunCommand.validParams()
+        params = runners.ExecuteCommand.validParams()
         params.setRequired('command', False) # to be set within the `execute` method
 
         #params.add('executable', vtype=str, doc="The executable to run, by default this is located automatically.")
@@ -98,7 +98,7 @@ class MOOSEAppRunner(runners.RunCommand):
         return params
 
     def __init__(self, *args, **kwargs):
-        runners.RunCommand.__init__(self, *args, **kwargs)
+        runners.ExecuteCommand.__init__(self, *args, **kwargs)
 
         # TODO: Remove legacy parameters
         #
@@ -169,7 +169,7 @@ class MOOSEAppRunner(runners.RunCommand):
         if thd_min is not None:
             self.parameters().setValue('thread', 'min', thd_min)
 
-        # Command list to supply base RunCommand
+        # Command list to supply base ExecuteCommand
         command = list(self.getParam('command') or tuple())
 
         # Locate MOOSE application executable
@@ -217,7 +217,7 @@ class MOOSEAppRunner(runners.RunCommand):
             command += ['--n-threads={}'.format(str(threads))]
 
         self.parameters().setValue('command', tuple(c.strip() for c in command))
-        return runners.RunCommand.execute(self)
+        return runners.ExecuteCommand.execute(self)
 
     def _getParallelCount(self, prefix):
         """
