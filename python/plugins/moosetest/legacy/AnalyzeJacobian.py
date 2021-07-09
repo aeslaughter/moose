@@ -5,9 +5,9 @@ from .RunApp import RunApp
 
 class AnalyzeJacobian(RunApp):
     """
-    Run MOOSE application with PETSc options for performing Jacobian checks.
+    Run python jacobiananalyzer.py script for performing Jacobian checks.
 
-    Direct replacement for legacy TestHarness PetscJacobianTester Tester object.
+    Direct replacement for legacy TestHarness AnalyzeJacobian Tester object.
     """
 
     @staticmethod

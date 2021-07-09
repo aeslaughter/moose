@@ -8,8 +8,8 @@
 #* https://www.gnu.org/licenses/lgpl-2.1.html
 
 from FileTester import FileTester
-from TestHarness import util
 import os
+import difflib
 
 class CheckFiles(FileTester):
 

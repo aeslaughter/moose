@@ -26,18 +26,10 @@ MOOSETOOLS_PLUGIN_DIRS = '${MOOSE_DIR}/python/plugins/moosetest ${MOOSE_DIR}/pyt
 []
 
 [Defaults]
-  # TODO: handle inheritance
-  [Exodiff]
+  [moosetools.moosetest.base.Runner]
     file_check_created = False # TODO: disable this and account for all files created/modified
-    file_ignore_patterns = 'tmp_jit*'
-  []
-  [CSVDiff]
-    file_check_created = False
-  []
-  [RunApp]
-    file_check_created = False
-  []
-  [AnalyzeJacobian]
-    file_check_created = False
+    file_check_modified = False # TODO: disable this and account for all files created/modified
+    file_ignore_patterns_created = 'tmp_jit*'
+    file_ignore_patterns_modified = 'tmp_jit*'
   []
 []

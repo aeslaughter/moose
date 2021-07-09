@@ -54,6 +54,9 @@ class MOOSEAppRunner(runners.RunCommand):
                 doc="Minimum number of MPI processes to utilize when running application, this will override the value supplied in 'n_processors'.")
         params.add('mpi', default=mpi, doc="Set MPI processors counts and limits.")
 
+        #
+
+
         # TODO: Remove legacy parameters
         #
         # Appends the listed parameters from each Controller object to parameters on this object,
@@ -90,6 +93,7 @@ class MOOSEAppRunner(runners.RunCommand):
         params.add('requirement')
         params.add('issues')
         params.add('detail')
+        params.add('deprecated')
 
         return params
 

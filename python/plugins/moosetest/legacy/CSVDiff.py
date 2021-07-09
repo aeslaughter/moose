@@ -1,8 +1,8 @@
 from moosetools.moosetest.base import make_differ
 from moosetools.moosetest.differs import CSVDiffer
-from ..runners import MOOSEAppRunner
+from .RunApp import RunApp
 
-class CSVDiff(MOOSEAppRunner):
+class CSVDiff(RunApp):
     """
     Run MOOSE application and compare CSV files.
 
@@ -10,7 +10,7 @@ class CSVDiff(MOOSEAppRunner):
     """
     @staticmethod
     def validParams():
-        params = MOOSEAppRunner.validParams()
+        params = RunApp.validParams()
         params.add('csvdiff', vtype=str, array=True,
                    doc="CSV file(s) to compare with counterpart in 'gold' directory.")
 
@@ -21,11 +21,11 @@ class CSVDiff(MOOSEAppRunner):
         return params
 
     def __init__(self, *args, **kwargs):
-        MOOSEAppRunner.__init__(self, *args, **kwargs)
+        RunApp.__init__(self, *args, **kwargs)
 
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
-        kwargs['file_names'] = self.getParam('csvdiff')
+        kwargs['file_names_created'] = self.getParam('csvdiff')
         kwargs['abs_zero'] = self.getParam('abs_zero')
         kwargs['rel_err'] = self.getParam('rel_err')
         kwargs['override_columns'] = self.getParam('override_columns') or tuple()

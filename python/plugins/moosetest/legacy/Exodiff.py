@@ -25,7 +25,7 @@ class Exodiff(RunApp):
 
         # Get parameters from the Runner that should be applied to the Differ
         kwargs = dict()
-        kwargs['file_names'] = self.getParam('exodiff')
+        kwargs['file_names_created'] = self.getParam('exodiff')
         kwargs['abs_zero'] = self.getParam('abs_zero')
         kwargs['rel_err'] = self.getParam('rel_err')
         kwargs['use_old_floor'] = self.getParam('use_old_floor')
