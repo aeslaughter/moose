@@ -30,7 +30,7 @@ def getClones(args):
     if args.per_week:
         params = {'per' : 'week'}
 
-    for search_type, url in urls.iteritems():
+    for search_type, url in urls.items():
         r = requests.get(url, params=params, headers=headers)
         if r.status_code != 200:
             print('There was an error while attempting to gather data:', r.status_code, '\n', r.text)
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     options = parseArgs()
     results = getClones(options)
     formatted_results = {}
-    for search_type, data in results.iteritems():
+    for search_type, data in results.items():
         formatted_results[search_type] = parseData(search_type, data)
     if options.write:
         writeFile(options, formatted_results)

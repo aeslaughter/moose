@@ -68,7 +68,10 @@ def getContributors(options, **kwargs):
     # Limit to the supplied number of authors
     n = len(contributors)
     if num_authors == 'moose':
-        contributors = ['Derek Gaston', 'Cody Permann', 'David Andrs', 'John W. Peterson', 'Andrew E. Slaughter', 'Brain Alger', 'Fande Kong', 'Robert Carlsen', 'Alex Lindsay', 'Jason M. Miller']
+        contributors = ['Derek Gaston', 'Cody Permann', 'David Andrs', 'John W. Peterson',
+                        'Andrew E. Slaughter', 'Brain Alger', 'Fande Kong', 'Robert Carlsen',
+                        'Alex Lindsay', 'Jason M. Miller', 'Logan Harbour', 'Roy H. Stogner',
+                        'Casey Icenhour', 'Guillaume Giudicelli']
         contributors += ['Other (' + str(n-len(contributors)) + ')']
 
     elif num_authors:
@@ -94,7 +97,7 @@ def getData(options):
     all_dates = sorted(set(run('git', 'log', '--reverse', '--format=%ad', '--date=short', options=options)))
     d1 = datetime.datetime.strptime(all_dates[0], '%Y-%m-%d')
     d2 = datetime.datetime.strptime(all_dates[-1], '%Y-%m-%d')
-    dates = [d1 + datetime.timedelta(days=x) for x in range(0, (d2-d1).days, options.days)]
+    dates = [datetime.date(d1.year, d1.month, d1.day) + datetime.timedelta(days=x) for x in range(0, (d2-d1).days, options.days)]
 
     # Build the data arrays, filled with zeros
     N = numpy.zeros((len(contributors), len(dates)), dtype=int)
@@ -113,7 +116,8 @@ def getData(options):
     # Loop over commits
     for commit in commits:
         c = commit.strip().split('\n')
-        date = datetime.datetime.strptime(c[0], '%Y-%m-%d')
+        d = datetime.datetime.strptime(c[0], '%Y-%m-%d')
+        date = datetime.date(d.year, d.month, d.day)
         author = c[1]
 
         if dev and author in moose_developers:
@@ -182,11 +186,11 @@ if __name__ == '__main__':
     parser.add_argument('--framework', action='store_true', help='Limit the analysis to framework directory')
     parser.add_argument('--modules', action='store_true', help='Limit the analysis to modules directory')
     parser.add_argument('--font', default=12, help='The font-size, in points')
+    parser.add_argument('--transparent', action='store_true', help="Write output file with transparent background.")
+    parser.add_argument('--grid', action='store_true', help="Add grid lines to line plot.")
     parser.parse_args('-sur'.split())
     options = parser.parse_args()
 
-    # Markers/colors
-    marker = itertools.cycle(('o', 'v', 's', 'd'))
     color = itertools.cycle(('g', 'r', 'b', 'c', 'm', 'y', 'k'))
 
     # Setup authors defaults for various cases
@@ -287,7 +291,7 @@ if __name__ == '__main__':
             x = numpy.array(dates)
             y = data['commits'][i,:]
             idx = y>0
-            h = ax1.plot(x[idx], y[idx], label=contributors[i], linewidth=2, markevery=60, marker=next(marker), color=next(color))
+            h = ax1.plot(x[idx], y[idx], label=contributors[i], linewidth=2, color=next(color))
             handles.append(h[0])
 
         if not options.disable_legend:
@@ -301,20 +305,21 @@ if __name__ == '__main__':
 
     # Add labels
     ax1.set_ylabel(y_label, fontsize=options.font)
-    ax1.set_xlabel('Date', fontsize=options.font)
+    ax1.set_xlabel('Year', fontsize=options.font)
+
+    if options.grid:
+        ax1.grid(color=[0.8]*3)
 
     # Show open-source region
     if options.open_source:
-        os = datetime.date(2014,3,10)
+        os_date = datetime.datetime(2014,3,10).timestamp()/86400
+        y_lim = ax1.get_ylim()
         x_lim = ax1.get_xlim()
-        if options.unique:
-            y_lim = ax2.get_ylim()
-        else:
-            y_lim = ax1.get_ylim()
-
-        delta = x_lim[1] - os.toordinal()
-        plt.gca().add_patch(plt.Rectangle((os.toordinal(), y_lim[0]), delta, y_lim[1]-y_lim[0], facecolor='green', alpha=0.1))
-        ax1.annotate('Open-source ', xy=(x_lim[1] - (delta/2.), y_lim[0]), ha='center', va='bottom', size=options.font)
+        xy = (os_date, y_lim[0])
+        width = x_lim[1] - os_date
+        height = y_lim[1] - y_lim[0]
+        ax1.add_patch(plt.Rectangle(xy, width, height, facecolor='green', alpha=0.1))
+        ax1.annotate('open source ', xy=(x_lim[1] - (width/2.), y_lim[0]), ha='center', va='bottom', size=options.font)
 
     plt.tight_layout()
-    plt.savefig(options.output, format='pdf')
+    plt.savefig(options.output, transparent=options.transparent)
