@@ -81,6 +81,13 @@ class LibMeshConfigController(AutotoolsConfigController):
                    doc="Require use of OpenMP threading.",
                    user_data=AutotoolsConfigItem('LIBMESH_USING_OPENMP', '0', bool))
 
+        # Compiler
+        params.add('compiler', vtype=str, array=True, allow=('CLANG', 'GCC'),
+                   doc="Restrict test to specific compiler(s).")
+        params.add('_compiler_command', vtype=str, private=True,
+                   user_data=AutotoolsConfigItem('LIBMESH_CXX', None, str))
+
+
         return params
 
     def execute(self, obj, params):
@@ -91,3 +98,6 @@ class LibMeshConfigController(AutotoolsConfigController):
         if (methods is not None) and (method is not None) and (method.lower() not in methods):
             self.info("METHOD={}, but test is limited to '{}'", method, ', '.join(methods))
             self.skip(f"{method} not in {methods}")
+
+        cxx_command = self.getConfigItem(params, '_compiler_command')
+        print(cxx_command)

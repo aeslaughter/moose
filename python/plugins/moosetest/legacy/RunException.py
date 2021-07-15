@@ -32,6 +32,8 @@ class RunException(RunApp):
         c_diff = self.getParam('differs')[0]
         c_diff.parameters().setValue('nonzero_exit_expected', True)
         if self.getParam('match_literal'):
-            c_diff.parameters().setValue('text_in_stderr', self.getParam(param_name))
+            c_diff.parameters().setValue('text_in', self.getParam(param_name))
         else:
-            c_diff.parameters().setValue('re_match_stderr', self.getParam(param_name))
+            c_diff.parameters().setValue('re_match', self.getParam(param_name))
+
+        c_diff.parameters().setValue('nonzero_exit_expected', True)

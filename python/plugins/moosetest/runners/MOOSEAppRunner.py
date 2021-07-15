@@ -31,7 +31,13 @@ class MOOSEAppRunner(runners.ExecuteCommand):
         # Command-line flags
         params.add('allow_warnings', vtype=bool, default=True,
                    doc="When False the '--error' flag is passed to the executable.")
-        params.add('allow_test_objects', vtype=bool, default=True,
+        params.add('allow_unused', vtype=bool, default=True,
+                   doc="When False the '--error-unused' flag is passed to the executable.")
+        params.add('allow_override', vtype=bool, default=True,
+                   doc="When False the '--override' flag is passed to the executable.")
+        params.add('allow_deprecated', vtype=bool, default=True,
+                   doc="When False the '--deprecated' flag is passed to the executable.")
+        params.add('allow_test_objects', vtype=bool, default=False,
                    doc="Allow the use of test objects by adding '--allow-test-objects' to the MOOSE application command.")
 
         # Threading parameters
@@ -54,8 +60,6 @@ class MOOSEAppRunner(runners.ExecuteCommand):
                 doc="Minimum number of MPI processes to utilize when running application, this will override the value supplied in 'n_processors'.")
         params.add('mpi', default=mpi, doc="Set MPI processors counts and limits.")
 
-        #
-
 
         # TODO: Remove legacy parameters
         #
@@ -65,7 +69,7 @@ class MOOSEAppRunner(runners.ExecuteCommand):
         # In the future, this syntax should be removed and the prefix versions used
         params.append(MOOSEConfigController.validObjectParams(), 'ad_mode', 'ad_indexing_type', 'ad_size')
         params.append(PETScConfigController.validObjectParams(), 'superlu', 'mumps', 'strumpack', 'parmetis', 'chaco', 'party', 'ptscotch')
-        params.append(LibMeshConfigController.validObjectParams(), 'mesh_mode', 'dof_id_bytes', 'unique_id', 'dtk', 'boost', 'vtk', 'tecplot', 'curl', 'fparser_jit', 'threads', 'tbb', 'openmp', 'methods')
+        params.append(LibMeshConfigController.validObjectParams(), 'mesh_mode', 'dof_id_bytes', 'unique_id', 'dtk', 'boost', 'vtk', 'tecplot', 'curl', 'fparser_jit', 'threads', 'tbb', 'openmp', 'methods', 'compiler')
 
         params.add('max_parallel', vtype=int, doc="Replaced by 'mpi_max'.")
         params.add('min_parallel', vtype=int, doc="Replaced by 'mpi_min'.")
@@ -83,10 +87,15 @@ class MOOSEAppRunner(runners.ExecuteCommand):
         params.add('skip', vtype=str, doc="Replaced by 'disable_reason'.")
         params.add('deleted', vtype=str, doc="Replaced by 'disable_reason' and 'disable_method'.")
 
+        params.add('delete_output_before_running', vtype=bool, doc="Replace by 'file_clean'.")
+        params.add('should_execute', vtype=bool, default=True)
+
         # TODO
         params.add('scale_refine')
         params.add('recover')
         params.add('group') # is group still used?
+        params.add('custom_cmp')
+        params.add('timing')
 
         # TODO: Create SQAController
         params.add('design')
@@ -135,10 +144,16 @@ class MOOSEAppRunner(runners.ExecuteCommand):
         self.parameters().setValue('libmesh', 'tbb', self.getParam('tbb'))
         self.parameters().setValue('libmesh', 'openmp', self.getParam('openmp'))
         self.parameters().setValue('libmesh', 'methods', self.getParam('methods') or tuple())
+        self.parameters().setValue('libmesh', 'compiler', self.getParam('compiler') or tuple())
 
         self.parameters().setValue('requires', self.getParam('prereq') or tuple())
 
         self.parameters().setValue('mem', 'mode', self.getParam('valgrind'))
+
+        if self.getParam('delete_output_before_running'):
+            self.parameters().setValue('file', 'clean', True)
+            self.parameters().setValue('file', 'names_created', tuple())
+            self.parameters().setValue('file', 'check_created', False)
 
         reason = self.getParam('skip')
         if reason is not None:
@@ -169,6 +184,12 @@ class MOOSEAppRunner(runners.ExecuteCommand):
         if thd_min is not None:
             self.parameters().setValue('thread', 'min', thd_min)
 
+        if not self.getParam('should_execute'):
+            self.info("Execution not performed, 'should_exeucte=False'.")
+            return 0
+        # End deprecated
+
+
         # Command list to supply base ExecuteCommand
         command = list(self.getParam('command') or tuple())
 
@@ -198,9 +219,15 @@ class MOOSEAppRunner(runners.ExecuteCommand):
         if jac == 'TEST_AND_RUN':
             command += ['-snes_type', 'ksponly', '-ksp_type', 'preonly', '-pc_type', 'none', '-snes_convergence_test', 'skip']
 
-        # Error flags
+        # Error/warning flags
         if not self.getParam('allow_warnings'):
             command.append('--error')
+        if not self.getParam('allow_unused'):
+            command.append('--error-unused')
+        if not self.getParam('allow_override'):
+            command.append('--error-override')
+        if not self.getParam('allow_deprecated'):
+            command.append('--error-deprecated')
 
         # Test objects
         if self.getParam('allow_test_objects'):
