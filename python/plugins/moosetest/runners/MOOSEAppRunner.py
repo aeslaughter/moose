@@ -29,13 +29,13 @@ class MOOSEAppRunner(runners.ExecuteCommand):
                    doc="Enable PETSc options for testing the Jacobian ('TEST') without running the simulation or with running the simulation ('TEST_AND_RUN').")
 
         # Command-line flags
-        params.add('allow_warnings', vtype=bool, default=True,
+        params.add('allow_warnings', vtype=bool, default=False,
                    doc="When False the '--error' flag is passed to the executable.")
-        params.add('allow_unused', vtype=bool, default=True,
+        params.add('allow_unused', vtype=bool, default=False,
                    doc="When False the '--error-unused' flag is passed to the executable.")
-        params.add('allow_override', vtype=bool, default=True,
+        params.add('allow_override', vtype=bool, default=False,
                    doc="When False the '--override' flag is passed to the executable.")
-        params.add('allow_deprecated', vtype=bool, default=True,
+        params.add('allow_deprecated', vtype=bool, default=False,
                    doc="When False the '--deprecated' flag is passed to the executable.")
         params.add('allow_test_objects', vtype=bool, default=False,
                    doc="Allow the use of test objects by adding '--allow-test-objects' to the MOOSE application command.")
@@ -188,7 +188,6 @@ class MOOSEAppRunner(runners.ExecuteCommand):
             self.info("Execution not performed, 'should_exeucte=False'.")
             return 0
         # End deprecated
-
 
         # Command list to supply base ExecuteCommand
         command = list(self.getParam('command') or tuple())
