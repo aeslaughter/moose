@@ -202,7 +202,7 @@ def get_civet_hashes(remote, start='HEAD', branch='master', author='moosetest', 
     """
 
     # Create "git clone" command
-    clone_cmd = ['git', 'clone', '--single-branch', '--branch', branch, remote, 'tmp']
+    clone_cmd = ['git', 'clone', '--depth', '1', '--bare', '--single-branch', '--branch', branch, remote, 'tmp']
     if logger is not None:
         logger.info("Cloning repository to gather commit information, this can take several minutes.")
 
