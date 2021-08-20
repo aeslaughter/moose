@@ -47,6 +47,11 @@ nearestPointBaseValidParams()
   // Add in the valid parameters
   params += validParams<UserObjectType>();
 
+  // Adding the UserObjectType parameter overrides the "_moose_base" parameter, this needs to be
+  // restored the the value in BaseType to correctly register the syntax for MooseDocs
+  params.set<std::string>("_moose_base") =
+      validParams<BaseType>().template get<std::string>("_moose_base");
+
   return params;
 }
 
