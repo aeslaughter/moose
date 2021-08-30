@@ -101,7 +101,7 @@ def main():
     surfaces += build_volume(mid_points, top_points)
 
     faces = gmsh.model.geo.addSurfaceLoop(surfaces)
-    #volume = gmsh.model.geo.addVolume([faces])
+    volume = gmsh.model.geo.addVolume([faces])
     gmsh.model.geo.synchronize()
 
     gmsh.model.mesh.generate(3)
