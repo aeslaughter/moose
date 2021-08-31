@@ -8,7 +8,7 @@ import scipy.interpolate
 import collections
 import enum
 import itertools
-from dataclasses import dataclass
+import dataclasses
 
 class ElementType(enum.IntEnum):
     POINT = 0
@@ -17,7 +17,7 @@ class ElementType(enum.IntEnum):
     QUAD4 = 3
 
 
-@dataclass
+@dataclasses.dataclass
 class Node:
     tag: int
     coords: list#[float]
@@ -109,10 +109,18 @@ def build_sides(bot_nodes, top_nodes, bot_elem_size=0, top_elem_size=0):
     curve = gmsh.model.geo.addCurveLoop([line_top, -line_left, -line_bot, line_right])
     surfaces.append(gmsh.model.geo.addPlaneSurface([curve]))
 
-    #gmsh.model.geo.synchronize()
+    gmsh.model.geo.synchronize()
+    gmsh.model.mesh.embed(0, top_points, 2, surfaces[-1])
 
-    #gmsh.model.mesh.embed(0, bot_points, 2, surfaces[-1])
+    #gmsh.model.geo.synchronize()
     #gmsh.model.mesh.embed(0, top_points, 2, surfaces[-1])
+
+    #gmsh.model.geo.synchronize()
+    #gmsh.model.mesh.embed(0, bot_points, 2, surfaces[-1])
+
+
+    #gmsh.model.geo.synchronize()
+    #gmsh.model.mesh.embed(1, [curve], 2, surfaces[-1])
 
     """
     # X=-1 face: i=-1, j
@@ -167,7 +175,7 @@ def main():
     gmsh.model.geo.synchronize()
     gmsh.model.mesh.generate(3)
 
-    gmsh.write("simple.msh")
+    #gmsh.write("simple.msh")
     gmsh.fltk.run()
     gmsh.finalize()
 
