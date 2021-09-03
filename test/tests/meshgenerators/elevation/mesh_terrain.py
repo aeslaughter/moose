@@ -37,7 +37,15 @@ def get_nodes(file_name: str, elem_size: int) -> numpy.ndarray:
 
     return nodes
 
-def build_surface(file_name, elem_size):
+def build_surface(file_name: str, elem_size: int) -> tuple: # tuple[int, list, numpy.ndarray]
+    """
+    Create a GMSH surface of the terrain.
+
+    The function returns the integer tag for the surface, a list of integer tags for the bounding
+    spline lines, and array of integers with the points defining the surface.
+
+    See get_nodes for input.
+    """
 
     nodes = get_nodes(file_name, elem_size)
 
@@ -54,7 +62,18 @@ def build_surface(file_name, elem_size):
     boundaries = gmsh.model.getBoundary([(2, surface)])
     return surface, [b[1] for b in boundaries], points
 
-def build_sides(bot_lines, bot_points, top_lines, top_points):
+def build_sides(bot_lines: list, bot_points: numpy.ndarray,
+                top_lines: list, top_points: numpy.ndarray) -> list: # list[int]
+    """
+    Given integer tags that define the two surfaces, add the surrounding surfaces.
+
+    bot_lines: list of integer tags for the boundaries extracted from the lower surface
+    bot_points: array of integer ids for the points that define the upper surface
+    top_lines: list of integer tags for the boundaries extracted from the upper surface
+    top_points: array of integer ids for the points that define the upper surface
+
+    Returns a list of integer tags for the created surfaces.
+    """
 
     surfaces = list()
     vert_lines = [gmsh.model.occ.addLine(bot_points[-1,0], top_points[-1,0]),
@@ -98,11 +117,7 @@ def main():
     volume = gmsh.model.occ.addVolume([faces])
     gmsh.model.occ.synchronize()
 
-
-
-
     gmsh.model.mesh.generate()
-
 
     gmsh.fltk.run()
     gmsh.finalize()
