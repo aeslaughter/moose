@@ -13,6 +13,7 @@ Tests for Component objects.
 """
 import unittest
 import os
+import pickle
 
 from MooseDocs import common
 from MooseDocs.common import exceptions
@@ -34,6 +35,16 @@ class TestTranslator(unittest.TestCase):
         with self.assertRaises(exceptions.MooseDocsException) as cm:
             page = self.translator.findPage('wrong.md')
             self.assertIn('Did you mean', ex.exception.message)
+
+    def testPickle(self):
+
+        print()
+        for k,v in self.translator.__dict__.items():
+            print(k,v, type(v))
+        p_obj = pickle.dumps(self.translator)
+
+        obj = pickle.loads(p_obj)
+        self.assertEqual(node.source, obj.source)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -733,3 +733,65 @@ class ParallelThreadPool(Executioner):
 
     def _write_target(self, node, result):
         self.write(node, result)
+
+class ParallelProcessPool(Executioner):
+    """
+    Utilize concurrent.futures to perform multiprocessing execution.
+
+    WARNING: This object is not ready for use, it is very slow and spends most time within
+             "{method 'acquire' of '_thread.lock' objects}" when using cProfile. I have
+             not been able to figure out what is causing the lock to be triggered.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._manager = self._ctx.Manager()
+        self._page_content = self._manager.dict()
+        self._page_ast = self._manager.dict()
+        self._page_result = self._manager.dict()
+        self._global_attributes = self._manager.dict()
+
+
+    def execute(self, nodes, num_threads=None, read=True, tokenize=True, render=True, write=True):
+
+        executor = concurrent.futures.ProcessPoolExecutor(num_threads, mp_context=self._ctx)
+        iterables = [(self, n) for n in nodes]
+        if read:
+            for uid, attr, content in executor.map(_read_target, iterables, chunksize=10):
+                self._page_content[uid] = content
+                self._global_attributes[uid] = attr
+
+            #futures = [executor.submit(self._read_target, node) for node in nodes]
+            #concurrent.futures.wait(futures)
+
+        """
+        if tokenize:
+            futures = [executor.submit(self._tokenize_target, node, self._page_content[node.uid]) for node in nodes]
+            concurrent.futures.wait(futures)
+
+        if render:
+            futures = [executor.submit(self._render_target, node, self._page_ast[node.uid]) for node in nodes]
+            concurrent.futures.wait(futures)
+
+        if write:
+            futures = [executor.submit(self._write_target, node, self._page_result[node.uid]) for node in nodes]
+            concurrent.futures.wait(futures)
+        """
+        executor.shutdown()
+
+def _read_target(executioner, node):
+    return None, None, None#node.uid, node.attributes, self.read(node)
+#self._page_content[node.uid] = self.read(node)
+#self._global_attributes[node.uid] = node.attributes
+
+"""
+    def _tokenize_target(self, node, content):
+        self._page_ast[node.uid] = self.tokenize(node, content)
+        self._global_attributes[node.uid] = node.attributes
+
+    def _render_target(self, node, ast):
+        self._page_result[node.uid] = self.render(node, ast)
+        self._global_attributes[node.uid] = node.attributes
+
+    def _write_target(self, node, result):
+        self.write(node, result)
+"""
