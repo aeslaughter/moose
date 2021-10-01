@@ -12,6 +12,7 @@
 import unittest
 import re
 import logging
+import pickle
 logging.basicConfig()#level=logging.CRITICAL)
 
 import MooseDocs
@@ -72,6 +73,14 @@ class TestReader(unittest.TestCase):
         self.assertEqual(root(1)(1)['content'], 'a')
         self.assertEqual(root(1)(2)['content'], 'r')
 
+    def testPickle(self):
+        reader = readers.Reader(lexers.RecursiveLexer('block', 'inline'))
+        p_obj = pickle.dumps(reader)
+        obj = pickle.loads(p_obj)
+        self.assertIsInstance(obj, type(reader))
+        self.assertEqual(obj.name, reader.name)
+
+
 class TestMarkdownReader(unittest.TestCase):
     def testBasic(self):
         root = tokens.Token(None)
@@ -95,6 +104,14 @@ class TestMarkdownReader(unittest.TestCase):
         self.assertEqual(root(1)(0)['content'], 'b')
         self.assertEqual(root(1)(1)['content'], 'a')
         self.assertEqual(root(1)(2)['content'], 'r')
+
+    def testPickle(self):
+        reader = readers.Reader(lexers.RecursiveLexer('block', 'inline'))
+        p_obj = pickle.dumps(reader)
+        obj = pickle.loads(p_obj)
+        self.assertIsInstance(obj, type(reader))
+        self.assertEqual(obj.name, reader.name)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

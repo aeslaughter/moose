@@ -47,6 +47,17 @@ class Reader(mixins.ConfigObject, mixins.ComponentObject):
         mixins.ComponentObject.__init__(self)
         self.__lexer = lexer
 
+    def __getstate__(self):
+        """Called by pickle"""
+        remove = ['_ComponentObject__components',
+                  '_ComponentObject__translator',
+                  '_Reader__lexer']
+        return {k:v for k, v in self.__dict__.items() if k not in remove}
+
+    def __setstate__(self, state):
+        """Called by pickle"""
+        self.__dict__.update(state)
+
     def getRoot(self):
         """
         Create the AST root node.

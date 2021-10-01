@@ -19,7 +19,7 @@ import multiprocessing
 import types
 import traceback
 import time
-
+import pickle
 import mooseutils
 
 from ..common import mixins, exceptions
@@ -83,6 +83,27 @@ class Translator(mixins.ConfigObject):
         # Cache for looking up markdown files for levenshtein distance
         self.__markdown_file_list = None
         self.__levenshtein_cache = dict()
+
+    def __getstate__(self):
+        """Called by pickle"""
+        remove = ['_Translator__extensions',
+                  '_Translator__reader',
+                  '_Translator__renderer',
+                  #'_Translator__unique_id',
+                  '_Translator__executioner',
+                  '_Translator__page_cache',
+                  #'_Translator__markdown_file_list',
+                  '_Translator__levenshtein_cache']
+
+        state = dict()
+        state['reader'] = pickle.dumps(self.__reader)
+        state['dict'] = {k:v for k, v in self.__dict__.items() if k not in remove}
+        return state
+
+    def __setstate__(self, state):
+        """Called by pickle"""
+        self.__reader = pickle.loads(state['reader'])
+        self.__dict__.update(state['dict'])
 
     @property
     def extensions(self):

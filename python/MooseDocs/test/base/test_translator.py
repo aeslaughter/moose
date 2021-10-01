@@ -38,13 +38,14 @@ class TestTranslator(unittest.TestCase):
 
     def testPickle(self):
 
-        print()
-        for k,v in self.translator.__dict__.items():
-            print(k,v, type(v))
         p_obj = pickle.dumps(self.translator)
-
         obj = pickle.loads(p_obj)
-        self.assertEqual(node.source, obj.source)
+        self.assertIsInstance(obj, type(self.translator))
+        self.assertEqual(obj.name, self.translator.name)
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
