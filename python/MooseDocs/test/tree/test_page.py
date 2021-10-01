@@ -10,7 +10,8 @@
 
 import unittest
 import os
-import multiprocessing
+import tempfile
+import pickle
 
 from MooseDocs import ROOT_DIR
 from MooseDocs.tree import pages
@@ -33,6 +34,14 @@ class TestPage(unittest.TestCase):
         source = os.path.join(ROOT_DIR, 'docs', 'content', 'utilities', 'MooseDocs', 'index.md')
         node = pages.File('foo', source=source)
         self.assertEqual(node.source, source)
+
+    def testPickle(self):
+        source = os.path.join(ROOT_DIR, 'docs', 'content', 'utilities', 'MooseDocs', 'index.md')
+        node = pages.File('foo', source=source)
+
+        p_obj = pickle.dumps(node)
+        obj = pickle.loads(p_obj)
+        self.assertEqual(node.source, obj.source)
 
 
 

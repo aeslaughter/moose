@@ -17,6 +17,9 @@ import multiprocessing
 import mooseutils
 import random
 import platform
+import concurrent.futures
+import threading
+import collections
 
 import MooseDocs
 from ..tree import pages
@@ -689,3 +692,44 @@ class ParallelPipe(Executioner):
             data.append((node.uid, node.attributes, None))
 
         conn.send(data)
+
+class ParallelThreadPool(Executioner):
+    """
+    Utilize concurrent.futures to perform threaded execution.
+
+    WARNING: This object is not ready for use, it is very slow and spends most time within
+             "{method 'acquire' of '_thread.lock' objects}" when using cProfile. I have
+             not been able to figure out what is causing the lock to be triggered.
+    """
+    def execute(self, nodes, num_threads=None, read=True, tokenize=True, render=True, write=True):
+
+        executor = concurrent.futures.ThreadPoolExecutor(num_threads)
+        if read:
+            futures = [executor.submit(self._read_target, node) for node in nodes]
+            concurrent.futures.wait(futures)
+
+        if tokenize:
+            futures = [executor.submit(self._tokenize_target, node, self._page_content[node.uid]) for node in nodes]
+            concurrent.futures.wait(futures)
+
+        if render:
+            futures = [executor.submit(self._render_target, node, self._page_ast[node.uid]) for node in nodes]
+            concurrent.futures.wait(futures)
+
+        if write:
+            futures = [executor.submit(self._write_target, node, self._page_result[node.uid]) for node in nodes]
+            concurrent.futures.wait(futures)
+
+        executor.shutdown()
+
+    def _read_target(self, node):
+        self._page_content[node.uid] = self.read(node)
+
+    def _tokenize_target(self, node, content):
+        self._page_ast[node.uid] = self.tokenize(node, content)
+
+    def _render_target(self, node, ast):
+        self._page_result[node.uid] = self.render(node, ast)
+
+    def _write_target(self, node, result):
+        self.write(node, result)
